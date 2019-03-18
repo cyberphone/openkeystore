@@ -1,0 +1,7 @@
+{
+  "algorithm": "A256CBC-HS512",
+  "keyId": "a512bitkey",
+  "iv": "dw0EQT9v8IiVQNzoZFS1NQ",
+  "tag": "elNz37drd7xKuO5Qljm3G8xLgcWBoDJqV2kRrV_Lc3g",
+  "cipherText": "UG5VKDLyF2nQdmCz3OZVbi_PttCN_qkLfUVQUzEd68c"
+}

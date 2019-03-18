@@ -1,0 +1,10 @@
+{
+  "now": "2019-02-10T11:23:06Z",
+  "name": "Joe",
+  "id": 2200063,
+  "signature": {
+    "algorithm": "RS256",
+    "keyId": "example.com:r2048",
+    "value": "AC8GELBS_2i1KXg8pXMaJwPTF1czAJiLRdj6Fxi85Wm3Eb7nOIMhM1LVE8-9BHeNl5lBCoIl1qsEeHly_Ub5J969aWLdHxBoGH_z1aEEDhQUNnQ1mT2kL3J9bwYSL2LxqwpINnh2iDM4FaL3fwRRtMSwcsuXqTVXpS2anvlCShll4EFLSFIG527FCCGH0JMVUZmhaOeR7lH2MOsdC-MsZ_7LzKmGgydfaF1xu4u3jmC78H1wSme5Arl7DSNBDFQhK2ZqjWIztIkhfZwmxW0OvzUSC3wdXKKNUE53EETIQSoZkTDW8v5_Bz-ebGEF5T7YVwG8M5MZdCE_ZPy-c5tXng"
+  }
+}

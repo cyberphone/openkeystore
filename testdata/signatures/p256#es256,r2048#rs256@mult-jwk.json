@@ -1,0 +1,25 @@
+{
+  "now": "2019-02-10T11:23:06Z",
+  "name": "Joe",
+  "id": 2200063,
+  "signature": {
+    "signers": [{
+      "algorithm": "ES256",
+      "publicKey": {
+        "kty": "EC",
+        "crv": "P-256",
+        "x": "censDzcMEkgiePz6DXB7cDuwFemshAFR90UNVQFCg8Q",
+        "y": "xq8rze6ewG0-eVcSF72J77gKiD0IHnzpwHaU7t6nVeY"
+      },
+      "value": "yI_ucBjb2uOGK07B5y5swXmTRO8jqrCAktE4mQlxLhc05hAksE-MuSEgnO14InByLcxWwe2xp6qXDQZlOHjFAg"
+    },{
+      "algorithm": "RS256",
+      "publicKey": {
+        "kty": "RSA",
+        "n": "hFWEXArvaZEpSP5qNX7x4C4Hl28GJQTNvnDwkfqiWs63kXbdyPeS06bz6GnY3tfQ_093nGauWsimqKBmGAGMPtsV83Qxw1OIeO4ujbIIb9pema0qtVqs0MWlHxklZGFkYfAmbuEUFxYDeLDHe0bkkXbSlB7_t8pCSvc8HLgHjEQjYOlFRwjR0D-uLo-xgsCbpmCtYkB5lcT_zFgpRgY4zJNLSv7GZiz2S4Fc5ArGjd34lL47-L8bozuYjqNOv9sqX0Zgll5XaJ1ndvr7UqZu1xQFgm38reoM3IarBP_SkEFbt_v9iak602VO3k28fQhMaocP7JWR2YLT3kZM0-WTFw",
+        "e": "AQAB"
+      },
+      "value": "aF3qTpIFGcJxB5En-JFQZWGqX-vOoGrs27SKBz_mNjmJRDdAeE-0NnmF16elUh2YmFWFfZd_SLnbrlkKE2adlOqxqWiQYcB1smKSOQ3dTwAYLcD4ebuBgDBKRs9ZO_GPBeSpwH5FGpUQbSPGh7BWD69OPF6Ik5vHPikfls-fr1qgrxpYARY1vUhXvl-QFtBvnd3Xn_n63kFQl4GZDeP6TZyuoaulTKsFBvhHu0OfqknoOzEUYJYMhS9r5rDz_AVbnx_F1Key-gQnm6UmuVothu_ApYy_NW4HEVKZfxhU_nYzuGYQD9VUI9WYmstBcLyS3uNPHDECoEy0hQ4UpZPMBg"
+    }]
+  }
+}

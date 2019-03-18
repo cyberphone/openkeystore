@@ -1,0 +1,7 @@
+{
+    "@context": "http://xmlns.webpki.org/keygen2/beta/20170513",
+    "@qualifier": "ProvisioningFinalizationResponse",
+    "serverSessionId": "142f1bdb286XVQnqmIRc1bSzm-QN-ZJk",
+    "clientSessionId": "39NMWamKtHumJFfdIGkDrLP-NMB-5Lwo",
+    "attestation": "Oy8QaNN0orkE2gxlCWrMYHxDNr6m5FTdVpqTqF9eXlI"
+}

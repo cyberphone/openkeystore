@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Schema for XML Encryption.
+
+    This schema is derived from the W3C XML Encryption specification
+    but has been extensively profiled to suit KeyGen2.  The schema is
+    however still a true subset of the original.
+
+    Copyright 2001 The Internet Society and W3C (Massachusetts Institute
+    of Technology, Institut National de Recherche en Informatique et en
+    Automatique, Keio University). All Rights Reserved.
+    http://www.w3.org/Consortium/Legal/
+
+    Revision: V0.80, 22-Oct-2007 
+    Author: Anders Rundgren, WebPKI.org
+-->
+
+<xs:schema targetNamespace="http://www.w3.org/2001/04/xmlenc#"
+           xmlns:xenc="http://www.w3.org/2001/04/xmlenc#"
+           xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+    <xs:import namespace="http://www.w3.org/2000/09/xmldsig#"/>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+          Small and strict (but true) subset of XML Encryption targeted for KeyGen2
+     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <xs:element name="EncryptedKey">
+        <xs:complexType>
+            <xs:sequence>
+
+                <!-- Algorithm -->
+                <xs:element ref="xenc:EncryptionMethod"/>
+
+                <!-- MAY contain an X509Data object -->
+                <xs:element ref="ds:KeyInfo" minOccurs="0"/>
+
+                <!-- The encrypted data -->
+                <xs:element ref="xenc:CipherData"/>
+
+                <!-- Holds the name referred to by EncryptedData/KeyInfo/KeyName -->
+                <xs:element name="CarriedKeyName" type="xs:string" minOccurs="0"/>
+
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="EncryptedData">
+        <xs:complexType>
+            <xs:sequence>
+
+                <!-- Algorithm -->
+                <xs:element ref="xenc:EncryptionMethod"/>
+
+                <!-- MUST contain a KeyName object pointing to EncryptedKey/CarriedKeyName -->
+                <xs:element ref="ds:KeyInfo"/>
+
+                <!-- The encrypted data -->
+                <xs:element ref="xenc:CipherData"/>
+
+            </xs:sequence>
+            <xs:attribute name="Id" type="xs:ID" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="EncryptionMethod">
+        <xs:complexType>
+            <xs:attribute name="Algorithm" type="xs:anyURI" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="CipherData">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="CipherValue" type="xs:base64Binary"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

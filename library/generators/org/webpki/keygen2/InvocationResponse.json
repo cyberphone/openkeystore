@@ -1,0 +1,15 @@
+{
+    "@context": "http://xmlns.webpki.org/keygen2/beta/20170513",
+    "@qualifier": "InvocationResponse",
+    "serverSessionId": "142f1bdb286XVQnqmIRc1bSzm-QN-ZJk",
+    "clientCapabilities": 
+        [{
+             "type": "http://xmlns.webpki.org/keygen2/logotype#list",
+             "imageAttributes": 
+                 {
+                     "mimeType": "image/png",
+                     "width": 94,
+                     "height": 74
+                 }
+         }]
+}

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+    version="2.4">
+
+    <context-param>
+        <description>Bouncycastle to be loaded before other providers</description>
+        <param-name>bouncycastle_first</param-name>
+        <param-value>@bouncycastle-first@</param-value>
+    </context-param>
+
+    <context-param>
+        <description>Key Password</description>
+        <param-name>key_password</param-name>
+        <param-value>@key-password@</param-value>
+    </context-param>
+ 
+    <context-param>
+        <description>Client RSA Certpath and Private Key</description>
+        <param-name>clientkey_rsa</param-name>
+        <param-value>@clientkey-rsa@</param-value>
+    </context-param>
+
+    <context-param>
+        <description>Client EC Certpath and Private Key</description>
+        <param-name>clientkey_ec</param-name>
+        <param-value>@clientkey-ec@</param-value>
+    </context-param>
+
+    <context-param>
+        <description>JOSE Draft Mode</description>
+        <param-name>jose_mode</param-name>
+        <param-value>@jose_mode@</param-value>
+    </context-param>
+
+    <listener>
+        <listener-class>org.webpki.webapps.json.jws.JWSService</listener-class>
+     </listener>
+
+    <servlet>
+	    <servlet-name>RequestServlet</servlet-name>
+        <servlet-class>org.webpki.webapps.json.jws.RequestServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>HomeServlet</servlet-name>
+        <servlet-class>org.webpki.webapps.json.jws.HomeServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>VerifyServlet</servlet-name>
+        <servlet-class>org.webpki.webapps.json.jws.VerifyServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>WebCryptoServlet</servlet-name>
+        <servlet-class>org.webpki.webapps.json.jws.WebCryptoServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>NoWebCryptoServlet</servlet-name>
+        <servlet-class>org.webpki.webapps.json.jws.NoWebCryptoServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>CreateServlet</servlet-name>
+        <servlet-class>org.webpki.webapps.json.jws.CreateServlet</servlet-class>
+    </servlet>
+    
+    <servlet>
+        <servlet-name>JavaScriptSignatureServlet</servlet-name>
+        <servlet-class>org.webpki.webapps.json.jws.JavaScriptSignatureServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>RequestServlet</servlet-name>
+        <url-pattern>/request</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>HomeServlet</servlet-name>
+        <url-pattern>/home</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>VerifyServlet</servlet-name>
+        <url-pattern>/verify</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>WebCryptoServlet</servlet-name>
+        <url-pattern>/webcrypto</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>NoWebCryptoServlet</servlet-name>
+        <url-pattern>/nowebcrypto</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>CreateServlet</servlet-name>
+        <url-pattern>/create</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>JavaScriptSignatureServlet</servlet-name>
+        <url-pattern>/jssignature</url-pattern>
+    </servlet-mapping>
+
+    <security-constraint>
+      <web-resource-collection>
+        <web-resource-name>The app</web-resource-name>
+        <url-pattern>/*</url-pattern>
+      </web-resource-collection>
+      <user-data-constraint>
+        <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+      </user-data-constraint>
+    </security-constraint>
+
+</web-app>

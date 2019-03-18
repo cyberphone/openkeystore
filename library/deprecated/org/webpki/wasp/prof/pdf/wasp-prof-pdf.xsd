@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    A signature profile for WASP (Web Activated Signature Protocol).
+
+    This profile supports native PDF signatures.
+
+    Revision: V0.62, 26-Aug-2006 
+    Author: Anders Rundgren, WebPKI.org 
+-->
+
+<xs:schema targetNamespace="http://xmlns.webpki.org/wasp/pdfsigprofile0/20060826"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+           xmlns:prof="http://xmlns.webpki.org/wasp/pdfsigprofile0/20060826"
+           xmlns:wasp="http://xmlns.webpki.org/wasp/beta/core/20130604#"
+           elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+    <xs:import namespace="http://xmlns.webpki.org/wasp/beta/core/20130604#"/>
+
+    <xs:import namespace="http://www.w3.org/2000/09/xmldsig#"/>
+
+    <!--===================================================================================
+       Request object: Inserted in the "SignatureRequest/SignatureProfiles" place-holder
+    ====================================================================================-->
+
+    <xs:element name="ProfileData">
+        <xs:complexType>
+
+            <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+               Note: although the following attributes have default values, these are not
+               specified in the schema as this would break standard canonicalization.
+            - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+            <!-- If true the XML DSig "SignedInfo" object SHOULD also include a Reference
+                 object to the "KeyInfo" object, effectively binding the user's Public Key
+                 Certificate (and possible additional certificates belonging to the same
+                 certificate path), to the signature as well.  Default value: false. -->
+            <xs:attribute name="SignedKeyInfo" type="xs:boolean" use="optional"/>
+
+            <!-- If true the XML DSig "KeyInfo" SHOULD include as many additional
+                 certificates in the associated certificate path as the client software
+                 has access to, possibly only excluding the root.
+                 Default value: false => Only the signer's certificate is supplied. -->
+            <xs:attribute name="ExtendedCertPath" type="xs:boolean" use="optional"/>
+
+            <!-- XML DSig parameter.  Implementations MAY support other algorithms than the default.
+                 This parameter controls the "SignedInfo/Reference/Transforms/Tranform/@Algorihtm"
+                 and the "SignedInfo/CanonicalizationMethod/@Algorithm" attributes.
+                 Default value: "http://www.w3.org/2001/10/xml-exc-c14n#". -->
+            <xs:attribute name="CanonicalizationAlgorithm" type="xs:anyURI" use="optional"/>
+
+            <!-- XML DSig parameter. Implementations MAY support other algorithms than the default.
+                 This parameter controls the "SignedInfo/Reference/DigestMethod/@Algorihtm"
+                 and the "DocumentSignatures/@DigestAlgorithm" attributes.
+                 Default value: "http://www.w3.org/2000/09/xmldsig#sha1". -->
+            <xs:attribute name="DigestAlgorithm" type="xs:anyURI" use="optional"/>
+
+            <!-- XML DSig parameter. Implementations MAY support other algorithms than the default.
+                 This parameter controls the "SignedInfo/SignatureMethod/@Algorihtm" attribute.
+                 Default value: "http://www.w3.org/2000/09/xmldsig#rsa-sha1". -->
+            <xs:attribute name="SignatureAlgorithm" type="xs:anyURI" use="optional"/>
+
+            <!-- For the document payload. Implementations MAY support other algorithms than
+                 the default.  The default canonicalization algorithm uses the unmodified
+                 binary value of "External" objects, the Base64-decoded value of "Binary"
+                 objects, and the UTF-8 decoded value of "Text" objects.  The actual algorithm
+                 used MUST be published in "DocumentSignatures/@CanonicalizationAlgorithm".
+                 Default value: "http://xmlns.webpki.org/wasp/beta/core/20130604#cn". -->
+            <xs:attribute name="DocumentCanonicalizationAlgorithm" type="xs:anyURI" use="optional"/>
+
+        </xs:complexType>
+    </xs:element>
+
+    <!--===================================================================================
+          Signed response object:
+          Inserted in the "SignatureResponse" any namespace="##other" place-holder
+    ====================================================================================-->
+
+    <xs:element name="SignedData">
+        <xs:complexType>
+            <xs:sequence>
+
+                <!-- Copy of "SignatureRequest/DocumentReferences". -->
+                <xs:element ref="wasp:DocumentReferences"/>
+
+                <!-- The set of locally calculated document hashes. -->
+                <xs:element ref="wasp:DocumentSignatures"/>
+
+                <!-- See "SignatureRequest/@ClientPlatformRequest". -->
+                <xs:element ref="wasp:ClientPlatform" minOccurs="0"/>
+
+                <!-- The signed PDF object. -->
+                <xs:element name="SignedPDF"/>
+
+            </xs:sequence>
+
+            <!-- Copy of "SignatureRequest/@SubmitURL". -->
+            <xs:attribute name="SubmitURL" type="wasp:httpURI" use="required"/>
+
+            <!-- The http URI that invoked the signature request operation. -->
+            <xs:attribute name="RequestURL" type="wasp:httpURI" use="required"/>
+
+            <!-- See "SignatureRequest/@ClientTimeRequest". -->
+            <xs:attribute name="ClientTime" type="xs:dateTime" use="required"/>
+
+            <!-- Copy of "SignatureRequest/@ServerTime". -->
+            <xs:attribute name="ServerTime" type="xs:dateTime" use="required"/>
+
+            <!-- Copy of "SignatureRequest/@ID". -->
+            <xs:attribute name="ID" type="xs:ID" use="required"/>
+
+            <!-- The "ServerCertificateFingerprint" attribute MUST be populated
+                 with the SHA256 hash of the associated server certificate if the
+                 SignatureRequest was invoked over HTTPS. -->
+            <xs:attribute name="ServerCertificateFingerprint" type="wasp:sha256Hash"
+                          use="optional"/>
+
+            <!-- The client software SHOULD keep track the URIs ("ContentID" or
+                 "Location") of attachments that have not been viewed or
+                 accessed by a user and insert these URIs in the
+                 "UnreferencedAttachments" list below.  Also see the
+                 "MustAccess" attachment attribute. -->
+            <xs:attribute name="UnreferencedAttachments" use="optional">
+                <xs:simpleType>
+                    <xs:list itemType="xs:anyURI"/>
+                </xs:simpleType>
+            </xs:attribute>
+
+        </xs:complexType>
+
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                  Constraints (that can be enforced by schema-directed validation).
+         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+        <!-- Document signature objects MUST have a unique "ContentID". -->
+        <xs:key name="DocSigKey">
+            <xs:selector xpath="wasp:DocumentSignatures/wasp:Digest"/>
+            <xs:field xpath="@ContentID"/>
+        </xs:key>
+
+        <!-- References MUST match a document signature "ContentID". -->
+        <xs:keyref name="DocSigRef" refer="prof:DocSigKey">
+            <xs:selector xpath="wasp:DocumentReferences/wasp:*"/>
+            <xs:field xpath="@ContentID"/>
+        </xs:keyref>
+
+        <!-- There MUST be no unreferenced document reference "ContentID". -->
+        <xs:keyref name="DocRefRef" refer="prof:DocRefKey">
+            <xs:selector xpath="wasp:DocumentSignatures/wasp:Digest"/>
+            <xs:field xpath="@ContentID"/>
+        </xs:keyref>
+
+        <!-- All document references MUST have a unique "ContentID". -->
+        <xs:key name="DocRefKey">
+            <xs:selector xpath="wasp:DocumentReferences/wasp:*"/>
+            <xs:field xpath="@ContentID"/>
+        </xs:key>
+
+    </xs:element>
+
+</xs:schema>

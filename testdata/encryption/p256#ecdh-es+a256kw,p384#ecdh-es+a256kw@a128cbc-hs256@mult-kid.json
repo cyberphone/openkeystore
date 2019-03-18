@@ -1,0 +1,27 @@
+{
+  "algorithm": "A128CBC-HS256",
+  "recipients": [{
+    "algorithm": "ECDH-ES+A256KW",
+    "keyId": "example.com:p256",
+    "ephemeralKey": {
+      "kty": "EC",
+      "crv": "P-256",
+      "x": "PneCOBKmJpQrPLqUBcfzAy9oymB1QiLfVMLL7stAqeM",
+      "y": "Km-AzoxPoQ3RXOOPh35YYpGYtIJz1Yo3oN8gyI8MelE"
+    },
+    "cipherText": "LxDpn53g2teHLGr1L_zUwgSxGc_Ne77TS_0e5UGKntMbD4_u545JeA"
+  },{
+    "algorithm": "ECDH-ES+A256KW",
+    "keyId": "example.com:p384",
+    "ephemeralKey": {
+      "kty": "EC",
+      "crv": "P-384",
+      "x": "0D0uvi60hhrIMMUE9Uo4mRyTLzH4ApvdmMa3MsTtK4R0IMaMiT9RFst6i_4qu9Zc",
+      "y": "nSkrRyp4AknGOkvEXQ5HAX0v3a7CKsghelvC28gusZoxHw52jfPjRq8_6qzuVdh4"
+    },
+    "cipherText": "mGKC3ZZEYZHKCt60p852uJXvj28V6snQSWd8CTYaPRdTKWmU6j-n9w"
+  }],
+  "iv": "yUgp3frtnGBI0wm-vR4jDQ",
+  "tag": "X41acxyzE7M8RjPJsipp-Q",
+  "cipherText": "vzIXE4WIef-ExPPgw_hE2pgGbhYvubQ5nlojSSkeyYM"
+}

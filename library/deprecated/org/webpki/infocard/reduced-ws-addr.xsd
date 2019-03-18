@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Extremely cut-down WS-Addr schema.  Who said that WS-* standards are complex? :-)
+-->
+
+<xs:schema targetNamespace="http://www.w3.org/2005/08/addressing"
+           xmlns:wsa="http://www.w3.org/2005/08/addressing"
+           xmlns:wssi="http://schemas.xmlsoap.org/ws/2006/02/addressingidentity"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+    
+   <xs:import namespace="http://schemas.xmlsoap.org/ws/2006/02/addressingidentity"/>
+
+   <xs:element name="Address" type="xs:anyURI"/>
+
+   <xs:element name="EndpointReference" type="wsa:EndpointReferenceType"/>
+
+   <xs:complexType name="EndpointReferenceType">
+      <xs:sequence>
+         <xs:element ref="wsa:Address"/>
+         <xs:element ref="wsa:Metadata" minOccurs="0"/>
+         <xs:element ref="wssi:Identity" minOccurs="0"/>
+      </xs:sequence>
+   </xs:complexType>
+    
+   <xs:element name="Metadata" type="wsa:MetadataType"/>
+
+   <xs:complexType name="MetadataType">
+      <xs:sequence>
+         <xs:any namespace="##any" processContents="strict"/>
+      </xs:sequence>
+   </xs:complexType>
+    
+</xs:schema>

@@ -1,0 +1,17 @@
+{
+    "@context": "http://xmlns.webpki.org/keygen2/beta/20170513",
+    "@qualifier": "KeyCreationResponse",
+    "serverSessionId": "142f1bdb286XVQnqmIRc1bSzm-QN-ZJk",
+    "clientSessionId": "39NMWamKtHumJFfdIGkDrLP-NMB-5Lwo",
+    "generatedKeys": 
+        [{
+             "id": "Key.1",
+             "publicKey": 
+                 {
+                    "kty": "RSA", 
+                    "n": "uSW5wpfano32Q6oU3xMkFig0r145DN....jkjy1ENPdBQaafvJnuh4x58WPTsVCvjimw",
+                    "e": "AQAB"
+                 },
+             "attestation": "gyRmTPdW4UdGdXlLkHf40PPRL9xac31eJnyyBtf7-Io"
+         }]
+}

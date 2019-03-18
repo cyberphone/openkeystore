@@ -1,0 +1,32 @@
+{
+  "mySignedData": "something",
+  "myUnsignedData": "something else",
+  "signature": {
+    "signers": [{
+      "algorithm": "ES256",
+      "publicKey": {
+        "kty": "EC",
+        "crv": "P-256",
+        "x": "censDzcMEkgiePz6DXB7cDuwFemshAFR90UNVQFCg8Q",
+        "y": "xq8rze6ewG0-eVcSF72J77gKiD0IHnzpwHaU7t6nVeY"
+      },
+      "otherExt": "Cool Stuff",
+      "https://example.com/extension": {
+        "life-is-great": true
+      },
+      "value": "Cuv5q7hxvc9OvG8cXsfkmZnh5rIKU8ADSHUmBoU_BafI2Xt8FaoPcK36Nm-MRzOBtCV6v7Qn03m55WmYO-tw7g"
+    },{
+      "algorithm": "ES384",
+      "publicKey": {
+        "kty": "EC",
+        "crv": "P-384",
+        "x": "GLfdsvEwphRzS_twup7UFPVOk7_CKgHZ7dt_fJ2QHPBdJa1c5pfJcRIWTfT0lpg9",
+        "y": "ovA5_QXmFbj9U4pjZ1AX_ZdVyIRZUBWW9cuZda_tupKfWQfmcQHzDmHGHbxl9Xxl"
+      },
+      "otherExt": "Other Data",
+      "value": "DVxxm2QDvvlxKpBV3vgWKobmah0_4BM3nVirCdLX0DZFit-z-fOEIVQJDtEifqVExPdmN_y2lNJ4myjPv1GMJ0UuqCe6LPbqDvZ755rrLI7uWlKheaZDYK5fhkMAXpXt"
+    }],
+    "extensions": ["otherExt", "https://example.com/extension"],
+    "exclude": ["myUnsignedData"]
+  }
+}

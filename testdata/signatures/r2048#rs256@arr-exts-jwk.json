@@ -1,0 +1,17 @@
+[90000,{
+  "success-is-inevitable": true,
+  "pi-approximation": 3.14159265359
+},"The quick brown fox...",{
+  "algorithm": "RS256",
+  "publicKey": {
+    "kty": "RSA",
+    "n": "hFWEXArvaZEpSP5qNX7x4C4Hl28GJQTNvnDwkfqiWs63kXbdyPeS06bz6GnY3tfQ_093nGauWsimqKBmGAGMPtsV83Qxw1OIeO4ujbIIb9pema0qtVqs0MWlHxklZGFkYfAmbuEUFxYDeLDHe0bkkXbSlB7_t8pCSvc8HLgHjEQjYOlFRwjR0D-uLo-xgsCbpmCtYkB5lcT_zFgpRgY4zJNLSv7GZiz2S4Fc5ArGjd34lL47-L8bozuYjqNOv9sqX0Zgll5XaJ1ndvr7UqZu1xQFgm38reoM3IarBP_SkEFbt_v9iak602VO3k28fQhMaocP7JWR2YLT3kZM0-WTFw",
+    "e": "AQAB"
+  },
+  "extensions": ["otherExt", "https://example.com/extension"],
+  "otherExt": "Cool Stuff",
+  "https://example.com/extension": {
+    "life-is-great": true
+  },
+  "value": "LcymT0m6gbLVUuiVIgg4TfW4mMovXejBSy2Zc5SQkAYM6vyRVhhkDhZlNHwZ5eEsd9iQVFKY1_Oy5cG3AeCgfDi_0nkPhrIpO45VngUwnXng51cwV0lGmZTXO4_CtIOs9yfbLQIBsyw9iJ-fZNSQRWAUWhJv1U_ts19fXr_iuDd7rfPgVZhnc1z_sX8atOGafS-iM93eH-LNgn4PYYXSCbKbkt29-QF1m3ZCx57It4mL7V7TTEcp4O_23mII6Y6v2jteG8rt9TZkifq5JFFzhtMAo9WZy0hnD7XVGiwZKIKRVeTHJou69DtSBpju-xAb0pzHrkdes1ikOrVkbYlzhQ"
+}]

@@ -1,0 +1,9 @@
+This project creates the client/server library as well as a web library
+Note: it can only be built using ANT build.xml in the /build directory
+
+Dependencies: JDK 6 or JDK 7, ANT 1.8.X
+
+For the .NET version (client only) you also need:
+- Windows V7.1 SDK
+- NAnt 0.91
+- .NET V4.0 Framework

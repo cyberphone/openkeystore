@@ -1,0 +1,15 @@
+{
+  "algorithm": "A256CBC-HS512",
+  "encryptedKey": {
+    "algorithm": "ECDH-ES",
+    "publicKey": {
+      "kty": "EC",
+      "crv": "P-384",
+      "x": "GLfdsvEwphRzS_twup7UFPVOk7_CKgHZ7dt_fJ2QHPBdJa1c5pfJcRIWTfT0lpg9",
+      "y": "ovA5_QXmFbj9U4pjZ1AX_ZdVyIRZUBWW9cuZda_tupKfWQfmcQHzDmHGHbxl9Xxl"
+    }
+  },
+  "iv": "dLzj1Hx31rMOrzEJXhs5iQ",
+  "tag": "J49c9spnGviE2qGqQwbQZWmFGTWc0IDv_YSRuBinS9U",
+  "cipherText": "RYCsuTOOhUpVABf8G7gATheW9VGfHjM5DeWJiyfQhGs"
+}

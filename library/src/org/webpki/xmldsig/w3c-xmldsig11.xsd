@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--                  
+    Schema for XML Signatures 1.1 additions.
+
+    This schema is derived from the W3C XML Signature specification
+    but has been extensively profiled to suit WASP, WebAuth, 
+    Information Cards, KeyGen2, OBI/X, etc.  The schema is however
+    still a true subset of the original.
+
+    Copyright 2001 The Internet Society and W3C (Massachusetts Institute
+    of Technology, Institut National de Recherche en Informatique et en
+    Automatique, Keio University). All Rights Reserved.
+    http://www.w3.org/Consortium/Legal/
+
+    Revision: V0.58, 10-April-2009 
+    Author: Anders Rundgren, WebPKI.org 
+-->
+
+<xs:schema targetNamespace="http://www.w3.org/2009/xmldsig11#"
+           xmlns:ds11="http://www.w3.org/2009/xmldsig11#"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+    <xs:element name="ECKeyValue">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="NamedCurve">
+                    <xs:complexType>
+                        <xs:attribute name="URI" use="required">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:pattern value="urn:oid:[1-9][0-9]*(\.[1-9][0-9]*)*"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="PublicKey" type="xs:base64Binary"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

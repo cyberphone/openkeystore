@@ -1,0 +1,9 @@
+{
+  "now": "2019-02-10T11:23:06Z",
+  "name": "Joe",
+  "id": 2200063,
+  "signature": {
+    "algorithm": "RS256",
+    "value": "JG4PrnwSHk3eBfYRyuKwiybbBnZ-aJWAG0_3-X9eJJg9Xxe_zGHcUiNrH2o77quxXcFSykV1LQALyS7blqecOBTRYYEPaMvKYmNNouXphAtCjfTRfK6zrxo8WQW6kHaJh4JQ-_4JZgr7f2r0iMuycnC-1cXQ5YUQsTsqfNXZrI8drWFDNxUGMTzoPx8lcR1V5nyZyXMwHdtE84Zy9V2q-Fd38vobcpYzrUJQSweCVr8MiGLWFmLtmknH2ckm6t8S45JQr3zjHHrE42_9BqN4o7ggNoHfMAeZYIn09EBdpD0EwCXZ-Kti2VTSl3X-wHfbkLrScKWFuAa6i8BuZrEZBg"
+  }
+}

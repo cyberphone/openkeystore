@@ -1,0 +1,9 @@
+{
+  "now": "2019-02-10T11:23:06Z",
+  "name": "Joe",
+  "id": 2200063,
+  "signature": {
+    "algorithm": "ES256",
+    "value": "dfkNQOOsCCEU_EX78U2p3Qm9bkwpKJxlTPwdQ8Yovry1WxhhfKWYmkzUaFDqkeYffqfm3_ltwrDkdpbjxYkbnA"
+  }
+}

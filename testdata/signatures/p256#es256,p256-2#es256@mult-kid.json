@@ -1,0 +1,16 @@
+{
+  "now": "2019-02-10T11:23:06Z",
+  "name": "Joe",
+  "id": 2200063,
+  "signature": {
+    "signers": [{
+      "algorithm": "ES256",
+      "keyId": "example.com:p256",
+      "value": "o-o7hvZV5ravuCQVCToNk1s98oSoZqc_WXdGxAmfJe4CzEOcw5CsOmiTaY7_E4j5uIYIE1gnVpqSFZvDi00MjA"
+    },{
+      "algorithm": "ES256",
+      "keyId": "example.com:p256-2",
+      "value": "SsMApCRpE4QG7MTqW1MjXrVsOBwTOT6CH491MElGHkWBFleDayaAbeY9HdLNPyW7TvoeIJx1AePc9BXn-ivfUA"
+    }]
+  }
+}

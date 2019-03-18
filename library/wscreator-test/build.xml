@@ -1,0 +1,338 @@
+<project name="WEBPKI.ORG library" default="dist" basedir=".">
+
+  <!-- set global properties for this build -->
+  <property name="sks.implementation" value="org.webpki.sks.test.SKSReferenceImplementation"/>
+  <property name="src_dir" value="../src" />
+  <property name="dot_net_dir" value="../sks-ws-dotnet" />
+  <property name="temp_dir" value="../.tmp" />
+  <property name="test_dir" value="../test" />
+  <property name="dist_dir"  value="../dist" />
+  <property name="wsdl_dir"  value="../wsdl" />
+  <property name="ext.jar"  value="../../resources/third-party-jars"/>
+  <property name="webpki-libext" value="webpki.org-libext-1.00.jar" />
+  <property name="webpki-webutil" value="webpki.org-webutil-1.00.jar" />
+  <property name="webpki-sksws" value="webpki.org-sksws-1.00.jar" />
+  <property name="ws.def" location="sks-ws-descriptor.xml"/>
+  <property name="doc_dir"  value="../doc" />
+  <property name="debug"  value="on"/>
+  <property environment="env"/>
+  <condition property="java.home">
+    <isset property="env.JAVA_HOME"/>
+  </condition>
+  <fail message="JAVA_HOME must be set to environment!" unless="java.home"/>
+  <property name="ws" location="../../resources/jax-ws"/>
+
+  <path id="jaxws.classpath">
+	<fileset dir="${ws}">
+	  <include name="*.jar"/>
+	</fileset>
+  </path> 
+
+  <target name="_ws-check">
+    <condition property="wsgen.required">
+      <not>
+	    <and>
+	      <available file="${src_dir}/org/webpki/sks/ws/server/SKSWSImplementation.java"/>
+	      <uptodate srcfile="${ws.def}" targetfile="${src_dir}/org/webpki/sks/ws/server/SKSWSImplementation.java"/>
+	      <available file="${src_dir}/org/webpki/sks/ws/client/SKSWS.java"/>
+	      <uptodate srcfile="${ws.def}" targetfile="${src_dir}/org/webpki/sks/ws/client/SKSWS.java"/>
+	      <available file="${src_dir}/org/webpki/sks/ws/client/SKSWSProxy.java"/>
+	      <uptodate srcfile="${ws.def}" targetfile="${src_dir}/org/webpki/sks/ws/client/SKSWSProxy.java"/>
+	      <available file="${src_dir}/org/webpki/sks/ws/client/SKSExceptionBean.java"/>
+	      <uptodate srcfile="${ws.def}" targetfile="${src_dir}/org/webpki/sks/ws/client/SKSExceptionBean.java"/>
+	      <available file="${src_dir}/org/webpki/sks/ws/client/SKSException_Exception.java"/>
+	      <uptodate srcfile="${ws.def}" targetfile="${src_dir}/org/webpki/sks/ws/client/SKSException_Exception.java"/>
+	      <available file="${dot_net_dir}/src/SKSWSProxy.cs"/>
+		  <uptodate srcfile="${ws.def}" targetfile="${dot_net_dir}/src/SKSWSProxy.cs"/>
+	      <available file="${wsdl_dir}/SKSWS.wsdl"/>
+	      <uptodate srcfile="${ws.def}" targetfile="${wsdl_dir}/SKSWS.wsdl"/>
+	      <uptodate srcfile="${src_dir}/org/webpki/tools/WSCreator.java" targetfile="${wsdl_dir}/SKSWS.wsdl"/>
+	      <uptodate srcfile="${src_dir}/org/webpki/tools/wscreator.xsd" targetfile="${wsdl_dir}/SKSWS.wsdl"/>
+	    </and>
+      </not>
+    </condition>
+  </target>
+
+  <path id="compile.classpath">
+	 <fileset dir="${ext.jar}">
+	   <include name="*.jar"/>
+     </fileset>
+		<fileset dir="${ws}">
+		  <include name="*.jar"/>
+		</fileset>
+  </path>
+
+  <path id="junit.classpath">
+    <fileset dir="${dist_dir}">
+	   <include name="${webpki-libext}"/>
+	    </fileset>
+	 <fileset dir="${ext.jar}">
+        <include name="*.jar"/>
+	 </fileset>
+  </path>
+
+  <target name="help">
+    <echo message="Targets: help dist clean compile doc testkg2 testsks."/>
+  </target>
+	
+  <target name="_build_sks_ws_for_dotnet" if="dotnet.tools.available">
+    <exec executable="nant.bat"
+  	      failonerror="true">
+        <arg value="-nologo"/>
+        <arg value="-quiet"/>
+        <arg value="-buildfile:${dot_net_dir}/nant.build"/>
+    </exec>
+  	<echo message=".NET SKS WS assembly built"/>
+  </target>
+
+  <target name="_ws-gen">
+  	<echo message="Updating '${cmd}'"/>
+  	<java fork="yes"
+  		  classname="org.webpki.tools.WSCreator"
+		  failonerror="true">
+  		<classpath>
+            <pathelement path="${temp_dir}"/>
+  			 <fileset dir="${ext.jar}">
+  		        <include name="*.jar"/>
+  			 </fileset>
+  		</classpath>
+  	    <arg value="${cmd}"/>
+  		<arg value="${ws.def}"/>
+  		<arg value="${out}"/>
+  	</java>
+  </target>
+
+  <target name="wsgen" depends="_ws-check" if="wsgen.required">
+  	<echo message="SKS WS needed updates"/>
+    <fixcrlf srcdir="."
+       tab="remove"
+       tablength="4"
+       eol="lf"
+       eof="remove"
+       includes="sks-ws-descriptor.xml"/>
+    <antcall target="_ws-gen">
+      <param name="cmd" value="wsdl"/>
+      <param name="out" value="../wsdl/SKSWS.wsdl"/>
+    </antcall>
+    <antcall target="_ws-gen">
+      <param name="cmd" value="jclient"/>
+      <param name="out" value="${src_dir}"/>
+     </antcall>
+    <antcall target="_ws-gen">
+      <param name="cmd" value="jserver"/>
+      <param name="out" value="${src_dir}"/>
+    </antcall>
+    <antcall target="_ws-gen">
+      <param name="cmd" value="dotnetclient"/>
+      <param name="out" value="${dot_net_dir}/src"/>
+    </antcall>
+    <antcall target="_ws-gen">
+      <param name="cmd" value="dotnetdoc"/>
+      <param name="out" value="${dot_net_dir}/doc/index.html"/>
+    </antcall>
+  </target>
+	
+  <target name="compile">
+    <fixcrlf srcdir="${src_dir}"
+       tab="remove"
+       tablength="4"
+       eol="lf"
+       eof="remove"
+       includes="**/*.java, **/*.xsd"/>
+    <mkdir dir="${temp_dir}" />
+
+  	<!-- Copy all files except .java  -->
+    <copy todir="${temp_dir}" preservelastmodified="true" includeEmptyDirs="false">
+      <fileset dir="${src_dir}">
+        <include name="**/*"/>
+        <exclude name="**/*.java"/>
+        <exclude name="**/package.html"/>
+        <exclude name="**/doc-files/*"/>
+      </fileset>
+    </copy>
+
+    <!-- Compile non-ws java code from ${src_dir} into ${temp_dir} -->
+    <javac debug="${debug}"
+    	   srcdir="${src_dir}"
+    	   destdir="${temp_dir}" 
+    	   classpathref="compile.classpath"
+    	   includeAntRuntime="false" excludes="**/sks/ws/**/*">
+       <compilerarg value="-Xlint:-path"/>
+    </javac>
+  	
+  	<!-- Now we can optionally update SKS WS code -->
+  	<antcall target="wsgen"/>
+
+  	<!-- Compile sks-ws java code from ${src_dir} into ${temp_dir} -->
+    <javac debug="${debug}"
+    	   srcdir="${src_dir}"
+    	   destdir="${temp_dir}" 
+    	   classpathref="compile.classpath"
+    	   includeAntRuntime="false" includes="**/sks/ws/**/*">
+       <compilerarg value="-Xlint:-path"/>
+    </javac>
+
+  	<!-- Build .NET package if applicable -->
+  	<condition property="dotnet.tools.available">
+  	   <and>
+ 	   	 <os family="windows"/>
+  	   	<available file="nant.bat" type="file">
+           <filepath>
+  	         <pathelement path="${env.Path}"/>
+  	       </filepath>
+  	     </available>
+  	   </and>
+  	 </condition>
+  	<antcall target="_build_sks_ws_for_dotnet"/>
+  </target>
+
+  <target name="doc">
+    <!-- Create the distribution directory -->
+    <mkdir dir="${doc_dir}" />
+
+    <!-- Make documentation -->
+    <javadoc destdir="${doc_dir}"
+             author="true"
+             version="true"
+             Package="false"
+             Use="false"
+             nodeprecated="true"
+             nodeprecatedlist="true"
+             classpathref="compile.classpath"
+             windowtitle="WebPKI.org Support">
+      <packageset dir="${src_dir}">
+        <include name="org/**"/>
+        <exclude name="org/**/test/**"/>
+      </packageset>
+      <link offline="true" href="http://java.sun.com/j2se/1.5.0/docs/api/" packagelistLoc="${env.JAVA_HOME}\docs\api"/>
+      <link offline="true" href="http://tomcat.apache.org/tomcat-5.5-doc/servletapi" packagelistLoc="${env.JAVA_HOME}\eedocs\docs\api"/>
+      <doctitle><![CDATA[<h1>WebPKI.org Support</h1>]]></doctitle>
+      <bottom><![CDATA[<i>2005-2011 WebPKI.org.</i>]]></bottom>
+    </javadoc>
+  </target>
+
+  <target name="dist" depends="clean,compile">    
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist_dir}" />
+
+    <!-- Put everything from ${temp_dir} into the two jar files -->
+    <jar jarfile="${dist_dir}/${webpki-libext}">
+      <fileset dir="${temp_dir}">
+        <exclude name="org/webpki/webutil/**"/>
+        <exclude name="org/webpki/sks/ws/**"/>
+      </fileset>
+    </jar>
+    <jar jarfile="${dist_dir}/${webpki-webutil}">
+      <fileset dir="${temp_dir}">
+        <include name="org/webpki/webutil/**"/>
+        <exclude name="org/webpki/sks/ws/**"/>
+      </fileset>
+    </jar>
+    <jar jarfile="${dist_dir}/${webpki-sksws}">
+      <fileset dir="${temp_dir}">
+        <include name="org/webpki/sks/ws/**"/>
+      </fileset>
+      <metainf dir="${wsdl_dir}"/>
+    </jar>
+  </target>
+
+  <target name="clean">
+    <delete dir="${temp_dir}"/>
+    <delete dir="${dist_dir}"/>
+  </target>
+
+  <target name="_test">
+    <mkdir dir="${test_dir}"/>
+  	<condition property="test.dir" value="">
+      <not>
+        <isset property="test.out.file"/>
+      </not>
+  	</condition>
+	<property name="test.dir" location="${test_dir}"/>
+  	<condition property="test.out.html" value="">
+      <not>
+        <isset property="html.mode"/>
+      </not>
+  	</condition>
+	<property name="test.out.html" value="true"/>
+    <junit fork="yes" haltonfailure="yes">
+      <test name="${test.class}"/>
+    	<sysproperty key="sks.implementation" value="${sks.implementation}"/>
+    	<sysproperty key="test.dir" value="${test.dir}"/>
+    	<sysproperty key="html.mode" value="${test.out.html}"/>
+      <formatter type="plain" usefile="false"/>
+      <jvmarg value="-Djava.endorsed.dirs=${ws}"/>
+      <classpath refid="junit.classpath" />
+    </junit>
+  </target>
+	
+  <target name="testkg2">
+    <antcall target="_test">
+       <param name="test.class" value="org.webpki.keygen2.test.KeyGen2Test"/>
+     </antcall>
+  </target>
+
+  <target name="testsks">
+    <antcall target="_test">
+       <param name="test.class" value="org.webpki.sks.test.SKSTest"/>
+     </antcall>
+  </target>
+	
+  <target name="ws-server">
+  	<java fork="yes"
+  		  classname="org.webpki.sks.ws.server.SKSWSImplementation"
+		  failonerror="true">
+  		<classpath>
+  		    <fileset dir="${dist_dir}">
+   			   <include name="${webpki-libext}"/>
+   			   <include name="${webpki-sksws}"/>
+  			 </fileset>
+  			 <fileset dir="${ext.jar}">
+  		        <include name="*.jar"/>
+  			 </fileset>
+  		</classpath>
+  		<jvmarg value="-Djava.endorsed.dirs=${ws}"/>
+    	<jvmarg value="-Dsks.implementation=${sks.implementation}"/>
+    	<jvmarg value="-Dcom.sun.xml.ws.fault.SOAPFaultBuilder.disableCaptureStackTrace=false"/>
+  	    <arg value="http://localhost:8080/securekeystore"/>
+  	</java>
+  </target>
+
+  <target name="pkcs12import">
+    <fail message="-&#10;Missing one or more of mandatory:&#10;
+ -Dfile=&#10;
+ -Dpassword=&#10;&#10;
+optional:&#10;
+ -Dpin=">
+       <condition>
+         <not>
+         	<and>
+            <isset property="file"/>
+            <isset property="password"/>
+           </and>
+         </not>
+       </condition>
+     </fail>
+  	<property name="p12.filename" location="${file}"/>
+  	<property name="pin" value=""/>
+  	<java fork="yes"
+  		  classname="org.webpki.sks.test.PKCS12Import"
+		  failonerror="true">
+  		<classpath>
+  		    <fileset dir="${dist_dir}">
+   			   <include name="${webpki-libext}"/>
+  			 </fileset>
+  			 <fileset dir="${ext.jar}">
+  		        <include name="*.jar"/>
+  			 </fileset>
+  		</classpath>
+  		<jvmarg value="-Djava.endorsed.dirs=${ws}"/>
+    	<jvmarg value="-Dsks.client=${sks.implementation}"/>
+  	    <arg value="${p12.filename}"/>
+  	    <arg value="${password}"/>
+  	    <arg value="${pin}"/>
+  	</java>
+  </target>
+
+</project>
+

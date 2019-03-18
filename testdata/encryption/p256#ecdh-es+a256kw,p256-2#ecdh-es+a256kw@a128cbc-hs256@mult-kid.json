@@ -1,0 +1,27 @@
+{
+  "algorithm": "A128CBC-HS256",
+  "recipients": [{
+    "algorithm": "ECDH-ES+A256KW",
+    "keyId": "example.com:p256",
+    "ephemeralKey": {
+      "kty": "EC",
+      "crv": "P-256",
+      "x": "KuYE7J3CIom0SqmfVD3dGISopO7WNGlrdvJu4dk8wRI",
+      "y": "lPHytCtyd0hooGnFMS7fItxqGWLEVBrbaMEgAO8Se8U"
+    },
+    "cipherText": "TV5S6amL_MLgBStCQd4sW713ALQ2OY3zVaJtsFimo80u3MkH6NjiSA"
+  },{
+    "algorithm": "ECDH-ES+A256KW",
+    "keyId": "example.com:p256-2",
+    "ephemeralKey": {
+      "kty": "EC",
+      "crv": "P-256",
+      "x": "jcLzlP1Eedsa7imrtRkDtg6nt3lgVEPXdouRhYDk0sI",
+      "y": "23Q5WBymnoiFcvsA1zX752hqCluZWzgvkH15I_q7TKM"
+    },
+    "cipherText": "yZAkG8P-LG25RpVY93WlVj3IlvHZMSnbkLJDshDLcg6QzkGp_fddoQ"
+  }],
+  "iv": "bdoD5E_YMRvtuxWoO-yYvA",
+  "tag": "oYqLFyRrGVw420bSwsKz4A",
+  "cipherText": "PunpZg1yyOQiSdU2iv44_gtxdh9qIlfwaXnuD66ExFA"
+}

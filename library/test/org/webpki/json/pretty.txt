@@ -1,0 +1,73 @@
+{
+}
+
+{
+  "nonce": "rI2WgzLLHtQ4Z2sZWIbSvw",
+  "clientCapabilities": [{
+    "type": "http://xmlns.webpki.org/keygen2/feature#ve",
+    "values": ["http://platforms.extreme-vm.com/type.3"]
+  }]
+}
+
+{
+  "nonce": "rI2WgzLLHtQ4Z2sZWIbSvw",
+  "clientCapabilities": [{
+    "type": "http://xmlns.webpki.org/keygen2/feature#ve",
+    "values": ["http://platforms.extreme-vm.com/type.3"]
+  },{
+    "type": "http://xmlns.webpki.org/keygen",
+    "values": ["http://platforms"]
+  }]
+}
+
+{
+  "nonce": "rI2WgzLLHtQ4Z2sZWIbSvw",
+  "clientCapabilities": [{
+    "type": "http://xmlns.webpki.org/keygen2/feature#ve",
+    "values": ["http://platforms.extreme-vm.com/type.3"]
+  },5]
+}
+
+{
+  "nonce": "rI2WgzLLHtQ4Z2sZWIbSvw",
+  "clientCapabilities": [5,{
+    "type": "http://xmlns.webpki.org/keygen2/feature#ve",
+    "values": ["http://platforms.extreme-vm.com/type.3"]
+  }]
+}
+
+{
+  "nonce": "rI2WgzLLHtQ4Z2sZWIbSvw",
+  "clientCapabilities": [5,{
+    "type": "http://xmlns.webpki.org/keygen2/feature#ve",
+    "values": ["http://platforms.extreme-vm.com/type.3"]
+  },{
+  },[]]
+}
+
+{
+  "nonce": "rI2WgzLLHtQ4Z2sZWIbSvw",
+  "client": [
+    [],[]
+  ],
+  "nonce2": "rI2WgzLLHtQ4Z2sZWIbSvw"
+}
+
+{
+  "nonce": "rI2WgzLLHtQ4Z2sZWIbSvw",
+  "client": [
+    [56]
+  ],
+  "nonce2": "rI2WgzLLHtQ4Z2sZWIbSvw"
+}
+
+{
+  "nonce": "rI2WgzLLHtQ4Z2sZWIbSvw",
+  "client": [
+    [{
+      "elem": 6
+    }]
+  ],
+  "nonce2": "rI2WgzLLHtQ4Z2sZWIbSvw"
+}
+

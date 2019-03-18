@@ -1,0 +1,8 @@
+{
+  "kid": "example.com:p256",
+  "kty": "EC",
+  "crv": "P-256",
+  "x": "censDzcMEkgiePz6DXB7cDuwFemshAFR90UNVQFCg8Q",
+  "y": "xq8rze6ewG0-eVcSF72J77gKiD0IHnzpwHaU7t6nVeY",
+  "d": "nEsftLbi5u9pI8B0-drEjIuJzQgZie3yeqUR3BwWDl4"
+}

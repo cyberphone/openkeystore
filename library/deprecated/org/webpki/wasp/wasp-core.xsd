@@ -1,0 +1,628 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    WASP (Web Activated Signature Protocol) core XML schema.  The purpose of
+    WASP is providing a way for users to digitally sign transactions (or
+    documents), in interactive sessions using a web browser.
+
+    Note that the WASP core schema must be augmented with one or more signature
+    profile schemas in order to create a complete signature request and response
+    definition.
+
+    "Perfection is achieved, not when there is nothing more to add, but when there
+    is nothing left to take away" [Antoine de Saint-Exupery]
+
+    Version: BETA 
+    Revised: 04-06-2013 
+    Author: Anders Rundgren
+
+    Copyright 2006-2014 WebPKI.org (http://webpki.org).
+
+    Licensed under the Apache License, Version 2.0 (the "License"); 
+    you may not use this file except in compliance with the License. 
+    You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<xs:schema targetNamespace="http://xmlns.webpki.org/wasp/beta/core/20130604#"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+           xmlns:wasp="http://xmlns.webpki.org/wasp/beta/core/20130604#"
+           elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+    <xs:import namespace="http://www.w3.org/2000/09/xmldsig#"/>
+
+    <!--==========================================================================================
+                          The primary (top-level) signature request object
+    ===========================================================================================-->
+
+    <xs:element name="SignatureRequest">
+        <xs:complexType>
+            <xs:sequence>
+
+                <!-- Requested signature profile(s) for the client software to select from
+                     in descending preference order.  Each profile consists of a matched
+                     request and response object, where the response object indicates which
+                     profile (or parameterized version of a profile), that was actually
+                     selected.  The client software MAY only support a subset of the supplied
+                     profiles, but MUST abort the operation if none is recognized and supported.
+                     Also see "CertificateFilter". -->
+                <xs:element name="SignatureProfiles">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:any namespace="##any" processContents="lax" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
+                <!-- See "CertificateFilter" definition. -->
+                <xs:element ref="wasp:CertificateFilter" minOccurs="0" maxOccurs="unbounded"/>
+
+                <!-- See "DocumentReferences" definition. -->
+                <xs:element ref="wasp:DocumentReferences"/>
+
+                <!-- See "DocumentData" definition. -->
+                <xs:element ref="wasp:DocumentData"/>
+
+                <!-- If defined, the client software MUST for signature profiles that support
+                     this, include the client's key platform parameters in the signed result.
+                     It is an ERROR including a client platform request in conjunction with
+                     signature profiles that do not support this object.
+
+                     Optionally the requester MAY include XML data objects specifying that it
+                     wants additional information concerning the client platform.  Such XML
+                     objects may not necessarily be recognized by the signature client and
+                     MAY also be ignored.  In case the requested information would include
+                     data that could affect personal integrity (like a machine ID), the
+                     client software SHOULD warn the user, and offer an option to decline
+                     the release of such data.  -->
+                <xs:element name="ClientPlatformRequest" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:any namespace="##any" processContents="lax" minOccurs="0"
+                                    maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
+                <!-- A signature request MAY also include an enveloped XML signature
+                     covering the entire SignatureRequest object (which MUST be done
+                     through an explicit reference to the "SignatureRequest/@ID" attribute).
+                     The client software MUST verify such a signature before proceeding
+                     with the signature process.  The signature requester is RECOMMENDED
+                     to sign using a certificate which already has a trust anchor
+                     installed in the potential users' browsers.  If the trust anchor is
+                     not known, the client software SHOULD warn the user before proceeding.
+                     The user SHOULD be able to abort the operation in case of an unknown
+                     issuer.  A broken signature MUST abort the signature process. -->
+                <xs:element ref="ds:Signature" minOccurs="0"/>
+
+            </xs:sequence>
+
+            <!-- This mandatory item MUST be unique between signature requests.
+                 "ID" is also used by signature profiles as a handle to
+                 enveloped signatures. -->
+            <xs:attribute name="ID" type="xs:ID" use="required"/>
+
+            <!-- A mandatory time-stamp indicating when the request was issued. -->
+            <xs:attribute name="ServerTime" type="xs:dateTime" use="required"/>
+
+            <!-- Where to HTTP POST the signature response.  Note that applicable
+                 session cookies MUST be submitted in the request as well. -->
+            <xs:attribute name="SubmitURL" type="wasp:httpURI" use="required"/>
+
+            <!-- Where to HTTP GET if the user cancels the signature process.
+                 Note that applicable session cookies MUST be submitted in the
+                 request as well. -->
+            <xs:attribute name="CancelURL" type="wasp:httpURI" use="optional"/>
+
+            <!-- The client software MAY honor a specific GUI variation/legislation requirement. -->
+            <xs:attribute name="SignatureGUIPolicy" type="xs:anyURI" use="optional"/>
+
+            <!-- GUI language in preference order.  Primarily for public computers. -->
+            <xs:attribute name="Languages" type="wasp:languageList" use="optional"/>
+
+            <!-- If true, the "SignatureRequest/DocumentData" MUST be copied to the
+                 "SignatureResponse/DocumentData" by the client software.  Note that this
+                 is usually redundant in a web service, as document data must anyway be
+                 kept in the session context for validation.  Default value: false.  -->
+            <xs:attribute name="CopyData" type="xs:boolean" use="optional"/>
+
+            <!-- If specified the client software SHOULD indicate to the user when a
+                 signature request is about to expire.  The value is given in seconds.  -->
+            <xs:attribute name="Expires" type="xs:unsignedInt" use="optional"/>
+
+        </xs:complexType>
+
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                  Constraints (that can be enforced by schema-directed validation).
+         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+        <!-- DocumentData objects MUST have a unique "ContentID". -->
+        <xs:key name="DocDataKey">
+            <xs:selector xpath="wasp:DocumentData/wasp:*"/>
+            <xs:field xpath="@ContentID"/>
+        </xs:key>
+
+        <!-- References MUST match a document "ContentID". -->
+        <xs:keyref name="DocDataRef" refer="wasp:DocDataKey">
+            <xs:selector xpath="wasp:DocumentReferences/wasp:*"/>
+            <xs:field xpath="@ContentID"/>
+        </xs:keyref>
+
+        <!-- There MUST be no unreferenced document "ContentID". -->
+        <xs:keyref name="DocRefRef" refer="wasp:DocRefKey">
+            <xs:selector xpath="wasp:DocumentData/wasp:*"/>
+            <xs:field xpath="@ContentID"/>
+        </xs:keyref>
+
+        <!-- All document references MUST have a unique "ContentID". -->
+        <xs:key name="DocRefKey">
+            <xs:selector xpath="wasp:DocumentReferences/wasp:*"/>
+            <xs:field xpath="@ContentID"/>
+        </xs:key>
+
+    </xs:element>
+
+    <!--==========================================================================================
+                              End of signature request object definition
+    ===========================================================================================-->
+
+
+    <!--==========================================================================================
+                         The primary (top-level) signature response object
+    ===========================================================================================-->
+
+    <xs:element name="SignatureResponse">
+        <xs:complexType>
+            <xs:sequence>
+
+                <!-- Signature object matching the selected profile. -->
+                <xs:any namespace="##other" processContents="strict"/>
+
+                <!-- A selected signature profile MAY require document data to be included
+                     in the final result.  Also see "SignatureRequest/@CopyData". -->
+                <xs:element ref="wasp:DocumentData" minOccurs="0"/>
+
+            </xs:sequence>
+        </xs:complexType>
+
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                  Constraints (that can be enforced by schema-directed validation).
+         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+        <!-- DocumentData objects MUST have a unique "ContentID". -->
+        <xs:unique name="UniqueDocKey">
+            <xs:selector xpath="wasp:DocumentData/wasp:*"/>
+            <xs:field xpath="@ContentID"/>
+        </xs:unique>
+
+    </xs:element>
+
+    <!--==========================================================================================
+                              End of signature response object definition
+    ===========================================================================================-->
+
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+       "CertificateFilter" criterions include SHA-1 fingerprints, issuer DNs, subject DNs,
+       subject e-mail addresses, serial numbers, policy OIDs, private key container types,
+       key usage, and extended key usage characteristics of accepted signature certificates.
+       To improve the "user experience", it is RECOMMENDED implementing support for
+       CertificateFilter objects.  If support for a specific selection criterion is not
+       implemented, this criterion SHOULD be considered as matching regardless of its value.
+
+       Client software MAY optionally support local policy settings, allowing an
+       installation to restrict the values on some or all CertificateFilter attributes.
+
+       If no CertificateFilter objects have been issued, all available signature
+       client certificates [1] SHOULD be shown to the user in a suitable signature
+       certificate selection menu.
+
+       The scope of "global" certificate selection filter attributes (if honored),
+       SHOULD be the entire set of known [2] certificate-paths associated with
+       a user's signature certificates, including the signing certificates as well.
+       Note that DNs (Distinguished Names) in certificates to be checked MUST be
+       expressed as described in RFC 2253, while CertificateFilter DN attributes MUST be
+       coded as described in the "distinguishedNameExpr" type definition in this XML
+       Schema.  A policy attribute MUST contain an RFC 5280 certificate policy OID.
+       If a certificate contains multiple policy OIDs, but only one of them matches a
+       specified policy attribute, this MUST anyway be regarded as a match.  Subject
+       e-mail addresses SHOULD be searched for both in the subject DN and in possible
+       SubjectAltName extensions.
+
+       Note: Within each CertificateFilter, only attribute matches belonging to the
+       same certificate path (but not necessarily the same certificate), should be
+       considered as matching (and thus considered for path inclusion).  All specified
+       attributes within a CertificateFilter MUST return a match to consider a path as
+       matching.  For the Containers attribute, only one of the featured items needs to
+       match in order to treat the attribute as matching.  Multiple paths matches (which
+       are allowed), within a specific CertificateFilter MUST be properly handled.
+
+       Note: Each CertificateFilter is to be treated as a separate unit returning a
+       result set to be added to a list of user-selectable signature certificates, after
+       removing CA certificates and possible signature certificate duplicates.
+
+       Note: In addition to CertificateFilter specifiers, signature profiles explicitly
+       or implicitly depend on a limited set of signature algorithms and associated
+       key characteristics.  For example, a signature may require ECC keys only, which
+       would exclude certificates with DSA and RSA keys.  The RECOMMENDED algorithm for
+       resolving this issue, is to first perform standard CertificateFilter processing
+       and then in descending priority order look for a SignatureProfile element that
+       has a matching key type.  Signature certificates that do not match any of the
+       supplied signature profiles, MUST always be removed from the final selection.
+
+       1] Regarding default signature key filtering, please consult the WASP
+       specification.
+
+       2] A conforming client MUST include all locally provisioned CA certificates
+       associated with the EE certificates, as well as expanding all RFC 5280 AIA
+       CaIssuers entries with HTTP or HTTPS accessLocation URIs.  This requirement
+       is independent of if CertificateFilter is supported or not since it also affects
+       other parts of signature profiles such as length of emitted certificate paths.
+    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <xs:element name="CertificateFilter">
+        <xs:complexType>
+            <!-- At least one of the following attributes MUST be specified. -->
+
+            <!-- "Global" (cert-path-wide) signer certificate selection attributes. -->
+            <xs:attribute name="SHA1" type="wasp:sha1Hash" use="optional"/>
+            <xs:attribute name="Issuer" type="wasp:distinguishedNameExpr" use="optional"/>
+
+            <!-- "Local" selection attributes that only apply to signature (EE) certificates. -->
+            <xs:attribute name="Subject" type="wasp:distinguishedNameExpr" use="optional"/>
+            <xs:attribute name="Email" type="wasp:emailAddress" use="optional"/>
+            <xs:attribute name="Serial" type="xs:integer" use="optional"/>
+            <xs:attribute name="Policy" type="wasp:oidValue" use="optional"/>
+            <xs:attribute name="Containers" type="wasp:containerList" use="optional"/>
+            <xs:attribute name="KeyUsage" type="wasp:keyUsageBits" use="optional"/>
+            <xs:attribute name="ExtKeyUsage" type="wasp:oidValue" use="optional"/>
+
+        </xs:complexType>
+    </xs:element>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+       The "DocumentReferences" sub-object holds all document related request data except
+       for the document data itself (which is a separate object to allow splitting).
+    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <xs:element name="DocumentReferences">
+        <xs:complexType>
+            <xs:sequence>
+
+                <!-- Mandatory main document view. -->
+                <xs:element name="MainDocument" type="wasp:documentReference"/>
+
+                <!-- Optional detail document view.  This option is primarily intended
+                     for payment transactions using devices with limited screens, giving
+                     the user an opportunity to get the "big picture" before signing. -->
+                <xs:element name="DetailDocument" type="wasp:documentReference"
+                            minOccurs="0"/>
+
+                <!-- Optional processing document view.  This option enables a provider
+                     to show a "branding" view during the transferral of a signature.
+                     This feature MAY be supported by a WASP client. -->
+                <xs:element name="ProcessingDocument" type="wasp:documentReference"
+                            minOccurs="0"/>
+
+                <!-- Optional embedded document objects (images, style sheets, etc). -->
+                <xs:element name="EmbeddedObject" type="wasp:documentReference"
+                            minOccurs="0" maxOccurs="unbounded"/>
+
+                <!-- Optional attachments.  Attachments MUST be possible to open (and view)
+                     by the user in a WASP client GUI. -->
+                <xs:element name="Attachment" type="wasp:attachmentReference"
+                            minOccurs="0" maxOccurs="unbounded"/>
+
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+       The "DocumentData" object holds the actual document data.  Regarding
+       canonicalization of document data: Only the binary decoded content of the
+       actual (raw) document data is to be used in digest operations.  That is,
+       element tags and "ContentID" URIs MUST be excluded from such calculations
+       when using the core algorithm "http://xmlns.webpki.org/wasp/beta/core/20130604#cn".
+
+       Note that HTTP URIs SHOULD NOT be used for embedded images and similar in
+       HTML or XHTML documents, since WASP only supports the signing of explicitly
+       declared data objects.  Due to this restriction, you SHOULD only specify
+       "ContentID" URIs (loosely tailored after RFC 2111) to "EmbeddedObject"
+       elements in the "DocumentData" container.  Below is an example of a well-
+       formed HTML image reference:
+
+           <img src="cid:d0@example.com">
+
+       In contrast to RFC 2111, "ContentID" arguments SHOULD always be expressed as
+       absolute e-mail addresses prepended with "cid:" but they do not need to be
+       globally unique between different signature requests.  It is perfectly
+       acceptable and probably also more logical, keeping "ContentID" URIs constant
+       for a specific signature application.
+    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <xs:element name="DocumentData">
+        <xs:complexType>
+            <xs:choice maxOccurs="unbounded">
+
+                <!-- Base64 encoded data.  Note that textual data that does not have a
+                     predefined encoding (e.g. HTML), when put in a Binary element MUST
+                     be UTF-8 encoded. -->
+                <xs:element name="Binary">
+                    <xs:complexType>
+                        <xs:simpleContent>
+                            <xs:extension base="xs:base64Binary">
+                                <xs:attribute name="ContentID" type="wasp:cidURI" use="required"/>
+                            </xs:extension>
+                        </xs:simpleContent>
+                    </xs:complexType>
+                </xs:element>
+
+                <!-- UTF-8 encoded textual data.  XML, HTML and other markup data
+                     is preferably stored in CDATA sections for space considerations. -->
+                <xs:element name="Text">
+                    <xs:complexType>
+                        <xs:simpleContent>
+                            <xs:extension base="xs:string">
+                                <xs:attribute name="ContentID" type="wasp:cidURI" use="required"/>
+                            </xs:extension>
+                        </xs:simpleContent>
+                    </xs:complexType>
+                </xs:element>
+
+                <!-- "Internal" data objects are intended to support more efficient ways
+                     of storing signed data after receival.  An example of that could
+                     be large logotype objects that are put in every signature request,
+                     which MAY equally well be replaced by a URI referring to a single
+                     instance of such an object.  Another possibility is to use a URI to
+                     identify a specific, but static transformation scheme which converts
+                     transaction data associated with the task that was signed, into HTML
+                     code or similar, used in the original signature request. Consequently,
+                     the interpretation of URI attributes during [possible, and future]
+                     signature validations is entirely application defined, but MUST as
+                     end-result return exact binary copies of replaced data objects.  In
+                     the case a signature is also supposed to be forwarded to another
+                     party, Internal data elements will typically have to be restored to
+                     compatible "Binary" or "Text" objects unless the parties have agreed
+                     on identical Internal objects and definitions.  It is an ERROR
+                     specifying an "Internal" document object in a SignatureRequest. -->
+                <xs:element name="Internal">
+                    <xs:complexType>
+                        <xs:attribute name="URI" type="xs:anyURI" use="required"/>
+                        <xs:attribute name="ContentID" type="wasp:cidURI" use="required"/>
+                    </xs:complexType>
+                </xs:element>
+
+                <!-- A "Deleted" data object, denotes an object that has been marked by
+                     the receiving application (after validation), to be excluded from
+                     future signature validations.  It is an ERROR specifying a
+                     "Deleted" document object in a SignatureRequest.-->
+                <xs:element name="Deleted">
+                    <xs:complexType>
+                        <xs:attribute name="Reason" type="xs:string" use="optional"/>
+                        <xs:attribute name="ContentID" type="wasp:cidURI" use="required"/>
+                    </xs:complexType>
+                </xs:element>
+
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+       The "DocumentSignatures" object is intended for returning signed document digests
+       to the signature requester.  It is referred to by signature profile objects only.
+       Regarding canonicalization, see "DocumentData".
+    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <xs:element name="DocumentSignatures">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Digest" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:simpleContent>
+                            <xs:extension base="xs:base64Binary">
+                                <xs:attribute name="ContentID" type="wasp:cidURI" use="required"/>
+                            </xs:extension>
+                        </xs:simpleContent>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="DigestAlgorithm" type="xs:anyURI" use="required"/>
+            <xs:attribute name="CanonicalizationAlgorithm" type="xs:anyURI" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+       The "ClientPlatform" object is holding various signature client related data
+       that can be used as evidence in case there is a dispute with the signer.
+       The ClientPlatform object is optionally supported by signature profiles.
+       Also see "SignatureRequest/ClientPlatformRequest".
+    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <xs:element name="ClientPlatform">
+        <xs:complexType>
+
+            <!-- Room for extensions like platform health statements.
+                 Note: a relying party application MAY ignore a supplied
+                 extension as indicated by the "lax" processing directive. -->
+            <xs:sequence>
+                <xs:any namespace="##any" processContents="lax" minOccurs="0"
+                        maxOccurs="unbounded"/>
+            </xs:sequence>
+
+        </xs:complexType>
+    </xs:element>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                               Document reference definitions.
+    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <xs:complexType name="documentReference">
+
+        <!-- See "DocumentData". -->
+        <xs:attribute name="ContentID" type="wasp:cidURI" use="required"/>
+
+        <!-- The MIME-type of the data object.  MUST NOT contain character encoding. -->
+        <xs:attribute name="MIMEType" use="required">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:pattern value="[^;]+"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+
+        <!-- Optional provider-defined internal data descriptor. -->
+        <xs:attribute name="MetaData" type="xs:string" use="optional"/>
+
+    </xs:complexType>
+
+    <xs:complexType name="attachmentReference">
+        <xs:complexContent>
+            <xs:extension base="wasp:documentReference">
+
+                <!-- The requester MUST indicate if the attachment is the result of
+                     an earlier "upload" by the user, or if it originates from the
+                     provider itself.  Default value: false. -->
+                <xs:attribute name="ProviderOriginated" type="xs:boolean" use="optional"/>
+
+                <!-- Short description to be shown to the user. -->
+                <xs:attribute name="Description" type="xs:string" use="required"/>
+
+                <!-- Attachment file name without path information.
+                     For provider-originated attachments, the provider SHOULD create
+                     a valid associated file name, to enable a local save option. -->
+                <xs:attribute name="File" type="xs:string" use="required"/>
+
+                <!-- The client software SHOULD always warn the user before
+                     proceeding to signature generation, if none of the possibly
+                     supplied attachments have been accessed by the user.  If the
+                     attribute below is set to true, the client software SHOULD
+                     request that the user opens the associated attachment as well
+                     as aborting the signature operation, if the request is cancelled
+                     by the user.  Default value: false. -->
+                <xs:attribute name="MustAccess" type="xs:boolean" use="optional"/>
+
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                    URI and OID definitions.
+    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <xs:simpleType name="cidURI">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="cid:.*@.*"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="oidValue">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[1-9][0-9]*(\.[1-9][0-9]*)*"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="httpURI">
+        <xs:restriction base="xs:anyURI">
+            <xs:pattern value="https?://.*"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                   Language list definitions.
+    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <xs:simpleType name="languageList">
+        <xs:restriction>
+            <xs:simpleType>
+                <xs:list itemType="xs:language"/>
+            </xs:simpleType>
+            <xs:minLength value="1"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                     Hash data definitions.
+    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <xs:simpleType name="sha1Hash">
+        <xs:restriction base="xs:base64Binary">
+            <xs:maxLength value="20"/>
+            <xs:minLength value="20"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="sha256Hash">
+        <xs:restriction base="xs:base64Binary">
+            <xs:maxLength value="32"/>
+            <xs:minLength value="32"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                   Key container definitions.
+    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <xs:simpleType name="containerList">
+        <xs:restriction>
+            <xs:simpleType>
+                <xs:list>
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:enumeration value="File"/>
+                            <xs:enumeration value="TPM"/>
+                            <xs:enumeration value="SIM"/>
+                            <xs:enumeration value="External"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:list>
+            </xs:simpleType>
+            <xs:minLength value="1"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      "KeyUsage" attribute definition: This attribute is represented by 9 bits as
+      described in RFC 5280.  The leftmost bit is digitalSignature (DS).  The KeyUsage
+      attribute bits MUST have the value "1", "0" or "X", where "X" denotes don't care.
+      Unspecified KeyUsage attribute bits MUST be treated like Xs.  Examples:
+      "1" => Select certificates with digitalSignature=1
+      "X10" => Select certificates with nonRepudiation=1 and keyEncipherment=0
+    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <xs:simpleType name="keyUsageBits">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[10X]{0,8}[10]"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      "Issuer" and "Subject" attributes MUST be represented as regular expressions
+      compatible with the XML Schema "pattern" facet.  Note that the regular expressions
+      MUST be targeted for RFC 4514 encoded data.
+    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <xs:simpleType name="distinguishedNameExpr">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="\S.*"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      Email addresses MUST be expressed as RFC 822 compatible strings.
+    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <xs:simpleType name="emailAddress">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>

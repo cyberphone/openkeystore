@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+Extremely cut-down WS-Security-ID schema.  Who said that WS-* standards are complex? :-)
+-->
+
+<xs:schema targetNamespace="http://schemas.xmlsoap.org/ws/2006/02/addressingidentity"
+           xmlns:wssi="http://schemas.xmlsoap.org/ws/2006/02/addressingidentity"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+           elementFormDefault="qualified">
+
+   <xs:import namespace="http://www.w3.org/2000/09/xmldsig#"/>
+
+   <xs:element name="Identity">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="ds:KeyInfo"/>
+        </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+
+</xs:schema>

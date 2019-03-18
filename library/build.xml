@@ -1,0 +1,795 @@
+<project name="WEBPKI.ORG library" default="dist" basedir=".">
+
+  <!-- set global properties for this build -->
+  <property name="sks.implementation" value="org.webpki.sks.SKSReferenceImplementation"/>
+  <property name="sks.auth.gui" value="org.webpki.sks.DummyTrustedGUIAuthorization"/>
+  <property name="sks.ws.client" value="org.webpki.sks.ws.client.SKSWSClient"/>
+  <property name="sks.debug" value="true"/>
+  <property name="sks.device" value=""/>
+  <property name="src_dir" value="src"/>
+  <property name="src_generators" value="generators"/>
+  <property name="src_test" value="test"/>
+  <property name="dot_net_dir" value="sks-ws-dotnet"/>
+  <property name="cpp_dir" value="sks-ws-cpp"/>
+  <property name="temp_dir" value=".tmp"/>
+  <property name="test_dir" value="test"/>
+  <property name="testout.dir" location="testout"/>
+  <property name="dist_dir"  value="dist"/>
+  <property name="bin_dir" value="bin"/>
+  <property name="wsdl_dir"  value="wsdl"/>
+  <property name="spts_dir"  value="securityproxy-test"/>
+  <property name="ext.jar"  value="../resources/third-party-jars"/>
+  <property name="testdata_dir" location="../testdata"/>
+  <property name="webpki-android" value="webpki.android"/>
+  <property name="android-json" value="webpki.android.json"/>
+  <property name="webpki-libext" value="webpki.org-libext-1.00.jar"/>
+  <property name="webpki-webutil" value="webpki.org-webutil-1.00.jar"/>
+  <property name="webpki-sksws" value="webpki.org-sksws-1.00.jar"/>
+  <property name="webpki-securityproxy" value="webpki.org-securityproxy-1.00.jar"/>
+  <property name="ws.def" location="sks-ws-descriptor.xml"/>
+  <property name="debug"  value="on"/>
+  <property name="javadoccss" location="stylesheet.css"/>
+  <property environment="env"/>
+
+  <!-- If you want non-local SKS WS access you must bind to non-local IP --> 
+  <property name="sksws.url" value="http://localhost:9982/securekeystore"/>
+
+  <property name="javaversion" value="${ant.java.version}"/>
+  <condition property="tested.version" else="false">
+    <equals arg1="1.8" arg2="${javaversion}"/>
+  </condition>
+	
+  <target name="_jdk8" unless="${tested.version}">
+  	<echo message="&#10;
+***************************************************************&#10;
+  	WARNING - This package has only been tested with Java 8!&#10;
+***************************************************************&#10;&#10;"/>
+  </target>
+
+  <!-- check dependecies that should force WS recreation -->
+  <target name="_ws-check">
+    <condition property="wsgen.required">
+      <not>
+	    <and>
+	      <available file="${src_dir}/org/webpki/sks/ws/server/SKSWSImplementation.java"/>
+	      <uptodate srcfile="${ws.def}" targetfile="${src_dir}/org/webpki/sks/ws/server/SKSWSImplementation.java"/>
+	      <available file="${src_dir}/org/webpki/sks/ws/client/SKSWS.java"/>
+	      <uptodate srcfile="${ws.def}" targetfile="${src_dir}/org/webpki/sks/ws/client/SKSWS.java"/>
+	      <available file="${src_dir}/org/webpki/sks/ws/client/SKSWSProxy.java"/>
+	      <uptodate srcfile="${ws.def}" targetfile="${src_dir}/org/webpki/sks/ws/client/SKSWSProxy.java"/>
+	      <available file="${src_dir}/org/webpki/sks/ws/client/SKSExceptionBean.java"/>
+	      <uptodate srcfile="${ws.def}" targetfile="${src_dir}/org/webpki/sks/ws/client/SKSExceptionBean.java"/>
+	      <available file="${src_dir}/org/webpki/sks/ws/client/SKSException_Exception.java"/>
+	      <uptodate srcfile="${ws.def}" targetfile="${src_dir}/org/webpki/sks/ws/client/SKSException_Exception.java"/>
+	      <available file="${dot_net_dir}/client/SKSWSProxy.cs"/>
+		  <uptodate srcfile="${ws.def}" targetfile="${dot_net_dir}/client/SKSWSProxy.cs"/>
+	      <available file="${cpp_dir}/src/SKSWSProxy.cpp"/>
+		  <uptodate srcfile="${ws.def}" targetfile="${cpp_dir}/src/SKSWSProxy.cpp"/>
+	      <available file="${cpp_dir}/src/SKSWSProxy.h"/>
+		  <uptodate srcfile="${ws.def}" targetfile="${cpp_dir}/src/SKSWSProxy.h"/>
+	      <available file="${wsdl_dir}/SKSWS.wsdl"/>
+	      <uptodate srcfile="${ws.def}" targetfile="${wsdl_dir}/SKSWS.wsdl"/>
+	      <uptodate srcfile="${src_dir}/org/webpki/tools/WSCreator.java" targetfile="${wsdl_dir}/SKSWS.wsdl"/>
+	      <uptodate srcfile="${src_dir}/org/webpki/tools/wscreator.xsd" targetfile="${wsdl_dir}/SKSWS.wsdl"/>
+	    </and>
+      </not>
+    </condition>
+  </target>
+
+  <path id="compile.classpath">
+	 <fileset dir="${ext.jar}">
+	   <include name="*.jar"/>
+     </fileset>
+  </path>
+
+  <condition property="junit.exclude" value="bc*.*" else="nosuchfile.jar">
+     <isset property="jceonly"/>
+  </condition>
+
+  <path id="junit.classpath">
+    <fileset dir="${dist_dir}">
+	   <include name="${webpki-libext}"/>
+	   <include name="${webpki-sksws}"/>
+    </fileset>
+	 <fileset dir="${ext.jar}">
+        <include name="*.jar"/>
+        <exclude name="${junit.exclude}"/>
+	 </fileset>
+  </path>
+
+  <target name="help">
+    <echo message="Targets: help dist doc testkeygen2 testsks testjson pkcs12import sks-service."/>
+  </target>
+	
+  <!-- .NET assumes that NAnt is installed, together with Windows SDK 7.1 and .NET 4 -->
+  <target name="_build_sks_ws_for_dotnet" if="dotnet.tools.available">
+  	
+  	<condition property="quiet.nant.build" value="-quiet" else="-D:justignore=5">
+      <not>
+        <isset property="nant.verbose"/>
+      </not>
+  	</condition>
+  	<condition property="rebuild.nant.build" value="false" else="true">
+      <not>
+        <isset property="nant.verbose"/>
+      </not>
+  	</condition>
+    <exec executable="nant.exe"
+  	      failonerror="true">
+        <arg value="build"/>
+        <arg value="-nologo"/>
+        <arg value="${quiet.nant.build}"/>
+    	<arg value="-D:rebuild=${rebuild.nant.build}"/>
+        <arg value="-buildfile:${dot_net_dir}/nant.build"/>
+    </exec>
+  	<echo message=".NET SKS WS assembly built"/>
+  </target>
+
+  <target name="_ws-gen">
+  	<echo message="Updating '${cmd}'"/>
+  	<java fork="yes"
+  		  classname="org.webpki.tools.WSCreator"
+		  failonerror="true">
+  		<classpath>
+            <pathelement path="${temp_dir}"/>
+  			 <fileset dir="${ext.jar}">
+  		        <include name="*.jar"/>
+  			 </fileset>
+  		</classpath>
+  	    <arg value="${cmd}"/>
+  		<arg value="${ws.def}"/>
+  		<arg value="${out}"/>
+  	</java>
+  </target>
+	
+  <target name="wsgen" depends="_ws-check" if="wsgen.required">
+  	<echo message="SKS WS needed updates"/>
+    <fixcrlf srcdir="."
+       tab="remove"
+       tablength="4"
+       eol="lf"
+       eof="remove"
+       includes="sks-ws-descriptor.xml"/>
+    <antcall target="_ws-gen">
+      <param name="cmd" value="wsdl"/>
+      <param name="out" value="wsdl/SKSWS.wsdl"/>
+    </antcall>
+    <antcall target="_ws-gen">
+      <param name="cmd" value="jclient"/>
+      <param name="out" value="${src_dir}"/>
+     </antcall>
+    <antcall target="_ws-gen">
+      <param name="cmd" value="jserver"/>
+      <param name="out" value="${src_dir}"/>
+    </antcall>
+    <antcall target="_ws-gen">
+      <param name="cmd" value="dotnetclient"/>
+      <param name="out" value="${dot_net_dir}/client"/>
+    </antcall>
+    <antcall target="_ws-gen">
+      <param name="cmd" value="cppclient"/>
+      <param name="out" value="${cpp_dir}/src"/>
+    </antcall>
+    <antcall target="_ws-gen">
+      <param name="cmd" value="dotnetdoc"/>
+      <param name="out" value="${dot_net_dir}/doc/index.html"/>
+    </antcall>
+  </target>
+	
+  <target name="compile">
+  	<antcall target="_jdk8"/>
+  	
+    <fixcrlf srcdir="${src_dir}"
+       tab="remove"
+       tablength="4"
+       eol="lf"
+       eof="remove"
+       includes="**/*.java, **/*.xsd"/>
+    <mkdir dir="${temp_dir}"/>
+
+    <fixcrlf srcdir="${src_test}"
+       tab="remove"
+       tablength="4"
+       eol="lf"
+       eof="remove"
+       includes="**/*.java, **/*.xsd"/>
+    <mkdir dir="${temp_dir}"/>
+
+  	<!-- Copy all files except .java and doc-related -->
+    <copy todir="${temp_dir}" preservelastmodified="true" includeEmptyDirs="false">
+      <fileset dir="${src_dir}">
+        <include name="**/*"/>
+        <exclude name="**/*.java"/>
+        <exclude name="**/package.html"/>
+        <exclude name="**/doc-files/*"/>
+      </fileset>
+      <fileset dir="${src_test}">
+        <include name="**/*"/>
+        <exclude name="**/*.java"/>
+        <exclude name="**/package.html"/>
+        <exclude name="**/doc-files/*"/>
+      </fileset>
+    </copy>
+
+    <!-- Compile non-ws java code from ${src_dir} into ${temp_dir} -->
+    <javac debug="${debug}"
+    	   srcdir="${src_dir}:${src_test}"
+    	   destdir="${temp_dir}" 
+           target="${javaversion}"
+           source="${javaversion}"
+    	   classpathref="compile.classpath"
+    	   includeAntRuntime="false" excludes="**/sks/ws/**/*">
+       <compilerarg value="-Xlint:all,-rawtypes,-path"/>
+    </javac>
+  	
+  	<!-- Now we can optionally update SKS WS code -->
+  	<antcall target="wsgen"/>
+
+  	<!-- Make a copy that we can patch... -->
+    <copy todir="${temp_dir}" preservelastmodified="true">
+      <fileset dir="${src_dir}">
+        <include name="org/webpki/sks/ws/**/*.java"/>
+      </fileset>
+    </copy>
+
+  	<!-- Compile sks-ws java code from ${temp_dir} into ${temp_dir} -->
+    <javac debug="${debug}"
+    	   srcdir="${temp_dir}"
+    	   destdir="${temp_dir}" 
+    	   classpathref="compile.classpath"
+    	   includeAntRuntime="false">
+        <compilerarg value="-Xlint:all,-path"/>
+        <compilerarg value="-XDignore.symbol.file"/>
+    </javac>
+
+  	<!-- Build .NET package if applicable -->
+  	<condition property="dotnet.tools.available">
+  	   <and>
+ 	   	 <os family="windows"/>
+  	   	<available file="nant.exe" type="file">
+           <filepath>
+  	         <pathelement path="${env.Path}"/>
+  	       </filepath>
+  	     </available>
+  	   </and>
+  	 </condition>
+  	<antcall target="_build_sks_ws_for_dotnet"/>
+  </target>
+
+  <target name="_setdoc_dir" unless="github.doc.present">
+  	<echo message="Local docs"/>
+    <mkdir dir="${public_doc_dir}"/>
+    <mkdir dir="${doc_dir}"/>
+  </target>
+
+  <target name="doc">
+    <fail message="JAVA_HOME must be set to environment!" unless="env.JAVA_HOME"/>
+
+  	<available file="../../../github.repositories/doc/openkeystore/javaapi" type="dir" property="github.doc.present"/>
+  	<condition property="doc_root" value="../../" else="">
+      <isset property="github.doc.present"/>
+  	</condition>
+    <property name="public_doc_dir"  location="${doc_root}doc/security"/>
+    <property name="doc_dir"  location="${doc_root}doc/openkeystore/javaapi"/>
+  	<antcall target="_setdoc_dir"/>
+  	
+  	<!-- Create temp directory -->
+    <delete dir="${temp_dir}"/>
+    <mkdir dir="${temp_dir}"/>
+
+  	<!-- Copy all files  -->
+    <copy todir="${temp_dir}">
+      <fileset dir="${src_dir}"/>
+  	</copy>
+  	
+  	<!-- Remove reference to SUN class  -->
+    <replace dir="${temp_dir}" value="">
+       <include name="org/webpki/sks/**/*.java"/>
+       <replacetoken><![CDATA[@com.sun.xml.ws.developer.SchemaValidation]]></replacetoken>
+     </replace>
+
+  	<!-- Make documentation -->
+    <javadoc destdir="${doc_dir}"
+    	     overview="${temp_dir}/overview.html"
+    	     stylesheetfile="${javadoccss}"
+             author="true"
+             version="true"
+             Package="false"
+             Use="false"
+    	     additionalparam="--allow-script-in-comments"
+             nodeprecated="true"
+             nodeprecatedlist="true"
+             classpathref="compile.classpath"
+             windowtitle="WebPKI.org Support">
+      <packageset dir="${temp_dir}">
+        <include name="org/**"/>
+        <exclude name="org/**/v8dtoa/**"/>
+        <exclude name="org/**/c14n/**"/>
+        <exclude name="org/**/webutil/locale/**"/>
+        <exclude name="org/**/webutil/certview/**"/>
+        <exclude name="org/**/webutil/xmlview/**"/>
+        <exclude name="org/**/sks/ws/**"/>
+        <exclude name="org/**/sks/twolayer/**"/>
+      </packageset>
+      <link offline="true" href="https://docs.oracle.com/javase/8/docs/api/" packagelistLoc="${env.JAVA_HOME}\jsedocs\api"/>
+      <link offline="true" href="https://docs.oracle.com/javaee/7/api/" packagelistLoc="${env.JAVA_HOME}\jeedocs"/>
+      <doctitle><![CDATA[<h1>WebPKI.org Support</h1>]]></doctitle>
+      <bottom><![CDATA[<i>2005-2018 WebPKI.org.</i>]]></bottom>
+    </javadoc>
+  	<replaceregexp
+        match="&lt;\!\-\-\ Generated\ by\ javadoc.+\-\-&gt;"
+        replace=""
+        flags="m">
+  	    <fileset dir="${doc_dir}" includes="**/*.html"/>
+  	</replaceregexp>
+  	<replaceregexp
+        match="&lt;meta\ name=.+&gt;"
+        replace=""
+        flags="m">
+  	    <fileset dir="${doc_dir}" includes="**/*.html"/>
+  	</replaceregexp>
+  	<!-- Windows... -->
+    <fixcrlf srcdir="${doc_dir}"
+       eol="lf"
+       includes="**/*.html, **/*.js, **/*.css"/>
+  	<!-- HTML Doc task for KeyGen2 -->
+    <antcall target="_java2html">
+       <param name="doc.class" value="org.webpki.keygen2.KeyGen2HTMLReference"/>
+       <param name="doc.file" value="${public_doc_dir}/keygen2.html"/>
+       <param name="file.base1" value=""/>
+       <param name="file.base2" value=""/>
+       <param name="file.base3" value=""/>
+     </antcall>
+     <!-- HTML Doc task for JCS -->
+     <antcall target="_java2html">
+       <param name="doc.class" value="org.webpki.json.JSONSignatureHTMLReference"/>
+       <param name="doc.file" value="${public_doc_dir}/jose-jcs.html"/>
+       <param name="file.base1" value="${testdata_dir}/keys"/>
+       <param name="file.base2" value="${testdata_dir}/signatures"/>
+       <param name="file.base3" value="${testdata_dir}/data"/>
+     </antcall>
+     <!-- HTML Doc task for JEF -->
+     <antcall target="_java2html">
+       <param name="doc.class" value="org.webpki.json.JSONEncryptionHTMLReference"/>
+       <param name="doc.file" value="${public_doc_dir}/jose-jef.html"/>
+       <param name="file.base1" value="${testdata_dir}/keys"/>
+       <param name="file.base2" value="${testdata_dir}/encryption"/>
+       <param name="file.base3" value="${testdata_dir}/data"/>
+     </antcall>
+  </target>
+
+  <target name="dist" depends="clean,compile">    
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist_dir}"/>
+
+    <!-- Put everything from ${temp_dir} into jar files -->
+    <jar jarfile="${dist_dir}/${webpki-libext}">
+      <fileset dir="${temp_dir}">
+        <exclude name="org/webpki/webutil/**"/>
+        <exclude name="org/webpki/sks/ws/**"/>
+        <exclude name="org/webpki/securityproxy/**"/>
+      </fileset>
+    </jar>
+
+  	<jar jarfile="${dist_dir}/${webpki-webutil}">
+      <fileset dir="${temp_dir}">
+        <include name="org/webpki/webutil/**"/>
+      </fileset>
+    </jar>
+
+  	<jar jarfile="${dist_dir}/${webpki-sksws}">
+      <fileset dir="${temp_dir}">
+        <include name="org/webpki/sks/ws/**"/>
+        <exclude name="org/webpki/sks/ws/**/*.java"/>
+      </fileset>
+      <metainf dir="${wsdl_dir}"/>
+    </jar>
+
+  	<jar jarfile="${dist_dir}/${webpki-securityproxy}">
+      <fileset dir="${temp_dir}">
+        <include name="org/webpki/securityproxy/**"/>
+        <exclude name="org/webpki/securityproxy/common/**"/>
+        <exclude name="org/webpki/securityproxy/client/**"/>
+        <exclude name="org/webpki/securityproxy/extservice/**"/>
+        <exclude name="org/webpki/securityproxy/localservice/**"/>
+        <exclude name="org/webpki/securityproxy/*.png"/>
+      </fileset>
+    </jar>
+
+  	<!-- Compile generators just to check that they are still in concert with the code -->
+    <javac debug="${debug}"
+           srcdir="${src_generators}"
+           destdir="${temp_dir}" 
+           classpathref="compile.classpath"
+           includeAntRuntime="false">
+       <compilerarg value="-Xlint:all,-path"/>
+    </javac>
+    
+  </target>
+
+  <target name="clean">
+    <delete dir="${temp_dir}"/>
+    <delete dir="${dist_dir}"/>
+  </target>
+
+  <target name="android-json">    
+    <delete file="${dist_dir}/${android-json}.zip"/>
+    <delete dir="${temp_dir}"/>
+    <delete dir="${bin_dir}"/>
+    <mkdir dir="${temp_dir}"/>
+    <mkdir dir="${bin_dir}"/>
+
+    <copy todir="${temp_dir}/org/webpki" preservelastmodified="true">
+      <fileset dir="${src_dir}/org/webpki">
+        <include name="**/util/ISODateTime.java"/>
+        <include name="**/util/ArrayUtil.java"/>
+        <include name="**/util/Base64URL.java"/>
+        <include name="**/util/Base64.java"/>
+        <include name="**/crypto/VerifierInterface.java"/>
+        <include name="**/crypto/SymKeyVerifierInterface.java"/>
+        <include name="**/crypto/SignerInterface.java"/>
+        <include name="**/crypto/AsymKeySignerInterface.java"/>
+        <include name="**/crypto/SymKeySignerInterface.java"/>
+        <include name="**/crypto/CertificateUtil.java"/>
+        <include name="**/crypto/CryptoAlgorithms.java"/>
+        <include name="**/crypto/KeyAlgorithms.java"/>
+        <include name="**/crypto/MACAlgorithms.java"/>
+        <include name="**/crypto/HashAlgorithms.java"/>
+        <include name="**/crypto/SignatureAlgorithms.java"/>
+        <include name="**/crypto/AlgorithmPreferences.java"/>
+        <include name="**/crypto/AsymSignatureAlgorithms.java"/>
+        <include name="**/crypto/SymSignatureAlgorithms.java"/>
+        <include name="**/crypto/SignatureWrapper.java"/>
+        <include name="**/crypto/DecryptionKeyHolder.java"/>
+        <include name="**/json/*.java"/>
+        <include name="**/json/encryption/*.java"/>
+        <include name="**/json/v8dtoa/*.java"/>
+      </fileset>
+    </copy>
+
+    <replaceregexp file="${temp_dir}/org/webpki/crypto/CertificateUtil.java"
+        match="\/\/ ANDROID_START.+?\/\/ ANDROID_END"
+        replace=""
+        flags="gs"/>
+
+    	<javac debug="${debug}" srcdir="${temp_dir}" destdir="${bin_dir}" includeAntRuntime="false"/>
+    
+    <!-- Create Android JSON java library -->
+    <zip destfile="${dist_dir}/${android-json}.zip">
+      <zipfileset dir="${temp_dir}">
+          <include name="**/*.java"/>
+       </zipfileset>
+    </zip>
+    <delete dir="${temp_dir}"/>
+    <delete dir="${bin_dir}"/>
+  </target>
+		
+  <target name="android">    
+    <delete file="${dist_dir}/${webpki-android}.zip"/>
+    <delete dir="${temp_dir}"/>
+    <delete dir="${bin_dir}"/>
+    <mkdir dir="${temp_dir}"/>
+    <mkdir dir="${bin_dir}"/>
+
+    <copy todir="${temp_dir}/org/webpki" preservelastmodified="true">
+      <fileset dir="${src_dir}/org/webpki">
+        <exclude name="**/infocard/**"/>
+        <exclude name="**/tools/**"/>
+        <exclude name="**/kg2xml/**"/>
+        <exclude name="**/wasp/**"/>
+        <exclude name="**/xml/**"/>
+        <exclude name="**/crypto/**"/>
+        <exclude name="**/util/**"/>
+        <exclude name="**/xmldsig/**"/>
+        <exclude name="**/xmlenc/**"/>
+        <exclude name="**/pdf/**"/>
+        <exclude name="**/sks/ws/**"/>
+        <exclude name="**/sks/twolayer/**"/>
+        <exclude name="**/securityproxy/**"/>
+        <exclude name="**/ca/**"/>
+        <exclude name="**/pkcs7/**"/>
+        <exclude name="**/webutil/**"/>
+        <exclude name="**/keygen2/*RequestEncoder.java"/>
+        <exclude name="**/keygen2/*ResponseDecoder.java"/>
+        <exclude name="**/keygen2/ServerState.java"/>
+        <exclude name="**/keygen2/ServerEncoder.java"/>
+        <exclude name="**/keygen2/ServerCryptoInterface.java"/>
+        <exclude name="**/webauth/*RequestEncoder.java"/>
+        <exclude name="**/webauth/*ResponseDecoder.java"/>
+      </fileset>
+      <fileset dir="${src_dir}/org/webpki">
+        <include name="**/util/ISODateTime.java"/>
+        <include name="**/util/DebugFormatter.java"/>
+        <include name="**/util/ArrayUtil.java"/>
+        <include name="**/util/StringUtil.java"/>
+        <include name="**/util/Base64URL.java"/>
+        <include name="**/util/Base64.java"/>
+        <include name="**/util/HTMLEncoder.java"/>
+        <include name="**/crypto/KeyStoreReader.java"/>
+        <include name="**/crypto/KeyContainerTypes.java"/>
+        <include name="**/crypto/CertificateFilter.java"/>
+        <include name="**/crypto/CertificateUtil.java"/>
+        <include name="**/crypto/CertificateInfo.java"/>
+        <include name="**/crypto/CertificateExtensions.java"/>
+        <include name="**/crypto/ExtendedKeyUsages.java"/>
+        <include name="**/crypto/DeviceID.java"/>
+        <include name="**/crypto/KeyUsageBits.java"/>
+        <include name="**/crypto/VerifierInterface.java"/>
+        <include name="**/crypto/SymKeyVerifierInterface.java"/>
+        <include name="**/crypto/SignerInterface.java"/>
+        <include name="**/crypto/AsymKeySignerInterface.java"/>
+        <include name="**/crypto/SymKeySignerInterface.java"/>
+        <include name="**/crypto/CryptoAlgorithms.java"/>
+        <include name="**/crypto/KeyAlgorithms.java"/>
+        <include name="**/crypto/MACAlgorithms.java"/>
+        <include name="**/crypto/HashAlgorithms.java"/>
+        <include name="**/crypto/SignatureAlgorithms.java"/>
+        <include name="**/crypto/AlgorithmPreferences.java"/>
+        <include name="**/crypto/AsymSignatureAlgorithms.java"/>
+        <include name="**/crypto/SymSignatureAlgorithms.java"/>
+        <include name="**/crypto/SignatureWrapper.java"/>
+        <include name="**/crypto/DecryptionKeyHolder.java"/>
+      </fileset>
+      </copy>
+
+    <replaceregexp file="${temp_dir}/org/webpki/crypto/KeyStoreReader.java"
+        match="(\/\/\ JKS\ magic\ number\ \+\ version\ \(2\).*)(byte\[\]\ jks\ \=\ \{)(\(byte\)0xfe,\ \(byte\)0xed,\ \(byte\)0xfe,\ \(byte\)0xed,\ 0,\ 0,\ 0,\ 2)(\}\;)"
+        replace="\20, 0, 0, 1, 0, 0, 0, 20\4 // BKS: (int)VERSION + (int)SALT_LENGTH"
+        flags="s"/>
+
+  	<!-- No need for decorated OIDs in Android -->
+    <replaceregexp file="${temp_dir}/org/webpki/asn1/ASN1ObjectID.java"
+        match="(public\ static\ void\ tryReadOIDNames.+\{)(.+)(\n.+Hashtable)"
+        replace="\1 \3"
+        flags="s"/>
+
+  	<replaceregexp file="${temp_dir}/org/webpki/asn1/ASN1ObjectID.java"
+        match="(no\ =\ new\ Hashtable&lt;String,\ String&gt;\(\);)(.+)(\n.+oidToName)"
+        replace="\1 \3"
+        flags="s"/>
+
+  	<replaceregexp
+        match="&quot;SunX509&quot;"
+        replace="&quot;X509&quot;"
+        flags="g">
+        <fileset dir="${temp_dir}/org/webpki/">
+          <include name="**/*.java"/>
+        </fileset>
+    </replaceregexp>
+    
+    <replaceregexp
+        match="&quot;JKS&quot;"
+        replace="&quot;BKS&quot;"
+        flags="g">
+        <fileset dir="${temp_dir}/org/webpki/">
+          <include name="**/*.java"/>
+        </fileset>
+    </replaceregexp>
+
+    <javac debug="${debug}" srcdir="${temp_dir}" destdir="${bin_dir}" includeAntRuntime="false"/>
+    
+    <!-- Create Android java library -->
+    <zip destfile="${dist_dir}/${webpki-android}.zip">
+      <zipfileset dir="${temp_dir}">
+          <include name="**/*.java"/>
+       </zipfileset>
+    </zip>
+    <delete dir="${temp_dir}"/>
+    <delete dir="${bin_dir}"/>
+  </target>
+	
+	<target name="_tomcat-server-bck" unless="tomcat.server.bck">
+  	<echo message="IMPORTANT: ${env.CATALINA_HOME}/conf/server.xml copied to server.xml.bck !!!"/>
+    <copy tofile="${env.CATALINA_HOME}/conf/server.xml.bck" preservelastmodified="true" overwrite="true" file="${env.CATALINA_HOME}/conf/server.xml"/>
+  </target>
+
+  <target name="_tomcat-deploy" if="tomcat-deploy">
+  	<echo message="TOMCAT DEPLOY"/>
+    <fail message="CATALINA_HOME must be set to environment!" unless="env.CATALINA_HOME"/>
+    <condition property="tomcat.server.bck">
+	      <available file="${env.CATALINA_HOME}/conf/server.xml.bck"/>
+    </condition>
+  	<antcall target="_tomcat-server-bck"/>
+    <copy todir="${env.CATALINA_HOME}/lib" preservelastmodified="true" overwrite="true" file="${dist_dir}/${webpki-securityproxy}"/>
+    <copy todir="${env.CATALINA_HOME}/securityproxy" preservelastmodified="true" overwrite="true" file="${dist_dir}/spts-proxychannel.war"/>
+    <copy todir="${env.CATALINA_HOME}/securityproxy" preservelastmodified="true" overwrite="true" file="${dist_dir}/spts-extservice.war"/>
+    <copy todir="${env.CATALINA_HOME}/conf" preservelastmodified="true" overwrite="true">
+ 	   <fileset dir="securityproxy-test/tomcat.conf"/>
+    </copy>
+  </target>
+
+  <target name="spts" description="Security Proxy Test Suite" depends="dist">
+
+  	<jar jarfile="${dist_dir}/spts-service.jar">
+  	  <metainf dir="${spts_dir}">
+        <include name="securityproxy.properties"/>
+   	  </metainf>
+      <manifest>
+		<attribute name="Class-path" value="${webpki-libext} ${webpki-securityproxy}"/>
+		<attribute name="Main-Class" value="org.webpki.securityproxy.localservice.TestService"/>
+      </manifest>
+      <fileset dir="${temp_dir}">
+        <include name="org/webpki/securityproxy/localservice/**"/>
+        <include name="org/webpki/securityproxy/common/**"/>
+      </fileset>
+    </jar>
+
+  	<jar jarfile="${dist_dir}/spts-testclient.jar">
+  	  <metainf dir="${spts_dir}">
+        <include name="securityproxy.properties"/>
+   	  </metainf>
+      <manifest>
+		<attribute name="Class-path" value="${webpki-libext}"/>
+		<attribute name="Main-Class" value="org.webpki.securityproxy.client.TestClient"/>
+      </manifest>
+      <fileset dir="${temp_dir}">
+        <include name="org/webpki/securityproxy/client/**"/>
+      </fileset>
+    </jar>
+
+  	<war warfile="${dist_dir}/spts-proxychannel.war" webxml="${spts_dir}/proxychannel-web.xml"/>
+
+  	<war warfile="${dist_dir}/spts-extservice.war" webxml="${spts_dir}/extservice-web.xml">
+      <classes dir="${temp_dir}">
+        <include name="org/webpki/securityproxy/extservice/**"/>
+        <include name="org/webpki/securityproxy/common/**"/>
+      </classes>
+    </war>
+
+    <antcall target="_tomcat-deploy"/>
+
+  </target>
+
+  <target name="_test">
+  	<property name="sks.standalone" value="true"/>
+    <mkdir dir="${testout.dir}"/>
+    <junit fork="no" haltonfailure="yes" tempdir="${testout.dir}">
+      <test name="${test.class}" unless="method"/>
+      <test name="${test.class}" methods="${method}" if="method"/><!-- ANT 1.8.2 and up -->
+    	<sysproperty key="sks.implementation" value="${sks.implementation}"/>
+    	<sysproperty key="sks.device" value="${sks.device}"/>
+    	<sysproperty key="sks.auth.gui" value="${sks.auth.gui}"/>
+    	<sysproperty key="testout.dir" value="${testout.dir}"/>
+    	<sysproperty key="sks.standalone" value="${sks.standalone}"/>
+      	<sysproperty key="sks.referenceimplementation" value="${sks.referenceimplementation}"/>
+    	<sysproperty key="org.webpki.sks.ws.client.url" value="${sksws.url}"/>
+    	<sysproperty key="json.keys" value="${testdata_dir}/keys"/>
+    	<sysproperty key="json.encryption" value="${testdata_dir}/encryption"/>
+    	<sysproperty key="json.signatures" value="${testdata_dir}/signatures"/>
+      <formatter type="plain" usefile="false"/>
+      <classpath refid="junit.classpath"/>
+    </junit>
+  </target>
+
+  <!-- JUnit test of the KeyGen2 protocol and the SKS API -->
+  <target name="testkeygen2">
+    <antcall target="_test">
+       <param name="test.class" value="org.webpki.keygen2.KeyGen2Test"/>
+     </antcall>
+  </target>
+  
+  <!-- JUnit test of the SKS API -->
+  <target name="testsks">
+    <antcall target="_test">
+       <param name="test.class" value="org.webpki.sks.SKSTest"/>
+     </antcall>
+  </target>
+
+  <!-- JUnit test of the JSON API.  The extra parameters for SKS/KeyGen2 are simply ignored... -->
+  <target name="testjson">
+    <antcall target="_test">
+       <param name="test.class" value="org.webpki.json.JSONTest"/>
+     </antcall>
+  </target>
+  
+  <!-- Java to HTML -->
+  <target name="_java2html">
+    <echo message="Writing: ${doc.file}"/>
+
+    <!-- Create temp directory -->
+    <delete dir="${temp_dir}"/>
+    <mkdir dir="${temp_dir}"/>
+
+    <!-- Copy all files  -->
+    <copy todir="${temp_dir}">
+      <fileset dir="${src_generators}"/>
+    </copy>
+    <copy todir="${temp_dir}">
+      <fileset dir="${src_dir}"/>
+    </copy>
+    
+    <!-- Compile all -->
+    <javac debug="${debug}"
+           srcdir="${src_dir}:${src_generators}:${test_dir}"
+           destdir="${temp_dir}" 
+           classpathref="compile.classpath"
+           includeAntRuntime="false">
+       <compilerarg value="-Xlint:all,-rawtypes,-path"/>
+    </javac>
+    <java fork="yes"
+          classname="${doc.class}"
+          failonerror="true">
+  		<classpath>
+            <pathelement path="${temp_dir}"/>
+  			 <fileset dir="${ext.jar}">
+  		        <include name="*.jar"/>
+  			 </fileset>
+  		</classpath>
+        <arg line="${doc.file} ${file.base1} ${file.base2} ${file.base3}"/>
+     </java>
+  </target>
+  
+  <!-- A web service that accepts SKS WS calls from applications and in turn
+       calls the designated SKS implementation -->
+  <target name="sks-service">
+  	<echo message="SKS WS - Bind Address: ${sksws.url}"/>
+  	<java fork="yes"
+  		  classname="org.webpki.sks.ws.server.SKSWSImplementation"
+		  failonerror="true">
+  		<classpath>
+  		    <fileset dir="${dist_dir}">
+   			   <include name="${webpki-libext}"/>
+   			   <include name="${webpki-sksws}"/>
+  			 </fileset>
+  			 <fileset dir="${ext.jar}">
+  		        <include name="*.jar"/>
+  			 </fileset>
+  		</classpath>
+    	<jvmarg value="-Dsks.implementation=${sks.implementation}"/>
+    	<jvmarg value="-Dsks.auth.gui=${sks.auth.gui}"/>
+    	<jvmarg value="-Dsks.debug=${sks.debug}"/>
+    	<jvmarg value="-Dcom.sun.xml.ws.fault.SOAPFaultBuilder.disableCaptureStackTrace=false"/>
+  	    <arg value="${sksws.url}"/>
+  	</java>
+  </target>
+
+  <target name="pkcs12import">
+  	<property name="format" value="NUMERIC"/>
+  	<property name="inputmethod" value="TRUSTED_GUI"/>
+  	<property name="grouping" value="NONE"/>
+  	<property name="appusage" value="UNIVERSAL"/>
+  	<property name="pincaching" value="false"/>
+    <fail message="-&#10;Missing one or more of mandatory:&#10;
+ -Dfile=&#10;
+ -Dpassword=&#10;&#10;
+optional:&#10;
+ -Dpin=          [default: none]&#10;&#10;
+applicable if pin has been set:&#10;
+ -Dformat=  [default: ${format}]&#10;
+ -Dinputmethod=  [default: ${inputmethod}]&#10;
+ -Dgrouping=  [default: ${grouping}]&#10;
+ -Dappusage=  [default: ${appusage}]&#10;
+ -Dpincaching=  [default: ${pincaching}]">
+       <condition>
+         <not>
+         	<and>
+            <isset property="file"/>
+            <isset property="password"/>
+           </and>
+         </not>
+       </condition>
+     </fail>
+  	<condition property="pinandparams" value=" ${pin} ${format} ${inputmethod} ${grouping} ${appusage} ${pincaching}" else="">
+      <isset property="pin"/>
+    </condition>
+  	<java fork="yes"
+  		  classname="org.webpki.sks.test.PKCS12Import"
+		  failonerror="true"
+		  dir="${user.dir}">
+  		<classpath>
+  		    <fileset dir="${dist_dir}">
+    			   <include name="${webpki-libext}"/>
+    			   <include name="${webpki-sksws}"/>
+  			 </fileset>
+  			 <fileset dir="${ext.jar}">
+  		        <include name="*.jar"/>
+  			 </fileset>
+  		</classpath>
+    	<jvmarg value="-Dsks.client=${sks.ws.client}"/>
+    	<jvmarg value="-Dorg.webpki.sks.ws.client.url=${sksws.url}"/>
+  	    <arg line="${file} ${password}${pinandparams}"/>
+  	</java>
+  </target>
+
+</project>
+

@@ -1,0 +1,24 @@
+{
+    "@context": "http://xmlns.webpki.org/keygen2/beta/20170513",
+    "@qualifier": "ProvisioningFinalizationRequest",
+    "serverSessionId": "142f1bdb286XVQnqmIRc1bSzm-QN-ZJk",
+    "clientSessionId": "39NMWamKtHumJFfdIGkDrLP-NMB-5Lwo",
+    "issuedCredentials": 
+        [{
+             "id": "Key.1",
+             "certificatePath": 
+                 [
+                     "MIICmDCCAYCgAwIBAgIGAULxF0G....UimDl7Dt7733M0TT8qSpXeYvV0NLX5kM"
+                 ],
+             "mac": "FkwauPbrrfJZxuEsMkwOFWIIutzdYbEt3P9kr0CG4dc",
+             "logotypes": 
+                 [{
+                      "type": "http://xmlns.webpki.org/keygen2/logotype#list",
+                      "mimeType": "image/png",
+                      "extensionData": "RBgoJkiaJk_IsZAEZUBsZAEZFg....NVBAMTC0RlbW8gU3ViIENBMBTEzMM1oDTM4",
+                      "mac": "uQ5IuLRDpbSkpfU9FHe1grrQ_FXUBfsxsk6HqspjuCU"
+                  }]
+         }],
+    "nonce": "_U9YmqyULox2Q53F4l9pQaxjbzlOu2wMo6_FgGAmooQ",
+    "mac": "_e0T_svX9vXQTuyIxDUmmteM2IwvXbSOEREuqbe7fS4"
+}

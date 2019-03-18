@@ -1,0 +1,9 @@
+
+Add ClientPlatform i XML prof
+
+UnreferencedAttachments seems not ready in XDS
+
+Complete (and design) the PDF signature profile
+
+JavaDoc!!!!
+

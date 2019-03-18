@@ -1,0 +1,22 @@
+{
+  "now": "2019-02-10T11:23:06Z",
+  "name": "Joe",
+  "id": 2200063,
+  "signature": {
+    "signers": [{
+      "algorithm": "ES256",
+      "keyId": "example.com:p256",
+      "otherExt": "Cool Stuff",
+      "https://example.com/extension": {
+        "life-is-great": true
+      },
+      "value": "T-7QWCI4GDMutdCOi4MDca_6Jpq2YLasrfOduvYgt8YlqVlY9gYrNfotLN3JjQbCrW6ShIrhErUY0sJ9VGBseg"
+    },{
+      "algorithm": "RS256",
+      "keyId": "example.com:r2048",
+      "otherExt": "Other Data",
+      "value": "fEy3hW0MXzpK9kC_gjPtpVBXBdBkuVVoY8DMugjMTJBw2t5iABpH_oNKmp3LQl-zB0LcSpINh0bRgv2sErgPFHEH0fcg1omJ8N7jee4yPkA4-r9qW_vWOKAOQOArcUnoGYtQTcOMlaNz5B-qbn-aX0faxm3zGOrizWVdQTG7fJe8dQW4M3JdGy01zlA37fpX9ucKvM2nKkSZtAjFRtKA504UEbww3wLcQlbocZPpVpYoaiN_Oi6X7zpIhxvTbYR1bhh9D9uuXaaYSIG5VjokpVo0vTvhrMg4rT29QRq70RyH45cA_ydwr18gwHLvXU0-4lSkB_d1F7f7rjwRnMlwAw"
+    }],
+    "extensions": ["otherExt", "https://example.com/extension"]
+  }
+}

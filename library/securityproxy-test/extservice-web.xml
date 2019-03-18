@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app version="2.5"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://java.sun.com/xml/ns/javaee" 
+         xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" 
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+    <display-name>External Service (For Testing Only)</display-name>
+
+    <context-param>
+        <description>Mandatory unique proxy service name</description>
+        <param-name>proxy-service-name</param-name>
+        <param-value>Proxy.Demo</param-value>
+    </context-param>
+
+    <listener>
+        <listener-class>org.webpki.securityproxy.test.extservice.Init</listener-class>
+    </listener>
+
+    <servlet>
+        <servlet-name>ExtHTTPService</servlet-name>
+        <servlet-class>org.webpki.securityproxy.test.extservice.ExtHTTPService</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ExtJavaService</servlet-name>
+        <servlet-class>org.webpki.securityproxy.test.extservice.ExtJavaService</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ServiceStatus</servlet-name>
+        <servlet-class>org.webpki.securityproxy.test.extservice.ServiceStatus</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ExtHTTPService</servlet-name>
+        <url-pattern>/http</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ExtJavaService</servlet-name>
+        <url-pattern>/java</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ServiceStatus</servlet-name>
+        <url-pattern>/status</url-pattern>
+    </servlet-mapping>
+
+</web-app>

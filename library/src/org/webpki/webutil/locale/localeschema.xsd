@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://locale.com"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:locale="http://locale.com"
+           elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+    <xs:element name="LocalizedStrings">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="LString" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:simpleContent>
+                            <xs:extension base="xs:string">
+                                <xs:attribute name="Name" type="xs:string" use="required"/>
+                            </xs:extension>
+                        </xs:simpleContent>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="Application" type="xs:string" use="required"/>
+            <xs:attribute name="Language" type="xs:string" use="required"/>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

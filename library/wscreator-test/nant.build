@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<!-- NAnt build file for .NET SKSWS -->
+<project name="SKSWS" default="build">
+    <property name="basename" value="org.webpki.sks.ws.client"/>
+    <property name="debug" value="false"/>
+    <property name="build.dir" value="../dist"/>
+    <property name="src.dir" value="src"/>
+    <property name="nant.settings.currentframework" value="net-4.0"/>
+
+    <target name="build">
+      <csc target="library"
+           output="${build.dir}/${basename}.dll" 
+           debug="${debug}"
+           keyfile="b651fd748a51c307.snk">
+            <sources basedir="${src.dir}">
+                <include name="**/*.cs"/>
+            </sources>
+            <references>
+                <include name="System.dll"/>
+                <include name="System.Data.dll"/>
+                <include name="System.ServiceModel.dll"/>
+                <include name="System.Runtime.Serialization.dll"/>
+                <include name="System.Xml.dll"/>
+            </references>
+        </csc>
+    </target>
+    
+    <target name="run" depends="build">
+      <script language="C#">
+          <references>
+                <include name="System.Data.dll"/>
+                 <include name="System.Runtime.Serialization.dll"/>
+                <include name="System.ServiceModel.dll"/>
+                <include name="System.Xml.dll"/>
+              <include name="../dist/${basename}.dll" />
+          </references>
+          <imports>
+              <import namespace="${basename}" />
+           </imports>
+          <code>
+            <![CDATA[
+              public static void ScriptMain(Project project)
+              {
+                  SKSWSProxy ws = SKSWSProxy.getDefaultSKSWSProxy();
+                  project.Log(Level.Info, "WS version: " + ws.getVersion ());
+              }
+            ]]>
+          </code>
+      </script>
+    </target>
+
+</project>

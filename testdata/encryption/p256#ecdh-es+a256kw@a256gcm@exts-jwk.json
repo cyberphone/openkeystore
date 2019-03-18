@@ -1,0 +1,27 @@
+{
+  "algorithm": "A256GCM",
+  "encryptedKey": {
+    "algorithm": "ECDH-ES+A256KW",
+    "publicKey": {
+      "kty": "EC",
+      "crv": "P-256",
+      "x": "censDzcMEkgiePz6DXB7cDuwFemshAFR90UNVQFCg8Q",
+      "y": "xq8rze6ewG0-eVcSF72J77gKiD0IHnzpwHaU7t6nVeY"
+    },
+    "ephemeralKey": {
+      "kty": "EC",
+      "crv": "P-256",
+      "x": "NO6Xg6rEfFZzadVgauvxRQXCHhyUwOinJl0gBt_aYZE",
+      "y": "GTP_nNFa7H7fa3pDS0PQxUc4CgQnvOtNnGIwZ74xGk8"
+    },
+    "cipherText": "McqRBA_Foh1gQox6M4W1I7VULCx97rLtkJ6y2J9dTppluh_VB_MdrQ",
+    "otherExt": "something",
+    "https://example.com/extension": {
+      "life-is-great": true
+    }
+  },
+  "extensions": ["otherExt", "https://example.com/extension"],
+  "iv": "bfuCN5E1X2I8kS9Y",
+  "tag": "W5rAw4SXoRzLjbJOwrjI5w",
+  "cipherText": "tsgolxhAA8llep3ZUXavlQkN7aZI7w"
+}

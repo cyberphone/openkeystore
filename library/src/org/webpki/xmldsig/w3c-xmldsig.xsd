@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--                  
+    Schema for XML Signatures.
+
+    This schema is derived from the W3C XML Signature specification
+    but has been extensively profiled to suit WASP, WebAuth, 
+    Information Cards, KeyGen2, OBI/X, etc.  The schema is however
+    still a true subset of the original.
+
+    Copyright 2001 The Internet Society and W3C (Massachusetts Institute
+    of Technology, Institut National de Recherche en Informatique et en
+    Automatique, Keio University). All Rights Reserved.
+    http://www.w3.org/Consortium/Legal/
+
+    Revision: V0.58, 10-April-2009 
+    Author: Anders Rundgren, WebPKI.org 
+-->
+
+<xs:schema targetNamespace="http://www.w3.org/2000/09/xmldsig#"
+           xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+           xmlns:ds11="http://www.w3.org/2009/xmldsig11#"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+    <xs:import namespace="http://www.w3.org/2009/xmldsig11#"/>
+
+    <xs:element name="Signature">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="SignedInfo" type="ds:SignedInfoType"/>
+                <xs:element name="SignatureValue" type="xs:base64Binary"/>
+                <xs:element ref="ds:KeyInfo"/>
+
+                <!-- Enveloped signatures MUST NOT have an "Object" element,
+                     while enveloping signatures MUST have an "Object" element -->
+                <xs:element name="Object" type="ds:ObjectType" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="SignedInfoType">
+        <xs:sequence>
+            <xs:element name="CanonicalizationMethod" type="ds:CanonicalizationMethodType"/>
+            <xs:element name="SignatureMethod" type="ds:SignatureMethodType"/>
+
+            <!-- Restrictions versus the original W3C definition:
+                 1. There MUST be one Reference to the Object (or "envelope") element.
+                 2. There MAY be a reference to the KeyInfo element. -->
+            <xs:element name="Reference" type="ds:ReferenceType" maxOccurs="2"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="CanonicalizationMethodType">
+        <xs:attribute name="Algorithm" type="xs:anyURI" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="SignatureMethodType">
+        <xs:attribute name="Algorithm" type="xs:anyURI" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="ReferenceType">
+        <xs:sequence>
+            <xs:element name="Transforms" type="ds:TransformsType"/>
+            <xs:element name="DigestMethod" type="ds:DigestMethodType"/>
+            <xs:element name="DigestValue" type="xs:base64Binary"/>
+        </xs:sequence>
+        <xs:attribute name="URI" type="ds:LocalURIType" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="TransformsType">
+        <xs:sequence>
+            <!-- Only enveloped signatures MAY have two "Transforms" elements, where
+                 the first element specifies enveloped signature, while an optional
+                 second element, specifies a canonicalization method.  -->
+            <xs:element name="Transform" type="ds:TransformType" maxOccurs="2"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="TransformType">
+        <xs:attribute name="Algorithm" type="xs:anyURI" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="DigestMethodType">
+        <xs:attribute name="Algorithm" type="xs:anyURI" use="required"/>
+    </xs:complexType>
+
+    <xs:element name="KeyInfo" type="ds:KeyInfoType"/>
+
+    <xs:complexType name="KeyInfoType">
+        <xs:choice>
+
+            <!-- Restrictions versus the original W3C definition:
+                 1. Only certificates, RSA keys and key-nams are supported.
+                 2. Only one outer element is permitted. -->
+            <xs:element name="KeyValue" type="ds:KeyValueType"/>
+            <xs:element ref="ds:X509Data"/>
+
+            <!-- The following elements are used with XML encryption only -->
+            <xs:element name="KeyName" type="xs:string"/>
+            <xs:any namespace="##other" processContents="strict"/>
+
+        </xs:choice>
+
+        <!-- If "Id" is used, it MUST match a "Reference" object URI. -->
+        <xs:attribute name="Id" type="xs:ID" use="optional"/>
+
+    </xs:complexType>
+
+    <xs:complexType name="KeyValueType">
+        <xs:sequence>
+            <xs:choice>
+                <xs:element ref="ds:RSAKeyValue"/>
+                <xs:element ref="ds11:ECKeyValue"/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="RSAKeyValue">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Modulus" type="xs:base64Binary"/>
+                <xs:element name="Exponent" type="xs:base64Binary"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:simpleType name="LocalURIType">
+        <xs:restriction base="xs:anyURI">
+            <xs:pattern value="|#.*"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:element name="X509Data" type="ds:X509DataType"/>
+
+    <xs:complexType name="X509DataType">
+        <xs:sequence maxOccurs="unbounded">
+            <xs:choice>
+
+                <!-- Restriction versus the original W3C definition:
+                     If any of the following elements are given they MUST identify the
+                     signer's certificate only.  That is, there MUST be zero or one
+                     instance of X509IssuerSerial and X509SubjectName elements although
+                     their order within the X509Data element is of no importance. -->
+                <xs:element name="X509IssuerSerial" type="ds:X509IssuerSerialType"/>
+                <xs:element name="X509SubjectName" type="xs:string"/>
+
+                <!-- Restriction versus the original W3C definition:
+                     The following element MUST contain at least the signer's certificate,
+                     and MUST NOT contain certificates belonging to "alien" cert-paths. -->
+                <xs:element name="X509Certificate" type="xs:base64Binary"/>
+
+                <!-- For coping with InfoCards... -->
+                <xs:any namespace="##other" processContents="strict"/>
+
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="X509IssuerSerialType">
+        <xs:sequence>
+            <xs:element name="X509IssuerName" type="xs:string"/>
+            <xs:element name="X509SerialNumber" type="xs:integer"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ObjectType">
+        <xs:sequence>
+
+            <!-- Restriction versus the original W3C definition:
+                 This profile only supports "known" and well-formed XML structures. -->
+            <xs:any namespace="##any" processContents="strict"/>
+
+        </xs:sequence>
+        <xs:attribute name="Id" type="xs:ID" use="required"/>
+    </xs:complexType>
+
+</xs:schema>

@@ -1,0 +1,10 @@
+{
+  "mySignedData": "something",
+  "myUnsignedData": "something else",
+  "signature": {
+    "algorithm": "ES256",
+    "keyId": "example.com:p256",
+    "exclude": ["myUnsignedData"],
+    "value": "_L75VfSAh6KOHieBEj_SbN9IYQqvBJKRx5_Vo7fG3QoFDzT5-73h3uYPfb7slD2VJR8aHOgytgjf56eC-l7LHw"
+  }
+}

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Extremely cut-down WS-Trust schema.  Who said that WS-* standards are complex? :-)
+-->
+
+<xs:schema targetNamespace="http://schemas.xmlsoap.org/ws/2005/02/trust"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:wst="http://schemas.xmlsoap.org/ws/2005/02/trust"
+           elementFormDefault="qualified">
+
+   <xs:element name="TokenType" type="xs:anyURI"/>
+
+</xs:schema>

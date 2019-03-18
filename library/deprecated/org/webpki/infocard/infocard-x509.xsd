@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+Copyright (c) 2006-2007 Microsoft Corporation, Inc. All rights reserved. 
+Slightly hacked for this implementation...
+-->
+
+<xs:schema targetNamespace="http://schemas.xmlsoap.org/ws/2005/05/identity"
+           xmlns:ic="http://schemas.xmlsoap.org/ws/2005/05/identity"
+           xmlns:wsa="http://www.w3.org/2005/08/addressing"
+           xmlns:wst="http://schemas.xmlsoap.org/ws/2005/02/trust"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+           elementFormDefault="qualified" blockDefault="#all" version="0.1">
+
+   <xs:import namespace="http://www.w3.org/2005/08/addressing"/>
+
+   <xs:import namespace="http://schemas.xmlsoap.org/ws/2005/02/trust"/>
+
+   <xs:import namespace="http://www.w3.org/2000/09/xmldsig#"/>
+
+   <xs:import namespace="http://www.w3.org/XML/1998/namespace"/>
+  
+   <xs:simpleType name="StringMaxLength255MinLength1">
+      <xs:restriction base="xs:string">
+         <xs:maxLength value="255"/>
+         <xs:minLength value="1"/>
+      </xs:restriction>
+   </xs:simpleType>
+
+   <xs:simpleType name="StringMaxLength64MinLength1">
+      <xs:restriction base="xs:string">
+         <xs:maxLength value="64"/>
+         <xs:minLength value="1"/>
+      </xs:restriction>
+   </xs:simpleType>
+
+   <xs:simpleType name="StringMaxLength684">
+      <xs:restriction base="xs:string">
+         <xs:maxLength value="684"/>
+      </xs:restriction>
+   </xs:simpleType>
+
+   <xs:simpleType name="Base64BinaryMaxSize1MB">
+      <xs:restriction base="xs:base64Binary">
+         <xs:maxLength value="1048576"/>
+      </xs:restriction>
+   </xs:simpleType>
+
+   <xs:simpleType name="Base64BinaryMaxSize16K">
+      <xs:restriction base="xs:base64Binary">
+         <xs:maxLength value="16384"/>
+      </xs:restriction>
+   </xs:simpleType>
+
+   <xs:simpleType name="Base64BinaryMaxSize1K">
+      <xs:restriction base="xs:base64Binary">
+         <xs:maxLength value="1024"/>
+      </xs:restriction>
+   </xs:simpleType>
+
+   <xs:simpleType name="PositiveUnsignedInt">
+      <xs:restriction base="xs:unsignedInt">
+         <xs:minInclusive value="1"/>
+      </xs:restriction>
+   </xs:simpleType>
+  
+   <xs:element name="DisplayCredentialHint" type="ic:StringMaxLength64MinLength1"/>
+
+   <xs:element name="CardName" type="ic:StringMaxLength255MinLength1"/>
+
+   <xs:element name="Issuer" type="xs:anyURI"/>
+
+   <xs:element name="TimeIssued" type="xs:dateTime"/>
+
+   <xs:element name="TimeExpires" type="xs:dateTime"/>
+
+   <xs:simpleType name="LogoImageType">
+      <xs:restriction base="xs:token">
+         <xs:enumeration value="image/jpeg"/>
+         <xs:enumeration value="image/gif"/>
+         <xs:enumeration value="image/bmp"/>
+         <xs:enumeration value="image/png"/>
+         <xs:enumeration value="image/tiff"/>
+      </xs:restriction>
+   </xs:simpleType>
+  
+   <xs:complexType name="BaseClaimType" abstract="true">
+      <xs:attribute name="Uri" type="xs:anyURI" use="required"/>
+   </xs:complexType>
+
+   <xs:element name="SupportedClaimType" type="ic:SupportedClaimType"/>
+
+   <xs:complexType name="SupportedClaimType">
+      <xs:complexContent>
+         <xs:extension base="ic:BaseClaimType">
+            <xs:sequence>
+               <xs:element name="DisplayTag" type="ic:StringMaxLength255MinLength1" minOccurs="0"/>
+               <xs:element name="Description" type="ic:StringMaxLength255MinLength1" minOccurs="0"/>
+            </xs:sequence>
+         </xs:extension>
+      </xs:complexContent>
+   </xs:complexType>
+
+   <xs:element name="InformationCardReference" type="ic:InformationCardReferenceType"/>
+
+   <xs:complexType name="InformationCardReferenceType">
+      <xs:sequence>
+         <xs:element name="CardId" type="xs:anyURI"/>
+         <xs:element name="CardVersion" type="ic:PositiveUnsignedInt"/>
+      </xs:sequence>
+   </xs:complexType>
+
+   <xs:element name="CardImage" type="ic:CardImageType"/>
+
+   <xs:complexType name="CardImageType">
+      <xs:simpleContent>
+         <xs:extension base="ic:Base64BinaryMaxSize1MB">
+            <xs:attribute name="MimeType" type="ic:LogoImageType" use="required"/>
+         </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+
+   <xs:element name="X509V3Credential" type="ic:X509V3CredentialType"/>
+
+   <xs:complexType name="X509V3CredentialType">
+      <xs:sequence>
+         <xs:element ref="ds:X509Data"/>
+      </xs:sequence>
+   </xs:complexType>
+
+   <xs:element name="UserCredential" type="ic:UserCredentialType"/>
+
+   <xs:complexType name="UserCredentialType">
+      <xs:sequence>
+         <xs:element ref="ic:DisplayCredentialHint" minOccurs="0"/>
+         <xs:element ref="ic:X509V3Credential"/>
+      </xs:sequence>
+   </xs:complexType>
+
+   <xs:element name="TokenService" type="ic:TokenServiceType"/>
+
+   <xs:complexType name="TokenServiceType">
+      <xs:sequence>
+         <xs:element ref="wsa:EndpointReference"/>
+         <xs:element ref="ic:UserCredential"/>
+      </xs:sequence>
+   </xs:complexType>
+
+   <xs:element name="TokenServiceList" type="ic:TokenServiceListType"/>
+
+   <xs:complexType name="TokenServiceListType">
+      <xs:sequence>
+         <xs:element ref="ic:TokenService" maxOccurs="128"/>
+      </xs:sequence>
+   </xs:complexType>
+
+   <xs:element name="SupportedTokenTypeList" type="ic:SupportedTokenTypeListType"/>
+
+   <xs:complexType name="SupportedTokenTypeListType">
+      <xs:sequence>
+         <xs:element ref="wst:TokenType" maxOccurs="32"/>
+      </xs:sequence>
+   </xs:complexType>
+
+   <xs:element name="SupportedClaimTypeList" type="ic:SupportedClaimTypeListType"/>
+
+   <xs:complexType name="SupportedClaimTypeListType">
+      <xs:sequence>
+         <xs:element ref="ic:SupportedClaimType" maxOccurs="128"/>
+      </xs:sequence>
+   </xs:complexType>
+
+   <xs:element name="RequireAppliesTo" type="ic:RequireAppliesToType"/>
+
+   <xs:complexType name="RequireAppliesToType">
+      <xs:attribute name="Optional" type="xs:boolean"/>
+   </xs:complexType>
+  
+   <xs:element name="PrivacyNotice" type="ic:PrivacyNoticeLocationType"/>
+
+   <xs:complexType name="PrivacyNoticeLocationType">
+      <xs:simpleContent>
+         <xs:extension base="xs:anyURI">
+            <xs:attribute name="Version" use="optional" type="ic:PositiveUnsignedInt"/>
+         </xs:extension>
+      </xs:simpleContent>
+   </xs:complexType>
+
+   <xs:element name="InformationCard" type="ic:InformationCardType"/>
+
+   <xs:complexType name="InformationCardType">
+      <xs:sequence>
+         <xs:element ref="ic:InformationCardReference"/>
+         <xs:element ref="ic:CardName" minOccurs="0"/>
+         <xs:element ref="ic:CardImage" minOccurs="0"/>
+         <xs:element ref="ic:Issuer"/>
+         <xs:element ref="ic:TimeIssued"/>
+         <xs:element ref="ic:TimeExpires" minOccurs="0"/>
+         <xs:element ref="ic:TokenServiceList"/>
+         <xs:element ref="ic:SupportedTokenTypeList"/>
+         <xs:element ref="ic:SupportedClaimTypeList"/>
+         <xs:element ref="ic:RequireAppliesTo" minOccurs="0"/>
+         <xs:element ref="ic:PrivacyNotice" minOccurs="0"/>
+      </xs:sequence>
+      <xs:attribute ref="xml:lang" use="required"/>
+   </xs:complexType>
+
+</xs:schema>

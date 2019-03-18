@@ -1,0 +1,128 @@
+<body>
+<h2>JSON - Encoder, Decoder, Signature, and Encryption Package</h2>
+This package contains classes for parsing and generating messages in JSON.
+<p>To cope with browsers, this implementation targets EcmaScript (JavaScript) version 6.</p>
+To make the system slightly more on par with XML Schemas the JSON library also supports:<br>
+<ul>
+    <li>Registration of classes extending
+        {@link org.webpki.json.JSONDecoder} (=supporting a specific message)
+        and automatic instantiation during parsing. See {@link org.webpki.json.JSONDecoderCache}
+    </li>
+    <li>Detection of missing reads. See {@link org.webpki.json.JSONObjectReader#checkForUnread()}
+    </li>
+    <li>Strong validation of input</li>
+    <li>Emulation of &quot;missing&quot; JSON data types like <code>True 64-bit long integer</code>,
+    <code>BigInteger</code>, <code>BigDecimal</code>,
+        <code>GregorianCalendar</code> and <code>byte[]</code></li>
+</ul>
+<p>
+    In addition, there is a set of classes supporting a [very] scaled-down JSON counterpart to
+    enveloped XML signatures:
+    <a href="https://cyberphone.github.io/doc/security/jcs.html" target="_blank"><b>JSON Cleartext
+        Signature</b></a>.
+    <br>See {@link org.webpki.json.JSONObjectWriter#setSignature(JSONSigner)} for programming
+    information.
+</p>
+<p>
+    There is also a class for encrypting data using JSON formatted containers:
+    <a href="https://cyberphone.github.io/doc/security/jef.html" target="_blank"><b>JSON Encryption
+        Format</b></a>.
+    <br>See {@link
+    org.webpki.json.JSONObjectWriter#createEncryptionObject(byte[],DataEncryptionAlgorithms,JSONEncrypter)}
+    for more information.
+</p>
+<h3>Reading and Writing JSON Data</h3>
+The following examples should be sufficient for getting started with generating JSON-formated data
+from java.
+<pre>
+import org.webpki.json.*;
+import java.util.GregorianCalendar;
+</pre>
+<h4>1. Writing simple objects:</h4>
+<pre style="margin-left:20pt">
+JSONObjectWriter writer = new JSONObjectWriter();
+writer.setInt("i", 5);
+writer.setInt("j", -8).setBoolean("k", true);  // Chain commands
+System.out.println(writer.toString());
+</pre>
+Expected result:
+<pre style="margin-left:40pt;color:green">
+{
+  "i": 5,
+  "j": -8,
+  "k": true
+}
+</pre>
+<h4>2. Writing nested objects:</h4>
+<pre style="margin-left:20pt">
+JSONObjectWriter writer = new JSONObjectWriter();
+writer.setInt("i", 5);
+writer.setInt("j", -8).setBoolean("k", true);  // Chain commands
+JSONObjectWriter inner = writer.setObject("o");
+inner.setString("s", "hi");
+inner.setDateTime("now", new GregorianCalendar(), true);  // Date UTC-only option
+System.out.println(writer.toString());
+</pre>
+Expected result:<pre style="margin-left:40pt;color:green">
+{
+  "i": 5,
+  "j": -8,
+  "k": true,
+  "o":
+    {
+      "s": "hi",
+      "now": "2014-12-26T16:25:23Z"
+    }
+}
+</pre>
+<h4>3. Writing arrays:</h4>
+<pre style="margin-left:20pt">
+JSONArrayWriter writer = new JSONArrayWriter();
+writer.setInt(5);
+writer.setInt(-8).setBoolean(true);  // Chain commands
+JSONObjectWriter inner = writer.setObject();
+inner.setString("s", "hi").setDateTime("now", new GregorianCalendar(), true);  // Date UTC-only option
+System.out.println(writer.toString());
+</pre>
+Expected result:<pre style="margin-left:40pt;color:green">
+[5,-8,true,
+{
+  "s": "hi",
+  "now": "2014-12-26T16:40:28Z"
+}]
+</pre>
+<h4>4. Reading objects</h4>
+<pre style="margin-left:20pt">
+String json = "{\"value\": \"hi\", \"myobj\" : {\"testme\": true}, \"list\":[1,2]}";
+
+JSONObjectReader reader = JSONParser.parse(json);
+String value = reader.getString("value");
+JSONObjectReader inner = reader.getObject("myobj");
+boolean testme = inner.getBoolean("testme");
+JSONArrayReader array = reader.getArray("list");
+int first = array.getInt();
+int second = array.getInt();
+
+System.out.println(value + ' ' + testme + ' ' + first + ' ' + second);
+</pre>
+Expected result:<pre style="margin-left:40pt;color:green">
+hi true 1 2
+</pre>
+<h4>5. Reading arrays</h4>
+<pre style="margin-left:20pt">
+String json = "[\"hi\", {\"testme\": true}, [1,2]]";
+
+JSONArrayReader reader = JSONParser.parse(json).getJSONArrayReader();
+String value = reader.getString();
+JSONObjectReader inner = reader.getObject();
+boolean testme = inner.getBoolean("testme");
+JSONArrayReader array = reader.getArray();
+int first = array.getInt();
+int second = array.getInt();
+
+System.out.println(value + ' ' + testme + ' ' + first + ' ' + second);
+</pre>
+Expected result:<pre style="margin-left:40pt;color:green">
+hi true 1 2
+</pre>
+</body>

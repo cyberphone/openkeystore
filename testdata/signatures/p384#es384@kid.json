@@ -1,0 +1,10 @@
+{
+  "now": "2019-02-10T11:23:06Z",
+  "name": "Joe",
+  "id": 2200063,
+  "signature": {
+    "algorithm": "ES384",
+    "keyId": "example.com:p384",
+    "value": "OdEQM8N1m36PbTEOLs0Q3m-pBDyKLKDD1WMr76DsOqJ-0IjeVBPhK4TuacCxRl1uOv8egRrUWhZf5lenOKZ-NMZDcNtqAIs2j40Vl85wqjBI-GFcbtU3UOcz4vQeeZ9L"
+  }
+}

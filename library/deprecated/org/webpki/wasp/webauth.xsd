@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Web Authentication XML schema.  The purpose of Web Authentication is
+    providing an authentication counterpart to the WASP (Web Activated Signature
+    Protocol) signature scheme.  Web Authentication is an application-level
+    alternative to using SSL/TLS client-certificate authentication.
+    
+    "Perfection is achieved, not when there is nothing more to add, but when there
+    is nothing left to take away" [Antoine de Saint-Exupery]
+
+    Version: BETA 
+    Revised: 04-06-2013 
+    Author: Anders Rundgren
+
+    Copyright 2006-2014 WebPKI.org (http://webpki.org).
+
+    Licensed under the Apache License, Version 2.0 (the "License"); 
+    you may not use this file except in compliance with the License. 
+    You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<xs:schema targetNamespace="http://xmlns.webpki.org/webauth/beta/20130604#"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+           xmlns:auth="http://xmlns.webpki.org/webauth/beta/20130604#"
+           elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+    <xs:import namespace="http://www.w3.org/2000/09/xmldsig#"/>
+
+    <!--==========================================================================================
+                       The primary (top-level) authentication request object
+    ===========================================================================================-->
+
+    <xs:element name="AuthenticationRequest">
+        <xs:complexType>
+            <xs:sequence>
+
+                <!-- See "AuthenticationProfile" definition -->
+                <xs:element ref="auth:AuthenticationProfile" maxOccurs="unbounded"/>
+
+                <!-- See "CertificateFilter" definition. -->
+                <xs:element ref="auth:CertificateFilter" minOccurs="0" maxOccurs="unbounded"/>
+
+                <!-- An authentication request MAY also include an enveloped XML signature
+                     covering the entire AuthenticationRequest object (which MUST be done
+                     through an explicit reference to the "AuthenticationRequest/@ID" attribute).
+                     The client software MUST verify such a signature before proceeding
+                     with the authentication process.  The authentication requester is
+                     RECOMMENDED to sign using a certificate which already has a trust anchor
+                     installed in the potential users' browsers.  If the trust anchor is
+                     not known, the client software SHOULD warn the user before proceeding.
+                     The user SHOULD be able to abort the operation in case of an unknown
+                     issuer.  A broken signature MUST abort the authentication process. -->
+                <xs:element ref="ds:Signature" minOccurs="0"/>
+
+            </xs:sequence>
+
+            <!-- This mandatory item MUST be unique between authentication
+                 requests since if functions as a "nonce" to defeat replay. -->
+            <xs:attribute name="ID" type="xs:ID" use="required"/>
+
+            <!-- A mandatory time-stamp indicating when the request was issued. -->
+            <xs:attribute name="ServerTime" type="xs:dateTime" use="required"/>
+
+            <!-- Where to HTTP POST the authentication response.  Note that
+                 applicable session cookies MUST be submitted in the request
+                 as well. -->
+            <xs:attribute name="SubmitURL" type="auth:httpURI" use="required"/>
+
+            <!-- Where to HTTP GET if the user aborts the authentication process.
+                 Note that applicable session cookies MUST be submitted in the
+                 request as well. -->
+            <xs:attribute name="AbortURL" type="auth:httpURI" use="optional"/>
+
+            <!-- GUI language in preference order.  Primarily for public computers. -->
+            <xs:attribute name="Languages" type="auth:languageList" use="optional"/>
+
+            <!-- If specified the client software SHOULD indicate to the user when
+                 an authentication request is about to expire.  The value is given
+                 in seconds. -->
+            <xs:attribute name="Expires" type="xs:unsignedInt" use="optional"/>
+
+            <!-- Optionally the requester MAY include URI objects specifying that
+                 it wants additional information concerning the client platform.
+                 Such URIs may not necessarily be recognized by the authentication
+                 client and MAY also be ignored.  In case the requested information
+                 would include data that could affect personal integrity (like a
+                 machine ID), the client software SHOULD warn the user, and offer an
+                 option to decline the release of such data. -->
+            <xs:attribute name="ClientPlatformFeatures" type="auth:featureList" use="optional"/>
+
+        </xs:complexType>
+    </xs:element>
+
+    <!--==========================================================================================
+                         End of authentication request object definition
+    ===========================================================================================-->
+
+
+    <!--==========================================================================================
+                       The primary (top-level) authentication response object
+    ===========================================================================================-->
+
+    <xs:element name="AuthenticationResponse">
+        <xs:complexType>
+            <xs:sequence>
+
+                <!-- See "AuthenticationRequest/@ClientPlatformFeatures". -->
+                <xs:element ref="auth:ClientPlatformFeature" minOccurs="0" maxOccurs="unbounded"/>
+
+                <!-- The user authentication signature is an enveloped XML signature
+                     covering the entire AuthenticationResponse object (which MUST be done
+                     through an explicit reference to the "AuthenticationResponse/@ID"
+                     attribute). -->
+                <xs:element ref="ds:Signature"/>
+
+            </xs:sequence>
+
+            <!-- Copy of "AuthenticationRequest/@ID". -->
+            <xs:attribute name="ID" type="xs:ID" use="required"/>
+
+            <!-- Copy of "AuthenticationRequest/@ServerTime". -->
+            <xs:attribute name="ServerTime" type="xs:dateTime" use="required"/>
+
+            <!-- Copy of "AuthenticationRequest/@SubmitURL". -->
+            <xs:attribute name="SubmitURL" type="auth:httpURI" use="required"/>
+
+            <!-- The http URI that invoked the authentication request operation.
+                 For proxy modes this URI will rather refer to the proxy. -->
+            <xs:attribute name="RequestURL" type="auth:httpURI" use="required"/>
+
+            <!-- The client's local clock is a mandatory item. -->
+            <xs:attribute name="ClientTime" type="xs:dateTime" use="required"/>
+
+            <!-- The "ServerCertificateFingerprint" attribute MUST be populated
+                 with the SHA256 hash of the associated server certificate if the
+                 AuthenticationRequest was invoked over HTTPS. -->
+            <xs:attribute name="ServerCertificateFingerprint" type="auth:sha256Hash"
+                          use="optional"/>
+
+        </xs:complexType>
+    </xs:element>
+
+    <!--==========================================================================================
+                           End of authentication response object definition
+    ===========================================================================================-->
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+       "CertificateFilter" criterions include SHA-1 fingerprints, issuer DNs, subject DNs,
+       subject e-mail addresses, serial numbers, policy OIDs, private key container types,
+       key usage, and extended key usage characteristics of accepted authentication certificates.
+       To improve the "user experience", it is RECOMMENDED implementing support for
+       CertificateFilter objects.  If support for a specific selection criterion is not
+       implemented, this criterion SHOULD be considered as matching regardless of its value.
+
+       Client software MAY optionally support local policy settings, allowing an
+       installation to restrict the values on some or all CertificateFilter attributes.
+
+       If no CertificateFilter objects have been issued, all available authentication
+       client certificates [1] SHOULD be shown to the user in a suitable authentication
+       certificate selection menu.
+
+       The scope of "global" certificate selection filter attributes (if honored),
+       SHOULD be the entire set of known [2] certificate-paths associated with
+       a user's authentication certificates, including the authentication
+       certificates as well.  Note that DNs (Distinguished Names) in certificates to
+       be checked MUST be expressed as described in RFC 2253, while CertificateFilter
+       DN attributes MUST be coded as described in the "distinguishedNameExpr" type
+       definition in this XML Schema.  A policy attribute MUST contain an RFC 5280
+       certificate policy OID.  If a certificate contains multiple policy OIDs, but
+       only one of them matches a specified policy attribute, this MUST anyway be
+       regarded as a match.  Subject e-mail addresses SHOULD be searched for both
+       in the subject DN and in possible SubjectAltName extensions.
+
+       Note: Within each CertificateFilter, only attribute matches belonging to the
+       same certificate path (but not necessarily the same certificate), should be
+       considered as matching (and thus considered for path inclusion).  All specified
+       attributes within a CertificateFilter MUST return a match to consider a path as
+       matching.  For the Containers attribute, only one of the featured items needs to
+       match in order to treat the attribute as matching.  Multiple paths matches (which
+       are allowed), within a specific CertificateFilter MUST be properly handled.
+
+       Note: Each CertificateFilter is to be treated as a separate unit returning a
+       result set to be added to a list of user-selectable authentication certificates,
+       after removing CA certificates and possible authentication certificate duplicates.
+
+       Note: In addition to CertificateFilter specifiers, each AuthenticationProfile
+       depend on a specific signature algorithm and associated key characteristics.
+       For example, an authentication profile may require ECC keys, which would exclude
+       certificates with DSA and RSA keys.   The RECOMMENDED algorithm for resolving
+       this issue, is to first perform standard CertificateFilter processing and then
+       in descending priority order look for an AuthenticationProfile element that has
+       a matching key type.  Authentication certificates that do not match any of the
+       supplied authentication profiles, MUST always be removed from the final selection.
+
+       1] Regarding default authentication key filtering, please consult the
+       Web Authentication specification.
+
+       2] A conforming client MUST include all locally provisioned CA certificates
+       associated with the EE certificates, as well as expanding all RFC 5280 AIA
+       CaIssuers entries with HTTP or HTTPS accessLocation URIs.  This requirement
+       is independent of if CertificateFilter is supported or not since it also affects
+       length of emitted certificate paths ("AuthenticationProfile/@ExtendedCertPath").
+    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <xs:element name="CertificateFilter">
+        <xs:complexType>
+            <!-- At least one of the following attributes MUST be specified. -->
+
+            <!-- "Global" (cert-path-wide) authentication certificate selection
+                 attributes. -->
+            <xs:attribute name="SHA1" type="auth:sha1Hash" use="optional"/>
+            <xs:attribute name="Issuer" type="auth:distinguishedNameExpr" use="optional"/>
+            <!-- "Local" selection attributes that only apply to authentication (EE)
+                 certificates. -->
+            <xs:attribute name="Subject" type="auth:distinguishedNameExpr" use="optional"/>
+            <xs:attribute name="Email" type="auth:emailAddress" use="optional"/>
+            <xs:attribute name="Serial" type="xs:integer" use="optional"/>
+            <xs:attribute name="Policy" type="auth:oidValue" use="optional"/>
+            <xs:attribute name="Containers" type="auth:containerList" use="optional"/>
+            <xs:attribute name="KeyUsage" type="auth:keyUsageBits" use="optional"/>
+            <xs:attribute name="ExtKeyUsage" type="auth:oidValue" use="optional"/>
+
+        </xs:complexType>
+    </xs:element>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+       Requested authentication profile(s) for the client software to select from in
+       descending preference order.  The client software MAY NOT recognize all
+       supplied profiles, but MUST abort the operation if none is recognized and
+       supported.  Also see "CertificateFilter".
+    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <xs:element name="AuthenticationProfile">
+        <xs:complexType>
+
+            <!-- If true the XML DSig "SignedInfo" object SHOULD also include a
+                 Reference object to the "KeyInfo" object, effectively binding
+                 the user's Public Key Certificate (and possible additional
+                 certificates belonging to the same certificate path), to the
+                 authentication signature as well.  Default value: false. -->
+            <xs:attribute name="SignedKeyInfo" type="xs:boolean" use="optional"/>
+
+            <!-- If true the XML DSig "KeyInfo" SHOULD include as many additional
+                 certificates in the associated certificate path as the client
+                 software has access to, possibly also including the root.
+                 Default value: false => Only the authentication certificate
+                 is supplied. -->
+            <xs:attribute name="ExtendedCertPath" type="xs:boolean" use="optional"/>
+
+            <!-- XML DSig parameter.  Implementations MAY support other algorithms
+                 than the default.  This parameter indicates a required value for
+                 the "SignedInfo/Reference/Transforms/Tranform/@Algorihtm" and the
+                 "SignedInfo/CanonicalizationMethod/@Algorithm" attributes.
+                 Default value: "http://www.w3.org/2001/10/xml-exc-c14n#". -->
+            <xs:attribute name="CanonicalizationAlgorithm" type="xs:anyURI" use="optional"/>
+
+            <!-- XML DSig parameter.  Implementations MAY support other algorithms
+                 than the default.  This parameter indicates a required value for
+                 the "SignedInfo/Reference/DigestMethod/@Algorihtm" attribute.
+                 Default value: See "getRecommendSignatureAlgorithm" in
+                 org.webpki.crypto.KeyAlgorithms.java. -->
+            <xs:attribute name="DigestAlgorithm" type="xs:anyURI" use="optional"/>
+
+            <!-- XML DSig parameter.  Implementations MAY support other algorithms
+                 than the default.  This parameter indicates a required value for
+                 the "SignedInfo/SignatureMethod/@Algorihtm" attribute.
+                 Default value: "http://www.w3.org/2000/09/xmldsig#rsa-sha256". -->
+            <xs:attribute name="SignatureAlgorithm" type="xs:anyURI" use="optional"/>
+
+        </xs:complexType>
+    </xs:element>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+       The "ClientPlatformFeature" object is holding various authentication client related
+       data which can be used for monitoring purposes.  With platform health statements
+       this object may also be used for qualifying machines before granting access.
+    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <xs:element name="ClientPlatformFeature">
+        <xs:complexType>
+
+            <!-- Room for extensions like platform health statements.  Note:
+                 a relying party application MAY ignore a supplied extension
+                 as indicated by the "lax" processing directive. -->
+            <xs:sequence>
+                <xs:any namespace="##any" processContents="lax"/>
+            </xs:sequence>
+
+            <xs:attribute name="URI" type="xs:anyURI" use="required"/>
+
+        </xs:complexType>
+    </xs:element>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                    URI and OID definitions.
+    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <xs:simpleType name="oidValue">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[1-9][0-9]*(\.[1-9][0-9]*)*"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="httpURI">
+        <xs:restriction base="xs:anyURI">
+            <xs:pattern value="https?://.*"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                   Feature list definitions.
+    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <xs:simpleType name="featureList">
+        <xs:restriction>
+            <xs:simpleType>
+                <xs:list itemType="xs:anyURI"/>
+            </xs:simpleType>
+            <xs:minLength value="1"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                   Language list definitions.
+    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <xs:simpleType name="languageList">
+        <xs:restriction>
+            <xs:simpleType>
+                <xs:list itemType="xs:language"/>
+            </xs:simpleType>
+            <xs:minLength value="1"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                 MIME type definition (MUST NOT contain character encoding).
+    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <xs:simpleType name="mimeType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[^;]+"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                     Hash data definitions.
+    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <xs:simpleType name="sha1Hash">
+        <xs:restriction base="xs:base64Binary">
+            <xs:maxLength value="20"/>
+            <xs:minLength value="20"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="sha256Hash">
+        <xs:restriction base="xs:base64Binary">
+            <xs:maxLength value="32"/>
+            <xs:minLength value="32"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                   Key container definitions.
+    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <xs:simpleType name="containerList">
+        <xs:restriction>
+            <xs:simpleType>
+                <xs:list>
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:enumeration value="File"/>
+                            <xs:enumeration value="TPM"/>
+                            <xs:enumeration value="SIM"/>
+                            <xs:enumeration value="External"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:list>
+            </xs:simpleType>
+            <xs:minLength value="1"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      "KeyUsage" attribute definition: This attribute is represented by 9 bits as
+      described in RFC 5280.  The leftmost bit is digitalSignature (DS).  The KeyUsage
+      attribute bits MUST have the value "1", "0" or "X", where "X" denotes don't care.
+      Unspecified KeyUsage attribute bits MUST be treated like Xs.  Examples:
+      "1" => Select certificates with digitalSignature=1
+      "X01" => Select certificates with nonRepudiation=0 and keyEncipherment=1
+    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <xs:simpleType name="keyUsageBits">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[10X]{0,8}[10]"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      "Issuer" and "Subject" attributes MUST be represented as regular expressions
+      compatible with the XML Schema "pattern" facet.  Note that the regular expressions
+      MUST be targeted for RFC 4514 encoded data.
+    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <xs:simpleType name="distinguishedNameExpr">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="\S.*"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      Email addresses MUST be expressed as RFC 822 compatible strings.
+    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <xs:simpleType name="emailAddress">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>

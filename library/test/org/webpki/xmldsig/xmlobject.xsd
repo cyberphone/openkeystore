@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema targetNamespace="http://example.com/xml"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+           xmlns="http://example.com/xml"
+           elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+    <xs:import namespace="http://www.w3.org/2000/09/xmldsig#"
+               schemaLocation="w3c-xmldsig.xsd"/>
+
+    <xs:element name="Outer">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Sig">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="Inner" type="xs:string"/>
+                            <xs:element name="InsertHere">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element ref="ds:Signature" minOccurs="0"
+                                                    maxOccurs="unbounded"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                        <xs:attribute name="ID" type="xs:ID" use="required"/>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SKS WS Descriptor File to be used with "WSCreator" -->
+<WebService NameSpace="http://xmlns.webpki.org/sks/v0.61"
+            Service="SKSWS"
+            DefaultURL="http://localhost:8080/securekeystore"
+            WSDLLocation="META-INF/SKSWS.wsdl"
+            Qualified="false"
+            xmlns="http://xmlns.webpki.org/wscreator.1.00">
+
+   <LicenseHeader><![CDATA[
+  Copyright 2006-2011 WebPKI.org (http://webpki.org).
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+]]></LicenseHeader>
+
+   <JavaServer ClassName="org.webpki.sks.ws.server.SKSWSImplementation"
+               Imports="java.util.ArrayList
+                        java.security.GeneralSecurityException
+                        java.io.IOException
+                        org.webpki.crypto.test.DemoKeyStore">
+     <ClassHeader><![CDATA[/**
+ *  This is the server :-)
+ */
+]]></ClassHeader>
+     <SupportCode><![CDATA[
+       void localMethod (String epub)
+         {
+         }
+]]></SupportCode>
+   </JavaServer>
+
+   <JavaClient ClassName="org.webpki.sks.ws.client.SKSWSProxy">
+     <ClassHeader><![CDATA[/**
+ *  This is the client :-)
+ */
+]]></ClassHeader>
+   </JavaClient>
+   <DotNetClient ClassName="org.webpki.sks.ws.client.SKSWSProxy"
+                 RegistryURL="SOFTWARE\WebPKI.org\SKSWSURL"
+                 PathAsDirectory="false">
+     <ClassHeader><![CDATA[    /*
+     *  This is the .NET client :-)
+     */
+]]></ClassHeader>
+     <SupportCode><![CDATA[
+        X509Certificate2[] blist2certs (List<byte[]> blist)
+        {
+            X509Certificate2[] certs = new X509Certificate2[blist.Count];
+            int i = 0;
+            foreach (byte[] b_arr in blist)
+            {
+                certs[i++] = new X509Certificate2(b_arr);
+            }
+            return i == 0 ? null : certs;
+        }
+
+        List<byte[]> certs2blist (X509Certificate2[] certs)
+        {
+            List<byte[]> blist = new List<byte[]>();
+            if (certs != null) foreach (X509Certificate2 cert in certs)
+            {
+                blist.Add (cert.RawData);
+            }
+            return blist;
+        }
+]]></SupportCode>
+     <RewriteRule DotNetRule="Out.X509"
+                  ActualType="System.Security.Cryptography.X509Certificates.X509Certificate2"
+                  Conversion="blist2certs($)"/>
+     <RewriteRule DotNetRule="In.X509"
+                  ActualType="System.Security.Cryptography.X509Certificates.X509Certificate2"
+                  Conversion="certs2blist($)"/>
+     </DotNetClient>
+
+   <Exception ClassName="org.webpki.sks.SKSException">
+     <Property Name="error" Type="int"/>
+     <Property Name="message" Type="string"/>
+   </Exception>
+
+   <Method Name="abortProvisioningSession" Throws="SKSException">
+     <Parameter Name="keyHandle" Type="int"/>
+     <Code><![CDATA[
+        if (keyHandle == 5)
+          {
+            throw new SKSException ("bad",4);
+          }
+]]></Code></Method>
+
+   <Method Name="getKeyProtectionInfo" Throws="SKSException">
+     <Returns Type="int"/>
+     <Parameter Name="key_handle" Type="int" XMLName="keyHandle"/>
+     <Parameter Name="protection_status" Mode="inout" Type="string" XMLName="ProtectionStatus"/>
+     <Parameter Name="blah" Mode="out" Type="byte"/>
+     <Parameter Name="certificate_path" Mode="out" Type="binary" XMLName="X509Certificate" DotNetRule="Out.X509" List="true"/>
+     <Code><![CDATA[
+        protection_status.value = protection_status.value + "@";
+        blah.value = (byte)(key_handle + 2);
+        List<byte[]> certs = new ArrayList<byte[]> ();
+        try
+          {
+            certs.add (DemoKeyStore.getCAKeyStore ().getCertificate ("mykey").getEncoded ());
+            certs.add (DemoKeyStore.getSubCAKeyStore ().getCertificate ("mykey").getEncoded ());
+          }
+        catch (GeneralSecurityException gse)
+          {
+            throw new SKSException (gse);
+          }
+        catch (IOException iox)
+          {
+            throw new SKSException (iox);
+          }
+        certificate_path.value = certs;
+        return 800;
+]]></Code></Method>
+
+   <Method Name="setCertificatePath" Throws="SKSException">
+     <Parameter Name="key_handle" Type="int" XMLName="KeyHandle"/>
+     <Parameter Name="certificate_path" Type="binary" XMLName="X509Certificate" DotNetRule="In.X509" List="true" Null="true"/>
+     <Parameter Name="mac" Type="binary" XMLName="MAC"/>
+     <Code><![CDATA[
+        StringBuffer res = new StringBuffer ();
+        if (certificate_path.size() == 0)
+          {
+            res.append ("'null'");
+          }
+        else
+          {
+            int i = 0;
+            for (byte[] b_arr : certificate_path)
+              {
+                if (i != 0)
+                  {
+                     res.append ("\n      ");
+                  }
+                try
+                  {
+                    res.append ("C[" + (i++) + "]=" + new org.webpki.crypto.CertificateInfo(org.webpki.crypto.CertificateUtil.getCertificateFromBlob (b_arr)).getSubject ());
+                  }
+                catch (IOException iox)
+                  {
+                    throw new SKSException (iox);
+                  }
+              }
+          }
+        System.out.println ("Certs=" + res.toString () + " mac=" + mac.length);
+]]></Code></Method>
+
+   <Method Name="getVersion">
+     <Returns Type="string"/>
+     <Code><![CDATA[
+        return "0.00001";
+]]></Code></Method>
+
+   <Method Name="getCertPath" Throws="SKSException">
+     <Returns Type="binary" XMLName="X509Certificate" DotNetRule="Out.X509" List="true" Null="true"/>
+     <Parameter Type="boolean" Name="want"/>
+     <Code><![CDATA[
+        List<byte[]> certs = new ArrayList<byte[]> ();
+        try
+          {
+            certs.add (DemoKeyStore.getCAKeyStore ().getCertificate ("mykey").getEncoded ());
+            certs.add (DemoKeyStore.getSubCAKeyStore ().getCertificate ("mykey").getEncoded ());
+          }
+        catch (GeneralSecurityException gse)
+          {
+            throw new SKSException (gse);
+          }
+        catch (IOException iox)
+          {
+            throw new SKSException (iox);
+          }
+        return want ? certs : null;
+]]></Code></Method>
+
+</WebService>

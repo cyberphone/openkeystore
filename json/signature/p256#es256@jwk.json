@@ -1,0 +1,16 @@
+{
+  "description": "This is a clear text JSON signature using canonicalization",
+  "numbers": [333333333.33333329, 1E30, 4.50, 2e-3, 0.000000000000000000000000001],
+  "string": "\u20ac$\u000F\u000aA'\u0042\u0022\u005c\\\"\/",
+  "literals": [null, true, false],
+  "signature": {
+    "alg": "ES256",
+    "jwk": {
+      "kty": "EC",
+      "crv": "P-256",
+      "x": "PxlJQu9Q6dOvM4LKoZUh2XIe9-pdcLkvKfBfQk11Sb0",
+      "y": "6IDquxrbdq5ABe4-HQ78_dhM6eEBUbvDtdqK31YfRP8"
+    },
+    "val": "uHVZQfrRnVm6rSjM-bQfGGGE-qgUp-gLEj2Y7qaE1UgfU0MiQOWPEIBxBgNSomJGtoXjposxz8Mj8uAtwK9_Ww"
+  }
+}

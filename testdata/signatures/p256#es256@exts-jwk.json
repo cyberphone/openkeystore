@@ -1,0 +1,20 @@
+{
+  "now": "2019-02-10T11:23:06Z",
+  "name": "Joe",
+  "id": 2200063,
+  "signature": {
+    "algorithm": "ES256",
+    "publicKey": {
+      "kty": "EC",
+      "crv": "P-256",
+      "x": "censDzcMEkgiePz6DXB7cDuwFemshAFR90UNVQFCg8Q",
+      "y": "xq8rze6ewG0-eVcSF72J77gKiD0IHnzpwHaU7t6nVeY"
+    },
+    "extensions": ["otherExt", "https://example.com/extension"],
+    "otherExt": "Cool Stuff",
+    "https://example.com/extension": {
+      "life-is-great": true
+    },
+    "value": "THxzfI5M3V-ZofagQcW97YuQBEIUZpo28p2Gq4xxSw4EesqTAkKqPgVKJAjceZSsWgYu6KMgdxH26T2bcgtkBQ"
+  }
+}

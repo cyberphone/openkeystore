@@ -1,0 +1,16 @@
+{
+    "@context": "http://xmlns.webpki.org/keygen2/beta/20170513",
+    "@qualifier": "ProvisioningInitializationRequest",
+    "serverSessionId": "142f1bdb286XVQnqmIRc1bSzm-QN-ZJk",
+    "serverTime": "2017-05-24T16:33:30Z",
+    "sessionKeyAlgorithm": "http://xmlns.webpki.org/sks/algorithm#session.1",
+    "sessionKeyLimit": 20,
+    "sessionLifeTime": 300,
+    "serverEphemeralKey": 
+        {
+            "kty": "EC", 
+            "crv": "P-256",
+            "x": "cpxUxJVt-is8bgWRFm6RuvUkxyv7xJ7PbeT1BCQNNws",
+            "y": "De7jXYsdL46ikHOWeC-V-AcNM/RURpu6ZgcVAxLUwns"
+        }
+}

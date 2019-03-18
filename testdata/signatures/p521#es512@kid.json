@@ -1,0 +1,10 @@
+{
+  "now": "2019-02-10T11:23:06Z",
+  "name": "Joe",
+  "id": 2200063,
+  "signature": {
+    "algorithm": "ES512",
+    "keyId": "example.com:p521",
+    "value": "AUK-81LqhaknISR5uMF6pObvaniK3DOlcIovfa8neZ6scO504OkWvBwjpPj89iVyDcfoEpYxHK0ejHc42mK5Vmj1AdiZUt5Z7W_d973g3SHqR4o_pufkBMHPL2sSccXUvk7nBpKsOHS1ZacMU6Z_prRRGd4-2tpBpHcbyTqPgmSsAlZD"
+  }
+}

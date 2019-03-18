@@ -1,0 +1,445 @@
+<?xml version="1.0"?>
+<!-- NAnt build file for .NET SKSWS -->
+<project name="SKSWS" default="help">
+    <property name="client.library.name" value="org.webpki.sks.ws.client"/>
+    <property name="test.library.name" value="org.webpki.sks.test"/>
+    <property name="debug" value="false"/>
+    <property name="rebuild" value="false" overwrite="false"/>
+    <property name="build.dir" value="../dist"/>
+    <property name="client.src.dir" value="client"/>
+    <property name="test.src.dir" value="test"/>
+    <property name="image.dir" value="../../resources/images"/>
+    <property name="nant.settings.currentframework" value="net-4.0"/>
+    
+    <target name="help">
+      <echo message="Commands: build, sign, encrypt, ecdh, test"/>
+    </target>
+
+<!--
+######################################################################
+#            Builds the .NET SKS WS Client Assembly DLL              #
+#                                                                    #
+#    This library is self-contained and only depends on V4 of .NET   #
+######################################################################
+-->
+    <target name="build">
+      <csc target="library"
+           output="${build.dir}/${client.library.name}.dll" 
+           debug="${debug}"
+           rebuild="${rebuild}"
+           keyfile="b651fd748a51c307.snk">
+            <sources basedir="${client.src.dir}">
+                <include name="**/*.cs"/>
+            </sources>
+            <references>
+                <include name="System.dll"/>
+                <include name="System.Data.dll"/>
+                <include name="System.ServiceModel.dll"/>
+                <include name="System.Runtime.Serialization.dll"/>
+                <include name="System.Xml.dll"/>
+            </references>
+            <resources prefix="sks" basedir="${image.dir}">
+                <include name="encrypt.gif"/>
+                <include name="idcard.gif"/>
+                <include name="signsymb.gif"/>
+                <include name="keyinfo.png"/>
+            </resources>
+        </csc>
+    </target>
+    
+<!--
+######################################################################
+#            Builds the .NET SKS WS Test Assembly DLL                #
+#                                                                    #
+#    This library depends on BouncyCastle and V4 of .NET             #
+######################################################################
+-->
+    <target name="test" depends="build">
+      <csc target="library"
+           output="${build.dir}/${test.library.name}.dll" 
+           debug="${debug}"
+           rebuild="${rebuild}"
+           keyfile="b651fd748a51c307.snk">
+            <sources basedir="${test.src.dir}">
+                <include name="Device.cs"/>
+                <include name="PINPol.cs"/>
+                <include name="PUKPol.cs"/>
+                <include name="BC2MS.cs"/>
+                <include name="MS2BC.cs"/>
+            </sources>
+            <references>
+                <include name="System.dll"/>
+                <include name="System.Data.dll"/>
+                <include name="System.ServiceModel.dll"/>
+                <include name="System.Runtime.Serialization.dll"/>
+                <include name="System.Xml.dll"/>
+                <include name="../dist/${client.library.name}.dll" />
+                <include name="third-party-dlls/BouncyCastle.Crypto.dll" />
+            </references>
+<!--
+            <resources prefix="sks" basedir="${image.dir}">
+                <include name="encrypt.gif"/>
+                <include name="idcard.gif"/>
+                <include name="signsymb.gif"/>
+                <include name="keyinfo.png"/>
+            </resources>
+-->
+        </csc>
+    </target>
+
+<!--
+######################################################################
+#   A small test program that signs data using the first available   #
+#   key or a key specified by the command line option "-D:key=nnn".  #
+#                                                                    #
+#   Depends on the BouncyCastle library for signature verification.  #
+######################################################################
+-->
+    <target name="sign" depends="build">
+      <script language="C#">
+          <references>
+              <include name="System.Data.dll"/>
+              <include name="System.dll"/>
+              <include name="System.Core.dll"/>
+              <include name="System.Runtime.Serialization.dll"/>
+              <include name="System.ServiceModel.dll"/>
+              <include name="System.Xml.dll"/>
+              <include name="../dist/${client.library.name}.dll" />
+              <include name="third-party-dlls/BouncyCastle.Crypto.dll" />
+          </references>
+          <imports>
+              <import namespace="${client.library.name}" />
+              <import namespace="System.Security.Cryptography" />
+           </imports>
+          <code>
+            <![CDATA[
+public static byte[] encodeSignature (byte[] concatendated_signature)
+{
+    int extend_to = concatendated_signature.Length / 2;
+    MemoryStream baos = new MemoryStream ();
+    for (int offset = 0; offset <= extend_to; offset += extend_to)
+    {
+        int l = extend_to;
+        int start = offset;
+        while (concatendated_signature[start] == 0x00)
+        {
+            start++;
+            l--;
+        }
+        bool add_zero = false;
+        if (concatendated_signature[start] > 127)
+        {
+            add_zero = true;
+            l++;
+        }
+        baos.WriteByte (0x02);
+        baos.WriteByte ((byte)l);
+        if (add_zero)
+        {
+            baos.WriteByte (0x00);
+        }
+        baos.Write (concatendated_signature, start, extend_to - start + offset);
+      }
+    byte[] body = baos.ToArray ();
+    baos = new MemoryStream ();
+    baos.WriteByte (0x30);
+    int length = body.Length;
+    if (length > 127)
+    {
+        baos.WriteByte (0x81);
+    }
+    baos.WriteByte ((byte)length);
+    baos.Write (body, 0, body.Length);
+    byte[] res = baos.ToArray ();
+ 
+ //   System.Console.WriteLine(org.webpki.sks.ws.client.BouncyCastle.Utilities.Encoders.Hex.ToHexString (res) + "\n" +
+ //                            org.webpki.sks.ws.client.BouncyCastle.Utilities.Encoders.Hex.ToHexString (concatendated_signature));
+    return res;
+}
+
+public static void ScriptMain(Project project)
+{
+   try
+    {
+        SKSWSProxy ws = SKSWSProxy.getDefaultSKSWSProxy();
+        string device = project.Properties["device"];
+        byte[] pin = project.Properties["pin"] == null ? null : System.Text.Encoding.UTF8.GetBytes (project.Properties["pin"]);
+        bool looping = project.Properties["loop"] != null;
+        int round = 0;
+        if (device != null)
+        {
+            foreach (string device_id in ws.listDevices ())
+            {
+               System.Console.WriteLine ("Device: " + device_id);
+            }
+            ws.DeviceID = device;
+        }
+        EnumeratedKey ek = new EnumeratedKey();
+        while ((ek = ws.enumerateKeys(ek.KeyHandle)) != null)
+        {
+            KeyAttributes ka = ws.getKeyAttributes(ek.KeyHandle);
+            if (project.Properties["key"] == null)
+            {
+                if (ka.SymmetricKeyLength > 0) continue;
+            }
+            else
+            {
+                if (Int32.Parse(project.Properties["key"]) != ek.KeyHandle) continue;
+            }
+            bool rsa = ka.CertificatePath[0].PublicKey.IsRSA();
+            do
+            {
+                System.Console.WriteLine("Signature: " + (looping ? "Round[" + ++round + "] " : "") + (rsa ? "RSA" : "EC") + " Key ID=#" + ek.KeyHandle + ", Subject: " + ka.CertificatePath[0].Subject);
+                string sign_alg = rsa ? "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256" : "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256";
+                byte[] test_string = Encoding.UTF8.GetBytes("Signed hi there!");
+                byte[] res = ws.signHashedData(ek.KeyHandle,
+                                               sign_alg,
+                                               null,
+                                               pin,
+                                               new SHA256Managed().ComputeHash(test_string));
+                Org.BouncyCastle.Crypto.ISigner verify = Org.BouncyCastle.Security.SignerUtilities.GetSigner(rsa? "SHA256WithRSA" : "SHA256WithECDSA");
+                verify.Init(false, Org.BouncyCastle.Security.PublicKeyFactory.CreateKey(ka.CertificatePath[0].PublicKey.X509Encoding()));
+                verify.BlockUpdate(test_string, 0, test_string.Length);
+                if (!verify.VerifySignature(rsa ? res : encodeSignature (res)))
+                {
+                    throw new NAnt.Core.BuildException ("FAILED SIGNATURE VERIFICATION!!!");
+                }
+            }
+            while (looping);
+            return;
+        }
+        throw new NAnt.Core.BuildException ("NO SUITABLE KEY FOUND!!!");
+    }
+    catch (SKSException e)
+    {
+        throw new NAnt.Core.BuildException("Signing: " + e.Message + " code=" + e.Error);
+    }
+}
+            ]]>
+          </code>
+      </script>
+    </target>
+
+<!--
+#########################################################################
+#   A small test program that encrypts data using the first available   #
+#   key or a key specified by the command line option "-D:key=nnn".     #
+#                                                                       #
+#   Depends on the BouncyCastle library for encryption verification.    #
+#########################################################################
+-->
+    <target name="encrypt" depends="build">
+      <script language="C#">
+          <references>
+              <include name="System.Data.dll"/>
+              <include name="System.dll"/>
+              <include name="System.Core.dll"/>
+              <include name="System.Runtime.Serialization.dll"/>
+              <include name="System.ServiceModel.dll"/>
+              <include name="System.Xml.dll"/>
+              <include name="../dist/${client.library.name}.dll" />
+              <include name="third-party-dlls/BouncyCastle.Crypto.dll" />
+          </references>
+          <imports>
+              <import namespace="${client.library.name}" />
+              <import namespace="System.Linq" />
+              <import namespace="System.Security.Cryptography" />
+           </imports>
+          <code>
+            <![CDATA[
+public static void EncryptRound (EnumeratedKey ek,
+                                 SKSWSProxy ws,
+                                 Org.BouncyCastle.Crypto.IAsymmetricBlockCipher engine,
+                                 String algorithm,
+                                 byte[] pin)
+{
+    KeyAttributes ka = ws.getKeyAttributes(ek.KeyHandle);
+    byte[] test_string = Encoding.UTF8.GetBytes("Encrypted hi there!");
+    engine.Init(true, Org.BouncyCastle.Security.PublicKeyFactory.CreateKey(ka.CertificatePath[0].PublicKey.X509Encoding()));
+    byte[] encrypted = engine.ProcessBlock(test_string, 0, test_string.Length);
+    byte[] sks_res = ws.asymmetricKeyDecrypt(ek.KeyHandle,
+                                             algorithm,
+                                             null,
+                                             pin,
+                                             encrypted);
+    // Do we match?
+    if (!sks_res.SequenceEqual(test_string))
+    {
+       throw new NAnt.Core.BuildException ("FAILED ENCRYPTION!!!");
+    }
+}
+public static void ScriptMain(Project project)
+{
+   try
+    {
+        SKSWSProxy ws = SKSWSProxy.getDefaultSKSWSProxy();
+        string device = project.Properties["device"];
+        byte[] pin = project.Properties["pin"] == null ? null : System.Text.Encoding.UTF8.GetBytes (project.Properties["pin"]);
+        bool looping = project.Properties["loop"] != null;
+        int round = 0;
+        if (device != null)
+        {
+            foreach (string device_id in ws.listDevices ())
+            {
+               System.Console.WriteLine ("Device: " + device_id);
+            }
+            ws.DeviceID = device;
+        }
+        EnumeratedKey ek = new EnumeratedKey();
+        while ((ek = ws.enumerateKeys(ek.KeyHandle)) != null)
+        {
+            KeyAttributes ka = ws.getKeyAttributes(ek.KeyHandle);
+            if (project.Properties["key"] == null)
+            {
+                if (ka.SymmetricKeyLength > 0 || !ka.CertificatePath[0].PublicKey.IsRSA()) continue;
+            }
+            else
+            {
+                if (Int32.Parse(project.Properties["key"]) != ek.KeyHandle) continue;
+            }
+            do
+            {
+                EncryptRound(ek,
+                             ws,
+                             new Org.BouncyCastle.Crypto.Engines.RsaEngine(),
+                             "http://xmlns.webpki.org/sks/algorithm#rsa.raw",
+                             pin);
+                EncryptRound(ek,
+                             ws,
+                             new Org.BouncyCastle.Crypto.Encodings.Pkcs1Encoding(new Org.BouncyCastle.Crypto.Engines.RsaEngine()),
+                             "http://xmlns.webpki.org/sks/algorithm#rsa.pkcs1_5",
+                             pin);
+                EncryptRound(ek,
+                             ws,
+                             new Org.BouncyCastle.Crypto.Encodings.OaepEncoding(new Org.BouncyCastle.Crypto.Engines.RsaEngine()),
+                             "http://xmlns.webpki.org/sks/algorithm#rsa.oaep.sha1.mgf1p",
+                             pin);
+                EncryptRound(ek,
+                             ws,
+                             new Org.BouncyCastle.Crypto.Encodings.OaepEncoding(new Org.BouncyCastle.Crypto.Engines.RsaEngine(),
+                             new Org.BouncyCastle.Crypto.Digests.Sha256Digest()),
+                             "http://xmlns.webpki.org/sks/algorithm#rsa.oaep.sha256.mgf1p",
+                             pin);
+                System.Console.WriteLine("Encryption: Round[" + ++round + "] Key ID=#" + ek.KeyHandle + ", Subject: " + ka.CertificatePath[0].Subject);
+            }
+            while (looping);
+            return;
+        }
+        throw new NAnt.Core.BuildException ("NO SUITABLE KEY FOUND!!!");
+    }
+    catch (SKSException e)
+    {
+        throw new NAnt.Core.BuildException("Encryption: " + e.Message + " code=" + e.Error);
+    }
+}
+            ]]>
+          </code>
+      </script>
+    </target>
+
+<!--
+######################################################################
+#   A small test program that performs ECHD using the first found    #
+#   key or a key specified by the command line option "-D:key=nnn".  #
+#                                                                    #
+#   Depends on the BouncyCastle library for all...                   #
+######################################################################
+-->
+    <target name="ecdh" depends="build">
+      <script language="C#">
+          <references>
+              <include name="System.Data.dll"/>
+              <include name="System.dll"/>
+              <include name="System.Core.dll"/>
+              <include name="System.Runtime.Serialization.dll"/>
+              <include name="System.ServiceModel.dll"/>
+              <include name="System.Xml.dll"/>
+              <include name="../dist/${client.library.name}.dll" />
+              <include name="third-party-dlls/BouncyCastle.Crypto.dll" />
+          </references>
+          <imports>
+              <import namespace="${client.library.name}" />
+              <import namespace="System.Linq" />
+              <import namespace="System.Security.Cryptography" />
+              <import namespace="System.Security.Cryptography.X509Certificates" />"
+           </imports>
+          <code>
+            <![CDATA[
+public static void ScriptMain(Project project)
+{
+   try
+    {
+        SKSWSProxy ws = SKSWSProxy.getDefaultSKSWSProxy();
+        string device = project.Properties["device"];
+        byte[] pin = project.Properties["pin"] == null ? null : System.Text.Encoding.UTF8.GetBytes (project.Properties["pin"]);
+        bool looping = project.Properties["loop"] != null;
+        int round = 0;
+        if (device != null)
+        {
+            foreach (string device_id in ws.listDevices ())
+            {
+               System.Console.WriteLine ("Device: " + device_id);
+            }
+            ws.DeviceID = device;
+        }
+        EnumeratedKey ek = new EnumeratedKey();
+        while ((ek = ws.enumerateKeys(ek.KeyHandle)) != null)
+        {
+            KeyAttributes ka = ws.getKeyAttributes(ek.KeyHandle);
+            if (project.Properties["key"] == null)
+            {
+                if (ka.SymmetricKeyLength > 0 || ka.CertificatePath[0].PublicKey.IsRSA()) continue;
+            }
+            else
+            {
+                if (Int32.Parse(project.Properties["key"]) != ek.KeyHandle) continue;
+            }
+            do
+            {
+                System.Console.WriteLine("ECDH: " + (looping ? "Round[" + ++round + "] " : "") + "EC Key ID=#" + ek.KeyHandle + ", Subject: " + ka.CertificatePath[0].Subject);
+                // Generate key-pair            
+                Org.BouncyCastle.Crypto.Generators.ECKeyPairGenerator g = new Org.BouncyCastle.Crypto.Generators.ECKeyPairGenerator();
+                g.Init(new Org.BouncyCastle.Crypto.Parameters.ECKeyGenerationParameters(new Org.BouncyCastle.Asn1.DerObjectIdentifier("1.2.840.10045.3.1.7"), new Org.BouncyCastle.Security.SecureRandom()));
+                Org.BouncyCastle.Crypto.AsymmetricCipherKeyPair kp = g.GenerateKeyPair();
+                Org.BouncyCastle.Asn1.X509.SubjectPublicKeyInfo gensubinfo = Org.BouncyCastle.X509.SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(kp.Public);
+                PublicKey genpubkey = Conversions.DecodeX509PublicKey(gensubinfo.ToAsn1Object().GetEncoded());
+                // Do SKS side
+                byte[] sks_res = ws.keyAgreement(ek.KeyHandle,
+                                                 "http://xmlns.webpki.org/sks/algorithm#ecdh.raw",
+                                                 null,
+                                                 pin,
+                                                 genpubkey);
+                // Do caller side
+                Org.BouncyCastle.Asn1.X509.SubjectPublicKeyInfo skssubinfo = Org.BouncyCastle.Asn1.X509.SubjectPublicKeyInfo.GetInstance (Org.BouncyCastle.Asn1.Asn1Sequence.GetInstance(Org.BouncyCastle.Asn1.Asn1Object.FromByteArray (Conversions.EncodeX509PublicKey(ka.CertificatePath[0].PublicKey))));
+                Org.BouncyCastle.Crypto.Parameters.ECPublicKeyParameters skspubkey = (Org.BouncyCastle.Crypto.Parameters.ECPublicKeyParameters)Org.BouncyCastle.Security.PublicKeyFactory.CreateKey (skssubinfo);
+                Org.BouncyCastle.Crypto.Agreement.ECDHBasicAgreement agreement = new Org.BouncyCastle.Crypto.Agreement.ECDHBasicAgreement();
+                agreement.Init(kp.Private);
+                byte[] gen_res = agreement.CalculateAgreement(skspubkey).ToByteArrayUnsigned();
+                if (gen_res.Length % 2 != 0)
+                {
+                   gen_res = new byte[]{0}.Concat(gen_res).ToArray();
+                }
+                // Do we agree?
+                if (!sks_res.SequenceEqual(gen_res))
+                {
+                    System.Console.WriteLine(org.webpki.sks.ws.client.BouncyCastle.Utilities.Encoders.Hex.ToHexString (gen_res) + "\n" +
+                                             org.webpki.sks.ws.client.BouncyCastle.Utilities.Encoders.Hex.ToHexString (sks_res));
+                    throw new NAnt.Core.BuildException ("FAILED KEY AGREEMENT!!!");
+                }
+            }
+            while (looping);
+            return;
+        }
+        throw new NAnt.Core.BuildException ("NO SUITABLE KEY FOUND!!!");
+    }
+    catch (SKSException e)
+    {
+        throw new NAnt.Core.BuildException("ECDHing: " + e.Message + " code=" + e.Error);
+    }
+}
+            ]]>
+          </code>
+      </script>
+    </target>
+
+</project>

@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    WSCreator XML schema.  Used for creating java server and client code,
+    WSDL and .NET client code.
+
+    Version: BETA 
+    Revised: 15-January-2011 
+    Author: Anders Rundgren
+
+    Copyright 2006-2014 WebPKI.org (http://webpki.org).
+
+    Licensed under the Apache License, Version 2.0 (the "License"); 
+    you may not use this file except in compliance with the License. 
+    You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<xs:schema targetNamespace="http://xmlns.webpki.org/wscreator.1.00"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:wsc="http://xmlns.webpki.org/wscreator.1.00"
+           elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+    <xs:element name="WebService">
+        <xs:complexType>
+            <xs:sequence>
+
+                <xs:element name="LicenseHeader" type="xs:string" minOccurs="0"/>
+
+                <xs:element name="GlobalClientConstants" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element ref="wsc:Constant" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
+                <xs:element ref="wsc:JavaServer" minOccurs="0"/>
+
+                <xs:element ref="wsc:JavaClient" minOccurs="0"/>
+
+                <xs:element ref="wsc:DotNetClient" minOccurs="0"/>
+
+                <xs:element ref="wsc:CppClient" minOccurs="0"/>
+
+                <xs:element ref="wsc:Exception" minOccurs="0" maxOccurs="unbounded"/>
+
+                <xs:element ref="wsc:Enumeration" minOccurs="0" maxOccurs="unbounded"/>
+
+                <xs:element ref="wsc:ReturnClass" minOccurs="0" maxOccurs="unbounded"/>
+
+                <xs:element ref="wsc:Method" maxOccurs="unbounded"/>
+
+            </xs:sequence>
+
+            <!-- WS Target Namespace -->
+            <xs:attribute name="NameSpace" type="xs:anyURI" use="required"/>
+
+            <!-- WS Service Name -->
+            <xs:attribute name="Service" type="wsc:id" use="required"/>
+
+            <!-- WSDL Default URL -->
+            <xs:attribute name="DefaultURL" type="xs:anyURI" use="required"/>
+
+            <!-- WSDL Location -->
+            <xs:attribute name="WSDLLocation" type="xs:string" use="required"/>
+
+            <!-- Qualified name space -->
+            <xs:attribute name="Qualified" type="xs:boolean" use="optional" default="true"/>
+
+        </xs:complexType>
+
+    </xs:element>
+
+    <xs:element name="JavaServer">
+        <xs:complexType>
+            <xs:sequence>
+
+                <xs:element name="ClassHeader" type="xs:string" minOccurs="0"/>
+
+                <xs:element name="SupportCode" type="xs:string" minOccurs="0"/>
+
+            </xs:sequence>
+
+            <!-- Java Class Name -->
+            <xs:attribute name="ClassName" type="wsc:xmlid" use="required"/>
+
+            <!-- Imports -->
+            <xs:attribute name="Imports" type="wsc:importList" use="optional"/>
+
+            <!-- Main -->
+            <xs:attribute name="AddMain" type="xs:boolean" use="optional" default="true"/>
+
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="JavaClient">
+        <xs:complexType>
+            <xs:sequence>
+
+                <xs:element name="ClassHeader" type="xs:string" minOccurs="0"/>
+
+            </xs:sequence>
+
+            <!-- Java Class Name -->
+            <xs:attribute name="ClassName" type="wsc:xmlid" use="required"/>
+
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="DotNetClient">
+        <xs:complexType>
+            <xs:sequence>
+
+                <xs:element name="ClassHeader" type="xs:string" minOccurs="0"/>
+
+                <xs:element name="RewriteRule" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+
+                        <!-- Rewrite rule name -->
+                        <xs:attribute name="Name" type="wsc:xmlid" use="required"/>
+
+                        <!-- Full .NET type -->
+                        <xs:attribute name="ActualType" type="xs:string" use="required"/>
+
+                        <!-- Conversion method -->
+                        <xs:attribute name="Conversion" type="xs:string" use="required"/>
+
+                    </xs:complexType>
+                </xs:element>
+
+                <xs:element name="SuppressRule" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:simpleContent>
+                            <xs:extension base="xs:string">
+                                <xs:attribute name="Name" type="wsc:xmlid" use="required"/>
+                            </xs:extension>
+                        </xs:simpleContent>
+                    </xs:complexType>
+                </xs:element>
+
+                <xs:element name="EmbedRule" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="Before" type="xs:string" minOccurs="0"/>
+                            <xs:element name="After" type="xs:string" minOccurs="0"/>
+                        </xs:sequence>
+                        <xs:attribute name="Name" type="wsc:xmlid" use="required"/>
+                    </xs:complexType>
+                </xs:element>
+
+            </xs:sequence>
+
+            <!-- C# Class Name -->
+            <xs:attribute name="ClassName" type="wsc:xmlid" use="required"/>
+
+            <!-- Use path as directory like for Java -->
+            <xs:attribute name="PathAsDirectory" type="xs:boolean" use="required"/>
+
+            <!-- Make the class partial -->
+            <xs:attribute name="Partial" type="xs:boolean" use="optional"/>
+
+            <!-- Imports -->
+            <xs:attribute name="Imports" type="wsc:importList" use="optional"/>
+
+            <!-- Default URL in registry -->
+            <xs:attribute name="RegistryURL" type="xs:string" use="optional"/>
+
+            <!-- Default URL -->
+            <xs:attribute name="DefaultURL" type="xs:string" use="optional"/>
+
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="CppClient">
+        <xs:complexType>
+
+            <!-- C# Class Name -->
+            <xs:attribute name="ClassName" type="wsc:xmlid" use="required"/>
+
+            <!-- Default URL in registry -->
+            <xs:attribute name="RegistryURL" type="xs:string" use="optional"/>
+
+            <!-- Default URL -->
+            <xs:attribute name="DefaultURL" type="xs:string" use="optional"/>
+
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="Enumeration">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Entry" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:attribute name="Name" type="wsc:id" use="required"/>
+                        <xs:attribute name="Value" type="xs:string" use="required"/>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+
+            <!-- Exception Canonicalized Name -->
+            <xs:attribute name="ClassName" type="wsc:id" use="required"/>
+
+            <!-- Type -->
+            <xs:attribute name="Type" type="xs:string" use="required"/>
+
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="Exception">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Property" type="wsc:argument" maxOccurs="unbounded"/>
+                <xs:element ref="wsc:Constant" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+
+            <!-- Exception Canonicalized Name -->
+            <xs:attribute name="ClassName" type="wsc:id" use="required"/>
+
+            <!-- XML -->
+            <xs:attribute name="XMLName" type="wsc:id" use="optional"/>
+
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="ReturnClass">
+        <xs:complexType>
+
+            <xs:sequence>
+                <xs:element ref="wsc:Constant" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+
+            <!-- Full java path class name.  The .NET generator only uses the
+                 class part, while the JNI driver needs the entire path -->
+            <xs:attribute name="ClassName" type="wsc:id" use="required"/>
+
+            <!-- If the method has a "Returns" the entire return should
+                 be null if the return value equals to NullValue -->
+            <xs:attribute name="NullValue" type="xs:string" use="optional"/>
+
+            <!-- If the return class may be created outside of WS using
+                 an empty constructor.  Default: false -->
+            <xs:attribute name="NullConstructor" type="xs:boolean" use="optional"/>
+
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="Method">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Returns" type="wsc:argument" minOccurs="0"/>
+                <xs:element name="Parameter" type="wsc:parameter" minOccurs="0"
+                            maxOccurs="unbounded"/>
+                <xs:element name="Code" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+
+            <!-- Method Name -->
+            <xs:attribute name="Name" type="wsc:id" use="required"/>
+
+            <!-- XML -->
+            <xs:attribute name="XMLName" type="wsc:id" use="optional"/>
+
+            <!-- Exceptions -->
+            <xs:attribute name="Throws" type="wsc:exceptionList" use="optional"/>
+
+            <!-- Class name of ReturnClass -->
+            <xs:attribute name="ReturnClass" type="wsc:id" use="optional"/>
+
+            <!-- Possible embed rule  -->
+            <xs:attribute name="EmbedRule" type="wsc:id" use="optional"/>
+
+            <!-- If we don't want to publish -->
+            <xs:attribute name="Public" type="xs:boolean" default="true" use="optional"/>
+
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="Constant">
+        <xs:complexType>
+
+            <!-- Name -->
+            <xs:attribute name="Name" type="wsc:id" use="required"/>
+
+            <!-- Value -->
+            <xs:attribute name="Value" type="xs:string" use="required"/>
+
+            <!-- Type -->
+            <xs:attribute name="Type" type="xs:string" use="required"/>
+
+        </xs:complexType>
+    </xs:element>
+
+    <xs:simpleType name="exceptionList">
+        <xs:restriction>
+            <xs:simpleType>
+                <xs:list itemType="wsc:id"/>
+            </xs:simpleType>
+            <xs:minLength value="1"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="importList">
+        <xs:restriction>
+            <xs:simpleType>
+                <xs:list itemType="wsc:xmlid"/>
+            </xs:simpleType>
+            <xs:minLength value="1"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="id">
+        <xs:restriction base="xs:NCName">
+            <xs:pattern value="[0-9,a-z,A-Z,_]*"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="xmlid">
+        <xs:restriction base="xs:NCName">
+            <xs:pattern value="[0-9,a-z,A-Z,_,\.]*"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="argument">
+
+        <!-- XML -->
+        <xs:attribute name="XMLName" type="wsc:id" use="optional"/>
+
+        <!-- Comment -->
+        <xs:attribute name="Comment" type="xs:string" use="optional"/>
+
+        <!-- Null -->
+        <xs:attribute name="Null" type="xs:boolean" use="optional" default="false"/>
+
+        <!-- List -->
+        <xs:attribute name="List" type="xs:boolean" use="optional" default="false"/>
+
+        <!-- Rewrite rule name -->
+        <xs:attribute name="RewriteRule" type="wsc:xmlid" use="optional"/>
+
+        <!-- Suppress rule name -->
+        <xs:attribute name="SuppressRule" type="wsc:xmlid" use="optional"/>
+
+        <!-- Argument Name -->
+        <xs:attribute name="Name" type="wsc:id" use="required"/>
+
+        <!-- Data type -->
+        <xs:attribute name="Type" use="required">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="int"/>
+                    <xs:enumeration value="short"/>
+                    <xs:enumeration value="byte"/>
+                    <xs:enumeration value="bool"/>
+                    <xs:enumeration value="string"/>
+                    <xs:enumeration value="binary"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+
+    </xs:complexType>
+
+    <xs:complexType name="parameter">
+        <xs:complexContent>
+
+            <xs:extension base="wsc:argument">
+
+                <!-- Parameter Mode -->
+                <xs:attribute name="Mode" use="optional" default="in">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:enumeration value="in"/>
+                            <xs:enumeration value="out"/>
+                            <xs:enumeration value="inout"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:attribute>
+
+            </xs:extension>
+
+        </xs:complexContent>
+    </xs:complexType>
+
+</xs:schema>
