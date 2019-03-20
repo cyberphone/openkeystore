@@ -18,7 +18,7 @@ package org.webpki.util;
 
 import java.io.IOException;
 
-import java.security.SecureRandom;
+import org.webpki.crypto.CryptoRandom;
 
 /**
  * Encodes/decodes base64URL data.
@@ -159,8 +159,7 @@ public class Base64URL {
      * @return Encoded nonce
      */
     public static String generateURLFriendlyRandom(int length) {
-        byte[] random = new byte[length];
-        new SecureRandom().nextBytes(random);
+        byte[] random = CryptoRandom.generateRandom(length);
         StringBuilder buffer = new StringBuilder();
         for (int i = 0; i < length; i++) {
             buffer.append(BASE64URL[random[i] & 0x3F]);

@@ -25,6 +25,7 @@ import java.security.PublicKey;
 import java.util.LinkedHashSet;
 
 import org.webpki.crypto.AlgorithmPreferences;
+import org.webpki.crypto.CryptoRandom;
 
 /**
  * Support class for encryption generators.
@@ -66,7 +67,7 @@ public abstract class JSONEncrypter implements Serializable {
             encryptionWriter = new JSONObjectWriter();
             encryptionWriter.setString(JSONCryptoHelper.ALGORITHM_JSON, dataEncryptionAlgorithm.joseName);
             if (encrypter.keyEncryptionAlgorithm != null && encrypter.keyEncryptionAlgorithm.keyWrap) {
-                contentEncryptionKey = EncryptionCore.generateRandom(dataEncryptionAlgorithm.keyLength);
+                contentEncryptionKey = CryptoRandom.generateRandom(dataEncryptionAlgorithm.keyLength);
             }
         }
 

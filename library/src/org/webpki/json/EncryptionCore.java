@@ -40,6 +40,7 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.webpki.crypto.CryptoRandom;
 import org.webpki.crypto.KeyAlgorithms;
 
 import org.webpki.util.ArrayUtil;
@@ -212,16 +213,6 @@ class EncryptionCore {
         return cipher.doFinal(data);
     }
 
-    /**
-     * Generate byte[] with random data.
-     * @param length Number of bytes
-     * @return byte[]
-     */
-    public static byte[] generateRandom(int length) {
-        byte[] random = new byte[length];
-        new SecureRandom().nextBytes(random);
-        return random;
-    }
 
     private static void check(byte[] parameter,
                               String parameterName,
@@ -241,7 +232,7 @@ class EncryptionCore {
     }
  
     static byte[] createIv(DataEncryptionAlgorithms dataEncryptionAlgorithm) {
-        return generateRandom(dataEncryptionAlgorithm.ivLength);
+        return CryptoRandom.generateRandom(dataEncryptionAlgorithm.ivLength);
     }
 
     /**

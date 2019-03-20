@@ -58,6 +58,7 @@ import org.webpki.sks.PatternRestriction;
 import org.webpki.sks.SecureKeyStore;
 
 import org.webpki.util.ArrayUtil;
+import org.webpki.util.Base64URL;
 import org.webpki.util.ISODateTime;
 import org.webpki.util.MIMETypedObject;
 
@@ -1197,10 +1198,19 @@ public class ServerState implements Serializable {
 
 
     // Constructor
-    public ServerState(ServerCryptoInterface serverCryptoInterface, String issuerUri) {
+    public ServerState(ServerCryptoInterface serverCryptoInterface, 
+                       String issuerUri,
+                       String optionalServerSessionId) {
         this.serverCryptoInterface = serverCryptoInterface;
         this.issuerUri = issuerUri;
         serverTime = ISODateTime.formatDateTime(new GregorianCalendar(), ISODateTime.UTC_NO_SUBSECONDS);
+        if (optionalServerSessionId == null) {
+            optionalServerSessionId = Long.toHexString(new GregorianCalendar().getTimeInMillis());
+            optionalServerSessionId += 
+                    Base64URL.generateURLFriendlyRandom(
+                            SecureKeyStore.MAX_LENGTH_ID_TYPE - optionalServerSessionId.length());
+        }
+        serverSessionId = optionalServerSessionId;
     }
 
     ServerState addQuery(String typeUri, CAPABILITY what) throws IOException {

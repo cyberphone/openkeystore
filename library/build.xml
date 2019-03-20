@@ -440,10 +440,8 @@
         <include name="**/crypto/AsymSignatureAlgorithms.java"/>
         <include name="**/crypto/SymSignatureAlgorithms.java"/>
         <include name="**/crypto/SignatureWrapper.java"/>
-        <include name="**/crypto/DecryptionKeyHolder.java"/>
+        <include name="**/crypto/CryptoRandom.java"/>
         <include name="**/json/*.java"/>
-        <include name="**/json/encryption/*.java"/>
-        <include name="**/json/v8dtoa/*.java"/>
       </fileset>
     </copy>
 
@@ -452,7 +450,12 @@
         replace=""
         flags="gs"/>
 
-    	<javac debug="${debug}" srcdir="${temp_dir}" destdir="${bin_dir}" includeAntRuntime="false"/>
+    <replaceregexp file="${temp_dir}/org/webpki/json/NumberToJSON.java"
+        match="ValueExact"
+        replace="Value"
+        flags="g"/>
+
+  	<javac debug="${debug}" srcdir="${temp_dir}" destdir="${bin_dir}" includeAntRuntime="false"/>
     
     <!-- Create Android JSON java library -->
     <zip destfile="${dist_dir}/${android-json}.zip">
@@ -479,6 +482,7 @@
         <exclude name="**/wasp/**"/>
         <exclude name="**/xml/**"/>
         <exclude name="**/crypto/**"/>
+        <exclude name="**/jose/**"/>
         <exclude name="**/util/**"/>
         <exclude name="**/xmldsig/**"/>
         <exclude name="**/xmlenc/**"/>
@@ -528,7 +532,7 @@
         <include name="**/crypto/AsymSignatureAlgorithms.java"/>
         <include name="**/crypto/SymSignatureAlgorithms.java"/>
         <include name="**/crypto/SignatureWrapper.java"/>
-        <include name="**/crypto/DecryptionKeyHolder.java"/>
+        <include name="**/crypto/CryptoRandom.java"/>
       </fileset>
       </copy>
 
@@ -566,7 +570,12 @@
         </fileset>
     </replaceregexp>
 
-    <javac debug="${debug}" srcdir="${temp_dir}" destdir="${bin_dir}" includeAntRuntime="false"/>
+    <replaceregexp file="${temp_dir}/org/webpki/json/NumberToJSON.java"
+        match="ValueExact"
+        replace="Value"
+        flags="g"/>
+   	
+  	<javac debug="${debug}" srcdir="${temp_dir}" destdir="${bin_dir}" includeAntRuntime="false"/>
     
     <!-- Create Android java library -->
     <zip destfile="${dist_dir}/${webpki-android}.zip">
@@ -578,7 +587,7 @@
     <delete dir="${bin_dir}"/>
   </target>
 	
-	<target name="_tomcat-server-bck" unless="tomcat.server.bck">
+  <target name="_tomcat-server-bck" unless="tomcat.server.bck">
   	<echo message="IMPORTANT: ${env.CATALINA_HOME}/conf/server.xml copied to server.xml.bck !!!"/>
     <copy tofile="${env.CATALINA_HOME}/conf/server.xml.bck" preservelastmodified="true" overwrite="true" file="${env.CATALINA_HOME}/conf/server.xml"/>
   </target>
@@ -779,7 +788,6 @@ applicable if pin has been set:&#10;
   		<classpath>
   		    <fileset dir="${dist_dir}">
     			   <include name="${webpki-libext}"/>
-    			   <include name="${webpki-sksws}"/>
   			 </fileset>
   			 <fileset dir="${ext.jar}">
   		        <include name="*.jar"/>
