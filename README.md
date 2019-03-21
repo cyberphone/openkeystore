@@ -43,7 +43,7 @@ $ cd library
 $ ant android-json
 ```
 Now you should have a file <code>library/dist/webpki.android.json.zip</code> which can be imported in an Android project.
-It has only been verified to work with Android API 25 and upwards.
+It has only been verified to work with Android API 24 (V7) and upwards.
 
 An Android demo/test project is available at:<br>
 https://github.com/cyberphone/android-json
