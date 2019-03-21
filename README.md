@@ -36,15 +36,14 @@ There also is an Android proof-of-concept implementation which allows you to tes
 and then using provisioned keys for authentication:<br>
 https://play.google.com/store/apps/details?id=org.webpki.mobile.android
 
-## Android JSON, JCS, and JEF support
+## Android JSON, JSF, and JEF support
 To create a source distribution for Android perform:
 ```
 $ cd library
 $ ant android-json
 ```
 Now you should have a file <code>library/dist/webpki.android.json.zip</code> which can be imported in an Android project.
-For use with a larger base of Android devices the Spongycastle library is recommended:<br>
-https://rtyley.github.io/spongycastle/
+It has only been verified to work with Android API 25 and upwards.
 
 An Android demo/test project is available at:<br>
 https://github.com/cyberphone/android-json
