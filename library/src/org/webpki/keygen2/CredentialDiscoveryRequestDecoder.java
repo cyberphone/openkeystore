@@ -132,8 +132,6 @@ public class CredentialDiscoveryRequestDecoder extends ClientDecoder {
 
     String serverSessionId;
 
-    String submitUrl;
-
     byte[] nonce_reference;
 
     public String getServerSessionId() {
@@ -144,12 +142,6 @@ public class CredentialDiscoveryRequestDecoder extends ClientDecoder {
     public String getClientSessionId() {
         return clientSessionId;
     }
-
-
-    public String getSubmitUrl() {
-        return submitUrl;
-    }
-
 
     public LookupSpecifier[] getLookupSpecifiers() {
         return lookupSpecifiers.values().toArray(new LookupSpecifier[0]);

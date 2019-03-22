@@ -393,8 +393,6 @@ public class ProvisioningFinalizationRequestDecoder extends ClientDecoder {
 
     private String serverSessionId;
 
-    private String submitUrl;
-
     private byte[] closeSessionMac;
 
     private byte[] closeSessionNonce;
@@ -407,11 +405,6 @@ public class ProvisioningFinalizationRequestDecoder extends ClientDecoder {
 
     public String getClientSessionId() {
         return clientSessionId;
-    }
-
-
-    public String getSubmitUrl() {
-        return submitUrl;
     }
 
 

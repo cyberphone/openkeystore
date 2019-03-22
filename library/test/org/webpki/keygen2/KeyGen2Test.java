@@ -22,7 +22,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
+
 import java.math.BigInteger;
+
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -30,12 +32,17 @@ import java.security.KeyStoreException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
+
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
+
 import java.security.cert.X509Certificate;
+
 import java.security.interfaces.ECPublicKey;
+
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.RSAKeyGenParameterSpec;
+
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
@@ -53,8 +60,10 @@ import org.junit.rules.TestName;
 import static org.junit.Assert.*;
 
 import org.webpki.asn1.cert.DistinguishedName;
+
 import org.webpki.ca.CA;
 import org.webpki.ca.CertSpec;
+
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymKeySignerInterface;
 import org.webpki.crypto.CertificateUtil;
@@ -69,6 +78,7 @@ import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.SymEncryptionAlgorithms;
 import org.webpki.crypto.SymKeySignerInterface;
 import org.webpki.crypto.SignatureWrapper;
+
 import org.webpki.keygen2.Action;
 import org.webpki.keygen2.KeyGen2Constants;
 import org.webpki.keygen2.KeyGen2Messages;
@@ -95,6 +105,7 @@ import org.webpki.keygen2.ProvisioningInitializationRequestEncoder;
 import org.webpki.keygen2.ProvisioningInitializationResponseDecoder;
 import org.webpki.keygen2.ProvisioningInitializationResponseEncoder;
 import org.webpki.keygen2.ServerState;
+
 import org.webpki.sks.AppUsage;
 import org.webpki.sks.DeleteProtection;
 import org.webpki.sks.DeviceInfo;
@@ -112,10 +123,13 @@ import org.webpki.sks.Property;
 import org.webpki.sks.ProvisioningSession;
 import org.webpki.sks.SKSException;
 import org.webpki.sks.SecureKeyStore;
+
 import org.webpki.sks.ws.WSSpecific;
+
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.HTMLHeader;
 import org.webpki.util.ImageData;
+
 import org.webpki.json.JSONDecoder;
 import org.webpki.json.JSONDecoderCache;
 import org.webpki.json.JSONOutputFormats;
@@ -836,7 +850,7 @@ public class KeyGen2Test {
             ////////////////////////////////////////////////////////////////////////////////////
             // First keygen2 request
             ////////////////////////////////////////////////////////////////////////////////////
-            InvocationRequestEncoder invocation_request = new InvocationRequestEncoder(serverState, null);
+            InvocationRequestEncoder invocation_request = new InvocationRequestEncoder(serverState);
             if (ask_for_4096) {
                 serverState.addFeatureQuery(KeyAlgorithms.RSA4096.getAlgorithmId(AlgorithmPreferences.SKS))
                         .addFeatureQuery(KeyAlgorithms.RSA2048.getAlgorithmId(AlgorithmPreferences.SKS));

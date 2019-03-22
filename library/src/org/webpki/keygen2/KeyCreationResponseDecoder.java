@@ -17,10 +17,13 @@
 package org.webpki.keygen2;
 
 import java.io.IOException;
+
 import java.util.LinkedHashMap;
+
 import java.security.PublicKey;
 
 import org.webpki.crypto.AlgorithmPreferences;
+
 import org.webpki.json.JSONObjectReader;
 
 import static org.webpki.keygen2.KeyGen2Constants.*;

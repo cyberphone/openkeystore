@@ -51,6 +51,7 @@ import java.security.PrivateKey;
 import java.security.Provider;
 import java.security.Security;
 
+import java.security.cert.Certificate;
 import java.security.cert.CertPath;
 import java.security.cert.CertPathValidator;
 import java.security.cert.CertificateFactory;
@@ -509,7 +510,12 @@ public class HTTPSWrapper {
         conn.connect();
 
         if (https_flag) {
-            server_certificates = (X509Certificate[]) (((HttpsURLConnection) conn).getServerCertificates());
+            Certificate[] certs = (((HttpsURLConnection) conn).getServerCertificates());
+            server_certificates = new X509Certificate[certs.length];
+            int i = 0;
+            for (Certificate cert : certs) {
+                server_certificates[i++] = (X509Certificate)cert;
+            }
         }
     }
 

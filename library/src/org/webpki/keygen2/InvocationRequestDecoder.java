@@ -69,13 +69,6 @@ public class InvocationRequestDecoder extends ClientDecoder {
     }
 
 
-    String cancelUrl;
-
-    public String getOptionalCancelUrl() {
-        return cancelUrl;
-    }
-
-
     LinkedHashSet<KeyContainerTypes> keyContainerList;  // Optional
     
     public LinkedHashSet<KeyContainerTypes> getOptionalKeyContainerList() {
@@ -97,8 +90,6 @@ public class InvocationRequestDecoder extends ClientDecoder {
         privacyEnabled = rd.getBooleanConditional(PRIVACY_ENABLED_JSON);
 
         serverSessionId = getID(rd, SERVER_SESSION_ID_JSON);
-
-        cancelUrl = rd.getStringConditional(CANCEL_URL_JSON);
 
         String[] capabilityUris = KeyGen2Validator.getURIListConditional(rd, CLIENT_CAPABILITY_QUERY_JSON);
         if (capabilityUris != null) {

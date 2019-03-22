@@ -24,6 +24,7 @@ import java.util.GregorianCalendar;
 
 import org.webpki.json.JSONEncoder;
 import org.webpki.json.JSONObjectWriter;
+
 import org.webpki.util.ISODateTime;
 
 abstract class ServerEncoder extends JSONEncoder {

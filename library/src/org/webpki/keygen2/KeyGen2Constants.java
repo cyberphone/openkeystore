@@ -34,8 +34,6 @@ public interface KeyGen2Constants {
 
     String BIOMETRIC_PROTECTION_JSON                 = SecureKeyStore.VAR_BIOMETRIC_PROTECTION;
 
-    String CANCEL_URL_JSON                           = "cancelUrl";
-
     String CLIENT_CAPABILITIES_JSON                  = "clientCapabilities";
 
     String CLIENT_CAPABILITY_QUERY_JSON              = "clientCapabilityQuery";
