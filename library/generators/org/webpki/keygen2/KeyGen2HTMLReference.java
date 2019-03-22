@@ -1188,14 +1188,14 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
               .addString("<code>" + CLIENT_SESSION_ID_JSON + "</code> of matching credential.")
           .newRow()
             .newColumn()
-              .addProperty(JSONCryptoHelper.CERTIFICATE_PATH)
+              .addProperty(JSONCryptoHelper.CERTIFICATE_PATH_JSON)
               .addArrayList(CERTIFICATE_PATH, 1)
             .newColumn()
               .setType(WEBPKI_DATA_TYPES.BYTE_ARRAY2)
             .newColumn()
             .newColumn()
               .addString("Certificate path having identical representation to <code>&quot;" +
-                          JSONCryptoHelper.CERTIFICATE_PATH +
+                          JSONCryptoHelper.CERTIFICATE_PATH_JSON +
                           "&quot;</code> in JCS ")
               .addString(json.createReference(JSONBaseHTML.REF_JCS))
               .addString(".")
@@ -1559,14 +1559,14 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
               .addString(" for a specific key.")
           .newRow()
             .newColumn()
-              .addProperty(JSONCryptoHelper.CERTIFICATE_PATH)
+              .addProperty(JSONCryptoHelper.CERTIFICATE_PATH_JSON)
               .addArrayList(CERTIFICATE_PATH, 1)
             .newColumn()
               .setType(WEBPKI_DATA_TYPES.BYTE_ARRAY)
             .newColumn()
             .newColumn()
               .addString("Certificate path having identical representation to <code>&quot;" +
-                          JSONCryptoHelper.CERTIFICATE_PATH +
+                          JSONCryptoHelper.CERTIFICATE_PATH_JSON +
                           "&quot;</code> in JCS ")
               .addString(json.createReference(JSONBaseHTML.REF_JCS))
               .addString("." + LINE_SEPARATOR +
@@ -1583,7 +1583,7 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
             .newColumn()
               .addString("<i>Optional:</i> Flag (with the default value <code>false</code>), " +
                           "which tells if <code>" +
-                          JSONCryptoHelper.CERTIFICATE_PATH +
+                          JSONCryptoHelper.CERTIFICATE_PATH_JSON +
                           "</code> contains a user-installable trust anchor as well." + LINE_SEPARATOR +
                           "Trust anchor installation is meant to be <i>independent</i> of SKS provisioning.")
           .newExtensionRow(new LinkedObject(IMPORT_SYMMETRIC_KEY_JSON,
@@ -1853,14 +1853,14 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
         json.addSubItemTable(DEVICE_ID_JSON)
           .newRow()
             .newColumn()
-              .addProperty(JSONCryptoHelper.CERTIFICATE_PATH)
+              .addProperty(JSONCryptoHelper.CERTIFICATE_PATH_JSON)
               .addArrayList(CERTIFICATE_PATH, 1)
             .newColumn()
               .setType(WEBPKI_DATA_TYPES.BYTE_ARRAY)
             .newColumn()
             .newColumn()
               .addString("Device certificate path having identical representation to <code>&quot;" +
-                          JSONCryptoHelper.CERTIFICATE_PATH +
+                          JSONCryptoHelper.CERTIFICATE_PATH_JSON +
                           "&quot;</code> in JCS ")
               .addString(json.createReference(JSONBaseHTML.REF_JCS))
               .addString(".");

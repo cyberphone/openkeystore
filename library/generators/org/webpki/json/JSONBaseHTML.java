@@ -1433,7 +1433,7 @@ public class JSONBaseHTML  {
               .addString("<i>Optional.</i> Public key object.")
           .newRow()
         .newColumn()
-          .addProperty(JSONCryptoHelper.CERTIFICATE_PATH)
+          .addProperty(JSONCryptoHelper.CERTIFICATE_PATH_JSON)
           .addArrayList(Types.CERTIFICATE_PATH, 1)
         .newColumn()
           .setType(Types.WEBPKI_DATA_TYPES.BYTE_ARRAY2)
@@ -1505,7 +1505,7 @@ public class JSONBaseHTML  {
                       createReference(REF_JWA) + " specifications.")
               .setNotes ("Note that asymmetric key signatures are <i>not required</i> providing an associated " +
                   enumerateAttributes(new String[]{JSONCryptoHelper.PUBLIC_KEY_JSON,
-                                                   JSONCryptoHelper.CERTIFICATE_PATH}, false) + 
+                                                   JSONCryptoHelper.CERTIFICATE_PATH_JSON}, false) + 
                    " property since the key may be given by the context or through the <code>&quot;" + 
                    JSONCryptoHelper.KEY_ID_JSON + "&quot;</code> property.");
 

@@ -43,7 +43,7 @@ public class JSONCryptoHelper implements Serializable {
 
     public static final String ALGORITHM_JSON          = "algorithm";
 
-    public static final String CERTIFICATE_PATH        = "certificatePath";// X.509 Certificate path
+    public static final String CERTIFICATE_PATH_JSON   = "certificatePath";// X.509 Certificate path
 
     public static final String CIPHER_TEXT_JSON        = "cipherText";     // JEF specific
 
@@ -96,7 +96,7 @@ public class JSONCryptoHelper implements Serializable {
         jefReservedWords.add(EXTENSIONS_JSON);
         jefReservedWords.add(KEY_ID_JSON);
         jefReservedWords.add(PUBLIC_KEY_JSON);
-        jefReservedWords.add(CERTIFICATE_PATH);
+        jefReservedWords.add(CERTIFICATE_PATH_JSON);
     }
 
     static final LinkedHashSet<String> jcsReservedWords = new LinkedHashSet<String>();
@@ -107,7 +107,7 @@ public class JSONCryptoHelper implements Serializable {
         jcsReservedWords.add(EXCLUDE_JSON);
         jcsReservedWords.add(KEY_ID_JSON);
         jcsReservedWords.add(PUBLIC_KEY_JSON);
-        jcsReservedWords.add(CERTIFICATE_PATH);
+        jcsReservedWords.add(CERTIFICATE_PATH_JSON);
         jcsReservedWords.add(VALUE_JSON);
     }
 

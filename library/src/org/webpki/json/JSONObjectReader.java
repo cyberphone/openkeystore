@@ -696,7 +696,7 @@ public class JSONObjectReader implements Serializable, Cloneable {
      * @see org.webpki.json.JSONObjectWriter#setCertificatePath(X509Certificate[])
      */
     public X509Certificate[] getCertificatePath() throws IOException {
-        return getArray(JSONCryptoHelper.CERTIFICATE_PATH).getCertificatePath();
+        return getArray(JSONCryptoHelper.CERTIFICATE_PATH_JSON).getCertificatePath();
     }
 
     /**

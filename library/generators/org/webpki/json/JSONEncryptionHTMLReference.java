@@ -178,7 +178,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
             options.keyIdOption == JSONCryptoHelper.KEY_ID_OPTIONS.FORBIDDEN) {
             options.setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.OPTIONAL);
         }
-        if (!recipient.hasProperty(JSONCryptoHelper.CERTIFICATE_PATH) &&
+        if (!recipient.hasProperty(JSONCryptoHelper.CERTIFICATE_PATH_JSON) &&
                    !recipient.hasProperty(JSONCryptoHelper.PUBLIC_KEY_JSON)) {
             options.setRequirePublicKeyInfo(false);
         }
@@ -709,7 +709,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
                     JSONBaseHTML.referToTestVector(JWK_TEST_VECTOR))
           .newRow()
         .newColumn()
-          .addProperty(JSONCryptoHelper.CERTIFICATE_PATH)
+          .addProperty(JSONCryptoHelper.CERTIFICATE_PATH_JSON)
           .addArrayList(Types.CERTIFICATE_PATH, 1)
         .newColumn()
           .setType(Types.WEBPKI_DATA_TYPES.BYTE_ARRAY2)

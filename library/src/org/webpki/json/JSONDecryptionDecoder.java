@@ -170,7 +170,7 @@ public class JSONDecryptionDecoder {
                 throw new IOException("Missing \"" + JSONCryptoHelper.ALGORITHM_JSON  + "\"");
             }
             if (holder.options.requirePublicKeyInfo) {
-                if (encryptionObject.hasProperty(JSONCryptoHelper.CERTIFICATE_PATH)) {
+                if (encryptionObject.hasProperty(JSONCryptoHelper.CERTIFICATE_PATH_JSON)) {
                     certificatePath = encryptionObject.getCertificatePath();
                 } else if (encryptionObject.hasProperty(JSONCryptoHelper.PUBLIC_KEY_JSON)) {
                     publicKey = encryptionObject.getPublicKey(holder.options.algorithmPreferences);

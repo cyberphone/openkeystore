@@ -174,7 +174,7 @@ public class JSONSignatureDecoder implements Serializable {
     void getPublicKeyInfo(JSONObjectReader rd) throws IOException {
         algorithm = AsymSignatureAlgorithms.getAlgorithmFromId(algorithmString, 
                                                                options.algorithmPreferences);
-        if (rd.hasProperty(JSONCryptoHelper.CERTIFICATE_PATH)) {
+        if (rd.hasProperty(JSONCryptoHelper.CERTIFICATE_PATH_JSON)) {
             certificatePath = rd.getCertificatePath();
         } else if (rd.hasProperty(JSONCryptoHelper.PUBLIC_KEY_JSON)) {
             publicKey = rd.getPublicKey(options.algorithmPreferences);
