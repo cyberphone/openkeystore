@@ -48,10 +48,6 @@ public class AuthenticationRequestDecoder extends ClientDecoder {
 
     Vector<CertificateFilter> certificateFilters = new Vector<CertificateFilter>();
 
-    String submitUrl;
-
-    String abortUrl;
-
     String[] languages;
 
     LinkedHashSet<KeyContainerTypes> keyContainerList;
@@ -82,16 +78,6 @@ public class AuthenticationRequestDecoder extends ClientDecoder {
 
     public GregorianCalendar getServerTime() {
         return serverTime;
-    }
-
-
-    public String getSubmitUrl() {
-        return submitUrl;
-    }
-
-
-    public String getOptionalAbortURL() {
-        return abortUrl;
     }
 
 
@@ -126,10 +112,6 @@ public class AuthenticationRequestDecoder extends ClientDecoder {
         id = InputValidator.getID(rd, ID_JSON);
 
         serverTime = rd.getDateTime(SERVER_TIME_JSON, ISODateTime.UTC_NO_SUBSECONDS);
-
-        submitUrl = rd.getString(SUBMIT_URL_JSON);
-
-        abortUrl = rd.getStringConditional(ABORT_URL_JSON);
 
         languages = InputValidator.getListConditional(rd, PREFERRED_LANGUAGES_JSON);
 

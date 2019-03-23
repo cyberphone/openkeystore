@@ -19,7 +19,7 @@ package org.webpki.webauth;
 
 public interface WebAuthConstants {
 
-    String WEBAUTH_NS                      = "http://xmlns.webpki.org/webauth/beta/20151101";
+    String WEBAUTH_NS                      = "http://xmlns.webpki.org/webauth/beta/20190322";
     
     String AUTHENTICATION_REQUEST_MSG      = "AuthenticationRequest";
 
@@ -29,8 +29,6 @@ public interface WebAuthConstants {
 
 
     // JSON properties
-
-    String ABORT_URL_JSON                  = "abortUrl";
 
     String CERTIFICATE_FILTERS_JSON        = "certificateFilters";
 
@@ -48,16 +46,12 @@ public interface WebAuthConstants {
 
     String REQUESTED_CLIENT_FEATURES_JSON  = "requestedClientFeatures";
 
-    String REQUEST_URL_JSON                = "requestUrl";
-
     String SERVER_CERT_FP_JSON             = "serverCertificateFingerPrint";
 
     String SERVER_TIME_JSON                = "serverTime";
 
     String SIGNATURE_ALGORITHMS_JSON       = "signatureAlgorithms";
     
-    String SUBMIT_URL_JSON                 = "submitUrl";
-
     String TYPE_JSON                       = "type";
 
     String VALUES_JSON                     = "values";

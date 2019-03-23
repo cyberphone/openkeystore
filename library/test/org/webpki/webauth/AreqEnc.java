@@ -121,7 +121,7 @@ public class AreqEnc {
         }
 
 
-        AuthenticationRequestEncoder areqenc = new AuthenticationRequestEncoder("https://example.com/home", null);
+        AuthenticationRequestEncoder areqenc = new AuthenticationRequestEncoder();
 
         if (certpath) {
             areqenc.setExtendedCertPath(true);

@@ -18,18 +18,22 @@ package org.webpki.webauth;
 
 import java.io.IOException;
 import java.io.FileInputStream;
-import java.net.URL;
+
 import java.util.GregorianCalendar;
+
 import java.security.KeyStore;
 
 import org.webpki.util.ArrayUtil;
+
 import org.webpki.webauth.AuthenticationRequestDecoder;
 import org.webpki.webauth.AuthenticationResponseDecoder;
 import org.webpki.webauth.AuthenticationResponseEncoder;
+
 import org.webpki.crypto.CertificateInfo;
 import org.webpki.crypto.DemoKeyStore;
 import org.webpki.crypto.KeyStoreSigner;
 import org.webpki.crypto.SignerInterface;
+
 import org.webpki.json.JSONDecoderCache;
 import org.webpki.json.JSONOutputFormats;
 import org.webpki.json.JSONX509Signer;
@@ -51,7 +55,6 @@ public class AresEnc {
 
         AuthenticationResponseEncoder authenc = new AuthenticationResponseEncoder(new JSONX509Signer(signer),
                 authdec,
-                (new URL(new URL(authdec.getSubmitUrl()), "authreq")).toString(),
                 localfixed ?
                         new GregorianCalendar(2006, 0, 1, 10, 0, 0)
                         :

@@ -51,20 +51,16 @@ public class AuthenticationResponseEncoder extends JSONEncoder {
 
     String id;
 
-    String requestUrl;
-
     JSONX509Signer signer;
 
 
     public AuthenticationResponseEncoder(JSONX509Signer signer,
                                          AuthenticationRequestDecoder auth_req_decoder,
-                                         String requestUrl,
                                          GregorianCalendar clientTime,
                                          X509Certificate server_certificate) throws IOException {
         this.signer = signer;
         this.id = auth_req_decoder.getID();
         this.serverTime = auth_req_decoder.getServerTime();
-        this.requestUrl = requestUrl;
         this.clientTime = clientTime;
         if (server_certificate != null) {
             try {
@@ -91,8 +87,6 @@ public class AuthenticationResponseEncoder extends JSONEncoder {
         wr.setDateTime(SERVER_TIME_JSON, serverTime, ISODateTime.UTC_NO_SUBSECONDS);
 
         wr.setDateTime(CLIENT_TIME_JSON, clientTime, ISODateTime.LOCAL_NO_SUBSECONDS);
-
-        wr.setString(REQUEST_URL_JSON, requestUrl);
 
         if (serverCertificateFingerprint != null) {
             wr.setBinary(SERVER_CERT_FP_JSON, serverCertificateFingerprint);

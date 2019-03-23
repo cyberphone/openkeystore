@@ -49,8 +49,6 @@ public class AuthenticationResponseDecoder extends InputValidator {
 
     byte[] serverCertificateFingerprint;
 
-    String requestUrl;
-
     String id;
 
     X509Certificate[] certificatePath;
@@ -58,11 +56,6 @@ public class AuthenticationResponseDecoder extends InputValidator {
     AsymSignatureAlgorithms signatureAlgorithm;
 
     LinkedHashMap<String, LinkedHashSet<String>> clientPlatformFeatures = new LinkedHashMap<String, LinkedHashSet<String>>();
-
-
-    public String getRequestURL() {
-        return requestUrl;
-    }
 
 
     public GregorianCalendar getClientTime() {
@@ -98,8 +91,6 @@ public class AuthenticationResponseDecoder extends InputValidator {
         serverTime = rd.getString(SERVER_TIME_JSON);
 
         clientTime = rd.getDateTime(CLIENT_TIME_JSON, ISODateTime.LOCAL_NO_SUBSECONDS);
-
-        requestUrl = rd.getString(REQUEST_URL_JSON);
 
         serverCertificateFingerprint = rd.getBinaryConditional(SERVER_CERT_FP_JSON);
 

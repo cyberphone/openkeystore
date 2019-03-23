@@ -42,10 +42,6 @@ public class AuthenticationRequestEncoder extends ServerEncoder {
 
     String id;
 
-    String submitUrl;
-
-    String abortUrl;                                                          // Optional
-
     String[] languageList;                                                    // Optional
 
     String[] keyContainerList;                                                // Optional
@@ -65,9 +61,7 @@ public class AuthenticationRequestEncoder extends ServerEncoder {
 
     String serverTime;
 
-    public AuthenticationRequestEncoder(String submitUrl, String optionalAbortUrl) {
-        this.submitUrl = submitUrl;
-        this.abortUrl = optionalAbortUrl;
+    public AuthenticationRequestEncoder() {
         this.serverTime = 
                 ISODateTime.formatDateTime(new GregorianCalendar(), ISODateTime.UTC_NO_SUBSECONDS);
     }
@@ -159,12 +153,6 @@ public class AuthenticationRequestEncoder extends ServerEncoder {
         wr.setString(ID_JSON, id);
 
         wr.setString(SERVER_TIME_JSON, serverTime);
-
-        wr.setString(SUBMIT_URL_JSON, submitUrl);
-
-        if (abortUrl != null) {
-            wr.setString(ABORT_URL_JSON, abortUrl);
-        }
 
         if (languageList != null) {
             wr.setStringArray(PREFERRED_LANGUAGES_JSON, languageList);
