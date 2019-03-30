@@ -1096,6 +1096,8 @@ public class ServerState implements Serializable {
     String serverTime;
 
     byte[] savedCloseNonce;
+    
+    byte[] serverCertificateFingerprint;
 
     X509Certificate[] deviceCertificatePath;
 
@@ -1200,7 +1202,8 @@ public class ServerState implements Serializable {
     // Constructor
     public ServerState(ServerCryptoInterface serverCryptoInterface, 
                        String issuerUri,
-                       String optionalServerSessionId) {
+                       byte[] serverCertificateFingerprint,
+                       String optionalServerSessionId) throws IOException {
         this.serverCryptoInterface = serverCryptoInterface;
         this.issuerUri = issuerUri;
         serverTime = ISODateTime.formatDateTime(new GregorianCalendar(), ISODateTime.UTC_NO_SUBSECONDS);
@@ -1211,6 +1214,7 @@ public class ServerState implements Serializable {
                             SecureKeyStore.MAX_LENGTH_ID_TYPE - optionalServerSessionId.length());
         }
         serverSessionId = optionalServerSessionId;
+        this.serverCertificateFingerprint = serverCertificateFingerprint;
     }
 
     ServerState addQuery(String typeUri, CAPABILITY what) throws IOException {
@@ -1265,8 +1269,7 @@ public class ServerState implements Serializable {
     }
 
 
-    public void update(ProvisioningInitializationResponseDecoder provisioningInitializationResponse, 
-                       X509Certificate serverCertificate) throws IOException {
+    public void update(ProvisioningInitializationResponseDecoder provisioningInitializationResponse) throws IOException {
         try {
             checkState(false, ProtocolPhase.PROVISIONING_INITIALIZATION);
             clientSessionId = provisioningInitializationResponse.clientSessionId;
@@ -1301,9 +1304,8 @@ public class ServerState implements Serializable {
                                                               attestationArguments.getResult(),
                                                               getDeviceCertificate(),
                                                               provisioningInitializationResponse.attestation);
-            if (((serverCertificate == null ^ provisioningInitializationResponse.serverCertificateFingerprint == null)) ||
-                (serverCertificate != null && !ArrayUtil.compare(provisioningInitializationResponse.serverCertificateFingerprint,
-                    HashAlgorithms.SHA256.digest(serverCertificate.getEncoded())))) {
+            if (!ArrayUtil.compare(provisioningInitializationResponse.serverCertificateFingerprint,
+                    serverCertificateFingerprint)) {
                 bad("Attribute '" + SERVER_CERT_FP_JSON + "' is missing or is invalid");
             }
             provisioningInitializationResponse.signature.verify(new JSONSymKeyVerifier(new SymKeyVerifierInterface() {

@@ -52,7 +52,7 @@ public class ProvisioningInitializationResponseDecoder extends KeyGen2Validator 
 
     X509Certificate[] deviceCertificatePath;  // Is null for the privacy_enabled mode
 
-    byte[] serverCertificateFingerprint;  // Optional
+    byte[] serverCertificateFingerprint;
 
     JSONSignatureDecoder signature;
 
@@ -75,7 +75,7 @@ public class ProvisioningInitializationResponseDecoder extends KeyGen2Validator 
 
         clientTime = rd.getDateTime(CLIENT_TIME_JSON, ISODateTime.LOCAL_NO_SUBSECONDS);
 
-        serverCertificateFingerprint = rd.getBinaryConditional(SERVER_CERT_FP_JSON);
+        serverCertificateFingerprint = rd.getBinary(SERVER_CERT_FP_JSON);
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Get the ephemeral client key

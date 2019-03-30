@@ -20,8 +20,7 @@ import java.io.IOException;
 
 import java.util.GregorianCalendar;
 
-import java.security.GeneralSecurityException;
-
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 
 import java.security.interfaces.ECPublicKey;
@@ -56,7 +55,7 @@ public class ProvisioningInitializationResponseEncoder extends JSONEncoder {
 
     X509Certificate[] deviceCertificatePath;  // Is null for the privacy_enabled mode
 
-    byte[] serverCertificateFingerprint;  // Optional
+    byte[] serverCertificateFingerprint;
 
     JSONSymKeySigner sessionSignature;
 
@@ -68,7 +67,9 @@ public class ProvisioningInitializationResponseEncoder extends JSONEncoder {
                                                      String clientSessionId,
                                                      GregorianCalendar clientTime,
                                                      byte[] attestation,
-                                                     X509Certificate[] deviceCertificatePath) throws IOException {
+                                                     X509Certificate serverCertificate,
+                                                     X509Certificate[] deviceCertificatePath) 
+    throws IOException, CertificateEncodingException {
         this.serverSessionId = prov_init_req.serverSessionId;
         this.serverTimeVerbatim = prov_init_req.serverTimeVerbatim;
         this.clientEphemeralKey = clientEphemeralKey;
@@ -76,17 +77,8 @@ public class ProvisioningInitializationResponseEncoder extends JSONEncoder {
         this.clientTime = clientTime;
         this.attestation = attestation;
         this.deviceCertificatePath = deviceCertificatePath;
+        serverCertificateFingerprint = HashAlgorithms.SHA256.digest(serverCertificate.getEncoded());
     }
-
-
-    public void setServerCertificate(X509Certificate serverCertificate) throws IOException {
-        try {
-            serverCertificateFingerprint = HashAlgorithms.SHA256.digest(serverCertificate.getEncoded());
-        } catch (GeneralSecurityException gse) {
-            throw new IOException(gse);
-        }
-    }
-
 
     public void setResponseSigner(SymKeySignerInterface signer) throws IOException {
         sessionSignature = new JSONSymKeySigner(signer);
@@ -126,11 +118,9 @@ public class ProvisioningInitializationResponseEncoder extends JSONEncoder {
         wr.setBinary(ATTESTATION_JSON, attestation);
 
         ////////////////////////////////////////////////////////////////////////
-        // Optional server certificate fingerprint
+        // Server certificate fingerprint
         ////////////////////////////////////////////////////////////////////////
-        if (serverCertificateFingerprint != null) {
-            wr.setBinary(SERVER_CERT_FP_JSON, serverCertificateFingerprint);
-        }
+        wr.setBinary(SERVER_CERT_FP_JSON, serverCertificateFingerprint);
 
         ////////////////////////////////////////////////////////////////////////
         // Mandatory session signature

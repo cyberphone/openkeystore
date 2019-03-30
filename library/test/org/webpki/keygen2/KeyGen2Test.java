@@ -35,7 +35,6 @@ import java.security.SecureRandom;
 
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
-
 import java.security.cert.X509Certificate;
 
 import java.security.interfaces.ECPublicKey;
@@ -203,8 +202,6 @@ public class KeyGen2Test {
     boolean brain_pool;
 
     boolean get_client_attributes;
-
-    boolean https;  // Use server-cert
 
     boolean ask_for_4096;
 
@@ -539,7 +536,7 @@ public class KeyGen2Test {
         ///////////////////////////////////////////////////////////////////////////////////
         // Get provisioning session request and respond with ephemeral keys and and attest
         ///////////////////////////////////////////////////////////////////////////////////
-        byte[] provSessResponse(byte[] json_data) throws IOException {
+        byte[] provSessResponse(byte[] json_data) throws IOException, GeneralSecurityException {
             prov_sess_req = (ProvisioningInitializationRequestDecoder) client_xml_cache.parse(json_data);
             scanForKeyManagementKeyUpdates(prov_sess_req.getKeyManagementKeyUpdateHolderRoot());
             GregorianCalendar clientTime = new GregorianCalendar();
@@ -561,10 +558,9 @@ public class KeyGen2Test {
                             sess.getClientSessionId(),
                             clientTime,
                             sess.getAttestation(),
+                            server_certificate,
                             invocation_request.getPrivacyEnabledFlag() ? null : device_info.getCertificatePath());
-            if (https) {
-                prov_init_response.setServerCertificate(server_certificate);
-            }
+
 
             prov_init_response.setResponseSigner(new SymKeySignerInterface() {
                 public MACAlgorithms getMacAlgorithm() throws IOException {
@@ -816,7 +812,7 @@ public class KeyGen2Test {
             ////////////////////////////////////////////////////////////////////////////////////
             // Update the container state.  This is where the action is
             ////////////////////////////////////////////////////////////////////////////////////
-            serverState.update(prov_init_response, https ? server_certificate : null);
+            serverState.update(prov_init_response);
 
             ////////////////////////////////////////////////////////////////////////////////////
             // Here we could/should introduce an SKS identity/brand check
@@ -833,6 +829,7 @@ public class KeyGen2Test {
             ////////////////////////////////////////////////////////////////////////////////////
             serverState = new ServerState(serverCryptoInterface,
                                           INVOCATION_URL,
+                                          HashAlgorithms.SHA256.digest(server_certificate.getEncoded()),
                                           null);
             if (privacy_enabled) {
                 serverState.setPrivacyEnabled(true);
@@ -1305,7 +1302,6 @@ public class KeyGen2Test {
             writeOption("Multiple Keys", two_keys);
             writeOption("Custom Key Name", custom_key_name);
             writeOption("Brainpool EC", brain_pool);
-            writeOption("HTTPS server certificate", https);
             writeOption("TrustAnchor option", set_trust_anchor);
             server = new Server();
             client = new Client();
@@ -1394,7 +1390,6 @@ public class KeyGen2Test {
         pin_protection = true;
         add_pin_pattern = true;
         ecc_key = true;
-        https = true;
         doer.perform();
     }
 
@@ -1403,7 +1398,6 @@ public class KeyGen2Test {
         Doer doer = new Doer();
         pin_protection = true;
         ecc_key = true;
-        https = true;
         doer.perform();
     }
 
