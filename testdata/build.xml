@@ -8,6 +8,9 @@
   <property name="encryptionBase" location="encryption"/>
   <property name="normalizationBase" location="normalization"/>
 
+  <!-- Set to something else if you need it -->
+  <property name="bcprovider" value=""/>
+
   <path id="lib.classpath">
     <fileset dir="../library/dist">
        <include name="*.jar"/>
@@ -51,6 +54,7 @@
         <arg value="${keyBase}"/>
         <arg value="${dataBase}"/>
         <arg value="${signatureBase}"/>
+       	<sysproperty key="bcprovider" value="${bcprovider}"/>
         <jvmarg value="-Dfile.encoding=UTF8"/>
     </java>
   </target>
@@ -69,6 +73,7 @@
         <arg value="${keyBase}"/>
         <arg value="${dataBase}"/>
         <arg value="${encryptionBase}"/>
+       	<sysproperty key="bcprovider" value="${bcprovider}"/>
         <jvmarg value="-Dfile.encoding=UTF8"/>
     </java>
   </target>

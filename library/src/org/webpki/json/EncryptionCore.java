@@ -31,6 +31,7 @@ import java.security.SecureRandom;
 import java.security.interfaces.ECPublicKey;
 
 import java.security.spec.ECGenParameterSpec;
+import java.security.spec.MGF1ParameterSpec;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyAgreement;
@@ -38,6 +39,8 @@ import javax.crypto.Mac;
 
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.OAEPParameterSpec;
+import javax.crypto.spec.PSource;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.webpki.crypto.CryptoRandom;
@@ -209,7 +212,12 @@ class EncryptionCore {
             Cipher.getInstance(keyEncryptionAlgorithm.jceName)
                                                 :
             Cipher.getInstance(keyEncryptionAlgorithm.jceName, rsaProviderName);
-        cipher.init(mode, key);
+        if (keyEncryptionAlgorithm == KeyEncryptionAlgorithms.JOSE_RSA_OAEP_256_ALG_ID) {
+            cipher.init(mode, key, new OAEPParameterSpec(
+                    "SHA-256", "MGF1", MGF1ParameterSpec.SHA256, PSource.PSpecified.DEFAULT));
+        } else {
+            cipher.init(mode, key);
+        }
         return cipher.doFinal(data);
     }
 

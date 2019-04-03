@@ -93,7 +93,9 @@ public class Signatures {
         if (args.length != 3) {
             throw new Exception("Wrong number of arguments");
         }
-        CustomCryptoProvider.forcedLoad(true);
+        if (!System.clearProperty("bcprovider").isEmpty()) {
+            CustomCryptoProvider.forcedLoad(true);
+        }
         baseKey = args[0] + File.separator;
         baseData = args[1] + File.separator;
         baseSignatures = args[2] + File.separator;

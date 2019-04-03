@@ -44,6 +44,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.ECParameterSpec;
+import java.security.spec.MGF1ParameterSpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.RSAKeyGenParameterSpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -59,6 +60,8 @@ import javax.crypto.KeyAgreement;
 import javax.crypto.Mac;
 
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.OAEPParameterSpec;
+import javax.crypto.spec.PSource;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.webpki.sks.DeviceInfo;
@@ -977,11 +980,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
 
         addAlgorithm("http://xmlns.webpki.org/sks/algorithm#rsa.oaep.sha256.mgf1p",
                      "RSA/ECB/OAEPWithSHA-256AndMGF1Padding",
-                     ALG_ASYM_ENC | ALG_RSA_KEY);
-
-        addAlgorithm("http://xmlns.webpki.org/sks/algorithm#rsa.raw",
-                     "RSA/ECB/NoPadding",
-                     ALG_ASYM_ENC | ALG_RSA_KEY);
+                     ALG_ASYM_ENC | ALG_RSA_KEY | ALG_HASH_256);
 
         //////////////////////////////////////////////////////////////////////////////////////
         //  Diffie-Hellman Key Agreement
@@ -1859,7 +1858,13 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
         ///////////////////////////////////////////////////////////////////////////////////
         try {
             Cipher cipher = Cipher.getInstance(alg.jceName);
-            cipher.init(Cipher.DECRYPT_MODE, keyEntry.privateKey);
+            if ((alg.mask & ALG_HASH_256) != 0) {
+                cipher.init(Cipher.DECRYPT_MODE, keyEntry.privateKey,
+                    new OAEPParameterSpec(
+                        "SHA-256", "MGF1", MGF1ParameterSpec.SHA256, PSource.PSpecified.DEFAULT));
+            } else {
+                cipher.init(Cipher.DECRYPT_MODE, keyEntry.privateKey);
+            }
             return cipher.doFinal(data);
         } catch (Exception e) {
             throw new SKSException(e, SKSException.ERROR_CRYPTO);

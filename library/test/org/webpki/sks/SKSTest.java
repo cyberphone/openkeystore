@@ -29,6 +29,7 @@ import java.security.SecureRandom;
 import java.security.interfaces.ECPublicKey;
 
 import java.security.spec.ECGenParameterSpec;
+import java.security.spec.MGF1ParameterSpec;
 import java.security.spec.RSAKeyGenParameterSpec;
 
 import java.util.EnumSet;
@@ -39,6 +40,8 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyAgreement;
 
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.OAEPParameterSpec;
+import javax.crypto.spec.PSource;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.junit.After;
@@ -47,6 +50,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.BeforeClass;
+
 import org.junit.rules.TestName;
 
 import static org.junit.Assert.*;
@@ -75,6 +79,7 @@ import org.webpki.sks.PatternRestriction;
 import org.webpki.sks.Property;
 import org.webpki.sks.SKSException;
 import org.webpki.sks.SecureKeyStore;
+
 import org.webpki.sks.ws.TrustedGUIAuthorization;
 import org.webpki.sks.ws.WSSpecific;
 
@@ -102,7 +107,10 @@ public class SKSTest {
     @BeforeClass
     public static void openFile() throws Exception {
         standalone_testing = new Boolean(System.getProperty("sks.standalone"));
-        bc_loaded = CustomCryptoProvider.conditionalLoad(true);
+        // Start deprecating Bouncycastle since Android will remove most of it anyway
+        if (!System.clearProperty("bcprovider").isEmpty()) {
+            bc_loaded = CustomCryptoProvider.conditionalLoad(true);
+        }
         sks = (SecureKeyStore) Class.forName(System.getProperty("sks.implementation")).newInstance();
         if (sks instanceof WSSpecific) {
             tga = (TrustedGUIAuthorization) Class.forName(System.getProperty("sks.auth.gui")).newInstance();
@@ -771,15 +779,20 @@ public class SKSTest {
                 AppUsage.ENCRYPTION).setCertificate(cn());
         sess.closeSession();
         Cipher cipher = Cipher.getInstance(encryption_algorithm.getJceName());
-        cipher.init(Cipher.ENCRYPT_MODE, key.getPublicKey());
+        if (encryption_algorithm == AsymEncryptionAlgorithms.RSA_OAEP_SHA256_MGF1P) {
+            cipher.init(Cipher.ENCRYPT_MODE, key.getPublicKey(),
+                new OAEPParameterSpec(
+                    "SHA-256", "MGF1", MGF1ParameterSpec.SHA256, PSource.PSpecified.DEFAULT));
+        } else {
+            cipher.init(Cipher.ENCRYPT_MODE, key.getPublicKey());
+        }
         byte[] enc = cipher.doFinal(TEST_STRING);
-        assertTrue("Encryption error" + encryption_algorithm,
+        assertTrue("Encryption error: " + encryption_algorithm,
                 ArrayUtil.compare(device.sks.asymmetricKeyDecrypt(key.keyHandle,
                         encryption_algorithm.getAlgorithmId(AlgorithmPreferences.SKS),
                         null,
                         good_pin.getBytes("UTF-8"),
-                        enc), TEST_STRING) ||
-                        (!bc_loaded && encryption_algorithm != AsymEncryptionAlgorithms.RSA_ES_PKCS_1_5));
+                        enc), TEST_STRING));
         try {
             device.sks.asymmetricKeyDecrypt(key.keyHandle,
                     AsymSignatureAlgorithms.RSA_SHA256.getAlgorithmId(AlgorithmPreferences.SKS),

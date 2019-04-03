@@ -73,7 +73,6 @@ import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONObjectWriter;
 import org.webpki.json.JSONParser;
 import org.webpki.json.JSONSignatureDecoder;
-import org.webpki.json.JSONSigner;
 import org.webpki.json.JSONSymKeySigner;
 import org.webpki.json.JSONSymKeyVerifier;
 import org.webpki.json.JSONTypes;
@@ -2292,6 +2291,8 @@ public class JSONTest {
 
     static String baseKey;
     
+    static String baseData;
+    
     static String baseSignatures;
     
     static String baseEncryption;
@@ -2302,9 +2303,13 @@ public class JSONTest {
 
     @BeforeClass
     public static void openFile() throws Exception {
-        bcLoaded = CustomCryptoProvider.conditionalLoad(true);
+        // Start deprecating Bouncycastle since Android will remove most of it anyway
+        if (!System.clearProperty("bcprovider").isEmpty()) {
+            bcLoaded = CustomCryptoProvider.conditionalLoad(true);
+        }
         Locale.setDefault(Locale.FRANCE);  // Should create HUGE problems :-)
         baseKey = System.clearProperty("json.keys") + File.separator;
+        baseData = System.clearProperty("json.data") + File.separator;
         baseSignatures = System.clearProperty("json.signatures") + File.separator;
         baseEncryption = System.clearProperty("json.encryption") + File.separator;
         symmetricKeys = new SymmetricKeys(baseKey);
@@ -2423,7 +2428,7 @@ public class JSONTest {
 
     void checkException(Exception e, String compare_message) {
         String m = e.getMessage();
-        if (m == null || !m.equals(compare_message)) {
+        if (compare_message != null && !m.equals(compare_message)) {
             fail("Exception: " + m);
         }
     }
@@ -3375,9 +3380,6 @@ public class JSONTest {
         }
     }
 
-    static final String P256CERTPATH = "https://cyberphone.github.io/doc/openkeystore/p256certpath.pem";
-    static final String R2048KEY     = "https://cyberphone.github.io/doc/openkeystore/r2048.jwks";
-    
 
     public static class ExampleComExtGood2 extends JSONCryptoHelper.Extension {
         
@@ -3805,6 +3807,14 @@ public class JSONTest {
             }
         }
     }
+    
+    void rsaOaep(String fileName) throws Exception {
+        JSONDecryptionDecoder dec = readEncryption(fileName).getEncryptionObject(new JSONCryptoHelper.Options()
+          .setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED).setRequirePublicKeyInfo(false));
+        KeyPair keyPair = readJwk("r2048");
+        assertTrue(ArrayUtil.compare(ArrayUtil.readFile(baseData + "datatobeencrypted.txt"),
+                                     dec.getDecryptedData(keyPair.getPrivate())));
+    }
 
     void allJefCombinations() throws Exception {
         KeyPairGenerator mallet = KeyPairGenerator.getInstance("RSA");
@@ -4143,7 +4153,7 @@ public class JSONTest {
 
         encryptionFieldErrors("err-bad-key1.json",
                               "p256",
-                              "checksum failed");
+                              null);
 
         encryptionFieldErrors("err-bad-key2.json",
                               "p256",
@@ -4153,6 +4163,8 @@ public class JSONTest {
         keyAgreement.init(alice.getPrivate());
         keyAgreement.doPhase(bob.getPublic(), true);
         assertTrue("Bad ECDH", Base64URL.encode(keyAgreement.generateSecret()).equals(ECDH_RESULT_WITHOUT_KDF));
+        rsaOaep("r2048#rsa-oaep@a128gcm@kid.json");
+        rsaOaep("r2048#rsa-oaep-256@a256gcm@kid.json");
     }
 
     @Test

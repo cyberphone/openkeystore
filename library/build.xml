@@ -29,6 +29,7 @@
   <property name="ws.def" location="sks-ws-descriptor.xml"/>
   <property name="debug"  value="on"/>
   <property name="javadoccss" location="stylesheet.css"/>
+  <property name="bcprovider" value=""/>
   <property environment="env"/>
 
   <!-- If you want non-local SKS WS access you must bind to non-local IP --> 
@@ -51,16 +52,16 @@
     <condition property="wsgen.required">
       <not>
 	    <and>
-	      <available file="${src_dir}/org/webpki/sks/ws/server/SKSWSImplementation.java"/>
-	      <uptodate srcfile="${ws.def}" targetfile="${src_dir}/org/webpki/sks/ws/server/SKSWSImplementation.java"/>
-	      <available file="${src_dir}/org/webpki/sks/ws/client/SKSWS.java"/>
-	      <uptodate srcfile="${ws.def}" targetfile="${src_dir}/org/webpki/sks/ws/client/SKSWS.java"/>
-	      <available file="${src_dir}/org/webpki/sks/ws/client/SKSWSProxy.java"/>
-	      <uptodate srcfile="${ws.def}" targetfile="${src_dir}/org/webpki/sks/ws/client/SKSWSProxy.java"/>
-	      <available file="${src_dir}/org/webpki/sks/ws/client/SKSExceptionBean.java"/>
-	      <uptodate srcfile="${ws.def}" targetfile="${src_dir}/org/webpki/sks/ws/client/SKSExceptionBean.java"/>
-	      <available file="${src_dir}/org/webpki/sks/ws/client/SKSException_Exception.java"/>
-	      <uptodate srcfile="${ws.def}" targetfile="${src_dir}/org/webpki/sks/ws/client/SKSException_Exception.java"/>
+	      <available file="${src_test}/org/webpki/sks/ws/server/SKSWSImplementation.java"/>
+	      <uptodate srcfile="${ws.def}" targetfile="${src_test}/org/webpki/sks/ws/server/SKSWSImplementation.java"/>
+	      <available file="${src_test}/org/webpki/sks/ws/client/SKSWS.java"/>
+	      <uptodate srcfile="${ws.def}" targetfile="${src_test}/org/webpki/sks/ws/client/SKSWS.java"/>
+	      <available file="${src_test}/org/webpki/sks/ws/client/SKSWSProxy.java"/>
+	      <uptodate srcfile="${ws.def}" targetfile="${src_test}/org/webpki/sks/ws/client/SKSWSProxy.java"/>
+	      <available file="${src_test}/org/webpki/sks/ws/client/SKSExceptionBean.java"/>
+	      <uptodate srcfile="${ws.def}" targetfile="${src_test}/org/webpki/sks/ws/client/SKSExceptionBean.java"/>
+	      <available file="${src_test}/org/webpki/sks/ws/client/SKSException_Exception.java"/>
+	      <uptodate srcfile="${ws.def}" targetfile="${src_test}/org/webpki/sks/ws/client/SKSException_Exception.java"/>
 	      <available file="${dot_net_dir}/client/SKSWSProxy.cs"/>
 		  <uptodate srcfile="${ws.def}" targetfile="${dot_net_dir}/client/SKSWSProxy.cs"/>
 	      <available file="${cpp_dir}/src/SKSWSProxy.cpp"/>
@@ -156,11 +157,11 @@
     </antcall>
     <antcall target="_ws-gen">
       <param name="cmd" value="jclient"/>
-      <param name="out" value="${src_dir}"/>
+      <param name="out" value="${src_test}"/>
      </antcall>
     <antcall target="_ws-gen">
       <param name="cmd" value="jserver"/>
-      <param name="out" value="${src_dir}"/>
+      <param name="out" value="${src_test}"/>
     </antcall>
     <antcall target="_ws-gen">
       <param name="cmd" value="dotnetclient"/>
@@ -662,7 +663,9 @@
     	<sysproperty key="sks.standalone" value="${sks.standalone}"/>
       	<sysproperty key="sks.referenceimplementation" value="${sks.referenceimplementation}"/>
     	<sysproperty key="org.webpki.sks.ws.client.url" value="${sksws.url}"/>
+       	<sysproperty key="bcprovider" value="${bcprovider}"/>
     	<sysproperty key="json.keys" value="${testdata_dir}/keys"/>
+    	<sysproperty key="json.data" value="${testdata_dir}/data"/>
     	<sysproperty key="json.encryption" value="${testdata_dir}/encryption"/>
     	<sysproperty key="json.signatures" value="${testdata_dir}/signatures"/>
       <formatter type="plain" usefile="false"/>

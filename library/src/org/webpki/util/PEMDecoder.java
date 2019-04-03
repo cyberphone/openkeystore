@@ -29,11 +29,12 @@ import java.security.PublicKey;
 
 import java.security.cert.X509Certificate;
 
-import java.security.interfaces.ECKey;
+import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.RSAPrivateCrtKey;
 
 import java.security.spec.ECPoint;
 import java.security.spec.ECPublicKeySpec;
+import java.security.spec.ECPrivateKeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.RSAPublicKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -84,14 +85,21 @@ public class PEMDecoder {
     
     private static PrivateKey getPrivateKeyFromPKCS8(byte[] pkcs8)
     throws IOException, GeneralSecurityException {
-        return getKeyFactory(ParseUtil.sequence(DerDecoder.decode(pkcs8)).get(1))
+        PrivateKey privateKey = getKeyFactory(ParseUtil.sequence(DerDecoder.decode(pkcs8)).get(1))
                 .generatePrivate(new PKCS8EncodedKeySpec(pkcs8));
+        // This is for getting the identical representation to JWK decoding
+        if (privateKey instanceof ECPrivateKey) {
+            return KeyFactory.getInstance("EC")
+                    .generatePrivate(new ECPrivateKeySpec(((ECPrivateKey)privateKey).getS(),
+                                                          ((ECPrivateKey)privateKey).getParams()));
+        }
+        return privateKey;
     }
 
     public static KeyPair getKeyPair(byte[] pemBlob) throws IOException, GeneralSecurityException {
         byte[] pkcs8 = getPrivateKeyBlob(pemBlob);
         PrivateKey privateKey =  getPrivateKeyFromPKCS8(pkcs8);
-        if (privateKey instanceof ECKey) {
+        if (privateKey instanceof ECPrivateKey) {
             return new KeyPair(ecPublicKeyFromPKCS8(pkcs8), privateKey);
         }
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
