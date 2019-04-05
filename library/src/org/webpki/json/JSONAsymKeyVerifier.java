@@ -17,8 +17,10 @@
 package org.webpki.json;
 
 import java.io.IOException;
-
+import java.security.GeneralSecurityException;
 import java.security.PublicKey;
+
+import org.webpki.crypto.KeyAlgorithms;
 
 /**
  * Initiator object for asymmetric key signature verifiers.
@@ -35,10 +37,11 @@ public class JSONAsymKeyVerifier extends JSONVerifier {
      * which is useful if there are multiple keys possible.
      *
      * @param expectedPublicKey Expected public key
+     * @throws GeneralSecurityException 
      */
-    public JSONAsymKeyVerifier(PublicKey expectedPublicKey) {
+    public JSONAsymKeyVerifier(PublicKey expectedPublicKey) throws GeneralSecurityException {
         super(JSONSignatureTypes.ASYMMETRIC_KEY);
-        this.expectedPublicKey = expectedPublicKey;
+        this.expectedPublicKey = KeyAlgorithms.normalizePublicKey(expectedPublicKey);
     }
 
     @Override

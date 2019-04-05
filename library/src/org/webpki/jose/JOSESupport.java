@@ -90,7 +90,7 @@ public class JOSESupport {
     }
 
     public static void setCertificatePath(JSONObjectWriter joseObject,
-                                             X509Certificate[] certificatePath)
+                                          X509Certificate[] certificatePath)
     throws IOException, GeneralSecurityException {
         JSONArrayWriter certPath = joseObject.setArray(X5C_JSON);
         for (X509Certificate cert : certificatePath) {
@@ -99,7 +99,7 @@ public class JOSESupport {
     }
 
     public static void setPublicKey(JSONObjectWriter joseObject,
-                                       PublicKey publicKey) throws IOException {
+                                    PublicKey publicKey) throws IOException {
         joseObject.setObject(JWK_JSON, 
                             JSONObjectWriter.createCorePublicKey(publicKey,
                                                                  AlgorithmPreferences.JOSE));

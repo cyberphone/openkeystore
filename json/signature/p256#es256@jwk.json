@@ -4,13 +4,13 @@
   "string": "\u20ac$\u000F\u000aA'\u0042\u0022\u005c\\\"\/",
   "literals": [null, true, false],
   "signature": {
-    "alg": "ES256",
-    "jwk": {
+    "algorithm": "ES256",
+    "publicKey": {
       "kty": "EC",
       "crv": "P-256",
       "x": "PxlJQu9Q6dOvM4LKoZUh2XIe9-pdcLkvKfBfQk11Sb0",
       "y": "6IDquxrbdq5ABe4-HQ78_dhM6eEBUbvDtdqK31YfRP8"
     },
-    "val": "uHVZQfrRnVm6rSjM-bQfGGGE-qgUp-gLEj2Y7qaE1UgfU0MiQOWPEIBxBgNSomJGtoXjposxz8Mj8uAtwK9_Ww"
+    "value": "XcvpGlrb32dnVGEApJkKRKHfRbJJxuETSWoDfrJszU3e3uB2tAapBJ2GpL_Ny-E3D0yUbYdB6o3dWxRZLgGIMA"
   }
 }

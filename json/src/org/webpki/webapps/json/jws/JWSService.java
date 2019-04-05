@@ -28,8 +28,6 @@ import javax.servlet.ServletContextListener;
 import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.KeyStoreReader;
 
-import org.webpki.json.JSONCryptoHelper;
-
 import org.webpki.util.ArrayUtil;
 
 import org.webpki.webutil.InitPropertyReader;
@@ -95,11 +93,6 @@ public class JWSService extends InitPropertyReader implements
             clientkey_ec = new AsymSignatureHelper(KeyStoreReader.loadKeyStore(
                     getResource(getPropertyString("clientkey_ec")),
                     key_password));
-
-            // //////////////////////////////////////////////////////////////////////////////////////////
-            // JOSE (draft) mode or not?
-            // //////////////////////////////////////////////////////////////////////////////////////////
-            JSONCryptoHelper._setMode(joseMode = getPropertyBoolean("jose_mode"));
 
             logger.info("JWS-CT Demo Successfully Initiated");
         } catch (Exception e) {

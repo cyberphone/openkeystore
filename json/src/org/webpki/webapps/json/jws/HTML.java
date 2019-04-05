@@ -19,14 +19,13 @@ package org.webpki.webapps.json.jws;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
-
 import org.webpki.json.JSONCryptoHelper;
+import org.webpki.json.JSONObjectWriter;
 
 public class HTML {
     static final String SIGNUP_BGND_COLOR = "#F4FFF1";
@@ -403,22 +402,22 @@ public class HTML {
         + "      return;\n"
         + "    }\n"
         + "    if (jsonObject."
-        + JSONCryptoHelper._getDefaultSignatureLabel()
+        + JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON
         + ") {\n"
         + "      bad('sign.res', 'Object is already signed');\n"
         + "      return;\n"
         + "    }\n"
         + "    var signatureObject = jsonObject."
-        + JSONCryptoHelper._getDefaultSignatureLabel()
+        + JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON
         + " = {};\n"
         + "    signatureObject."
-        + JSONCryptoHelper.ALG_JSON
+        + JSONCryptoHelper.ALGORITHM_JSON
         + " = '"
         + AsymSignatureAlgorithms.RSA_SHA256
                 .getAlgorithmId(AlgorithmPreferences.JOSE)
         + "';\n"
         + "    var publicKeyObject = signatureObject."
-        + JSONCryptoHelper.JWK_JSON
+        + JSONCryptoHelper.PUBLIC_KEY_JSON
         + " = {};\n"
         + "    publicKeyObject."
         + JSONCryptoHelper.KTY_JSON
@@ -443,7 +442,7 @@ public class HTML {
         + "                     convertToUTF8(canonicalize(jsonObject))).then(function(signature) {\n"
         + "    console.log('Sign with RSASSA-PKCS1-v1_5 - SHA-256: PASS');\n"
         + "    signatureObject."
-        + JSONCryptoHelper._getValueLabel()
+        + JSONCryptoHelper.VALUE_JSON
         + " = convertToBase64URL(new Uint8Array(signature));\n"
         + "    document.getElementById('sign.res').innerHTML = fancyJSONBox('Signed data in JVS-CT format', jsonObject) + "
         + "'<p><input type=\"button\" value=\"Verify Signature (on the server)\" onClick=\"verifySignatureOnServer()\"></p>';\n"

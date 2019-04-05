@@ -18,6 +18,7 @@ package org.webpki.crypto;
 
 import java.io.IOException;
 
+import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 
@@ -25,7 +26,8 @@ import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPublicKey;
 
 import java.security.spec.ECParameterSpec;
-
+import java.security.spec.ECPublicKeySpec;
+import java.security.spec.RSAPublicKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 public enum KeyAlgorithms implements CryptoAlgorithms {
@@ -387,6 +389,19 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
         throw new IOException("Unsupported RSA key size: " + lengthInBits);
     }
 
+    // Public keys read from specific security providers are not comparable to 
+    // public keys created directly from crypto parameters and thus don't compare :-(
+    // This method normalizes the former.
+    public static PublicKey normalizePublicKey(PublicKey publicKey) throws GeneralSecurityException {
+        if (publicKey instanceof ECPublicKey) {
+            return KeyFactory.getInstance("EC")
+                    .generatePublic(new ECPublicKeySpec(((ECPublicKey)publicKey).getW(),
+                                                        ((ECPublicKey)publicKey).getParams()));
+        }
+        return KeyFactory.getInstance("RSA").generatePublic(
+                new RSAPublicKeySpec(((RSAPublicKey)publicKey).getModulus(),
+                                     ((RSAPublicKey)publicKey).getPublicExponent()));
+    }
 
     public static KeyAlgorithms getKeyAlgorithm(PublicKey publicKey) throws IOException {
         return getKeyAlgorithm(publicKey, null);

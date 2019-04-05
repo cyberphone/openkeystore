@@ -26,12 +26,12 @@ public enum AsymEncryptionAlgorithms implements EncryptionAlgorithms {
                             "1.2.840.113549.1.1.1",
                             "RSA/ECB/PKCS1Padding"),
     
-    RSA_OAEP_SHA1_MGF1P    ("http://xmlns.webpki.org/sks/algorithm#rsa.oaep.sha1.mgf1p",
+    RSA_OAEP_SHA1_MGF1P    ("http://xmlns.webpki.org/sks/algorithm#rsa.oaep.sha1",
                             "RSA-OAEP",
                             null,
                             "RSA/ECB/OAEPWithSHA-1AndMGF1Padding"),
     
-    RSA_OAEP_SHA256_MGF1P  ("http://xmlns.webpki.org/sks/algorithm#rsa.oaep.sha256.mgf1p",
+    RSA_OAEP_SHA256_MGF1P  ("http://xmlns.webpki.org/sks/algorithm#rsa.oaep.sha256",
                             "RSA-OAEP-256",
                             null,                            
                             "RSA/ECB/OAEPWithSHA-256AndMGF1Padding");

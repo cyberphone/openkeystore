@@ -22,13 +22,7 @@
   <property name="webpki.lib.dir" location="../library/dist"/>
   <property name="catalina.home" value="${env.CATALINA_HOME}"/>
 
-  <condition property="joseMode" value="true" else="false">
-	  <isset property="jose"/>
-  </condition>
-  <condition property="joseFile" value="-jose" else="">
-	  <isset property="jose"/>
-  </condition>
-  <property name="signature.dir" location="signature${joseFile}"/>
+  <property name="signature.dir" location="signature"/>
 
 	<resources id="jcs_application.xml">
 <string><![CDATA[    <!-- JWS Demo -->
@@ -88,7 +82,6 @@
 	  <replacefilter token="@key-password@" value="${keypassword}"/>
 	  <replacefilter token="@clientkey-rsa@" value="${clientkey_rsa}${keyfilext}"/>
 	  <replacefilter token="@clientkey-ec@" value="${clientkey_ec}${keyfilext}"/>
-  	  <replacefilter token="@jose_mode@" value="${joseMode}"/>
 	</replace>
     <war destfile="${dist.dir}/${application}" webxml="${temp.dir}/web.xml">
       <classes dir="${temp.dir}">

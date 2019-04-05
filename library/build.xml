@@ -413,6 +413,24 @@
     <delete dir="${dist_dir}"/>
   </target>
 
+  <target name="_clean_android">
+    <replaceregexp file="${temp_dir}/org/webpki/json/NumberToJSON.java"
+        match="ValueExact"
+        replace="Value"
+        flags="g"/>
+  	
+    <replace file="${temp_dir}/org/webpki/json/EncryptionCore.java">
+      <replacefilter token="import java.security.spec.MGF1ParameterSpec;&#10;" value=""/>
+      <replacefilter token="import javax.crypto.spec.OAEPParameterSpec;&#10;" value=""/>
+      <replacefilter token="import javax.crypto.spec.PSource;&#10;" value=""/>
+    </replace>  
+
+  	<replaceregexp file="${temp_dir}/org/webpki/json/EncryptionCore.java"
+        match="(\n)(.*\n.*\n.*PSpecified.*\n.*\n\ \ \ \ )(.*\n)(.*\n)"
+        replace="\1\3"/>
+
+  </target>
+
   <target name="android-json">    
     <delete file="${dist_dir}/${android-json}.zip"/>
     <delete dir="${temp_dir}"/>
@@ -451,11 +469,8 @@
         replace=""
         flags="gs"/>
 
-    <replaceregexp file="${temp_dir}/org/webpki/json/NumberToJSON.java"
-        match="ValueExact"
-        replace="Value"
-        flags="g"/>
-
+  	<antcall target="_clean_android"/>
+  	
   	<javac debug="${debug}" srcdir="${temp_dir}" destdir="${bin_dir}" includeAntRuntime="false"/>
     
     <!-- Create Android JSON java library -->
@@ -571,10 +586,7 @@
         </fileset>
     </replaceregexp>
 
-    <replaceregexp file="${temp_dir}/org/webpki/json/NumberToJSON.java"
-        match="ValueExact"
-        replace="Value"
-        flags="g"/>
+  	<antcall target="_clean_android"/>
    	
   	<javac debug="${debug}" srcdir="${temp_dir}" destdir="${bin_dir}" includeAntRuntime="false"/>
     

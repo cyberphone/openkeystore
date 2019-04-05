@@ -18,6 +18,8 @@ package org.webpki.webapps.json.jws;
 
 import java.io.IOException;
 
+import java.security.GeneralSecurityException;
+
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -48,7 +50,7 @@ public class RequestServlet extends HttpServlet {
 
     void verifySignature(HttpServletRequest request,
             HttpServletResponse response, byte[] signed_json)
-            throws IOException, ServletException {
+            throws IOException, ServletException, GeneralSecurityException {
         logger.info("JSON Signature Verification Entered");
         ReadSignature doc = new ReadSignature();
         JSONObjectReader parsed_json = JSONParser.parse(signed_json);
@@ -99,7 +101,7 @@ public class RequestServlet extends HttpServlet {
         }
         try {
             verifySignature(request, response, Base64URL.decode(json));
-        } catch (IOException e) {
+        } catch (Exception e) {
             HTML.errorPage(response, e.getMessage());
             return;
         }

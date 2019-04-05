@@ -48,7 +48,8 @@ public class DemoCode {
         CustomCryptoProvider.conditionalLoad(true);
     }
 
-    public void signAndVerifyJCS(final PublicKey publicKey, final PrivateKey privateKey) throws IOException {
+    public void signAndVerify(final PublicKey publicKey, final PrivateKey privateKey) 
+    throws IOException, GeneralSecurityException {
 
         // Create an empty JSON document
         JSONObjectWriter writer = new JSONObjectWriter();
@@ -97,7 +98,7 @@ public class DemoCode {
             KeyPairGenerator kpg = KeyPairGenerator.getInstance("EC");
             kpg.initialize(new ECGenParameterSpec(KeyAlgorithms.NIST_P_256.getJceName()), new SecureRandom());
             KeyPair keyPair = kpg.generateKeyPair();
-            new DemoCode().signAndVerifyJCS(keyPair.getPublic(), keyPair.getPrivate());
+            new DemoCode().signAndVerify(keyPair.getPublic(), keyPair.getPrivate());
         } catch (Exception e) {
             e.printStackTrace();
         }

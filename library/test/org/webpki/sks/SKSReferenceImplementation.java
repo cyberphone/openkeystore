@@ -974,11 +974,11 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
                      "RSA/ECB/PKCS1Padding",
                      ALG_ASYM_ENC | ALG_RSA_KEY);
 
-        addAlgorithm("http://xmlns.webpki.org/sks/algorithm#rsa.oaep.sha1.mgf1p",
+        addAlgorithm("http://xmlns.webpki.org/sks/algorithm#rsa.oaep.sha1",
                      "RSA/ECB/OAEPWithSHA-1AndMGF1Padding",
                      ALG_ASYM_ENC | ALG_RSA_KEY);
 
-        addAlgorithm("http://xmlns.webpki.org/sks/algorithm#rsa.oaep.sha256.mgf1p",
+        addAlgorithm("http://xmlns.webpki.org/sks/algorithm#rsa.oaep.sha256",
                      "RSA/ECB/OAEPWithSHA-256AndMGF1Padding",
                      ALG_ASYM_ENC | ALG_RSA_KEY | ALG_HASH_256);
 

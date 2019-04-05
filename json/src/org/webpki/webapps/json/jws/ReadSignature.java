@@ -20,8 +20,8 @@ import java.io.IOException;
 
 import java.math.BigInteger;
 
+import java.security.GeneralSecurityException;
 import java.security.PublicKey;
-
 import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPublicKey;
 
@@ -36,13 +36,12 @@ import org.webpki.crypto.MACAlgorithms;
 import org.webpki.json.JSONArrayReader;
 import org.webpki.json.JSONAsymKeyVerifier;
 import org.webpki.json.JSONCryptoHelper;
-import org.webpki.json.JSONRemoteKeys;
+import org.webpki.json.JSONObjectWriter;
 import org.webpki.json.JSONSignatureDecoder;
 import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONSymKeyVerifier;
 import org.webpki.json.JSONTypes;
 
-import org.webpki.json.WebKey;  // from "test" actually
 import org.webpki.util.DebugFormatter;
 
 /**
@@ -83,7 +82,8 @@ public class ReadSignature {
         return pre + result.toString();
     }
     
-    void processOneSignature(JSONSignatureDecoder signature, PublicKey preselectedKey) throws IOException {
+    void processOneSignature(JSONSignatureDecoder signature, PublicKey preselectedKey)
+    throws IOException, GeneralSecurityException {
         switch (signature.getSignatureType()) {
         case ASYMMETRIC_KEY:
             PublicKey publicKey = preselectedKey == null ? signature.getPublicKey() : preselectedKey;
@@ -130,23 +130,21 @@ public class ReadSignature {
         }
     }
 
-    void recurseObject(JSONObjectReader rd) throws IOException {
+    void recurseObject(JSONObjectReader rd) throws IOException, GeneralSecurityException {
         for (String property : rd.getProperties()) {
             switch (rd.getPropertyType(property)) {
             case OBJECT:
-                if (property.equals(JSONCryptoHelper._getDefaultSignatureLabel())) {
+                if (property.equals(JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON)) {
                     boolean multi = false;
-                    JSONObjectReader outer = rd.getObject(JSONCryptoHelper._getDefaultSignatureLabel());
+                    JSONObjectReader outer = rd.getObject(JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON);
                     JSONObjectReader inner = outer;
                     JSONCryptoHelper.Options options = new JSONCryptoHelper.Options();
                     String algo = null;
                     if (outer.hasProperty(JSONCryptoHelper.SIGNERS_JSON)) {
                         multi = true;
                         inner = outer.getArray(JSONCryptoHelper.SIGNERS_JSON).getObject();
-                        algo = outer.getStringConditional(JSONCryptoHelper.ALG_JSON);
-                    }
-                    if (algo == null) {
-                        algo = inner.getString(JSONCryptoHelper.ALG_JSON);
+                    } else {
+                        algo = inner.getString(JSONCryptoHelper.ALGORITHM_JSON);
                     }
                     options.setAlgorithmPreferences(AlgorithmPreferences.JOSE_ACCEPT_PREFER);
                     boolean asymAlg = true;
@@ -160,12 +158,8 @@ public class ReadSignature {
                     }
                     PublicKey preselectedKey = null;
                     if (asymAlg) {
-                        if (inner.hasProperty(JSONCryptoHelper.JKU_JSON)) {
-                            options.setRemoteKeyReader(new WebKey(), JSONRemoteKeys.JWK_KEY_SET);
-                        } else if (inner.hasProperty(JSONCryptoHelper.X5U_JSON)) {
-                            options.setRemoteKeyReader(new WebKey(), JSONRemoteKeys.PEM_CERT_PATH);
-                        } else if (!inner.hasProperty(JSONCryptoHelper.JWK_JSON) && 
-                                   !inner.hasProperty(JSONCryptoHelper.X5C_JSON)) {
+                        if (!inner.hasProperty(JSONCryptoHelper.PUBLIC_KEY_JSON) && 
+                                   !inner.hasProperty(JSONCryptoHelper.CERTIFICATE_PATH_JSON)) {
                             preselectedKey =
                                     (AsymSignatureAlgorithms.getAlgorithmFromId(algo, 
                                                AlgorithmPreferences.JOSE_ACCEPT_PREFER).isRsa() ?
@@ -195,7 +189,7 @@ public class ReadSignature {
         }
     }
 
-    void recurseArray(JSONArrayReader array) throws IOException {
+    void recurseArray(JSONArrayReader array) throws IOException, GeneralSecurityException {
         while (array.hasMore()) {
             if (array.getElementType() == JSONTypes.OBJECT) {
                 recurseObject(array.getObject());
