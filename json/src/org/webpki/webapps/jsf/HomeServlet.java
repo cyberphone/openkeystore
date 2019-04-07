@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package org.webpki.webapps.json.jws;
+package org.webpki.webapps.jsf;
 
 import java.io.IOException;
 

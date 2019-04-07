@@ -1,29 +1,21 @@
 {
-    "@context": "http://xmlns.webpki.org/keygen2/beta/20170513",
+    "@context": "https://webpki.github.io/keygen2#20190318",
     "@qualifier": "ProvisioningInitializationResponse",
     "serverSessionId": "142f1bdb286XVQnqmIRc1bSzm-QN-ZJk",
     "clientSessionId": "39NMWamKtHumJFfdIGkDrLP-NMB-5Lwo",
-    "serverTime": "2017-05-24T16:33:30Z",
-    "clientTime": "2017-05-24T18:33:36+02:00",
-    "clientEphemeralKey": 
-        {
+    "serverTime": "2019-04-08T16:33:30Z",
+    "clientTime": "2019-04-08T18:33:36+02:00",
+    "clientEphemeralKey": {
             "kty": "EC", 
             "crv": "P-256",
             "x": "tQXczn7qxGgcLpOVBuw5i-tMHxbJTUF6k3RZGsjdauc",
             "y": "jIlm8sXwknZeQQDTxkfwXKUdhubt6JcqQYA6S8Dm3AE"
-        },
-    "deviceId": 
-        {
+    },
+    "deviceId": {
             "certificatePath": 
                 [
                     "MIIC2DCCAcCgAwIBAgIGARTWcc7VMCSq....awCV4OfAGXLIwJBCp85AN7KNdcJfL"
                 ]
-        },
-    "attestation": "KMUpOesC8nDTLpu8PppsSGg1j....WiwvUcVpbNudbY14lLks8RQuwoiU",
-    "serverCertificateFingerPrint": "HwKCofkqkTFXRmyyb_CnWhAcTbQF7w8rl1OqCwyM4TM",
-    "signature": 
-        {
-            "algorithm": "HS256",
-            "value": "nnzNSZUZw1qlGVydZZ3ssCVIZTznyHwDXlOpLMpI3Lo"
-        }
+    },
+    "attestation": "KMUpOesC8nDTLpu8PppsSGg1j....WiwvUcVpbNudbY14lLks8RQuwoiU"
 }

@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package org.webpki.webapps.json.jws;
+package org.webpki.webapps.jsf;
 
 import java.io.IOException;
 
@@ -30,7 +30,7 @@ import org.webpki.crypto.KeyStoreSigner;
 public class AsymSignatureHelper extends KeyStoreSigner implements  AsymKeySignerInterface {
     AsymSignatureHelper(KeyStore signer_keystore) throws IOException {
         super(signer_keystore, null);
-        setKey(null, JWSService.key_password);
+        setKey(null, JSFService.key_password);
     }
 
     @Override

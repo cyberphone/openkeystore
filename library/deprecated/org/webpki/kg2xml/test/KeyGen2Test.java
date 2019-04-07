@@ -316,7 +316,7 @@ public class KeyGen2Test
       {
         private static final String kg2keycre = 
           "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-          "<KeyCreationRequest " + KeyGen2Constants.KEY_ENTRY_ALGORITHM_ATTR  + "=\"http://xmlns.webpki.org/sks/algorithm#key.1\" " +
+          "<KeyCreationRequest " + KeyGen2Constants.KEY_ENTRY_ALGORITHM_ATTR  + "=\"https://webpki.github.io/sks/algorithm#key.1\" " +
           "ClientSessionID=\"C-139622a0ac98f2f44a35c9753ca\" " +
           "ID=\"S-139622a0a9993085d38d1586b76\" " +
           "SubmitURL=\"http://issuer.example.com/keyinit\" " +
@@ -394,7 +394,7 @@ public class KeyGen2Test
                .append (appUsage.getProtocolName ())
                .append ("\" ID=\"Key.")
                .append (++keyId)
-               .append ("\" KeyAlgorithm=\"http://xmlns.webpki.org/sks/algorithm#rsa2048\" MAC=\"Jrqigi79Yw6SoLobsBA5S8b74gTKrIJPh3tQRKci33Y=\"/>");
+               .append ("\" KeyAlgorithm=\"https://webpki.github.io/sks/algorithm#rsa2048\" MAC=\"Jrqigi79Yw6SoLobsBA5S8b74gTKrIJPh3tQRKci33Y=\"/>");
             return this;
           }
 

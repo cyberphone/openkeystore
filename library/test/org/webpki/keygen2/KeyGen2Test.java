@@ -292,7 +292,7 @@ public class KeyGen2Test {
                         "\"@qualifier\": \"" + KeyGen2Messages.KEY_CREATION_REQUEST.getName() + "\",\n" +
                         "\"" + KeyGen2Constants.SERVER_SESSION_ID_JSON + "\": \"1417ace50e9IoDMto6NHlN1JWvysvZsC\",\n" +
                         "\"" + KeyGen2Constants.CLIENT_SESSION_ID_JSON + "\": \"KzyjlYG3YurWzSr2d9O9X3y_1EUsadmE\",\n" +
-                        "\"" + KeyGen2Constants.KEY_ENTRY_ALGORITHM_JSON + "\": \"http://xmlns.webpki.org/sks/algorithm#key.1\",\n";
+                        "\"" + KeyGen2Constants.KEY_ENTRY_ALGORITHM_JSON + "\": \"https://webpki.github.io/sks/algorithm#key.1\",\n";
         private static JSONDecoderCache json_cache;
 
         static {
@@ -348,7 +348,7 @@ public class KeyGen2Test {
                     .append(appUsage.getProtocolName())
                     .append("\", \"" + KeyGen2Constants.ID_JSON + "\":\"Key.")
                     .append(++keyId)
-                    .append("\", \"" + KeyGen2Constants.KEY_ALGORITHM_JSON + "\":\"http://xmlns.webpki.org/sks/algorithm#rsa2048\", \"" + KeyGen2Constants.MAC_JSON + "\":\"Jrqigi79Yw6SoLobsBA5S8b74gTKrIJPh3tQRKci33Y\"}");
+                    .append("\", \"" + KeyGen2Constants.KEY_ALGORITHM_JSON + "\":\"https://webpki.github.io/sks/algorithm#rsa2048\", \"" + KeyGen2Constants.MAC_JSON + "\":\"Jrqigi79Yw6SoLobsBA5S8b74gTKrIJPh3tQRKci33Y\"}");
             key_spec = false;
             return this;
         }
@@ -549,7 +549,8 @@ public class KeyGen2Test {
                             prov_sess_req.getKeyManagementKey(),
                             (int) (clientTime.getTimeInMillis() / 1000),
                             prov_sess_req.getSessionLifeTime(),
-                            prov_sess_req.getSessionKeyLimit());
+                            prov_sess_req.getSessionKeyLimit(),
+                            server_certificate.getEncoded());
             provisioning_handle = sess.getProvisioningHandle();
 
             ProvisioningInitializationResponseEncoder prov_init_response =
@@ -558,19 +559,8 @@ public class KeyGen2Test {
                             sess.getClientSessionId(),
                             clientTime,
                             sess.getAttestation(),
-                            server_certificate,
                             invocation_request.getPrivacyEnabledFlag() ? null : device_info.getCertificatePath());
 
-
-            prov_init_response.setResponseSigner(new SymKeySignerInterface() {
-                public MACAlgorithms getMacAlgorithm() throws IOException {
-                    return MACAlgorithms.HMAC_SHA256;
-                }
-
-                public byte[] signData(byte[] data, MACAlgorithms algorithm) throws IOException {
-                    return sks.signProvisioningSessionData(provisioning_handle, data);
-                }
-            });
             return prov_init_response.serializeJSONDocument(JSONOutputFormats.PRETTY_PRINT);
         }
 
@@ -803,7 +793,7 @@ public class KeyGen2Test {
             server_xml_cache.addToCache(ProvisioningFinalizationResponseDecoder.class);
         }
 
-        void getProvSess(JSONDecoder xml_object) throws IOException {
+        void getProvSess(JSONDecoder xml_object) throws IOException, GeneralSecurityException {
             ////////////////////////////////////////////////////////////////////////////////////
             // Begin by creating the "SessionKey" that holds the key to just about everything
             ////////////////////////////////////////////////////////////////////////////////////
@@ -829,7 +819,7 @@ public class KeyGen2Test {
             ////////////////////////////////////////////////////////////////////////////////////
             serverState = new ServerState(serverCryptoInterface,
                                           INVOCATION_URL,
-                                          HashAlgorithms.SHA256.digest(server_certificate.getEncoded()),
+                                          server_certificate,
                                           null);
             if (privacy_enabled) {
                 serverState.setPrivacyEnabled(true);

@@ -1,5 +1,5 @@
 {
-    "@context": "http://xmlns.webpki.org/keygen2/beta/20170513",
+    "@context": "https://webpki.github.io/keygen2#20190318",
     "@qualifier": "ProvisioningFinalizationRequest",
     "serverSessionId": "142f1bdb286XVQnqmIRc1bSzm-QN-ZJk",
     "clientSessionId": "39NMWamKtHumJFfdIGkDrLP-NMB-5Lwo",
@@ -13,7 +13,7 @@
              "mac": "FkwauPbrrfJZxuEsMkwOFWIIutzdYbEt3P9kr0CG4dc",
              "logotypes": 
                  [{
-                      "type": "http://xmlns.webpki.org/keygen2/logotype#list",
+                      "type": "https://webpki.github.io/keygen2/logotype#list",
                       "mimeType": "image/png",
                       "extensionData": "RBgoJkiaJk_IsZAEZUBsZAEZFg....NVBAMTC0RlbW8gU3ViIENBMBTEzMM1oDTM4",
                       "mac": "uQ5IuLRDpbSkpfU9FHe1grrQ_FXUBfsxsk6HqspjuCU"

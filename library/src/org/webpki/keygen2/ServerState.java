@@ -37,15 +37,11 @@ import java.util.Vector;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.DeviceID;
-import org.webpki.crypto.HashAlgorithms;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyContainerTypes;
-import org.webpki.crypto.MACAlgorithms;
-import org.webpki.crypto.SymKeyVerifierInterface;
 
 import org.webpki.json.JSONArrayWriter;
 import org.webpki.json.JSONObjectWriter;
-import org.webpki.json.JSONSymKeyVerifier;
 
 import org.webpki.sks.AppUsage;
 import org.webpki.sks.BiometricProtection;
@@ -666,13 +662,6 @@ public class ServerState implements Serializable {
         }
 
 
-        byte[] attestation;   // Filled in by KeyCreationRequestDecoder
-
-        public byte[] getAttestation() {
-            return attestation;
-        }
-
-
         ExportProtection exportProtection;
 
         public Key setExportProtection(ExportProtection exportProtection) {
@@ -852,6 +841,8 @@ public class ServerState implements Serializable {
                 }
             }
         }
+        
+        byte[] macInputData;
 
         void writeRequest(JSONObjectWriter wr) throws IOException {
             keyInitDone = true;
@@ -932,7 +923,8 @@ public class ServerState implements Serializable {
                 wr.setStringArray(ENDORSED_ALGORITHMS_JSON, endorsedAlgorithms);
             }
 
-            wr.setBinary(MAC_JSON, mac(keyPairMac.getResult(), SecureKeyStore.METHOD_CREATE_KEY_ENTRY));
+            wr.setBinary(MAC_JSON, mac(macInputData = keyPairMac.getResult(), 
+                                       SecureKeyStore.METHOD_CREATE_KEY_ENTRY));
 
             expectedAttestMacCount = getMacSequenceCounterAndUpdate();
         }
@@ -1097,7 +1089,7 @@ public class ServerState implements Serializable {
 
     byte[] savedCloseNonce;
     
-    byte[] serverCertificateFingerprint;
+    X509Certificate serverCertificate;
 
     X509Certificate[] deviceCertificatePath;
 
@@ -1202,7 +1194,7 @@ public class ServerState implements Serializable {
     // Constructor
     public ServerState(ServerCryptoInterface serverCryptoInterface, 
                        String issuerUri,
-                       byte[] serverCertificateFingerprint,
+                       X509Certificate serverCertificate,
                        String optionalServerSessionId) throws IOException {
         this.serverCryptoInterface = serverCryptoInterface;
         this.issuerUri = issuerUri;
@@ -1214,7 +1206,7 @@ public class ServerState implements Serializable {
                             SecureKeyStore.MAX_LENGTH_ID_TYPE - optionalServerSessionId.length());
         }
         serverSessionId = optionalServerSessionId;
-        this.serverCertificateFingerprint = serverCertificateFingerprint;
+        this.serverCertificate = serverCertificate;
     }
 
     ServerState addQuery(String typeUri, CAPABILITY what) throws IOException {
@@ -1269,54 +1261,41 @@ public class ServerState implements Serializable {
     }
 
 
-    public void update(ProvisioningInitializationResponseDecoder provisioningInitializationResponse) throws IOException {
-        try {
-            checkState(false, ProtocolPhase.PROVISIONING_INITIALIZATION);
-            clientSessionId = provisioningInitializationResponse.clientSessionId;
-            deviceCertificatePath = provisioningInitializationResponse.deviceCertificatePath;
-            clientEphemeralKey = provisioningInitializationResponse.clientEphemeralKey;
-            if (!serverTime.equals(provisioningInitializationResponse.serverTime)) {
-                bad("Received \"" + KeyGen2Constants.SERVER_TIME_JSON + "\" mismatch");
-            }
-
-            MacGenerator kdf = new MacGenerator();
-            kdf.addString(clientSessionId);
-            kdf.addString(serverSessionId);
-            kdf.addString(issuerUri);
-            kdf.addArray(getDeviceID());
-
-            MacGenerator attestationArguments = new MacGenerator();
-            attestationArguments.addString(clientSessionId);
-            attestationArguments.addString(serverSessionId);
-            attestationArguments.addString(issuerUri);
-            attestationArguments.addArray(getDeviceID());
-            attestationArguments.addString(provisioningSessionAlgorithm);
-            attestationArguments.addBool(getDeviceCertificate() == null);
-            attestationArguments.addArray(serverEphemeralKey.getEncoded());
-            attestationArguments.addArray(clientEphemeralKey.getEncoded());
-            attestationArguments.addArray(keyManagementKey == null ? new byte[0] : keyManagementKey.getEncoded());
-            attestationArguments.addInt((int) (provisioningInitializationResponse.clientTime.getTimeInMillis() / 1000));
-            attestationArguments.addInt(sessionLifeTime);
-            attestationArguments.addShort(sessionKeyLimit);
-
-            serverCryptoInterface.generateAndVerifySessionKey(clientEphemeralKey,
-                                                              kdf.getResult(),
-                                                              attestationArguments.getResult(),
-                                                              getDeviceCertificate(),
-                                                              provisioningInitializationResponse.attestation);
-            if (!ArrayUtil.compare(provisioningInitializationResponse.serverCertificateFingerprint,
-                    serverCertificateFingerprint)) {
-                bad("Attribute '" + SERVER_CERT_FP_JSON + "' is missing or is invalid");
-            }
-            provisioningInitializationResponse.signature.verify(new JSONSymKeyVerifier(new SymKeyVerifierInterface() {
-                @Override
-                public boolean verifyData(byte[] data, byte[] digest, MACAlgorithms algorithm, String keyId) throws IOException {
-                    return ArrayUtil.compare(serverCryptoInterface.mac(data, SecureKeyStore.KDF_EXTERNAL_SIGNATURE), digest);
-                }
-            }));
-        } catch (GeneralSecurityException e) {
-            throw new IOException(e);
+    public void update(ProvisioningInitializationResponseDecoder provisioningInitializationResponse) throws IOException, GeneralSecurityException {
+        checkState(false, ProtocolPhase.PROVISIONING_INITIALIZATION);
+        clientSessionId = provisioningInitializationResponse.clientSessionId;
+        deviceCertificatePath = provisioningInitializationResponse.deviceCertificatePath;
+        clientEphemeralKey = provisioningInitializationResponse.clientEphemeralKey;
+        if (!serverTime.equals(provisioningInitializationResponse.serverTime)) {
+            bad("Received \"" + KeyGen2Constants.SERVER_TIME_JSON + "\" mismatch");
         }
+
+        MacGenerator kdf = new MacGenerator();
+        kdf.addString(clientSessionId);
+        kdf.addString(serverSessionId);
+        kdf.addString(issuerUri);
+        kdf.addArray(getDeviceID());
+
+        MacGenerator attestationArguments = new MacGenerator();
+        attestationArguments.addString(clientSessionId);
+        attestationArguments.addString(serverSessionId);
+        attestationArguments.addString(issuerUri);
+        attestationArguments.addArray(getDeviceID());
+        attestationArguments.addString(provisioningSessionAlgorithm);
+        attestationArguments.addBool(getDeviceCertificate() == null);
+        attestationArguments.addArray(serverEphemeralKey.getEncoded());
+        attestationArguments.addArray(clientEphemeralKey.getEncoded());
+        attestationArguments.addArray(keyManagementKey == null ? new byte[0] : keyManagementKey.getEncoded());
+        attestationArguments.addInt((int) (provisioningInitializationResponse.clientTime.getTimeInMillis() / 1000));
+        attestationArguments.addInt(sessionLifeTime);
+        attestationArguments.addShort(sessionKeyLimit);
+        attestationArguments.addArray(serverCertificate.getEncoded());
+
+        serverCryptoInterface.generateAndVerifySessionKey(clientEphemeralKey,
+                                                          kdf.getResult(),
+                                                          attestationArguments.getResult(),
+                                                          getDeviceCertificate(),
+                                                          provisioningInitializationResponse.attestation);
         currentPhase = ProtocolPhase.CREDENTIAL_DISCOVERY;
     }
 
@@ -1340,9 +1319,9 @@ public class ServerState implements Serializable {
         if (keyCreationResponse.generatedKeys.size() != requestedKeys.size()) {
             ServerState.bad("Different number of requested and received keys");
         }
-        Iterator<ServerState.Key> req_key_iterator = requestedKeys.values().iterator();
+        Iterator<ServerState.Key> requestedKeysIterator = requestedKeys.values().iterator();
         for (KeyCreationResponseDecoder.GeneratedPublicKey gpk : keyCreationResponse.generatedKeys.values()) {
-            ServerState.Key kp = req_key_iterator.next();
+            ServerState.Key kp = requestedKeysIterator.next();
             if (!kp.id.equals(gpk.id)) {
                 ServerState.bad("Wrong ID order:" + gpk.id + " / " + kp.id);
             }
@@ -1350,11 +1329,11 @@ public class ServerState implements Serializable {
                 ServerState.bad("Wrong key type returned for key id:" + gpk.id);
             }
             MacGenerator attestation = new MacGenerator();
-            // Write key attestation data
-            attestation.addString(gpk.id);
+            // Recreate anticipated key attestation data
             attestation.addArray(gpk.publicKey.getEncoded());
+            attestation.addCoreArray(kp.macInputData);
             if (!ArrayUtil.compare(attest(attestation.getResult(), kp.expectedAttestMacCount), 
-                                   kp.attestation = gpk.attestation)) {
+                                          gpk.attestation)) {
                 ServerState.bad("Attestation failed for key id:" + gpk.id);
             }
         }

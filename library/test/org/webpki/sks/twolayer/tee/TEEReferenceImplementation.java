@@ -432,7 +432,6 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
         String clientSessionId;
         String serverSessionId;
         String issuerUri;
-        byte[] sessionKey;
         boolean open = true;
         PublicKey keyManagementKey;
         short macSequenceCounter;
@@ -1552,25 +1551,6 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
 
     ////////////////////////////////////////////////////////////////////////////////
     //                                                                            //
-    //                      signProvisioningSessionData                           //
-    //                                                                            //
-    ////////////////////////////////////////////////////////////////////////////////
-    @Override
-    public synchronized byte[] signProvisioningSessionData(int provisioningHandle, byte[] data) throws SKSException {
-        ///////////////////////////////////////////////////////////////////////////////////
-        // Get provisioning session
-        ///////////////////////////////////////////////////////////////////////////////////
-        Provisioning provisioning = getOpenProvisioningSession(provisioningHandle);
-
-        ///////////////////////////////////////////////////////////////////////////////////
-        // Sign through the SE
-        ///////////////////////////////////////////////////////////////////////////////////
-        return SEReferenceImplementation.executeSessionSign(OS_INSTANCE_KEY, provisioning.provisioningState, data);
-    }
-
-
-    ////////////////////////////////////////////////////////////////////////////////
-    //                                                                            //
     //                              getKeyHandle                                  //
     //                                                                            //
     ////////////////////////////////////////////////////////////////////////////////
@@ -1880,7 +1860,8 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
                                                                       PublicKey keyManagementKey, // May be null
                                                                       int clientTime,
                                                                       int sessionLifeTime,
-                                                                      short sessionKeyLimit) throws SKSException {
+                                                                      short sessionKeyLimit,
+                                                                      byte[] serverCertificate) throws SKSException {
         ///////////////////////////////////////////////////////////////////////////////////
         // Limited input validation
         ///////////////////////////////////////////////////////////////////////////////////
@@ -1899,7 +1880,8 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
                                                              keyManagementKey,
                                                              clientTime,
                                                              sessionLifeTime,
-                                                             sessionKeyLimit);
+                                                             sessionKeyLimit,
+                                                             serverCertificate);
 
         ///////////////////////////////////////////////////////////////////////////////////
         // We did it!

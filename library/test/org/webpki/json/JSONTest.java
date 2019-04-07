@@ -3091,7 +3091,7 @@ public class JSONTest {
                     "  \"publicKey\": " +
                     "     {" +
                     "      \"kty\": \"EC\"," +
-                    "      \"crv\": \"http://xmlns.webpki.org/sks/algorithm#ec.nist.p521\"," +
+                    "      \"crv\": \"https://webpki.github.io/sks/algorithm#ec.nist.p521\"," +
                     "      \"x\": \"AQggHPZ-De2Tq_7U7v8ADpjyouKk6eV97Lujt9NdIcZgWI_cyOLv9HZulGWtC7I3X73ABE-rx95hAKbxiqQ1q0bA\"," +
                     "      \"y\": \"AP5yYckNtHGuzZ9Gb8oqueBXwgG5Riu5LnbhQUz5Mb_Xjo4mnhqe1f396ldZMUvyJdi2O03OZdhkpVv_ks2CsYHp\"" +
                     "    }" +
@@ -3137,7 +3137,7 @@ public class JSONTest {
                     "  \"publicKey\":" +
                     "    {" +
                     "      \"kty\": \"EC\"," +
-                    "      \"crv\": \"http://xmlns.webpki.org/sks/algorithm#ec.nist.p256\"," +
+                    "      \"crv\": \"https://webpki.github.io/sks/algorithm#ec.nist.p256\"," +
                     "      \"x\": \"GRgbhKB9Mw1lDKJFMbD_HsBvHR9235X7zF2SxHkDiOU\"," +
                     "      \"y\": \"isxpqxSx6AAEmZfgL5HevS67ejfm_4HcsB883TUaccs\"" +
                     "    }" +
@@ -3148,7 +3148,7 @@ public class JSONTest {
                     "  \"publicKey\":" +
                     "    {" +
                     "      \"kty\": \"EC\"," +
-                    "      \"crv\": \"http://xmlns.webpki.org/sks/algorithm#ec.nist.p256\"," +
+                    "      \"crv\": \"https://webpki.github.io/sks/algorithm#ec.nist.p256\"," +
                     "      \"x\": \"GRgbhKB9Mw1lDKJFMbD_HsBvHR9235X7zF2SxHkDiOU\"," +
                     "      \"y\": \"isxpqxSx6AAEmZfgL5HevS67ejfm_4HcsB883TUaccs\"," +
                     "      \"alien\": \"data\"" +

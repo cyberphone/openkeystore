@@ -37,7 +37,7 @@ import org.w3c.dom.Node;
  * @author Christian Geuer-Pollmann
  * @version $Revision: 1.37 $
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public abstract class Canonicalizer20010315 extends CanonicalizerBase {
     boolean firstCall = true;
     final SortedSet result = new TreeSet(COMPARE);
@@ -67,6 +67,7 @@ public abstract class Canonicalizer20010315 extends CanonicalizerBase {
      * @return the Attr[]s to be outputted
      * @throws CanonicalizerException
      */
+    @SuppressWarnings("rawtypes")
     Iterator handleAttributesSubtree(Element E, NameSpaceSymbTable ns)
             throws CanonicalizerException {
         if (!E.hasAttributes() && !firstCall) {
@@ -126,6 +127,7 @@ public abstract class Canonicalizer20010315 extends CanonicalizerBase {
      * @param E the root node.
      * @param result the xml:* attributes  to output.
      */
+    @SuppressWarnings("rawtypes")
     private void addXmlAttributesSubtree(Element E, SortedSet result) {
         // E is in the node-set
         Node parent = E.getParentNode();
@@ -266,6 +268,7 @@ public abstract class Canonicalizer20010315 extends CanonicalizerBase {
      * @param E
      * @param result
      */
+    @SuppressWarnings("rawtypes")
     private void addXmlAttributes(Element E, SortedSet result) {
     /* The processing of an element node E MUST be modified slightly when an
        * XPath node-set is given as input and the element's parent is omitted

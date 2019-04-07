@@ -14,11 +14,9 @@
  *  limitations under the License.
  *
  */
-package org.webpki.webapps.json.jws;
+package org.webpki.webapps.jsf;
 
 import java.io.IOException;
-
-import java.security.GeneralSecurityException;
 
 import java.util.logging.Logger;
 
@@ -29,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.webpki.json.JSONObjectReader;
+import org.webpki.json.JSONObjectWriter;
 import org.webpki.json.JSONOutputFormats;
 import org.webpki.json.JSONParser;
 
@@ -36,37 +35,34 @@ import org.webpki.util.Base64URL;
 
 import org.webpki.webutil.ServletUtil;
 
-public class RequestServlet extends HttpServlet {
+public class JavaScriptSignatureServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    static Logger logger = Logger.getLogger(RequestServlet.class.getName());
-
-    static final String JWS_ARGUMENT = "JWS";
+    static Logger logger = Logger.getLogger(JavaScriptSignatureServlet.class
+            .getName());
 
     static void error(HttpServletResponse response, String error_message)
             throws IOException, ServletException {
         HTML.errorPage(response, error_message);
     }
 
-    void verifySignature(HttpServletRequest request,
+    void showSignature(HttpServletRequest request,
             HttpServletResponse response, byte[] signed_json)
-            throws IOException, ServletException, GeneralSecurityException {
-        logger.info("JSON Signature Verification Entered");
-        ReadSignature doc = new ReadSignature();
+            throws IOException, ServletException {
         JSONObjectReader parsed_json = JSONParser.parse(signed_json);
-        doc.recurseObject(parsed_json);
         HTML.printResultPage(
                 response,
                 "<table>"
-        + "<tr><td align=\"center\" style=\"font-weight:bolder;font-size:10pt;font-family:arial,verdana\">Successful Verification!<br>&nbsp;</td></tr>"
-        + "<tr><td align=\"left\">"
-        + HTML.newLines2HTML(doc.getResult())
-        + "</td></tr>"
-        + "<tr><td align=\"left\">Signed JSON Object:</td></tr>"
-        + "<tr><td align=\"left\">"
-        + HTML.fancyBox("verify", parsed_json.serializeToString(JSONOutputFormats.PRETTY_HTML))
-        + "</td></tr>"
-        + "</table>");
+                        + "<tr><td align=\"center\" style=\"font-weight:bolder;font-size:10pt;font-family:arial,verdana\">Signed JavaScript Object<br>&nbsp;</td></tr>"
+                        + "<tr><td align=\"left\">"
+                        + HTML.fancyBox(
+                                "verify",
+                                new String(
+                                        new JSONObjectWriter(parsed_json)
+                                                .serializeToBytes(JSONOutputFormats.PRETTY_JS_NATIVE),
+                                        "UTF-8").replace("\n", "<br>").replace("  ", "&nbsp;&nbsp;&nbsp;&nbsp;"))
+                        + "</td></tr>"
+                        + "</table>");
     }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -74,7 +70,7 @@ public class RequestServlet extends HttpServlet {
         byte[] data = null;
         if (request.getContentType().startsWith(
                 "application/x-www-form-urlencoded")) {
-            data = Base64URL.decode(request.getParameter(JWS_ARGUMENT));
+            data = Base64URL.decode(request.getParameter(RequestServlet.JWS_ARGUMENT));
         } else {
             if (!request.getContentType().startsWith("application/json")) {
                 error(response, "Request didn't have the proper mime-type: "
@@ -84,26 +80,11 @@ public class RequestServlet extends HttpServlet {
             data = ServletUtil.getData(request);
         }
         try {
-            verifySignature(request, response, data);
-        } catch (Exception e) {
+            showSignature(request, response, data);
+        } catch (IOException e) {
             HTML.errorPage(response, e.getMessage());
             return;
         }
     }
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
-        String json = request.getParameter(JWS_ARGUMENT);
-        if (json == null) {
-            error(response, "Request didn't contain a \"" + JWS_ARGUMENT
-                    + "\" argment");
-            return;
-        }
-        try {
-            verifySignature(request, response, Base64URL.decode(json));
-        } catch (Exception e) {
-            HTML.errorPage(response, e.getMessage());
-            return;
-        }
-    }
 }

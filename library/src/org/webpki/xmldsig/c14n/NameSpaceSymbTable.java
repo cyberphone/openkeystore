@@ -32,7 +32,7 @@ import org.w3c.dom.Node;
  *
  * @author Raul Benito
  **/
-@SuppressWarnings("unchecked")
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class NameSpaceSymbTable {
 
     /**
@@ -342,7 +342,7 @@ class NameSpaceSymbEntry implements Cloneable {
     Attr n;
 };
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({ "unchecked", "rawtypes" })
 class SymbMap implements Cloneable {
     int free = 23;
     NameSpaceSymbEntry[] entries = new NameSpaceSymbEntry[free];

@@ -1,9 +1,9 @@
 {
-    "@context": "http://xmlns.webpki.org/keygen2/beta/20170513",
+    "@context": "https://webpki.github.io/keygen2#20190318",
     "@qualifier": "KeyCreationRequest",
     "serverSessionId": "142f1bdb286XVQnqmIRc1bSzm-QN-ZJk",
     "clientSessionId": "39NMWamKtHumJFfdIGkDrLP-NMB-5Lwo",
-    "keyEntryAlgorithm": "http://xmlns.webpki.org/sks/algorithm#key.1",
+    "keyEntryAlgorithm": "https://webpki.github.io/sks/algorithm#key.1",
     "pinPolicySpecifiers": 
         [{
              "id": "PIN.1",
@@ -17,7 +17,7 @@
                  [{
                       "id": "Key.1",
                       "appUsage": "authentication",
-                      "keyAlgorithm": "http://xmlns.webpki.org/sks/algorithm#rsa2048",
+                      "keyAlgorithm": "https://webpki.github.io/sks/algorithm#rsa2048",
                       "mac": "BQpWMwSz4EsYgliHH6RY3UNWuLsR3eJVapY0CYOUTtI"
                   }]
          }]

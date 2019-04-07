@@ -35,16 +35,16 @@ public enum SymEncryptionAlgorithms implements EncryptionAlgorithms {
     KW_AES256       ("http://www.w3.org/2001/04/xmlenc#kw-aes256",
                      "AESWrap",              32, false, false, false, true),
                 
-    AES_ECB_NOPAD   ("http://xmlns.webpki.org/sks/algorithm#aes.ecb.nopad",
+    AES_ECB_NOPAD   ("https://webpki.github.io/sks/algorithm#aes.ecb.nopad",
                      "AES/ECB/NoPadding",    0,  false, false, true,  true),  // SecurID
                 
-    AES_ECB_PAD     ("http://xmlns.webpki.org/sks/algorithm#aes.ecb",
+    AES_ECB_PAD     ("https://webpki.github.io/sks/algorithm#aes.ecb",
                      "AES/ECB/PKCS5Padding", 0,  false, false, false, false),
                 
-    AES_CBC_NOPAD   ("http://xmlns.webpki.org/sks/algorithm#aes.cbc.nopad",
+    AES_CBC_NOPAD   ("https://webpki.github.io/sks/algorithm#aes.cbc.nopad",
                      "AES/CBC/NoPadding",    0,  true,  false, false,  true),
                 
-    AES_CBC_PAD     ("http://xmlns.webpki.org/sks/algorithm#aes.cbc",
+    AES_CBC_PAD     ("https://webpki.github.io/sks/algorithm#aes.cbc",
                      "AES/CBC/PKCS5Padding", 0,  true,  false, true,   false);
 
     private final String sksName;          // As expressed in SKS

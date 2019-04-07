@@ -32,7 +32,7 @@ import java.security.spec.X509EncodedKeySpec;
 
 public enum KeyAlgorithms implements CryptoAlgorithms {
 
-    RSA1024     ("http://xmlns.webpki.org/sks/algorithm#rsa1024", null,
+    RSA1024     ("https://webpki.github.io/sks/algorithm#rsa1024", null,
                 "RSA",
                 1024,
                 AsymSignatureAlgorithms.RSA_SHA256,
@@ -41,7 +41,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                 null,
                 null),
     
-    RSA2048     ("http://xmlns.webpki.org/sks/algorithm#rsa2048", null,
+    RSA2048     ("https://webpki.github.io/sks/algorithm#rsa2048", null,
                 "RSA",
                 2048,
                 AsymSignatureAlgorithms.RSA_SHA256,
@@ -50,7 +50,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                 null,
                 null),
     
-    RSA3072     ("http://xmlns.webpki.org/sks/algorithm#rsa3072", null,
+    RSA3072     ("https://webpki.github.io/sks/algorithm#rsa3072", null,
                 "RSA",
                 3072,
                 AsymSignatureAlgorithms.RSA_SHA512,
@@ -59,7 +59,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                 null,
                 null),
     
-    RSA4096     ("http://xmlns.webpki.org/sks/algorithm#rsa4096", null,
+    RSA4096     ("https://webpki.github.io/sks/algorithm#rsa4096", null,
                 "RSA",
                 4096,
                 AsymSignatureAlgorithms.RSA_SHA512,
@@ -68,7 +68,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                 null,
                 null),
     
-    RSA1024_EXP ("http://xmlns.webpki.org/sks/algorithm#rsa1024.exp", null,
+    RSA1024_EXP ("https://webpki.github.io/sks/algorithm#rsa1024.exp", null,
                 "RSA",
                 1024,
                 AsymSignatureAlgorithms.RSA_SHA256,
@@ -77,7 +77,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                 null,
                 null),
     
-    RSA2048_EXP ("http://xmlns.webpki.org/sks/algorithm#rsa2048.exp", null,
+    RSA2048_EXP ("https://webpki.github.io/sks/algorithm#rsa2048.exp", null,
                 "RSA",
                 2048,
                 AsymSignatureAlgorithms.RSA_SHA256,
@@ -86,7 +86,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                 null,
                 null),
     
-    RSA3072_EXP ("http://xmlns.webpki.org/sks/algorithm#rsa3072.exp", null,
+    RSA3072_EXP ("https://webpki.github.io/sks/algorithm#rsa3072.exp", null,
                 "RSA",
                 3072,
                 AsymSignatureAlgorithms.RSA_SHA512,
@@ -95,7 +95,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                 null,
                 null),
     
-    RSA4096_EXP ("http://xmlns.webpki.org/sks/algorithm#rsa4096.exp", null,
+    RSA4096_EXP ("https://webpki.github.io/sks/algorithm#rsa4096.exp", null,
                 "RSA",
                 4096,
                 AsymSignatureAlgorithms.RSA_SHA512,
@@ -104,7 +104,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                 null,
                 null),
     
-    NIST_B_233  ("http://xmlns.webpki.org/sks/algorithm#ec.nist.b233", null,
+    NIST_B_233  ("https://webpki.github.io/sks/algorithm#ec.nist.b233", null,
                 "sect233r1",
                 233,
                 AsymSignatureAlgorithms.ECDSA_SHA512,
@@ -124,7 +124,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                     (byte)0xF6, (byte)0x18, (byte)0xB8, (byte)0x4D, (byte)0xB8, (byte)0xD0, (byte)0x9C, (byte)0x81,
                     (byte)0xB4, (byte)0x99, (byte)0x3B, (byte)0x94}),
     
-    NIST_B_283  ("http://xmlns.webpki.org/sks/algorithm#ec.nist.b283", null,
+    NIST_B_283  ("https://webpki.github.io/sks/algorithm#ec.nist.b283", null,
                 "sect283r1",
                 283,
                 AsymSignatureAlgorithms.ECDSA_SHA512,
@@ -145,7 +145,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                     (byte)0xCF, (byte)0x07, (byte)0x7D, (byte)0x84, (byte)0xEC, (byte)0x23, (byte)0xC6, (byte)0x2C,
                     (byte)0x1E, (byte)0x12, (byte)0x0D, (byte)0x95, (byte)0xFD, (byte)0xC7, (byte)0xC7, (byte)0x0C}),
     
-    NIST_P_256  ("http://xmlns.webpki.org/sks/algorithm#ec.nist.p256", "P-256",
+    NIST_P_256  ("https://webpki.github.io/sks/algorithm#ec.nist.p256", "P-256",
                 "secp256r1",
                 256,
                 AsymSignatureAlgorithms.ECDSA_SHA256,
@@ -166,7 +166,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                     (byte)0xCA, (byte)0x5F, (byte)0xB5, (byte)0x09, (byte)0x6E, (byte)0x95, (byte)0xCF, (byte)0x78,
                     (byte)0x7C, (byte)0x0D, (byte)0xB2}),
     
-    NIST_P_384  ("http://xmlns.webpki.org/sks/algorithm#ec.nist.p384", "P-384",
+    NIST_P_384  ("https://webpki.github.io/sks/algorithm#ec.nist.p384", "P-384",
                 "secp384r1",
                 384,
                 AsymSignatureAlgorithms.ECDSA_SHA384,
@@ -190,7 +190,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                     (byte)0x82, (byte)0xBD, (byte)0x65, (byte)0x83, (byte)0xB6, (byte)0x84, (byte)0x77, (byte)0xE8,
                     (byte)0x1F, (byte)0xB8, (byte)0xD7, (byte)0x3D, (byte)0x79, (byte)0x88, (byte)0x2E, (byte)0x98}),
     
-    NIST_P_521  ("http://xmlns.webpki.org/sks/algorithm#ec.nist.p521", "P-521",
+    NIST_P_521  ("https://webpki.github.io/sks/algorithm#ec.nist.p521", "P-521",
                 "secp521r1",
                 521,
                 AsymSignatureAlgorithms.ECDSA_SHA512,
@@ -219,7 +219,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                     (byte)0x22, (byte)0xA8, (byte)0x87, (byte)0x64, (byte)0xD0, (byte)0x36, (byte)0xAF, (byte)0xD3,
                     (byte)0x69, (byte)0xAC, (byte)0xCA, (byte)0xCB, (byte)0x1A, (byte)0x96}),
                     
-    SECG_K_256 ("http://xmlns.webpki.org/sks/algorithm#ec.secg.p256k1", null,
+    SECG_K_256 ("https://webpki.github.io/sks/algorithm#ec.secg.p256k1", null,
                 "secp256k1",
                 256,
                 AsymSignatureAlgorithms.ECDSA_SHA256,
@@ -240,7 +240,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                     (byte)0x5B, (byte)0xC1, (byte)0x32, (byte)0x44, (byte)0xA6, (byte)0x32, (byte)0x06, (byte)0xA9}),                       
     
     BRAINPOOL_P_256 (
-                "http://xmlns.webpki.org/sks/algorithm#ec.brainpool.p256r1", null,
+                "https://webpki.github.io/sks/algorithm#ec.brainpool.p256r1", null,
                 "brainpoolP256r1",
                 256,
                 AsymSignatureAlgorithms.ECDSA_SHA256,

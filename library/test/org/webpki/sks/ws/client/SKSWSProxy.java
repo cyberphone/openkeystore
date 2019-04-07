@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2014 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -35,678 +35,668 @@ import javax.xml.ws.ResponseWrapper;
  * This is the Java SKS WS client.
  */
 @WebService(serviceName="SKSWS",
-            targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+            targetNamespace="https://webpki.github.io/sks/v1.00")
 public interface SKSWSProxy
   {
     @WebMethod(operationName="getDeviceInfo")
-    @RequestWrapper(localName="getDeviceInfo", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="getDeviceInfo.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public void getDeviceInfo (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                               String deviceId,
-                               @WebParam(name="APILevel", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
+    @RequestWrapper(localName="getDeviceInfo", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="getDeviceInfo.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public void getDeviceInfo (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                               String device_id,
+                               @WebParam(name="APILevel", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
                                Holder<Short> api_level,
-                               @WebParam(name="DeviceType", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
+                               @WebParam(name="DeviceType", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
                                Holder<Byte> device_type,
-                               @WebParam(name="UpdateURL", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
+                               @WebParam(name="UpdateURL", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
                                Holder<String> update_url,
-                               @WebParam(name="VendorName", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
+                               @WebParam(name="VendorName", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
                                Holder<String> vendor_name,
-                               @WebParam(name="VendorDescription", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
+                               @WebParam(name="VendorDescription", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
                                Holder<String> vendor_description,
-                               @WebParam(name="X509Certificate", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
-                               Holder<List<byte[]>> certificatePath,
-                               @WebParam(name="SupportedAlgorithm", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
+                               @WebParam(name="X509Certificate", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
+                               Holder<List<byte[]>> certificate_path,
+                               @WebParam(name="SupportedAlgorithm", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
                                Holder<List<String>> supported_algorithms,
-                               @WebParam(name="CryptoDataSize", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
+                               @WebParam(name="CryptoDataSize", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
                                Holder<Integer> crypto_data_size,
-                               @WebParam(name="ExtensionDataSize", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
+                               @WebParam(name="ExtensionDataSize", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
                                Holder<Integer> extension_data_size,
-                               @WebParam(name="DevicePINSupport", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
+                               @WebParam(name="DevicePINSupport", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
                                Holder<Boolean> device_pin_support,
-                               @WebParam(name="BiometricSupport", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
+                               @WebParam(name="BiometricSupport", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
                                Holder<Boolean> biometric_support,
-                               @WebParam(name="ConnectionPort", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
+                               @WebParam(name="ConnectionPort", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
                                Holder<String> connection_port)
     throws SKSException_Exception;
 
     @WebMethod(operationName="createProvisioningSession")
-    @RequestWrapper(localName="createProvisioningSession", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="createProvisioningSession.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @WebResult(name="ProvisioningHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public int createProvisioningSession (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                          String deviceId,
-                                          @WebParam(name="SessionKeyAlgorithm", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="createProvisioningSession", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="createProvisioningSession.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @WebResult(name="ProvisioningHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public int createProvisioningSession (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                          String device_id,
+                                          @WebParam(name="SessionKeyAlgorithm", targetNamespace="https://webpki.github.io/sks/v1.00")
                                           String session_key_algorithm,
-                                          @WebParam(name="PrivacyEnabled", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                          @WebParam(name="PrivacyEnabled", targetNamespace="https://webpki.github.io/sks/v1.00")
                                           boolean privacy_enabled,
-                                          @WebParam(name="ServerSessionID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                          String serverSessionId,
-                                          @WebParam(name="ServerEphemeralKey", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                          @WebParam(name="ServerSessionID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                          String server_session_id,
+                                          @WebParam(name="ServerEphemeralKey", targetNamespace="https://webpki.github.io/sks/v1.00")
                                           byte[] server_ephemeral_key,
-                                          @WebParam(name="IssuerURI", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                          @WebParam(name="IssuerURI", targetNamespace="https://webpki.github.io/sks/v1.00")
                                           String issuer_uri,
-                                          @WebParam(name="KeyManagementKey", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                          byte[] keyManagementKey,
-                                          @WebParam(name="ClientTime", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                          int clientTime,
-                                          @WebParam(name="SessionLifeTime", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                          int sessionLifeTime,
-                                          @WebParam(name="SessionKeyLimit", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                          short sessionKeyLimit,
-                                          @WebParam(name="ClientSessionID", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
-                                          Holder<String> clientSessionId,
-                                          @WebParam(name="ClientEphemeralKey", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
+                                          @WebParam(name="KeyManagementKey", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                          byte[] key_management_key,
+                                          @WebParam(name="ClientTime", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                          int client_time,
+                                          @WebParam(name="SessionLifeTime", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                          int session_life_time,
+                                          @WebParam(name="SessionKeyLimit", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                          short session_key_limit,
+                                          @WebParam(name="ServerCertificate", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                          byte[] server_certificate,
+                                          @WebParam(name="ClientSessionID", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
+                                          Holder<String> client_session_id,
+                                          @WebParam(name="ClientEphemeralKey", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
                                           Holder<byte[]> client_ephemeral_key,
-                                          @WebParam(name="Attestation", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
+                                          @WebParam(name="Attestation", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
                                           Holder<byte[]> attestation)
     throws SKSException_Exception;
 
     @WebMethod(operationName="closeProvisioningSession")
-    @RequestWrapper(localName="closeProvisioningSession", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="closeProvisioningSession.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @WebResult(name="CloseAttestation", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public byte[] closeProvisioningSession (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                            String deviceId,
-                                            @WebParam(name="ProvisioningHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="closeProvisioningSession", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="closeProvisioningSession.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @WebResult(name="CloseAttestation", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public byte[] closeProvisioningSession (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                            String device_id,
+                                            @WebParam(name="ProvisioningHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
                                             int provisioning_handle,
-                                            @WebParam(name="Nonce", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                            @WebParam(name="Nonce", targetNamespace="https://webpki.github.io/sks/v1.00")
                                             byte[] nonce,
-                                            @WebParam(name="MAC", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                            @WebParam(name="MAC", targetNamespace="https://webpki.github.io/sks/v1.00")
                                             byte[] mac)
     throws SKSException_Exception;
 
     @WebMethod(operationName="enumerateProvisioningSessions")
-    @RequestWrapper(localName="enumerateProvisioningSessions", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="enumerateProvisioningSessions.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @WebResult(name="ProvisioningHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public int enumerateProvisioningSessions (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                              String deviceId,
-                                              @WebParam(name="ProvisioningHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="enumerateProvisioningSessions", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="enumerateProvisioningSessions.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @WebResult(name="ProvisioningHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public int enumerateProvisioningSessions (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                              String device_id,
+                                              @WebParam(name="ProvisioningHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
                                               int provisioning_handle,
-                                              @WebParam(name="ProvisioningState", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                              @WebParam(name="ProvisioningState", targetNamespace="https://webpki.github.io/sks/v1.00")
                                               boolean provisioning_state,
-                                              @WebParam(name="SessionKeyAlgorithm", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
+                                              @WebParam(name="SessionKeyAlgorithm", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
                                               Holder<String> session_key_algorithm,
-                                              @WebParam(name="PrivacyEnabled", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
+                                              @WebParam(name="PrivacyEnabled", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
                                               Holder<Boolean> privacy_enabled,
-                                              @WebParam(name="KeyManagementKey", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
-                                              Holder<byte[]> keyManagementKey,
-                                              @WebParam(name="ClientTime", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
-                                              Holder<Integer> clientTime,
-                                              @WebParam(name="SessionLifeTime", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
-                                              Holder<Integer> sessionLifeTime,
-                                              @WebParam(name="ServerSessionID", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
-                                              Holder<String> serverSessionId,
-                                              @WebParam(name="ClientSessionID", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
-                                              Holder<String> clientSessionId,
-                                              @WebParam(name="IssuerURI", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
+                                              @WebParam(name="KeyManagementKey", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
+                                              Holder<byte[]> key_management_key,
+                                              @WebParam(name="ClientTime", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
+                                              Holder<Integer> client_time,
+                                              @WebParam(name="SessionLifeTime", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
+                                              Holder<Integer> session_life_time,
+                                              @WebParam(name="ServerSessionID", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
+                                              Holder<String> server_session_id,
+                                              @WebParam(name="ClientSessionID", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
+                                              Holder<String> client_session_id,
+                                              @WebParam(name="IssuerURI", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
                                               Holder<String> issuer_uri)
     throws SKSException_Exception;
 
     @WebMethod(operationName="abortProvisioningSession")
-    @RequestWrapper(localName="abortProvisioningSession", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="abortProvisioningSession.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public void abortProvisioningSession (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                          String deviceId,
-                                          @WebParam(name="ProvisioningHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="abortProvisioningSession", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="abortProvisioningSession.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public void abortProvisioningSession (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                          String device_id,
+                                          @WebParam(name="ProvisioningHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
                                           int provisioning_handle)
     throws SKSException_Exception;
 
-    @WebMethod(operationName="signProvisioningSessionData")
-    @RequestWrapper(localName="signProvisioningSessionData", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="signProvisioningSessionData.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @WebResult(name="Signature", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public byte[] signProvisioningSessionData (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                               String deviceId,
-                                               @WebParam(name="ProvisioningHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                               int provisioning_handle,
-                                               @WebParam(name="Data", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                               byte[] data)
-    throws SKSException_Exception;
-
     @WebMethod(operationName="createPukPolicy")
-    @RequestWrapper(localName="createPukPolicy", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="createPukPolicy.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @WebResult(name="PukPolicyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public int createPukPolicy (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                String deviceId,
-                                @WebParam(name="ProvisioningHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="createPukPolicy", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="createPukPolicy.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @WebResult(name="PukPolicyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public int createPukPolicy (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                String device_id,
+                                @WebParam(name="ProvisioningHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
                                 int provisioning_handle,
-                                @WebParam(name="ID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                @WebParam(name="ID", targetNamespace="https://webpki.github.io/sks/v1.00")
                                 String id,
-                                @WebParam(name="EncryptedPuk", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                @WebParam(name="EncryptedPuk", targetNamespace="https://webpki.github.io/sks/v1.00")
                                 byte[] encrypted_puk,
-                                @WebParam(name="Format", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                @WebParam(name="Format", targetNamespace="https://webpki.github.io/sks/v1.00")
                                 byte format,
-                                @WebParam(name="RetryLimit", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                short retryLimit,
-                                @WebParam(name="MAC", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                @WebParam(name="RetryLimit", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                short retry_limit,
+                                @WebParam(name="MAC", targetNamespace="https://webpki.github.io/sks/v1.00")
                                 byte[] mac)
     throws SKSException_Exception;
 
     @WebMethod(operationName="createPinPolicy")
-    @RequestWrapper(localName="createPinPolicy", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="createPinPolicy.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @WebResult(name="PINPolicyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public int createPinPolicy (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                String deviceId,
-                                @WebParam(name="ProvisioningHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="createPinPolicy", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="createPinPolicy.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @WebResult(name="PINPolicyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public int createPinPolicy (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                String device_id,
+                                @WebParam(name="ProvisioningHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
                                 int provisioning_handle,
-                                @WebParam(name="ID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                @WebParam(name="ID", targetNamespace="https://webpki.github.io/sks/v1.00")
                                 String id,
-                                @WebParam(name="PukPolicyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                @WebParam(name="PukPolicyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
                                 int puk_policy_handle,
-                                @WebParam(name="UserDefined", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                boolean userDefined,
-                                @WebParam(name="UserModifiable", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                boolean userModifiable,
-                                @WebParam(name="Format", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                @WebParam(name="UserDefined", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                boolean user_defined,
+                                @WebParam(name="UserModifiable", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                boolean user_modifiable,
+                                @WebParam(name="Format", targetNamespace="https://webpki.github.io/sks/v1.00")
                                 byte format,
-                                @WebParam(name="RetryLimit", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                short retryLimit,
-                                @WebParam(name="Grouping", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                @WebParam(name="RetryLimit", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                short retry_limit,
+                                @WebParam(name="Grouping", targetNamespace="https://webpki.github.io/sks/v1.00")
                                 byte grouping,
-                                @WebParam(name="PatternRestrictions", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                byte patternRestrictions,
-                                @WebParam(name="MinLength", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                short minLength,
-                                @WebParam(name="MaxLength", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                short maxLength,
-                                @WebParam(name="InputMethod", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                byte inputMethod,
-                                @WebParam(name="MAC", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                @WebParam(name="PatternRestrictions", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                byte pattern_restrictions,
+                                @WebParam(name="MinLength", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                short min_length,
+                                @WebParam(name="MaxLength", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                short max_length,
+                                @WebParam(name="InputMethod", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                byte input_method,
+                                @WebParam(name="MAC", targetNamespace="https://webpki.github.io/sks/v1.00")
                                 byte[] mac)
     throws SKSException_Exception;
 
     @WebMethod(operationName="createKeyEntry")
-    @RequestWrapper(localName="createKeyEntry", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="createKeyEntry.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @WebResult(name="KeyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public int createKeyEntry (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                               String deviceId,
-                               @WebParam(name="ProvisioningHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="createKeyEntry", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="createKeyEntry.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @WebResult(name="KeyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public int createKeyEntry (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                               String device_id,
+                               @WebParam(name="ProvisioningHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
                                int provisioning_handle,
-                               @WebParam(name="ID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                               @WebParam(name="ID", targetNamespace="https://webpki.github.io/sks/v1.00")
                                String id,
-                               @WebParam(name="KeyEntryAlgorithm", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                               @WebParam(name="KeyEntryAlgorithm", targetNamespace="https://webpki.github.io/sks/v1.00")
                                String key_entry_algorithm,
-                               @WebParam(name="ServerSeed", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                               byte[] serverSeed,
-                               @WebParam(name="DevicePinProtection", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                               boolean devicePinProtection,
-                               @WebParam(name="PinPolicyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                               @WebParam(name="ServerSeed", targetNamespace="https://webpki.github.io/sks/v1.00")
+                               byte[] server_seed,
+                               @WebParam(name="DevicePinProtection", targetNamespace="https://webpki.github.io/sks/v1.00")
+                               boolean device_pin_protection,
+                               @WebParam(name="PinPolicyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
                                int pin_policy_handle,
-                               @WebParam(name="PinValue", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                               @WebParam(name="PinValue", targetNamespace="https://webpki.github.io/sks/v1.00")
                                byte[] pin_value,
-                               @WebParam(name="EnablePinCaching", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                               boolean enablePinCaching,
-                               @WebParam(name="BiometricProtection", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                               byte biometricProtection,
-                               @WebParam(name="ExportProtection", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                               byte exportProtection,
-                               @WebParam(name="DeleteProtection", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                               byte deleteProtection,
-                               @WebParam(name="AppUsage", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                               byte appUsage,
-                               @WebParam(name="FriendlyName", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                               String friendlyName,
-                               @WebParam(name="KeyAlgorithm", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                               @WebParam(name="EnablePinCaching", targetNamespace="https://webpki.github.io/sks/v1.00")
+                               boolean enable_pin_caching,
+                               @WebParam(name="BiometricProtection", targetNamespace="https://webpki.github.io/sks/v1.00")
+                               byte biometric_protection,
+                               @WebParam(name="ExportProtection", targetNamespace="https://webpki.github.io/sks/v1.00")
+                               byte export_protection,
+                               @WebParam(name="DeleteProtection", targetNamespace="https://webpki.github.io/sks/v1.00")
+                               byte delete_protection,
+                               @WebParam(name="AppUsage", targetNamespace="https://webpki.github.io/sks/v1.00")
+                               byte app_usage,
+                               @WebParam(name="FriendlyName", targetNamespace="https://webpki.github.io/sks/v1.00")
+                               String friendly_name,
+                               @WebParam(name="KeyAlgorithm", targetNamespace="https://webpki.github.io/sks/v1.00")
                                String key_algorithm,
-                               @WebParam(name="KeyParameters", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                               byte[] keyParameters,
-                               @WebParam(name="EndorsedAlgorithm", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                               List<String> endorsedAlgorithms,
-                               @WebParam(name="MAC", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                               @WebParam(name="KeyParameters", targetNamespace="https://webpki.github.io/sks/v1.00")
+                               byte[] key_parameters,
+                               @WebParam(name="EndorsedAlgorithm", targetNamespace="https://webpki.github.io/sks/v1.00")
+                               List<String> endorsed_algorithms,
+                               @WebParam(name="MAC", targetNamespace="https://webpki.github.io/sks/v1.00")
                                byte[] mac,
-                               @WebParam(name="PublicKey", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
-                               Holder<byte[]> publicKey,
-                               @WebParam(name="Attestation", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
+                               @WebParam(name="PublicKey", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
+                               Holder<byte[]> public_key,
+                               @WebParam(name="Attestation", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
                                Holder<byte[]> attestation)
     throws SKSException_Exception;
 
     @WebMethod(operationName="getKeyHandle")
-    @RequestWrapper(localName="getKeyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="getKeyHandle.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @WebResult(name="KeyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public int getKeyHandle (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                             String deviceId,
-                             @WebParam(name="ProvisioningHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="getKeyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="getKeyHandle.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @WebResult(name="KeyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public int getKeyHandle (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                             String device_id,
+                             @WebParam(name="ProvisioningHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
                              int provisioning_handle,
-                             @WebParam(name="ID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                             @WebParam(name="ID", targetNamespace="https://webpki.github.io/sks/v1.00")
                              String id)
     throws SKSException_Exception;
 
     @WebMethod(operationName="setCertificatePath")
-    @RequestWrapper(localName="setCertificatePath", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="setCertificatePath.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public void setCertificatePath (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                    String deviceId,
-                                    @WebParam(name="KeyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                    int keyHandle,
-                                    @WebParam(name="X509Certificate", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                    List<byte[]> certificatePath,
-                                    @WebParam(name="MAC", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="setCertificatePath", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="setCertificatePath.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public void setCertificatePath (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                    String device_id,
+                                    @WebParam(name="KeyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                    int key_handle,
+                                    @WebParam(name="X509Certificate", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                    List<byte[]> certificate_path,
+                                    @WebParam(name="MAC", targetNamespace="https://webpki.github.io/sks/v1.00")
                                     byte[] mac)
     throws SKSException_Exception;
 
     @WebMethod(operationName="importSymmetricKey")
-    @RequestWrapper(localName="importSymmetricKey", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="importSymmetricKey.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public void importSymmetricKey (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                    String deviceId,
-                                    @WebParam(name="KeyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                    int keyHandle,
-                                    @WebParam(name="EncryptedKey", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="importSymmetricKey", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="importSymmetricKey.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public void importSymmetricKey (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                    String device_id,
+                                    @WebParam(name="KeyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                    int key_handle,
+                                    @WebParam(name="EncryptedKey", targetNamespace="https://webpki.github.io/sks/v1.00")
                                     byte[] encrypted_key,
-                                    @WebParam(name="MAC", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                    @WebParam(name="MAC", targetNamespace="https://webpki.github.io/sks/v1.00")
                                     byte[] mac)
     throws SKSException_Exception;
 
     @WebMethod(operationName="importPrivateKey")
-    @RequestWrapper(localName="importPrivateKey", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="importPrivateKey.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public void importPrivateKey (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                  String deviceId,
-                                  @WebParam(name="KeyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                  int keyHandle,
-                                  @WebParam(name="EncryptedKey", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="importPrivateKey", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="importPrivateKey.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public void importPrivateKey (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                  String device_id,
+                                  @WebParam(name="KeyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                  int key_handle,
+                                  @WebParam(name="EncryptedKey", targetNamespace="https://webpki.github.io/sks/v1.00")
                                   byte[] encrypted_key,
-                                  @WebParam(name="MAC", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                  @WebParam(name="MAC", targetNamespace="https://webpki.github.io/sks/v1.00")
                                   byte[] mac)
     throws SKSException_Exception;
 
     @WebMethod(operationName="addExtension")
-    @RequestWrapper(localName="addExtension", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="addExtension.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public void addExtension (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                              String deviceId,
-                              @WebParam(name="KeyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                              int keyHandle,
-                              @WebParam(name="Type", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="addExtension", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="addExtension.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public void addExtension (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                              String device_id,
+                              @WebParam(name="KeyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
+                              int key_handle,
+                              @WebParam(name="Type", targetNamespace="https://webpki.github.io/sks/v1.00")
                               String type,
-                              @WebParam(name="SubType", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                              byte subType,
-                              @WebParam(name="Qualifier", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                              @WebParam(name="SubType", targetNamespace="https://webpki.github.io/sks/v1.00")
+                              byte sub_type,
+                              @WebParam(name="Qualifier", targetNamespace="https://webpki.github.io/sks/v1.00")
                               String qualifier,
-                              @WebParam(name="ExtensionData", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                              @WebParam(name="ExtensionData", targetNamespace="https://webpki.github.io/sks/v1.00")
                               byte[] extension_data,
-                              @WebParam(name="MAC", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                              @WebParam(name="MAC", targetNamespace="https://webpki.github.io/sks/v1.00")
                               byte[] mac)
     throws SKSException_Exception;
 
     @WebMethod(operationName="postDeleteKey")
-    @RequestWrapper(localName="postDeleteKey", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="postDeleteKey.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public void postDeleteKey (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                               String deviceId,
-                               @WebParam(name="ProvisioningHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="postDeleteKey", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="postDeleteKey.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public void postDeleteKey (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                               String device_id,
+                               @WebParam(name="ProvisioningHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
                                int provisioning_handle,
-                               @WebParam(name="TargetKeyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                               @WebParam(name="TargetKeyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
                                int target_key_handle,
-                               @WebParam(name="Authorization", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                               @WebParam(name="Authorization", targetNamespace="https://webpki.github.io/sks/v1.00")
                                byte[] authorization,
-                               @WebParam(name="MAC", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                               @WebParam(name="MAC", targetNamespace="https://webpki.github.io/sks/v1.00")
                                byte[] mac)
     throws SKSException_Exception;
 
     @WebMethod(operationName="postUnlockKey")
-    @RequestWrapper(localName="postUnlockKey", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="postUnlockKey.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public void postUnlockKey (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                               String deviceId,
-                               @WebParam(name="ProvisioningHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="postUnlockKey", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="postUnlockKey.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public void postUnlockKey (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                               String device_id,
+                               @WebParam(name="ProvisioningHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
                                int provisioning_handle,
-                               @WebParam(name="TargetKeyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                               @WebParam(name="TargetKeyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
                                int target_key_handle,
-                               @WebParam(name="Authorization", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                               @WebParam(name="Authorization", targetNamespace="https://webpki.github.io/sks/v1.00")
                                byte[] authorization,
-                               @WebParam(name="MAC", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                               @WebParam(name="MAC", targetNamespace="https://webpki.github.io/sks/v1.00")
                                byte[] mac)
     throws SKSException_Exception;
 
     @WebMethod(operationName="postUpdateKey")
-    @RequestWrapper(localName="postUpdateKey", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="postUpdateKey.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public void postUpdateKey (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                               String deviceId,
-                               @WebParam(name="KeyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                               int keyHandle,
-                               @WebParam(name="TargetKeyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="postUpdateKey", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="postUpdateKey.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public void postUpdateKey (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                               String device_id,
+                               @WebParam(name="KeyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
+                               int key_handle,
+                               @WebParam(name="TargetKeyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
                                int target_key_handle,
-                               @WebParam(name="Authorization", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                               @WebParam(name="Authorization", targetNamespace="https://webpki.github.io/sks/v1.00")
                                byte[] authorization,
-                               @WebParam(name="MAC", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                               @WebParam(name="MAC", targetNamespace="https://webpki.github.io/sks/v1.00")
                                byte[] mac)
     throws SKSException_Exception;
 
     @WebMethod(operationName="postCloneKeyProtection")
-    @RequestWrapper(localName="postCloneKeyProtection", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="postCloneKeyProtection.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public void postCloneKeyProtection (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                        String deviceId,
-                                        @WebParam(name="KeyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                        int keyHandle,
-                                        @WebParam(name="TargetKeyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="postCloneKeyProtection", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="postCloneKeyProtection.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public void postCloneKeyProtection (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                        String device_id,
+                                        @WebParam(name="KeyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                        int key_handle,
+                                        @WebParam(name="TargetKeyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
                                         int target_key_handle,
-                                        @WebParam(name="Authorization", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                        @WebParam(name="Authorization", targetNamespace="https://webpki.github.io/sks/v1.00")
                                         byte[] authorization,
-                                        @WebParam(name="MAC", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                        @WebParam(name="MAC", targetNamespace="https://webpki.github.io/sks/v1.00")
                                         byte[] mac)
     throws SKSException_Exception;
 
     @WebMethod(operationName="enumerateKeys")
-    @RequestWrapper(localName="enumerateKeys", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="enumerateKeys.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @WebResult(name="KeyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public int enumerateKeys (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                              String deviceId,
-                              @WebParam(name="KeyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                              int keyHandle,
-                              @WebParam(name="ProvisioningHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
+    @RequestWrapper(localName="enumerateKeys", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="enumerateKeys.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @WebResult(name="KeyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public int enumerateKeys (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                              String device_id,
+                              @WebParam(name="KeyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
+                              int key_handle,
+                              @WebParam(name="ProvisioningHandle", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
                               Holder<Integer> provisioning_handle)
     throws SKSException_Exception;
 
     @WebMethod(operationName="updateKeyManagementKey")
-    @RequestWrapper(localName="updateKeyManagementKey", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="updateKeyManagementKey.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public void updateKeyManagementKey (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                        String deviceId,
-                                        @WebParam(name="ProvisioningHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="updateKeyManagementKey", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="updateKeyManagementKey.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public void updateKeyManagementKey (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                        String device_id,
+                                        @WebParam(name="ProvisioningHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
                                         int provisioning_handle,
-                                        @WebParam(name="KeyManagementKey", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                        byte[] keyManagementKey,
-                                        @WebParam(name="Attestation", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                        @WebParam(name="KeyManagementKey", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                        byte[] key_management_key,
+                                        @WebParam(name="Attestation", targetNamespace="https://webpki.github.io/sks/v1.00")
                                         byte[] attestation)
     throws SKSException_Exception;
 
     @WebMethod(operationName="getKeyAttributes")
-    @RequestWrapper(localName="getKeyAttributes", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="getKeyAttributes.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public void getKeyAttributes (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                  String deviceId,
-                                  @WebParam(name="KeyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                  int keyHandle,
-                                  @WebParam(name="SymmetricKeyLength", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
+    @RequestWrapper(localName="getKeyAttributes", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="getKeyAttributes.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public void getKeyAttributes (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                  String device_id,
+                                  @WebParam(name="KeyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                  int key_handle,
+                                  @WebParam(name="SymmetricKeyLength", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
                                   Holder<Short> symmetric_key_length,
-                                  @WebParam(name="X509Certificate", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
-                                  Holder<List<byte[]>> certificatePath,
-                                  @WebParam(name="AppUsage", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
-                                  Holder<Byte> appUsage,
-                                  @WebParam(name="FriendlyName", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
-                                  Holder<String> friendlyName,
-                                  @WebParam(name="EndorsedAlgorithm", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
-                                  Holder<List<String>> endorsedAlgorithms,
-                                  @WebParam(name="ExtensionType", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
+                                  @WebParam(name="X509Certificate", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
+                                  Holder<List<byte[]>> certificate_path,
+                                  @WebParam(name="AppUsage", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
+                                  Holder<Byte> app_usage,
+                                  @WebParam(name="FriendlyName", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
+                                  Holder<String> friendly_name,
+                                  @WebParam(name="EndorsedAlgorithm", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
+                                  Holder<List<String>> endorsed_algorithms,
+                                  @WebParam(name="ExtensionType", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
                                   Holder<List<String>> extension_types)
     throws SKSException_Exception;
 
     @WebMethod(operationName="getKeyProtectionInfo")
-    @RequestWrapper(localName="getKeyProtectionInfo", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="getKeyProtectionInfo.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public void getKeyProtectionInfo (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                      String deviceId,
-                                      @WebParam(name="KeyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                      int keyHandle,
-                                      @WebParam(name="ProtectionStatus", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
-                                      Holder<Byte> protectionStatus,
-                                      @WebParam(name="PukFormat", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
+    @RequestWrapper(localName="getKeyProtectionInfo", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="getKeyProtectionInfo.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public void getKeyProtectionInfo (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                      String device_id,
+                                      @WebParam(name="KeyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                      int key_handle,
+                                      @WebParam(name="ProtectionStatus", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
+                                      Holder<Byte> protection_status,
+                                      @WebParam(name="PukFormat", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
                                       Holder<Byte> puk_format,
-                                      @WebParam(name="PukRetryLimit", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
+                                      @WebParam(name="PukRetryLimit", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
                                       Holder<Short> puk_retry_limit,
-                                      @WebParam(name="PukErrorCount", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
+                                      @WebParam(name="PukErrorCount", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
                                       Holder<Short> puk_error_count,
-                                      @WebParam(name="UserDefined", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
-                                      Holder<Boolean> userDefined,
-                                      @WebParam(name="UserModifiable", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
-                                      Holder<Boolean> userModifiable,
-                                      @WebParam(name="Format", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
+                                      @WebParam(name="UserDefined", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
+                                      Holder<Boolean> user_defined,
+                                      @WebParam(name="UserModifiable", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
+                                      Holder<Boolean> user_modifiable,
+                                      @WebParam(name="Format", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
                                       Holder<Byte> format,
-                                      @WebParam(name="RetryLimit", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
-                                      Holder<Short> retryLimit,
-                                      @WebParam(name="Grouping", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
+                                      @WebParam(name="RetryLimit", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
+                                      Holder<Short> retry_limit,
+                                      @WebParam(name="Grouping", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
                                       Holder<Byte> grouping,
-                                      @WebParam(name="PatternRestrictions", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
-                                      Holder<Byte> patternRestrictions,
-                                      @WebParam(name="MinLength", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
-                                      Holder<Short> minLength,
-                                      @WebParam(name="MaxLength", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
-                                      Holder<Short> maxLength,
-                                      @WebParam(name="InputMethod", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
-                                      Holder<Byte> inputMethod,
-                                      @WebParam(name="PinErrorCount", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
+                                      @WebParam(name="PatternRestrictions", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
+                                      Holder<Byte> pattern_restrictions,
+                                      @WebParam(name="MinLength", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
+                                      Holder<Short> min_length,
+                                      @WebParam(name="MaxLength", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
+                                      Holder<Short> max_length,
+                                      @WebParam(name="InputMethod", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
+                                      Holder<Byte> input_method,
+                                      @WebParam(name="PinErrorCount", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
                                       Holder<Short> pin_error_count,
-                                      @WebParam(name="EnablePinCaching", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
-                                      Holder<Boolean> enablePinCaching,
-                                      @WebParam(name="BiometricProtection", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
-                                      Holder<Byte> biometricProtection,
-                                      @WebParam(name="ExportProtection", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
-                                      Holder<Byte> exportProtection,
-                                      @WebParam(name="DeleteProtection", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
-                                      Holder<Byte> deleteProtection,
-                                      @WebParam(name="KeyBackup", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
+                                      @WebParam(name="EnablePinCaching", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
+                                      Holder<Boolean> enable_pin_caching,
+                                      @WebParam(name="BiometricProtection", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
+                                      Holder<Byte> biometric_protection,
+                                      @WebParam(name="ExportProtection", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
+                                      Holder<Byte> export_protection,
+                                      @WebParam(name="DeleteProtection", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
+                                      Holder<Byte> delete_protection,
+                                      @WebParam(name="KeyBackup", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
                                       Holder<Byte> key_backup)
     throws SKSException_Exception;
 
     @WebMethod(operationName="getExtension")
-    @RequestWrapper(localName="getExtension", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="getExtension.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public void getExtension (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                              String deviceId,
-                              @WebParam(name="KeyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                              int keyHandle,
-                              @WebParam(name="Type", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="getExtension", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="getExtension.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public void getExtension (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                              String device_id,
+                              @WebParam(name="KeyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
+                              int key_handle,
+                              @WebParam(name="Type", targetNamespace="https://webpki.github.io/sks/v1.00")
                               String type,
-                              @WebParam(name="SubType", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
-                              Holder<Byte> subType,
-                              @WebParam(name="Qualifier", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
+                              @WebParam(name="SubType", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
+                              Holder<Byte> sub_type,
+                              @WebParam(name="Qualifier", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
                               Holder<String> qualifier,
-                              @WebParam(name="ExtensionData", targetNamespace="http://xmlns.webpki.org/sks/v1.00", mode=WebParam.Mode.OUT)
+                              @WebParam(name="ExtensionData", targetNamespace="https://webpki.github.io/sks/v1.00", mode=WebParam.Mode.OUT)
                               Holder<byte[]> extension_data)
     throws SKSException_Exception;
 
     @WebMethod(operationName="setProperty")
-    @RequestWrapper(localName="setProperty", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="setProperty.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public void setProperty (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                             String deviceId,
-                             @WebParam(name="KeyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                             int keyHandle,
-                             @WebParam(name="Type", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="setProperty", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="setProperty.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public void setProperty (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                             String device_id,
+                             @WebParam(name="KeyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
+                             int key_handle,
+                             @WebParam(name="Type", targetNamespace="https://webpki.github.io/sks/v1.00")
                              String type,
-                             @WebParam(name="Name", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                             @WebParam(name="Name", targetNamespace="https://webpki.github.io/sks/v1.00")
                              String name,
-                             @WebParam(name="Value", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                             @WebParam(name="Value", targetNamespace="https://webpki.github.io/sks/v1.00")
                              String value)
     throws SKSException_Exception;
 
     @WebMethod(operationName="deleteKey")
-    @RequestWrapper(localName="deleteKey", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="deleteKey.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public void deleteKey (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                           String deviceId,
-                           @WebParam(name="KeyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                           int keyHandle,
-                           @WebParam(name="Authorization", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="deleteKey", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="deleteKey.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public void deleteKey (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                           String device_id,
+                           @WebParam(name="KeyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
+                           int key_handle,
+                           @WebParam(name="Authorization", targetNamespace="https://webpki.github.io/sks/v1.00")
                            byte[] authorization)
     throws SKSException_Exception;
 
     @WebMethod(operationName="exportKey")
-    @RequestWrapper(localName="exportKey", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="exportKey.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @WebResult(name="Key", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public byte[] exportKey (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                             String deviceId,
-                             @WebParam(name="KeyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                             int keyHandle,
-                             @WebParam(name="Authorization", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="exportKey", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="exportKey.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @WebResult(name="Key", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public byte[] exportKey (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                             String device_id,
+                             @WebParam(name="KeyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
+                             int key_handle,
+                             @WebParam(name="Authorization", targetNamespace="https://webpki.github.io/sks/v1.00")
                              byte[] authorization)
     throws SKSException_Exception;
 
     @WebMethod(operationName="unlockKey")
-    @RequestWrapper(localName="unlockKey", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="unlockKey.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public void unlockKey (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                           String deviceId,
-                           @WebParam(name="KeyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                           int keyHandle,
-                           @WebParam(name="Authorization", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="unlockKey", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="unlockKey.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public void unlockKey (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                           String device_id,
+                           @WebParam(name="KeyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
+                           int key_handle,
+                           @WebParam(name="Authorization", targetNamespace="https://webpki.github.io/sks/v1.00")
                            byte[] authorization)
     throws SKSException_Exception;
 
     @WebMethod(operationName="changePin")
-    @RequestWrapper(localName="changePin", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="changePin.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public void changePin (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                           String deviceId,
-                           @WebParam(name="KeyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                           int keyHandle,
-                           @WebParam(name="Authorization", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="changePin", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="changePin.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public void changePin (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                           String device_id,
+                           @WebParam(name="KeyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
+                           int key_handle,
+                           @WebParam(name="Authorization", targetNamespace="https://webpki.github.io/sks/v1.00")
                            byte[] authorization,
-                           @WebParam(name="NewPin", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                           @WebParam(name="NewPin", targetNamespace="https://webpki.github.io/sks/v1.00")
                            byte[] new_pin)
     throws SKSException_Exception;
 
     @WebMethod(operationName="setPin")
-    @RequestWrapper(localName="setPin", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="setPin.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public void setPin (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                        String deviceId,
-                        @WebParam(name="KeyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                        int keyHandle,
-                        @WebParam(name="Authorization", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="setPin", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="setPin.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public void setPin (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                        String device_id,
+                        @WebParam(name="KeyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
+                        int key_handle,
+                        @WebParam(name="Authorization", targetNamespace="https://webpki.github.io/sks/v1.00")
                         byte[] authorization,
-                        @WebParam(name="NewPin", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                        @WebParam(name="NewPin", targetNamespace="https://webpki.github.io/sks/v1.00")
                         byte[] new_pin)
     throws SKSException_Exception;
 
     @WebMethod(operationName="signHashedData")
-    @RequestWrapper(localName="signHashedData", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="signHashedData.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @WebResult(name="Result", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public byte[] signHashedData (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                  String deviceId,
-                                  @WebParam(name="KeyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                  int keyHandle,
-                                  @WebParam(name="Algorithm", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="signHashedData", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="signHashedData.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @WebResult(name="Result", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public byte[] signHashedData (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                  String device_id,
+                                  @WebParam(name="KeyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                  int key_handle,
+                                  @WebParam(name="Algorithm", targetNamespace="https://webpki.github.io/sks/v1.00")
                                   String algorithm,
-                                  @WebParam(name="Parameters", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                  @WebParam(name="Parameters", targetNamespace="https://webpki.github.io/sks/v1.00")
                                   byte[] parameters,
-                                  @WebParam(name="TrustedGUIAuthorization", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                  @WebParam(name="TrustedGUIAuthorization", targetNamespace="https://webpki.github.io/sks/v1.00")
                                   boolean trusted_gui_authorization,
-                                  @WebParam(name="Authorization", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                  @WebParam(name="Authorization", targetNamespace="https://webpki.github.io/sks/v1.00")
                                   byte[] authorization,
-                                  @WebParam(name="Data", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                  @WebParam(name="Data", targetNamespace="https://webpki.github.io/sks/v1.00")
                                   byte[] data)
     throws SKSException_Exception;
 
     @WebMethod(operationName="asymmetricKeyDecrypt")
-    @RequestWrapper(localName="asymmetricKeyDecrypt", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="asymmetricKeyDecrypt.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @WebResult(name="Result", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public byte[] asymmetricKeyDecrypt (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                        String deviceId,
-                                        @WebParam(name="KeyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                        int keyHandle,
-                                        @WebParam(name="Algorithm", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="asymmetricKeyDecrypt", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="asymmetricKeyDecrypt.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @WebResult(name="Result", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public byte[] asymmetricKeyDecrypt (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                        String device_id,
+                                        @WebParam(name="KeyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                        int key_handle,
+                                        @WebParam(name="Algorithm", targetNamespace="https://webpki.github.io/sks/v1.00")
                                         String algorithm,
-                                        @WebParam(name="Parameters", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                        @WebParam(name="Parameters", targetNamespace="https://webpki.github.io/sks/v1.00")
                                         byte[] parameters,
-                                        @WebParam(name="TrustedGUIAuthorization", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                        @WebParam(name="TrustedGUIAuthorization", targetNamespace="https://webpki.github.io/sks/v1.00")
                                         boolean trusted_gui_authorization,
-                                        @WebParam(name="Authorization", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                        @WebParam(name="Authorization", targetNamespace="https://webpki.github.io/sks/v1.00")
                                         byte[] authorization,
-                                        @WebParam(name="Data", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                        @WebParam(name="Data", targetNamespace="https://webpki.github.io/sks/v1.00")
                                         byte[] data)
     throws SKSException_Exception;
 
     @WebMethod(operationName="keyAgreement")
-    @RequestWrapper(localName="keyAgreement", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="keyAgreement.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @WebResult(name="Result", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public byte[] keyAgreement (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                String deviceId,
-                                @WebParam(name="KeyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                int keyHandle,
-                                @WebParam(name="Algorithm", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="keyAgreement", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="keyAgreement.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @WebResult(name="Result", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public byte[] keyAgreement (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                String device_id,
+                                @WebParam(name="KeyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                int key_handle,
+                                @WebParam(name="Algorithm", targetNamespace="https://webpki.github.io/sks/v1.00")
                                 String algorithm,
-                                @WebParam(name="Parameters", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                @WebParam(name="Parameters", targetNamespace="https://webpki.github.io/sks/v1.00")
                                 byte[] parameters,
-                                @WebParam(name="TrustedGUIAuthorization", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                @WebParam(name="TrustedGUIAuthorization", targetNamespace="https://webpki.github.io/sks/v1.00")
                                 boolean trusted_gui_authorization,
-                                @WebParam(name="Authorization", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                @WebParam(name="Authorization", targetNamespace="https://webpki.github.io/sks/v1.00")
                                 byte[] authorization,
-                                @WebParam(name="PublicKey", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                byte[] publicKey)
+                                @WebParam(name="PublicKey", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                byte[] public_key)
     throws SKSException_Exception;
 
     @WebMethod(operationName="performHmac")
-    @RequestWrapper(localName="performHmac", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="performHmac.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @WebResult(name="Result", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public byte[] performHmac (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                               String deviceId,
-                               @WebParam(name="KeyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                               int keyHandle,
-                               @WebParam(name="Algorithm", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="performHmac", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="performHmac.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @WebResult(name="Result", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public byte[] performHmac (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                               String device_id,
+                               @WebParam(name="KeyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
+                               int key_handle,
+                               @WebParam(name="Algorithm", targetNamespace="https://webpki.github.io/sks/v1.00")
                                String algorithm,
-                               @WebParam(name="Parameters", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                               @WebParam(name="Parameters", targetNamespace="https://webpki.github.io/sks/v1.00")
                                byte[] parameters,
-                               @WebParam(name="TrustedGUIAuthorization", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                               @WebParam(name="TrustedGUIAuthorization", targetNamespace="https://webpki.github.io/sks/v1.00")
                                boolean trusted_gui_authorization,
-                               @WebParam(name="Authorization", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                               @WebParam(name="Authorization", targetNamespace="https://webpki.github.io/sks/v1.00")
                                byte[] authorization,
-                               @WebParam(name="Data", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                               @WebParam(name="Data", targetNamespace="https://webpki.github.io/sks/v1.00")
                                byte[] data)
     throws SKSException_Exception;
 
     @WebMethod(operationName="symmetricKeyEncrypt")
-    @RequestWrapper(localName="symmetricKeyEncrypt", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="symmetricKeyEncrypt.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @WebResult(name="Result", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public byte[] symmetricKeyEncrypt (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                       String deviceId,
-                                       @WebParam(name="KeyHandle", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                       int keyHandle,
-                                       @WebParam(name="Algorithm", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="symmetricKeyEncrypt", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="symmetricKeyEncrypt.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @WebResult(name="Result", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public byte[] symmetricKeyEncrypt (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                       String device_id,
+                                       @WebParam(name="KeyHandle", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                       int key_handle,
+                                       @WebParam(name="Algorithm", targetNamespace="https://webpki.github.io/sks/v1.00")
                                        String algorithm,
-                                       @WebParam(name="Mode", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                       @WebParam(name="Mode", targetNamespace="https://webpki.github.io/sks/v1.00")
                                        boolean mode,
-                                       @WebParam(name="Parameters", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                       @WebParam(name="Parameters", targetNamespace="https://webpki.github.io/sks/v1.00")
                                        byte[] parameters,
-                                       @WebParam(name="TrustedGUIAuthorization", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                       @WebParam(name="TrustedGUIAuthorization", targetNamespace="https://webpki.github.io/sks/v1.00")
                                        boolean trusted_gui_authorization,
-                                       @WebParam(name="Authorization", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                       @WebParam(name="Authorization", targetNamespace="https://webpki.github.io/sks/v1.00")
                                        byte[] authorization,
-                                       @WebParam(name="Data", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                                       @WebParam(name="Data", targetNamespace="https://webpki.github.io/sks/v1.00")
                                        byte[] data)
     throws SKSException_Exception;
 
     @WebMethod(operationName="updateFirmware")
-    @RequestWrapper(localName="updateFirmware", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="updateFirmware.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @WebResult(name="NextURL", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public String updateFirmware (@WebParam(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-                                  String deviceId,
-                                  @WebParam(name="Chunk", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="updateFirmware", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="updateFirmware.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @WebResult(name="NextURL", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public String updateFirmware (@WebParam(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                  String device_id,
+                                  @WebParam(name="Chunk", targetNamespace="https://webpki.github.io/sks/v1.00")
                                   byte[] chunk)
     throws SKSException_Exception;
 
     @WebMethod(operationName="listDevices")
-    @RequestWrapper(localName="listDevices", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="listDevices.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @WebResult(name="DeviceID", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="listDevices", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="listDevices.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @WebResult(name="DeviceID", targetNamespace="https://webpki.github.io/sks/v1.00")
     public List<String> listDevices ()
     throws SKSException_Exception;
 
     @WebMethod(operationName="getVersion")
-    @RequestWrapper(localName="getVersion", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="getVersion.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @WebResult(name="Version", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="getVersion", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="getVersion.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @WebResult(name="Version", targetNamespace="https://webpki.github.io/sks/v1.00")
     public String getVersion ();
 
     @WebMethod(operationName="logEvent")
-    @RequestWrapper(localName="logEvent", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    @ResponseWrapper(localName="logEvent.Response", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
-    public void logEvent (@WebParam(name="Description", targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+    @RequestWrapper(localName="logEvent", targetNamespace="https://webpki.github.io/sks/v1.00")
+    @ResponseWrapper(localName="logEvent.Response", targetNamespace="https://webpki.github.io/sks/v1.00")
+    public void logEvent (@WebParam(name="Description", targetNamespace="https://webpki.github.io/sks/v1.00")
                           String description);
   }

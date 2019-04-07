@@ -41,7 +41,7 @@ import org.webpki.xml.DOMUtil;
  * @author Christian Geuer-Pollmann
  * @version $Revision: 1.23 $
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public abstract class CanonicalizerBase extends CanonicalizerSpi {
     //Constants to be outputed, In char array form, so
     //less garbage is generate when outputed.

@@ -265,6 +265,10 @@ public class ProvSess {
         private byte[] int2bytes(int i) {
             return new byte[]{(byte) (i >>> 24), (byte) (i >>> 16), (byte) (i >>> 8), (byte) i};
         }
+        
+        void addCoreArray(byte[] data) throws IOException {
+            baos.write(data);
+        }
 
         void addBlob(byte[] data) throws IOException {
             baos.write(int2bytes(data.length));
@@ -352,7 +356,8 @@ public class ProvSess {
                         keyManagementKey,
                         (int) (clientTime.getTimeInMillis() / 1000),
                         sessionLifeTime,
-                        sessionKeyLimit);
+                        sessionKeyLimit,
+                        SKSTest.serverCertificate);
         clientSessionId = sess.getClientSessionId();
         provisioning_handle = sess.getProvisioningHandle();
 
@@ -375,6 +380,7 @@ public class ProvSess {
         attestation_arguments.addInt((int) (clientTime.getTimeInMillis() / 1000));
         attestation_arguments.addInt(sessionLifeTime);
         attestation_arguments.addShort(sessionKeyLimit);
+        attestation_arguments.addArray(SKSTest.serverCertificate);
 
         server_sess_key.generateAndVerifySessionKey(sess.getClientEphemeralKey(),
                 kdf.getResult(),
@@ -618,6 +624,7 @@ public class ProvSess {
         for (String algorithm : sorted_algorithms) {
             key_entry_mac.addString(algorithm);
         }
+        byte[] data4macing = key_entry_mac.getResult();
         KeyData key_entry = sks.createKeyEntry(provisioning_handle,
                 id,
                 key_entry_algorithm,
@@ -634,10 +641,10 @@ public class ProvSess {
                 key_algorithm,
                 keyParameters,
                 sorted_algorithms,
-                mac4call(key_entry_mac.getResult(), SecureKeyStore.METHOD_CREATE_KEY_ENTRY));
+                mac4call(data4macing, SecureKeyStore.METHOD_CREATE_KEY_ENTRY));
         MacGenerator key_attestation = new MacGenerator();
-        key_attestation.addString(id);
         key_attestation.addArray(key_entry.getPublicKey().getEncoded());
+        key_attestation.addCoreArray(data4macing);
         if (!ArrayUtil.compare(attest(key_attestation.getResult()), key_entry.getAttestation())) {
             bad("Failed key attest");
         }
@@ -698,7 +705,4 @@ public class ProvSess {
         return privacy_enabled ? SecureKeyStore.KDF_ANONYMOUS : device.device_info.getCertificatePath()[0].getEncoded();
     }
 
-    public byte[] serverSessionSign(byte[] data) throws IOException, GeneralSecurityException {
-        return mac(data, SecureKeyStore.KDF_EXTERNAL_SIGNATURE);
-    }
 }

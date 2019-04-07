@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- SKS WS Descriptor File to be used with "WSCreator" -->
-<WebService NameSpace="http://xmlns.webpki.org/sks/v1.00"
+<WebService NameSpace="https://webpki.github.io/sks/v1.00"
             Service="SKSWS"
             DefaultURL="http://localhost:9982/securekeystore"
             WSDLLocation="META-INF/SKSWS.wsdl"
@@ -25,8 +25,8 @@
 ]]></LicenseHeader>
 
    <GlobalClientConstants>
-      <Constant Name="ALGORITHM_SESSION_KEY_ATTEST_1" Type="string" Value="http://xmlns.webpki.org/keygen2/1.0#algorithm.sks.s1"/>
-      <Constant Name="ALGORITHM_KEY_ATTEST_1"         Type="string" Value="http://xmlns.webpki.org/keygen2/1.0#algorithm.sks.k1"/>
+      <Constant Name="ALGORITHM_SESSION_KEY_ATTEST_1" Type="string" Value="https://webpki.github.io/keygen2/1.0#algorithm.sks.s1"/>
+      <Constant Name="ALGORITHM_KEY_ATTEST_1"         Type="string" Value="https://webpki.github.io/keygen2/1.0#algorithm.sks.k1"/>
    </GlobalClientConstants>
 
    <JavaServer ClassName="org.webpki.sks.ws.server.SKSWSImplementation"
@@ -527,6 +527,7 @@
      <Parameter Name="client_time"           Type="int"    XMLName="ClientTime"/>
      <Parameter Name="session_life_time"     Type="int"    XMLName="SessionLifeTime"/>
      <Parameter Name="session_key_limit"     Type="short"  XMLName="SessionKeyLimit"/>
+     <Parameter Name="server_certificate"    Type="binary" XMLName="ServerCertificate"/>
      <Parameter Name="client_session_id"     Type="string" XMLName="ClientSessionID"       Mode="out"/>
      <Parameter Name="client_ephemeral_key"  Type="binary" XMLName="ClientEphemeralKey"    Mode="out" RewriteRule="Out.ECPublicKey"/>
      <Parameter Name="attestation"           Type="binary" XMLName="Attestation"           Mode="out"/>
@@ -542,7 +543,8 @@
                                                                                         key_management_key == null ? null : createPublicKeyFromBlob (key_management_key),
                                                                                         client_time,
                                                                                         session_life_time,
-                                                                                        session_key_limit);
+                                                                                        session_key_limit,
+                                                                                        server_certificate);
             client_session_id.value = sess.getClientSessionId ();
             client_ephemeral_key.value = sess.getClientEphemeralKey ().getEncoded ();
             attestation.value = sess.getAttestation ();
@@ -648,16 +650,6 @@
           {
             log (device_id, "abortProvisioningSession (ProvisioningHandle=" + provisioning_handle + ")" + log_result);
           }
-]]></Code></Method>
-
-   <Method Name="signProvisioningSessionData" Throws="SKSException">
-     <Returns   Name="signature"           Type="binary" XMLName="Signature"/>
-     <Parameter Name="device_id"           Type="string" XMLName="DeviceID"           Null="true" SuppressRule="DEV"/>
-     <Parameter Name="provisioning_handle" Type="int"    XMLName="ProvisioningHandle"/>
-     <Parameter Name="data"                Type="binary" XMLName="Data"               />
-     <Code><![CDATA[
-        log (device_id, "signProvisioningSessionData (ProvisioningHandle=" + provisioning_handle + ")");
-        return getDevice (device_id).signProvisioningSessionData (provisioning_handle, data);
 ]]></Code></Method>
 
    <Method Name="createPukPolicy" Throws="SKSException">

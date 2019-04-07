@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServlet;
 public class ServiceStatus extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    private static Logger logger = Logger.getLogger(ServiceStatus.class.getName());
+    static Logger logger = Logger.getLogger(ServiceStatus.class.getName());
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {

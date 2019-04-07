@@ -14,16 +14,18 @@
  *  limitations under the License.
  *
  */
-package org.webpki.webapps.json.jws;
+package org.webpki.webapps.jsf;
 
 import java.io.IOException;
 
 import javax.servlet.ServletException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
+
 import org.webpki.json.JSONCryptoHelper;
 import org.webpki.json.JSONObjectWriter;
 
@@ -47,7 +49,7 @@ public class HTML {
     static final String HTML_INIT = "<!DOCTYPE html>"
         + "<html><head><link rel=\"icon\" href=\"webpkiorg.png\" sizes=\"192x192\">"
         + "<meta name=\"viewport\" content=\"initial-scale=1.0\"/>"
-        + "<title>JSON Signature Demo</title>"
+        + "<title>JSON Signature Format - Demo</title>"
         + "<style type=\"text/css\">html {overflow:auto} html, body {margin:0px;padding:0px;height:100%} "
         + "body {font-size:8pt;color:#000000;font-family:verdana,arial;background-color:white} "
         + "h2 {font-weight:bold;font-size:12pt;color:#000000;font-family:arial,verdana,helvetica} "
@@ -122,7 +124,7 @@ public class HTML {
                 "><div style=\"cursor:pointer;padding:2pt 0 0 0;position:absolute;top:15pt;left:15pt;z-index:5;visibility:visible;width:100pt;"
         + "height:47pt;border-width:1px;border-style:solid;border-color:black;box-shadow:3pt 3pt 3pt #D0D0D0\""
         + " onclick=\"document.location.href='https://github.com/cyberphone'\" title=\"Home of WebPKI.org\">")
-                .append(JWSService.logotype)
+                .append(JSFService.logotype)
                 .append("</div><table cellapdding=\"0\" cellspacing=\"0\" width=\"100%\" height=\"100%\">")
                 .append(box).append("</table></body></html>");
         return s.toString();
@@ -168,21 +170,18 @@ public class HTML {
         + "<tr><td align=\"center\" style=\"font-weight:bolder;font-size:10pt;font-family:arial,verdana\">JSON Clear Text Signature<br>&nbsp;</td></tr>"
         + "<tr><td align=\"left\"><a href=\""
         + baseurl
-        + "/verify\">Verify a JWS-CT on the server</a></td></tr>"
+        + "/verify\">Verify a JSF on the server</a></td></tr>"
         + "<tr><td>&nbsp;</td></tr>"
         + "<tr><td align=\"left\"><a href=\""
         + baseurl
-        + "/create\">Create a JWS-CT on the server</a></td></tr>"
+        + "/create\">Create a JSF on the server</a></td></tr>"
         + "<tr><td>&nbsp;</td></tr>"
         + "<tr><td align=\"left\"><a href=\""
         + baseurl
-        + "/webcrypto\">Create a JWS-CT using WebCrypto</a></td></tr>"
+        + "/webcrypto\">Create a JSF using WebCrypto</a></td></tr>"
         + "<tr><td>&nbsp;</td></tr>"
-        + "<tr><td align=\"center\" colspan=\"2\"><b>JOSE Mode</b>=" +
-        JWSService.joseMode 
-        + "</td></tr>"
         + "<tr><td>&nbsp;</td></tr>"
-        + "<tr><td align=\"left\"><a target=\"_blank\" href=\"https://cyberphone.github.io/doc/security/jose-jcs.html\">JWS-CT Documentation</a></td></tr>"
+        + "<tr><td align=\"left\"><a target=\"_blank\" href=\"https://cyberphone.github.io/doc/security/jose-jcs.html\">JSF Documentation</a></td></tr>"
         + "</table></td></tr>"));
     }
 

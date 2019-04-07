@@ -18,7 +18,7 @@ package org.webpki.kg2xml;
 
 public interface KeyGen2Constants
   {
-    String KEYGEN2_NS                                = "http://xmlns.webpki.org/keygen2/beta/20131201#";
+    String KEYGEN2_NS                                = "https://webpki.github.io/keygen2/beta/20131201#";
 
     String KEYGEN2_SCHEMA_FILE                       = "keygen2.xsd";
 

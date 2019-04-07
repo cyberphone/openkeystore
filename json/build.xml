@@ -1,15 +1,17 @@
-<project name="JWS Clear-text Signature Demo" default="help">
+<project name="JSON Signature Format Demo" default="help">
 
   <!-- set properties for this build -->
   <property name="src.dir" value="src"/>
-  <property name="class_war_path" value="WEB-INF/classes/org/webpki/webapps/json/jws"/>
+  <property name="class_war_path" value="WEB-INF/classes/org/webpki/webapps/jsf"/>
   
-  <property name="appcorename" value="jws-ct"/>
+  <property name="appcorename" value="jsf"/>
   <property name="application" value="${appcorename}.war"/>
   
   <property name="keypassword" value="foo123"/>
   <property name="keyfilext" value=".p12"/>
   <property name="key.dir" location="keys"/>
+  <property name="dist.dir" value="location"/>
+  <property name="temp.dir" location=".tmp"/>
   <property name="logotype.dir" location="logotype"/>
   
   <property name="clientroot" value="mybank-clientroot"/>
@@ -18,30 +20,20 @@
   
   <property name="debug" value="on"/>
   <property environment="env"/>
-  <property name="third.party.lib.dir" location="../resources/third-party-jars"/>
+  <property name="bcprovider.lib.dir" location="../resources/third-party-jars"/>
   <property name="webpki.lib.dir" location="../library/dist"/>
   <property name="catalina.home" value="${env.CATALINA_HOME}"/>
+  <property name="bouncycastle" value="true"/>
+  <property name="javaversion" value="1.8"/>
 
   <property name="signature.dir" location="signature"/>
-
-	<resources id="jcs_application.xml">
-<string><![CDATA[    <!-- JWS Demo -->
-    <module>
-        <web>
-            <web-uri>${application}</web-uri>
-            <context-root>/${appcorename}</context-root>
-        </web>
-    </module>
-</application>]]></string>
-    </resources>
-  <property name="ejbca-app-xml-mod" refid="jcs_application.xml"/>
 
   <condition property="storetype" value="PKCS12" else="JKS">
     <matches pattern=".*\.p12$" string="${keyfilext}"/>
   </condition>
 
   <target name="help">
-      <echo message="build tomcat [-Djose=0] ejbca-jcs zip-distribution createcerts"/>
+      <echo message="build tomcat createcerts"/>
   </target>
 
   <target name="_init" unless="app_path">
@@ -53,14 +45,11 @@
 
   </target>
 
-  <target name="_delete_tmp" unless="${ejbca.tmp.path}">
+  <target name="build">
     <delete dir="${temp.dir}"/>
     <mkdir dir="${temp.dir}"/>
-  </target>
-  
-  <target name="_build">
-    <property name="temp.dir" value=".tmp"/>
-    <antcall target="_delete_tmp"/>
+    <property name="zip.bcprovider.lib.dir" value="${bcprovider.lib.dir}"/>
+    <property name="zip.webpki.lib.dir" value="${webpki.lib.dir}"/>
     <fixcrlf srcdir="${src.dir}"
        tab="remove"
        tablength="4"
@@ -73,12 +62,19 @@
            target="${javaversion}"
            srcdir="${src.dir}"
            destdir="${temp.dir}"
-           classpath="${compile_classpath}"
-           includeAntRuntime="false"/>
+           includeAntRuntime="false">
+  		<classpath>
+  			 <fileset dir="${webpki.lib.dir}">
+  		        <include name="*.jar"/>
+  			 </fileset>
+  			 <fileset dir="${bcprovider.lib.dir}">
+  		        <include name="*.jar"/>
+  			 </fileset>
+  	    </classpath>
+    </javac>
     <property name="clientkey" value="${clientkey_rsa}"/>
-    <property name="bouncycastle.first" value="true"/>
     <replace file="${temp.dir}/web.xml">
-	  <replacefilter token="@bouncycastle-first@" value="${bouncycastle.first}"/>
+	  <replacefilter token="@bouncycastle-first@" value="${bouncycastle}"/>
 	  <replacefilter token="@key-password@" value="${keypassword}"/>
 	  <replacefilter token="@clientkey-rsa@" value="${clientkey_rsa}${keyfilext}"/>
 	  <replacefilter token="@clientkey-ec@" value="${clientkey_ec}${keyfilext}"/>
@@ -87,7 +83,7 @@
       <classes dir="${temp.dir}">
          <exclude name="web.xml"/>
       </classes>
-      <lib dir="${zip.third.party.lib.dir}">
+      <lib dir="${zip.bcprovider.lib.dir}">
          <include name="bcprov-*.jar"/>
       </lib>
       <lib dir="${zip.webpki.lib.dir}">
@@ -102,55 +98,10 @@
   </target>
 
   <target name="tomcat" depends="_init">
-    <!-- Set path to application.  -->
-    <property name="dist.dir" value="dist"/>
     <antcall target="build"/>
     <copy file="${dist.dir}/${application}" todir="${env.CATALINA_HOME}/webapps" overwrite="true" preservelastmodified="true"/>
   </target>
   
-  <!-- ejbca plugin -->
-  <target name="jcs-ejbca">
-     <echo message="JCS Demo Plugin"/>
-     <property name="zip.third.party.lib.dir" value="empty.lib"/>
-     <property name="zip.webpki.lib.dir" value="empty.lib"/>
-     <property name="dist.dir" value="${ejbca.gen.path}"/>
-     <path id="compile.classpath.ejbca">
-	    <fileset dir="${plugin.ejbca.ant.custom.enrollment_plugin_directory}/lib.common">
-           <include name="*.jar"/>
-        </fileset>
-        <pathelement path="${ejbca.classpath}"/>
-	 </path>
-     <property name="compile_classpath" refid="compile.classpath.ejbca"/>
-     <property name="temp.dir" value="${ejbca.tmp.path}"/>
-     <property name="bouncycastle.first" value="false"/>
-     <antcall target="_build">
-        <param name="javaversion" value="1.6"/>
-     </antcall>
-     <!-- Update application.xml -->
-     <replace file="${ejbca.app.xml}" value="${ejbca-app-xml-mod}">
-	    <replacetoken><![CDATA[</application>]]></replacetoken>
-     </replace>
-  </target>
-
-  <target name="build">
-    <!-- Set path to application.  -->
-    <property name="dist.dir" value="dist"/>
-    <property name="zip.third.party.lib.dir" value="${third.party.lib.dir}"/>
-    <property name="zip.webpki.lib.dir" value="${webpki.lib.dir}"/>
-    <path id="compile.classpath">
-	  <fileset dir="${webpki.lib.dir}">
-        <include name="*.jar"/>
-     </fileset>
-     <fileset dir="${third.party.lib.dir}">
-	    <include name="*.jar"/>
-      </fileset>
-	</path>
-	<property name="compile_classpath" refid="compile.classpath"/>
-    <antcall target="_build">
-       <param name="javaversion" value="1.8"/>
-    </antcall>
-  </target>
-
   <target name="_createcert">
   	<java fork="yes"
   		  classname="org.webpki.ca.CommandLineCA"
@@ -160,7 +111,7 @@
   			 <fileset dir="${webpki.lib.dir}">
   		        <include name="*.jar"/>
   			 </fileset>
-  			 <fileset dir="${third.party.lib.dir}">
+  			 <fileset dir="${bcprovider.lib.dir}">
   		        <include name="*.jar"/>
   			 </fileset>
   	    </classpath>
@@ -180,32 +131,4 @@
     </antcall>
   </target>
   
-  <target name="_unzipit" if="uu">
-    <delete dir="${dd}/${appcorename}"/>
-    <unzip src="${dd}/${appcorename}.zip" dest="${dd}"/>
-  </target>
-
-  <target name="zip-distribution">
-    <fail unless="dd" message="-&#10;
-***************************************************************&#10;
- You must define a distribution directory using the -D option:&#10;
- ant zip-distribution -Ddd=the_path_to_the_directory.&#10;
- Optionally you can specify -Duu=0 which deletes ${appcorename}&#10;
- and replaces the directory with the unzipped content&#10;
-***************************************************************&#10;"/>
-	<echo message="Producing ${appcorename} .zip and .zip.SHA1 files..."/> 
-   	<delete file="${dd}/${appcorename}.zip" failonerror="false"/>
-    <zip destfile="${dd}/${appcorename}.zip">
-      <zipfileset dir="." prefix="${appcorename}">
-       	<exclude name="/**/.*"/>
-        <exclude name="/.tmp/**"/>
-       	<exclude name="**/.settings/**"/>
-       	<exclude name="**/bin/**"/>
-       	<exclude name="dist/**"/>
-      </zipfileset>
-    </zip>
-    <checksum file="${dd}/${appcorename}.zip" fileext=".SHA1" algorithm="sha1" forceOverwrite="yes"/>
-    <antcall target="_unzipit"/>
-  </target>
-   
 </project>

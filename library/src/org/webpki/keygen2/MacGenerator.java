@@ -26,36 +26,36 @@ class MacGenerator {
     MacGenerator() {
         baos = new ByteArrayOutputStream();
     }
-
-    private byte[] short2bytes(int s) {
-        return new byte[]{(byte) (s >>> 8), (byte) s};
-    }
-
-    private byte[] int2bytes(int i) {
-        return new byte[]{(byte) (i >>> 24), (byte) (i >>> 16), (byte) (i >>> 8), (byte) i};
+    
+    void addCoreArray(byte[] data) throws IOException {
+        baos.write(data);
     }
 
     void addBlob(byte[] data) throws IOException {
-        baos.write(int2bytes(data.length));
+        addInt(data.length);
         baos.write(data);
     }
 
     void addArray(byte[] data) throws IOException {
-        baos.write(short2bytes(data.length));
+        addShort(data.length);
         baos.write(data);
     }
 
     void addString(String string) throws IOException {
-        addArray(string.getBytes("UTF-8"));
+        addArray(string.getBytes("utf-8"));
     }
 
-    void addInt(int i) throws IOException {
-        baos.write(int2bytes(i));
-    }
 
     void addShort(int s) throws IOException {
-        baos.write(short2bytes(s));
+        baos.write((byte)(s >>> 8));
+        baos.write((byte)(s));
     }
+    
+    void addInt(int i) throws IOException {
+        addShort(i >>> 16);
+        addShort(i);
+    }
+
 
     void addByte(byte b) {
         baos.write(b);

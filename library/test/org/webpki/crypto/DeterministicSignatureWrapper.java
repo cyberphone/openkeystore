@@ -35,7 +35,6 @@ import java.security.spec.ECParameterSpec;
 import org.webpki.json.JSONCryptoHelper;
 import org.webpki.json.JSONObjectWriter;
 import org.webpki.json.JSONParser;
-import org.webpki.json.JSONSignatureDecoder;
 
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.DebugFormatter;

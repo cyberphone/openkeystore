@@ -1,10 +1,10 @@
 {
-    "@context": "http://xmlns.webpki.org/keygen2/beta/20170513",
+    "@context": "https://webpki.github.io/keygen2#20190318",
     "@qualifier": "InvocationResponse",
     "serverSessionId": "142f1bdb286XVQnqmIRc1bSzm-QN-ZJk",
     "clientCapabilities": 
         [{
-             "type": "http://xmlns.webpki.org/keygen2/logotype#list",
+             "type": "https://webpki.github.io/keygen2/logotype#list",
              "imageAttributes": 
                  {
                      "mimeType": "image/png",

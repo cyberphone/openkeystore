@@ -41,7 +41,7 @@ import org.w3c.dom.Node;
  * @author Christian Geuer-Pollmann
  * @version $Revision: 1.21 $
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public abstract class Canonicalizer20010315Excl extends CanonicalizerBase {
     /**
      * This Set contains the names (Strings like "xmlns" or "xmlns:foo") of

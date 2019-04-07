@@ -152,8 +152,6 @@ public interface KeyGen2Constants {
 
     String SERVER_EPHEMERAL_KEY_JSON                 = SecureKeyStore.VAR_SERVER_EPHEMERAL_KEY;
 
-    String SERVER_CERT_FP_JSON                       = "serverCertificateFingerPrint";
-
     String SERVER_SEED_JSON                          = SecureKeyStore.VAR_SERVER_SEED;
     
     String SERVER_SESSION_ID_JSON                    = SecureKeyStore.VAR_SERVER_SESSION_ID;

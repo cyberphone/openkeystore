@@ -19,7 +19,6 @@ package org.webpki.sks.ws;
 import java.security.cert.X509Certificate;
 
 import org.webpki.sks.DeviceInfo;
-import org.webpki.sks.SKSException;
 
 public class WSDeviceInfo extends DeviceInfo {
     /**

@@ -217,7 +217,8 @@ public class SKSWSClient implements SecureKeyStore, WSSpecific {
                                                          PublicKey keyManagementKey,
                                                          int clientTime,
                                                          int sessionLifeTime,
-                                                         short sessionKeyLimit) throws SKSException {
+                                                         short sessionKeyLimit,
+                                                         byte[] serverCertificate) throws SKSException {
         try {
             Holder<String> clientSessionId = new Holder<String>();
             Holder<byte[]> client_ephemeral_key = new Holder<byte[]>();
@@ -232,6 +233,7 @@ public class SKSWSClient implements SecureKeyStore, WSSpecific {
                     clientTime,
                     sessionLifeTime,
                     sessionKeyLimit,
+                    serverCertificate,
                     clientSessionId,
                     client_ephemeral_key,
                     session_attestation);
@@ -305,18 +307,6 @@ public class SKSWSClient implements SecureKeyStore, WSSpecific {
         try {
             getSKSWS().abortProvisioningSession(deviceId,
                     provisioning_handle);
-        } catch (SKSException_Exception e) {
-            throw new SKSException(e.getFaultInfo().getMessage(), e.getFaultInfo().getError());
-        }
-    }
-
-    @Override
-    public byte[] signProvisioningSessionData(int provisioning_handle,
-                                              byte[] data) throws SKSException {
-        try {
-            return getSKSWS().signProvisioningSessionData(deviceId,
-                    provisioning_handle,
-                    data);
         } catch (SKSException_Exception e) {
             throw new SKSException(e.getFaultInfo().getMessage(), e.getFaultInfo().getError());
         }

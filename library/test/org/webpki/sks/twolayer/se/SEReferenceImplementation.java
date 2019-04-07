@@ -301,11 +301,11 @@ public class SEReferenceImplementation {
                      "AES/CBC/PKCS5Padding",
                      ALG_SYM_ENC | ALG_IV_INT | ALG_IV_REQ | ALG_SYML_256);
 
-        addAlgorithm("http://xmlns.webpki.org/sks/algorithm#aes.ecb.nopad",
+        addAlgorithm("https://webpki.github.io/sks/algorithm#aes.ecb.nopad",
                      "AES/ECB/NoPadding",
                      ALG_SYM_ENC | ALG_SYML_128 | ALG_SYML_192 | ALG_SYML_256 | ALG_AES_PAD);
 
-        addAlgorithm("http://xmlns.webpki.org/sks/algorithm#aes.cbc",
+        addAlgorithm("https://webpki.github.io/sks/algorithm#aes.cbc",
                      "AES/CBC/PKCS5Padding",
                      ALG_SYM_ENC | ALG_IV_REQ | ALG_SYML_128 | ALG_SYML_192 | ALG_SYML_256);
 
@@ -323,22 +323,22 @@ public class SEReferenceImplementation {
         //////////////////////////////////////////////////////////////////////////////////////
         //  Asymmetric Key Decryption
         //////////////////////////////////////////////////////////////////////////////////////
-        addAlgorithm("http://xmlns.webpki.org/sks/algorithm#rsa.es.pkcs1_5",
+        addAlgorithm("https://webpki.github.io/sks/algorithm#rsa.es.pkcs1_5",
                      "RSA/ECB/PKCS1Padding",
                      ALG_ASYM_ENC | ALG_RSA_KEY);
 
-        addAlgorithm("http://xmlns.webpki.org/sks/algorithm#rsa.oaep.sha1",
+        addAlgorithm("https://webpki.github.io/sks/algorithm#rsa.oaep.sha1",
                      "RSA/ECB/OAEPWithSHA-1AndMGF1Padding",
                      ALG_ASYM_ENC | ALG_RSA_KEY);
 
-        addAlgorithm("http://xmlns.webpki.org/sks/algorithm#rsa.oaep.sha256",
+        addAlgorithm("https://webpki.github.io/sks/algorithm#rsa.oaep.sha256",
                      "RSA/ECB/OAEPWithSHA-256AndMGF1Padding",
                      ALG_ASYM_ENC | ALG_RSA_KEY | ALG_HASH_256);
 
         //////////////////////////////////////////////////////////////////////////////////////
         //  Diffie-Hellman Key Agreement
         //////////////////////////////////////////////////////////////////////////////////////
-        addAlgorithm("http://xmlns.webpki.org/sks/algorithm#ecdh.raw",
+        addAlgorithm("https://webpki.github.io/sks/algorithm#ecdh.raw",
                      "ECDH",
                      ALG_ASYM_KA | ALG_EC_KEY);
         
@@ -375,18 +375,18 @@ public class SEReferenceImplementation {
                      "NONEwithECDSA",
                      ALG_ASYM_SGN | ALG_EC_KEY | ALG_HASH_512);
 
-        addAlgorithm("http://xmlns.webpki.org/sks/algorithm#rsa.pkcs1.none",
+        addAlgorithm("https://webpki.github.io/sks/algorithm#rsa.pkcs1.none",
                      "NONEwithRSA",
                      ALG_ASYM_SGN | ALG_RSA_KEY);
 
-        addAlgorithm("http://xmlns.webpki.org/sks/algorithm#ecdsa.none",
+        addAlgorithm("https://webpki.github.io/sks/algorithm#ecdsa.none",
                      "NONEwithECDSA",
                      ALG_ASYM_SGN | ALG_EC_KEY);
 
         //////////////////////////////////////////////////////////////////////////////////////
         //  Asymmetric Key Generation
         //////////////////////////////////////////////////////////////////////////////////////
-        addAlgorithm("http://xmlns.webpki.org/sks/algorithm#ec.nist.p256",
+        addAlgorithm("https://webpki.github.io/sks/algorithm#ec.nist.p256",
                      "secp256r1",
                      ALG_EC_KEY | ALG_KEY_GEN).addEcCurve (32, new byte[]
               {(byte)0x30, (byte)0x59, (byte)0x30, (byte)0x13, (byte)0x06, (byte)0x07, (byte)0x2A, (byte)0x86,
@@ -402,7 +402,7 @@ public class SEReferenceImplementation {
                (byte)0xCA, (byte)0x5F, (byte)0xB5, (byte)0x09, (byte)0x6E, (byte)0x95, (byte)0xCF, (byte)0x78,
                (byte)0x7C, (byte)0x0D, (byte)0xB2});
 
-        addAlgorithm("http://xmlns.webpki.org/sks/algorithm#ec.nist.p384",
+        addAlgorithm("https://webpki.github.io/sks/algorithm#ec.nist.p384",
                      "secp384r1",
                      ALG_EC_KEY | ALG_KEY_GEN).addEcCurve (48, new byte[]
               {(byte)0x30, (byte)0x76, (byte)0x30, (byte)0x10, (byte)0x06, (byte)0x07, (byte)0x2A, (byte)0x86,
@@ -421,7 +421,7 @@ public class SEReferenceImplementation {
                (byte)0x82, (byte)0xBD, (byte)0x65, (byte)0x83, (byte)0xB6, (byte)0x84, (byte)0x77, (byte)0xE8,
                (byte)0x1F, (byte)0xB8, (byte)0xD7, (byte)0x3D, (byte)0x79, (byte)0x88, (byte)0x2E, (byte)0x98});
 
-        addAlgorithm("http://xmlns.webpki.org/sks/algorithm#ec.nist.p521",
+        addAlgorithm("https://webpki.github.io/sks/algorithm#ec.nist.p521",
                      "secp521r1",
                       ALG_EC_KEY | ALG_KEY_GEN).addEcCurve (66, new byte[]
               {(byte)0x30, (byte)0x81, (byte)0x9B, (byte)0x30, (byte)0x10, (byte)0x06, (byte)0x07, (byte)0x2A,
@@ -445,7 +445,7 @@ public class SEReferenceImplementation {
                (byte)0x22, (byte)0xA8, (byte)0x87, (byte)0x64, (byte)0xD0, (byte)0x36, (byte)0xAF, (byte)0xD3,
                (byte)0x69, (byte)0xAC, (byte)0xCA, (byte)0xCB, (byte)0x1A, (byte)0x96});
 
-        addAlgorithm("http://xmlns.webpki.org/sks/algorithm#ec.brainpool.p256r1",
+        addAlgorithm("https://webpki.github.io/sks/algorithm#ec.brainpool.p256r1",
                      "brainpoolP256r1",
                      ALG_EC_KEY | ALG_KEY_GEN).addEcCurve (32, new byte[]
               {(byte)0x30, (byte)0x5A, (byte)0x30, (byte)0x14, (byte)0x06, (byte)0x07, (byte)0x2A, (byte)0x86,
@@ -462,10 +462,10 @@ public class SEReferenceImplementation {
                (byte)0x17, (byte)0xF3, (byte)0x3A, (byte)0xB4});
 
         for (short rsa_size : SecureKeyStore.SKS_DEFAULT_RSA_SUPPORT) {
-            addAlgorithm("http://xmlns.webpki.org/sks/algorithm#rsa" + rsa_size,
+            addAlgorithm("https://webpki.github.io/sks/algorithm#rsa" + rsa_size,
                     null, ALG_RSA_KEY | ALG_KEY_GEN | rsa_size);
             if (SKS_RSA_EXPONENT_SUPPORT) {
-                addAlgorithm("http://xmlns.webpki.org/sks/algorithm#rsa" + rsa_size + ".exp",
+                addAlgorithm("https://webpki.github.io/sks/algorithm#rsa" + rsa_size + ".exp",
                         null, ALG_KEY_PARM | ALG_RSA_KEY | ALG_KEY_GEN | rsa_size);
             }
         }
@@ -477,7 +477,7 @@ public class SEReferenceImplementation {
 
         addAlgorithm(SecureKeyStore.ALGORITHM_KEY_ATTEST_1, null, 0);
 
-        addAlgorithm("http://xmlns.webpki.org/sks/algorithm#none", null, ALG_NONE);
+        addAlgorithm("https://webpki.github.io/sks/algorithm#none", null, ALG_NONE);
 
     }
 
@@ -632,13 +632,14 @@ public class SEReferenceImplementation {
 
         void readKey(byte[] osInstanceKey, byte[] sealedKey) throws GeneralSecurityException {
             try {
-                ByteReader byte_reader = new ByteReader(sealedKey);
-                wrappedKey = byte_reader.getArray();
-                isSymmetric = byte_reader.readBoolean();
-                isExportable = byte_reader.readBoolean();
-                sha256OfPublicKeyOrCertificate = byte_reader.readArray(32);
-                byte[] oldMac = byte_reader.readArray(32);
-                byte_reader.checkEOF();
+                ByteReader byteReader = new ByteReader(sealedKey);
+                wrappedKey = byteReader.getArray();
+                isSymmetric = byteReader.readBoolean();
+                isExportable = byteReader.readBoolean();
+                sha256OfPublicKeyOrCertificate = byteReader.readArray(32);
+                byte[] oldMac = byteReader.readArray(32);
+                byteReader.checkEOF();
+                byteReader.close();
                 if (!Arrays.equals(oldMac, createMAC(osInstanceKey))) {
                     throw new GeneralSecurityException("Sealed key MAC error");
                 }
@@ -659,11 +660,12 @@ public class SEReferenceImplementation {
 
         public void readKey(byte[] provisioningState) throws GeneralSecurityException {
             try {
-                ByteReader byte_reader = new ByteReader(provisioningState);
-                wrappedSessionKey = byte_reader.readArray(SecureKeyStore.AES_CBC_PKCS5_PADDING + 32);
-                macSequenceCounter = byte_reader.readShort();
-                sessionKeyLimit = byte_reader.readShort();
-                byte_reader.checkEOF();
+                ByteReader byteReader = new ByteReader(provisioningState);
+                wrappedSessionKey = byteReader.readArray(SecureKeyStore.AES_CBC_PKCS5_PADDING + 32);
+                macSequenceCounter = byteReader.readShort();
+                sessionKeyLimit = byteReader.readShort();
+                byteReader.checkEOF();
+                byteReader.close();
             } catch (IOException e) {
                 throw new GeneralSecurityException(e);
             }
@@ -1233,19 +1235,6 @@ public class SEReferenceImplementation {
 
     ////////////////////////////////////////////////////////////////////////////////
     //                                                                            //
-    //                           executeSessionSign                               //
-    //                                                                            //
-    ////////////////////////////////////////////////////////////////////////////////
-    public static byte[] executeSessionSign(byte[] osInstanceKey,
-                                            byte[] provisioningState,
-                                            byte[] data) throws SKSException {
-        return getMacBuilder(getUnwrappedSessionKey(osInstanceKey, provisioningState),
-                SecureKeyStore.KDF_EXTERNAL_SIGNATURE).addVerbatim(data).getResult();
-    }
-
-
-    ////////////////////////////////////////////////////////////////////////////////
-    //                                                                            //
     //                        executeAsymmetricDecrypt                            //
     //                                                                            //
     ////////////////////////////////////////////////////////////////////////////////
@@ -1664,7 +1653,8 @@ public class SEReferenceImplementation {
                                                             PublicKey keyManagementKey, // May be null
                                                             int clientTime,
                                                             int sessionLifeTime,
-                                                            short sessionKeyLimit) throws SKSException {
+                                                            short sessionKeyLimit,
+                                                            byte[] serverCertificate) throws SKSException {
         ///////////////////////////////////////////////////////////////////////////////////
         // Check provisioning session algorithm compatibility
         ///////////////////////////////////////////////////////////////////////////////////
@@ -1761,6 +1751,7 @@ public class SEReferenceImplementation {
                 ska.addInt(clientTime);
                 ska.addInt(sessionLifeTime);
                 ska.addShort(sessionKeyLimit);
+                ska.addArray(serverCertificate);
                 seProvisioningData.attestation = ska.getResult();
             } else {
                 ///////////////////////////////////////////////////////////////////////////////////
@@ -1779,6 +1770,7 @@ public class SEReferenceImplementation {
                 pka.addInt(clientTime);
                 pka.addInt(sessionLifeTime);
                 pka.addShort(sessionKeyLimit);
+                pka.addArray(serverCertificate);
                 seProvisioningData.attestation = pka.getResult();
             }
 

@@ -27,7 +27,7 @@ import org.w3c.dom.Node;
 /**
  * @author Christian Geuer-Pollmann
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class Canonicalizer {
 
     //J-

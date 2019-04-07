@@ -59,7 +59,6 @@ public interface SecureKeyStore {
     ///////////////////////////////////////////////////////////////////////////////////
     byte[] KDF_DEVICE_ATTESTATION             = {'D','e','v','i','c','e','A','t','t','e','s','t','a','t','i','o','n'};
     byte[] KDF_ENCRYPTION_KEY                 = {'E','n','c','r','y','p','t','i','o','n','K','e','y'};
-    byte[] KDF_EXTERNAL_SIGNATURE             = {'E','x','t','e','r','n','a','l','S','i','g','n','a','t','u','r','e'};
     byte[] KDF_ANONYMOUS                      = {'A','n','o','n','y','m','o','u','s'};
 
     ///////////////////////////////////////////////////////////////////////////////////
@@ -202,16 +201,16 @@ public interface SecureKeyStore {
     ///////////////////////////////////////////////////////////////////////////////////
     // Special algorithms
     ///////////////////////////////////////////////////////////////////////////////////
-    String ALGORITHM_KEY_ATTEST_1             = "http://xmlns.webpki.org/sks/algorithm#key.1";
-    String ALGORITHM_SESSION_ATTEST_1         = "http://xmlns.webpki.org/sks/algorithm#session.1";
-    String ALGORITHM_ECDH_RAW                 = "http://xmlns.webpki.org/sks/algorithm#ecdh.raw";
-    String ALGORITHM_NONE                     = "http://xmlns.webpki.org/sks/algorithm#none";
+    String ALGORITHM_KEY_ATTEST_1             = "https://webpki.github.io/sks/algorithm#key.1";
+    String ALGORITHM_SESSION_ATTEST_1         = "https://webpki.github.io/sks/algorithm#session.1";
+    String ALGORITHM_ECDH_RAW                 = "https://webpki.github.io/sks/algorithm#ecdh.raw";
+    String ALGORITHM_NONE                     = "https://webpki.github.io/sks/algorithm#none";
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Miscellaneous
     ///////////////////////////////////////////////////////////////////////////////////
     byte[] ZERO_LENGTH_ARRAY                  = new byte[0];
-    short SKS_API_LEVEL                       = 99;
+    short SKS_API_LEVEL                       = 105;
     int AES_CBC_PKCS5_PADDING                 = 32;
 
     ///////////////////////////////////////////////////////////////////////////////////
@@ -226,7 +225,8 @@ public interface SecureKeyStore {
                                                   PublicKey keyManagementKey, // Must be null if not applicable
                                                   int clientTime,
                                                   int sessionLifeTime,
-                                                  short sessionKeyLimit) throws SKSException;
+                                                  short sessionKeyLimit,
+                                                  byte[] serverCertificate) throws SKSException;
 
     byte[] closeProvisioningSession(int provisioningHandle,
                                     byte[] nonce,
@@ -235,8 +235,6 @@ public interface SecureKeyStore {
     EnumeratedProvisioningSession enumerateProvisioningSessions(int provisioningHandle,
                                                                 boolean provisioningState) throws SKSException;
 
-    byte[] signProvisioningSessionData(int provisioningHandle,
-                                       byte[] data) throws SKSException;
 
     KeyData createKeyEntry(int provisioningHandle,
                            String id,

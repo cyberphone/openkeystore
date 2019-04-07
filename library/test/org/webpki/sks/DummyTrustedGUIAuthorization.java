@@ -74,7 +74,6 @@ public class DummyTrustedGUIAuthorization implements TrustedGUIAuthorization {
             Cipher crypt = Cipher.getInstance("AES/CBC/PKCS5Padding");
             crypt.init(Cipher.DECRYPT_MODE, new SecretKeySpec(SHARED_SECRET_32, "AES"), new IvParameterSpec(value, 32, 16));
             value = crypt.doFinal(value, 48, value.length - 48);
-        } catch (IOException e) {
         } catch (GeneralSecurityException e) {
             throw new SKSException(e);
         }

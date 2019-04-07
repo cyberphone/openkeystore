@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package org.webpki.webapps.json.jws;
+package org.webpki.webapps.jsf;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,9 +32,9 @@ import org.webpki.util.ArrayUtil;
 
 import org.webpki.webutil.InitPropertyReader;
 
-public class JWSService extends InitPropertyReader implements
-        ServletContextListener {
-    static Logger logger = Logger.getLogger(JWSService.class.getName());
+public class JSFService extends InitPropertyReader implements  ServletContextListener {
+
+    static Logger logger = Logger.getLogger(JSFService.class.getName());
 
     static String key_password;
 
@@ -46,8 +46,6 @@ public class JWSService extends InitPropertyReader implements
     
     static String testSignature;
     
-    static boolean joseMode;
-
     InputStream getResource(String name) throws IOException {
         InputStream is = this.getClass().getResourceAsStream(name);
         if (is == null) {
@@ -84,8 +82,9 @@ public class JWSService extends InitPropertyReader implements
             // //////////////////////////////////////////////////////////////////////////////////////////
             // Keys
             // //////////////////////////////////////////////////////////////////////////////////////////
-            CustomCryptoProvider
-                    .forcedLoad(getPropertyBoolean("bouncycastle_first"));
+            if (!getPropertyString("bouncycastle_first").isEmpty()) {
+                CustomCryptoProvider.forcedLoad(true);
+            }
             key_password = getPropertyString("key_password");
             clientkey_rsa = new AsymSignatureHelper(KeyStoreReader.loadKeyStore(
                     getResource(getPropertyString("clientkey_rsa")),
@@ -94,7 +93,7 @@ public class JWSService extends InitPropertyReader implements
                     getResource(getPropertyString("clientkey_ec")),
                     key_password));
 
-            logger.info("JWS-CT Demo Successfully Initiated");
+            logger.info("JSF Demo Successfully Initiated");
         } catch (Exception e) {
             logger.log(Level.SEVERE, "********\n" + e.getMessage()
                     + "\n********", e);

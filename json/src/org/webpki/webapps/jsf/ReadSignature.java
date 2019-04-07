@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package org.webpki.webapps.json.jws;
+package org.webpki.webapps.jsf;
 
 import java.io.IOException;
 
@@ -163,7 +163,7 @@ public class ReadSignature {
                             preselectedKey =
                                     (AsymSignatureAlgorithms.getAlgorithmFromId(algo, 
                                                AlgorithmPreferences.JOSE_ACCEPT_PREFER).isRsa() ?
-                                            JWSService.clientkey_rsa : JWSService.clientkey_ec).getPublicKey();
+                                            JSFService.clientkey_rsa : JSFService.clientkey_ec).getPublicKey();
                             options.setRequirePublicKeyInfo(false);
                         }
                     }

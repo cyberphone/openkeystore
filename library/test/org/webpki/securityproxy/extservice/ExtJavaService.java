@@ -33,7 +33,7 @@ import org.webpki.securityproxy.common.SampleResponseObject;
 public class ExtJavaService extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    private static Logger logger = Logger.getLogger(ExtJavaService.class.getName());
+    static Logger logger = Logger.getLogger(ExtJavaService.class.getName());
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {

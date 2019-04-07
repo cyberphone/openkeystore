@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2014 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -27,19 +27,19 @@ import javax.xml.ws.WebEndpoint;
 import javax.xml.ws.WebServiceClient;
 
 @WebServiceClient(name="SKSWS",
-                  targetNamespace="http://xmlns.webpki.org/sks/v1.00")
+                  targetNamespace="https://webpki.github.io/sks/v1.00")
 public class SKSWS extends Service
   {
     public SKSWS ()
       {
         super (SKSWS.class.getResource ("/META-INF/SKSWS.wsdl"),
-               new QName ("http://xmlns.webpki.org/sks/v1.00", "SKSWS"));
+               new QName ("https://webpki.github.io/sks/v1.00", "SKSWS"));
       }
 
     @WebEndpoint(name="SKSWS.Port")
     public SKSWSProxy getSKSWSPort ()
       {
-        return super.getPort (new QName ("http://xmlns.webpki.org/sks/v1.00", "SKSWS.Port"),
+        return super.getPort (new QName ("https://webpki.github.io/sks/v1.00", "SKSWS.Port"),
                               SKSWSProxy.class);
       }
   }

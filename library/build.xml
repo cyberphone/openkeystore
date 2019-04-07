@@ -228,7 +228,7 @@
 
   	<!-- Make a copy that we can patch... -->
     <copy todir="${temp_dir}" preservelastmodified="true">
-      <fileset dir="${src_dir}">
+      <fileset dir="${test_dir}">
         <include name="org/webpki/sks/ws/**/*.java"/>
       </fileset>
     </copy>

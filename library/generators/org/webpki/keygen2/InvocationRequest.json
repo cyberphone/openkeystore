@@ -1,7 +1,7 @@
 {
-    "@context": "http://xmlns.webpki.org/keygen2/beta/20170513",
+    "@context": "https://webpki.github.io/keygen2#20190318",
     "@qualifier": "InvocationRequest",
     "serverSessionId": "142f1bdb286XVQnqmIRc1bSzm-QN-ZJk",
     "action": "manage",
-    "clientCapabilityQuery": ["http://xmlns.webpki.org/keygen2/logotype#list"]
+    "clientCapabilityQuery": ["https://webpki.github.io/keygen2/logotype#list"]
 }

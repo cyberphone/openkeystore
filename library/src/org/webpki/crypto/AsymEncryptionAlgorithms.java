@@ -21,17 +21,17 @@ import java.io.IOException;
 
 public enum AsymEncryptionAlgorithms implements EncryptionAlgorithms {
 
-    RSA_ES_PKCS_1_5        ("http://xmlns.webpki.org/sks/algorithm#rsa.es.pkcs1_5",
+    RSA_ES_PKCS_1_5        ("https://webpki.github.io/sks/algorithm#rsa.es.pkcs1_5",
                             null,
                             "1.2.840.113549.1.1.1",
                             "RSA/ECB/PKCS1Padding"),
     
-    RSA_OAEP_SHA1_MGF1P    ("http://xmlns.webpki.org/sks/algorithm#rsa.oaep.sha1",
+    RSA_OAEP_SHA1_MGF1P    ("https://webpki.github.io/sks/algorithm#rsa.oaep.sha1",
                             "RSA-OAEP",
                             null,
                             "RSA/ECB/OAEPWithSHA-1AndMGF1Padding"),
     
-    RSA_OAEP_SHA256_MGF1P  ("http://xmlns.webpki.org/sks/algorithm#rsa.oaep.sha256",
+    RSA_OAEP_SHA256_MGF1P  ("https://webpki.github.io/sks/algorithm#rsa.oaep.sha256",
                             "RSA-OAEP-256",
                             null,                            
                             "RSA/ECB/OAEPWithSHA-256AndMGF1Padding");

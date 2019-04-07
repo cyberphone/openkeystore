@@ -20,7 +20,7 @@ import java.io.IOException;
 
 public enum AsymSignatureAlgorithms implements SignatureAlgorithms {
 
-    RSA_NONE     ("http://xmlns.webpki.org/sks/algorithm#rsa.pkcs1.none", null,
+    RSA_NONE     ("https://webpki.github.io/sks/algorithm#rsa.pkcs1.none", null,
                   null,                    "NONEwithRSA",     null,                  true,  true),
       
     RSA_SHA1     ("http://www.w3.org/2000/09/xmldsig#rsa-sha1",           null,              
@@ -35,7 +35,7 @@ public enum AsymSignatureAlgorithms implements SignatureAlgorithms {
     RSA_SHA512   ("http://www.w3.org/2001/04/xmldsig-more#rsa-sha512",    "RS512",   
                   "1.2.840.113549.1.1.13", "SHA512withRSA",   HashAlgorithms.SHA512, true,  true),
       
-    ECDSA_NONE   ("http://xmlns.webpki.org/sks/algorithm#ecdsa.none",     null,
+    ECDSA_NONE   ("https://webpki.github.io/sks/algorithm#ecdsa.none",     null,
                   null,                    "NONEwithECDSA",   null,                  true,  false),
       
     ECDSA_SHA256 ("http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256",  "ES256",  

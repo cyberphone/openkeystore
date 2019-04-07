@@ -21,15 +21,15 @@
         ///////////////////////////////////////////////
 
 -->
-<wsdl:definitions targetNamespace="http://xmlns.webpki.org/sks/v1.00"
+<wsdl:definitions targetNamespace="https://webpki.github.io/sks/v1.00"
                   xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
-                  xmlns:tns="http://xmlns.webpki.org/sks/v1.00"
+                  xmlns:tns="https://webpki.github.io/sks/v1.00"
                   xmlns:xs="http://www.w3.org/2001/XMLSchema"
                   xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
 
   <wsdl:types>
 
-    <xs:schema targetNamespace="http://xmlns.webpki.org/sks/v1.00"
+    <xs:schema targetNamespace="https://webpki.github.io/sks/v1.00"
                elementFormDefault="qualified" attributeFormDefault="unqualified">
 
       <xs:element name="SKSException">
@@ -90,6 +90,7 @@
             <xs:element name="ClientTime" type="xs:int"/>
             <xs:element name="SessionLifeTime" type="xs:int"/>
             <xs:element name="SessionKeyLimit" type="xs:short"/>
+            <xs:element name="ServerCertificate" type="xs:base64Binary"/>
           </xs:sequence>
         </xs:complexType>
       </xs:element>
@@ -171,28 +172,6 @@
         </xs:complexType>
       </xs:element>
       <xs:element name="abortProvisioningSession.Response"/>
-
-<!--
-      #########################################################
-      #              signProvisioningSessionData              #
-      #########################################################
--->
-      <xs:element name="signProvisioningSessionData">
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="DeviceID" type="xs:string" nillable="true" minOccurs="0"/>
-            <xs:element name="ProvisioningHandle" type="xs:int"/>
-            <xs:element name="Data" type="xs:base64Binary"/>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="signProvisioningSessionData.Response">
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="Signature" type="xs:base64Binary"/>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
 
 <!--
       #########################################################
@@ -933,14 +912,6 @@
     <wsdl:part name="parameters" element="tns:abortProvisioningSession.Response"/>
   </wsdl:message>
 
-  <wsdl:message name="signProvisioningSessionData">
-    <wsdl:part name="parameters" element="tns:signProvisioningSessionData"/>
-  </wsdl:message>
-
-  <wsdl:message name="signProvisioningSessionData.Response">
-    <wsdl:part name="parameters" element="tns:signProvisioningSessionData.Response"/>
-  </wsdl:message>
-
   <wsdl:message name="createPukPolicy">
     <wsdl:part name="parameters" element="tns:createPukPolicy"/>
   </wsdl:message>
@@ -1229,12 +1200,6 @@
       <wsdl:fault message="tns:SKSException" name="SKSException"/>
     </wsdl:operation>
 
-    <wsdl:operation name="signProvisioningSessionData">
-      <wsdl:input message="tns:signProvisioningSessionData"/>
-      <wsdl:output message="tns:signProvisioningSessionData.Response"/>
-      <wsdl:fault message="tns:SKSException" name="SKSException"/>
-    </wsdl:operation>
-
     <wsdl:operation name="createPukPolicy">
       <wsdl:input message="tns:createPukPolicy"/>
       <wsdl:output message="tns:createPukPolicy.Response"/>
@@ -1479,18 +1444,6 @@
       </wsdl:operation>
 
       <wsdl:operation name="abortProvisioningSession">
-        <wsdl:input>
-          <soap:body use="literal"/>
-        </wsdl:input>
-        <wsdl:output>
-          <soap:body use="literal"/>
-        </wsdl:output>
-        <wsdl:fault name="SKSException">
-          <soap:fault name="SKSException" use="literal"/>
-        </wsdl:fault>
-      </wsdl:operation>
-
-      <wsdl:operation name="signProvisioningSessionData">
         <wsdl:input>
           <soap:body use="literal"/>
         </wsdl:input>

@@ -103,6 +103,8 @@ public class SKSTest {
     static Device device;
 
     static boolean bc_loaded;
+    
+    static byte[] serverCertificate = {1,2,3};
 
     @BeforeClass
     public static void openFile() throws Exception {
@@ -2951,12 +2953,8 @@ public class SKSTest {
     }
 
     @Test
-    public void test74() throws Exception {
-        ProvSess sess = new ProvSess(device);
-        assertTrue("Signature error",
-                ArrayUtil.compare(device.sks.signProvisioningSessionData(sess.provisioning_handle, TEST_STRING),
-                        sess.serverSessionSign(TEST_STRING)));
-        sess.closeSession();
+    public void test74() {
+//TODO        
     }
 
     @Test

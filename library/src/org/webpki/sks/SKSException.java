@@ -16,10 +16,9 @@
  */
 package org.webpki.sks;
 
-import java.io.IOException;
 
 @SuppressWarnings("serial")
-public class SKSException extends IOException {
+public class SKSException extends RuntimeException {
  
     /* Non-fatal error returned when there is something wrong with a
        supplied  PIN or PUK code.  See getKeyProtectionInfo */

@@ -46,7 +46,8 @@ public class SKSWSNativeClient implements SecureKeyStore, WSSpecific {
                                                                 PublicKey keyManagementKey,
                                                                 int clientTime,
                                                                 int sessionLifeTime,
-                                                                short sessionKeyLimit) throws SKSException;
+                                                                short sessionKeyLimit,
+                                                                byte[] serverCertificate) throws SKSException;
 
     @Override
     native public byte[] closeProvisioningSession(int provisioning_handle,
@@ -56,10 +57,6 @@ public class SKSWSNativeClient implements SecureKeyStore, WSSpecific {
     @Override
     native public EnumeratedProvisioningSession enumerateProvisioningSessions(int provisioning_handle,
                                                                               boolean provisioning_state) throws SKSException;
-
-    @Override
-    native public byte[] signProvisioningSessionData(int provisioning_handle,
-                                                     byte[] data) throws SKSException;
 
     @Override
     native public KeyData createKeyEntry(int provisioning_handle,

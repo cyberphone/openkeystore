@@ -28,7 +28,7 @@ namespace org.webpki.sks.ws.client
     /*
      *  This is the .NET SKS WS client.
      */
-    [System.ServiceModel.ServiceContractAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00")]
+    [System.ServiceModel.ServiceContractAttribute(Namespace="https://webpki.github.io/sks/v1.00")]
     public interface SKSWSProxyInterface
     {
         [System.ServiceModel.OperationContractAttribute(Action="", ReplyAction="*")]
@@ -55,11 +55,6 @@ namespace org.webpki.sks.ws.client
         [System.ServiceModel.FaultContractAttribute(typeof(_SKSException), Action="", Name="SKSException")]
         [System.ServiceModel.XmlSerializerFormatAttribute()]
         abortProvisioningSession_Response abortProvisioningSession(abortProvisioningSession_Request request);
-
-        [System.ServiceModel.OperationContractAttribute(Action="", ReplyAction="*")]
-        [System.ServiceModel.FaultContractAttribute(typeof(_SKSException), Action="", Name="SKSException")]
-        [System.ServiceModel.XmlSerializerFormatAttribute()]
-        signProvisioningSessionData_Response signProvisioningSessionData(signProvisioningSessionData_Request request);
 
         [System.ServiceModel.OperationContractAttribute(Action="", ReplyAction="*")]
         [System.ServiceModel.FaultContractAttribute(typeof(_SKSException), Action="", Name="SKSException")]
@@ -358,10 +353,10 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="getDeviceInfo", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="getDeviceInfo", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class getDeviceInfo_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
@@ -372,76 +367,76 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="getDeviceInfo.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="getDeviceInfo.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class DeviceInfo
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="APILevel", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal short _api_level;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceType", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal sbyte _device_type;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="UpdateURL", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal string _update_url;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=3)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=3)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="VendorName", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal string _vendor_name;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=4)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=4)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="VendorDescription", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal string _vendor_description;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=5)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=5)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="X509Certificate", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal List<byte[]> _certificate_path;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=6)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=6)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="SupportedAlgorithm", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal List<string> _supported_algorithms;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=7)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=7)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="CryptoDataSize", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal int _crypto_data_size;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=8)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=8)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ExtensionDataSize", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal int _extension_data_size;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=9)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=9)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DevicePINSupport", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal bool _device_pin_support;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=10)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=10)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="BiometricSupport", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal bool _biometric_support;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=11)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=11)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ConnectionPort", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal string _connection_port;
@@ -531,48 +526,52 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="createProvisioningSession", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="createProvisioningSession", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class createProvisioningSession_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="SessionKeyAlgorithm", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _session_key_algorithm;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="PrivacyEnabled", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal bool _privacy_enabled;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=3)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=3)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ServerSessionID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _server_session_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=4)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=4)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ServerEphemeralKey", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _server_ephemeral_key;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=5)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=5)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="IssuerURI", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _issuer_uri;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=6)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=6)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="KeyManagementKey", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _key_management_key;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=7)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=7)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ClientTime", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _client_time;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=8)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=8)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="SessionLifeTime", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _session_life_time;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=9)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=9)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="SessionKeyLimit", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal short _session_key_limit;
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=10)]
+        [System.Xml.Serialization.XmlElementAttribute(ElementName="ServerCertificate", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
+        internal byte[] _server_certificate;
 
         public createProvisioningSession_Request(string DeviceID,
                                                  string SessionKeyAlgorithm,
@@ -583,7 +582,8 @@ namespace org.webpki.sks.ws.client
                                                  byte[] KeyManagementKey,
                                                  int ClientTime,
                                                  int SessionLifeTime,
-                                                 short SessionKeyLimit)
+                                                 short SessionKeyLimit,
+                                                 byte[] ServerCertificate)
         {
             _device_id = DeviceID;
             _session_key_algorithm = SessionKeyAlgorithm;
@@ -595,32 +595,33 @@ namespace org.webpki.sks.ws.client
             _client_time = ClientTime;
             _session_life_time = SessionLifeTime;
             _session_key_limit = SessionKeyLimit;
+            _server_certificate = ServerCertificate;
         }
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="createProvisioningSession.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="createProvisioningSession.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class ProvisioningSession
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ProvisioningHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal int _provisioning_handle;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ClientSessionID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal string _client_session_id;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ClientEphemeralKey", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal byte[] _client_ephemeral_key;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=3)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=3)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Attestation", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal byte[] _attestation;
@@ -650,22 +651,22 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="closeProvisioningSession", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="closeProvisioningSession", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class closeProvisioningSession_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ProvisioningHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _provisioning_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Nonce", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _nonce;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=3)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=3)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="MAC", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _mac;
 
@@ -682,10 +683,10 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="closeProvisioningSession.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="closeProvisioningSession.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class closeProvisioningSession_Response
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="CloseAttestation", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal byte[] _close_attestation;
@@ -693,18 +694,18 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="enumerateProvisioningSessions", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="enumerateProvisioningSessions", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class enumerateProvisioningSessions_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ProvisioningHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _provisioning_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ProvisioningState", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal bool _provisioning_state;
 
@@ -719,58 +720,58 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="enumerateProvisioningSessions.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="enumerateProvisioningSessions.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class EnumeratedProvisioningSession
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ProvisioningHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal int _provisioning_handle;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="SessionKeyAlgorithm", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal string _session_key_algorithm;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="PrivacyEnabled", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal bool _privacy_enabled;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=3)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=3)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="KeyManagementKey", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal byte[] _key_management_key;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=4)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=4)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ClientTime", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal int _client_time;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=5)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=5)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="SessionLifeTime", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal int _session_life_time;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=6)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=6)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ServerSessionID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal string _server_session_id;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=7)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=7)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ClientSessionID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal string _client_session_id;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=8)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=8)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="IssuerURI", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal string _issuer_uri;
@@ -823,14 +824,14 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="abortProvisioningSession", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="abortProvisioningSession", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class abortProvisioningSession_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ProvisioningHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _provisioning_handle;
 
@@ -843,77 +844,40 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="abortProvisioningSession.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="abortProvisioningSession.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class abortProvisioningSession_Response
     {
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="signProvisioningSessionData", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
-    public class signProvisioningSessionData_Request
-    {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
-        internal string _device_id;
-
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
-        [System.Xml.Serialization.XmlElementAttribute(ElementName="ProvisioningHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
-        internal int _provisioning_handle;
-
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
-        [System.Xml.Serialization.XmlElementAttribute(ElementName="Data", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
-        internal byte[] _data;
-
-        public signProvisioningSessionData_Request(string DeviceID,
-                                                   int ProvisioningHandle,
-                                                   byte[] Data)
-        {
-            _device_id = DeviceID;
-            _provisioning_handle = ProvisioningHandle;
-            _data = Data;
-        }
-    }
-
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="signProvisioningSessionData.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
-    public class signProvisioningSessionData_Response
-    {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute(ElementName="Signature", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
-        #pragma warning disable 0649
-        internal byte[] _signature;
-        #pragma warning restore 0649
-    }
-
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="createPukPolicy", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="createPukPolicy", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class createPukPolicy_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ProvisioningHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _provisioning_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=3)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=3)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="EncryptedPuk", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _encrypted_puk;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=4)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=4)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Format", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal sbyte _format;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=5)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=5)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="RetryLimit", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal short _retry_limit;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=6)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=6)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="MAC", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _mac;
 
@@ -936,10 +900,10 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="createPukPolicy.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="createPukPolicy.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class createPukPolicy_Response
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="PukPolicyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal int _puk_policy_handle;
@@ -947,62 +911,62 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="createPinPolicy", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="createPinPolicy", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class createPinPolicy_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ProvisioningHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _provisioning_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=3)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=3)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="PukPolicyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _puk_policy_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=4)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=4)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="UserDefined", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal bool _user_defined;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=5)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=5)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="UserModifiable", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal bool _user_modifiable;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=6)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=6)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Format", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal sbyte _format;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=7)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=7)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="RetryLimit", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal short _retry_limit;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=8)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=8)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Grouping", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal sbyte _grouping;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=9)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=9)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="PatternRestrictions", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal sbyte _pattern_restrictions;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=10)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=10)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="MinLength", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal short _min_length;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=11)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=11)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="MaxLength", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal short _max_length;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=12)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=12)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="InputMethod", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal sbyte _input_method;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=13)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=13)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="MAC", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _mac;
 
@@ -1039,10 +1003,10 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="createPinPolicy.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="createPinPolicy.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class createPinPolicy_Response
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="PINPolicyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal int _pin_policy_handle;
@@ -1050,78 +1014,78 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="createKeyEntry", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="createKeyEntry", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class createKeyEntry_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ProvisioningHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _provisioning_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=3)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=3)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="KeyEntryAlgorithm", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _key_entry_algorithm;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=4)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=4)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ServerSeed", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _server_seed;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=5)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=5)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DevicePinProtection", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal bool _device_pin_protection;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=6)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=6)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="PinPolicyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _pin_policy_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=7)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=7)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="PinValue", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _pin_value;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=8)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=8)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="EnablePinCaching", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal bool _enable_pin_caching;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=9)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=9)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="BiometricProtection", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal sbyte _biometric_protection;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=10)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=10)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ExportProtection", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal sbyte _export_protection;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=11)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=11)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeleteProtection", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal sbyte _delete_protection;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=12)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=12)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="AppUsage", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal sbyte _app_usage;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=13)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=13)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="FriendlyName", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _friendly_name;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=14)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=14)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="KeyAlgorithm", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _key_algorithm;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=15)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=15)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="KeyParameters", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _key_parameters;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=16)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=16)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="EndorsedAlgorithm", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal List<string> _endorsed_algorithms;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=17)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=17)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="MAC", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _mac;
 
@@ -1166,22 +1130,22 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="createKeyEntry.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="createKeyEntry.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class KeyData
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="KeyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal int _key_handle;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="PublicKey", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal byte[] _public_key;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Attestation", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal byte[] _attestation;
@@ -1206,18 +1170,18 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="getKeyHandle", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="getKeyHandle", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class getKeyHandle_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ProvisioningHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _provisioning_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _id;
 
@@ -1232,10 +1196,10 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="getKeyHandle.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="getKeyHandle.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class getKeyHandle_Response
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="KeyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal int _key_handle;
@@ -1243,22 +1207,22 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="setCertificatePath", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="setCertificatePath", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class setCertificatePath_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="KeyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _key_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="X509Certificate", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal List<byte[]> _certificate_path;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=3)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=3)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="MAC", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _mac;
 
@@ -1275,28 +1239,28 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="setCertificatePath.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="setCertificatePath.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class setCertificatePath_Response
     {
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="importSymmetricKey", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="importSymmetricKey", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class importSymmetricKey_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="KeyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _key_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="EncryptedKey", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _encrypted_key;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=3)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=3)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="MAC", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _mac;
 
@@ -1313,28 +1277,28 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="importSymmetricKey.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="importSymmetricKey.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class importSymmetricKey_Response
     {
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="importPrivateKey", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="importPrivateKey", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class importPrivateKey_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="KeyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _key_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="EncryptedKey", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _encrypted_key;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=3)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=3)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="MAC", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _mac;
 
@@ -1351,40 +1315,40 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="importPrivateKey.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="importPrivateKey.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class importPrivateKey_Response
     {
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="addExtension", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="addExtension", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class addExtension_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="KeyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _key_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Type", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _type;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=3)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=3)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="SubType", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal sbyte _sub_type;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=4)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=4)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Qualifier", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _qualifier;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=5)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=5)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ExtensionData", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _extension_data;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=6)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=6)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="MAC", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _mac;
 
@@ -1407,32 +1371,32 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="addExtension.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="addExtension.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class addExtension_Response
     {
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="postDeleteKey", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="postDeleteKey", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class postDeleteKey_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ProvisioningHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _provisioning_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="TargetKeyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _target_key_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=3)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=3)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Authorization", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _authorization;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=4)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=4)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="MAC", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _mac;
 
@@ -1451,32 +1415,32 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="postDeleteKey.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="postDeleteKey.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class postDeleteKey_Response
     {
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="postUnlockKey", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="postUnlockKey", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class postUnlockKey_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ProvisioningHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _provisioning_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="TargetKeyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _target_key_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=3)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=3)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Authorization", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _authorization;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=4)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=4)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="MAC", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _mac;
 
@@ -1495,32 +1459,32 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="postUnlockKey.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="postUnlockKey.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class postUnlockKey_Response
     {
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="postUpdateKey", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="postUpdateKey", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class postUpdateKey_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="KeyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _key_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="TargetKeyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _target_key_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=3)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=3)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Authorization", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _authorization;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=4)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=4)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="MAC", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _mac;
 
@@ -1539,32 +1503,32 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="postUpdateKey.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="postUpdateKey.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class postUpdateKey_Response
     {
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="postCloneKeyProtection", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="postCloneKeyProtection", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class postCloneKeyProtection_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="KeyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _key_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="TargetKeyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _target_key_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=3)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=3)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Authorization", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _authorization;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=4)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=4)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="MAC", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _mac;
 
@@ -1583,20 +1547,20 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="postCloneKeyProtection.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="postCloneKeyProtection.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class postCloneKeyProtection_Response
     {
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="enumerateKeys", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="enumerateKeys", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class enumerateKeys_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="KeyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _key_handle;
 
@@ -1609,16 +1573,16 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="enumerateKeys.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="enumerateKeys.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class EnumeratedKey
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="KeyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal int _key_handle;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ProvisioningHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal int _provisioning_handle;
@@ -1636,22 +1600,22 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="updateKeyManagementKey", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="updateKeyManagementKey", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class updateKeyManagementKey_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ProvisioningHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _provisioning_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="KeyManagementKey", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _key_management_key;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=3)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=3)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Attestation", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _attestation;
 
@@ -1668,20 +1632,20 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="updateKeyManagementKey.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="updateKeyManagementKey.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class updateKeyManagementKey_Response
     {
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="getKeyAttributes", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="getKeyAttributes", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class getKeyAttributes_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="KeyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _key_handle;
 
@@ -1694,40 +1658,40 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="getKeyAttributes.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="getKeyAttributes.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class KeyAttributes
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="SymmetricKeyLength", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal short _symmetric_key_length;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="X509Certificate", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal List<byte[]> _certificate_path;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="AppUsage", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal sbyte _app_usage;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=3)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=3)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="FriendlyName", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal string _friendly_name;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=4)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=4)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="EndorsedAlgorithm", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal List<string> _endorsed_algorithms;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=5)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=5)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ExtensionType", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal List<string> _extension_types;
@@ -1767,14 +1731,14 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="getKeyProtectionInfo", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="getKeyProtectionInfo", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class getKeyProtectionInfo_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="KeyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _key_handle;
 
@@ -1787,118 +1751,118 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="getKeyProtectionInfo.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="getKeyProtectionInfo.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class KeyProtectionInfo
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ProtectionStatus", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal sbyte _protection_status;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="PukFormat", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal sbyte _puk_format;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="PukRetryLimit", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal short _puk_retry_limit;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=3)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=3)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="PukErrorCount", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal short _puk_error_count;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=4)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=4)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="UserDefined", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal bool _user_defined;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=5)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=5)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="UserModifiable", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal bool _user_modifiable;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=6)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=6)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Format", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal sbyte _format;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=7)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=7)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="RetryLimit", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal short _retry_limit;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=8)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=8)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Grouping", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal sbyte _grouping;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=9)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=9)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="PatternRestrictions", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal sbyte _pattern_restrictions;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=10)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=10)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="MinLength", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal short _min_length;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=11)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=11)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="MaxLength", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal short _max_length;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=12)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=12)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="InputMethod", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal sbyte _input_method;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=13)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=13)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="PinErrorCount", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal short _pin_error_count;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=14)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=14)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="EnablePinCaching", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal bool _enable_pin_caching;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=15)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=15)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="BiometricProtection", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal sbyte _biometric_protection;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=16)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=16)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ExportProtection", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal sbyte _export_protection;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=17)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=17)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeleteProtection", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal sbyte _delete_protection;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=18)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=18)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="KeyBackup", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal sbyte _key_backup;
@@ -2017,18 +1981,18 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="getExtension", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="getExtension", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class getExtension_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="KeyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _key_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Type", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _type;
 
@@ -2043,22 +2007,22 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="getExtension.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="getExtension.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class Extension
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="SubType", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal sbyte _sub_type;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Qualifier", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal string _qualifier;
         #pragma warning restore 0649
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="ExtensionData", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal byte[] _extension_data;
@@ -2083,26 +2047,26 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="setProperty", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="setProperty", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class setProperty_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="KeyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _key_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Type", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _type;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=3)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=3)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Name", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _name;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=4)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=4)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Value", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _value;
 
@@ -2121,24 +2085,24 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="setProperty.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="setProperty.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class setProperty_Response
     {
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="deleteKey", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="deleteKey", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class deleteKey_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="KeyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _key_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Authorization", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _authorization;
 
@@ -2153,24 +2117,24 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="deleteKey.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="deleteKey.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class deleteKey_Response
     {
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="exportKey", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="exportKey", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class exportKey_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="KeyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _key_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Authorization", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _authorization;
 
@@ -2185,10 +2149,10 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="exportKey.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="exportKey.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class exportKey_Response
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Key", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal byte[] _key;
@@ -2196,18 +2160,18 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="unlockKey", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="unlockKey", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class unlockKey_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="KeyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _key_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Authorization", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _authorization;
 
@@ -2222,28 +2186,28 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="unlockKey.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="unlockKey.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class unlockKey_Response
     {
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="changePin", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="changePin", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class changePin_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="KeyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _key_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Authorization", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _authorization;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=3)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=3)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="NewPin", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _new_pin;
 
@@ -2260,28 +2224,28 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="changePin.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="changePin.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class changePin_Response
     {
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="setPin", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="setPin", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class setPin_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="KeyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _key_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Authorization", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _authorization;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=3)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=3)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="NewPin", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _new_pin;
 
@@ -2298,40 +2262,40 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="setPin.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="setPin.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class setPin_Response
     {
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="signHashedData", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="signHashedData", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class signHashedData_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="KeyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _key_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Algorithm", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _algorithm;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=3)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=3)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Parameters", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _parameters;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=4)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=4)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="TrustedGUIAuthorization", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal bool _trusted_gui_authorization;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=5)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=5)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Authorization", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _authorization;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=6)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=6)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Data", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _data;
 
@@ -2354,10 +2318,10 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="signHashedData.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="signHashedData.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class signHashedData_Response
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Result", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal byte[] _result;
@@ -2365,34 +2329,34 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="asymmetricKeyDecrypt", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="asymmetricKeyDecrypt", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class asymmetricKeyDecrypt_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="KeyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _key_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Algorithm", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _algorithm;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=3)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=3)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Parameters", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _parameters;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=4)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=4)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="TrustedGUIAuthorization", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal bool _trusted_gui_authorization;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=5)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=5)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Authorization", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _authorization;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=6)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=6)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Data", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _data;
 
@@ -2415,10 +2379,10 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="asymmetricKeyDecrypt.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="asymmetricKeyDecrypt.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class asymmetricKeyDecrypt_Response
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Result", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal byte[] _result;
@@ -2426,34 +2390,34 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="keyAgreement", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="keyAgreement", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class keyAgreement_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="KeyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _key_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Algorithm", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _algorithm;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=3)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=3)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Parameters", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _parameters;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=4)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=4)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="TrustedGUIAuthorization", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal bool _trusted_gui_authorization;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=5)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=5)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Authorization", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _authorization;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=6)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=6)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="PublicKey", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _public_key;
 
@@ -2476,10 +2440,10 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="keyAgreement.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="keyAgreement.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class keyAgreement_Response
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Result", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal byte[] _result;
@@ -2487,34 +2451,34 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="performHmac", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="performHmac", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class performHmac_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="KeyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _key_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Algorithm", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _algorithm;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=3)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=3)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Parameters", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _parameters;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=4)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=4)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="TrustedGUIAuthorization", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal bool _trusted_gui_authorization;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=5)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=5)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Authorization", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _authorization;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=6)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=6)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Data", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _data;
 
@@ -2537,10 +2501,10 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="performHmac.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="performHmac.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class performHmac_Response
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Result", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal byte[] _result;
@@ -2548,38 +2512,38 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="symmetricKeyEncrypt", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="symmetricKeyEncrypt", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class symmetricKeyEncrypt_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="KeyHandle", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal int _key_handle;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=2)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=2)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Algorithm", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _algorithm;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=3)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=3)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Mode", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal bool _mode;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=4)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=4)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Parameters", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _parameters;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=5)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=5)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="TrustedGUIAuthorization", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal bool _trusted_gui_authorization;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=6)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=6)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Authorization", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _authorization;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=7)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=7)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Data", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _data;
 
@@ -2604,10 +2568,10 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="symmetricKeyEncrypt.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="symmetricKeyEncrypt.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class symmetricKeyEncrypt_Response
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Result", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal byte[] _result;
@@ -2615,14 +2579,14 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="updateFirmware", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="updateFirmware", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class updateFirmware_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _device_id;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=1)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=1)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Chunk", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _chunk;
 
@@ -2635,10 +2599,10 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="updateFirmware.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="updateFirmware.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class updateFirmware_Response
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="NextURL", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal string _next_url;
@@ -2646,16 +2610,16 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="listDevices", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="listDevices", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class listDevices_Request
     {
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="listDevices.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="listDevices.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class listDevices_Response
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="DeviceID", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal List<string> _devices;
@@ -2663,16 +2627,16 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="getVersion", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="getVersion", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class getVersion_Request
     {
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="getVersion.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="getVersion.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class getVersion_Response
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Version", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         #pragma warning disable 0649
         internal string _version;
@@ -2680,10 +2644,10 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="logEvent", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="logEvent", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class logEvent_Request
     {
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://xmlns.webpki.org/sks/v1.00", Order=0)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=0)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Description", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal string _description;
 
@@ -2694,16 +2658,16 @@ namespace org.webpki.sks.ws.client
     }
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="logEvent.Response", WrapperNamespace="http://xmlns.webpki.org/sks/v1.00", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="logEvent.Response", WrapperNamespace="https://webpki.github.io/sks/v1.00", IsWrapped=true)]
     public class logEvent_Response
     {
     }
 
     public partial class SKSWSProxy : System.ServiceModel.ClientBase<SKSWSProxyInterface>
     {
-        public const string ALGORITHM_SESSION_KEY_ATTEST_1 = "http://xmlns.webpki.org/keygen2/1.0#algorithm.sks.s1";
+        public const string ALGORITHM_SESSION_KEY_ATTEST_1 = "https://webpki.github.io/keygen2/1.0#algorithm.sks.s1";
 
-        public const string ALGORITHM_KEY_ATTEST_1 = "http://xmlns.webpki.org/keygen2/1.0#algorithm.sks.k1";
+        public const string ALGORITHM_KEY_ATTEST_1 = "https://webpki.github.io/keygen2/1.0#algorithm.sks.k1";
 
         public static SKSWSProxy getDefaultSKSWSProxy()
         {
@@ -2749,7 +2713,8 @@ namespace org.webpki.sks.ws.client
                                                              PublicKey KeyManagementKey,
                                                              int ClientTime,
                                                              int SessionLifeTime,
-                                                             short SessionKeyLimit)
+                                                             short SessionKeyLimit,
+                                                             byte[] ServerCertificate)
         {
             try
             {
@@ -2762,7 +2727,8 @@ namespace org.webpki.sks.ws.client
                                                                                                     Conversions.EncodeX509PublicKey(KeyManagementKey),
                                                                                                     ClientTime,
                                                                                                     SessionLifeTime,
-                                                                                                    SessionKeyLimit));
+                                                                                                    SessionKeyLimit,
+                                                                                                    ServerCertificate));
             }
             catch (System.ServiceModel.FaultException<_SKSException> e)
             {
@@ -2809,21 +2775,6 @@ namespace org.webpki.sks.ws.client
             {
                 base.Channel.abortProvisioningSession(new abortProvisioningSession_Request(device_id,
                                                                                            ProvisioningHandle));
-            }
-            catch (System.ServiceModel.FaultException<_SKSException> e)
-            {
-                throw new SKSException(e);
-            }
-        }
-
-        public byte[] signProvisioningSessionData(int ProvisioningHandle,
-                                                  byte[] Data)
-        {
-            try
-            {
-                return base.Channel.signProvisioningSessionData(new signProvisioningSessionData_Request(device_id,
-                                                                                                        ProvisioningHandle,
-                                                                                                        Data))._signature;
             }
             catch (System.ServiceModel.FaultException<_SKSException> e)
             {

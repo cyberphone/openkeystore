@@ -26,9 +26,7 @@ import java.security.interfaces.ECPublicKey;
 
 import org.webpki.crypto.AlgorithmPreferences;
 
-import org.webpki.json.JSONCryptoHelper;
 import org.webpki.json.JSONObjectReader;
-import org.webpki.json.JSONSignatureDecoder;
 
 import org.webpki.util.ISODateTime;
 
@@ -52,10 +50,6 @@ public class ProvisioningInitializationResponseDecoder extends KeyGen2Validator 
 
     X509Certificate[] deviceCertificatePath;  // Is null for the privacy_enabled mode
 
-    byte[] serverCertificateFingerprint;
-
-    JSONSignatureDecoder signature;
-
     public X509Certificate[] getDeviceCertificatePath() {
         return deviceCertificatePath;
     }
@@ -75,8 +69,6 @@ public class ProvisioningInitializationResponseDecoder extends KeyGen2Validator 
 
         clientTime = rd.getDateTime(CLIENT_TIME_JSON, ISODateTime.LOCAL_NO_SUBSECONDS);
 
-        serverCertificateFingerprint = rd.getBinary(SERVER_CERT_FP_JSON);
-
         /////////////////////////////////////////////////////////////////////////////////////////
         // Get the ephemeral client key
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -89,11 +81,6 @@ public class ProvisioningInitializationResponseDecoder extends KeyGen2Validator 
         if (rd.hasProperty(DEVICE_ID_JSON)) {
             deviceCertificatePath = rd.getObject(DEVICE_ID_JSON).getCertificatePath();
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // Get the mandatory provisioning session data signature
-        /////////////////////////////////////////////////////////////////////////////////////////
-        signature = rd.getSignature(new JSONCryptoHelper.Options().setRequirePublicKeyInfo(false));
     }
 
     @Override
