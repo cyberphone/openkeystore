@@ -219,8 +219,9 @@ public class ProvisioningFinalizationRequestEncoder extends ServerEncoder {
             close.addString(serverState.serverSessionId);
             close.addString(serverState.issuerUri);
             close.addArray(serverState.savedCloseNonce = serverState.serverCryptoInterface.generateNonce());
-            wr.setBinary(NONCE_JSON, serverState.savedCloseNonce);
-            wr.setBinary(MAC_JSON, mac(close.getResult(), SecureKeyStore.METHOD_CLOSE_PROVISIONING_SESSION));
+            wr.setObject(SESSION_CLOSE_DATA_JSON)
+                .setBinary(NONCE_JSON, serverState.savedCloseNonce)
+                .setBinary(MAC_JSON, mac(close.getResult(), SecureKeyStore.METHOD_CLOSE_PROVISIONING_SESSION));
         } catch (GeneralSecurityException e) {
             throw new IOException(e);
         }

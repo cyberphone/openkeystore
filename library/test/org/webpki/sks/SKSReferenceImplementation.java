@@ -3240,7 +3240,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
             ///////////////////////////////////////////////////////////////////////////////////
             MacBuilder cka = provisioning.getMacBuilderForMethodCall(KDF_DEVICE_ATTESTATION);
             cka.addArray(publicKey.getEncoded());
-            cka.addArrayCore(verifier.getData());
+            cka.addArray(mac);
             byte[] attestation = cka.getResult();
 
             ///////////////////////////////////////////////////////////////////////////////////

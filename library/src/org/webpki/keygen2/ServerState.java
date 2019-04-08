@@ -842,7 +842,7 @@ public class ServerState implements Serializable {
             }
         }
         
-        byte[] macInputData;
+        byte[] keyMac;
 
         void writeRequest(JSONObjectWriter wr) throws IOException {
             keyInitDone = true;
@@ -923,8 +923,7 @@ public class ServerState implements Serializable {
                 wr.setStringArray(ENDORSED_ALGORITHMS_JSON, endorsedAlgorithms);
             }
 
-            wr.setBinary(MAC_JSON, mac(macInputData = keyPairMac.getResult(), 
-                                       SecureKeyStore.METHOD_CREATE_KEY_ENTRY));
+            wr.setBinary(MAC_JSON, keyMac = mac(keyPairMac.getResult(), SecureKeyStore.METHOD_CREATE_KEY_ENTRY));
 
             expectedAttestMacCount = getMacSequenceCounterAndUpdate();
         }
@@ -1331,7 +1330,7 @@ public class ServerState implements Serializable {
             MacGenerator attestation = new MacGenerator();
             // Recreate anticipated key attestation data
             attestation.addArray(gpk.publicKey.getEncoded());
-            attestation.addCoreArray(kp.macInputData);
+            attestation.addArray(kp.keyMac);
             if (!ArrayUtil.compare(attest(attestation.getResult(), kp.expectedAttestMacCount), 
                                           gpk.attestation)) {
                 ServerState.bad("Attestation failed for key id:" + gpk.id);

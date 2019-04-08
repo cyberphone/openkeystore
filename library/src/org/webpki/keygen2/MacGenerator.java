@@ -26,10 +26,6 @@ class MacGenerator {
     MacGenerator() {
         baos = new ByteArrayOutputStream();
     }
-    
-    void addCoreArray(byte[] data) throws IOException {
-        baos.write(data);
-    }
 
     void addBlob(byte[] data) throws IOException {
         addInt(data.length);

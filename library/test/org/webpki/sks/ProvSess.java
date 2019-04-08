@@ -266,10 +266,6 @@ public class ProvSess {
             return new byte[]{(byte) (i >>> 24), (byte) (i >>> 16), (byte) (i >>> 8), (byte) i};
         }
         
-        void addCoreArray(byte[] data) throws IOException {
-            baos.write(data);
-        }
-
         void addBlob(byte[] data) throws IOException {
             baos.write(int2bytes(data.length));
             baos.write(data);
@@ -624,7 +620,7 @@ public class ProvSess {
         for (String algorithm : sorted_algorithms) {
             key_entry_mac.addString(algorithm);
         }
-        byte[] data4macing = key_entry_mac.getResult();
+        byte[] keyMac;
         KeyData key_entry = sks.createKeyEntry(provisioning_handle,
                 id,
                 key_entry_algorithm,
@@ -641,10 +637,10 @@ public class ProvSess {
                 key_algorithm,
                 keyParameters,
                 sorted_algorithms,
-                mac4call(data4macing, SecureKeyStore.METHOD_CREATE_KEY_ENTRY));
+                keyMac = mac4call(key_entry_mac.getResult(), SecureKeyStore.METHOD_CREATE_KEY_ENTRY));
         MacGenerator key_attestation = new MacGenerator();
         key_attestation.addArray(key_entry.getPublicKey().getEncoded());
-        key_attestation.addCoreArray(data4macing);
+        key_attestation.addArray(keyMac);
         if (!ArrayUtil.compare(attest(key_attestation.getResult()), key_entry.getAttestation())) {
             bad("Failed key attest");
         }

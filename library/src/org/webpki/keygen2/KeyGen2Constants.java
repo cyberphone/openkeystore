@@ -46,6 +46,8 @@ public interface KeyGen2Constants {
 
     String CLONE_KEY_PROTECTION_JSON                 = "cloneKeyProtection";
     
+    String SESSION_CLOSE_DATA_JSON                   = "sessionCloseData";
+    
     String EXTENSION_DATA_JSON                       = SecureKeyStore.VAR_EXTENSION_DATA;
     
     String DEFERRED_ISSUANCE_JSON                    = "deferredIssuance";

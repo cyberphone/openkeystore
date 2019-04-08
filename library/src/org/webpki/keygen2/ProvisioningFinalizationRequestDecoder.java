@@ -439,12 +439,14 @@ public class ProvisioningFinalizationRequestDecoder extends ClientDecoder {
         // Session properties
         /////////////////////////////////////////////////////////////////////////////////////////
         serverSessionId = getID(rd, SERVER_SESSION_ID_JSON);
-
+        
         clientSessionId = getID(rd, CLIENT_SESSION_ID_JSON);
 
-        closeSessionNonce = rd.getBinary(NONCE_JSON);
+        JSONObjectReader closeSession = rd.getObject(SESSION_CLOSE_DATA_JSON);
 
-        closeSessionMac = KeyGen2Validator.getMac(rd);
+        closeSessionNonce = closeSession.getBinary(NONCE_JSON);
+
+        closeSessionMac = KeyGen2Validator.getMac(closeSession);
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Get the issued_keys [0..n]
