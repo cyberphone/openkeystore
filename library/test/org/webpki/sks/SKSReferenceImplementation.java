@@ -665,7 +665,6 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
         byte[] getData() throws IOException {
              return baos.toByteArray();
         }
-
     }
     
 
@@ -690,6 +689,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
         }
     }
 
+
     class AttestationSignatureGenerator extends ByteWriter {
 
         SignatureWrapper signer;
@@ -706,6 +706,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
         }
     }
 
+
     class PostProvisioningObject implements Serializable {
         private static final long serialVersionUID = 1L;
 
@@ -719,6 +720,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
             this.updateOrDelete = updateOrDelete;
         }
     }
+
 
     class SignatureWrapper {
         static final int ASN1_SEQUENCE = 0x30;
