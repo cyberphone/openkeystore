@@ -50,7 +50,7 @@
 
                         org.webpki.sks.ws.TrustedGUIAuthorization
 
-                        org.webpki.sks.SKSException
+                        org.webpki.sks.ws.SKSException
                         org.webpki.sks.EnumeratedKey
                         org.webpki.sks.ProvisioningSession
                         org.webpki.sks.EnumeratedProvisioningSession
@@ -141,7 +141,7 @@
           {
             throw new RuntimeException (e);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             throw new RuntimeException (e);
           }
@@ -169,7 +169,7 @@
         SecureKeyStore sks = devices.get (device_id);
         if (sks == null)
           {
-             throw new SKSException ("No such device: " + device_id, SKSException.ERROR_NOT_AVAILABLE);
+             throw new SKSException ("No such device: " + device_id, org.webpki.sks.SKSException.ERROR_NOT_AVAILABLE);
           }
         return sks;
       }
@@ -551,10 +551,10 @@
             log_result = " : ProvisioningHandle=" + sess.getProvisioningHandle ();
             return sess.getProvisioningHandle ();
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -574,10 +574,10 @@
           {
             return getDevice (device_id).closeProvisioningSession (provisioning_handle, nonce, mac);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -621,10 +621,10 @@
               }
             return eps.getProvisioningHandle ();
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -641,10 +641,10 @@
           {
             getDevice (device_id).abortProvisioningSession (provisioning_handle);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -674,10 +674,10 @@
             log_result = " : PukPolicyHandle=" + puk_policy_handle;
             return puk_policy_handle;
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -721,10 +721,10 @@
             log_result = " : PinPolicyHandle=" + pin_policy_handle;
             return pin_policy_handle;
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -780,10 +780,10 @@
             log_result = " : KeyHandle=" + kd.getKeyHandle ();
             return kd.getKeyHandle ();
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -804,10 +804,10 @@
             log_result = " : KeyHandle=" + key_handle;
             return key_handle;
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -828,10 +828,10 @@
             getDevice (device_id).setCertificatePath (key_handle, cp, mac);
             log_result = " : " + getEndEntityName (cp);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         catch (IOException e)
           {
@@ -855,10 +855,10 @@
           {
             getDevice (device_id).importSymmetricKey (key_handle, encrypted_key, mac);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -877,10 +877,10 @@
           {
             getDevice (device_id).importPrivateKey (key_handle, encrypted_key, mac);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -907,10 +907,10 @@
                                                 extension_data,
                                                 mac);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -930,10 +930,10 @@
           {
             getDevice (device_id).postDeleteKey (provisioning_handle, target_key_handle, authorization, mac);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -953,10 +953,10 @@
           {
             getDevice (device_id).postUnlockKey (provisioning_handle, target_key_handle, authorization, mac);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -976,10 +976,10 @@
           {
             getDevice (device_id).postUpdateKey (key_handle, target_key_handle, authorization, mac);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -999,10 +999,10 @@
           {
             getDevice (device_id).postCloneKeyProtection (key_handle, target_key_handle, authorization, mac);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1031,10 +1031,10 @@
               }
             return ek.getKeyHandle ();
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1055,10 +1055,10 @@
                                                           createPublicKeyFromBlob (key_management_key),
                                                           attestation);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1105,10 +1105,10 @@
             log_result = " Exception: " + e.getMessage ();
             throw new SKSException (e);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1188,10 +1188,10 @@
             delete_protection.value    = kpi.getDeleteProtection ().getSksValue ();
             key_backup.value           = kpi.getKeyBackup ();
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1215,10 +1215,10 @@
             qualifier.value      = ext.getQualifier ();
             extension_data.value = ext.getExtensionData ();
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1238,10 +1238,10 @@
           {
             getDevice (device_id).setProperty (key_handle, type, name, value);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1259,10 +1259,10 @@
           {
             getDevice (device_id).deleteKey (key_handle, authorization);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1281,10 +1281,10 @@
           {
             return getDevice (device_id).exportKey (key_handle, authorization);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1302,10 +1302,10 @@
           {
             getDevice (device_id).unlockKey (key_handle, authorization);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1324,10 +1324,10 @@
           {
             getDevice (device_id).changePin (key_handle, authorization, new_pin);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1346,10 +1346,10 @@
           {
             getDevice (device_id).setPin (key_handle, authorization, new_pin);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1380,10 +1380,10 @@
                                                          authorization,
                                                          data);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1414,10 +1414,10 @@
                                                                authorization, 
                                                                data);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1448,10 +1448,10 @@
                                                        authorization, 
                                                        getECPublicKey (public_key));
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1482,10 +1482,10 @@
                                                       authorization,
                                                       data);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1518,10 +1518,10 @@
                                                               authorization,
                                                               data);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1539,10 +1539,10 @@
           {
             return getDevice (device_id).updateFirmware (chunk);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {

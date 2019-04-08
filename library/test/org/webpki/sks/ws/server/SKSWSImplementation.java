@@ -60,9 +60,9 @@ import org.webpki.sks.KeyData;
 import org.webpki.sks.KeyProtectionInfo;
 import org.webpki.sks.PatternRestriction;
 import org.webpki.sks.ProvisioningSession;
-import org.webpki.sks.SKSException;
 import org.webpki.sks.SecureKeyStore;
 
+import org.webpki.sks.ws.SKSException;
 import org.webpki.sks.ws.TrustedGUIAuthorization;
 
 import org.webpki.util.DebugFormatter;
@@ -152,7 +152,7 @@ public class SKSWSImplementation
           {
             throw new RuntimeException (e);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             throw new RuntimeException (e);
           }
@@ -180,7 +180,7 @@ public class SKSWSImplementation
         SecureKeyStore sks = devices.get (device_id);
         if (sks == null)
           {
-             throw new SKSException ("No such device: " + device_id, SKSException.ERROR_NOT_AVAILABLE);
+             throw new SKSException ("No such device: " + device_id, org.webpki.sks.SKSException.ERROR_NOT_AVAILABLE);
           }
         return sks;
       }
@@ -369,10 +369,10 @@ public class SKSWSImplementation
             log_result = " : ProvisioningHandle=" + sess.getProvisioningHandle ();
             return sess.getProvisioningHandle ();
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -399,10 +399,10 @@ public class SKSWSImplementation
           {
             return getDevice (device_id).closeProvisioningSession (provisioning_handle, nonce, mac);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -460,10 +460,10 @@ public class SKSWSImplementation
               }
             return eps.getProvisioningHandle ();
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -485,10 +485,10 @@ public class SKSWSImplementation
           {
             getDevice (device_id).abortProvisioningSession (provisioning_handle);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -528,10 +528,10 @@ public class SKSWSImplementation
             log_result = " : PukPolicyHandle=" + puk_policy_handle;
             return puk_policy_handle;
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -592,10 +592,10 @@ public class SKSWSImplementation
             log_result = " : PinPolicyHandle=" + pin_policy_handle;
             return pin_policy_handle;
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -674,10 +674,10 @@ public class SKSWSImplementation
             log_result = " : KeyHandle=" + kd.getKeyHandle ();
             return kd.getKeyHandle ();
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -704,10 +704,10 @@ public class SKSWSImplementation
             log_result = " : KeyHandle=" + key_handle;
             return key_handle;
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -735,10 +735,10 @@ public class SKSWSImplementation
             getDevice (device_id).setCertificatePath (key_handle, cp, mac);
             log_result = " : " + getEndEntityName (cp);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         catch (IOException e)
           {
@@ -769,10 +769,10 @@ public class SKSWSImplementation
           {
             getDevice (device_id).importSymmetricKey (key_handle, encrypted_key, mac);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -798,10 +798,10 @@ public class SKSWSImplementation
           {
             getDevice (device_id).importPrivateKey (key_handle, encrypted_key, mac);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -838,10 +838,10 @@ public class SKSWSImplementation
                                                 extension_data,
                                                 mac);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -869,10 +869,10 @@ public class SKSWSImplementation
           {
             getDevice (device_id).postDeleteKey (provisioning_handle, target_key_handle, authorization, mac);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -900,10 +900,10 @@ public class SKSWSImplementation
           {
             getDevice (device_id).postUnlockKey (provisioning_handle, target_key_handle, authorization, mac);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -931,10 +931,10 @@ public class SKSWSImplementation
           {
             getDevice (device_id).postUpdateKey (key_handle, target_key_handle, authorization, mac);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -962,10 +962,10 @@ public class SKSWSImplementation
           {
             getDevice (device_id).postCloneKeyProtection (key_handle, target_key_handle, authorization, mac);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1000,10 +1000,10 @@ public class SKSWSImplementation
               }
             return ek.getKeyHandle ();
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1031,10 +1031,10 @@ public class SKSWSImplementation
                                                           createPublicKeyFromBlob (key_management_key),
                                                           attestation);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1092,10 +1092,10 @@ public class SKSWSImplementation
             log_result = " Exception: " + e.getMessage ();
             throw new SKSException (e);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1199,10 +1199,10 @@ public class SKSWSImplementation
             delete_protection.value    = kpi.getDeleteProtection ().getSksValue ();
             key_backup.value           = kpi.getKeyBackup ();
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1235,10 +1235,10 @@ public class SKSWSImplementation
             qualifier.value      = ext.getQualifier ();
             extension_data.value = ext.getExtensionData ();
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1266,10 +1266,10 @@ public class SKSWSImplementation
           {
             getDevice (device_id).setProperty (key_handle, type, name, value);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1293,10 +1293,10 @@ public class SKSWSImplementation
           {
             getDevice (device_id).deleteKey (key_handle, authorization);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1321,10 +1321,10 @@ public class SKSWSImplementation
           {
             return getDevice (device_id).exportKey (key_handle, authorization);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1348,10 +1348,10 @@ public class SKSWSImplementation
           {
             getDevice (device_id).unlockKey (key_handle, authorization);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1377,10 +1377,10 @@ public class SKSWSImplementation
           {
             getDevice (device_id).changePin (key_handle, authorization, new_pin);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1406,10 +1406,10 @@ public class SKSWSImplementation
           {
             getDevice (device_id).setPin (key_handle, authorization, new_pin);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1450,10 +1450,10 @@ public class SKSWSImplementation
                                                          authorization,
                                                          data);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1494,10 +1494,10 @@ public class SKSWSImplementation
                                                                authorization, 
                                                                data);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1538,10 +1538,10 @@ public class SKSWSImplementation
                                                        authorization, 
                                                        getECPublicKey (public_key));
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1582,10 +1582,10 @@ public class SKSWSImplementation
                                                       authorization,
                                                       data);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1629,10 +1629,10 @@ public class SKSWSImplementation
                                                               authorization,
                                                               data);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
@@ -1655,10 +1655,10 @@ public class SKSWSImplementation
           {
             return getDevice (device_id).updateFirmware (chunk);
           }
-        catch (SKSException e)
+        catch (org.webpki.sks.SKSException e)
           {
             log_result = " Exception: " + e.getMessage ();
-            throw e;
+            throw new SKSException(e);
           }
         finally
           {
