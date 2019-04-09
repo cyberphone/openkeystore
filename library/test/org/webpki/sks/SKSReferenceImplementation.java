@@ -147,7 +147,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
 
         Provisioning owner;
 
-        NameSpace(Provisioning owner, String id) throws SKSException {
+        NameSpace(Provisioning owner, String id) {
             //////////////////////////////////////////////////////////////////////
             // Keys, PINs and PUKs share virtual ID space during provisioning
             //////////////////////////////////////////////////////////////////////
@@ -162,7 +162,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
     }
 
 
-    static void checkIdSyntax(String identifier, String symbolicName, SKSError sksError) throws SKSException {
+    static void checkIdSyntax(String identifier, String symbolicName, SKSError sksError) {
         boolean flag = false;
         if (identifier.length() == 0 || identifier.length() > MAX_LENGTH_ID_TYPE) {
             flag = true;
@@ -214,13 +214,13 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
 
         LinkedHashMap<String, ExtObject> extensions = new LinkedHashMap<String, ExtObject>();
 
-        KeyEntry(Provisioning owner, String id) throws SKSException {
+        KeyEntry(Provisioning owner, String id) {
             super(owner, id);
             keyHandle = nextKeyHandle++;
             keys.put(keyHandle, this);
         }
 
-        void authError() throws SKSException {
+        void authError() {
             abort("\"" + VAR_AUTHORIZATION + "\" error for key #" + keyHandle, SKSException.ERROR_AUTHORIZATION);
         }
 
@@ -264,7 +264,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
             }
         }
 
-        void verifyPin(byte[] pin) throws SKSException {
+        void verifyPin(byte[] pin) {
             ///////////////////////////////////////////////////////////////////////////////////
             // If there is no PIN policy there is nothing to verify...
             ///////////////////////////////////////////////////////////////////////////////////
@@ -302,7 +302,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
             }
         }
 
-        void verifyPuk(byte[] puk) throws SKSException {
+        void verifyPuk(byte[] puk) {
             ///////////////////////////////////////////////////////////////////////////////////
             // Check that this key really has a PUK...
             ///////////////////////////////////////////////////////////////////////////////////
@@ -344,7 +344,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
             pukPolicy.errorCount = 0;
         }
 
-        void authorizeExportOrDeleteOperation(byte policy, byte[] authorization) throws SKSException {
+        void authorizeExportOrDeleteOperation(byte policy, byte[] authorization) {
             switch (policy) {
                 case EXPORT_DELETE_PROTECTION_PIN:
                     verifyPin(authorization);
@@ -362,13 +362,13 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
             }
         }
 
-        void checkEECertificateAvailability() throws SKSException {
+        void checkEECertificateAvailability() {
             if (certificatePath == null) {
                 owner.abort("Missing \"setCertificatePath\" for: " + id);
             }
         }
 
-        MacBuilder getEeCertMacBuilder(byte[] method) throws SKSException, GeneralSecurityException, IOException {
+        MacBuilder getEeCertMacBuilder(byte[] method) throws IOException, GeneralSecurityException {
             checkEECertificateAvailability();
             MacBuilder macBuilder = owner.getMacBuilderForMethodCall(method);
             macBuilder.addArray(certificatePath[0].getEncoded());
@@ -378,7 +378,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
         void validateTargetKeyReference(MacBuilder verifier,
                                         byte[] mac,
                                         byte[] authorization,
-                                        Provisioning provisioning) throws SKSException {
+                                        Provisioning provisioning) {
             try {
                 ///////////////////////////////////////////////////////////////////////////////////
                 // "Sanity check"
@@ -414,13 +414,13 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
             return symmetricKey != null;
         }
 
-        void checkCryptoDataSize(byte[] data) throws SKSException {
+        void checkCryptoDataSize(byte[] data) {
             if (data.length > MAX_LENGTH_CRYPTO_DATA) {
                 abort("Exceeded \"" + VAR_CRYPTO_DATA_SIZE + "\" for key #" + keyHandle);
             }
         }
 
-        void setAndVerifyServerBackupFlag() throws SKSException {
+        void setAndVerifyServerBackupFlag() {
             if ((keyBackup & KeyProtectionInfo.KEYBACKUP_IMPORTED) != 0) {
                 owner.abort("Mutiple key imports for: " + id);
             }
@@ -459,7 +459,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
         short minLength;
         short maxLength;
 
-        PINPolicy(Provisioning owner, String id) throws SKSException {
+        PINPolicy(Provisioning owner, String id) {
             super(owner, id);
             pinPolicyHandle = nextPinHandle++;
             pinPolicies.put(pinPolicyHandle, this);
@@ -477,7 +477,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
         short retryLimit;
         short errorCount;
 
-        PUKPolicy(Provisioning owner, String id) throws SKSException {
+        PUKPolicy(Provisioning owner, String id) {
             super(owner, id);
             pukPolicyHandle = nextPukHandle++;
             pukPolicies.put(pukPolicyHandle, this);
@@ -513,46 +513,46 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
             provisionings.put(provisioningHandle, this);
         }
 
-        void verifyMac(MacBuilder actualMac, byte[] claimedMac) throws SKSException, IOException {
+        void verifyMac(MacBuilder actualMac, byte[] claimedMac) throws IOException {
             if (!Arrays.equals(actualMac.getResult(), claimedMac)) {
                 abort("MAC error", SKSException.ERROR_MAC);
             }
         }
 
-        void abort(String message, int exceptionType) throws SKSException {
+        void abort(String message, int exceptionType) {
             abortProvisioningSession(provisioningHandle);
             throw new SKSException(message, exceptionType);
         }
 
-        void abort(Throwable e) throws SKSException {
+        void abort(Throwable e) {
             abort(e.getMessage(), SKSException.ERROR_INTERNAL);
         }
 
         @Override
-        public void abort(String message) throws SKSException {
+        public void abort(String message) {
             abort(message, SKSException.ERROR_OPTION);
         }
 
-        byte[] decrypt(byte[] data) throws SKSException, GeneralSecurityException, IOException {
+        byte[] decrypt(byte[] data) throws IOException, GeneralSecurityException {
             byte[] key = getMacBuilder(ZERO_LENGTH_ARRAY).addVerbatim(KDF_ENCRYPTION_KEY).getResult();
             Cipher crypt = Cipher.getInstance("AES/CBC/PKCS5Padding");
             crypt.init(Cipher.DECRYPT_MODE, new SecretKeySpec(key, "AES"), new IvParameterSpec(data, 0, 16));
             return crypt.doFinal(data, 16, data.length - 16);
         }
 
-        MacBuilder getMacBuilder(byte[] keyModifier) throws SKSException, GeneralSecurityException {
+        MacBuilder getMacBuilder(byte[] keyModifier) throws GeneralSecurityException {
             if (sessionKeyLimit-- <= 0) {
                 abort("\"" + VAR_SESSION_KEY_LIMIT + "\" exceeded");
             }
             return new MacBuilder(addArrays(sessionKey, keyModifier));
         }
 
-        MacBuilder getMacBuilderForMethodCall(byte[] method) throws SKSException, GeneralSecurityException {
+        MacBuilder getMacBuilderForMethodCall(byte[] method) throws GeneralSecurityException {
             short q = macSequenceCounter++;
             return getMacBuilder(addArrays(method, new byte[]{(byte) (q >>> 8), (byte) q}));
         }
 
-        KeyEntry getTargetKey(int keyHandle) throws SKSException {
+        KeyEntry getTargetKey(int keyHandle) {
             KeyEntry keyEntry = keys.get(keyHandle);
             if (keyEntry == null) {
                 abort("Key not found #" + keyHandle, SKSException.ERROR_NO_KEY);
@@ -568,7 +568,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
 
         void addPostProvisioningObject(KeyEntry targetKeyEntry, 
                                        KeyEntry newKey,
-                                       boolean updateOrDelete) throws SKSException {
+                                       boolean updateOrDelete) {
             for (PostProvisioningObject postOp : postProvisioningObjects) {
                 if (postOp.newKey != null && postOp.newKey == newKey) {
                     abort("New key used for multiple operations: " + newKey.id);
@@ -592,17 +592,17 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
             postProvisioningObjects.add(new PostProvisioningObject(targetKeyEntry, newKey, updateOrDelete));
         }
 
-        void rangeTest(byte value, byte lowLimit, byte highLimit, String objectName) throws SKSException {
+        void rangeTest(byte value, byte lowLimit, byte highLimit, String objectName) {
             if (value > highLimit || value < lowLimit) {
                 abort("Invalid \"" + objectName + "\" value=" + value);
             }
         }
 
-        void passphraseFormatTest(byte format) throws SKSException {
+        void passphraseFormatTest(byte format) {
             rangeTest(format, PASSPHRASE_FORMAT_NUMERIC, PASSPHRASE_FORMAT_BINARY, "Format");
         }
 
-        void retryLimitTest(short retryLimit, short min) throws SKSException {
+        void retryLimitTest(short retryLimit, short min) {
             if (retryLimit < min || retryLimit > MAX_RETRY_LIMIT) {
                 abort("Invalid \"" + VAR_RETRY_LIMIT + "\" value=" + retryLimit);
             }
@@ -701,7 +701,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
                                           attester);
         }
 
-        byte[] getResult() throws GeneralSecurityException, IOException {
+        byte[] getResult() throws IOException, GeneralSecurityException {
             return signer.update(getData()).sign();
         }
     }
@@ -1134,7 +1134,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
         return (PrivateKey) getAttestationKeyStore().getKey(ATTESTATION_KEY_ALIAS, ATTESTATION_KEY_PASSWORD);
     }
 
-    Provisioning getProvisioningSession(int provisioningHandle) throws SKSException {
+    Provisioning getProvisioningSession(int provisioningHandle) {
         Provisioning provisioning = provisionings.get(provisioningHandle);
         if (provisioning == null) {
             abort("No such provisioning session: " + provisioningHandle, SKSException.ERROR_NO_SESSION);
@@ -1142,7 +1142,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
         return provisioning;
     }
 
-    Provisioning getOpenProvisioningSession(int provisioningHandle) throws SKSException {
+    Provisioning getOpenProvisioningSession(int provisioningHandle) {
         Provisioning provisioning = getProvisioningSession(provisioningHandle);
         if (!provisioning.open) {
             abort("Session not open: " + provisioningHandle, SKSException.ERROR_NO_SESSION);
@@ -1150,7 +1150,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
         return provisioning;
     }
 
-    Provisioning getClosedProvisioningSession(int provisioningHandle) throws SKSException {
+    Provisioning getClosedProvisioningSession(int provisioningHandle) {
         Provisioning provisioning = getProvisioningSession(provisioningHandle);
         if (provisioning.open) {
             abort("Session is open: " + provisioningHandle, SKSException.ERROR_NOT_ALLOWED);
@@ -1166,7 +1166,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
         return ((buffer[index++] << 8) & 0xFFFF) + (buffer[index] & 0xFF);
     }
 
-    KeyEntry getOpenKey(int keyHandle) throws SKSException {
+    KeyEntry getOpenKey(int keyHandle) {
         KeyEntry keyEntry = keys.get(keyHandle);
         if (keyEntry == null) {
             abort("Key not found #" + keyHandle, SKSException.ERROR_NO_KEY);
@@ -1177,7 +1177,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
         return keyEntry;
     }
 
-    KeyEntry getStdKey(int keyHandle) throws SKSException {
+    KeyEntry getStdKey(int keyHandle) {
         KeyEntry keyEntry = keys.get(keyHandle);
         if (keyEntry == null) {
             abort("Key not found #" + keyHandle, SKSException.ERROR_NO_KEY);
@@ -1227,23 +1227,23 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
     }
 
     @Override
-    public void abort(String message) throws SKSException {
+    public void abort(String message) {
         abort(message, SKSException.ERROR_OPTION);
     }
 
-    void abort(String message, int option) throws SKSException {
+    void abort(String message, int option) {
         throw new SKSException(message, option);
     }
 
 
-    void tearDownSession(KeyEntry key, Throwable e) throws SKSException {
+    void tearDownSession(KeyEntry key, Throwable e) {
         if (key == null) {
             throw new SKSException(e);
         }
         key.owner.abort(e);
     }
 
-    void tearDownSession(Provisioning provisioning, Throwable e) throws SKSException {
+    void tearDownSession(Provisioning provisioning, Throwable e) {
         if (provisioning == null) {
             throw new SKSException(e);
         }
@@ -1262,7 +1262,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
         return null;
     }
 
-    String checkEcKeyCompatibility(ECKey ecKey, SKSError sksError, String keyId) throws SKSException {
+    String checkEcKeyCompatibility(ECKey ecKey, SKSError sksError, String keyId) {
         Algorithm ecType = getEcType(ecKey);
         if (ecType != null) {
             return ecType.jceName;
@@ -1282,7 +1282,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
     void checkRsaKeyCompatibility(int rsaKeySize,
                                   BigInteger exponent, 
                                   SKSError sksError,
-                                  String keyId) throws SKSException {
+                                  String keyId) {
         if (!SKS_RSA_EXPONENT_SUPPORT && !exponent.equals(RSAKeyGenParameterSpec.F4)) {
             sksError.abort("Unsupported RSA exponent value for: " + keyId);
         }
@@ -1308,7 +1308,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
                                    byte[] pinValue,
                                    PINPolicy pinPolicy,
                                    byte appUsage,
-                                   SKSError sksError) throws SKSException {
+                                   SKSError sksError) {
         ///////////////////////////////////////////////////////////////////////////////////
         // Check PIN length
         ///////////////////////////////////////////////////////////////////////////////////
@@ -1421,7 +1421,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
         }
     }
 
-    void testUpdatablePin(KeyEntry keyEntry, byte[] newPin) throws SKSException {
+    void testUpdatablePin(KeyEntry keyEntry, byte[] newPin) {
         if (!keyEntry.pinPolicy.userModifiable) {
             abort("PIN for key #" + keyEntry.keyHandle + " is not user modifiable", SKSException.ERROR_NOT_ALLOWED);
         }
@@ -1459,7 +1459,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
         }
     }
 
-    Algorithm checkKeyAndAlgorithm(KeyEntry keyEntry, String inputAlgorithm, int expectedType) throws SKSException {
+    Algorithm checkKeyAndAlgorithm(KeyEntry keyEntry, String inputAlgorithm, int expectedType) {
         Algorithm alg = getAlgorithm(inputAlgorithm);
         if ((alg.mask & expectedType) == 0) {
             abort("Algorithm does not match operation: " + inputAlgorithm, SKSException.ERROR_ALGORITHM);
@@ -1476,7 +1476,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
             return alg;
         }
         abort("\"" + VAR_ENDORSED_ALGORITHMS + "\" for key #" + keyEntry.keyHandle + " does not include: " + inputAlgorithm, SKSException.ERROR_ALGORITHM);
-        return null;    // For the compiler only...
+        return null;    // For the compiler...
     }
 
     byte[] addArrays(byte[] a, byte[] b) {
@@ -1486,7 +1486,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
         return r;
     }
 
-    void testAESKey(String algorithm, byte[] symmetricKey, String keyId, SKSError sksError) throws SKSException {
+    void testAESKey(String algorithm, byte[] symmetricKey, String keyId, SKSError sksError) {
         Algorithm alg = getAlgorithm(algorithm);
         if ((alg.mask & ALG_SYM_ENC) != 0) {
             int l = symmetricKey.length;
@@ -1500,7 +1500,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
         }
     }
 
-    Algorithm getAlgorithm(String algorithmUri) throws SKSException {
+    Algorithm getAlgorithm(String algorithmUri) {
         Algorithm alg = supportedAlgorithms.get(algorithmUri);
         if (alg == null) {
             abort("Unsupported algorithm: " + algorithmUri, SKSException.ERROR_ALGORITHM);
@@ -1508,7 +1508,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
         return alg;
     }
 
-    void verifyExportDeleteProtection(byte actualProtection, byte minProtectionVal, Provisioning provisioning) throws SKSException {
+    void verifyExportDeleteProtection(byte actualProtection, byte minProtectionVal, Provisioning provisioning) {
         if (actualProtection >= minProtectionVal && actualProtection <= EXPORT_DELETE_PROTECTION_PUK) {
             provisioning.abort("Protection object lacks a PIN or PUK object");
         }
@@ -1518,7 +1518,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
                                           int targetKeyHandle,
                                           byte[] authorization,
                                           byte[] mac,
-                                          boolean update) throws SKSException {
+                                          boolean update) {
         KeyEntry newKey = null;
         try {
             ///////////////////////////////////////////////////////////////////////////////////
@@ -1571,7 +1571,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
                                  int targetKeyHandle,
                                  byte[] authorization,
                                  byte[] mac,
-                                 boolean delete) throws SKSException {
+                                 boolean delete) {
         Provisioning provisioning = null;
         try {
             ///////////////////////////////////////////////////////////////////////////////////
@@ -1610,7 +1610,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
     //                                                                            //
     ////////////////////////////////////////////////////////////////////////////////
     @Override
-    public synchronized void unlockKey(int keyHandle, byte[] authorization) throws SKSException {
+    public synchronized void unlockKey(int keyHandle, byte[] authorization) {
         ///////////////////////////////////////////////////////////////////////////////////
         // Get key (which must belong to an already fully provisioned session)
         ///////////////////////////////////////////////////////////////////////////////////
@@ -1636,7 +1636,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
     @Override
     public synchronized void changePin(int keyHandle,
                                        byte[] authorization,
-                                       byte[] newPin) throws SKSException {
+                                       byte[] newPin) {
         ///////////////////////////////////////////////////////////////////////////////////
         // Get key (which must belong to an already fully provisioned session)
         ///////////////////////////////////////////////////////////////////////////////////
@@ -1667,7 +1667,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
     @Override
     public synchronized void setPin(int keyHandle,
                                     byte[] authorization,
-                                    byte[] newPin) throws SKSException {
+                                    byte[] newPin) {
         ///////////////////////////////////////////////////////////////////////////////////
         // Get key (which must belong to an already fully provisioned session)
         ///////////////////////////////////////////////////////////////////////////////////
@@ -1697,7 +1697,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
     //                                                                            //
     ////////////////////////////////////////////////////////////////////////////////
     @Override
-    public synchronized void deleteKey(int keyHandle, byte[] authorization) throws SKSException {
+    public synchronized void deleteKey(int keyHandle, byte[] authorization) {
         ///////////////////////////////////////////////////////////////////////////////////
         // Get key (which must belong to an already fully provisioned session)
         ///////////////////////////////////////////////////////////////////////////////////
@@ -1722,7 +1722,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
     //                                                                            //
     ////////////////////////////////////////////////////////////////////////////////
     @Override
-    public synchronized byte[] exportKey(int keyHandle, byte[] authorization) throws SKSException {
+    public synchronized byte[] exportKey(int keyHandle, byte[] authorization) {
         ///////////////////////////////////////////////////////////////////////////////////
         // Get key (which must belong to an already fully provisioned session)
         ///////////////////////////////////////////////////////////////////////////////////
@@ -1754,7 +1754,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
     public synchronized void setProperty(int keyHandle,
                                          String type,
                                          String name,
-                                         String value) throws SKSException {
+                                         String value) {
         try {
             ///////////////////////////////////////////////////////////////////////////////////
             // Get key (which must belong to an already fully provisioned session)
@@ -1806,7 +1806,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
     //                                                                            //
     ////////////////////////////////////////////////////////////////////////////////
     @Override
-    public synchronized Extension getExtension(int keyHandle, String type) throws SKSException {
+    public synchronized Extension getExtension(int keyHandle, String type) {
         ///////////////////////////////////////////////////////////////////////////////////
         // Get key (which must belong to an already fully provisioned session)
         ///////////////////////////////////////////////////////////////////////////////////
@@ -1833,7 +1833,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
                                                     String algorithm,
                                                     byte[] parameters,
                                                     byte[] authorization,
-                                                    byte[] data) throws SKSException {
+                                                    byte[] data) {
         ///////////////////////////////////////////////////////////////////////////////////
         // Get key (which must belong to an already fully provisioned session)
         ///////////////////////////////////////////////////////////////////////////////////
@@ -1881,7 +1881,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
                                               String algorithm,
                                               byte[] parameters,
                                               byte[] authorization,
-                                              byte[] data) throws SKSException {
+                                              byte[] data) {
         ///////////////////////////////////////////////////////////////////////////////////
         // Get key (which must belong to an already fully provisioned session)
         ///////////////////////////////////////////////////////////////////////////////////
@@ -1936,7 +1936,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
                                             String algorithm,
                                             byte[] parameters,
                                             byte[] authorization,
-                                            ECPublicKey publicKey) throws SKSException {
+                                            ECPublicKey publicKey) {
         ///////////////////////////////////////////////////////////////////////////////////
         // Get key (which must belong to an already fully provisioned session)
         ///////////////////////////////////////////////////////////////////////////////////
@@ -1986,7 +1986,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
                                                    boolean mode,
                                                    byte[] parameters,
                                                    byte[] authorization,
-                                                   byte[] data) throws SKSException {
+                                                   byte[] data) {
         ///////////////////////////////////////////////////////////////////////////////////
         // Get key (which must belong to an already fully provisioned session)
         ///////////////////////////////////////////////////////////////////////////////////
@@ -2058,7 +2058,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
                                            String algorithm,
                                            byte[] parameters,
                                            byte[] authorization,
-                                           byte[] data) throws SKSException {
+                                           byte[] data) {
         ///////////////////////////////////////////////////////////////////////////////////
         // Get key (which must belong to an already fully provisioned session)
         ///////////////////////////////////////////////////////////////////////////////////
@@ -2101,7 +2101,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
     //                                                                            //
     ////////////////////////////////////////////////////////////////////////////////
     @Override
-    public synchronized DeviceInfo getDeviceInfo() throws SKSException {
+    public synchronized DeviceInfo getDeviceInfo() {
         try {
             return new DeviceInfo(SKS_API_LEVEL,
                                   (byte) (DeviceInfo.LOCATION_EMBEDDED | DeviceInfo.TYPE_SOFTWARE),
@@ -2126,7 +2126,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
     //                                                                            //
     ////////////////////////////////////////////////////////////////////////////////
     @Override
-    public String updateFirmware(byte[] chunk) throws SKSException {
+    public String updateFirmware(byte[] chunk) {
         throw new SKSException("Updates are not supported", SKSException.ERROR_NOT_ALLOWED);
     }
 
@@ -2137,7 +2137,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
     //                                                                            //
     ////////////////////////////////////////////////////////////////////////////////
     @Override
-    public synchronized EnumeratedKey enumerateKeys(int keyHandle) throws SKSException {
+    public synchronized EnumeratedKey enumerateKeys(int keyHandle) {
         if (keyHandle == EnumeratedKey.INIT_ENUMERATION) {
             return getKey(keys.values().iterator());
         }
@@ -2157,7 +2157,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
     //                                                                            //
     ////////////////////////////////////////////////////////////////////////////////
     @Override
-    public synchronized KeyProtectionInfo getKeyProtectionInfo(int keyHandle) throws SKSException {
+    public synchronized KeyProtectionInfo getKeyProtectionInfo(int keyHandle) {
         ///////////////////////////////////////////////////////////////////////////////////
         // Get key (which must belong to an already fully provisioned session)
         ///////////////////////////////////////////////////////////////////////////////////
@@ -2234,7 +2234,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
     //                                                                            //
     ////////////////////////////////////////////////////////////////////////////////
     @Override
-    public synchronized KeyAttributes getKeyAttributes(int keyHandle) throws SKSException {
+    public synchronized KeyAttributes getKeyAttributes(int keyHandle) {
         ///////////////////////////////////////////////////////////////////////////////////
         // Get key (which must belong to an already fully provisioned session)
         ///////////////////////////////////////////////////////////////////////////////////
@@ -2260,7 +2260,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
     @Override
     public void updateKeyManagementKey(int provisioningHandle,
                                        PublicKey keyManagementKey,
-                                       byte[] authorization) throws SKSException {
+                                       byte[] authorization) {
         Provisioning provisioning = getClosedProvisioningSession(provisioningHandle);
         if (provisioning.keyManagementKey == null) {
             abort("Session is not updatable: " + provisioningHandle, SKSException.ERROR_NOT_ALLOWED);
@@ -2293,7 +2293,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
     ////////////////////////////////////////////////////////////////////////////////
     @Override
     public synchronized EnumeratedProvisioningSession enumerateProvisioningSessions(int provisioningHandle,
-                                                                                    boolean provisioningState) throws SKSException {
+                                                                                    boolean provisioningState) {
         if (provisioningHandle == EnumeratedProvisioningSession.INIT_ENUMERATION) {
             return getProvisioning(provisionings.values().iterator(), provisioningState);
         }
@@ -2313,7 +2313,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
     //                                                                            //
     ////////////////////////////////////////////////////////////////////////////////
     @Override
-    public synchronized int getKeyHandle(int provisioningHandle, String id) throws SKSException {
+    public synchronized int getKeyHandle(int provisioningHandle, String id) {
         ///////////////////////////////////////////////////////////////////////////////////
         // Get provisioning session
         ///////////////////////////////////////////////////////////////////////////////////
@@ -2328,7 +2328,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
             }
         }
         provisioning.abort("Key " + id + " missing");
-        return 0;    // For the compiler only...
+        return 0;    // For the compiler...
     }
 
 
@@ -2341,7 +2341,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
     public synchronized void postDeleteKey(int provisioningHandle,
                                            int targetKeyHandle,
                                            byte[] authorization,
-                                           byte[] mac) throws SKSException {
+                                           byte[] mac) {
         addUnlockKeyOrDeleteKey(provisioningHandle, targetKeyHandle, authorization, mac, true);
     }
 
@@ -2355,7 +2355,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
     public synchronized void postUnlockKey(int provisioningHandle,
                                            int targetKeyHandle,
                                            byte[] authorization,
-                                           byte[] mac) throws SKSException {
+                                           byte[] mac) {
         addUnlockKeyOrDeleteKey(provisioningHandle, targetKeyHandle, authorization, mac, false);
     }
 
@@ -2369,7 +2369,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
     public synchronized void postCloneKeyProtection(int keyHandle,
                                                     int targetKeyHandle,
                                                     byte[] authorization,
-                                                    byte[] mac) throws SKSException {
+                                                    byte[] mac) {
         addUpdateKeyOrCloneKeyProtection(keyHandle, targetKeyHandle, authorization, mac, false);
     }
 
@@ -2383,7 +2383,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
     public synchronized void postUpdateKey(int keyHandle,
                                            int targetKeyHandle,
                                            byte[] authorization,
-                                           byte[] mac) throws SKSException {
+                                           byte[] mac) {
         addUpdateKeyOrCloneKeyProtection(keyHandle, targetKeyHandle, authorization, mac, true);
     }
 
@@ -2394,7 +2394,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
     //                                                                            //
     ////////////////////////////////////////////////////////////////////////////////
     @Override
-    public synchronized void abortProvisioningSession(int provisioningHandle) throws SKSException {
+    public synchronized void abortProvisioningSession(int provisioningHandle) {
         ///////////////////////////////////////////////////////////////////////////////////
         // Get provisioning session
         ///////////////////////////////////////////////////////////////////////////////////
@@ -2418,7 +2418,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
     @Override
     public synchronized byte[] closeProvisioningSession(int provisioningHandle,
                                                         byte[] nonce,
-                                                        byte[] mac) throws SKSException {
+                                                        byte[] mac) {
         Provisioning provisioning = null;
         try {
             ///////////////////////////////////////////////////////////////////////////////////
@@ -2653,7 +2653,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
                                                                       int clientTime,
                                                                       int sessionLifeTime,
                                                                       short sessionKeyLimit,
-                                                                      byte[] serverCertificate) throws SKSException {
+                                                                      byte[] serverCertificate) {
         ///////////////////////////////////////////////////////////////////////////////////
         // Check provisioning session algorithm compatibility
         ///////////////////////////////////////////////////////////////////////////////////
@@ -2812,7 +2812,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
                                           byte subType,
                                           String qualifier,
                                           byte[] extensionData,
-                                          byte[] mac) throws SKSException {
+                                          byte[] mac) {
         KeyEntry keyEntry = null;
         try {
             ///////////////////////////////////////////////////////////////////////////////////
@@ -2887,7 +2887,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
     @Override
     public synchronized void importPrivateKey(int keyHandle,
                                               byte[] encryptedKey,
-                                              byte[] mac) throws SKSException {
+                                              byte[] mac) {
         KeyEntry keyEntry = null;
         try {
             ///////////////////////////////////////////////////////////////////////////////////
@@ -2956,7 +2956,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
     @Override
     public synchronized void importSymmetricKey(int keyHandle,
                                                 byte[] encryptedKey,
-                                                byte[] mac) throws SKSException {
+                                                byte[] mac) {
         KeyEntry keyEntry = null;
         try {
             ///////////////////////////////////////////////////////////////////////////////////
@@ -3002,7 +3002,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
     @Override
     public synchronized void setCertificatePath(int keyHandle,
                                                 X509Certificate[] certificatePath,
-                                                byte[] mac) throws SKSException {
+                                                byte[] mac) {
         KeyEntry keyEntry = null;
         try {
             ///////////////////////////////////////////////////////////////////////////////////
@@ -3076,7 +3076,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
                                                String keyAlgorithm,
                                                byte[] keyParameters,
                                                String[] endorsedAlgorithms,
-                                               byte[] mac) throws SKSException {
+                                               byte[] mac) {
         Provisioning provisioning = null;
         try {
             ///////////////////////////////////////////////////////////////////////////////////
@@ -3265,8 +3265,8 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
             return new KeyData(keyEntry.keyHandle, publicKey, attestation);
         } catch (GeneralSecurityException | IOException e) {
             tearDownSession(provisioning, e);
+            return null;    // For the compiler...
         }
-        return null;    // For the compiler only...
     }
 
 
@@ -3288,7 +3288,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
                                             short minLength,
                                             short maxLength,
                                             byte inputMethod,
-                                            byte[] mac) throws SKSException {
+                                            byte[] mac) {
         Provisioning provisioning = null;
         try {
             ///////////////////////////////////////////////////////////////////////////////////
@@ -3378,7 +3378,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
                                             byte[] pukValue,
                                             byte format,
                                             short retryLimit,
-                                            byte[] mac) throws SKSException {
+                                            byte[] mac) {
         Provisioning provisioning = null;
         try {
             ///////////////////////////////////////////////////////////////////////////////////

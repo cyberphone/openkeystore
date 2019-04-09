@@ -75,7 +75,6 @@ import org.webpki.crypto.MACAlgorithms;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.SymEncryptionAlgorithms;
-import org.webpki.crypto.SymKeySignerInterface;
 import org.webpki.crypto.SignatureWrapper;
 
 import org.webpki.keygen2.Action;

@@ -23,7 +23,7 @@ import java.security.cert.X509Certificate;
 import java.security.interfaces.ECPublicKey;
 
 /**
- * SKS (Secure Key Store) API.
+ * SKS (Secure Key Store) API.  All calls may throw the unchecked SKSException
  */
 public interface SecureKeyStore {
 
@@ -226,14 +226,14 @@ public interface SecureKeyStore {
                                                   int clientTime,
                                                   int sessionLifeTime,
                                                   short sessionKeyLimit,
-                                                  byte[] serverCertificate) throws SKSException;
+                                                  byte[] serverCertificate);
 
     byte[] closeProvisioningSession(int provisioningHandle,
                                     byte[] nonce,
-                                    byte[] mac) throws SKSException;
+                                    byte[] mac);
 
     EnumeratedProvisioningSession enumerateProvisioningSessions(int provisioningHandle,
-                                                                boolean provisioningState) throws SKSException;
+                                                                boolean provisioningState);
 
 
     KeyData createKeyEntry(int provisioningHandle,
@@ -252,31 +252,31 @@ public interface SecureKeyStore {
                            String keyAlgorithm,
                            byte[] keyParameters,  // Must be null if not applicable
                            String[] endorsedAlgorithms,
-                           byte[] mac) throws SKSException;
+                           byte[] mac);
 
     int getKeyHandle(int provisioningHandle,
-                     String id) throws SKSException;
+                     String id);
 
-    void abortProvisioningSession(int provisioningHandle) throws SKSException;
+    void abortProvisioningSession(int provisioningHandle);
 
     void setCertificatePath(int keyHandle,
                             X509Certificate[] certificatePath,
-                            byte[] mac) throws SKSException;
+                            byte[] mac);
 
     void addExtension(int keyHandle,
                       String type,
                       byte subType,
                       String qualifier,
                       byte[] extensionData,
-                      byte[] mac) throws SKSException;
+                      byte[] mac);
 
     void importSymmetricKey(int keyHandle,
                             byte[] encryptedKey,
-                            byte[] mac) throws SKSException;
+                            byte[] mac);
 
     void importPrivateKey(int keyHandle,
                           byte[] encryptedKey,
-                          byte[] mac) throws SKSException;
+                          byte[] mac);
 
     int createPinPolicy(int provisioningHandle,
                         String id,
@@ -290,18 +290,18 @@ public interface SecureKeyStore {
                         short minLength,
                         short maxLength,
                         byte inputMethod,
-                        byte[] mac) throws SKSException;
+                        byte[] mac);
 
     int createPukPolicy(int provisioningHandle,
                         String id,
                         byte[] pukValue,
                         byte format,
                         short retryLimit,
-                        byte[] mac) throws SKSException;
+                        byte[] mac);
 
     void updateKeyManagementKey(int provisioningHandle,
                                 PublicKey keyManagementKey,
-                                byte[] authorization) throws SKSException;
+                                byte[] authorization);
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Post Provisioning (Management)
@@ -310,95 +310,95 @@ public interface SecureKeyStore {
     void postDeleteKey(int provisioningHandle,
                        int targetKeyHandle,
                        byte[] authorization,
-                       byte[] mac) throws SKSException;
+                       byte[] mac);
 
     void postUnlockKey(int provisioningHandle,
                        int targetKeyHandle,
                        byte[] authorization,
-                       byte[] mac) throws SKSException;
+                       byte[] mac);
 
     void postUpdateKey(int keyHandle,
                        int targetKeyHandle,
                        byte[] authorization,
-                       byte[] mac) throws SKSException;
+                       byte[] mac);
 
     void postCloneKeyProtection(int keyHandle,
                                 int targetKeyHandle,
                                 byte[] authorization,
-                                byte[] mac) throws SKSException;
+                                byte[] mac);
 
     ///////////////////////////////////////////////////////////////////////////////////
     // "User" API
     ///////////////////////////////////////////////////////////////////////////////////
 
-    KeyAttributes getKeyAttributes(int keyHandle) throws SKSException;
+    KeyAttributes getKeyAttributes(int keyHandle);
 
-    EnumeratedKey enumerateKeys(int keyHandle) throws SKSException;
+    EnumeratedKey enumerateKeys(int keyHandle);
 
     byte[] signHashedData(int keyHandle,
                           String algorithm,
                           byte[] parameters,    // Must be null if not applicable
                           byte[] authorization, // Must be null if not applicable
-                          byte[] data) throws SKSException;
+                          byte[] data);
 
     byte[] performHmac(int keyHandle,
                        String algorithm,
                        byte[] parameters,    // Must be null if not applicable
                        byte[] authorization, // Must be null if not applicable
-                       byte[] data) throws SKSException;
+                       byte[] data);
 
     byte[] symmetricKeyEncrypt(int keyHandle,
                                String algorithm,
                                boolean mode,
                                byte[] parameters,    // Must be null if not applicable
                                byte[] authorization, // Must be null if not applicable
-                               byte[] data) throws SKSException;
+                               byte[] data);
 
     byte[] asymmetricKeyDecrypt(int keyHandle,
                                 String algorithm,
                                 byte[] parameters,    // Must be null if not applicable
                                 byte[] authorization, // Must be null if not applicable
-                                byte[] data) throws SKSException;
+                                byte[] data);
 
     byte[] keyAgreement(int keyHandle,
                         String algorithm,
                         byte[] parameters,    // Must be null if not applicable
                         byte[] authorization, // Must be null if not applicable
-                        ECPublicKey publicKey) throws SKSException;
+                        ECPublicKey publicKey);
 
     void deleteKey(int keyHandle,
-                   byte[] authorization /* Must be null if not applicable */) throws SKSException;
+                   byte[] authorization /* Must be null if not applicable */);
 
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Miscellaneous
     ///////////////////////////////////////////////////////////////////////////////////
 
-    DeviceInfo getDeviceInfo() throws SKSException;
+    DeviceInfo getDeviceInfo();
 
     Extension getExtension(int keyHandle,
-                           String type) throws SKSException;
+                           String type);
 
-    KeyProtectionInfo getKeyProtectionInfo(int keyHandle) throws SKSException;
+    KeyProtectionInfo getKeyProtectionInfo(int keyHandle);
 
     void setProperty(int keyHandle,
                      String type,
                      String name,
-                     String value) throws SKSException;
+                     String value);
 
     void unlockKey(int keyHandle,
-                   byte[] authorization) throws SKSException;
+                   byte[] authorization);
 
     void changePin(int keyHandle,
                    byte[] authorization,
-                   byte[] newPin) throws SKSException;
+                   byte[] newPin);
 
     void setPin(int keyHandle,
                 byte[] authorization,
-                byte[] newPin) throws SKSException;
+                byte[] newPin);
 
     byte[] exportKey(int keyHandle,
-                     byte[] authorization /* Must be null if not applicable */) throws SKSException;
+                     byte[] authorization /* Must be null if not applicable */);
 
-    String updateFirmware(byte[] chunk) throws SKSException;
+    String updateFirmware(byte[] chunk);
 }
