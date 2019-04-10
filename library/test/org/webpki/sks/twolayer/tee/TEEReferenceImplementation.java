@@ -1747,7 +1747,7 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
                         SEReferenceImplementation.checkKeyPair(OS_INSTANCE_KEY,
                                                                keyEntry.sealedKey,
                                                                keyEntry.publicKey,
-                                                               keyEntry.id);
+                                                               keyEntry.id).testReturn();
                     }
     
                     ///////////////////////////////////////////////////////////////////////////////////
@@ -2158,22 +2158,22 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
                                                                       mac);
             keyEntry.owner.provisioningState = seCertificateData.getProvisioningState();
             keyEntry.sealedKey = seCertificateData.getSealedKey();
+
+            ///////////////////////////////////////////////////////////////////////////////////
+            // Update public key value.  It has no use after "setCertificatePath" anyway...
+            ///////////////////////////////////////////////////////////////////////////////////
+            keyEntry.publicKey = certificatePath[0].getPublicKey();
+    
+            ///////////////////////////////////////////////////////////////////////////////////
+            // Store certificate path
+            ///////////////////////////////////////////////////////////////////////////////////
+            if (keyEntry.certificatePath != null) {
+                abort("Multiple calls to \"setCertificatePath\" for: " + keyEntry.id);
+            }
+            keyEntry.certificatePath = certificatePath.clone();
         } catch (Exception e) {
             tearDownSession(keyEntry, e);
         }
-
-        ///////////////////////////////////////////////////////////////////////////////////
-        // Update public key value.  It has no use after "setCertificatePath" anyway...
-        ///////////////////////////////////////////////////////////////////////////////////
-        keyEntry.publicKey = certificatePath[0].getPublicKey();
-
-        ///////////////////////////////////////////////////////////////////////////////////
-        // Store certificate path
-        ///////////////////////////////////////////////////////////////////////////////////
-        if (keyEntry.certificatePath != null) {
-            abort("Multiple calls to \"setCertificatePath\" for: " + keyEntry.id);
-        }
-        keyEntry.certificatePath = certificatePath.clone();
     }
 
 

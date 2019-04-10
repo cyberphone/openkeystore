@@ -22,7 +22,7 @@ public class SECertificateData extends SEResult {
 
     public byte[] getProvisioningState() {
         testReturn();
-        return sealedKey;
+        return provisioningState;
     }
 
     byte[] sealedKey;
