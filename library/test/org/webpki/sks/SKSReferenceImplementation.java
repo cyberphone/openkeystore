@@ -1236,13 +1236,6 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
     }
 
 
-    void tearDownSession(KeyEntry key, Throwable e) {
-        if (key == null) {
-            throw new SKSException(e);
-        }
-        key.owner.abort(e);
-    }
-
     void tearDownSession(Provisioning provisioning, Throwable e) {
         if (provisioning == null) {
             throw new SKSException(e);
@@ -1250,6 +1243,10 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
         provisioning.abort(e);
     }
     
+    void tearDownSession(KeyEntry key, Throwable e) {
+        tearDownSession(key == null ? null : key.owner, e);
+    }
+
     Algorithm getEcType(ECKey ecKey) {
         for (String uri : supportedAlgorithms.keySet()) {
             ECParameterSpec ecParameterSpec = supportedAlgorithms.get(uri).ecParameterSpec;
