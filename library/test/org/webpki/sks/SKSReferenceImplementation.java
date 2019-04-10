@@ -516,7 +516,6 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
         }
 
         void abort(String message, int exceptionType) {
-            abortProvisioningSession(provisioningHandle);
             throw new SKSException(message, exceptionType);
         }
 
@@ -1233,10 +1232,13 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
 
 
     void tearDownSession(Provisioning provisioning, Throwable e) {
-        if (provisioning == null) {
-            throw new SKSException(e);
+        if (provisioning != null) {
+            abortProvisioningSession(provisioning.provisioningHandle);
         }
-        provisioning.abort(e);
+        if (e instanceof SKSException) {
+            throw (SKSException)e;
+        }
+        throw new SKSException(e);
     }
     
     void tearDownSession(KeyEntry key, Throwable e) {
@@ -1554,7 +1556,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
             // Put the operation in the post-op buffer used by "closeProvisioningSession"
             ///////////////////////////////////////////////////////////////////////////////////
             provisioning.addPostProvisioningObject(targetKeyEntry, newKey, update);
-        } catch (IOException | GeneralSecurityException e) {
+        } catch (Exception e) {
             tearDownSession(newKey, e);
         }
     }
@@ -1591,7 +1593,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
             // Put the operation in the post-op buffer used by "closeProvisioningSession"
             ///////////////////////////////////////////////////////////////////////////////////
             provisioning.addPostProvisioningObject(targetKeyEntry, null, delete);
-        } catch (IOException | GeneralSecurityException e) {
+        } catch (Exception e) {
             tearDownSession(provisioning, e);
         }
     }
@@ -2624,7 +2626,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
             ///////////////////////////////////////////////////////////////////////////////////
             provisioning.open = false;
             return attestation;
-        } catch (IOException | GeneralSecurityException e) {
+        } catch (Exception e) {
             tearDownSession(provisioning, e);
             return null;
         }
@@ -2866,7 +2868,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
             extension.extensionData = (subType == SUB_TYPE_ENCRYPTED_EXTENSION) ?
                     keyEntry.owner.decrypt(extensionData) : extensionData;
             keyEntry.extensions.put(type, extension);
-        } catch (IOException | GeneralSecurityException e) {
+        } catch (Exception e) {
             tearDownSession(keyEntry, e);
         }
     }
@@ -2935,7 +2937,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
             } else {
                 checkEcKeyCompatibility((ECPrivateKey) keyEntry.privateKey, keyEntry.owner, keyEntry.id);
             }
-        } catch (GeneralSecurityException | IOException e) {
+        } catch (Exception e) {
             tearDownSession(keyEntry, e);
         }
     }
@@ -2981,7 +2983,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
             // Decrypt and store symmetric key
             ///////////////////////////////////////////////////////////////////////////////////
             keyEntry.symmetricKey = keyEntry.owner.decrypt(encryptedKey);
-        } catch (IOException | GeneralSecurityException e) {
+        } catch (Exception e) {
             tearDownSession(keyEntry, e);
         }
     }
@@ -3041,7 +3043,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
                 keyEntry.owner.abort("Multiple calls to \"setCertificatePath\" for: " + keyEntry.id);
             }
             keyEntry.certificatePath = certificatePath.clone();
-        } catch (IOException | GeneralSecurityException e) {
+        } catch (Exception e) {
             tearDownSession(keyEntry, e);
         }
     }
@@ -3256,7 +3258,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
             keyEntry.deleteProtection = deleteProtection;
             keyEntry.endorsedAlgorithms = tempEndorsed;
             return new KeyData(keyEntry.keyHandle, publicKey, attestation);
-        } catch (GeneralSecurityException | IOException e) {
+        } catch (Exception e) {
             tearDownSession(provisioning, e);
             return null;    // For the compiler...
         }
@@ -3353,7 +3355,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
             pinPolicy.maxLength = maxLength;
             pinPolicy.inputMethod = inputMethod;
             return pinPolicy.pinPolicyHandle;
-        } catch (IOException | GeneralSecurityException e){
+        } catch (Exception e){
             tearDownSession(provisioning, e);
             return 0;  // For the compiler...
         }
@@ -3414,7 +3416,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
             pukPolicy.format = format;
             pukPolicy.retryLimit = retryLimit;
             return pukPolicy.pukPolicyHandle;
-        } catch (IOException | GeneralSecurityException e) {
+        } catch (Exception e) {
             tearDownSession(provisioning, e);
             return 0;  // For the compiler...
         }
