@@ -433,7 +433,6 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
         String issuerUri;
         boolean open = true;
         PublicKey keyManagementKey;
-        short macSequenceCounter;
         int clientTime;
         int sessionLifeTime;
         short sessionKeyLimit;
