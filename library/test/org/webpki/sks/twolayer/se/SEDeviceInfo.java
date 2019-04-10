@@ -18,15 +18,16 @@ package org.webpki.sks.twolayer.se;
 
 import java.security.cert.X509Certificate;
 
-public class SEDeviceInfo {
+public class SEDeviceInfo extends SEResult {
 
     short apiLevel;
 
     public short getApiLevel() {
+        testReturn();
         return apiLevel;
     }
 
-    private byte deviceType;
+    byte deviceType;
 
     public byte getDeviceType() {
         return deviceType;
@@ -74,23 +75,4 @@ public class SEDeviceInfo {
         return extensionDataSize;
     }
 
-    public SEDeviceInfo(short apiLevel,
-                        byte deviceType,
-                        String updateUrl,  // May be null
-                        String vendorName,
-                        String vendorDescription,
-                        X509Certificate[] certificatePath,
-                        String[] supportedAlgorithms,
-                        int cryptoDataSize,
-                        int extensionDataSize) {
-        this.apiLevel = apiLevel;
-        this.deviceType = deviceType;
-        this.updateUrl = updateUrl;
-        this.vendorName = vendorName;
-        this.vendorDescription = vendorDescription;
-        this.certificatePath = certificatePath;
-        this.supportedAlgorithms = supportedAlgorithms;
-        this.cryptoDataSize = cryptoDataSize;
-        this.extensionDataSize = extensionDataSize;
-    }
 }

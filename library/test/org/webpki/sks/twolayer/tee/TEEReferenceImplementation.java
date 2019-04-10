@@ -19,7 +19,6 @@ package org.webpki.sks.twolayer.tee;
 import java.io.IOException;
 import java.io.Serializable;
 
-import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 
 import java.security.cert.X509Certificate;
@@ -66,7 +65,7 @@ import org.webpki.sks.twolayer.se.SESymmetricKeyData;
  *
  *  Author: Anders Rundgren
  */
-public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Serializable {
+public class TEEReferenceImplementation implements SecureKeyStore, Serializable {
     private static final long serialVersionUID = 1L;
 
     /////////////////////////////////////////////////////////////////////////////////////////////
@@ -120,9 +119,9 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
             // Keys, PINs and PUKs share virtual ID space during provisioning
             //////////////////////////////////////////////////////////////////////
             if (owner.names.get(id) != null) {
-                owner.abort("Duplicate \"" + VAR_ID + "\" : " + id);
+                abort("Duplicate \"" + VAR_ID + "\" : " + id);
             }
-            checkIDSyntax(id, VAR_ID, owner);
+            checkIDSyntax(id, VAR_ID);
             owner.names.put(id, false);
             this.owner = owner;
             this.id = id;
@@ -130,7 +129,7 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
     }
 
 
-    static void checkIDSyntax(String identifier, String symbolic_name, TEEError sksError) {
+    static void checkIDSyntax(String identifier, String symbolic_name) {
         boolean flag = false;
         if (identifier.length() == 0 || identifier.length() > MAX_LENGTH_ID_TYPE) {
             flag = true;
@@ -144,7 +143,7 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
             }
         }
         if (flag) {
-            sksError.abort("Malformed \"" + symbolic_name + "\" : " + identifier);
+            abort("Malformed \"" + symbolic_name + "\" : " + identifier);
         }
     }
 
@@ -335,7 +334,7 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
 
         void checkEECertificateAvailability() {
             if (certificatePath == null) {
-                owner.abort("Missing \"setCertificatePath\" for: " + id);
+                abort("Missing \"setCertificatePath\" for: " + id);
             }
         }
 
@@ -347,7 +346,7 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
 
         void setAndVerifyServerBackupFlag() {
             if ((key_backup & KeyProtectionInfo.KEYBACKUP_IMPORTED) != 0) {
-                owner.abort("Mutiple key imports for: " + id);
+                abort("Mutiple key imports for: " + id);
             }
             key_backup |= KeyProtectionInfo.KEYBACKUP_IMPORTED;
         }
@@ -417,7 +416,7 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
     }
 
 
-    class Provisioning implements TEEError, Serializable {
+    class Provisioning implements Serializable {
         private static final long serialVersionUID = 1L;
 
         int provisioningHandle;
@@ -444,20 +443,6 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
         Provisioning() {
             provisioningHandle = nextProvHandle++;
             provisionings.put(provisioningHandle, this);
-        }
-
-        void abort(String message, int exceptionType) {
-            abortProvisioningSession(provisioningHandle);
-            throw new SKSException(message, exceptionType);
-        }
-
-        public void abort(Throwable e) {
-            abort(e.getMessage(), SKSException.ERROR_INTERNAL);
-        }
-
-        @Override
-        public void abort(String message) {
-            abort(message, SKSException.ERROR_OPTION);
         }
 
         KeyEntry getTargetKey(int keyHandle) {
@@ -637,44 +622,42 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
         return null;
     }
 
-    @Override
-    public void abort(String message) {
+    static void abort(String message) {
         abort(message, SKSException.ERROR_OPTION);
     }
 
-    public void abort(Throwable e) {
-        abort(e.getMessage(), SKSException.ERROR_INTERNAL);
-    }
-
-    void abort(String message, int option) {
+    static void abort(String message, int option) {
         throw new SKSException(message, option);
     }
-
-    void tearDownSession(KeyEntry key, Throwable e) {
-        if (key == null) {
-            throw new SKSException(e);
+    
+    static void abort(Throwable e) {
+        if (e instanceof SKSException) {
+            throw (SKSException)e;
         }
-        key.owner.abort(e);
+        throw new SKSException(e);
     }
 
     void tearDownSession(Provisioning provisioning, Throwable e) {
-        if (provisioning == null) {
-            throw new SKSException(e);
+        if (provisioning != null) {
+            abortProvisioningSession(provisioning.provisioningHandle);
         }
-        provisioning.abort(e);
+        abort(e);
+    }
+
+    void tearDownSession(KeyEntry key, Throwable e) {
+        tearDownSession(key == null ? null : key.owner, e);
     }
     
     @SuppressWarnings("fallthrough")
     void verifyPINPolicyCompliance(boolean forcedSetter, 
                                    byte[] pinValue,
                                    PINPolicy pinPolicy,
-                                   byte appUsage,
-                                   TEEError sksError) {
+                                   byte appUsage) {
         ///////////////////////////////////////////////////////////////////////////////////
         // Check PIN length
         ///////////////////////////////////////////////////////////////////////////////////
         if (pinValue.length > pinPolicy.maxLength || pinValue.length < pinPolicy.minLength) {
-            sksError.abort("PIN length error");
+            abort("PIN length error");
         }
 
         ///////////////////////////////////////////////////////////////////////////////////
@@ -698,7 +681,7 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
         }
         if ((pinPolicy.format == PASSPHRASE_FORMAT_NUMERIC && (loweralpha || nonalphanum || upperalpha)) ||
             (pinPolicy.format == PASSPHRASE_FORMAT_ALPHANUMERIC && (loweralpha || nonalphanum))) {
-            sksError.abort("PIN syntax error");
+            abort("PIN syntax error");
         }
 
         ///////////////////////////////////////////////////////////////////////////////////
@@ -707,7 +690,7 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
         if ((pinPolicy.patternRestrictions & PIN_PATTERN_MISSING_GROUP) != 0) {
             if (!upperalpha || !number ||
                 (pinPolicy.format == PASSPHRASE_FORMAT_STRING && (!loweralpha || !nonalphanum))) {
-                sksError.abort("Missing character group in PIN");
+                abort("Missing character group in PIN");
             }
         }
         if ((pinPolicy.patternRestrictions & PIN_PATTERN_SEQUENCE) != 0) {
@@ -722,7 +705,7 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
                 c = pinValue[i];
             }
             if (seq) {
-                sksError.abort("PIN must not be a sequence");
+                abort("PIN must not be a sequence");
             }
         }
         if ((pinPolicy.patternRestrictions & PIN_PATTERN_REPEATED) != 0) {
@@ -730,7 +713,7 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
                 byte b = pinValue[i];
                 for (int j = 0; j < pinValue.length; j++) {
                     if (j != i && b == pinValue[j]) {
-                        sksError.abort("Repeated PIN character");
+                        abort("Repeated PIN character");
                     }
                 }
             }
@@ -742,7 +725,7 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
             for (int i = 1; i < pinValue.length; i++) {
                 if (c == pinValue[i]) {
                     if (++sameCount == max) {
-                        sksError.abort("PIN with " + max + " or more of same the character in a row");
+                        abort("PIN with " + max + " or more of same the character in a row");
                     }
                 } else {
                     sameCount = 1;
@@ -763,19 +746,19 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
                 switch (pinPolicy.grouping) {
                     case PIN_GROUPING_SHARED:
                         if (!equal) {
-                            sksError.abort("Grouping = \"shared\" requires identical PINs");
+                            abort("Grouping = \"shared\" requires identical PINs");
                         }
                         continue;
 
                     case PIN_GROUPING_UNIQUE:
                         if (equal ^ (appUsage == keyEntry.appUsage)) {
-                            sksError.abort("Grouping = \"unique\" PIN error");
+                            abort("Grouping = \"unique\" PIN error");
                         }
                         continue;
 
                     case PIN_GROUPING_SIGN_PLUS_STD:
                         if (((appUsage == APP_USAGE_SIGNATURE) ^ (keyEntry.appUsage == APP_USAGE_SIGNATURE)) ^ !equal) {
-                            sksError.abort("Grouping = \"signature+standard\" PIN error");
+                            abort("Grouping = \"signature+standard\" PIN error");
                         }
                 }
             }
@@ -786,7 +769,7 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
         if (!keyEntry.pinPolicy.userModifiable) {
             abort("PIN for key #" + keyEntry.keyHandle + " is not user modifiable", SKSException.ERROR_NOT_ALLOWED);
         }
-        verifyPINPolicyCompliance(true, newPin, keyEntry.pinPolicy, keyEntry.appUsage, this);
+        verifyPINPolicyCompliance(true, newPin, keyEntry.pinPolicy, keyEntry.appUsage);
     }
 
     void deleteEmptySession(Provisioning provisioning) {
@@ -831,7 +814,7 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
                                       byte minProtection_val,
                                       Provisioning provisioning) {
         if (actualProtection >= minProtection_val && actualProtection <= EXPORT_DELETE_PROTECTION_PUK) {
-            provisioning.abort("Protection object lacks a PIN or PUK object");
+            abort("Protection object lacks a PIN or PUK object");
         }
     }
 
@@ -857,18 +840,18 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
             // Perform some "sanity" tests
             ///////////////////////////////////////////////////////////////////////////////////
             if (newKey.pinPolicy != null || newKey.devicePinProtection) {
-                provisioning.abort("Updated/cloned keys must not define PIN protection");
+                abort("Updated/cloned keys must not define PIN protection");
             }
             if (update) {
                 if (targetKeyEntry.appUsage != newKey.appUsage) {
-                    provisioning.abort("Updated keys must have the same \"" + VAR_APP_USAGE + "\" as the target key");
+                    abort("Updated keys must have the same \"" + VAR_APP_USAGE + "\" as the target key");
                 }
             } else {
                 ///////////////////////////////////////////////////////////////////////////////////
                 // Cloned keys must share the PIN of its parent
                 ///////////////////////////////////////////////////////////////////////////////////
                 if (targetKeyEntry.pinPolicy != null && targetKeyEntry.pinPolicy.grouping != PIN_GROUPING_SHARED) {
-                    provisioning.abort("A cloned key protection must have PIN grouping=\"shared\"");
+                    abort("A cloned key protection must have PIN grouping=\"shared\"");
                 }
             }
     
@@ -876,7 +859,7 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
             // Verify incoming MAC and target key data through the SE
             ///////////////////////////////////////////////////////////////////////////////////
             X509Certificate eeCertificate = newKey.getEECertificate();
-            provisioning.provisioningState = 
+            provisioning.provisioningState =
                 SEReferenceImplementation.validateTargetKey2(OS_INSTANCE_KEY,
                                                              targetKeyEntry.getEECertificate(),
                                                              targetKeyHandle,
@@ -884,15 +867,17 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
                                                              eeCertificate,
                                                              newKey.sealedKey,
                                                              provisioning.privacyEnabled,
-                                                             update ? METHOD_POST_UPDATE_KEY : METHOD_POST_CLONE_KEY_PROTECTION,
+                                                             update ? 
+                                             METHOD_POST_UPDATE_KEY : METHOD_POST_CLONE_KEY_PROTECTION,
                                                              authorization,
                                                              provisioning.provisioningState,
-                                                             mac);
+                                                             mac).getByteArray();
+
             ///////////////////////////////////////////////////////////////////////////////////
             // Put the operation in the post-op buffer used by "closeProvisioningSession"
             ///////////////////////////////////////////////////////////////////////////////////
             provisioning.addPostProvisioningObject(targetKeyEntry, newKey, update);
-        } catch (IOException | GeneralSecurityException e) {
+        } catch (Exception e) {
             tearDownSession(newKey, e);
         }
     }
@@ -914,7 +899,7 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
             ///////////////////////////////////////////////////////////////////////////////////
             KeyEntry targetKeyEntry = provisioning.getTargetKey(targetKeyHandle);
             if (!delete && targetKeyEntry.pinPolicy == null) {
-                provisioning.abort("Key #" + targetKeyHandle + " is not PIN protected");
+                abort("Key #" + targetKeyHandle + " is not PIN protected");
             }
     
             ///////////////////////////////////////////////////////////////////////////////////
@@ -926,16 +911,17 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
                                                             targetKeyHandle,
                                                             targetKeyEntry.owner.keyManagementKey,
                                                             provisioning.privacyEnabled,
-                                                            delete ? METHOD_POST_DELETE_KEY : METHOD_POST_UNLOCK_KEY,
+                                                            delete ? 
+                                            METHOD_POST_DELETE_KEY : METHOD_POST_UNLOCK_KEY,
                                                             authorization,
                                                             provisioning.provisioningState,
-                                                            mac);
+                                                            mac).getByteArray();
 
             ///////////////////////////////////////////////////////////////////////////////////
             // Put the operation in the post-op buffer used by "closeProvisioningSession"
             ///////////////////////////////////////////////////////////////////////////////////
             provisioning.addPostProvisioningObject(targetKeyEntry, null, delete);
-        } catch (IOException | GeneralSecurityException e) {
+        } catch (Exception e) {
             tearDownSession(provisioning, e);
         }
     }
@@ -1079,8 +1065,8 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
             ///////////////////////////////////////////////////////////////////////////////////
             // Export key in raw unencrypted format through the SE
             ///////////////////////////////////////////////////////////////////////////////////
-            return SEReferenceImplementation.unwrapKey(OS_INSTANCE_KEY, keyEntry.sealedKey);
-        } catch (IOException | GeneralSecurityException e) {
+            return SEReferenceImplementation.unwrapKey(OS_INSTANCE_KEY, keyEntry.sealedKey).getByteArray();
+        } catch (Exception e) {
             abort(e.getMessage());
             return null;   // For the compiler...
         }
@@ -1195,8 +1181,8 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
                                                                   keyHandle,
                                                                   algorithm,
                                                                   parameters,
-                                                                  data);
-        } catch (IOException | GeneralSecurityException e) {
+                                                                  data).getByteArray();
+        } catch (Exception e) {
             abort(e);
             return null;   // For the compiler...
         }
@@ -1243,8 +1229,8 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
                                                              keyHandle,
                                                              algorithm,
                                                              parameters,
-                                                             data);
-        } catch (IOException | GeneralSecurityException e) {
+                                                             data).getByteArray();
+        } catch (Exception e) {
             abort(e);
             return null;   // For the compiler...
         }
@@ -1286,8 +1272,8 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
                                                                  keyHandle,
                                                                  algorithm,
                                                                  parameters,
-                                                                 publicKey);
-        } catch (IOException | GeneralSecurityException e) {
+                                                                 publicKey).getByteArray();
+        } catch (Exception e) {
             abort(e);
             return null;   // For the compiler...
         }
@@ -1336,8 +1322,8 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
                                                                         algorithm,
                                                                         mode,
                                                                         parameters,
-                                                                        data);
-        } catch (IOException | GeneralSecurityException e) {
+                                                                        data).getByteArray();
+        } catch (Exception e) {
             abort(e);
             return null;   // For the compiler...
         }
@@ -1384,8 +1370,8 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
                                                          keyHandle,
                                                          algorithm,
                                                          parameters,
-                                                         data);
-        } catch (IOException | GeneralSecurityException e) {
+                                                         data).getByteArray();
+        } catch (Exception e) {
             abort(e);
             return null;   // For the compiler...
         }
@@ -1412,7 +1398,7 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
                                   deviceInfo.getExtensionDataSize(),
                                   SKS_DEVICE_PIN_SUPPORT,
                                   SKS_BIOMETRIC_SUPPORT);
-        } catch (IOException | GeneralSecurityException e) {
+        } catch (Exception e) {
             abort(e);
             return null;   // For the compiler...
         }
@@ -1571,16 +1557,17 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
             // Verify KMK signature
             ///////////////////////////////////////////////////////////////////////////////////
             if (!SEReferenceImplementation.validateRollOverAuthorization(keyManagementKey,
-                    provisioning.keyManagementKey,
-                    authorization)) {
-                abort("\"" + VAR_AUTHORIZATION + "\" signature did not verify for session: " + provisioningHandle);
+                                                                         provisioning.keyManagementKey,
+                                                                         authorization).getBoolean()) {
+                abort("\"" + VAR_AUTHORIZATION + "\" signature did not verify for session: " + 
+                      provisioningHandle);
             }
     
             ///////////////////////////////////////////////////////////////////////////////////
             // Success, update KeyManagementKey
             ///////////////////////////////////////////////////////////////////////////////////
             provisioning.keyManagementKey = keyManagementKey;
-        } catch (GeneralSecurityException e) {
+        } catch (Exception e) {
             tearDownSession(provisioning, e);
         }
     }
@@ -1627,7 +1614,7 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
                 return keyEntry.keyHandle;
             }
         }
-        provisioning.abort("Key " + id + " missing");
+        abort("Key " + id + " missing");
         return 0;    // For the compiler only...
     }
 
@@ -1736,14 +1723,14 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
                                                                   provisioning.clientSessionId,
                                                                   provisioning.issuerUri,
                                                                   challenge,
-                                                                  mac);
+                                                                  mac).getByteArray();
     
             ///////////////////////////////////////////////////////////////////////////////////
             // Perform "sanity" checks on provisioned data
             ///////////////////////////////////////////////////////////////////////////////////
             for (String id : provisioning.names.keySet()) {
                 if (!provisioning.names.get(id)) {
-                    provisioning.abort("Unreferenced object \"" + VAR_ID + "\" : " + id);
+                    abort("Unreferenced object \"" + VAR_ID + "\" : " + id);
                 }
             }
             provisioning.names.clear();
@@ -1780,7 +1767,7 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
                                 }
                             }
                             if (collision) {
-                                provisioning.abort("Duplicate certificate in \"setCertificatePath\" for: " + keyEntry.id);
+                                abort("Duplicate certificate in \"setCertificatePath\" for: " + keyEntry.id);
                             }
                         }
                     }
@@ -1792,7 +1779,8 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
                         SEReferenceImplementation.testKeyAndAlgorithmCompliance(OS_INSTANCE_KEY,
                                                                                 keyEntry.sealedKey,
                                                                                 algorithm,
-                                                                                keyEntry.id);
+                                                                                keyEntry.id)
+                            .testReturn();
                     }
                 }
             }
@@ -1890,7 +1878,7 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
             ///////////////////////////////////////////////////////////////////////////////////
             provisioning.open = false;
             return attestation;
-        } catch (IOException | GeneralSecurityException e) {
+        } catch (Exception e) {
             tearDownSession(provisioning, e);
             return null;   // For the compiler...
         }
@@ -1914,44 +1902,44 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
                                                                       short sessionKeyLimit,
                                                                       byte[] serverCertificate) {
         try {
-        ///////////////////////////////////////////////////////////////////////////////////
-        // Limited input validation
-        ///////////////////////////////////////////////////////////////////////////////////
-        checkIDSyntax(serverSessionId, VAR_SERVER_SESSION_ID, this);
-
-        ///////////////////////////////////////////////////////////////////////////////////
-        // The assumption here is that the SE can do crypto parameter validation...
-        ///////////////////////////////////////////////////////////////////////////////////
-        SEProvisioningData sePd = 
-            SEReferenceImplementation.createProvisioningData(OS_INSTANCE_KEY,
-                                                             sessionKeyAlgorithm,
-                                                             privacyEnabled,
-                                                             serverSessionId,
-                                                             serverEphemeralKey,
-                                                             issuerUri,
-                                                             keyManagementKey,
-                                                             clientTime,
-                                                             sessionLifeTime,
-                                                             sessionKeyLimit,
-                                                             serverCertificate);
-
-        ///////////////////////////////////////////////////////////////////////////////////
-        // We did it!
-        ///////////////////////////////////////////////////////////////////////////////////
-        Provisioning provisioning = new Provisioning();
-        provisioning.privacyEnabled = privacyEnabled;
-        provisioning.serverSessionId = serverSessionId;
-        provisioning.clientSessionId = sePd.clientSessionId;
-        provisioning.issuerUri = issuerUri;
-        provisioning.keyManagementKey = keyManagementKey;
-        provisioning.clientTime = clientTime;
-        provisioning.sessionLifeTime = sessionLifeTime;
-        provisioning.provisioningState = sePd.provisioningState;
-        return new ProvisioningSession(provisioning.provisioningHandle,
-                                       sePd.clientSessionId,
-                                       sePd.attestation,
-                                       sePd.clientEphemeralKey);
-        } catch (IOException | GeneralSecurityException e) {
+            ///////////////////////////////////////////////////////////////////////////////////
+            // Limited input validation
+            ///////////////////////////////////////////////////////////////////////////////////
+            checkIDSyntax(serverSessionId, VAR_SERVER_SESSION_ID);
+    
+            ///////////////////////////////////////////////////////////////////////////////////
+            // The assumption here is that the SE can do crypto parameter validation...
+            ///////////////////////////////////////////////////////////////////////////////////
+            SEProvisioningData sePd = 
+                SEReferenceImplementation.createProvisioningData(OS_INSTANCE_KEY,
+                                                                 sessionKeyAlgorithm,
+                                                                 privacyEnabled,
+                                                                 serverSessionId,
+                                                                 serverEphemeralKey,
+                                                                 issuerUri,
+                                                                 keyManagementKey,
+                                                                 clientTime,
+                                                                 sessionLifeTime,
+                                                                 sessionKeyLimit,
+                                                                 serverCertificate);
+     
+            ///////////////////////////////////////////////////////////////////////////////////
+            // We did it!
+            ///////////////////////////////////////////////////////////////////////////////////
+            Provisioning provisioning = new Provisioning();
+            provisioning.privacyEnabled = privacyEnabled;
+            provisioning.serverSessionId = serverSessionId;
+            provisioning.clientSessionId = sePd.getClientSessionId();
+            provisioning.issuerUri = issuerUri;
+            provisioning.keyManagementKey = keyManagementKey;
+            provisioning.clientTime = clientTime;
+            provisioning.sessionLifeTime = sessionLifeTime;
+            provisioning.provisioningState = sePd.getProvisioningState();
+            return new ProvisioningSession(provisioning.provisioningHandle,
+                                           sePd.getClientSessionId(),
+                                           sePd.getAttestation(),
+                                           sePd.getClientEphemeralKey());
+        } catch (Exception e) {
             abort(e);
             return null;   // For the compiler...
         }
@@ -1982,20 +1970,20 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
             ///////////////////////////////////////////////////////////////////////////////////
             keyEntry.owner.rangeTest(subType, SUB_TYPE_EXTENSION, SUB_TYPE_LOGOTYPE, "SubType");
             if (type.length() == 0 || type.length() > MAX_LENGTH_URI) {
-                keyEntry.owner.abort("URI length error: " + type.length());
+                abort("URI length error: " + type.length());
             }
             if (keyEntry.extensions.get(type) != null) {
-                keyEntry.owner.abort("Duplicate \"" + VAR_TYPE + "\" : " + type);
+                abort("Duplicate \"" + VAR_TYPE + "\" : " + type);
             }
             if (extensionData.length > (subType == SUB_TYPE_ENCRYPTED_EXTENSION ?
                     MAX_LENGTH_EXTENSION_DATA + AES_CBC_PKCS5_PADDING
                     :
                     MAX_LENGTH_EXTENSION_DATA)) {
-                keyEntry.owner.abort("Extension data exceeds " + MAX_LENGTH_EXTENSION_DATA + " bytes");
+                abort("Extension data exceeds " + MAX_LENGTH_EXTENSION_DATA + " bytes");
             }
             byte[] binQualifier = getBinary(qualifier);
             if (((subType == SUB_TYPE_LOGOTYPE) ^ (binQualifier.length != 0)) || binQualifier.length > MAX_LENGTH_QUALIFIER) {
-                keyEntry.owner.abort("\"" + VAR_QUALIFIER + "\" length error");
+                abort("\"" + VAR_QUALIFIER + "\" length error");
             }
             ///////////////////////////////////////////////////////////////////////////////////
             // Property bags are checked for not being empty or incorrectly formatted
@@ -2007,7 +1995,7 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
                             (i += getShort(extensionData, i) + 2) > extensionData.length - 3 ||
                             ((extensionData[i++] & 0xFE) != 0) ||
                             (i += getShort(extensionData, i) + 2) > extensionData.length) {
-                        keyEntry.owner.abort("\"" + VAR_PROPERTY_BAG + "\" format error: " + type);
+                        abort("\"" + VAR_PROPERTY_BAG + "\" format error: " + type);
                     }
                 }
                 while (i != extensionData.length);
@@ -2028,8 +2016,8 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
                                                                 binQualifier,
                                                                 extensionData,
                                                                 mac);
-            keyEntry.owner.provisioningState = seExtensionData.provisioningState;
-            extensionData = seExtensionData.extensionData;
+            keyEntry.owner.provisioningState = seExtensionData.getProvisioningState();
+            extensionData = seExtensionData.getExtensionData();
     
             ///////////////////////////////////////////////////////////////////////////////////
             // Succeeded, create object
@@ -2039,7 +2027,7 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
             extension.qualifier = qualifier;
             extension.extensionData = extensionData;
             keyEntry.extensions.put(type, extension);
-        } catch (IOException | GeneralSecurityException e) {
+        } catch (Exception e) {
             abort(e);
         }
     }
@@ -2065,7 +2053,7 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
             // Check for key length errors
             ///////////////////////////////////////////////////////////////////////////////////
             if (encryptedKey.length > (MAX_LENGTH_CRYPTO_DATA + AES_CBC_PKCS5_PADDING)) {
-                keyEntry.owner.abort("Private key: " + keyEntry.id + " exceeds " + MAX_LENGTH_CRYPTO_DATA + " bytes");
+                abort("Private key: " + keyEntry.id + " exceeds " + MAX_LENGTH_CRYPTO_DATA + " bytes");
             }
     
             ///////////////////////////////////////////////////////////////////////////////////
@@ -2085,9 +2073,9 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
                                                                     eeCertificate,
                                                                     encryptedKey,
                                                                     mac);
-            keyEntry.owner.provisioningState = sePrivateKeyData.provisioningState;
-            keyEntry.sealedKey = sePrivateKeyData.sealedKey;
-        } catch (IOException | GeneralSecurityException e) {
+            keyEntry.owner.provisioningState = sePrivateKeyData.getProvisioningState();
+            keyEntry.sealedKey = sePrivateKeyData.getSealedKey();
+        } catch (Exception e) {
             tearDownSession(keyEntry, e);
         }
     }
@@ -2113,7 +2101,7 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
             // Check for various input errors
             ///////////////////////////////////////////////////////////////////////////////////
             if (encryptedKey.length > (MAX_LENGTH_SYMMETRIC_KEY + AES_CBC_PKCS5_PADDING)) {
-                keyEntry.owner.abort("Symmetric key: " + keyEntry.id + " exceeds " + MAX_LENGTH_SYMMETRIC_KEY + " bytes");
+                abort("Symmetric key: " + keyEntry.id + " exceeds " + MAX_LENGTH_SYMMETRIC_KEY + " bytes");
             }
     
             ///////////////////////////////////////////////////////////////////////////////////
@@ -2133,10 +2121,10 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
                                                                       eeCertificate,
                                                                       encryptedKey,
                                                                       mac);
-            keyEntry.owner.provisioningState = seSymmetricKeyData.provisioningState;
-            keyEntry.symmetricKeyLength = seSymmetricKeyData.symmetricKeyLength;
-            keyEntry.sealedKey = seSymmetricKeyData.sealedKey;
-        } catch (IOException | GeneralSecurityException e) {
+            keyEntry.owner.provisioningState = seSymmetricKeyData.getProvisioningState();
+            keyEntry.symmetricKeyLength = seSymmetricKeyData.getSymmetricKeyLength();
+            keyEntry.sealedKey = seSymmetricKeyData.getSealedKey();
+        } catch (Exception e) {
             tearDownSession(keyEntry, e);
         }
     }
@@ -2169,9 +2157,9 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
                                                                       keyEntry.publicKey,
                                                                       certificatePath,
                                                                       mac);
-            keyEntry.sealedKey = seCertificateData.sealedKey;
-            keyEntry.owner.provisioningState = seCertificateData.provisioningState;
-        } catch (IOException | GeneralSecurityException e) {
+            keyEntry.owner.provisioningState = seCertificateData.getProvisioningState();
+            keyEntry.sealedKey = seCertificateData.getSealedKey();
+        } catch (Exception e) {
             tearDownSession(keyEntry, e);
         }
 
@@ -2184,7 +2172,7 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
         // Store certificate path
         ///////////////////////////////////////////////////////////////////////////////////
         if (keyEntry.certificatePath != null) {
-            keyEntry.owner.abort("Multiple calls to \"setCertificatePath\" for: " + keyEntry.id);
+            abort("Multiple calls to \"setCertificatePath\" for: " + keyEntry.id);
         }
         keyEntry.certificatePath = certificatePath.clone();
     }
@@ -2224,10 +2212,10 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
             // Validate input as much as possible
             ///////////////////////////////////////////////////////////////////////////////////
             if (!keyEntryAlgorithm.equals(ALGORITHM_KEY_ATTEST_1)) {
-                provisioning.abort("Unknown \"" + VAR_KEY_ENTRY_ALGORITHM + "\" : " + keyEntryAlgorithm, SKSException.ERROR_ALGORITHM);
+                abort("Unknown \"" + VAR_KEY_ENTRY_ALGORITHM + "\" : " + keyEntryAlgorithm, SKSException.ERROR_ALGORITHM);
             }
             if (serverSeed != null && (serverSeed.length == 0 || serverSeed.length > MAX_LENGTH_SERVER_SEED)) {
-                provisioning.abort("\"" + VAR_SERVER_SEED + "\" length error: " + serverSeed.length);
+                abort("\"" + VAR_SERVER_SEED + "\" length error: " + serverSeed.length);
             }
             provisioning.rangeTest(exportProtection, EXPORT_DELETE_PROTECTION_NONE, EXPORT_DELETE_PROTECTION_NOT_ALLOWED, "ExportProtection");
             provisioning.rangeTest(deleteProtection, EXPORT_DELETE_PROTECTION_NONE, EXPORT_DELETE_PROTECTION_NOT_ALLOWED, "DeleteProtection");
@@ -2244,18 +2232,18 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
             if (devicePinProtection) {
                 if (SKS_DEVICE_PIN_SUPPORT) {
                     if (pinPolicyHandle != 0) {
-                        provisioning.abort("Device PIN mixed with PIN policy ojbect");
+                        abort("Device PIN mixed with PIN policy ojbect");
                     }
                 } else {
-                    provisioning.abort("Unsupported: \"" + VAR_DEVICE_PIN_PROTECTION + "\"");
+                    abort("Unsupported: \"" + VAR_DEVICE_PIN_PROTECTION + "\"");
                 }
             } else if (pinPolicyHandle != 0) {
                 pinPolicy = pinPolicies.get(pinPolicyHandle);
                 if (pinPolicy == null || pinPolicy.owner != provisioning) {
-                    provisioning.abort("Referenced PIN policy object not found");
+                    abort("Referenced PIN policy object not found");
                 }
                 if (enablePinCaching && pinPolicy.inputMethod != INPUT_METHOD_TRUSTED_GUI) {
-                    provisioning.abort("\"" + VAR_ENABLE_PIN_CACHING + "\" must be combined with \"trusted-gui\"");
+                    abort("\"" + VAR_ENABLE_PIN_CACHING + "\" must be combined with \"trusted-gui\"");
                 }
                 pinPolicyId = pinPolicy.id;
                 provisioning.names.put(pinPolicyId, true); // Referenced
@@ -2265,15 +2253,15 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
                 verifyExportDeleteProtection(exportProtection, EXPORT_DELETE_PROTECTION_PIN, provisioning);
                 pinProtection = false;
                 if (enablePinCaching) {
-                    provisioning.abort("\"" + VAR_ENABLE_PIN_CACHING + "\" without PIN");
+                    abort("\"" + VAR_ENABLE_PIN_CACHING + "\" without PIN");
                 }
                 if (pinValue != null) {
-                    provisioning.abort("\"" + VAR_PIN_VALUE + "\" expected to be empty");
+                    abort("\"" + VAR_PIN_VALUE + "\" expected to be empty");
                 }
             }
             if (biometricProtection != BIOMETRIC_PROTECTION_NONE &&
                     ((biometricProtection != BIOMETRIC_PROTECTION_EXCLUSIVE) ^ pinProtection)) {
-                provisioning.abort("Invalid \"BiometricProtection\" and PIN combination");
+                abort("Invalid \"BiometricProtection\" and PIN combination");
             }
             if (pinPolicy == null || pinPolicy.pukPolicy == null) {
                 verifyExportDeleteProtection(deleteProtection, EXPORT_DELETE_PROTECTION_PUK, provisioning);
@@ -2302,11 +2290,13 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
                                                                 keyParameters,
                                                                 endorsedAlgorithms,
                                                                 mac);
+            provisioning.provisioningState = seKeyData.getProvisioningState();
+
             ///////////////////////////////////////////////////////////////////////////////////
             // Perform a gazillion tests on PINs if applicable
             ///////////////////////////////////////////////////////////////////////////////////
             if (decryptPin) {
-                pinValue = seKeyData.decryptedPinValue;
+                pinValue = seKeyData.getDecryptedPinValue();
             } else if (pinValue != null) {
                 pinValue = pinValue.clone();
             }
@@ -2314,7 +2304,7 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
                 ///////////////////////////////////////////////////////////////////////////////////
                 // Testing the actual PIN value
                 ///////////////////////////////////////////////////////////////////////////////////
-                verifyPINPolicyCompliance(false, pinValue, pinPolicy, appUsage, provisioning);
+                verifyPINPolicyCompliance(false, pinValue, pinPolicy, appUsage);
             }
     
             ///////////////////////////////////////////////////////////////////////////////////
@@ -2322,12 +2312,11 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
             ///////////////////////////////////////////////////////////////////////////////////
             KeyEntry keyEntry = new KeyEntry(provisioning, id);
             provisioning.names.put(id, true); // Referenced (for "closeProvisioningSession")
-            provisioning.provisioningState = seKeyData.provisioningState;
             keyEntry.pinPolicy = pinPolicy;
             keyEntry.friendlyName = friendlyName;
             keyEntry.pinValue = pinValue;
-            keyEntry.publicKey = seKeyData.publicKey;
-            keyEntry.sealedKey = seKeyData.sealedKey;
+            keyEntry.publicKey = seKeyData.getPublicKey();
+            keyEntry.sealedKey = seKeyData.getSealedKey();
             keyEntry.appUsage = appUsage;
             keyEntry.devicePinProtection = devicePinProtection;
             keyEntry.enablePinCaching = enablePinCaching;
@@ -2339,8 +2328,8 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
                 tempEndorsed.add(endorsedAlgorithm);
             }
             keyEntry.endorsedAlgorithms = tempEndorsed;
-            return new KeyData(keyEntry.keyHandle, seKeyData.publicKey, seKeyData.attestation);
-        } catch (IOException | GeneralSecurityException e) {
+            return new KeyData(keyEntry.keyHandle, seKeyData.getPublicKey(), seKeyData.getAttestation());
+        } catch (Exception e) {
             tearDownSession(provisioning, e);
             return null;  // For the compiler...
         }
@@ -2385,24 +2374,24 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
                                          PIN_PATTERN_SEQUENCE |
                                          PIN_PATTERN_REPEATED |
                                          PIN_PATTERN_MISSING_GROUP)) != 0) {
-                provisioning.abort("Invalid \"" + VAR_PATTERN_RESTRICTIONS + "\" value=" + patternRestrictions);
+                abort("Invalid \"" + VAR_PATTERN_RESTRICTIONS + "\" value=" + patternRestrictions);
             }
             String pukPolicyId = CRYPTO_STRING_NOT_AVAILABLE;
             PUKPolicy pukPolicy = null;
             if (pukPolicyHandle != 0) {
                 pukPolicy = pukPolicies.get(pukPolicyHandle);
                 if (pukPolicy == null || pukPolicy.owner != provisioning) {
-                    provisioning.abort("Referenced PUK policy object not found");
+                    abort("Referenced PUK policy object not found");
                 }
                 pukPolicyId = pukPolicy.id;
                 provisioning.names.put(pukPolicyId, true); // Referenced
             }
             if ((patternRestrictions & PIN_PATTERN_MISSING_GROUP) != 0 &&
                     format != PASSPHRASE_FORMAT_ALPHANUMERIC && format != PASSPHRASE_FORMAT_STRING) {
-                provisioning.abort("Incorrect \"" + VAR_FORMAT + "\" for the \"missing-group\" PIN pattern policy");
+                abort("Incorrect \"" + VAR_FORMAT + "\" for the \"missing-group\" PIN pattern policy");
             }
             if (minLength < 1 || maxLength > MAX_LENGTH_PIN_PUK || maxLength < minLength) {
-                provisioning.abort("PIN policy length error");
+                abort("PIN policy length error");
             }
     
             ///////////////////////////////////////////////////////////////////////////////////
@@ -2422,7 +2411,7 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
                                                           minLength,
                                                           maxLength,
                                                           inputMethod,
-                                                          mac);
+                                                          mac).getByteArray();
 
             ///////////////////////////////////////////////////////////////////////////////////
             // Success, create object
@@ -2439,7 +2428,7 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
             pinPolicy.maxLength = maxLength;
             pinPolicy.inputMethod = inputMethod;
             return pinPolicy.pinPolicyHandle;
-        } catch (IOException | GeneralSecurityException e) {
+        } catch (Exception e) {
             tearDownSession(provisioning, e);
             return 0;    // For the compiler...
         }
@@ -2482,16 +2471,16 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
                                                                         format,
                                                                         retryLimit,
                                                                         mac);
-            provisioning.provisioningState = sePukData.provisioningState;
-            decryptedPukValue = sePukData.pukValue;
+            provisioning.provisioningState = sePukData.getProvisioningState();
+            decryptedPukValue = sePukData.getPukValue();
             if (decryptedPukValue.length == 0 || decryptedPukValue.length > MAX_LENGTH_PIN_PUK) {
-                provisioning.abort("PUK length error");
+                abort("PUK length error");
             }
             for (int i = 0; i < decryptedPukValue.length; i++) {
                 byte c = decryptedPukValue[i];
                 if ((c < '0' || c > '9') && (format == PASSPHRASE_FORMAT_NUMERIC ||
                         ((c < 'A' || c > 'Z') && format == PASSPHRASE_FORMAT_ALPHANUMERIC))) {
-                    provisioning.abort("PUK syntax error");
+                    abort("PUK syntax error");
                 }
             }
     
@@ -2503,7 +2492,7 @@ public class TEEReferenceImplementation implements TEEError, SecureKeyStore, Ser
             pukPolicy.format = format;
             pukPolicy.retryLimit = retryLimit;
             return pukPolicy.pukPolicyHandle;
-        } catch (IOException | GeneralSecurityException e) {
+        } catch (Exception e) {
             tearDownSession(provisioning, e);
             return 0;  // For the compiler...
         }

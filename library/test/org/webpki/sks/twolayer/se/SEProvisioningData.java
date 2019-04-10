@@ -18,14 +18,30 @@ package org.webpki.sks.twolayer.se;
 
 import java.security.interfaces.ECPublicKey;
 
-public class SEProvisioningData {
+public class SEProvisioningData extends SEResult {
 
-    public byte[] provisioningState;
+    byte[] provisioningState;
+    
+    public byte[] getProvisioningState() {
+        testReturn();
+        return provisioningState;
+    }
 
-    public String clientSessionId;
+    String clientSessionId;
 
-    public byte[] attestation;
+    public String getClientSessionId() {
+        return clientSessionId;
+    }
 
-    public ECPublicKey clientEphemeralKey;
+    byte[] attestation;
+    
+    public byte[] getAttestation() {
+        return attestation;
+    }
 
+    ECPublicKey clientEphemeralKey;
+    
+    public ECPublicKey getClientEphemeralKey() {
+        return clientEphemeralKey;
+    }
 }

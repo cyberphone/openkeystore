@@ -16,10 +16,18 @@
  */
 package org.webpki.sks.twolayer.se;
 
-public class SEPUKData {
+public class SEPUKData extends SEResult {
 
-    public byte[] provisioningState;
+    byte[] provisioningState;
 
-    public byte[] pukValue;
+    public byte[] getProvisioningState() {
+        testReturn();
+        return provisioningState;
+    }
 
+    byte[] pukValue;
+    
+    public byte[] getPukValue() {
+        return pukValue;
+    }
 }

@@ -14,12 +14,14 @@
  *  limitations under the License.
  *
  */
-package org.webpki.sks.twolayer.tee;
+package org.webpki.sks.twolayer.se;
 
-import org.webpki.sks.SKSException;
-
-public interface TEEError {
-
-    void abort(String error) throws SKSException;
-
+public class SEBooleanData extends SEResult {
+    
+    boolean bool;
+    
+    public boolean getBoolean() {
+        testReturn();
+        return bool;
+    }
 }

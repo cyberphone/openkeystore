@@ -16,10 +16,18 @@
  */
 package org.webpki.sks.twolayer.se;
 
-public class SEExtensionData {
+public class SEExtensionData extends SEResult {
 
-    public byte[] provisioningState;
+    byte[] provisioningState;
 
-    public byte[] extensionData;
-
+    public byte[] getProvisioningState() {
+        testReturn();
+        return provisioningState;
+    }
+    
+    byte[] extensionData;
+    
+    public byte[] getExtensionData() {
+        return extensionData;
+    }
 }

@@ -16,10 +16,24 @@
  */
 package org.webpki.sks.twolayer.se;
 
-public class SESymmetricKeyData {
-    public byte[] provisioningState;
+public class SESymmetricKeyData extends SEResult {
 
-    public short symmetricKeyLength;
+    byte[] provisioningState;
 
-    public byte[] sealedKey;
+    public byte[] getProvisioningState() {
+        testReturn();
+        return provisioningState;
+    }
+    
+    short symmetricKeyLength;
+
+    public short getSymmetricKeyLength() {
+        return symmetricKeyLength;
+    }
+    
+    byte[] sealedKey;
+
+    public byte[] getSealedKey() {
+        return sealedKey;
+    }
 }

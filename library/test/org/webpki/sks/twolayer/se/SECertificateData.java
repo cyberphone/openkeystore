@@ -16,10 +16,18 @@
  */
 package org.webpki.sks.twolayer.se;
 
-public class SECertificateData {
+public class SECertificateData extends SEResult {
 
-    public byte[] sealedKey;
+    byte[] provisioningState;
 
-    public byte[] provisioningState;
+    public byte[] getProvisioningState() {
+        testReturn();
+        return sealedKey;
+    }
 
+    byte[] sealedKey;
+
+    public byte[] getSealedKey() {
+        return sealedKey;
+    }
 }

@@ -16,38 +16,6 @@
  */
 package org.webpki.sks.twolayer.se;
 
-import java.security.PublicKey;
+public class SEVoidData extends SEResult {
 
-public class SEKeyData extends SEResult {
-    
-    byte[] provisioningState;
-
-    public byte[] getProvisioningState() {
-        testReturn();
-        return provisioningState;
-    }
-    
-    byte[] sealedKey;
-    
-    public byte[] getSealedKey() {
-        return sealedKey;
-    }
-    
-    byte[] attestation;
-    
-    public byte[] getAttestation() {
-        return attestation;
-    }
-
-    byte[] decryptedPinValue;
-    
-    public byte[] getDecryptedPinValue() {
-        return decryptedPinValue;
-    }
-
-    PublicKey publicKey;
-    
-    public PublicKey getPublicKey() {
-        return publicKey;
-    }
 }

@@ -16,38 +16,28 @@
  */
 package org.webpki.sks.twolayer.se;
 
-import java.security.PublicKey;
+import org.webpki.sks.SKSException;
 
-public class SEKeyData extends SEResult {
+public abstract class SEResult {
+    int status = 0;
+    String message;
     
-    byte[] provisioningState;
-
-    public byte[] getProvisioningState() {
-        testReturn();
-        return provisioningState;
+    void setError(Exception e, int error) {
+        message = e.getMessage();
+        this.status = error;
     }
     
-    byte[] sealedKey;
-    
-    public byte[] getSealedKey() {
-        return sealedKey;
+    void setError(Exception e) {
+        if (e instanceof SKSException) {
+            setError(e, ((SKSException)e).getError());
+        } else {
+            setError(e, SKSException.ERROR_INTERNAL);
+        }
     }
     
-    byte[] attestation;
-    
-    public byte[] getAttestation() {
-        return attestation;
-    }
-
-    byte[] decryptedPinValue;
-    
-    public byte[] getDecryptedPinValue() {
-        return decryptedPinValue;
-    }
-
-    PublicKey publicKey;
-    
-    public PublicKey getPublicKey() {
-        return publicKey;
+    public void testReturn() {
+        if (status > 0) {
+            throw new SKSException(message, status);
+        }
     }
 }
