@@ -152,7 +152,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             // Keys, PINs and PUKs share virtual ID space during provisioning
             //////////////////////////////////////////////////////////////////////
             if (owner.names.get(id) != null) {
-                owner.abort("Duplicate \"" + VAR_ID + "\" : " + id);
+                abort("Duplicate \"" + VAR_ID + "\" : " + id);
             }
             checkIdSyntax(id, VAR_ID);
             owner.names.put(id, false);
@@ -364,7 +364,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
 
         void checkEECertificateAvailability() {
             if (certificatePath == null) {
-                owner.abort("Missing \"setCertificatePath\" for: " + id);
+                abort("Missing \"setCertificatePath\" for: " + id);
             }
         }
 
@@ -383,7 +383,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             // "Sanity check"
             ///////////////////////////////////////////////////////////////////////////////////
             if (provisioning.privacyEnabled ^ owner.privacyEnabled) {
-                provisioning.abort("Inconsistent use of the \"" + VAR_PRIVACY_ENABLED + "\" attribute for key #" + keyHandle);
+                abort("Inconsistent use of the \"" + VAR_PRIVACY_ENABLED + "\" attribute for key #" + keyHandle);
             }
 
             ///////////////////////////////////////////////////////////////////////////////////
@@ -398,7 +398,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             if (!owner.verifyKeyManagementKeyAuthorization(KMK_TARGET_KEY_REFERENCE,
                     provisioning.getMacBuilder(getDeviceID(provisioning.privacyEnabled))
                         .addVerbatim(certificatePath[0].getEncoded()).getResult(), authorization)) {
-                provisioning.abort("\"" + VAR_AUTHORIZATION + "\" signature did not verify for key #" + keyHandle);
+                abort("\"" + VAR_AUTHORIZATION + "\" signature did not verify for key #" + keyHandle);
             }
         }
 
@@ -418,7 +418,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
 
         void setAndVerifyServerBackupFlag() {
             if ((keyBackup & KeyProtectionInfo.KEYBACKUP_IMPORTED) != 0) {
-                owner.abort("Mutiple key imports for: " + id);
+                abort("Mutiple key imports for: " + id);
             }
             keyBackup |= KeyProtectionInfo.KEYBACKUP_IMPORTED;
         }
@@ -513,18 +513,6 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             if (!Arrays.equals(actualMac.getResult(), claimedMac)) {
                 abort("MAC error", SKSException.ERROR_MAC);
             }
-        }
-
-        void abort(String message, int exceptionType) {
-            throw new SKSException(message, exceptionType);
-        }
-
-        void abort(Throwable e) {
-            abort(e.getMessage(), SKSException.ERROR_INTERNAL);
-        }
-
-        void abort(String message) {
-            abort(message, SKSException.ERROR_OPTION);
         }
 
         byte[] decrypt(byte[] data) throws IOException, GeneralSecurityException {
@@ -1501,7 +1489,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
 
     void verifyExportDeleteProtection(byte actualProtection, byte minProtectionVal, Provisioning provisioning) {
         if (actualProtection >= minProtectionVal && actualProtection <= EXPORT_DELETE_PROTECTION_PUK) {
-            provisioning.abort("Protection object lacks a PIN or PUK object");
+            abort("Protection object lacks a PIN or PUK object");
         }
     }
 
@@ -1527,18 +1515,18 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             // Perform some "sanity" tests
             ///////////////////////////////////////////////////////////////////////////////////
             if (newKey.pinPolicy != null || newKey.devicePinProtection) {
-                provisioning.abort("Updated/cloned keys must not define PIN protection");
+                abort("Updated/cloned keys must not define PIN protection");
             }
             if (update) {
                 if (targetKeyEntry.appUsage != newKey.appUsage) {
-                    provisioning.abort("Updated keys must have the same \"" + VAR_APP_USAGE + "\" as the target key");
+                    abort("Updated keys must have the same \"" + VAR_APP_USAGE + "\" as the target key");
                 }
             } else {
                 ///////////////////////////////////////////////////////////////////////////////////
                 // Cloned keys must share the PIN of its parent
                 ///////////////////////////////////////////////////////////////////////////////////
                 if (targetKeyEntry.pinPolicy != null && targetKeyEntry.pinPolicy.grouping != PIN_GROUPING_SHARED) {
-                    provisioning.abort("A cloned key protection must have PIN grouping=\"shared\"");
+                    abort("A cloned key protection must have PIN grouping=\"shared\"");
                 }
             }
     
@@ -1575,7 +1563,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             ///////////////////////////////////////////////////////////////////////////////////
             KeyEntry targetKeyEntry = provisioning.getTargetKey(targetKeyHandle);
             if (!delete && targetKeyEntry.pinPolicy == null) {
-                provisioning.abort("Key #" + targetKeyHandle + " is not PIN protected");
+                abort("Key #" + targetKeyHandle + " is not PIN protected");
             }
     
             ///////////////////////////////////////////////////////////////////////////////////
@@ -2318,7 +2306,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                 return keyEntry.keyHandle;
             }
         }
-        provisioning.abort("Key " + id + " missing");
+        abort("Key " + id + " missing");
         return 0;    // For the compiler...
     }
 
@@ -2441,7 +2429,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             ///////////////////////////////////////////////////////////////////////////////////
             for (String id : provisioning.names.keySet()) {
                 if (!provisioning.names.get(id)) {
-                    provisioning.abort("Unreferenced object \"" + VAR_ID + "\" : " + id);
+                    abort("Unreferenced object \"" + VAR_ID + "\" : " + id);
                 }
             }
             provisioning.names.clear();
@@ -2456,12 +2444,12 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                     // Check public versus private key match
                     ///////////////////////////////////////////////////////////////////////////////////
                     if (keyEntry.isRsa() ^ keyEntry.privateKey instanceof RSAPrivateKey) {
-                        provisioning.abort("RSA/EC mixup between public and private keys for: " + keyEntry.id);
+                        abort("RSA/EC mixup between public and private keys for: " + keyEntry.id);
                     }
                     if (keyEntry.isRsa()) {
                         if (!((RSAPublicKey) keyEntry.publicKey).getPublicExponent().equals(keyEntry.getPublicRSAExponentFromPrivateKey()) ||
                                 !((RSAPublicKey) keyEntry.publicKey).getModulus().equals(((RSAPrivateKey) keyEntry.privateKey).getModulus())) {
-                            provisioning.abort("RSA mismatch between public and private keys for: " + keyEntry.id);
+                            abort("RSA mismatch between public and private keys for: " + keyEntry.id);
                         }
                     } else {
                         Signature ecSigner = Signature.getInstance("SHA256withECDSA");
@@ -2472,7 +2460,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                         ecVerifier.initVerify(keyEntry.publicKey);
                         ecVerifier.update(RSA_ENCRYPTION_OID);
                         if (!ecVerifier.verify(ecSignData)) {
-                            provisioning.abort("EC mismatch between public and private keys for: " + keyEntry.id);
+                            abort("EC mismatch between public and private keys for: " + keyEntry.id);
                         }
                     }
     
@@ -2492,7 +2480,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                                 }
                             }
                             if (collision) {
-                                provisioning.abort("Duplicate certificate in \"setCertificatePath\" for: " + keyEntry.id);
+                                abort("Duplicate certificate in \"setCertificatePath\" for: " + keyEntry.id);
                             }
                         }
                     }
@@ -2522,7 +2510,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                                     }
                                 }
                             }
-                            provisioning.abort((keyEntry.isSymmetric() ? "Symmetric" : keyEntry.isRsa() ? "RSA" : "EC") +
+                            abort((keyEntry.isSymmetric() ? "Symmetric" : keyEntry.isRsa() ? "RSA" : "EC") +
                                     " key " + keyEntry.id + " does not match algorithm: " + algorithm);
                         }
                     }
@@ -2816,18 +2804,18 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             ///////////////////////////////////////////////////////////////////////////////////
             keyEntry.owner.rangeTest(subType, SUB_TYPE_EXTENSION, SUB_TYPE_LOGOTYPE, VAR_SUB_TYPE);
             if (type.length() == 0 || type.length() > MAX_LENGTH_URI) {
-                keyEntry.owner.abort("URI length error: " + type.length());
+                abort("URI length error: " + type.length());
             }
             if (keyEntry.extensions.get(type) != null) {
-                keyEntry.owner.abort("Duplicate \"" + VAR_TYPE + "\" : " + type);
+                abort("Duplicate \"" + VAR_TYPE + "\" : " + type);
             }
             if (extensionData.length > (subType == SUB_TYPE_ENCRYPTED_EXTENSION ?
                     MAX_LENGTH_EXTENSION_DATA + AES_CBC_PKCS5_PADDING : MAX_LENGTH_EXTENSION_DATA)) {
-                keyEntry.owner.abort("Extension data exceeds " + MAX_LENGTH_EXTENSION_DATA + " bytes");
+                abort("Extension data exceeds " + MAX_LENGTH_EXTENSION_DATA + " bytes");
             }
             byte[] binQualifier = getBinary(qualifier);
             if (((subType == SUB_TYPE_LOGOTYPE) ^ (binQualifier.length != 0)) || binQualifier.length > MAX_LENGTH_QUALIFIER) {
-                keyEntry.owner.abort("\"" + VAR_QUALIFIER + "\" length error");
+                abort("\"" + VAR_QUALIFIER + "\" length error");
             }
             ///////////////////////////////////////////////////////////////////////////////////
             // Property bags are checked for not being empty or incorrectly formatted
@@ -2839,7 +2827,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                             (i += getShort(extensionData, i) + 2) > extensionData.length - 3 ||
                             ((extensionData[i++] & 0xFE) != 0) ||
                             (i += getShort(extensionData, i) + 2) > extensionData.length) {
-                        keyEntry.owner.abort("\"" + VAR_PROPERTY_BAG + "\" format error: " + type);
+                        abort("\"" + VAR_PROPERTY_BAG + "\" format error: " + type);
                     }
                 }
                 while (i != extensionData.length);
@@ -2890,7 +2878,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             // Check for key length errors
             ///////////////////////////////////////////////////////////////////////////////////
             if (encryptedKey.length > (MAX_LENGTH_CRYPTO_DATA + AES_CBC_PKCS5_PADDING)) {
-                keyEntry.owner.abort("Private key: " + keyEntry.id + " exceeds " + MAX_LENGTH_CRYPTO_DATA + " bytes");
+                abort("Private key: " + keyEntry.id + " exceeds " + MAX_LENGTH_CRYPTO_DATA + " bytes");
             }
     
             ///////////////////////////////////////////////////////////////////////////////////
@@ -2959,7 +2947,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             // Check for various input errors
             ///////////////////////////////////////////////////////////////////////////////////
             if (encryptedKey.length > (MAX_LENGTH_SYMMETRIC_KEY + AES_CBC_PKCS5_PADDING)) {
-                keyEntry.owner.abort("Symmetric key: " + keyEntry.id + " exceeds " +
+                abort("Symmetric key: " + keyEntry.id + " exceeds " +
                                      MAX_LENGTH_SYMMETRIC_KEY + " bytes");
             }
     
@@ -3010,7 +2998,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             for (X509Certificate certificate : certificatePath) {
                 byte[] der = certificate.getEncoded();
                 if (der.length > MAX_LENGTH_CRYPTO_DATA) {
-                    keyEntry.owner.abort("Certificate for: " + keyEntry.id + " exceeds " + MAX_LENGTH_CRYPTO_DATA + " bytes");
+                    abort("Certificate for: " + keyEntry.id + " exceeds " + MAX_LENGTH_CRYPTO_DATA + " bytes");
                 }
                 verifier.addArray(der);
             }
@@ -3036,7 +3024,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             // Store certificate path
             ///////////////////////////////////////////////////////////////////////////////////
             if (keyEntry.certificatePath != null) {
-                keyEntry.owner.abort("Multiple calls to \"setCertificatePath\" for: " + keyEntry.id);
+                abort("Multiple calls to \"setCertificatePath\" for: " + keyEntry.id);
             }
             keyEntry.certificatePath = certificatePath.clone();
         } catch (Exception e) {
@@ -3079,19 +3067,19 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             // Validate input as much as possible
             ///////////////////////////////////////////////////////////////////////////////////
             if (!keyEntryAlgorithm.equals(ALGORITHM_KEY_ATTEST_1)) {
-                provisioning.abort("Unknown \"" + VAR_KEY_ENTRY_ALGORITHM + "\" : " + keyEntryAlgorithm, SKSException.ERROR_ALGORITHM);
+                abort("Unknown \"" + VAR_KEY_ENTRY_ALGORITHM + "\" : " + keyEntryAlgorithm, SKSException.ERROR_ALGORITHM);
             }
             Algorithm kalg = supportedAlgorithms.get(keyAlgorithm);
             if (kalg == null || (kalg.mask & ALG_KEY_GEN) == 0) {
-                provisioning.abort("Unsupported \"" + VAR_KEY_ALGORITHM + "\": " + keyAlgorithm);
+                abort("Unsupported \"" + VAR_KEY_ALGORITHM + "\": " + keyAlgorithm);
             }
             if ((kalg.mask & ALG_KEY_PARM) == 0 ^ keyParameters == null) {
-                provisioning.abort((keyParameters == null ? "Missing" : "Unexpected") + " \"" + VAR_KEY_PARAMETERS + "\"");
+                abort((keyParameters == null ? "Missing" : "Unexpected") + " \"" + VAR_KEY_PARAMETERS + "\"");
             }
             if (serverSeed == null) {
                 serverSeed = ZERO_LENGTH_ARRAY;
             } else if (serverSeed.length > MAX_LENGTH_SERVER_SEED) {
-                provisioning.abort("\"" + VAR_SERVER_SEED + "\" length error: " + serverSeed.length);
+                abort("\"" + VAR_SERVER_SEED + "\" length error: " + serverSeed.length);
             }
             provisioning.rangeTest(exportProtection, EXPORT_DELETE_PROTECTION_NONE, EXPORT_DELETE_PROTECTION_NOT_ALLOWED, VAR_EXPORT_PROTECTION);
             provisioning.rangeTest(deleteProtection, EXPORT_DELETE_PROTECTION_NONE, EXPORT_DELETE_PROTECTION_NOT_ALLOWED, VAR_DELETE_PROTECTION);
@@ -3108,18 +3096,18 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             if (devicePinProtection) {
                 if (SKS_DEVICE_PIN_SUPPORT) {
                     if (pinPolicyHandle != 0) {
-                        provisioning.abort("Device PIN mixed with PIN policy ojbect");
+                        abort("Device PIN mixed with PIN policy ojbect");
                     }
                 } else {
-                    provisioning.abort("Unsupported: \"" + VAR_DEVICE_PIN_PROTECTION + "\"");
+                    abort("Unsupported: \"" + VAR_DEVICE_PIN_PROTECTION + "\"");
                 }
             } else if (pinPolicyHandle != 0) {
                 pinPolicy = pinPolicies.get(pinPolicyHandle);
                 if (pinPolicy == null || pinPolicy.owner != provisioning) {
-                    provisioning.abort("Referenced PIN policy object not found");
+                    abort("Referenced PIN policy object not found");
                 }
                 if (enablePinCaching && pinPolicy.inputMethod != INPUT_METHOD_TRUSTED_GUI) {
-                    provisioning.abort("\"" + VAR_ENABLE_PIN_CACHING + "\" must be combined with \"trusted-gui\"");
+                    abort("\"" + VAR_ENABLE_PIN_CACHING + "\" must be combined with \"trusted-gui\"");
                 }
                 pinPolicyId = pinPolicy.id;
                 provisioning.names.put(pinPolicyId, true); // Referenced
@@ -3129,15 +3117,15 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                 verifyExportDeleteProtection(exportProtection, EXPORT_DELETE_PROTECTION_PIN, provisioning);
                 pinProtection = false;
                 if (enablePinCaching) {
-                    provisioning.abort("\"" + VAR_ENABLE_PIN_CACHING + "\" without PIN");
+                    abort("\"" + VAR_ENABLE_PIN_CACHING + "\" without PIN");
                 }
                 if (pinValue != null) {
-                    provisioning.abort("\"" + VAR_PIN_VALUE + "\" expected to be empty");
+                    abort("\"" + VAR_PIN_VALUE + "\" expected to be empty");
                 }
             }
             if (biometricProtection != BIOMETRIC_PROTECTION_NONE &&
                     ((biometricProtection != BIOMETRIC_PROTECTION_EXCLUSIVE) ^ pinProtection)) {
-                provisioning.abort("Invalid \"" + VAR_BIOMETRIC_PROTECTION + "\" and PIN combination");
+                abort("Invalid \"" + VAR_BIOMETRIC_PROTECTION + "\" and PIN combination");
             }
             if (pinPolicy == null || pinPolicy.pukPolicy == null) {
                 verifyExportDeleteProtection(deleteProtection, EXPORT_DELETE_PROTECTION_PUK, provisioning);
@@ -3177,14 +3165,14 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                 // Check that the algorithms are sorted and known
                 ///////////////////////////////////////////////////////////////////////////////////
                 if (prevAlg.compareTo(endorsedAlgorithm) >= 0) {
-                    provisioning.abort("Duplicate or incorrectly sorted algorithm: " + endorsedAlgorithm);
+                    abort("Duplicate or incorrectly sorted algorithm: " + endorsedAlgorithm);
                 }
                 Algorithm alg = supportedAlgorithms.get(endorsedAlgorithm);
                 if (alg == null || alg.mask == 0) {
-                    provisioning.abort("Unsupported algorithm: " + endorsedAlgorithm);
+                    abort("Unsupported algorithm: " + endorsedAlgorithm);
                 }
                 if ((alg.mask & ALG_NONE) != 0 && endorsedAlgorithms.length > 1) {
-                    provisioning.abort("Algorithm must be alone: " + endorsedAlgorithm);
+                    abort("Algorithm must be alone: " + endorsedAlgorithm);
                 }
                 tempEndorsed.add(prevAlg = endorsedAlgorithm);
                 verifier.addString(endorsedAlgorithm);
@@ -3210,7 +3198,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                 BigInteger exponent = RSAKeyGenParameterSpec.F4;
                 if (keyParameters != null) {
                     if (keyParameters.length == 0 || keyParameters.length > 8) {
-                        provisioning.abort("\"" + VAR_KEY_PARAMETERS + "\" length error: " + keyParameters.length);
+                        abort("\"" + VAR_KEY_PARAMETERS + "\" length error: " + keyParameters.length);
                     }
                     exponent = new BigInteger(keyParameters);
                 }
@@ -3299,24 +3287,24 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                                          PIN_PATTERN_SEQUENCE |
                                          PIN_PATTERN_REPEATED |
                                          PIN_PATTERN_MISSING_GROUP)) != 0) {
-                provisioning.abort("Invalid \"" + VAR_PATTERN_RESTRICTIONS + "\" value=" + patternRestrictions);
+                abort("Invalid \"" + VAR_PATTERN_RESTRICTIONS + "\" value=" + patternRestrictions);
             }
             String pukPolicyId = CRYPTO_STRING_NOT_AVAILABLE;
             PUKPolicy pukPolicy = null;
             if (pukPolicyHandle != 0) {
                 pukPolicy = pukPolicies.get(pukPolicyHandle);
                 if (pukPolicy == null || pukPolicy.owner != provisioning) {
-                    provisioning.abort("Referenced PUK policy object not found");
+                    abort("Referenced PUK policy object not found");
                 }
                 pukPolicyId = pukPolicy.id;
                 provisioning.names.put(pukPolicyId, true); // Referenced
             }
             if ((patternRestrictions & PIN_PATTERN_MISSING_GROUP) != 0 &&
                     format != PASSPHRASE_FORMAT_ALPHANUMERIC && format != PASSPHRASE_FORMAT_STRING) {
-                provisioning.abort("Incorrect \"" + VAR_FORMAT + "\" for the \"missing-group\" PIN pattern policy");
+                abort("Incorrect \"" + VAR_FORMAT + "\" for the \"missing-group\" PIN pattern policy");
             }
             if (minLength < 1 || maxLength > MAX_LENGTH_PIN_PUK || maxLength < minLength) {
-                provisioning.abort("PIN policy length error");
+                abort("PIN policy length error");
             }
     
             ///////////////////////////////////////////////////////////////////////////////////
@@ -3384,13 +3372,13 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             provisioning.retryLimitTest(retryLimit, (short) 0);
             byte[] decryptedPukValue = provisioning.decrypt(pukValue);
             if (decryptedPukValue.length == 0 || decryptedPukValue.length > MAX_LENGTH_PIN_PUK) {
-                provisioning.abort("PUK length error");
+                abort("PUK length error");
             }
             for (int i = 0; i < decryptedPukValue.length; i++) {
                 byte c = decryptedPukValue[i];
                 if ((c < '0' || c > '9') && (format == PASSPHRASE_FORMAT_NUMERIC ||
                         ((c < 'A' || c > 'Z') && format == PASSPHRASE_FORMAT_ALPHANUMERIC))) {
-                    provisioning.abort("PUK syntax error");
+                    abort("PUK syntax error");
                 }
             }
     
