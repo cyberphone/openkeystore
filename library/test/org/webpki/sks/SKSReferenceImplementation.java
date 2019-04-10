@@ -103,7 +103,7 @@ import org.webpki.sks.SecureKeyStore;
  *
  *  Author: Anders Rundgren
  */
-public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Serializable {
+public class SKSReferenceImplementation implements SecureKeyStore, Serializable {
     private static final long serialVersionUID = 1L;
 
     /////////////////////////////////////////////////////////////////////////////////////////////
@@ -154,7 +154,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
             if (owner.names.get(id) != null) {
                 owner.abort("Duplicate \"" + VAR_ID + "\" : " + id);
             }
-            checkIdSyntax(id, VAR_ID, owner);
+            checkIdSyntax(id, VAR_ID);
             owner.names.put(id, false);
             this.owner = owner;
             this.id = id;
@@ -162,7 +162,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
     }
 
 
-    static void checkIdSyntax(String identifier, String symbolicName, SKSError sksError) {
+    static void checkIdSyntax(String identifier, String symbolicName) {
         boolean flag = false;
         if (identifier.length() == 0 || identifier.length() > MAX_LENGTH_ID_TYPE) {
             flag = true;
@@ -176,7 +176,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
             }
         }
         if (flag) {
-            sksError.abort("Malformed \"" + symbolicName + "\" : " + identifier);
+            abort("Malformed \"" + symbolicName + "\" : " + identifier);
         }
     }
 
@@ -481,7 +481,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
     }
 
 
-    class Provisioning implements SKSError, Serializable {
+    class Provisioning implements Serializable {
         private static final long serialVersionUID = 1L;
 
         int provisioningHandle;
@@ -523,7 +523,6 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
             abort(e.getMessage(), SKSException.ERROR_INTERNAL);
         }
 
-        @Override
         public void abort(String message) {
             abort(message, SKSException.ERROR_OPTION);
         }
@@ -1221,12 +1220,11 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
         return null;
     }
 
-    @Override
-    public void abort(String message) {
+    public static void abort(String message) {
         abort(message, SKSException.ERROR_OPTION);
     }
 
-    void abort(String message, int option) {
+    static void abort(String message, int option) {
         throw new SKSException(message, option);
     }
 
@@ -1257,12 +1255,12 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
         return null;
     }
 
-    String checkEcKeyCompatibility(ECKey ecKey, SKSError sksError, String keyId) {
+    String checkEcKeyCompatibility(ECKey ecKey, String keyId) {
         Algorithm ecType = getEcType(ecKey);
         if (ecType != null) {
             return ecType.jceName;
         }
-        sksError.abort("Unsupported EC key algorithm for: " + keyId);
+        abort("Unsupported EC key algorithm for: " + keyId);
         return null;
     }
 
@@ -1276,10 +1274,9 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
 
     void checkRsaKeyCompatibility(int rsaKeySize,
                                   BigInteger exponent, 
-                                  SKSError sksError,
                                   String keyId) {
         if (!SKS_RSA_EXPONENT_SUPPORT && !exponent.equals(RSAKeyGenParameterSpec.F4)) {
-            sksError.abort("Unsupported RSA exponent value for: " + keyId);
+            abort("Unsupported RSA exponent value for: " + keyId);
         }
         boolean found = false;
         for (short keySize : SKS_DEFAULT_RSA_SUPPORT) {
@@ -1289,7 +1286,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
             }
         }
         if (!found) {
-            sksError.abort("Unsupported RSA key size " + rsaKeySize + " for: " + keyId);
+            abort("Unsupported RSA key size " + rsaKeySize + " for: " + keyId);
         }
     }
 
@@ -1302,13 +1299,12 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
     void verifyPinPolicyCompliance(boolean forcedSetter,
                                    byte[] pinValue,
                                    PINPolicy pinPolicy,
-                                   byte appUsage,
-                                   SKSError sksError) {
+                                   byte appUsage) {
         ///////////////////////////////////////////////////////////////////////////////////
         // Check PIN length
         ///////////////////////////////////////////////////////////////////////////////////
         if (pinValue.length > pinPolicy.maxLength || pinValue.length < pinPolicy.minLength) {
-            sksError.abort("PIN length error");
+            abort("PIN length error");
         }
 
         ///////////////////////////////////////////////////////////////////////////////////
@@ -1332,7 +1328,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
         }
         if ((pinPolicy.format == PASSPHRASE_FORMAT_NUMERIC && (loweralpha || nonalphanum || upperalpha)) ||
             (pinPolicy.format == PASSPHRASE_FORMAT_ALPHANUMERIC && (loweralpha || nonalphanum))) {
-            sksError.abort("PIN syntax error");
+            abort("PIN syntax error");
         }
 
         ///////////////////////////////////////////////////////////////////////////////////
@@ -1341,7 +1337,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
         if ((pinPolicy.patternRestrictions & PIN_PATTERN_MISSING_GROUP) != 0) {
             if (!upperalpha || !number ||
                 (pinPolicy.format == PASSPHRASE_FORMAT_STRING && (!loweralpha || !nonalphanum))) {
-                sksError.abort("Missing character group in PIN");
+                abort("Missing character group in PIN");
             }
         }
         if ((pinPolicy.patternRestrictions & PIN_PATTERN_SEQUENCE) != 0) {
@@ -1356,7 +1352,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
                 c = pinValue[i];
             }
             if (seq) {
-                sksError.abort("PIN must not be a sequence");
+                abort("PIN must not be a sequence");
             }
         }
         if ((pinPolicy.patternRestrictions & PIN_PATTERN_REPEATED) != 0) {
@@ -1364,7 +1360,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
                 byte b = pinValue[i];
                 for (int j = 0; j < pinValue.length; j++) {
                     if (j != i && b == pinValue[j]) {
-                        sksError.abort("Repeated PIN character");
+                        abort("Repeated PIN character");
                     }
                 }
             }
@@ -1376,7 +1372,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
             for (int i = 1; i < pinValue.length; i++) {
                 if (c == pinValue[i]) {
                     if (++sameCount == max) {
-                        sksError.abort("PIN with " + max + " or more of same the character in a row");
+                        abort("PIN with " + max + " or more of same the character in a row");
                     }
                 } else {
                     sameCount = 1;
@@ -1397,19 +1393,19 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
                 switch (pinPolicy.grouping) {
                     case PIN_GROUPING_SHARED:
                         if (!equal) {
-                            sksError.abort("Grouping = \"shared\" requires identical PINs");
+                            abort("Grouping = \"shared\" requires identical PINs");
                         }
                         continue;
 
                     case PIN_GROUPING_UNIQUE:
                         if (equal ^ (appUsage == keyEntry.appUsage)) {
-                            sksError.abort("Grouping = \"unique\" PIN error");
+                            abort("Grouping = \"unique\" PIN error");
                         }
                         continue;
 
                     case PIN_GROUPING_SIGN_PLUS_STD:
                         if (((appUsage == APP_USAGE_SIGNATURE) ^ (keyEntry.appUsage == APP_USAGE_SIGNATURE)) ^ !equal) {
-                            sksError.abort("Grouping = \"signature+standard\" PIN error");
+                            abort("Grouping = \"signature+standard\" PIN error");
                         }
                 }
             }
@@ -1420,7 +1416,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
         if (!keyEntry.pinPolicy.userModifiable) {
             abort("PIN for key #" + keyEntry.keyHandle + " is not user modifiable", SKSException.ERROR_NOT_ALLOWED);
         }
-        verifyPinPolicyCompliance(true, newPin, keyEntry.pinPolicy, keyEntry.appUsage, this);
+        verifyPinPolicyCompliance(true, newPin, keyEntry.pinPolicy, keyEntry.appUsage);
     }
 
     void deleteEmptySession(Provisioning provisioning) {
@@ -1463,7 +1459,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
             abort((keyEntry.isSymmetric() ? "S" : "As") + "ymmetric key #" + keyEntry.keyHandle + " is incompatible with: " + inputAlgorithm, SKSException.ERROR_ALGORITHM);
         }
         if (keyEntry.isSymmetric()) {
-            testAESKey(inputAlgorithm, keyEntry.symmetricKey, "#" + keyEntry.keyHandle, this);
+            testAESKey(inputAlgorithm, keyEntry.symmetricKey, "#" + keyEntry.keyHandle);
         } else if (keyEntry.isRsa() ^ (alg.mask & ALG_RSA_KEY) != 0) {
             abort((keyEntry.isRsa() ? "RSA" : "EC") + " key #" + keyEntry.keyHandle + " is incompatible with: " + inputAlgorithm, SKSException.ERROR_ALGORITHM);
         }
@@ -1481,7 +1477,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
         return r;
     }
 
-    void testAESKey(String algorithm, byte[] symmetricKey, String keyId, SKSError sksError) {
+    void testAESKey(String algorithm, byte[] symmetricKey, String keyId) {
         Algorithm alg = getAlgorithm(algorithm);
         if ((alg.mask & ALG_SYM_ENC) != 0) {
             int l = symmetricKey.length;
@@ -1490,7 +1486,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
             else if (l == 32) l = ALG_SYML_256;
             else l = 0;
             if ((l & alg.mask) == 0) {
-                sksError.abort("Key " + keyId + " has wrong size (" + symmetricKey.length + ") for algorithm: " + algorithm);
+                abort("Key " + keyId + " has wrong size (" + symmetricKey.length + ") for algorithm: " + algorithm);
             }
         }
     }
@@ -1954,7 +1950,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
         ///////////////////////////////////////////////////////////////////////////////////
         // Check that the key type matches the algorithm
         ///////////////////////////////////////////////////////////////////////////////////
-        checkEcKeyCompatibility(publicKey, this, "\"" + VAR_PUBLIC_KEY + "\"");
+        checkEcKeyCompatibility(publicKey, "\"" + VAR_PUBLIC_KEY + "\"");
 
         ///////////////////////////////////////////////////////////////////////////////////
         // Finally, perform operation
@@ -2515,7 +2511,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
                                     ///////////////////////////////////////////////////////////////////////////////////
                                     // Symmetric. AES algorithms only operates on 128, 192, and 256 bit keys
                                     ///////////////////////////////////////////////////////////////////////////////////
-                                    testAESKey(algorithm, keyEntry.symmetricKey, keyEntry.id, provisioning);
+                                    testAESKey(algorithm, keyEntry.symmetricKey, keyEntry.id);
                                     continue;
                                 } else {
                                     ///////////////////////////////////////////////////////////////////////////////////
@@ -2666,7 +2662,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
         ///////////////////////////////////////////////////////////////////////////////////
         // Check server ECDH key compatibility
         ///////////////////////////////////////////////////////////////////////////////////
-        String jceName = checkEcKeyCompatibility(serverEphemeralKey, this, "\"" + VAR_SERVER_EPHEMERAL_KEY + "\"");
+        String jceName = checkEcKeyCompatibility(serverEphemeralKey, "\"" + VAR_SERVER_EPHEMERAL_KEY + "\"");
 
         ///////////////////////////////////////////////////////////////////////////////////
         // Check optional key management key compatibility
@@ -2674,16 +2670,16 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
         if (keyManagementKey != null) {
             if (keyManagementKey instanceof RSAPublicKey) {
                 checkRsaKeyCompatibility(getRSAKeySize((RSAPublicKey) keyManagementKey),
-                        ((RSAPublicKey) keyManagementKey).getPublicExponent(), this, "\"" + VAR_KEY_MANAGEMENT_KEY + "\"");
+                        ((RSAPublicKey) keyManagementKey).getPublicExponent(), "\"" + VAR_KEY_MANAGEMENT_KEY + "\"");
             } else {
-                checkEcKeyCompatibility((ECPublicKey) keyManagementKey, this, "\"" + VAR_KEY_MANAGEMENT_KEY + "\"");
+                checkEcKeyCompatibility((ECPublicKey) keyManagementKey, "\"" + VAR_KEY_MANAGEMENT_KEY + "\"");
             }
         }
 
         ///////////////////////////////////////////////////////////////////////////////////
         // Check ServerSessionID
         ///////////////////////////////////////////////////////////////////////////////////
-        checkIdSyntax(serverSessionId, VAR_SERVER_SESSION_ID, this);
+        checkIdSyntax(serverSessionId, VAR_SERVER_SESSION_ID);
 
         ///////////////////////////////////////////////////////////////////////////////////
         // Create ClientSessionID
@@ -2933,9 +2929,9 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
             if (rsaFlag) {
                 checkRsaKeyCompatibility(getRSAKeySize((RSAPrivateKey) keyEntry.privateKey),
                                          keyEntry.getPublicRSAExponentFromPrivateKey(),
-                                         keyEntry.owner, keyEntry.id);
+                                         keyEntry.id);
             } else {
-                checkEcKeyCompatibility((ECPrivateKey) keyEntry.privateKey, keyEntry.owner, keyEntry.id);
+                checkEcKeyCompatibility((ECPrivateKey) keyEntry.privateKey, keyEntry.id);
             }
         } catch (Exception e) {
             tearDownSession(keyEntry, e);
@@ -3031,9 +3027,9 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
             if (keyEntry.publicKey instanceof RSAPublicKey) {
                 checkRsaKeyCompatibility(getRSAKeySize((RSAPublicKey) keyEntry.publicKey),
                                          ((RSAPublicKey) keyEntry.publicKey).getPublicExponent(),
-                                         keyEntry.owner, keyEntry.id);
+                                         keyEntry.id);
             } else {
-                checkEcKeyCompatibility((ECPublicKey) keyEntry.publicKey, keyEntry.owner, keyEntry.id);
+                checkEcKeyCompatibility((ECPublicKey) keyEntry.publicKey, keyEntry.id);
             }
     
             ///////////////////////////////////////////////////////////////////////////////////
@@ -3202,7 +3198,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
                 ///////////////////////////////////////////////////////////////////////////////////
                 // Testing the actual PIN value
                 ///////////////////////////////////////////////////////////////////////////////////
-                verifyPinPolicyCompliance(false, pinValue, pinPolicy, appUsage, provisioning);
+                verifyPinPolicyCompliance(false, pinValue, pinPolicy, appUsage);
             }
     
             ///////////////////////////////////////////////////////////////////////////////////
