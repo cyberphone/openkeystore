@@ -523,7 +523,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             abort(e.getMessage(), SKSException.ERROR_INTERNAL);
         }
 
-        public void abort(String message) {
+        void abort(String message) {
             abort(message, SKSException.ERROR_OPTION);
         }
 
@@ -1220,7 +1220,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         return null;
     }
 
-    public static void abort(String message) {
+    static void abort(String message) {
         abort(message, SKSException.ERROR_OPTION);
     }
 
