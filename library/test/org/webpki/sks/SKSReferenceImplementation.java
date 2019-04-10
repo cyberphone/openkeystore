@@ -378,7 +378,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         void validateTargetKeyReference(MacBuilder verifier,
                                         byte[] mac,
                                         byte[] authorization,
-                                        Provisioning provisioning) throws GeneralSecurityException, IOException {
+                                        Provisioning provisioning) throws IOException, GeneralSecurityException {
             ///////////////////////////////////////////////////////////////////////////////////
             // "Sanity check"
             ///////////////////////////////////////////////////////////////////////////////////
