@@ -23,7 +23,6 @@ public class SEProvisioningData extends SEResult {
     byte[] provisioningState;
     
     public byte[] getProvisioningState() {
-        testReturn();
         return provisioningState;
     }
 

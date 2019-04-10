@@ -1066,7 +1066,7 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
             ///////////////////////////////////////////////////////////////////////////////////
             return SEReferenceImplementation.unwrapKey(OS_INSTANCE_KEY, keyEntry.sealedKey).getByteArray();
         } catch (Exception e) {
-            abort(e.getMessage());
+            abort(e);
             return null;   // For the compiler...
         }
     }
@@ -1567,7 +1567,7 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
             ///////////////////////////////////////////////////////////////////////////////////
             provisioning.keyManagementKey = keyManagementKey;
         } catch (Exception e) {
-            tearDownSession(provisioning, e);
+            abort(e);
         }
     }
 
@@ -1909,7 +1909,7 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
             ///////////////////////////////////////////////////////////////////////////////////
             // The assumption here is that the SE can do crypto parameter validation...
             ///////////////////////////////////////////////////////////////////////////////////
-            SEProvisioningData sePd = 
+            SEProvisioningData seProvisioningData = 
                 SEReferenceImplementation.createProvisioningData(OS_INSTANCE_KEY,
                                                                  sessionKeyAlgorithm,
                                                                  privacyEnabled,
@@ -1921,6 +1921,7 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
                                                                  sessionLifeTime,
                                                                  sessionKeyLimit,
                                                                  serverCertificate);
+            seProvisioningData.testReturn();
      
             ///////////////////////////////////////////////////////////////////////////////////
             // We did it!
@@ -1928,16 +1929,16 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
             Provisioning provisioning = new Provisioning();
             provisioning.privacyEnabled = privacyEnabled;
             provisioning.serverSessionId = serverSessionId;
-            provisioning.clientSessionId = sePd.getClientSessionId();
+            provisioning.clientSessionId = seProvisioningData.getClientSessionId();
             provisioning.issuerUri = issuerUri;
             provisioning.keyManagementKey = keyManagementKey;
             provisioning.clientTime = clientTime;
             provisioning.sessionLifeTime = sessionLifeTime;
-            provisioning.provisioningState = sePd.getProvisioningState();
+            provisioning.provisioningState = seProvisioningData.getProvisioningState();
             return new ProvisioningSession(provisioning.provisioningHandle,
-                                           sePd.getClientSessionId(),
-                                           sePd.getAttestation(),
-                                           sePd.getClientEphemeralKey());
+                                           seProvisioningData.getClientSessionId(),
+                                           seProvisioningData.getAttestation(),
+                                           seProvisioningData.getClientEphemeralKey());
         } catch (Exception e) {
             abort(e);
             return null;   // For the compiler...
@@ -2027,7 +2028,7 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
             extension.extensionData = extensionData;
             keyEntry.extensions.put(type, extension);
         } catch (Exception e) {
-            abort(e);
+            tearDownSession(keyEntry, e);
         }
     }
 
