@@ -378,31 +378,27 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
         void validateTargetKeyReference(MacBuilder verifier,
                                         byte[] mac,
                                         byte[] authorization,
-                                        Provisioning provisioning) {
-            try {
-                ///////////////////////////////////////////////////////////////////////////////////
-                // "Sanity check"
-                ///////////////////////////////////////////////////////////////////////////////////
-                if (provisioning.privacyEnabled ^ owner.privacyEnabled) {
-                    provisioning.abort("Inconsistent use of the \"" + VAR_PRIVACY_ENABLED + "\" attribute for key #" + keyHandle);
-                }
-    
-                ///////////////////////////////////////////////////////////////////////////////////
-                // Verify MAC
-                ///////////////////////////////////////////////////////////////////////////////////
-                verifier.addArray(authorization);
-                provisioning.verifyMac(verifier, mac);
-    
-                ///////////////////////////////////////////////////////////////////////////////////
-                // Verify KMK signature
-                ///////////////////////////////////////////////////////////////////////////////////
-                if (!owner.verifyKeyManagementKeyAuthorization(KMK_TARGET_KEY_REFERENCE,
-                        provisioning.getMacBuilder(getDeviceID(provisioning.privacyEnabled))
-                            .addVerbatim(certificatePath[0].getEncoded()).getResult(), authorization)) {
-                    provisioning.abort("\"" + VAR_AUTHORIZATION + "\" signature did not verify for key #" + keyHandle);
-                }
-            } catch (IOException | GeneralSecurityException e) {
-                provisioning.abort(e.getMessage(), SKSException.ERROR_CRYPTO);
+                                        Provisioning provisioning) throws GeneralSecurityException, IOException {
+            ///////////////////////////////////////////////////////////////////////////////////
+            // "Sanity check"
+            ///////////////////////////////////////////////////////////////////////////////////
+            if (provisioning.privacyEnabled ^ owner.privacyEnabled) {
+                provisioning.abort("Inconsistent use of the \"" + VAR_PRIVACY_ENABLED + "\" attribute for key #" + keyHandle);
+            }
+
+            ///////////////////////////////////////////////////////////////////////////////////
+            // Verify MAC
+            ///////////////////////////////////////////////////////////////////////////////////
+            verifier.addArray(authorization);
+            provisioning.verifyMac(verifier, mac);
+
+            ///////////////////////////////////////////////////////////////////////////////////
+            // Verify KMK signature
+            ///////////////////////////////////////////////////////////////////////////////////
+            if (!owner.verifyKeyManagementKeyAuthorization(KMK_TARGET_KEY_REFERENCE,
+                    provisioning.getMacBuilder(getDeviceID(provisioning.privacyEnabled))
+                        .addVerbatim(certificatePath[0].getEncoded()).getResult(), authorization)) {
+                provisioning.abort("\"" + VAR_AUTHORIZATION + "\" signature did not verify for key #" + keyHandle);
             }
         }
 
@@ -1595,7 +1591,7 @@ public class SKSReferenceImplementation implements SKSError, SecureKeyStore, Ser
             // Put the operation in the post-op buffer used by "closeProvisioningSession"
             ///////////////////////////////////////////////////////////////////////////////////
             provisioning.addPostProvisioningObject(targetKeyEntry, null, delete);
-        } catch (GeneralSecurityException e) {
+        } catch (IOException | GeneralSecurityException e) {
             tearDownSession(provisioning, e);
         }
     }
