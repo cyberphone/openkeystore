@@ -647,6 +647,10 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         byte[] getData() throws IOException {
              return baos.toByteArray();
         }
+        
+        byte[] getResult() throws IOException, GeneralSecurityException {
+            return null;
+        }
     }
     
 
@@ -665,6 +669,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             return this;
         }
 
+        @Override
         byte[] getResult() throws IOException {
             mac.update(getData());
             return mac.doFinal();
@@ -683,6 +688,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                                           attester);
         }
 
+        @Override
         byte[] getResult() throws IOException, GeneralSecurityException {
             return signer.update(getData()).sign();
         }
@@ -2723,47 +2729,24 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             ///////////////////////////////////////////////////////////////////////////////////
             // Finally, create the Attestation
             ///////////////////////////////////////////////////////////////////////////////////
-            if (privacyEnabled) {
-                ///////////////////////////////////////////////////////////////////////////////////
-                // SessionKey attest
-                ///////////////////////////////////////////////////////////////////////////////////
-                MacBuilder ska = new MacBuilder(sessionKey);
-                ska.addString(clientSessionId);
-                ska.addString(serverSessionId);
-                ska.addString(issuerUri);
-                ska.addArray(getDeviceID(privacyEnabled));
-                ska.addString(sessionKeyAlgorithm);
-                ska.addBool(privacyEnabled);
-                ska.addArray(serverEphemeralKey.getEncoded());
-                ska.addArray(clientEphemeralKey.getEncoded());
-                ska.addArray(keyManagementKey == null ? ZERO_LENGTH_ARRAY : keyManagementKey.getEncoded());
-                ska.addInt(clientTime);
-                ska.addShort(sessionLifeTime);
-                ska.addShort(sessionKeyLimit);
-                ska.addArray(serverCertificate);
-                attestation = ska.getResult();
-            } else {
-                ///////////////////////////////////////////////////////////////////////////////////
-                // Device private key attest
-                ///////////////////////////////////////////////////////////////////////////////////
-                AttestationSignatureGenerator pka = new AttestationSignatureGenerator();
-                pka.addString(clientSessionId);
-                pka.addString(serverSessionId);
-                pka.addString(issuerUri);
-                pka.addArray(getDeviceID(privacyEnabled));
-                pka.addString(sessionKeyAlgorithm);
-                pka.addBool(privacyEnabled);
-                pka.addArray(serverEphemeralKey.getEncoded());
-                pka.addArray(clientEphemeralKey.getEncoded());
-                pka.addArray(keyManagementKey == null ? ZERO_LENGTH_ARRAY : keyManagementKey.getEncoded());
-                pka.addInt(clientTime);
-                pka.addShort(sessionLifeTime);
-                pka.addShort(sessionKeyLimit);
-                pka.addArray(serverCertificate);
-                attestation = pka.getResult();
-            }
+            ByteWriter attestationCreator = privacyEnabled  ? 
+                                 new MacBuilder(sessionKey) : new AttestationSignatureGenerator();
+            attestationCreator.addString(clientSessionId);
+            attestationCreator.addString(serverSessionId);
+            attestationCreator.addString(issuerUri);
+            attestationCreator.addArray(getDeviceID(privacyEnabled));
+            attestationCreator.addString(sessionKeyAlgorithm);
+            attestationCreator.addBool(privacyEnabled);
+            attestationCreator.addArray(serverEphemeralKey.getEncoded());
+            attestationCreator.addArray(clientEphemeralKey.getEncoded());
+            attestationCreator.addArray(keyManagementKey == null ? ZERO_LENGTH_ARRAY : keyManagementKey.getEncoded());
+            attestationCreator.addInt(clientTime);
+            attestationCreator.addShort(sessionLifeTime);
+            attestationCreator.addShort(sessionKeyLimit);
+            attestationCreator.addArray(serverCertificate);
+            attestation = attestationCreator.getResult();
         } catch (Exception e) {
-            throw new SKSException(e);
+            abort(e);
         }
 
         ///////////////////////////////////////////////////////////////////////////////////
