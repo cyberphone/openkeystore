@@ -1857,7 +1857,8 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             }
             return cipher.doFinal(data);
         } catch (Exception e) {
-            throw new SKSException(e, SKSException.ERROR_CRYPTO);
+            abort(e);
+            return null;   // For the compiler...
         }
     }
 
@@ -2034,7 +2035,8 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             data = crypt.doFinal(data);
             return (mode && (alg.mask & ALG_IV_INT) != 0) ? addArrays(parameters, data) : data;
         } catch (Exception e) {
-            throw new SKSException(e, SKSException.ERROR_CRYPTO);
+            abort(e);
+            return null;   // For the compiler...
         }
     }
 
@@ -2081,7 +2083,8 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             mac.init(new SecretKeySpec(keyEntry.symmetricKey, "RAW"));
             return mac.doFinal(data);
         } catch (Exception e) {
-            throw new SKSException(e, SKSException.ERROR_CRYPTO);
+            abort(e);
+            return null;   // For the compiler...
         }
     }
 
