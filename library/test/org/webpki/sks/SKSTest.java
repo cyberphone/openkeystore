@@ -209,7 +209,13 @@ public class SKSTest {
 
     void checkException(SKSException e, String compare_message, Integer sks_error_code) {
         String m = e.getMessage();
-        if (reference_implementation && m != null && compare_message.indexOf('#') == m.indexOf('#')) {
+        if (reference_implementation && m != null && compare_message.charAt(compare_message.length() - 1) == '@') {
+            compare_message = compare_message.substring(0, compare_message.length() - 1);
+            if (m.length() > compare_message.length()) {
+                m = m.substring(0, compare_message.length());
+            }
+        } else if (reference_implementation && m != null && 
+                compare_message.indexOf('#') > 0 && compare_message.indexOf('#') == m.indexOf('#')) {
             int i = m.indexOf('#') + 1;
             int q = 0;
             while ((q + i) < m.length() && m.charAt(i + q) >= '0' && m.charAt(i + q) <= '9') {
@@ -2953,8 +2959,15 @@ public class SKSTest {
     }
 
     @Test
-    public void test74() {
-//TODO        
+    public void test74()  throws Exception {
+        ProvSess sess = new ProvSess(device);
+        sess.closeSession();
+        try {
+            device.sks.abortProvisioningSession(sess.provisioning_handle);
+            fail("No open");
+        } catch (SKSException e) {
+            checkException(e, "No such provisioning session:@");
+        }
     }
 
     @Test

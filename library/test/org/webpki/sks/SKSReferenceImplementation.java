@@ -1220,6 +1220,9 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         if (e instanceof SKSException) {
             throw (SKSException)e;
         }
+        if (e instanceof GeneralSecurityException) {
+            throw new SKSException(e, SKSException.ERROR_CRYPTO);
+        }
         throw new SKSException(e);
     }
 
@@ -1864,47 +1867,47 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                                               byte[] parameters,
                                               byte[] authorization,
                                               byte[] data) {
-        ///////////////////////////////////////////////////////////////////////////////////
-        // Get key (which must belong to an already fully provisioned session)
-        ///////////////////////////////////////////////////////////////////////////////////
-        KeyEntry keyEntry = getStdKey(keyHandle);
-
-        ///////////////////////////////////////////////////////////////////////////////////
-        // Verify PIN (in any)
-        ///////////////////////////////////////////////////////////////////////////////////
-        keyEntry.verifyPin(authorization);
-
-        ///////////////////////////////////////////////////////////////////////////////////
-        // Enforce the data limit
-        ///////////////////////////////////////////////////////////////////////////////////
-        keyEntry.checkCryptoDataSize(data);
-
-        ///////////////////////////////////////////////////////////////////////////////////
-        // Check that the signature algorithm is known and applicable
-        ///////////////////////////////////////////////////////////////////////////////////
-        Algorithm alg = checkKeyAndAlgorithm(keyEntry, algorithm, ALG_ASYM_SGN);
-        int hashLen = (alg.mask / ALG_HASH_DIV) & ALG_HASH_MSK;
-        if (hashLen > 0 && hashLen != data.length) {
-            abort("Incorrect length of \"" + VAR_DATA + "\": " + data.length);
-        }
-        if (parameters != null)  // Only supports non-parameterized operations yet...
-        {
-            abort("\"" + VAR_PARAMETERS + "\" for key #" + keyHandle + " do not match algorithm");
-        }
-
-        ///////////////////////////////////////////////////////////////////////////////////
-        // Finally, perform operation
-        ///////////////////////////////////////////////////////////////////////////////////
         try {
+            ///////////////////////////////////////////////////////////////////////////////////
+            // Get key (which must belong to an already fully provisioned session)
+            ///////////////////////////////////////////////////////////////////////////////////
+            KeyEntry keyEntry = getStdKey(keyHandle);
+    
+            ///////////////////////////////////////////////////////////////////////////////////
+            // Verify PIN (in any)
+            ///////////////////////////////////////////////////////////////////////////////////
+            keyEntry.verifyPin(authorization);
+    
+            ///////////////////////////////////////////////////////////////////////////////////
+            // Enforce the data limit
+            ///////////////////////////////////////////////////////////////////////////////////
+            keyEntry.checkCryptoDataSize(data);
+    
+            ///////////////////////////////////////////////////////////////////////////////////
+            // Check that the signature algorithm is known and applicable
+            ///////////////////////////////////////////////////////////////////////////////////
+            Algorithm alg = checkKeyAndAlgorithm(keyEntry, algorithm, ALG_ASYM_SGN);
+            int hashLen = (alg.mask / ALG_HASH_DIV) & ALG_HASH_MSK;
+            if (hashLen > 0 && hashLen != data.length) {
+                abort("Incorrect length of \"" + VAR_DATA + "\": " + data.length);
+            }
+            if (parameters != null)  // Only supports non-parameterized operations yet...
+            {
+                abort("\"" + VAR_PARAMETERS + "\" for key #" + keyHandle + " do not match algorithm");
+            }
+    
+            ///////////////////////////////////////////////////////////////////////////////////
+            // Finally, perform operation
+            ///////////////////////////////////////////////////////////////////////////////////
             if (keyEntry.isRsa() && hashLen > 0) {
                 data = addArrays(alg.pkcs1DigestInfo, data);
             }
-            return new SignatureWrapper(alg.jceName, keyEntry.privateKey)
-                .update(data)
-                .sign();
+            return new SignatureWrapper(alg.jceName, keyEntry.privateKey).update(data).sign();
         } catch (Exception e) {
-            throw new SKSException(e, SKSException.ERROR_CRYPTO);
+            abort(e);
+            return null;    // For the compiler...
         }
+
     }
 
 

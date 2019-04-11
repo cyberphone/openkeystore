@@ -16,6 +16,8 @@
  */
 package org.webpki.sks.twolayer.se;
 
+import java.security.GeneralSecurityException;
+
 import org.webpki.sks.SKSException;
 
 public abstract class SEResult {
@@ -31,7 +33,8 @@ public abstract class SEResult {
         if (e instanceof SKSException) {
             setError(e, ((SKSException)e).getError());
         } else {
-            setError(e, SKSException.ERROR_INTERNAL);
+            setError(e, e instanceof GeneralSecurityException ? 
+                                    SKSException.ERROR_CRYPTO : SKSException.ERROR_INTERNAL);
         }
     }
     

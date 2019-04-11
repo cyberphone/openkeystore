@@ -19,6 +19,7 @@ package org.webpki.sks.twolayer.tee;
 import java.io.IOException;
 import java.io.Serializable;
 
+import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 
 import java.security.cert.X509Certificate;
@@ -632,6 +633,9 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
     static void abort(Throwable e) {
         if (e instanceof SKSException) {
             throw (SKSException)e;
+        }
+        if (e instanceof GeneralSecurityException) {
+            throw new SKSException(e, SKSException.ERROR_CRYPTO);
         }
         throw new SKSException(e);
     }
