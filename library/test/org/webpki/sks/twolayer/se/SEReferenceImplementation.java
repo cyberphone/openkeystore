@@ -500,7 +500,7 @@ public class SEReferenceImplementation {
 
     static final byte[] USER_KEY_ENCRYPTION = {'U', 's', 'e', 'r', 'K', 'e', 'y'};
 
-    static final byte[] USER_KEY_INTEGRITY = {'I', 'n', 't', 'e', 'g', 'r', 'i', 't', 'y'};
+    static final byte[] INTEGRITY_MODIFIER = {'I', 'n', 't', 'e', 'g', 'r', 'i', 't', 'y'};
 
     static byte[] userKeyWrapperSecret;
 
@@ -526,13 +526,27 @@ public class SEReferenceImplementation {
         }
     }
 
-    static byte[] userKeyMac_secret;
+    static byte[] userKeyMacSecret;
 
     static {
         try {
             MacBuilder macBuilder = new MacBuilder(SE_MASTER_SECRET);
-            macBuilder.addVerbatim(USER_KEY_INTEGRITY);
-            userKeyMac_secret = macBuilder.getResult();
+            macBuilder.addVerbatim(INTEGRITY_MODIFIER);
+            macBuilder.addVerbatim(USER_KEY_ENCRYPTION);
+            userKeyMacSecret = macBuilder.getResult();
+        } catch (GeneralSecurityException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    static byte[] sessionKeyMacSecret;
+
+    static {
+        try {
+            MacBuilder macBuilder = new MacBuilder(SE_MASTER_SECRET);
+            macBuilder.addVerbatim(INTEGRITY_MODIFIER);
+            macBuilder.addVerbatim(SESSION_KEY_ENCRYPTION);
+            sessionKeyMacSecret = macBuilder.getResult();
         } catch (GeneralSecurityException e) {
             throw new RuntimeException(e);
         }
@@ -609,7 +623,7 @@ public class SEReferenceImplementation {
         }
 
         private byte[] createMAC(byte[] osInstanceKey) throws GeneralSecurityException {
-            MacBuilder macBuilder = new MacBuilder(deriveKey(osInstanceKey, userKeyMac_secret));
+            MacBuilder macBuilder = new MacBuilder(deriveKey(osInstanceKey, userKeyMacSecret));
             macBuilder.addBool(isExportable);
             macBuilder.addBool(isSymmetric);
             macBuilder.addArray(wrappedKey);
@@ -650,20 +664,35 @@ public class SEReferenceImplementation {
 
         short sessionKeyLimit;
 
-        public void readKey(byte[] provisioningState) throws IOException {
+
+        private byte[] createMAC(byte[] osInstanceKey) throws GeneralSecurityException {
+            MacBuilder macBuilder = new MacBuilder(deriveKey(osInstanceKey, sessionKeyMacSecret));
+            macBuilder.addArray(wrappedSessionKey);
+            macBuilder.addShort(macSequenceCounter);
+            macBuilder.addShort(sessionKeyLimit);
+            return macBuilder.getResult();
+        }
+        
+        public void readKey(byte[] osInstanceKey, byte[] provisioningState) 
+        throws IOException, GeneralSecurityException {
             ByteReader byteReader = new ByteReader(provisioningState);
             wrappedSessionKey = byteReader.readArray(SecureKeyStore.AES_CBC_PKCS5_PADDING + 32);
             macSequenceCounter = byteReader.readShort();
             sessionKeyLimit = byteReader.readShort();
+            byte[] oldMac = byteReader.readArray(32);
             byteReader.checkEOF();
             byteReader.close();
+            if (!Arrays.equals(oldMac, createMAC(osInstanceKey))) {
+                throw new GeneralSecurityException("Sealed session key MAC error");
+            }
         }
 
-        byte[] writeKey() throws IOException {
+        byte[] writeKey(byte[] osInstanceKey) throws IOException, GeneralSecurityException {
             ByteWriter byteWriter = new ByteWriter();
             byteWriter.writeArray(wrappedSessionKey);
             byteWriter.writeShort(macSequenceCounter);
             byteWriter.writeShort(sessionKeyLimit);
+            byteWriter.writeArray(createMAC(osInstanceKey));
             return byteWriter.getData();
         }
     }
@@ -712,7 +741,7 @@ public class SEReferenceImplementation {
     static UnwrappedSessionKey getUnwrappedSessionKey(byte[] osInstanceKey, byte[] provisioningState) 
     throws IOException, GeneralSecurityException {
         UnwrappedSessionKey unwrappedSessionKey = new UnwrappedSessionKey();
-        unwrappedSessionKey.readKey(provisioningState);
+        unwrappedSessionKey.readKey(osInstanceKey, provisioningState);
         byte[] data = unwrappedSessionKey.wrappedSessionKey;
         Cipher crypt = Cipher.getInstance("AES/CBC/PKCS5Padding");
         crypt.init(Cipher.DECRYPT_MODE, 
@@ -722,7 +751,10 @@ public class SEReferenceImplementation {
         return unwrappedSessionKey;
     }
 
-    static byte[] wrapSessionKey(byte[] osInstanceKey, UnwrappedSessionKey unwrappedSessionKey, byte[] rawKey, short sessionKeyLimit)
+    static byte[] wrapSessionKey(byte[] osInstanceKey, 
+                                 UnwrappedSessionKey unwrappedSessionKey,
+                                 byte[] rawKey, 
+                                 short sessionKeyLimit)
     throws IOException, GeneralSecurityException {
         Cipher crypt = Cipher.getInstance("AES/CBC/PKCS5Padding");
         byte[] iv = new byte[16];
@@ -732,7 +764,7 @@ public class SEReferenceImplementation {
                    new IvParameterSpec(iv));
         unwrappedSessionKey.wrappedSessionKey = addArrays(iv, crypt.doFinal(rawKey));
         unwrappedSessionKey.sessionKeyLimit = sessionKeyLimit;
-        return unwrappedSessionKey.writeKey();
+        return unwrappedSessionKey.writeKey(osInstanceKey);
     }
 
     static KeyStore getAttestationKeyStore() throws IOException, GeneralSecurityException {
@@ -1527,7 +1559,7 @@ public class SEReferenceImplementation {
             ///////////////////////////////////////////////////////////////////////////////////
             // Success, return updated session data
             ///////////////////////////////////////////////////////////////////////////////////
-            seByteArrayData.data = unwrappedSessionKey.writeKey();
+            seByteArrayData.data = unwrappedSessionKey.writeKey(osInstanceKey);
         } catch (Exception e) {
             seByteArrayData.setError(e);
         }
@@ -1572,7 +1604,7 @@ public class SEReferenceImplementation {
             ///////////////////////////////////////////////////////////////////////////////////
             // Success, return updated session data
             ///////////////////////////////////////////////////////////////////////////////////
-            seByteArrayData.data = unwrappedSessionKey.writeKey();
+            seByteArrayData.data = unwrappedSessionKey.writeKey(osInstanceKey);
         } catch (Exception e) {
             seByteArrayData.setError(e);
         }
@@ -1796,7 +1828,10 @@ public class SEReferenceImplementation {
             ///////////////////////////////////////////////////////////////////////////////////
             // Create the wrapped session key and associated data
             ///////////////////////////////////////////////////////////////////////////////////
-            seProvisioningData.provisioningState = wrapSessionKey(osInstanceKey, new UnwrappedSessionKey(), sessionKey, sessionKeyLimit);
+            seProvisioningData.provisioningState = wrapSessionKey(osInstanceKey, 
+                                                                  new UnwrappedSessionKey(), 
+                                                                  sessionKey, 
+                                                                  sessionKeyLimit);
             seProvisioningData.clientSessionId = clientSessionId;
             seProvisioningData.clientEphemeralKey = clientEphemeralKey;
     
@@ -1862,7 +1897,7 @@ public class SEReferenceImplementation {
             ///////////////////////////////////////////////////////////////////////////////////
             byte[] decryptedPrivateKey = decrypt(unwrappedSessionKey, encryptedKey);
             PrivateKey decodedPrivateKey = raw2PrivateKey(decryptedPrivateKey);
-            sePrivateKeyData.provisioningState = unwrappedSessionKey.writeKey();
+            sePrivateKeyData.provisioningState = unwrappedSessionKey.writeKey(osInstanceKey);
             sePrivateKeyData.sealedKey = wrapKey(osInstanceKey, unwrappedKey, decryptedPrivateKey);
             if (decodedPrivateKey instanceof RSAKey) {
                 checkRSAKeyCompatibility(getRSAKeySize((RSAPrivateKey) decodedPrivateKey),
@@ -1941,7 +1976,7 @@ public class SEReferenceImplementation {
             ///////////////////////////////////////////////////////////////////////////////////
             byte[] rawKey = decrypt(unwrappedSessionKey, encryptedKey);
             unwrappedKey.isSymmetric = true;
-            seSymmetricKeyData.provisioningState = unwrappedSessionKey.writeKey();
+            seSymmetricKeyData.provisioningState = unwrappedSessionKey.writeKey(osInstanceKey);
             seSymmetricKeyData.sealedKey = wrapKey(osInstanceKey, unwrappedKey, rawKey);
             seSymmetricKeyData.symmetricKeyLength = (short) rawKey.length;
         
@@ -2021,7 +2056,7 @@ public class SEReferenceImplementation {
             ///////////////////////////////////////////////////////////////////////////////////
             // Return extension data
             ///////////////////////////////////////////////////////////////////////////////////
-            seExtensionData.provisioningState = unwrappedSessionKey.writeKey();
+            seExtensionData.provisioningState = unwrappedSessionKey.writeKey(osInstanceKey);
             seExtensionData.extensionData = subType == SecureKeyStore.SUB_TYPE_ENCRYPTED_EXTENSION ?
                     decrypt(unwrappedSessionKey, extensionData) : extensionData.clone();
             ///////////////////////////////////////////////////////////////////////////////////
@@ -2093,7 +2128,7 @@ public class SEReferenceImplementation {
             // Update the sealed key with the certificate link
             ///////////////////////////////////////////////////////////////////////////////////
             unwrappedKey.sha256OfPublicKeyOrCertificate = getSHA256(certificatePath[0].getEncoded());
-            seCertificateData.provisioningState = unwrappedSessionKey.writeKey();
+            seCertificateData.provisioningState = unwrappedSessionKey.writeKey(osInstanceKey);
             seCertificateData.sealedKey = 
                     wrapKey(osInstanceKey, unwrappedKey, unwrappedKey.privateKey.getEncoded());
             ///////////////////////////////////////////////////////////////////////////////////
@@ -2254,7 +2289,7 @@ public class SEReferenceImplementation {
                     exportProtection != SecureKeyStore.EXPORT_DELETE_PROTECTION_NOT_ALLOWED;
             unwrappedKey.sha256OfPublicKeyOrCertificate = getSHA256(publicKey.getEncoded());
             seKeyData.sealedKey = wrapKey(osInstanceKey, unwrappedKey, privateKey.getEncoded());
-            seKeyData.provisioningState = unwrappedSessionKey.writeKey();
+            seKeyData.provisioningState = unwrappedSessionKey.writeKey(osInstanceKey);
             seKeyData.attestation = attestation;
             seKeyData.publicKey = publicKey;
             seKeyData.decryptedPinValue = decryptedPinValue;
@@ -2321,7 +2356,7 @@ public class SEReferenceImplementation {
             ///////////////////////////////////////////////////////////////////////////////////
             // Success, return updated session data
             ///////////////////////////////////////////////////////////////////////////////////
-            seByteArrayData.data = unwrappedSessionKey.writeKey();
+            seByteArrayData.data = unwrappedSessionKey.writeKey(osInstanceKey);
         } catch (Exception e) {
             seByteArrayData.setError(e);
         }
@@ -2372,7 +2407,7 @@ public class SEReferenceImplementation {
             ///////////////////////////////////////////////////////////////////////////////////
             // Success, return PUK and updated session data
             ///////////////////////////////////////////////////////////////////////////////////
-            sePukData.provisioningState = unwrappedSessionKey.writeKey();
+            sePukData.provisioningState = unwrappedSessionKey.writeKey(osInstanceKey);
             sePukData.pukValue = decryptedPukValue;
         } catch (Exception e) {
             sePukData.setError(e);
