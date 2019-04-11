@@ -888,7 +888,7 @@ public class KeyGen2Test {
             }
 
             ProvisioningInitializationRequestEncoder prov_init_request =
-                    new ProvisioningInitializationRequestEncoder(serverState, 10000, (short) 50);
+                    new ProvisioningInitializationRequestEncoder(serverState, (short) 10000, (short) 50);
             if (updatable) {
                 ProvisioningInitializationRequestEncoder.KeyManagementKeyUpdateHolder kmk =
                         prov_init_request.setKeyManagementKey(server_km = serverCryptoInterface.enumerateKeyManagementKeys()[ecc_kmk ? 2 : 0]);

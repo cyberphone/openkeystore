@@ -525,7 +525,7 @@
      <Parameter Name="issuer_uri"            Type="string" XMLName="IssuerURI"/>
      <Parameter Name="key_management_key"    Type="binary" XMLName="KeyManagementKey"      Null="true" RewriteRule="In.PublicKey"/>
      <Parameter Name="client_time"           Type="int"    XMLName="ClientTime"/>
-     <Parameter Name="session_life_time"     Type="int"    XMLName="SessionLifeTime"/>
+     <Parameter Name="session_life_time"     Type="short"  XMLName="SessionLifeTime"/>
      <Parameter Name="session_key_limit"     Type="short"  XMLName="SessionKeyLimit"/>
      <Parameter Name="server_certificate"    Type="binary" XMLName="ServerCertificate"/>
      <Parameter Name="client_session_id"     Type="string" XMLName="ClientSessionID"       Mode="out"/>

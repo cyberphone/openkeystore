@@ -1701,7 +1701,7 @@ public class SEReferenceImplementation {
                                                             String issuerUri,
                                                             PublicKey keyManagementKey, // May be null
                                                             int clientTime,
-                                                            int sessionLifeTime,
+                                                            short sessionLifeTime,
                                                             short sessionKeyLimit,
                                                             byte[] serverCertificate) {
         SEProvisioningData seProvisioningData = new SEProvisioningData();
@@ -1799,7 +1799,7 @@ public class SEReferenceImplementation {
                 ska.addArray(clientEphemeralKey.getEncoded());
                 ska.addArray(keyManagementKey == null ? SecureKeyStore.ZERO_LENGTH_ARRAY : keyManagementKey.getEncoded());
                 ska.addInt(clientTime);
-                ska.addInt(sessionLifeTime);
+                ska.addShort(sessionLifeTime);
                 ska.addShort(sessionKeyLimit);
                 ska.addArray(serverCertificate);
                 seProvisioningData.attestation = ska.getResult();
@@ -1819,7 +1819,7 @@ public class SEReferenceImplementation {
                 pka.addArray(keyManagementKey == null ? 
                      SecureKeyStore.ZERO_LENGTH_ARRAY : keyManagementKey.getEncoded());
                 pka.addInt(clientTime);
-                pka.addInt(sessionLifeTime);
+                pka.addShort(sessionLifeTime);
                 pka.addShort(sessionKeyLimit);
                 pka.addArray(serverCertificate);
                 seProvisioningData.attestation = pka.getResult();

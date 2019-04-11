@@ -213,7 +213,7 @@ public class ProvSess {
 
     int provisioning_handle;
 
-    int sessionLifeTime = 10000;
+    short sessionLifeTime = 10000;
 
     String serverSessionId;
 
@@ -374,7 +374,7 @@ public class ProvSess {
         attestation_arguments.addArray(sess.getClientEphemeralKey().getEncoded());
         attestation_arguments.addArray(keyManagementKey == null ? new byte[0] : keyManagementKey.getEncoded());
         attestation_arguments.addInt((int) (clientTime.getTimeInMillis() / 1000));
-        attestation_arguments.addInt(sessionLifeTime);
+        attestation_arguments.addShort(sessionLifeTime);
         attestation_arguments.addShort(sessionKeyLimit);
         attestation_arguments.addArray(SKSTest.serverCertificate);
 

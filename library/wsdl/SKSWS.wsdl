@@ -88,7 +88,7 @@
             <xs:element name="IssuerURI" type="xs:string"/>
             <xs:element name="KeyManagementKey" type="xs:base64Binary" nillable="true" minOccurs="0"/>
             <xs:element name="ClientTime" type="xs:int"/>
-            <xs:element name="SessionLifeTime" type="xs:int"/>
+            <xs:element name="SessionLifeTime" type="xs:short"/>
             <xs:element name="SessionKeyLimit" type="xs:short"/>
             <xs:element name="ServerCertificate" type="xs:base64Binary"/>
           </xs:sequence>

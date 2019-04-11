@@ -563,7 +563,7 @@ namespace org.webpki.sks.ws.client
 
         [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=8)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="SessionLifeTime", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
-        internal int _session_life_time;
+        internal short _session_life_time;
 
         [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=9)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="SessionKeyLimit", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
@@ -581,7 +581,7 @@ namespace org.webpki.sks.ws.client
                                                  string IssuerURI,
                                                  byte[] KeyManagementKey,
                                                  int ClientTime,
-                                                 int SessionLifeTime,
+                                                 short SessionLifeTime,
                                                  short SessionKeyLimit,
                                                  byte[] ServerCertificate)
         {
@@ -2712,7 +2712,7 @@ namespace org.webpki.sks.ws.client
                                                              string IssuerURI,
                                                              PublicKey KeyManagementKey,
                                                              int ClientTime,
-                                                             int SessionLifeTime,
+                                                             short SessionLifeTime,
                                                              short SessionKeyLimit,
                                                              byte[] ServerCertificate)
         {

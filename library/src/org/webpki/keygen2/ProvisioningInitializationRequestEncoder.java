@@ -96,7 +96,7 @@ public class ProvisioningInitializationRequestEncoder extends ServerEncoder {
     // Constructors
 
     public ProvisioningInitializationRequestEncoder(ServerState serverState,
-                                                    int sessionLifeTime,
+                                                    short sessionLifeTime,
                                                     short sessionKeyLimit) throws IOException {
         serverState.checkState(true, ProtocolPhase.PROVISIONING_INITIALIZATION);
         this.serverState = serverState;

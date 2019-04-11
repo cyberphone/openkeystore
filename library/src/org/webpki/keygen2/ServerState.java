@@ -1070,7 +1070,7 @@ public class ServerState implements Serializable {
 
     String issuerUri;
 
-    int sessionLifeTime;
+    short sessionLifeTime;
 
     short sessionKeyLimit;
 
@@ -1286,7 +1286,7 @@ public class ServerState implements Serializable {
         attestationArguments.addArray(clientEphemeralKey.getEncoded());
         attestationArguments.addArray(keyManagementKey == null ? new byte[0] : keyManagementKey.getEncoded());
         attestationArguments.addInt((int) (provisioningInitializationResponse.clientTime.getTimeInMillis() / 1000));
-        attestationArguments.addInt(sessionLifeTime);
+        attestationArguments.addShort(sessionLifeTime);
         attestationArguments.addShort(sessionKeyLimit);
         attestationArguments.addArray(serverCertificate.getEncoded());
 

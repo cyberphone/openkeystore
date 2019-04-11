@@ -224,7 +224,7 @@ public interface SecureKeyStore {
                                                   String issuerUri,
                                                   PublicKey keyManagementKey, // Must be null if not applicable
                                                   int clientTime,
-                                                  int sessionLifeTime,
+                                                  short sessionLifeTime,
                                                   short sessionKeyLimit,
                                                   byte[] serverCertificate);
 

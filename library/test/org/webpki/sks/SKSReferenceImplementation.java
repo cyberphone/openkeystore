@@ -501,7 +501,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         PublicKey keyManagementKey;
         short macSequenceCounter;
         int clientTime;
-        int sessionLifeTime;
+        short sessionLifeTime;
         short sessionKeyLimit;
 
         Provisioning() {
@@ -2636,7 +2636,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                                                                       String issuerUri,
                                                                       PublicKey keyManagementKey, // May be null
                                                                       int clientTime,
-                                                                      int sessionLifeTime,
+                                                                      short sessionLifeTime,
                                                                       short sessionKeyLimit,
                                                                       byte[] serverCertificate) {
         ///////////////////////////////////////////////////////////////////////////////////
@@ -2738,7 +2738,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                 ska.addArray(clientEphemeralKey.getEncoded());
                 ska.addArray(keyManagementKey == null ? ZERO_LENGTH_ARRAY : keyManagementKey.getEncoded());
                 ska.addInt(clientTime);
-                ska.addInt(sessionLifeTime);
+                ska.addShort(sessionLifeTime);
                 ska.addShort(sessionKeyLimit);
                 ska.addArray(serverCertificate);
                 attestation = ska.getResult();
@@ -2757,7 +2757,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                 pka.addArray(clientEphemeralKey.getEncoded());
                 pka.addArray(keyManagementKey == null ? ZERO_LENGTH_ARRAY : keyManagementKey.getEncoded());
                 pka.addInt(clientTime);
-                pka.addInt(sessionLifeTime);
+                pka.addShort(sessionLifeTime);
                 pka.addShort(sessionKeyLimit);
                 pka.addArray(serverCertificate);
                 attestation = pka.getResult();

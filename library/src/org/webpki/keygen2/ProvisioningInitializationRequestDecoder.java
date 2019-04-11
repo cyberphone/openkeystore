@@ -91,7 +91,7 @@ public class ProvisioningInitializationRequestDecoder extends ClientDecoder {
     }
 
 
-    public int getSessionLifeTime() {
+    public short getSessionLifeTime() {
         return sessionLifeTime;
     }
 
@@ -132,7 +132,7 @@ public class ProvisioningInitializationRequestDecoder extends ClientDecoder {
 
     ECPublicKey serverEphemeralKey;
 
-    int sessionLifeTime;
+    short sessionLifeTime;
 
     short sessionKeyLimit;
 
@@ -152,7 +152,7 @@ public class ProvisioningInitializationRequestDecoder extends ClientDecoder {
 
         sessionKeyLimit = (short) rd.getInt(SESSION_KEY_LIMIT_JSON);
 
-        sessionLifeTime = rd.getInt(SESSION_LIFE_TIME_JSON);
+        sessionLifeTime = (short) rd.getInt(SESSION_LIFE_TIME_JSON);
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Get the server key

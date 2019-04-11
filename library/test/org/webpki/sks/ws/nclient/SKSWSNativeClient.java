@@ -45,7 +45,7 @@ public class SKSWSNativeClient implements SecureKeyStore, WSSpecific {
                                                                 String issuer_uri,
                                                                 PublicKey keyManagementKey,
                                                                 int clientTime,
-                                                                int sessionLifeTime,
+                                                                short sessionLifeTime,
                                                                 short sessionKeyLimit,
                                                                 byte[] serverCertificate) throws SKSException;
 

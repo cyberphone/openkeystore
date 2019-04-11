@@ -337,7 +337,7 @@ public class SKSWSImplementation
                                           @WebParam(name="ClientTime", targetNamespace="https://webpki.github.io/sks/v1.00")
                                           int client_time,
                                           @WebParam(name="SessionLifeTime", targetNamespace="https://webpki.github.io/sks/v1.00")
-                                          int session_life_time,
+                                          short session_life_time,
                                           @WebParam(name="SessionKeyLimit", targetNamespace="https://webpki.github.io/sks/v1.00")
                                           short session_key_limit,
                                           @WebParam(name="ServerCertificate", targetNamespace="https://webpki.github.io/sks/v1.00")

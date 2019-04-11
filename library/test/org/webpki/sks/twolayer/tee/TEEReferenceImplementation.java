@@ -435,7 +435,7 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
         boolean open = true;
         PublicKey keyManagementKey;
         int clientTime;
-        int sessionLifeTime;
+        short sessionLifeTime;
         short sessionKeyLimit;
 
         byte[] provisioningState;
@@ -1900,7 +1900,7 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
                                                                       String issuerUri,
                                                                       PublicKey keyManagementKey, // May be null
                                                                       int clientTime,
-                                                                      int sessionLifeTime,
+                                                                      short sessionLifeTime,
                                                                       short sessionKeyLimit,
                                                                       byte[] serverCertificate) {
         try {
