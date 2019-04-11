@@ -502,25 +502,25 @@ public class SEReferenceImplementation {
 
     static final byte[] USER_KEY_INTEGRITY = {'I', 'n', 't', 'e', 'g', 'r', 'i', 't', 'y'};
 
-    static byte[] userKey_wrapper_secret;
+    static byte[] userKeyWrapperSecret;
 
     static {
         try {
             MacBuilder macBuilder = new MacBuilder(SE_MASTER_SECRET);
             macBuilder.addVerbatim(USER_KEY_ENCRYPTION);
-            userKey_wrapper_secret = macBuilder.getResult();
+            userKeyWrapperSecret = macBuilder.getResult();
         } catch (GeneralSecurityException e) {
             throw new RuntimeException(e);
         }
     }
 
-    static byte[] sessionKey_wrapper_secret;
+    static byte[] sessionKeyWrapperSecret;
 
     static {
         try {
             MacBuilder macBuilder = new MacBuilder(SE_MASTER_SECRET);
             macBuilder.addVerbatim(SESSION_KEY_ENCRYPTION);
-            sessionKey_wrapper_secret = macBuilder.getResult();
+            sessionKeyWrapperSecret = macBuilder.getResult();
         } catch (GeneralSecurityException e) {
             throw new RuntimeException(e);
         }
@@ -617,13 +617,13 @@ public class SEReferenceImplementation {
         }
 
         byte[] writeKey(byte[] osInstanceKey) throws IOException, GeneralSecurityException {
-            ByteWriter byte_writer = new ByteWriter();
-            byte_writer.writeArray(wrappedKey);
-            byte_writer.writeBoolean(isSymmetric);
-            byte_writer.writeBoolean(isExportable);
-            byte_writer.writeArray(sha256OfPublicKeyOrCertificate);
-            byte_writer.writeArray(createMAC(osInstanceKey));
-            return byte_writer.getData();
+            ByteWriter byteWriter = new ByteWriter();
+            byteWriter.writeArray(wrappedKey);
+            byteWriter.writeBoolean(isSymmetric);
+            byteWriter.writeBoolean(isExportable);
+            byteWriter.writeArray(sha256OfPublicKeyOrCertificate);
+            byteWriter.writeArray(createMAC(osInstanceKey));
+            return byteWriter.getData();
         }
 
         void readKey(byte[] osInstanceKey, byte[] sealedKey) throws IOException, GeneralSecurityException {
@@ -660,11 +660,11 @@ public class SEReferenceImplementation {
         }
 
         byte[] writeKey() throws IOException {
-            ByteWriter byte_writer = new ByteWriter();
-            byte_writer.writeArray(wrappedSessionKey);
-            byte_writer.writeShort(macSequenceCounter);
-            byte_writer.writeShort(sessionKeyLimit);
-            return byte_writer.getData();
+            ByteWriter byteWriter = new ByteWriter();
+            byteWriter.writeArray(wrappedSessionKey);
+            byteWriter.writeShort(macSequenceCounter);
+            byteWriter.writeShort(sessionKeyLimit);
+            return byteWriter.getData();
         }
     }
 
@@ -688,7 +688,7 @@ public class SEReferenceImplementation {
         unwrappedKey.readKey(osInstanceKey, sealedKey);
         byte[] data = unwrappedKey.wrappedKey;
         Cipher crypt = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        crypt.init(Cipher.DECRYPT_MODE, new SecretKeySpec(deriveKey(osInstanceKey, userKey_wrapper_secret), "AES"), new IvParameterSpec(data, 0, 16));
+        crypt.init(Cipher.DECRYPT_MODE, new SecretKeySpec(deriveKey(osInstanceKey, userKeyWrapperSecret), "AES"), new IvParameterSpec(data, 0, 16));
         byte[] rawKey = crypt.doFinal(data, 16, data.length - 16);
         if (unwrappedKey.isSymmetric) {
             unwrappedKey.symmetricKey = rawKey;
@@ -703,7 +703,7 @@ public class SEReferenceImplementation {
         byte[] iv = new byte[16];
         new SecureRandom().nextBytes(iv);
         crypt.init(Cipher.ENCRYPT_MODE, 
-                   new SecretKeySpec(deriveKey(osInstanceKey, userKey_wrapper_secret), "AES"),
+                   new SecretKeySpec(deriveKey(osInstanceKey, userKeyWrapperSecret), "AES"),
                    new IvParameterSpec(iv));
         unwrappedKey.wrappedKey = addArrays(iv, crypt.doFinal(rawKey));
         return unwrappedKey.writeKey(osInstanceKey);
@@ -716,7 +716,7 @@ public class SEReferenceImplementation {
         byte[] data = unwrappedSessionKey.wrappedSessionKey;
         Cipher crypt = Cipher.getInstance("AES/CBC/PKCS5Padding");
         crypt.init(Cipher.DECRYPT_MODE, 
-                   new SecretKeySpec(deriveKey(osInstanceKey, sessionKey_wrapper_secret), "AES"), 
+                   new SecretKeySpec(deriveKey(osInstanceKey, sessionKeyWrapperSecret), "AES"), 
                    new IvParameterSpec(data, 0, 16));
         unwrappedSessionKey.sessionKey = crypt.doFinal(data, 16, data.length - 16);
         return unwrappedSessionKey;
@@ -727,7 +727,9 @@ public class SEReferenceImplementation {
         Cipher crypt = Cipher.getInstance("AES/CBC/PKCS5Padding");
         byte[] iv = new byte[16];
         new SecureRandom().nextBytes(iv);
-        crypt.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(deriveKey(osInstanceKey, sessionKey_wrapper_secret), "AES"), new IvParameterSpec(iv));
+        crypt.init(Cipher.ENCRYPT_MODE, 
+                   new SecretKeySpec(deriveKey(osInstanceKey, sessionKeyWrapperSecret), "AES"), 
+                   new IvParameterSpec(iv));
         unwrappedSessionKey.wrappedSessionKey = addArrays(iv, crypt.doFinal(rawKey));
         unwrappedSessionKey.sessionKeyLimit = sessionKeyLimit;
         return unwrappedSessionKey.writeKey();
@@ -735,12 +737,14 @@ public class SEReferenceImplementation {
 
     static KeyStore getAttestationKeyStore() throws IOException, GeneralSecurityException {
         KeyStore ks = KeyStore.getInstance("JKS");
-        ks.load(SEReferenceImplementation.class.getResourceAsStream("attestationkeystore.jks"), ATTESTATION_KEY_PASSWORD);
+        ks.load(SEReferenceImplementation.class.getResourceAsStream("attestationkeystore.jks"), 
+                ATTESTATION_KEY_PASSWORD);
         return ks;
     }
 
     static X509Certificate[] getDeviceCertificatePath() throws IOException, GeneralSecurityException {
-        return new X509Certificate[]{(X509Certificate) getAttestationKeyStore().getCertificate(ATTESTATION_KEY_ALIAS)};
+        return new X509Certificate[]{(X509Certificate) getAttestationKeyStore()
+                .getCertificate(ATTESTATION_KEY_ALIAS)};
     }
 
     static byte[] getDeviceID(boolean privacyEnabled) throws IOException, GeneralSecurityException {
@@ -748,7 +752,8 @@ public class SEReferenceImplementation {
     }
 
     static PrivateKey getAttestationKey() throws IOException, GeneralSecurityException {
-        return (PrivateKey) getAttestationKeyStore().getKey(ATTESTATION_KEY_ALIAS, ATTESTATION_KEY_PASSWORD);
+        return (PrivateKey) getAttestationKeyStore()
+                .getKey(ATTESTATION_KEY_ALIAS, ATTESTATION_KEY_PASSWORD);
     }
 
     static int getShort(byte[] buffer, int index) {
@@ -767,7 +772,7 @@ public class SEReferenceImplementation {
         throw new SKSException(e, SKSException.ERROR_CRYPTO);
     }
 
-    static void checkIDSyntax(String identifier, String symbolic_name) {
+    static void checkIDSyntax(String identifier, String symbolicName) {
         boolean flag = false;
         if (identifier.length() == 0 || identifier.length() > SecureKeyStore.MAX_LENGTH_ID_TYPE) {
             flag = true;
@@ -781,7 +786,7 @@ public class SEReferenceImplementation {
             }
         }
         if (flag) {
-            abort("Malformed \"" + symbolic_name + "\" : " + identifier);
+            abort("Malformed \"" + symbolicName + "\" : " + identifier);
         }
     }
 
@@ -907,8 +912,9 @@ public class SEReferenceImplementation {
 
         AttestationSignatureGenerator() throws IOException, GeneralSecurityException {
             PrivateKey attester = getAttestationKey();
-            signer = new SignatureWrapper(attester instanceof RSAPrivateKey ? "SHA256withRSA" : "SHA256withECDSA",
-                    attester);
+            signer = new SignatureWrapper(attester instanceof RSAPrivateKey ? 
+                                                            "SHA256withRSA" : "SHA256withECDSA",
+                                          attester);
         }
 
         private byte[] short2bytes(int s) {
@@ -991,7 +997,8 @@ public class SEReferenceImplementation {
                                                        byte[] kmkKdf,
                                                        byte[] argument,
                                                        byte[] authorization) throws GeneralSecurityException {
-        return new SignatureWrapper(keyManagementKey instanceof RSAPublicKey ? "SHA256WithRSA" : "SHA256WithECDSA",
+        return new SignatureWrapper(keyManagementKey instanceof RSAPublicKey ? 
+                                                             "SHA256WithRSA" : "SHA256WithECDSA",
                                     keyManagementKey)
             .update(kmkKdf)
             .update(argument)
@@ -1190,14 +1197,14 @@ public class SEReferenceImplementation {
                     abort("RSA mismatch between public and private keys for: " + id);
                 }
             } else {
-                Signature ec_signer = Signature.getInstance("SHA256withECDSA");
-                ec_signer.initSign(unwrappedKey.privateKey);
-                ec_signer.update(RSA_ENCRYPTION_OID);  // Any data could be used...
-                byte[] ec_signData = ec_signer.sign();
-                Signature ec_verifier = Signature.getInstance("SHA256withECDSA");
-                ec_verifier.initVerify(publicKey);
-                ec_verifier.update(RSA_ENCRYPTION_OID);
-                if (!ec_verifier.verify(ec_signData)) {
+                Signature ecSigner = Signature.getInstance("SHA256withECDSA");
+                ecSigner.initSign(unwrappedKey.privateKey);
+                ecSigner.update(RSA_ENCRYPTION_OID);  // Any data could be used...
+                byte[] ec_signData = ecSigner.sign();
+                Signature ecVerifier = Signature.getInstance("SHA256withECDSA");
+                ecVerifier.initVerify(publicKey);
+                ecVerifier.update(RSA_ENCRYPTION_OID);
+                if (!ecVerifier.verify(ec_signData)) {
                     abort("EC mismatch between public and private keys for: " + id);
                 }
             }
