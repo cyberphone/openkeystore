@@ -1215,18 +1215,21 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
     static void abort(String message, int option) {
         throw new SKSException(message, option);
     }
-
-
-    void tearDownSession(Provisioning provisioning, Throwable e) {
-        if (provisioning != null) {
-            abortProvisioningSession(provisioning.provisioningHandle);
-        }
+    
+    static void abort(Throwable e) {
         if (e instanceof SKSException) {
             throw (SKSException)e;
         }
         throw new SKSException(e);
     }
-    
+
+    void tearDownSession(Provisioning provisioning, Throwable e) {
+        if (provisioning != null) {
+            abortProvisioningSession(provisioning.provisioningHandle);
+        }
+        abort(e);
+    }
+
     void tearDownSession(KeyEntry key, Throwable e) {
         tearDownSession(key == null ? null : key.owner, e);
     }
@@ -2240,15 +2243,15 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
     public void updateKeyManagementKey(int provisioningHandle,
                                        PublicKey keyManagementKey,
                                        byte[] authorization) {
-        Provisioning provisioning = getClosedProvisioningSession(provisioningHandle);
-        if (provisioning.keyManagementKey == null) {
-            abort("Session is not updatable: " + provisioningHandle, SKSException.ERROR_NOT_ALLOWED);
-        }
-
-        ///////////////////////////////////////////////////////////////////////////////////
-        // Verify KMK signature
-        ///////////////////////////////////////////////////////////////////////////////////
         try {
+            Provisioning provisioning = getClosedProvisioningSession(provisioningHandle);
+            if (provisioning.keyManagementKey == null) {
+                abort("Session is not updatable: " + provisioningHandle, SKSException.ERROR_NOT_ALLOWED);
+            }
+    
+            ///////////////////////////////////////////////////////////////////////////////////
+            // Verify KMK signature
+            ///////////////////////////////////////////////////////////////////////////////////
             if (!provisioning.verifyKeyManagementKeyAuthorization(KMK_ROLL_OVER_AUTHORIZATION,
                                                                   keyManagementKey.getEncoded(),
                                                                   authorization)) {
@@ -2260,7 +2263,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             ///////////////////////////////////////////////////////////////////////////////////
             provisioning.keyManagementKey = keyManagementKey;
         } catch (Exception e) {
-            abort(e.getMessage(), SKSException.ERROR_CRYPTO);
+            abort(e);
         }
     }
 

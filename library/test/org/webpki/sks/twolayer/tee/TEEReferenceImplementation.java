@@ -1545,9 +1545,8 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
     public void updateKeyManagementKey(int provisioningHandle,
                                        PublicKey keyManagementKey,
                                        byte[] authorization) {
-        Provisioning provisioning = null;
         try {
-            provisioning = getClosedProvisioningSession(provisioningHandle);
+            Provisioning provisioning = getClosedProvisioningSession(provisioningHandle);
             if (provisioning.keyManagementKey == null) {
                 abort("Session is not updatable: " + provisioningHandle, SKSException.ERROR_NOT_ALLOWED);
             }
