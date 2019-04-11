@@ -691,7 +691,6 @@ public class SEReferenceImplementation {
         crypt.init(Cipher.DECRYPT_MODE, new SecretKeySpec(deriveKey(osInstanceKey, userKey_wrapper_secret), "AES"), new IvParameterSpec(data, 0, 16));
         byte[] rawKey = crypt.doFinal(data, 16, data.length - 16);
         if (unwrappedKey.isSymmetric) {
-            unwrappedKey.isSymmetric = true;
             unwrappedKey.symmetricKey = rawKey;
         } else {
             unwrappedKey.privateKey = raw2PrivateKey(rawKey);
