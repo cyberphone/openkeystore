@@ -14,7 +14,13 @@
  *  limitations under the License.
  *
  */
+//#if ANDROID
+package org.webpki.mobile.android.sks;
+
+import android.util.Log;
+//#else
 package org.webpki.sks;
+//#endif
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -45,7 +51,9 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.ECParameterSpec;
+//#if !ANDROID
 import java.security.spec.MGF1ParameterSpec;
+//#endif
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.RSAKeyGenParameterSpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -61,8 +69,10 @@ import javax.crypto.KeyAgreement;
 import javax.crypto.Mac;
 
 import javax.crypto.spec.IvParameterSpec;
+//#if !ANDROID
 import javax.crypto.spec.OAEPParameterSpec;
 import javax.crypto.spec.PSource;
+//#endif
 import javax.crypto.spec.SecretKeySpec;
 
 import org.webpki.sks.DeviceInfo;
@@ -76,6 +86,21 @@ import org.webpki.sks.ProvisioningSession;
 import org.webpki.sks.SKSException;
 import org.webpki.sks.SecureKeyStore;
 
+//#if ANDROID
+/*
+ *                          ###########################
+ *                          #  SKS - Secure Key Store #
+ *                          ###########################
+ *
+ *  SKS is a cryptographic module that supports On-line Provisioning and Management
+ *  of PKI, Symmetric keys, PINs, PUKs and Extension data.
+ *
+ *  This is an Android version of SKS.
+ *
+ *  Author: Anders Rundgren
+ */
+public class SKSImplementation implements SecureKeyStore, Serializable, GrantInterface {
+//#else
 /*
  *                          ###########################
  *                          #  SKS - Secure Key Store #
@@ -104,17 +129,26 @@ import org.webpki.sks.SecureKeyStore;
  *  Author: Anders Rundgren
  */
 public class SKSReferenceImplementation implements SecureKeyStore, Serializable {
+//#endif
     private static final long serialVersionUID = 12L;
 
     /////////////////////////////////////////////////////////////////////////////////////////////
     // SKS version and configuration data
     /////////////////////////////////////////////////////////////////////////////////////////////
     static final String SKS_VENDOR_NAME                    = "WebPKI.org";
+//#if ANDROID
+    static final String SKS_VENDOR_DESCRIPTION             = "SKS for Android";
+    static final String SKS_UPDATE_URL                     = null;  // Change here to test or disable
+    static final boolean SKS_DEVICE_PIN_SUPPORT            = false;  // Change here to test or disable
+    static final boolean SKS_BIOMETRIC_SUPPORT             = false; // Change here to test or disable
+    static final boolean SKS_RSA_EXPONENT_SUPPORT          = true;  // Change here to test or disable
+//#else
     static final String SKS_VENDOR_DESCRIPTION             = "SKS Reference - Java Emulator Edition";
     static final String SKS_UPDATE_URL                     = null;  // Change here to test or disable
     static final boolean SKS_DEVICE_PIN_SUPPORT            = true;  // Change here to test or disable
     static final boolean SKS_BIOMETRIC_SUPPORT             = true;  // Change here to test or disable
     static final boolean SKS_RSA_EXPONENT_SUPPORT          = true;  // Change here to test or disable
+//#endif
     static final int MAX_LENGTH_CRYPTO_DATA                = 16384;
     static final int MAX_LENGTH_EXTENSION_DATA             = 65536;
 
@@ -142,6 +176,25 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
     X509Certificate[] deviceCertificatePath;
     PrivateKey attestationKey;
     
+//#if ANDROID
+    private static final String SKS_DEBUG = "SKS";                // Android SKS debug constant
+
+    static final String ANDROID_KEYSTORE  = "AndroidKeyStore";    // Hardware backed keys
+
+    SKSImplementation(X509Certificate[] deviceCertificatePath, PrivateKey attestationKey) {
+        this.deviceCertificatePath = deviceCertificatePath;
+        this.attestationKey = attestationKey;
+    }
+
+    void logCertificateOperation(KeyEntry keyEntry, String operation) {
+        Log.i(SKS_DEBUG, certificateLogData(keyEntry) + " " + operation);
+    }
+
+    String certificateLogData(KeyEntry keyEntry) {
+        return "Certificate for '" + keyEntry.certificatePath[0].getSubjectX500Principal().getName() +
+               "' Serial=" + keyEntry.certificatePath[0].getSerialNumber();
+    }
+//#else
     static final char[] ATTESTATION_KEY_PASSWORD = {'t', 'e', 's', 't', 'i', 'n', 'g'};
 
     static final String ATTESTATION_KEY_ALIAS = "mykey";
@@ -152,6 +205,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         attestationKey = (PrivateKey)ks.getKey(ATTESTATION_KEY_ALIAS, ATTESTATION_KEY_PASSWORD);
         deviceCertificatePath = new X509Certificate[]{(X509Certificate) ks.getCertificate(ATTESTATION_KEY_ALIAS)};
     }
+//#endif
 
     abstract class NameSpace implements Serializable {
         private static final long serialVersionUID = 1L;
@@ -208,6 +262,10 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         byte[] symmetricKey;     // Defined by "importSymmetricKey"
 
         LinkedHashSet<String> endorsedAlgorithms;
+//#if ANDROID
+
+        LinkedHashSet<String> grantedDomains = new LinkedHashSet<String>();
+//#endif
 
         String friendlyName;
 
@@ -1211,7 +1269,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
     static void abort(String message, int option) {
         throw new SKSException(message, option);
     }
-    
+
     static void abort(Throwable e) {
         if (e instanceof SKSException) {
             throw (SKSException)e;
@@ -1542,6 +1600,9 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             // Put the operation in the post-op buffer used by "closeProvisioningSession"
             ///////////////////////////////////////////////////////////////////////////////////
             provisioning.addPostProvisioningObject(targetKeyEntry, newKey, update);
+//#if ANDROID
+            logCertificateOperation(targetKeyEntry, update ? "post-updated" : "post-cloned");
+//#endif
         } catch (Exception e) {
             tearDownSession(newKey, e);
         }
@@ -1579,6 +1640,9 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             // Put the operation in the post-op buffer used by "closeProvisioningSession"
             ///////////////////////////////////////////////////////////////////////////////////
             provisioning.addPostProvisioningObject(targetKeyEntry, null, delete);
+//#if ANDROID
+            logCertificateOperation(targetKeyEntry, delete ? "post-deleted" : "post-unlocked");
+//#endif
         } catch (Exception e) {
             tearDownSession(provisioning, e);
         }
@@ -1838,6 +1902,9 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         ///////////////////////////////////////////////////////////////////////////////////
         try {
             Cipher cipher = Cipher.getInstance(alg.jceName);
+//#if ANDROID
+            cipher.init(Cipher.DECRYPT_MODE, keyEntry.privateKey);
+//#else
             if ((alg.mask & ALG_HASH_256) != 0) {
                 cipher.init(Cipher.DECRYPT_MODE, keyEntry.privateKey,
                     new OAEPParameterSpec(
@@ -1845,6 +1912,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             } else {
                 cipher.init(Cipher.DECRYPT_MODE, keyEntry.privateKey);
             }
+//#endif
             return cipher.doFinal(data);
         } catch (Exception e) {
             abort(e);
@@ -2246,7 +2314,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             if (provisioning.keyManagementKey == null) {
                 abort("Session is not updatable: " + provisioningHandle, SKSException.ERROR_NOT_ALLOWED);
             }
-    
+
             ///////////////////////////////////////////////////////////////////////////////////
             // Verify KMK signature
             ///////////////////////////////////////////////////////////////////////////////////
@@ -2260,6 +2328,9 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             // Success, update KeyManagementKey
             ///////////////////////////////////////////////////////////////////////////////////
             provisioning.keyManagementKey = keyManagementKey;
+//#if ANDROID
+            Log.i(SKS_DEBUG, "Updated KMK");
+//#endif
         } catch (Exception e) {
             abort(e);
         }
@@ -2387,6 +2458,9 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         deleteObject(pinPolicies, provisioning);
         deleteObject(pukPolicies, provisioning);
         provisionings.remove(provisioningHandle);
+//#if ANDROID
+        Log.i(SKS_DEBUG, "Session ABORTED");
+//#endif
     }
 
 
@@ -2610,6 +2684,9 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             // We are done, close the show for this time
             ///////////////////////////////////////////////////////////////////////////////////
             provisioning.open = false;
+//#if ANDROID
+            Log.i(SKS_DEBUG, "Session CLOSED");
+//#endif
             return attestation;
         } catch (Exception e) {
             tearDownSession(provisioning, e);
@@ -2751,6 +2828,9 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         p.clientTime = clientTime;
         p.sessionLifeTime = sessionLifeTime;
         p.sessionKeyLimit = sessionKeyLimit;
+//#if ANDROID
+        Log.i(SKS_DEBUG, "Session CREATED");
+//#endif
         return new ProvisioningSession(p.provisioningHandle,
                                        clientSessionId,
                                        attestation,
@@ -2830,6 +2910,9 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             extension.extensionData = (subType == SUB_TYPE_ENCRYPTED_EXTENSION) ?
                     keyEntry.owner.decrypt(extensionData) : extensionData;
             keyEntry.extensions.put(type, extension);
+//#if ANDROID
+            logCertificateOperation(keyEntry, "extension '" + type + "'");
+//#endif
         } catch (Exception e) {
             tearDownSession(keyEntry, e);
         }
@@ -2899,6 +2982,9 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             } else {
                 checkEcKeyCompatibility((ECPrivateKey) keyEntry.privateKey, keyEntry.id);
             }
+//#if ANDROID
+            logCertificateOperation(keyEntry, "private key import");
+//#endif
         } catch (Exception e) {
             tearDownSession(keyEntry, e);
         }
@@ -2945,6 +3031,9 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             // Decrypt and store symmetric key
             ///////////////////////////////////////////////////////////////////////////////////
             keyEntry.symmetricKey = keyEntry.owner.decrypt(encryptedKey);
+//#if ANDROID
+            logCertificateOperation(keyEntry, "symmetric key import");
+//#endif
         } catch (Exception e) {
             tearDownSession(keyEntry, e);
         }
@@ -3005,6 +3094,9 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                 abort("Multiple calls to \"setCertificatePath\" for: " + keyEntry.id);
             }
             keyEntry.certificatePath = certificatePath.clone();
+//#if ANDROID
+            logCertificateOperation(keyEntry, "received");
+//#endif
         } catch (Exception e) {
             tearDownSession(keyEntry, e);
         }
@@ -3219,6 +3311,9 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             keyEntry.exportProtection = exportProtection;
             keyEntry.deleteProtection = deleteProtection;
             keyEntry.endorsedAlgorithms = tempEndorsed;
+//#if ANDROID
+            Log.i(SKS_DEBUG, "Key with algorithm \"" + keyAlgorithm + "\" created");
+//#endif
             return new KeyData(keyEntry.keyHandle, publicKey, attestation);
         } catch (Exception e) {
             tearDownSession(provisioning, e);
@@ -3316,6 +3411,9 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             pinPolicy.minLength = minLength;
             pinPolicy.maxLength = maxLength;
             pinPolicy.inputMethod = inputMethod;
+//#if ANDROID
+            Log.i(SKS_DEBUG, "PIN policy object created");
+//#endif
             return pinPolicy.pinPolicyHandle;
         } catch (Exception e){
             tearDownSession(provisioning, e);
@@ -3377,10 +3475,43 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             pukPolicy.pukValue = decryptedPukValue;
             pukPolicy.format = format;
             pukPolicy.retryLimit = retryLimit;
+//#if ANDROID
+            Log.i(SKS_DEBUG, "PUK policy object created");
+//#endif
             return pukPolicy.pukPolicyHandle;
         } catch (Exception e) {
             tearDownSession(provisioning, e);
             return 0;  // For the compiler...
         }
     }
+//#if ANDROID
+
+    ////////////////////////////////////////////////////////////////////////////////
+    //                                                                            //
+    //                      A set of public non-SKS methods                       //
+    //                                                                            //
+    ////////////////////////////////////////////////////////////////////////////////
+
+    @Override
+    public boolean isGranted(int keyHandle, String domain) {
+        KeyEntry keyEntry = getStdKey(keyHandle);
+        return keyEntry.grantedDomains.contains(domain);
+    }
+
+    @Override
+    public void setGrant(int keyHandle, String domain, boolean granted) {
+        KeyEntry keyEntry = getStdKey(keyHandle);
+        if (granted) {
+            keyEntry.grantedDomains.add(domain);
+        } else {
+            keyEntry.grantedDomains.remove(domain);
+        }
+    }
+
+    @Override
+    public String[] listGrants(int keyHandle) {
+        KeyEntry keyEntry = getStdKey(keyHandle);
+        return keyEntry.grantedDomains.toArray(new String[0]);
+    }
+//#endif
 }

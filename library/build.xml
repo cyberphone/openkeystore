@@ -39,6 +39,9 @@
   <condition property="tested.version" else="false">
     <equals arg1="1.8" arg2="${javaversion}"/>
   </condition>
+
+  <!-- Register the jpp ant task -->
+  <taskdef resource="jpp.xml" classpath="../resources/third-party-jars/jpp-1.0.3.jar" />
 	
   <target name="_jdk8" unless="${tested.version}">
   	<echo message="&#10;
@@ -180,23 +183,19 @@
   <target name="compile">
   	<antcall target="_jdk8"/>
   	
-    <fixcrlf srcdir="${src_dir}"
+    <fixcrlf srcdir="."
        tab="remove"
        tablength="4"
        eol="lf"
        eof="remove"
        includes="**/*.java, **/*.xsd"/>
-    <mkdir dir="${temp_dir}"/>
+ 
+    <jpp destdir="${test_dir}" verbose="true">
+        <fileset dir="ppmastertest" includes="**/*.java" />
+    </jpp>
 
-    <fixcrlf srcdir="${src_test}"
-       tab="remove"
-       tablength="4"
-       eol="lf"
-       eof="remove"
-       includes="**/*.java, **/*.xsd"/>
     <mkdir dir="${temp_dir}"/>
-
-  	<!-- Copy all files except .java and doc-related -->
+ 	<!-- Copy all files except .java and doc-related -->
     <copy todir="${temp_dir}" preservelastmodified="true" includeEmptyDirs="false">
       <fileset dir="${src_dir}">
         <include name="**/*"/>
@@ -472,8 +471,8 @@
   	<antcall target="_clean_android"/>
   	
   	<javac debug="${debug}" srcdir="${temp_dir}" destdir="${bin_dir}" includeAntRuntime="false"/>
-    
-    <!-- Create Android JSON java library -->
+  	
+  	<!-- Create Android JSON java library -->
     <zip destfile="${dist_dir}/${android-json}.zip">
       <zipfileset dir="${temp_dir}">
           <include name="**/*.java"/>
@@ -588,9 +587,19 @@
 
   	<antcall target="_clean_android"/>
    	
-  	<javac debug="${debug}" srcdir="${temp_dir}" destdir="${bin_dir}" includeAntRuntime="false"/>
+  	<property name="ANDROID" value="true"/>
+    <jpp destdir="${temp_dir}" verbose="true">
+        <fileset dir="ppmastertest/org/webpki/sks" includes="**/*.java" />
+    </jpp>
+  	<move file="${temp_dir}/SKSReferenceImplementation.java" tofile="${temp_dir}/org/webpki/mobile/android/sks/SKSImplementation.java"/>
+  	
+  	<copy todir="${temp_dir}">
+  		<fileset dir="androidextsrc" includes="**/*.java"/>
+  	</copy>
     
-    <!-- Create Android java library -->
+  	<javac debug="${debug}" srcdir="${temp_dir}:androidrefsrc" destdir="${bin_dir}" includeAntRuntime="false"/>
+
+  	<!-- Create Android java library -->
     <zip destfile="${dist_dir}/${webpki-android}.zip">
       <zipfileset dir="${temp_dir}">
           <include name="**/*.java"/>

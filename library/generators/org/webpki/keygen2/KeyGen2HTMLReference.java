@@ -1355,12 +1355,12 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
               .setUsage(false)
             .newColumn()
               .addString("See <code>SKS:createKeyEntry.pinValue</code>.<br>" + "" +
-              		      "Note that if this property is defined, the " +
-              		      "<code>SKS:createPinPolicy.userDefined</code> " +
-              		      "flag of the required embedding PIN policy is set to <code>false</code> " +
-              		      "else it is set to <code>true</code>." + LINE_SEPARATOR +
-              		      "Keys associated with a specific PIN policy " +
-              		      "<b>must not</b> mix user-defined and preset PINs.")
+                          "Note that if this property is defined, the " +
+                          "<code>SKS:createPinPolicy.userDefined</code> " +
+                          "flag of the required embedding PIN policy is set to <code>false</code> " +
+                          "else it is set to <code>true</code>." + LINE_SEPARATOR +
+                          "Keys associated with a specific PIN policy " +
+                          "<b>must not</b> mix user-defined and preset PINs.")
           .newRow()
             .newColumn()
               .addProperty(ENABLE_PIN_CACHING_JSON)
