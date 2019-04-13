@@ -556,6 +556,20 @@ public class SEReferenceImplementation {
 
     static final String ATTESTATION_KEY_ALIAS = "mykey";
 
+    static X509Certificate[] deviceCertificatePath;
+    static PrivateKey attestationKey;
+
+    static {
+        try {
+            KeyStore ks = KeyStore.getInstance("JKS");
+            ks.load(SEReferenceImplementation.class.getResourceAsStream("attestationkeystore.jks"), ATTESTATION_KEY_PASSWORD);
+            attestationKey = (PrivateKey)ks.getKey(ATTESTATION_KEY_ALIAS, ATTESTATION_KEY_PASSWORD);
+            deviceCertificatePath = new X509Certificate[]{(X509Certificate) ks.getCertificate(ATTESTATION_KEY_ALIAS)};
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     static class ByteReader extends DataInputStream {
         ByteReader(byte[] input) {
             super(new ByteArrayInputStream(input));
@@ -767,25 +781,8 @@ public class SEReferenceImplementation {
         return unwrappedSessionKey.writeKey(osInstanceKey);
     }
 
-    static KeyStore getAttestationKeyStore() throws IOException, GeneralSecurityException {
-        KeyStore ks = KeyStore.getInstance("JKS");
-        ks.load(SEReferenceImplementation.class.getResourceAsStream("attestationkeystore.jks"), 
-                ATTESTATION_KEY_PASSWORD);
-        return ks;
-    }
-
-    static X509Certificate[] getDeviceCertificatePath() throws IOException, GeneralSecurityException {
-        return new X509Certificate[]{(X509Certificate) getAttestationKeyStore()
-                .getCertificate(ATTESTATION_KEY_ALIAS)};
-    }
-
     static byte[] getDeviceID(boolean privacyEnabled) throws IOException, GeneralSecurityException {
-        return privacyEnabled ? SecureKeyStore.KDF_ANONYMOUS : getDeviceCertificatePath()[0].getEncoded();
-    }
-
-    static PrivateKey getAttestationKey() throws IOException, GeneralSecurityException {
-        return (PrivateKey) getAttestationKeyStore()
-                .getKey(ATTESTATION_KEY_ALIAS, ATTESTATION_KEY_PASSWORD);
+        return privacyEnabled ? SecureKeyStore.KDF_ANONYMOUS : deviceCertificatePath[0].getEncoded();
     }
 
     static int getShort(byte[] buffer, int index) {
@@ -943,10 +940,9 @@ public class SEReferenceImplementation {
         SignatureWrapper signer;
 
         AttestationSignatureGenerator() throws IOException, GeneralSecurityException {
-            PrivateKey attester = getAttestationKey();
-            signer = new SignatureWrapper(attester instanceof RSAPrivateKey ? 
-                                                            "SHA256withRSA" : "SHA256withECDSA",
-                                          attester);
+            signer = new SignatureWrapper(attestationKey instanceof RSAPrivateKey ? 
+                                                                  "SHA256withRSA" : "SHA256withECDSA",
+                                          attestationKey);
         }
 
         private byte[] short2bytes(int s) {
@@ -1190,7 +1186,7 @@ public class SEReferenceImplementation {
             seDeviceInfo.updateUrl           = SKS_UPDATE_URL;
             seDeviceInfo.vendorName          = SKS_VENDOR_NAME;
             seDeviceInfo.vendorDescription   = SKS_VENDOR_DESCRIPTION;
-            seDeviceInfo.certificatePath     = getDeviceCertificatePath();
+            seDeviceInfo.certificatePath     = deviceCertificatePath;
             seDeviceInfo.supportedAlgorithms = supportedAlgorithms.keySet().toArray(new String[0]);
             seDeviceInfo.cryptoDataSize      = MAX_LENGTH_CRYPTO_DATA;
             seDeviceInfo.extensionDataSize   = MAX_LENGTH_EXTENSION_DATA;
