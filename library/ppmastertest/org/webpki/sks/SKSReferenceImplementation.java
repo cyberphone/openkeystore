@@ -174,14 +174,15 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
     LinkedHashMap<Integer, PUKPolicy> pukPolicies = new LinkedHashMap<Integer, PUKPolicy>();
 
     X509Certificate[] deviceCertificatePath;
-    PrivateKey attestationKey;
-    
 //#if ANDROID
+    private transient PrivateKey attestationKey;                  // Hardware backed do not serialize
+
     private static final String SKS_DEBUG = "SKS";                // Android SKS debug constant
 
-    static final String ANDROID_KEYSTORE  = "AndroidKeyStore";    // Hardware backed keys
+    AndroidSKSImplementation() {
+    }
 
-    AndroidSKSImplementation(X509Certificate[] deviceCertificatePath, PrivateKey attestationKey) {
+    void setDeviceCredentials(X509Certificate[] deviceCertificatePath, PrivateKey attestationKey) {
         this.deviceCertificatePath = deviceCertificatePath;
         this.attestationKey = attestationKey;
     }
@@ -195,6 +196,8 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                "' Serial=" + keyEntry.certificatePath[0].getSerialNumber();
     }
 //#else
+    private PrivateKey attestationKey;
+
     static final char[] ATTESTATION_KEY_PASSWORD = {'t', 'e', 's', 't', 'i', 'n', 'g'};
 
     static final String ATTESTATION_KEY_ALIAS = "mykey";

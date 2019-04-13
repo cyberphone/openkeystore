@@ -140,8 +140,8 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
     LinkedHashMap<Integer, PUKPolicy> pukPolicies = new LinkedHashMap<Integer, PUKPolicy>();
 
     X509Certificate[] deviceCertificatePath;
-    PrivateKey attestationKey;
-    
+    private PrivateKey attestationKey;
+
     static final char[] ATTESTATION_KEY_PASSWORD = {'t', 'e', 's', 't', 'i', 'n', 'g'};
 
     static final String ATTESTATION_KEY_ALIAS = "mykey";
