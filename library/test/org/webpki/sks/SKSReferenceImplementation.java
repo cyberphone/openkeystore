@@ -1211,7 +1211,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
     static void abort(String message, int option) {
         throw new SKSException(message, option);
     }
-    
+
     static void abort(Throwable e) {
         if (e instanceof SKSException) {
             throw (SKSException)e;
@@ -2246,7 +2246,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             if (provisioning.keyManagementKey == null) {
                 abort("Session is not updatable: " + provisioningHandle, SKSException.ERROR_NOT_ALLOWED);
             }
-    
+
             ///////////////////////////////////////////////////////////////////////////////////
             // Verify KMK signature
             ///////////////////////////////////////////////////////////////////////////////////

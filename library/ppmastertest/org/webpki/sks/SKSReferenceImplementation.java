@@ -99,7 +99,7 @@ import org.webpki.sks.SecureKeyStore;
  *
  *  Author: Anders Rundgren
  */
-public class SKSImplementation implements SecureKeyStore, Serializable, GrantInterface {
+public class AndroidSKSImplementation implements SecureKeyStore, Serializable, GrantInterface {
 //#else
 /*
  *                          ###########################
@@ -181,7 +181,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
 
     static final String ANDROID_KEYSTORE  = "AndroidKeyStore";    // Hardware backed keys
 
-    SKSImplementation(X509Certificate[] deviceCertificatePath, PrivateKey attestationKey) {
+    AndroidSKSImplementation(X509Certificate[] deviceCertificatePath, PrivateKey attestationKey) {
         this.deviceCertificatePath = deviceCertificatePath;
         this.attestationKey = attestationKey;
     }
@@ -1122,6 +1122,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                (byte)0x22, (byte)0xA8, (byte)0x87, (byte)0x64, (byte)0xD0, (byte)0x36, (byte)0xAF, (byte)0xD3,
                (byte)0x69, (byte)0xAC, (byte)0xCA, (byte)0xCB, (byte)0x1A, (byte)0x96});
 
+//#if !ANDROID
         addAlgorithm("https://webpki.github.io/sks/algorithm#ec.brainpool.p256r1",
                      "brainpoolP256r1",
                      ALG_EC_KEY | ALG_KEY_GEN).addEcCurve (32, new byte[]
@@ -1138,6 +1139,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                (byte)0xCD, (byte)0xC9, (byte)0x45, (byte)0xF3, (byte)0x21, (byte)0xC5, (byte)0xCF, (byte)0x41,
                (byte)0x17, (byte)0xF3, (byte)0x3A, (byte)0xB4});
 
+//#endif
         for (short rsa_size : SKS_DEFAULT_RSA_SUPPORT) {
             addAlgorithm("https://webpki.github.io/sks/algorithm#rsa" + rsa_size,
                          null, ALG_RSA_KEY | ALG_KEY_GEN | rsa_size);

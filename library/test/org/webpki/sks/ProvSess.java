@@ -18,20 +18,25 @@ package org.webpki.sks;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
 import java.math.BigInteger;
+
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
-import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
+
 import java.security.cert.X509Certificate;
+
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPublicKey;
+
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.RSAKeyGenParameterSpec;
+
 import java.util.GregorianCalendar;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
@@ -40,16 +45,19 @@ import java.util.Set;
 import javax.crypto.Cipher;
 import javax.crypto.KeyAgreement;
 import javax.crypto.Mac;
+
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.CertificateUtil;
-import org.webpki.crypto.DemoKeyStore;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.MACAlgorithms;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
+
+import org.webpki.json.JSONParser;
+
 import org.webpki.sks.AppUsage;
 import org.webpki.sks.BiometricProtection;
 import org.webpki.sks.DeleteProtection;
@@ -63,26 +71,85 @@ import org.webpki.sks.PatternRestriction;
 import org.webpki.sks.ProvisioningSession;
 import org.webpki.sks.SKSException;
 import org.webpki.sks.SecureKeyStore;
+
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.DebugFormatter;
 
 public class ProvSess {
+
+    static final String RSA_KEY_1 =
+        "{" +
+        "  \"kty\": \"RSA\"," +
+        "  \"n\": \"hCaR1AEH5I6zwp_vmyjrac1ENgqBH9jxu1afOUyRRMv_S--jP0ldOvdg6gwtddalQL1gy9hRcPs95jRa5ecYd8c4v" +
+        "ZY4iUif9486f17V51Jv8mbmWBxbte754YGI-RN7EBeq-flRzHsmg91Tzf7vzf_QwgO_eGX2YPhjySzZCboZN77HrmN29VYkpdIZD" +
+        "p26bJM5YmFMSwfXU6mp6dtCGZfnQl3L5Col3JcbFQap7nfrGnJBvPqtgq2L44O0C4HQ3AMWwKkqE89tWJsSP25wRy_KW00Nt5lNB" +
+        "cvb-J93SKCCse8NEbfYW6SW4H2locBuTE6c53mb6Cd_IWQpwdbzxw\"," +
+        "  \"e\": \"AQAB\"," +
+        "  \"d\": \"DyhRX6zCl_-aNL-dfwGBhwApS72Gs_1xNJip6KuUmfyACtiws8iZbfMD5bSB3ltBVxyhpp_oL3pRzj7BEk-gadSq-" +
+        "GvrjiuLVZzTC9r30_GLr5UH5KFUD5kahjgSWudWHTFpxgRH0plpgIR5YU5VeR5Xdnlxk8C2Mscqwt9nAYtxYPZGL1zIny9uV7hy2" +
+        "9o6AizC4CjIvb5n0vzek8ZS7yw_yTAQDddboycFSLvKrL2EtjHNwtlQR0jLxWJ_SC5Oi6od5NqvcphfK9_2LGML3WmmsXWpS5Yko" +
+        "yAohuSRDa1XvtkAr2vi7stXWSYC2sYnMvSAad5KJ55HKFxa1fe8SQ\"," +
+        "  \"p\": \"0QW0PfzAlHju0uv063SHe9b9I__Jz7DkBando3hVC1PNatsk3BI19O93C1pFN8Rh0RGdl3Aqv6GhEdps_M0GeNQMI" +
+        "byfxOI9QjUzRaLez5GX-fBsn4m4cT0TTPxXdmpTjE_caou1LCJp0CxnS7uFcCef5ow_1ESPW1h4e6w4Sps\"," +
+        "  \"q\": \"odn72ss_X4qI-5fH6EmTRPBr_QmmEO7DsXeBqU_hUvRFds2ZrpscBT-5GEk1u9gBJEuQLgqAm65nm-pK-CHJV3y4e" +
+        "qcuED-BjpuefeVdlzniMGsANo6d7ju8SFE2zo8kAzc9Hme_xkDZTXsiGbX4_ix1HGA998wsqo6qy99iCEU\"," +
+        "  \"dp\": \"jMKQnOXnMpU2D6iC6UUyL_2Zv3J0D3-KLx4zefCBJP2safdmHSXOXEIfIvAJiQKg9NAuFludDivkckdr-dqAL0Jt" +
+        "YRLLbSUGJ933xz9lWNctR03XeKCgKvH8W23b4Iy98tGdF8s5mJ0cMOqWLXP86ohksDdmjKYW_GbZzD8wMV0\"," +
+        "  \"dq\": \"ahy3QYgVgXcbPhAR0VpDgmQ5-IjV5q4TgQt_59hmOvPJgw1i35Xz9gEEQkblQsVoYjpkSbs6_FaIuTEPe8Ty8zfi" +
+        "3w8yZRatwyiF7bZt-NLLV8EfP6WbJ3DkjWkpjJ1OGAmkOYX9tmYX0fOTtNWYbFQLZ9I1bnvfIOcuVUGcTR0\"," +
+        "  \"qi\": \"CnLmyI3yFO7QfO3vnfEYXyDaaIDg1JCmNL3-U1kxquRSDnYrRA_0Pcg-pN29ucI21pR2law7rUPAKCEdgeAoMpgs" +
+        "dgYWB4XU1DLMo8KqMKMBZT36WYxGxQ5dvKLBy5YvMMEOVcfgdfjYnpQKF5FqqPMI5k3oMtC3K-QbLAZu2_I\"" +
+        "}";
+    
+    static final String RSA_KEY_2 =
+        "{" +
+        "  \"kty\": \"RSA\"," +
+        "  \"n\": \"kq1jB-6Gz0ahRxpSy9LWNf-zL9Cu5QNshEmXhJ6IVL33eFYMaggE3Gf_aoOGGtMAaj_ZbVJoT3-TO2rrTuOV0SzI7" +
+        "WFHkiOcUZRgkxzU4cFklq1VyQHlTcdbX6-NV0znTdvC9HG6RzR3fl6AkyQ_zDoK-Lb2CdaonZLLbfxoxxVv5wV7QqLgRxjBlNIxU" +
+        "LtDwO92ZPUkyt3KnWEVcBs-b1lupw78Xl32FWriHkaQXaI7YtoyPDj7tmxIdDqMDnFnFXxh1h7PvFRG_26NsiYDJwaFXZiUg09_D" +
+        "RkTSFwwx5AVxPG9ysbBAbYaT8hBnEwkrdnwPT1Zzey9UnVPMw3MxQ\"," +
+        "  \"e\": \"AQAB\"," +
+        "  \"d\": \"C9t8b_22ZDc_fnIAU33d10uufqUOHnFiamdQmmX-e2tIADBknIW9btvxZ_jt9GkuVWiH-TB6QkL78ge4sg3v5JMMQ" +
+        "zRkBspeLrIiBIKGKyHpMc0dbDx8_waoulmEwZPz9vVXE0_GUU9Kgaq-FicOCUJ_9I9F4JG729EsJN4M0lsn9gJn1FXuPFec0jeUu" +
+        "E5SzpmBfsxALTFNogLlokOSNCOSk5675CPBn-9-kvmWZcT6dw7dsPtZLzZq7SKMYVyBfTzJC7Non0UGLolkl_YniTGvkScWRvAzO" +
+        "VE7hEWsZe7OjokX5WoEReim9kXrnaovqt_TrzXiE9_L64r-Iz592Q\"," +
+        "  \"p\": \"wvsVm10oOCm1n1HGHarwMWx2AFHDmKdS5cRnkjLtcJOvN9_RhWgyT4rwap6lEEZ6xMZzBhkKGJpFb-7NhMuf4NSiK" +
+        "aqoH3DDMd24WKlII8RMMDei7uJKoDAJOLhuN3I8H1a8tIVU2H7YAgwpMueUN-FF4jDuoPs1slgwq6HbrY8\"," +
+        "  \"q\": \"wJR1uqdym6KQmF1QWyq4RQWBF1pVQdlx0wCSUWnEu8zjxuhrx2uzuzyhAGpD-6C0EERlZYyRQkYEJS2zsiAU8C718" +
+        "QTh2NnvVVJwYNgG-A92KhpUxL70VlWM3a274cWpj-1OVckreP3xSLubGb4y4jbPdi0W5fdASC7L2qQCnms\"," +
+        "  \"dp\": \"J8V_isldwtb_LRhJCRQtGme9SiNjemfnCOcfGTs6I5R8UTFeU5AFcyQsFhN2J_O4Zxrzq3LAFHSjZUmYslW2ru2w" +
+        "hj9BO-iMaEeJqswc4u7Pe6Zdncya3EHwH5m_IaAzk1Dl_QyVWfPFq-U_IhsKqLtSveitRDj5ov9KLjg9zxE\"," +
+        "  \"dq\": \"axfkJGmL_Wq42FJEJn6qPI_kCvWMJfNjLgDKXYXhBsLZBDsp_JszNvNvYUi3B46Fs-olLQSvnthK49X3cR4QJsUm" +
+        "teKOKcaAJsWSgvh_X6FRh_Zen47FV-F5VamQquv98HD6OBCIIV-ut1DE3tr7dvseAczvR_FoiPulF7BPWIM\"," +
+        "  \"qi\": \"ssmk1NqS9OCm4HHlNdd-m2iafXUHIITaSSey-Z8ITei6o48iMx-YMmE9_5P2oBrlYitwol3vYtpt3f6WdjR2oCSC" +
+        "dLAabfFaGdzoz5wJZg-86l5hHgKTXSjutVrTAIGboJ_jM1tPojY9FKopj1o0V4jaeOVtsh89ORiVDQC8LF4\"" +
+        "}";
+    
+    static final String ECDSA_KEY =
+        "{" +
+        "  \"kty\": \"EC\"," +
+        "  \"crv\": \"P-256\"," +
+        "  \"x\": \"lNxNvAUEE8t7DSQBft93LVSXxKCiVjhbWWfyg023FCk\"," +
+        "  \"y\": \"LmTlQxXB3LgZrNLmhOfMaCnDizczC_RfQ6Kx8iNwfFA\"," +
+        "  \"d\": \"WdwYWh7yTRLOBXPMyc9v6u1OIQzjOmNmNFWOam3uqXY\"" +
+        "}";
+            
     static class SoftHSM {
         ////////////////////////////////////////////////////////////////////////////////////////
         // Private and secret keys would in a HSM implementation be represented as handles
         ////////////////////////////////////////////////////////////////////////////////////////
         private static LinkedHashMap<PublicKey, PrivateKey> key_management_keys = new LinkedHashMap<PublicKey, PrivateKey>();
 
-        static private void addKMK(KeyStore km_keystore) throws IOException, GeneralSecurityException {
-            key_management_keys.put(km_keystore.getCertificate("mykey").getPublicKey(),
-                    (PrivateKey) km_keystore.getKey("mykey", DemoKeyStore.getSignerPassword().toCharArray()));
+        static private void addKMK(String jwk) throws IOException, GeneralSecurityException {
+            KeyPair keyPair = JSONParser.parse(jwk).getKeyPair();
+            key_management_keys.put(keyPair.getPublic(), keyPair.getPrivate());
         }
 
         static {
             try {
-                addKMK(DemoKeyStore.getMybankDotComKeyStore());
-                addKMK(DemoKeyStore.getSubCAKeyStore());
-                addKMK(DemoKeyStore.getECDSAStore());
+                addKMK(RSA_KEY_1);
+                addKMK(RSA_KEY_2);
+                addKMK(ECDSA_KEY);
                 KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
                 kpg.initialize(512);
                 KeyPair key_pair = kpg.generateKeyPair();

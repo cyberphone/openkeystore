@@ -589,9 +589,9 @@
    	
   	<property name="ANDROID" value="true"/>
     <jpp destdir="${temp_dir}" verbose="true">
-        <fileset dir="ppmastertest/org/webpki/sks" includes="**/*.java" />
+        <fileset dir="ppmastertest" includes="**/*.java" />
     </jpp>
-  	<move file="${temp_dir}/SKSReferenceImplementation.java" tofile="${temp_dir}/org/webpki/mobile/android/sks/SKSImplementation.java"/>
+  	<move file="${temp_dir}/org/webpki/sks/SKSReferenceImplementation.java" tofile="${temp_dir}/org/webpki/mobile/android/sks/AndroidSKSImplementation.java"/>
   	
   	<copy todir="${temp_dir}">
   		<fileset dir="androidextsrc" includes="**/*.java"/>

@@ -50,7 +50,7 @@ import org.webpki.util.Base64URL;
 public class KeyStore2JWKConverter {
     private static void fail() {
         System.out.println(KeyStore2JWKConverter.class.getName() + "  keystore-file password JWK-file qualifier\n" +
-                "   qualifier = [public private certificate trust keyid]");
+                "   qualifier = [public private certificate trust keyid javastring]");
         System.exit(3);
     }
     
@@ -61,6 +61,7 @@ public class KeyStore2JWKConverter {
     static boolean certificateFlag;
     static boolean trustFlag;
     static boolean keyidFlag;
+    static boolean javaFlag;
 
     static void addPrivateKeyElement(String property, byte[] value) throws IOException {
         privateKeyInfo.put(property, Base64URL.encode(value));
@@ -91,6 +92,8 @@ public class KeyStore2JWKConverter {
                 trustFlag = true;
             } else if (argv[i].equals("keyid")) {
                 keyidFlag = true;
+            } else if (argv[i].equals("javastring")) {
+                javaFlag = true;
             } else {
                 fail();
             }
@@ -106,7 +109,7 @@ public class KeyStore2JWKConverter {
                 if (privateKeyFlag) {
                     KeyAlgorithms keyAlgorithm = KeyAlgorithms.getKeyAlgorithm(publicKey);
                     if (keyAlgorithm.isECKey()) {
-                       BigInteger d = ((ECPrivateKey)ks.getKey(alias, argv[2].toCharArray())).getS();
+                       BigInteger d = ((ECPrivateKey)ks.getKey(alias, argv[1].toCharArray())).getS();
                        byte[] curvePoint = d.toByteArray();
                        if (curvePoint.length > (keyAlgorithm.getPublicKeySizeInBits() + 7) / 8) {
                            if (curvePoint[0] != 0) {
@@ -120,7 +123,7 @@ public class KeyStore2JWKConverter {
                            addPrivateKeyElement("d", curvePoint);
                        }
                     } else {
-                        RSAPrivateCrtKey rsaPrivateKey = ((RSAPrivateCrtKey)ks.getKey(alias, argv[2].toCharArray()));
+                        RSAPrivateCrtKey rsaPrivateKey = ((RSAPrivateCrtKey)ks.getKey(alias, argv[1].toCharArray()));
                         setCryptoBinary("d", rsaPrivateKey.getPrivateExponent());
                         setCryptoBinary("p", rsaPrivateKey.getPrimeP());
                         setCryptoBinary("q", rsaPrivateKey.getPrimeQ());
@@ -161,7 +164,27 @@ public class KeyStore2JWKConverter {
         if (keyidFlag) {
             key = "{\"kid\":\"" + keyId + "\"," + key.substring(1);
         }
-        fis.write(JSONParser.parse(key).serializeToBytes(JSONOutputFormats.PRETTY_PRINT));
+        key = JSONParser.parse(key).toString();
+        if (javaFlag) {
+            key = key.replace("\"", "\\\"");
+            StringBuilder s = new StringBuilder("\"");
+            int count = 1;
+            for (char c : key.trim().toCharArray()) {
+                if (c == '\n') {
+                    s.append("\" +\n\"");
+                    count = 0;
+                    continue;
+                }
+                if (count == 100) {
+                    s.append("\" +\n\"");
+                    count = 0;
+                }
+                count++;
+                s.append(c);
+            }
+            key = s.append('\"').toString();
+        }
+        fis.write(key.getBytes("utf-8"));
     }
 
     static void writeCert(FileOutputStream fis, X509Certificate[] certificatePath) throws Exception {
