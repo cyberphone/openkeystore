@@ -20,6 +20,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import java.math.BigInteger;
+
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Vector;
@@ -28,7 +29,6 @@ import java.security.KeyStore;
 import java.security.PublicKey;
 
 import java.security.cert.Certificate;
-
 import java.security.cert.X509Certificate;
 
 import java.security.interfaces.ECPrivateKey;
@@ -62,6 +62,7 @@ public class KeyStore2JWKConverter {
     static boolean trustFlag;
     static boolean keyidFlag;
     static boolean javaFlag;
+    static FileOutputStream fis;
 
     static void addPrivateKeyElement(String property, byte[] value) throws IOException {
         privateKeyInfo.put(property, Base64URL.encode(value));
@@ -100,7 +101,7 @@ public class KeyStore2JWKConverter {
         }
         CustomCryptoProvider.forcedLoad(true);
         KeyStore ks = KeyStoreReader.loadKeyStore(argv[0], argv[1]);
-        FileOutputStream fis = new FileOutputStream(argv[2]);
+        fis = new FileOutputStream(argv[2]);
         Enumeration<String> aliases = ks.aliases();
         while (aliases.hasMoreElements()) {
             String alias = aliases.nextElement();
@@ -164,7 +165,15 @@ public class KeyStore2JWKConverter {
         if (keyidFlag) {
             key = "{\"kid\":\"" + keyId + "\"," + key.substring(1);
         }
-        key = JSONParser.parse(key).toString();
+        printIt(JSONParser.parse(key).toString());
+
+    }
+
+    static void writeCert(FileOutputStream fis, X509Certificate[] certificatePath) throws Exception {
+        printIt(JSONArrayWriter.createCoreCertificatePath(certificatePath).serializeToString(JSONOutputFormats.PRETTY_PRINT));
+    }
+
+    static void printIt(String key) throws IOException {
         if (javaFlag) {
             key = key.replace("\"", "\\\"");
             StringBuilder s = new StringBuilder("\"");
@@ -185,9 +194,5 @@ public class KeyStore2JWKConverter {
             key = s.append('\"').toString();
         }
         fis.write(key.getBytes("utf-8"));
-    }
-
-    static void writeCert(FileOutputStream fis, X509Certificate[] certificatePath) throws Exception {
-        fis.write(JSONArrayWriter.createCoreCertificatePath(certificatePath).serializeToBytes(JSONOutputFormats.PRETTY_PRINT));
     }
 }

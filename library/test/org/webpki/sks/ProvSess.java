@@ -76,8 +76,53 @@ import org.webpki.util.ArrayUtil;
 import org.webpki.util.DebugFormatter;
 
 public class ProvSess {
+    
+    static X509Certificate[] getCertPath(String json) {
+        try {
+            return JSONParser.parse(json).getJSONArrayReader().getCertificatePath();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    static final X509Certificate[] SUBCA_RSA_KEY_2 = getCertPath(
 
-    static final String RSA_KEY_1 =
+        "[" +
+        "  \"MIIDZjCCAk6gAwIBAgICAMgwDQYJKoZIhvcNAQELBQAwRDETMBEGCgmSJomT8ixkARkWA29yZzEWMBQGCgmSJomT8ixkARkW" +
+        "BndlYnBraTEVMBMGA1UEAxMMRGVtbyBSb290IENBMB4XDTA1MDcxMDEwMDAwMFoXDTI1MDcxMDA5NTk1OVowQzETMBEGCgmSJomT" +
+        "8ixkARkWA29yZzEWMBQGCgmSJomT8ixkARkWBndlYnBraTEUMBIGA1UEAxMLRGVtbyBTdWIgQ0EwggEiMA0GCSqGSIb3DQEBAQUA" +
+        "A4IBDwAwggEKAoIBAQCSrWMH7obPRqFHGlLL0tY1_7Mv0K7lA2yESZeEnohUvfd4VgxqCATcZ_9qg4Ya0wBqP9ltUmhPf5M7autO" +
+        "45XRLMjtYUeSI5xRlGCTHNThwWSWrVXJAeVNx1tfr41XTOdN28L0cbpHNHd-XoCTJD_MOgr4tvYJ1qidkstt_GjHFW_nBXtCouBH" +
+        "GMGU0jFQu0PA73Zk9STK3cqdYRVwGz5vWW6nDvxeXfYVauIeRpBdojti2jI8OPu2bEh0OowOcWcVfGHWHs-8VEb_bo2yJgMnBoVd" +
+        "mJSDT38NGRNIXDDHkBXE8b3KxsEBthpPyEGcTCSt2fA9PVnN7L1SdU8zDczFAgMBAAGjYzBhMA8GA1UdEwEB_wQFMAMBAf8wDgYD" +
+        "VR0PAQH_BAQDAgEGMB0GA1UdDgQWBBRvahwWKOXPS0QtatVIWNTzUIMRwjAfBgNVHSMEGDAWgBTp-GUQC7TedX1XGVhfwNtQpyTm" +
+        "NjANBgkqhkiG9w0BAQsFAAOCAQEAbxeDZiAJvuDhhl51pyCaZR9PmtHFmjJd8OxmxHqgKerWcU7xrIIfJMJPGRWcyJnJNc9RgpSj" +
+        "wAZNH5oUu-yGkmuMqhpNtrwYo2fzkY7GjKOmlYBl0joq6Zik0uEOMlIG-Qt_16bfNv98gIGnZcpPfeDSYo1akIv8_3Pqd7f2mXx-" +
+        "gn0ElA4YSv2Veca76_p4u8A4uvBTMgQtOg7ICxiGSQUwIvIrlFvDJp1WJNi85U2g7MTQC8T12dgw2YfO4um6tJS2oBMZkYLkJzIZ" +
+        "B0X37cJTd6yrcwTvR5bOItR81ekLvyQITLJl-YMG8-9g9GfV2y6Xu7suCjgz1HV2h8fzWQ\"," +
+        "  \"MIIDZjCCAk6gAwIBAgIBATANBgkqhkiG9w0BAQsFADBEMRMwEQYKCZImiZPyLGQBGRYDb3JnMRYwFAYKCZImiZPyLGQBGRYG" +
+        "d2VicGtpMRUwEwYDVQQDEwxEZW1vIFJvb3QgQ0EwHhcNMDIwNzEwMTAwMDAwWhcNMzAwNzEwMDk1OTU5WjBEMRMwEQYKCZImiZPy" +
+        "LGQBGRYDb3JnMRYwFAYKCZImiZPyLGQBGRYGd2VicGtpMRUwEwYDVQQDEwxEZW1vIFJvb3QgQ0EwggEiMA0GCSqGSIb3DQEBAQUA" +
+        "A4IBDwAwggEKAoIBAQCcIMdTC698CeAYOWiB5tNCM2IudcpFueAQDQ4vV-bNj2oWaQ8Wl2IWO6UH2MAjYUqeZIgG2sPGuKiV27np" +
+        "6VBPrp3ACYUcvwS8h2GlUSRbaMnIWIe_kVcytJzSsxopyrnwDdIN6iE4i-i2MX_i4riS97vALl1A5XfYk6mz4kaiXsYMpn-UFlRf" +
+        "TsbQEFkKT5WArdVa0UvERnIS667ho3E2T35XzJ6vsGVUCXd-SwPWAneLNWjez50as0xwGdRKSO4YVuhJ14MWkk6bOXmGqloznDj3" +
+        "N45dgyUhkqaPiKRzILQpPKW9UpceR2BmWQjstbJQcKRvVwXEed24goAYyc4lAgMBAAGjYzBhMA8GA1UdEwEB_wQFMAMBAf8wDgYD" +
+        "VR0PAQH_BAQDAgEGMB0GA1UdDgQWBBTp-GUQC7TedX1XGVhfwNtQpyTmNjAfBgNVHSMEGDAWgBTp-GUQC7TedX1XGVhfwNtQpyTm" +
+        "NjANBgkqhkiG9w0BAQsFAAOCAQEARI071BaQ1ljke73OsC-FoT0xbH1QZJdF5YX-Bjw7Peoz7C9_tBhR63CIajLTKOKVIAcufasX" +
+        "hJdeMQ5sxbsFWtTCJlcm_z_eUOqmDPniskJI4bF8OanPEtuVeG4XEd2F_bpdDu9TYD_YqgfCNerFih1-Dm0gSJ4P63blts1-2J7V" +
+        "JxoDuYXHjKfMlJGBqztagKJfTPRn7tpovKfdh_2GYFbDur1_fA_D2uH7Iis6ImG3Ehofi12v55PDhveEvI_LkgZuGgHdAT1x0BEJ" +
+        "WYHt25kQ_DqDbz4qgjXV96jYyipRd6CdCYrUmsS4se00TwSOR4xDHEICjmXH_kh22Mfp7A\"" +
+        "]");
+
+    static KeyPair parseJwk(String jwk) {
+        try {
+            return JSONParser.parse(jwk).getKeyPair();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    static final KeyPair RSA_KEY_1 = parseJwk(
         "{" +
         "  \"kty\": \"RSA\"," +
         "  \"n\": \"hCaR1AEH5I6zwp_vmyjrac1ENgqBH9jxu1afOUyRRMv_S--jP0ldOvdg6gwtddalQL1gy9hRcPs95jRa5ecYd8c4v" +
@@ -99,9 +144,9 @@ public class ProvSess {
         "3w8yZRatwyiF7bZt-NLLV8EfP6WbJ3DkjWkpjJ1OGAmkOYX9tmYX0fOTtNWYbFQLZ9I1bnvfIOcuVUGcTR0\"," +
         "  \"qi\": \"CnLmyI3yFO7QfO3vnfEYXyDaaIDg1JCmNL3-U1kxquRSDnYrRA_0Pcg-pN29ucI21pR2law7rUPAKCEdgeAoMpgs" +
         "dgYWB4XU1DLMo8KqMKMBZT36WYxGxQ5dvKLBy5YvMMEOVcfgdfjYnpQKF5FqqPMI5k3oMtC3K-QbLAZu2_I\"" +
-        "}";
+        "}");
     
-    static final String RSA_KEY_2 =
+    static final KeyPair RSA_KEY_2 = parseJwk(
         "{" +
         "  \"kty\": \"RSA\"," +
         "  \"n\": \"kq1jB-6Gz0ahRxpSy9LWNf-zL9Cu5QNshEmXhJ6IVL33eFYMaggE3Gf_aoOGGtMAaj_ZbVJoT3-TO2rrTuOV0SzI7" +
@@ -123,16 +168,16 @@ public class ProvSess {
         "teKOKcaAJsWSgvh_X6FRh_Zen47FV-F5VamQquv98HD6OBCIIV-ut1DE3tr7dvseAczvR_FoiPulF7BPWIM\"," +
         "  \"qi\": \"ssmk1NqS9OCm4HHlNdd-m2iafXUHIITaSSey-Z8ITei6o48iMx-YMmE9_5P2oBrlYitwol3vYtpt3f6WdjR2oCSC" +
         "dLAabfFaGdzoz5wJZg-86l5hHgKTXSjutVrTAIGboJ_jM1tPojY9FKopj1o0V4jaeOVtsh89ORiVDQC8LF4\"" +
-        "}";
-    
-    static final String ECDSA_KEY =
+        "}");
+   
+    static final KeyPair ECDSA_KEY = parseJwk(
         "{" +
         "  \"kty\": \"EC\"," +
         "  \"crv\": \"P-256\"," +
         "  \"x\": \"lNxNvAUEE8t7DSQBft93LVSXxKCiVjhbWWfyg023FCk\"," +
         "  \"y\": \"LmTlQxXB3LgZrNLmhOfMaCnDizczC_RfQ6Kx8iNwfFA\"," +
         "  \"d\": \"WdwYWh7yTRLOBXPMyc9v6u1OIQzjOmNmNFWOam3uqXY\"" +
-        "}";
+        "}");
             
     static class SoftHSM {
         ////////////////////////////////////////////////////////////////////////////////////////
@@ -140,8 +185,7 @@ public class ProvSess {
         ////////////////////////////////////////////////////////////////////////////////////////
         private static LinkedHashMap<PublicKey, PrivateKey> key_management_keys = new LinkedHashMap<PublicKey, PrivateKey>();
 
-        static private void addKMK(String jwk) throws IOException, GeneralSecurityException {
-            KeyPair keyPair = JSONParser.parse(jwk).getKeyPair();
+        static private void addKMK(KeyPair keyPair) throws IOException, GeneralSecurityException {
             key_management_keys.put(keyPair.getPublic(), keyPair.getPrivate());
         }
 
@@ -153,7 +197,7 @@ public class ProvSess {
                 KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
                 kpg.initialize(512);
                 KeyPair key_pair = kpg.generateKeyPair();
-                key_management_keys.put(key_pair.getPublic(), key_pair.getPrivate());  // INVALID
+                addKMK(key_pair);  // INVALID
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

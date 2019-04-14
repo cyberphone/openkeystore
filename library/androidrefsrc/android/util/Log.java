@@ -6,4 +6,7 @@ public class Log {
         
     }
 
+    public static void e(String a, String b) {
+        
+    }
 }

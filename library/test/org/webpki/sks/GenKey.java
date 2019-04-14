@@ -17,25 +17,31 @@
 package org.webpki.sks;
 
 import java.io.IOException;
+
 import java.math.BigInteger;
+
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
+
 import java.util.GregorianCalendar;
 
 import org.webpki.asn1.cert.DistinguishedName;
+
 import org.webpki.ca.CA;
 import org.webpki.ca.CertSpec;
+
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymEncryptionAlgorithms;
 import org.webpki.crypto.AsymKeySignerInterface;
-import org.webpki.crypto.DemoKeyStore;
 import org.webpki.crypto.MACAlgorithms;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
 import org.webpki.crypto.SymEncryptionAlgorithms;
+
 import org.webpki.sks.EnumeratedKey;
 import org.webpki.sks.KeyProtectionInfo;
 import org.webpki.sks.SKSException;
@@ -78,8 +84,9 @@ public class GenKey {
 
         X509Certificate certificate =
                 new CA().createCert(cert_spec,
-                        DistinguishedName.subjectDN((X509Certificate) DemoKeyStore.getSubCAKeyStore().getCertificate("mykey")),
-                        BigInteger.valueOf(serialNumber++).shiftLeft(64).add(BigInteger.valueOf(new GregorianCalendar().getTimeInMillis())),
+                        DistinguishedName.subjectDN(ProvSess.SUBCA_RSA_KEY_2[0]),
+                        BigInteger.valueOf(serialNumber++).shiftLeft(64)
+                            .add(BigInteger.valueOf(new GregorianCalendar().getTimeInMillis())),
                         start.getTime(),
                         end.getTime(),
                         AsymSignatureAlgorithms.RSA_SHA256,
@@ -87,19 +94,14 @@ public class GenKey {
 
                             @Override
                             public PublicKey getPublicKey() throws IOException {
-                                try {
-                                    return ((X509Certificate) DemoKeyStore.getSubCAKeyStore().getCertificate("mykey")).getPublicKey();
-                                } catch (GeneralSecurityException e) {
-                                    throw new IOException(e);
-                                }
+                                return ProvSess.RSA_KEY_2.getPublic();
                             }
 
                             @Override
                             public byte[] signData(byte[] data, AsymSignatureAlgorithms algorithm) throws IOException {
                                 try {
-                                    SignatureWrapper signer = new SignatureWrapper(algorithm,
-                                            (PrivateKey) DemoKeyStore.getSubCAKeyStore()
-                                                    .getKey("mykey", DemoKeyStore.getSignerPassword().toCharArray()));
+                                    SignatureWrapper signer = new SignatureWrapper(algorithm, 
+                                                                                   ProvSess.RSA_KEY_2.getPrivate());
                                     signer.setEcdsaSignatureEncoding(true);
                                     signer.update(data);
                                     return signer.sign();

@@ -13,6 +13,8 @@
   <property name="cpp_dir" value="sks-ws-cpp"/>
   <property name="temp_dir" value=".tmp"/>
   <property name="test_dir" value="test"/>
+  <property name="android_dir" value="${temp_dir}/src/main/java"/>
+  <property name="android_test_dir" value="${temp_dir}/src/androidTest/java"/>
   <property name="testout.dir" location="testout"/>
   <property name="dist_dir"  value="dist"/>
   <property name="bin_dir" value="bin"/>
@@ -413,18 +415,18 @@
   </target>
 
   <target name="_clean_android">
-    <replaceregexp file="${temp_dir}/org/webpki/json/NumberToJSON.java"
+    <replaceregexp file="${android_dir}/org/webpki/json/NumberToJSON.java"
         match="ValueExact"
         replace="Value"
         flags="g"/>
   	
-    <replace file="${temp_dir}/org/webpki/json/EncryptionCore.java">
+    <replace file="${android_dir}/org/webpki/json/EncryptionCore.java">
       <replacefilter token="import java.security.spec.MGF1ParameterSpec;&#10;" value=""/>
       <replacefilter token="import javax.crypto.spec.OAEPParameterSpec;&#10;" value=""/>
       <replacefilter token="import javax.crypto.spec.PSource;&#10;" value=""/>
     </replace>  
 
-  	<replaceregexp file="${temp_dir}/org/webpki/json/EncryptionCore.java"
+  	<replaceregexp file="${android_dir}/org/webpki/json/EncryptionCore.java"
         match="(\n)(.*\n.*\n.*PSpecified.*\n.*\n\ \ \ \ )(.*\n)(.*\n)"
         replace="\1\3"/>
 
@@ -437,12 +439,11 @@
     <mkdir dir="${temp_dir}"/>
     <mkdir dir="${bin_dir}"/>
 
-    <copy todir="${temp_dir}/org/webpki" preservelastmodified="true">
+    <copy todir="${android_dir}/org/webpki" preservelastmodified="true">
       <fileset dir="${src_dir}/org/webpki">
         <include name="**/util/ISODateTime.java"/>
         <include name="**/util/ArrayUtil.java"/>
         <include name="**/util/Base64URL.java"/>
-        <include name="**/util/Base64.java"/>
         <include name="**/crypto/VerifierInterface.java"/>
         <include name="**/crypto/SymKeyVerifierInterface.java"/>
         <include name="**/crypto/SignerInterface.java"/>
@@ -463,14 +464,14 @@
       </fileset>
     </copy>
 
-    <replaceregexp file="${temp_dir}/org/webpki/crypto/CertificateUtil.java"
+    <replaceregexp file="${android_dir}/org/webpki/crypto/CertificateUtil.java"
         match="\/\/ ANDROID_START.+?\/\/ ANDROID_END"
         replace=""
         flags="gs"/>
 
   	<antcall target="_clean_android"/>
   	
-  	<javac debug="${debug}" srcdir="${temp_dir}" destdir="${bin_dir}" includeAntRuntime="false"/>
+  	<javac debug="${debug}" srcdir="${android_dir}" destdir="${bin_dir}" includeAntRuntime="false"/>
   	
   	<!-- Create Android JSON java library -->
     <zip destfile="${dist_dir}/${android-json}.zip">
@@ -489,7 +490,7 @@
     <mkdir dir="${temp_dir}"/>
     <mkdir dir="${bin_dir}"/>
 
-    <copy todir="${temp_dir}/org/webpki" preservelastmodified="true">
+    <copy todir="${android_dir}/org/webpki" preservelastmodified="true">
       <fileset dir="${src_dir}/org/webpki">
         <exclude name="**/infocard/**"/>
         <exclude name="**/tools/**"/>
@@ -551,18 +552,18 @@
       </fileset>
       </copy>
 
-    <replaceregexp file="${temp_dir}/org/webpki/crypto/KeyStoreReader.java"
+    <replaceregexp file="${android_dir}/org/webpki/crypto/KeyStoreReader.java"
         match="(\/\/\ JKS\ magic\ number\ \+\ version\ \(2\).*)(byte\[\]\ jks\ \=\ \{)(\(byte\)0xfe,\ \(byte\)0xed,\ \(byte\)0xfe,\ \(byte\)0xed,\ 0,\ 0,\ 0,\ 2)(\}\;)"
         replace="\20, 0, 0, 1, 0, 0, 0, 20\4 // BKS: (int)VERSION + (int)SALT_LENGTH"
         flags="s"/>
 
   	<!-- No need for decorated OIDs in Android -->
-    <replaceregexp file="${temp_dir}/org/webpki/asn1/ASN1ObjectID.java"
+    <replaceregexp file="${android_dir}/org/webpki/asn1/ASN1ObjectID.java"
         match="(public\ static\ void\ tryReadOIDNames.+\{)(.+)(\n.+Hashtable)"
         replace="\1 \3"
         flags="s"/>
 
-  	<replaceregexp file="${temp_dir}/org/webpki/asn1/ASN1ObjectID.java"
+  	<replaceregexp file="${android_dir}/org/webpki/asn1/ASN1ObjectID.java"
         match="(no\ =\ new\ Hashtable&lt;String,\ String&gt;\(\);)(.+)(\n.+oidToName)"
         replace="\1 \3"
         flags="s"/>
@@ -571,7 +572,7 @@
         match="&quot;SunX509&quot;"
         replace="&quot;X509&quot;"
         flags="g">
-        <fileset dir="${temp_dir}/org/webpki/">
+        <fileset dir="${android_dir}/org/webpki/">
           <include name="**/*.java"/>
         </fileset>
     </replaceregexp>
@@ -580,7 +581,7 @@
         match="&quot;JKS&quot;"
         replace="&quot;BKS&quot;"
         flags="g">
-        <fileset dir="${temp_dir}/org/webpki/">
+        <fileset dir="${android_dir}/org/webpki/">
           <include name="**/*.java"/>
         </fileset>
     </replaceregexp>
@@ -588,16 +589,42 @@
   	<antcall target="_clean_android"/>
    	
   	<property name="ANDROID" value="true"/>
-    <jpp destdir="${temp_dir}" verbose="true">
+    <jpp destdir="${android_dir}" verbose="true">
         <fileset dir="ppmastertest" includes="**/*.java" />
     </jpp>
-  	<move file="${temp_dir}/org/webpki/sks/SKSReferenceImplementation.java" tofile="${temp_dir}/org/webpki/mobile/android/sks/AndroidSKSImplementation.java"/>
-  	
-  	<copy todir="${temp_dir}">
-  		<fileset dir="androidextsrc" includes="**/*.java"/>
+  	<move file="${android_dir}/org/webpki/sks/SKSReferenceImplementation.java" tofile="${android_dir}/org/webpki/mobile/android/sks/AndroidSKSImplementation.java"/>
+ 	<move file="${android_dir}/org/webpki/sks/SKSTest.java" todir="${android_test_dir}/org/webpki/sks"/>
+  	<copy todir="${android_test_dir}/org/webpki/sks">
+  		<fileset dir="${test_dir}/org/webpki/sks">
+  	       <exclude name="SKSReferenceImplementation.java"/>
+   	       <exclude name="ASN1.java"/>
+   	       <exclude name="PKCS12Import.java"/>
+   	       <exclude name="DemoTrustedGUIAuthorization.java"/>
+   	       <exclude name="DummyTrustedGUIAuthorization.java"/>
+   	       <exclude name="Random.java"/>
+   	       <exclude name="*.jks"/>
+   	       <exclude name="**/twolayer/**"/>
+  	       <exclude name="**/ws/**"/>
+  		</fileset>
+  	</copy>
+  	<copy todir="${android_test_dir}">
+  		<fileset dir="${src_dir}">
+  	       <include name="**/AsymEncryptionAlgorithms.java"/>
+  	       <include name="**/SymEncryptionAlgorithms.java"/>
+   	       <include name="**/EncryptionAlgorithms.java"/>
+   	       <include name="**/CA.java"/>
+   	       <include name="**/CertSpec.java"/>
+  		</fileset>
+  	</copy>
+  	<copy todir="${android_dir}">
+  		<fileset dir="androidsrc" includes="**/*.java"/>
   	</copy>
     
-  	<javac debug="${debug}" srcdir="${temp_dir}:androidrefsrc" destdir="${bin_dir}" includeAntRuntime="false"/>
+  	<javac debug="${debug}" 
+  		   srcdir="${android_dir}:androidrefsrc:${android_test_dir}"
+  		   destdir="${bin_dir}"
+  		   includeAntRuntime="false"
+  	       classpath="${ext.jar}/junit-4.12.jar"/>
 
   	<!-- Create Android java library -->
     <zip destfile="${dist_dir}/${webpki-android}.zip">

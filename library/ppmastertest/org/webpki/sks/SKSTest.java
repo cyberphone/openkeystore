@@ -62,7 +62,9 @@ import org.webpki.crypto.MACAlgorithms;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
 import org.webpki.crypto.SymEncryptionAlgorithms;
+//#if !ANDROID
 import org.webpki.crypto.CustomCryptoProvider;
+//#endif
 
 import org.webpki.sks.AppUsage;
 import org.webpki.sks.BiometricProtection;
@@ -80,19 +82,32 @@ import org.webpki.sks.Property;
 import org.webpki.sks.SKSException;
 import org.webpki.sks.SecureKeyStore;
 
+//#if ANDROID
+import android.support.test.runner.AndroidJUnit4;
+
+import org.junit.runner.RunWith;
+
+import org.webpki.mobile.android.sks.SKSStore;
+//#else
 import org.webpki.sks.ws.TrustedGUIAuthorization;
 import org.webpki.sks.ws.WSSpecific;
+//#endif
 
 import org.webpki.util.ArrayUtil;
 
 import org.webpki.keygen2.KeyGen2Constants;
 
+//#if ANDROID
+@RunWith(AndroidJUnit4.class)
+//#endif
 public class SKSTest {
     static final byte[] TEST_STRING = new byte[]{'S', 'u', 'c', 'c', 'e', 's', 's', ' ', 'o', 'r', ' ', 'n', 'o', 't', '?'};
 
     static SecureKeyStore sks;
 
+//#if !ANDROID
     static TrustedGUIAuthorization tga;
+//#endif
 
     static boolean reference_implementation;
 
@@ -108,6 +123,9 @@ public class SKSTest {
 
     @BeforeClass
     public static void openFile() throws Exception {
+    //#if ANDROID
+        // something
+    //#else
         standalone_testing = new Boolean(System.getProperty("sks.standalone"));
         // Start deprecating Bouncycastle since Android will remove most of it anyway
         if (!System.clearProperty("bcprovider").isEmpty()) {
@@ -135,6 +153,7 @@ public class SKSTest {
         System.out.println("API Level: " + dev.getApiLevel());
         System.out.println("Trusted GUI: " + (tga == null ? "N/A" : tga.getImplementation()));
         System.out.println("Testing mode: " + (standalone_testing ? "StandAlone" : "MultiThreaded"));
+//#endif
         EnumeratedProvisioningSession eps = new EnumeratedProvisioningSession();
         while ((eps = sks.enumerateProvisioningSessions(eps.getProvisioningHandle(), true)) != null) {
             prov_sessions.add(eps.getProvisioningHandle());
@@ -159,9 +178,11 @@ public class SKSTest {
 
     @Before
     public void setup() throws Exception {
+//#if !ANDROID
         if (sks instanceof WSSpecific) {
             ((WSSpecific) sks).logEvent("Testing:" + _name.getMethodName());
         }
+//#endif
     }
 
     @After
@@ -2543,6 +2564,7 @@ public class SKSTest {
         sess2.postDeleteKey(key);
         sess2.closeSession();
     }
+//#if !ANDROID
 
     @Test
     public void test59() throws Exception {
@@ -2570,6 +2592,7 @@ public class SKSTest {
             }
         }
     }
+//#endif
 
     @Test
     public void test60() throws Exception {
