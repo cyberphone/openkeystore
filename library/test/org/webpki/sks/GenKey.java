@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 
 import java.security.GeneralSecurityException;
-import java.security.PrivateKey;
+import java.security.KeyPair;
 import java.security.PublicKey;
 
 import java.security.cert.CertificateEncodingException;
@@ -46,7 +46,9 @@ import org.webpki.sks.EnumeratedKey;
 import org.webpki.sks.KeyProtectionInfo;
 import org.webpki.sks.SKSException;
 import org.webpki.sks.SecureKeyStore;
+
 import org.webpki.sks.ProvSess.MacGenerator;
+
 import org.webpki.util.ArrayUtil;
 
 public class GenKey {
@@ -136,9 +138,9 @@ public class GenKey {
         prov_sess.sks.importSymmetricKey(keyHandle, encrypted_symmetric_key, prov_sess.mac4call(symk_mac.getResult(), SecureKeyStore.METHOD_IMPORT_SYMMETRIC_KEY));
     }
 
-    public void setPrivateKey(PrivateKey privateKey) throws IOException, GeneralSecurityException {
+    public void setPrivateKey(KeyPair keyPair) throws IOException, GeneralSecurityException {
         MacGenerator privk_mac = getEECertMacBuilder();
-        byte[] encrypted_private_key = prov_sess.server_sess_key.encrypt(privateKey.getEncoded());
+        byte[] encrypted_private_key = prov_sess.server_sess_key.encrypt(keyPair.getPrivate().getEncoded());
         privk_mac.addArray(encrypted_private_key);
         prov_sess.sks.importPrivateKey(keyHandle, encrypted_private_key, prov_sess.mac4call(privk_mac.getResult(), SecureKeyStore.METHOD_IMPORT_PRIVATE_KEY));
     }

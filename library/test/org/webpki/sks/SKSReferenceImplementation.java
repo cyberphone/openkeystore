@@ -114,7 +114,13 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
     static final String SKS_UPDATE_URL                     = null;  // Change here to test or disable
     static final boolean SKS_DEVICE_PIN_SUPPORT            = true;  // Change here to test or disable
     static final boolean SKS_BIOMETRIC_SUPPORT             = true;  // Change here to test or disable
+
+    ///////////////////////////////////////////////////////////////////////////////////
+    // Default RSA support
+    ///////////////////////////////////////////////////////////////////////////////////
     static final boolean SKS_RSA_EXPONENT_SUPPORT          = true;  // Change here to test or disable
+    static final short[] SKS_DEFAULT_RSA_SUPPORT           = {1024, 2048};
+
     static final int MAX_LENGTH_CRYPTO_DATA                = 16384;
     static final int MAX_LENGTH_EXTENSION_DATA             = 65536;
 

@@ -207,7 +207,7 @@ public class ProvSess {
 
         byte[] session_key;
 
-        public ECPublicKey generateEphemeralKey(KeyAlgorithms ec_key_algorithm) throws IOException {
+        public ECPublicKey generateEphemeralKey(KeyAlgorithms ec_key_algorithm) {
             try {
                 KeyPairGenerator generator = KeyPairGenerator.getInstance("EC");
                 ECGenParameterSpec eccgen = new ECGenParameterSpec(ec_key_algorithm.getJceName());
@@ -215,8 +215,8 @@ public class ProvSess {
                 KeyPair kp = generator.generateKeyPair();
                 server_ec_private_key = (ECPrivateKey) kp.getPrivate();
                 return (ECPublicKey) kp.getPublic();
-            } catch (GeneralSecurityException e) {
-                throw new IOException(e);
+            } catch (Exception e) {
+                throw new SKSException(e);
             }
         }
 

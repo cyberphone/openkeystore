@@ -37,7 +37,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                 1024,
                 AsymSignatureAlgorithms.RSA_SHA256,
                 false,
-                true,
+                false,
                 null,
                 null),
     

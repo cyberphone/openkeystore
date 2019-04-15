@@ -18,6 +18,7 @@ package org.webpki.sks;
 
 import java.io.IOException;
 
+import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -89,7 +90,8 @@ public class PKCS12Import {
                 break;
             }
         }
-        boolean rsaFlag = cert_path.firstElement().getPublicKey() instanceof RSAPublicKey;
+        PublicKey publicKey = cert_path.firstElement().getPublicKey();
+        boolean rsaFlag = publicKey instanceof RSAPublicKey;
         if (privateKey == null) {
             throw new IOException("No private key!");
         }
@@ -165,7 +167,7 @@ public class PKCS12Import {
                 new KeySpecifier(KeyAlgorithms.NIST_P_256),
                 endorsed_algs);
         key.setCertificatePath(cert_path.toArray(new X509Certificate[0]));
-        key.setPrivateKey(privateKey);
+        key.setPrivateKey(new KeyPair(publicKey, privateKey));
         sess.closeSession();
         System.out.println("Imported Subject: " + cert_path.firstElement().getSubjectX500Principal().getName() + "\nID=#" + key.keyHandle +
                 ", " + (rsaFlag ? "RSA" : "EC") + " Key with " + prot);

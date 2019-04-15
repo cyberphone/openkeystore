@@ -86,12 +86,13 @@ public class SEReferenceImplementation {
     /////////////////////////////////////////////////////////////////////////////////////////////
     // SKS version and configuration data
     /////////////////////////////////////////////////////////////////////////////////////////////
-    static final String SKS_VENDOR_NAME           = "WebPKI.org";
-    static final String SKS_VENDOR_DESCRIPTION    = "SKS TEE/SE RI - SE Module";
-    static final String SKS_UPDATE_URL            = null;  // Change here to test or disable
-    static final boolean SKS_RSA_EXPONENT_SUPPORT = true;  // Change here to test or disable
-    static final int MAX_LENGTH_CRYPTO_DATA       = 16384;
-    static final int MAX_LENGTH_EXTENSION_DATA    = 65536;
+    static final String SKS_VENDOR_NAME              = "WebPKI.org";
+    static final String SKS_VENDOR_DESCRIPTION       = "SKS TEE/SE RI - SE Module";
+    static final String SKS_UPDATE_URL               = null;  // Change here to test or disable
+    static final boolean SKS_RSA_EXPONENT_SUPPORT    = false;
+    static final short[] SKS_DEFAULT_RSA_SUPPORT     = {2048};
+    static final int MAX_LENGTH_CRYPTO_DATA          = 16384;
+    static final int MAX_LENGTH_EXTENSION_DATA       = 65536;
 
     static final char[] BASE64_URL = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
                                       'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
@@ -461,7 +462,7 @@ public class SEReferenceImplementation {
                (byte)0xCD, (byte)0xC9, (byte)0x45, (byte)0xF3, (byte)0x21, (byte)0xC5, (byte)0xCF, (byte)0x41,
                (byte)0x17, (byte)0xF3, (byte)0x3A, (byte)0xB4});
 
-        for (short rsa_size : SecureKeyStore.SKS_DEFAULT_RSA_SUPPORT) {
+        for (short rsa_size : SKS_DEFAULT_RSA_SUPPORT) {
             addAlgorithm("https://webpki.github.io/sks/algorithm#rsa" + rsa_size,
                     null, ALG_RSA_KEY | ALG_KEY_GEN | rsa_size);
             if (SKS_RSA_EXPONENT_SUPPORT) {
@@ -853,7 +854,7 @@ public class SEReferenceImplementation {
             abort("Unsupported RSA exponent value for: " + keyId);
         }
         boolean found = false;
-        for (short key_size : SecureKeyStore.SKS_DEFAULT_RSA_SUPPORT) {
+        for (short key_size : SKS_DEFAULT_RSA_SUPPORT) {
             if (key_size == rsaKey_size) {
                 found = true;
                 break;
