@@ -44,7 +44,6 @@ import java.security.interfaces.ECKey;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAKey;
-import java.security.interfaces.RSAPrivateCrtKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
@@ -507,10 +506,6 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                 abort("Mutiple key imports for: " + id);
             }
             keyBackup |= KeyProtectionInfo.KEYBACKUP_IMPORTED;
-        }
-
-        BigInteger getPublicRSAExponentFromPrivateKey() {
-            return ((RSAPrivateCrtKey) privateKey).getPublicExponent();
         }
     }
 
@@ -1352,6 +1347,12 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         }
         if (!found) {
             abort("Unsupported RSA key size " + rsaKeySize + " for: " + keyId);
+        }
+    }
+
+    void coreCompatibilityCheck(KeyEntry keyEntry){
+        if (keyEntry.isRsa() ^ keyEntry.privateKey instanceof RSAPrivateKey) {
+            abort("RSA/EC mixup between public and private keys for: " + keyEntry.id);
         }
     }
 
@@ -2535,25 +2536,17 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                     ///////////////////////////////////////////////////////////////////////////////////
                     // Check public versus private key match
                     ///////////////////////////////////////////////////////////////////////////////////
-                    if (keyEntry.isRsa() ^ keyEntry.privateKey instanceof RSAPrivateKey) {
-                        abort("RSA/EC mixup between public and private keys for: " + keyEntry.id);
-                    }
-                    if (keyEntry.isRsa()) {
-                        if (!((RSAPublicKey) keyEntry.publicKey).getPublicExponent().equals(keyEntry.getPublicRSAExponentFromPrivateKey()) ||
-                                !((RSAPublicKey) keyEntry.publicKey).getModulus().equals(((RSAPrivateKey) keyEntry.privateKey).getModulus())) {
-                            abort("RSA mismatch between public and private keys for: " + keyEntry.id);
-                        }
-                    } else {
-                        Signature ecSigner = Signature.getInstance("SHA256withECDSA");
-                        ecSigner.initSign(keyEntry.privateKey);
-                        ecSigner.update(RSA_ENCRYPTION_OID);  // Any data could be used...
-                        byte[] ecSignData = ecSigner.sign();
-                        Signature ecVerifier = Signature.getInstance("SHA256withECDSA");
-                        ecVerifier.initVerify(keyEntry.publicKey);
-                        ecVerifier.update(RSA_ENCRYPTION_OID);
-                        if (!ecVerifier.verify(ecSignData)) {
-                            abort("EC mismatch between public and private keys for: " + keyEntry.id);
-                        }
+                    coreCompatibilityCheck(keyEntry);
+                    String signatureAlgorithm = keyEntry.isRsa() ? "SHA256withRSA" : "SHA256withECDSA";
+                    Signature sign = Signature.getInstance(signatureAlgorithm);
+                    sign.initSign(keyEntry.privateKey);
+                    sign.update(RSA_ENCRYPTION_OID);  // Any data could be used...
+                    byte[] signedData = sign.sign();
+                    Signature verify = Signature.getInstance(signatureAlgorithm);
+                    verify.initVerify(keyEntry.publicKey);
+                    verify.update(RSA_ENCRYPTION_OID);
+                    if (!verify.verify(signedData)) {
+                        abort("Public/private key mismatch for: " + keyEntry.id);
                     }
     
                     ///////////////////////////////////////////////////////////////////////////////////
@@ -2992,10 +2985,17 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                 if (rsaFlag) break;
             }
             keyEntry.privateKey = KeyFactory.getInstance(rsaFlag ? "RSA" : "EC").generatePrivate(keySpec);
+            coreCompatibilityCheck(keyEntry);
             if (rsaFlag) {
-                checkRsaKeyCompatibility(getRSAKeySize((RSAPrivateKey) keyEntry.privateKey),
-                                         keyEntry.getPublicRSAExponentFromPrivateKey(),
-                                         keyEntry.id);
+                // https://stackoverflow.com/questions/24121801/how-to-verify-if-the-private-key-matches-with-the-certificate
+                if (!(((RSAPublicKey)keyEntry.publicKey).getModulus()
+                            .equals(((RSAPrivateKey)keyEntry.privateKey).getModulus()) &&
+                      BigInteger.valueOf(2).modPow(((RSAPublicKey)keyEntry.publicKey).getPublicExponent()
+                                .multiply(((RSAPrivateKey)keyEntry.privateKey).getPrivateExponent())
+                                .subtract(BigInteger.ONE),((RSAPublicKey) keyEntry.publicKey).getModulus())
+                            .equals(BigInteger.ONE))) {
+                    abort("Imported RSA key does not match certificate for: " + keyEntry.id);
+                }
             } else {
                 checkEcKeyCompatibility((ECPrivateKey) keyEntry.privateKey, keyEntry.id);
             }

@@ -42,7 +42,6 @@ import java.security.interfaces.ECKey;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAKey;
-import java.security.interfaces.RSAPrivateCrtKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
@@ -633,7 +632,7 @@ public class SEReferenceImplementation {
 
         byte[] symmetricKey;
 
-        boolean isRSA() {
+        boolean isRsa() {
             return privateKey instanceof RSAKey;
         }
 
@@ -862,6 +861,12 @@ public class SEReferenceImplementation {
         }
         if (!found) {
             abort("Unsupported RSA key size " + rsaKey_size + " for: " + keyId);
+        }
+    }
+
+    static void coreCompatibilityCheck(PublicKey publicKey, boolean rsaFlag, String id){
+        if (rsaFlag ^ publicKey instanceof RSAPublicKey) {
+            abort("RSA/EC mixup between public and private keys for: " + id);
         }
     }
 
@@ -1096,8 +1101,8 @@ public class SEReferenceImplementation {
         }
         if (unwrappedKey.isSymmetric) {
             testSymmetricKey(algorithm, unwrappedKey.symmetricKey, "#" + keyHandle);
-        } else if (unwrappedKey.isRSA() ^ (alg.mask & ALG_RSA_KEY) != 0) {
-            abort((unwrappedKey.isRSA() ? "RSA" : "EC") + " key #" + keyHandle + " is incompatible with: " + algorithm, SKSException.ERROR_ALGORITHM);
+        } else if (unwrappedKey.isRsa() ^ (alg.mask & ALG_RSA_KEY) != 0) {
+            abort((unwrappedKey.isRsa() ? "RSA" : "EC") + " key #" + keyHandle + " is incompatible with: " + algorithm, SKSException.ERROR_ALGORITHM);
         }
         return alg;
     }
@@ -1125,12 +1130,12 @@ public class SEReferenceImplementation {
                         ///////////////////////////////////////////////////////////////////////////////////
                         // Asymmetric.  Check that algorithms match RSA or EC
                         ///////////////////////////////////////////////////////////////////////////////////
-                        if (((alg.mask & ALG_RSA_KEY) == 0) ^ unwrappedKey.isRSA()) {
+                        if (((alg.mask & ALG_RSA_KEY) == 0) ^ unwrappedKey.isRsa()) {
                             return seVoidData;
                         }
                     }
                 }
-                abort((unwrappedKey.isSymmetric ? "Symmetric" : unwrappedKey.isRSA() ? "RSA" : "EC") +
+                abort((unwrappedKey.isSymmetric ? "Symmetric" : unwrappedKey.isRsa() ? "RSA" : "EC") +
                         " key " + id + " does not match algorithm: " + algorithm);
             }
         } catch (Exception e) {
@@ -1217,27 +1222,19 @@ public class SEReferenceImplementation {
             ///////////////////////////////////////////////////////////////////////////////////
             // Perform "sanity" checks
             ///////////////////////////////////////////////////////////////////////////////////
-            if (publicKey instanceof RSAPublicKey ^ unwrappedKey.isRSA()) {
-                abort("RSA/EC mixup between public and private keys for: " + id);
+            coreCompatibilityCheck(publicKey, unwrappedKey.isRsa(), id);
+            String signatureAlgorithm = unwrappedKey.isRsa() ? "SHA256withRSA" : "SHA256withECDSA";
+            Signature sign = Signature.getInstance(signatureAlgorithm);
+            sign.initSign(unwrappedKey.privateKey);
+            sign.update(RSA_ENCRYPTION_OID);  // Any data could be used...
+            byte[] signedData = sign.sign();
+            Signature verify = Signature.getInstance(signatureAlgorithm);
+            verify.initVerify(publicKey);
+            verify.update(RSA_ENCRYPTION_OID);
+            if (!verify.verify(signedData)) {
+                abort("Public/private key mismatch for: " + id);
             }
-            if (unwrappedKey.isRSA()) {
-                if (!((RSAPublicKey) publicKey).getPublicExponent().equals(((RSAPrivateCrtKey) unwrappedKey.privateKey).getPublicExponent()) ||
-                        !((RSAPublicKey) publicKey).getModulus().equals(((RSAPrivateKey) unwrappedKey.privateKey).getModulus())) {
-                    abort("RSA mismatch between public and private keys for: " + id);
-                }
-            } else {
-                Signature ecSigner = Signature.getInstance("SHA256withECDSA");
-                ecSigner.initSign(unwrappedKey.privateKey);
-                ecSigner.update(RSA_ENCRYPTION_OID);  // Any data could be used...
-                byte[] ec_signData = ecSigner.sign();
-                Signature ecVerifier = Signature.getInstance("SHA256withECDSA");
-                ecVerifier.initVerify(publicKey);
-                ecVerifier.update(RSA_ENCRYPTION_OID);
-                if (!ecVerifier.verify(ec_signData)) {
-                    abort("EC mismatch between public and private keys for: " + id);
-                }
-            }
-        } catch (Exception e) {
+      } catch (Exception e) {
             seVoidData.setError(e);
         }
         return seVoidData;
@@ -1324,7 +1321,7 @@ public class SEReferenceImplementation {
             ///////////////////////////////////////////////////////////////////////////////////
             // Finally, perform operation
             ///////////////////////////////////////////////////////////////////////////////////
-            if (unwrappedKey.isRSA() && hashLen > 0) {
+            if (unwrappedKey.isRsa() && hashLen > 0) {
                 data = addArrays(alg.pkcs1DigestInfo, data);
             }
             seByteArrayData.data = new SignatureWrapper(alg.jceName, unwrappedKey.privateKey)
@@ -1896,10 +1893,19 @@ public class SEReferenceImplementation {
             PrivateKey decodedPrivateKey = raw2PrivateKey(decryptedPrivateKey);
             sePrivateKeyData.provisioningState = unwrappedSessionKey.writeKey(osInstanceKey);
             sePrivateKeyData.sealedKey = wrapKey(osInstanceKey, unwrappedKey, decryptedPrivateKey);
-            if (decodedPrivateKey instanceof RSAKey) {
-                checkRSAKeyCompatibility(getRSAKeySize((RSAPrivateKey) decodedPrivateKey),
-                                         ((RSAPrivateCrtKey) decodedPrivateKey).getPublicExponent(),
-                                         id);
+            PublicKey publicKey = eeCertificate.getPublicKey();
+            boolean rsaFlag = decodedPrivateKey instanceof RSAKey;
+            coreCompatibilityCheck(publicKey, rsaFlag, id);
+            if (rsaFlag) {
+                // https://stackoverflow.com/questions/24121801/how-to-verify-if-the-private-key-matches-with-the-certificate
+                if (!(((RSAPublicKey)publicKey).getModulus()
+                            .equals(((RSAPrivateKey)decodedPrivateKey).getModulus()) &&
+                      BigInteger.valueOf(2).modPow(((RSAPublicKey)publicKey).getPublicExponent()
+                                .multiply(((RSAPrivateKey)decodedPrivateKey).getPrivateExponent())
+                                .subtract(BigInteger.ONE),((RSAPublicKey) publicKey).getModulus())
+                            .equals(BigInteger.ONE))) {
+                    abort("Imported RSA key does not match certificate for: " + id);
+                }
             } else {
                 checkECKeyCompatibility((ECPrivateKey) decodedPrivateKey, id);
             }

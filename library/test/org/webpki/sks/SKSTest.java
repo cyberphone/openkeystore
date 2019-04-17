@@ -2731,7 +2731,7 @@ public class SKSTest {
                 sess.closeSession();
                 fail("Mismatch");
             } catch (SKSException e) {
-                checkException(e, "RSA mismatch between public and private keys for: Key.1");
+                checkException(e, "Public/private key mismatch for: Key.1");
             }
         }
     }
@@ -2760,7 +2760,7 @@ public class SKSTest {
             sess.closeSession();
             fail("Mismatch");
         } catch (SKSException e) {
-            checkException(e, "EC mismatch between public and private keys for: Key.1");
+            checkException(e, "Public/private key mismatch for: Key.1");
         }
     }
 
@@ -2823,6 +2823,21 @@ public class SKSTest {
         } catch (SKSException e) {
             assertTrue("RSA exp mismatch", rsa_var_exp == null);
             checkException(e, "Unsupported RSA exponent value for: Key.1");
+        }
+        sess = new ProvSess(device);
+        kpg = KeyPairGenerator.getInstance("RSA");
+        kpg.initialize(preferred_rsa_algorithm.getPublicKeySizeInBits());
+        key_pair = kpg.generateKeyPair();
+        try {
+            GenKey key = sess.createKey("Key.1",
+                    preferred_rsa_algorithm,
+                    null /* pin_value */,
+                    null,
+                    AppUsage.AUTHENTICATION).setCertificate(cn());
+            key.setPrivateKey(key_pair);
+            fail("RSA mismatch");
+        } catch (SKSException e) {
+            checkException(e, "Imported RSA key does not match certificate for: Key.1");
         }
     }
 
