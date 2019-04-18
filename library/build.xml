@@ -195,7 +195,11 @@
     <jpp destdir="${test_dir}" verbose="true">
         <fileset dir="ppmastertest" includes="**/*.java" />
     </jpp>
-
+    <replace file="${test_dir}/org/webpki/sks/SKSReferenceImplementation.java">
+      <replacefilter token="MACRO_GET_PRIVATEKEY" value="privateKey"/>
+      <replacefilter token="MACRO_IMPORTED_PRIVATEKEY" value="keyEntry.privateKey"/>
+    </replace>  
+  	
     <mkdir dir="${temp_dir}"/>
  	<!-- Copy all files except .java and doc-related -->
     <copy todir="${temp_dir}" preservelastmodified="true" includeEmptyDirs="false">
@@ -592,6 +596,10 @@
     <jpp destdir="${android_dir}" verbose="true">
         <fileset dir="ppmastertest" includes="**/*.java" />
     </jpp>
+    <replace file="${android_dir}/org/webpki/sks/SKSReferenceImplementation.java">
+      <replacefilter token="MACRO_GET_PRIVATEKEY" value="getPrivateKey()"/>
+      <replacefilter token="MACRO_IMPORTED_PRIVATEKEY" value="importedPrivateKey"/>
+    </replace>  
   	<move file="${android_dir}/org/webpki/sks/SKSReferenceImplementation.java" tofile="${android_dir}/org/webpki/mobile/android/sks/AndroidSKSImplementation.java"/>
  	<move file="${android_dir}/org/webpki/sks/SKSTest.java" todir="${android_test_dir}/org/webpki/sks"/>
   	<copy todir="${android_test_dir}/org/webpki/sks">

@@ -31,7 +31,9 @@ import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
 import java.security.KeyPairGenerator;
+//#if !ANDROID
 import java.security.KeyStore;
+//#endif
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -270,7 +272,11 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         byte appUsage;
 
         PublicKey publicKey;     // In this implementation overwritten by "setCertificatePath"
-        PrivateKey privateKey;   // Overwritten if "restorePivateKey" is called
+//#if ANDROID
+        byte[] exportablePrivateKey;  // Not stored in AndroidKeyStore
+//#else
+        PrivateKey privateKey;   // Overwritten if "importPrivateKey" is called
+//#endif
         X509Certificate[] certificatePath;
 
         byte[] symmetricKey;     // Defined by "importSymmetricKey"
@@ -309,6 +315,12 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             abort("\"" + VAR_AUTHORIZATION + "\" error for key #" + keyHandle, SKSException.ERROR_AUTHORIZATION);
         }
 
+//#if ANDROID
+        PrivateKey getPrivateKey() {
+            return null;
+        }
+
+//#endif
         @SuppressWarnings("fallthrough")
         Vector<KeyEntry> getPinSynchronizedKeys() {
             Vector<KeyEntry> group = new Vector<KeyEntry>();
@@ -1350,8 +1362,13 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         }
     }
 
+//#if ANDROID
+    void coreCompatibilityCheck(KeyEntry keyEntry, PrivateKey privateKey){
+        if (keyEntry.isRsa() ^ privateKey instanceof RSAPrivateKey) {
+//#else
     void coreCompatibilityCheck(KeyEntry keyEntry){
         if (keyEntry.isRsa() ^ keyEntry.privateKey instanceof RSAPrivateKey) {
+//#endif
             abort("RSA/EC mixup between public and private keys for: " + keyEntry.id);
         }
     }
@@ -1804,7 +1821,11 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         ///////////////////////////////////////////////////////////////////////////////////
         // Export key in raw unencrypted format
         ///////////////////////////////////////////////////////////////////////////////////
+//#if ANDROID
+        return keyEntry.isSymmetric() ? keyEntry.symmetricKey : keyEntry.exportablePrivateKey;
+//#else
         return keyEntry.isSymmetric() ? keyEntry.symmetricKey : keyEntry.privateKey.getEncoded();
+//#endif
     }
 
 
@@ -1921,7 +1942,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         try {
             Cipher cipher = Cipher.getInstance(alg.jceName);
 //#if ANDROID
-            cipher.init(Cipher.DECRYPT_MODE, keyEntry.privateKey);
+            cipher.init(Cipher.DECRYPT_MODE, keyEntry.MACRO_GET_PRIVATEKEY);
 //#else
             if ((alg.mask & ALG_HASH_256) != 0) {
                 cipher.init(Cipher.DECRYPT_MODE, keyEntry.privateKey,
@@ -1985,7 +2006,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             if (keyEntry.isRsa() && hashLen > 0) {
                 data = addArrays(alg.pkcs1DigestInfo, data);
             }
-            return new SignatureWrapper(alg.jceName, keyEntry.privateKey).update(data).sign();
+            return new SignatureWrapper(alg.jceName, keyEntry.MACRO_GET_PRIVATEKEY).update(data).sign();
         } catch (Exception e) {
             abort(e);
             return null;    // For the compiler...
@@ -2034,7 +2055,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         ///////////////////////////////////////////////////////////////////////////////////
         try {
             KeyAgreement key_agreement = KeyAgreement.getInstance(alg.jceName);
-            key_agreement.init(keyEntry.privateKey);
+            key_agreement.init(keyEntry.MACRO_GET_PRIVATEKEY);
             key_agreement.doPhase(publicKey, true);
             return key_agreement.generateSecret();
         } catch (Exception e) {
@@ -2536,10 +2557,14 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                     ///////////////////////////////////////////////////////////////////////////////////
                     // Check public versus private key match
                     ///////////////////////////////////////////////////////////////////////////////////
+//#if ANDROID
+                    coreCompatibilityCheck(keyEntry, keyEntry.MACRO_GET_PRIVATEKEY);
+//#else
                     coreCompatibilityCheck(keyEntry);
+//#endif
                     String signatureAlgorithm = keyEntry.isRsa() ? "SHA256withRSA" : "SHA256withECDSA";
                     Signature sign = Signature.getInstance(signatureAlgorithm);
-                    sign.initSign(keyEntry.privateKey);
+                    sign.initSign(keyEntry.MACRO_GET_PRIVATEKEY);
                     sign.update(RSA_ENCRYPTION_OID);  // Any data could be used...
                     byte[] signedData = sign.sign();
                     Signature verify = Signature.getInstance(signatureAlgorithm);
@@ -2985,20 +3010,26 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                 }
                 if (rsaFlag) break;
             }
+//#if ANDROID
+            PrivateKey importedPrivateKey = 
+                    KeyFactory.getInstance(rsaFlag ? "RSA" : "EC").generatePrivate(keySpec);
+            coreCompatibilityCheck(keyEntry, importedPrivateKey);
+//#else
             keyEntry.privateKey = KeyFactory.getInstance(rsaFlag ? "RSA" : "EC").generatePrivate(keySpec);
             coreCompatibilityCheck(keyEntry);
+//#endif
             if (rsaFlag) {
                 // https://stackoverflow.com/questions/24121801/how-to-verify-if-the-private-key-matches-with-the-certificate
                 if (!(((RSAPublicKey)keyEntry.publicKey).getModulus()
-                            .equals(((RSAPrivateKey)keyEntry.privateKey).getModulus()) &&
+                            .equals(((RSAPrivateKey)MACRO_IMPORTED_PRIVATEKEY).getModulus()) &&
                       BigInteger.valueOf(2).modPow(((RSAPublicKey)keyEntry.publicKey).getPublicExponent()
-                                .multiply(((RSAPrivateKey)keyEntry.privateKey).getPrivateExponent())
+                                .multiply(((RSAPrivateKey)MACRO_IMPORTED_PRIVATEKEY).getPrivateExponent())
                                 .subtract(BigInteger.ONE),((RSAPublicKey) keyEntry.publicKey).getModulus())
                             .equals(BigInteger.ONE))) {
                     abort("Imported RSA key does not match certificate for: " + keyEntry.id);
                 }
             } else {
-                checkEcKeyCompatibility((ECPrivateKey) keyEntry.privateKey, keyEntry.id);
+                checkEcKeyCompatibility((ECPrivateKey)MACRO_IMPORTED_PRIVATEKEY, keyEntry.id);
             }
 //#if ANDROID
             logCertificateOperation(keyEntry, "private key import");
@@ -3292,15 +3323,26 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             } else {
                 algParSpec = new ECGenParameterSpec(kalg.jceName);
             }
+
             ///////////////////////////////////////////////////////////////////////////////////
-            // At last, generate the desired key-pair
+            //Reserve a key entry
             ///////////////////////////////////////////////////////////////////////////////////
+            KeyEntry keyEntry = new KeyEntry(provisioning, id);
+            provisioning.names.put(id, true); // Referenced (for "closeProvisioningSession")
+
+            ///////////////////////////////////////////////////////////////////////////////////
+            // Generate the desired key pair
+            ///////////////////////////////////////////////////////////////////////////////////
+//#if ANDROID
+            PublicKey publicKey = null;
+//#else
             SecureRandom secureRandom = serverSeed.length == 0 ? new SecureRandom() : new SecureRandom(serverSeed);
             KeyPairGenerator kpg = KeyPairGenerator.getInstance(algParSpec instanceof RSAKeyGenParameterSpec ? "RSA" : "EC");
             kpg.initialize(algParSpec, secureRandom);
             KeyPair keyPair = kpg.generateKeyPair();
-            PublicKey publicKey = keyPair.getPublic();
             PrivateKey privateKey = keyPair.getPrivate();
+            PublicKey publicKey = keyPair.getPublic();
+//#endif
 
             ///////////////////////////////////////////////////////////////////////////////////
             // Create key attest
@@ -3311,15 +3353,15 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             byte[] attestation = cka.getResult();
 
             ///////////////////////////////////////////////////////////////////////////////////
-            // Finally, create a key entry
+            // Finally, fill in the key attributes
             ///////////////////////////////////////////////////////////////////////////////////
-            KeyEntry keyEntry = new KeyEntry(provisioning, id);
-            provisioning.names.put(id, true); // Referenced (for "closeProvisioningSession")
             keyEntry.pinPolicy = pinPolicy;
             keyEntry.friendlyName = friendlyName;
             keyEntry.pinValue = pinValue;
             keyEntry.publicKey = publicKey;
+//#if !ANDROID
             keyEntry.privateKey = privateKey;
+//#endif
             keyEntry.appUsage = appUsage;
             keyEntry.devicePinProtection = devicePinProtection;
             keyEntry.enablePinCaching = enablePinCaching;

@@ -207,7 +207,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         byte appUsage;
 
         PublicKey publicKey;     // In this implementation overwritten by "setCertificatePath"
-        PrivateKey privateKey;   // Overwritten if "restorePivateKey" is called
+        PrivateKey privateKey;   // Overwritten if "importPrivateKey" is called
         X509Certificate[] certificatePath;
 
         byte[] symmetricKey;     // Defined by "importSymmetricKey"
@@ -2904,7 +2904,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                     abort("Imported RSA key does not match certificate for: " + keyEntry.id);
                 }
             } else {
-                checkEcKeyCompatibility((ECPrivateKey) keyEntry.privateKey, keyEntry.id);
+                checkEcKeyCompatibility((ECPrivateKey)keyEntry.privateKey, keyEntry.id);
             }
         } catch (Exception e) {
             tearDownSession(keyEntry, e);
@@ -3189,15 +3189,22 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             } else {
                 algParSpec = new ECGenParameterSpec(kalg.jceName);
             }
+
             ///////////////////////////////////////////////////////////////////////////////////
-            // At last, generate the desired key-pair
+            //Reserve a key entry
+            ///////////////////////////////////////////////////////////////////////////////////
+            KeyEntry keyEntry = new KeyEntry(provisioning, id);
+            provisioning.names.put(id, true); // Referenced (for "closeProvisioningSession")
+
+            ///////////////////////////////////////////////////////////////////////////////////
+            // Generate the desired key pair
             ///////////////////////////////////////////////////////////////////////////////////
             SecureRandom secureRandom = serverSeed.length == 0 ? new SecureRandom() : new SecureRandom(serverSeed);
             KeyPairGenerator kpg = KeyPairGenerator.getInstance(algParSpec instanceof RSAKeyGenParameterSpec ? "RSA" : "EC");
             kpg.initialize(algParSpec, secureRandom);
             KeyPair keyPair = kpg.generateKeyPair();
-            PublicKey publicKey = keyPair.getPublic();
             PrivateKey privateKey = keyPair.getPrivate();
+            PublicKey publicKey = keyPair.getPublic();
 
             ///////////////////////////////////////////////////////////////////////////////////
             // Create key attest
@@ -3208,10 +3215,8 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             byte[] attestation = cka.getResult();
 
             ///////////////////////////////////////////////////////////////////////////////////
-            // Finally, create a key entry
+            // Finally, fill in the key attributes
             ///////////////////////////////////////////////////////////////////////////////////
-            KeyEntry keyEntry = new KeyEntry(provisioning, id);
-            provisioning.names.put(id, true); // Referenced (for "closeProvisioningSession")
             keyEntry.pinPolicy = pinPolicy;
             keyEntry.friendlyName = friendlyName;
             keyEntry.pinValue = pinValue;
