@@ -1263,12 +1263,12 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         throw new GeneralSecurityException("Unsupported EC curve");
     }
 
-    void checkRsaKeyCompatibility(int rsaKeySize,
-                                  BigInteger exponent, 
-                                  String keyId) {
-        if (!SKS_RSA_EXPONENT_SUPPORT && !exponent.equals(RSAKeyGenParameterSpec.F4)) {
+    void checkRsaKeyCompatibility(RSAPublicKey publicKey, String keyId) {
+
+        if (!SKS_RSA_EXPONENT_SUPPORT && !publicKey.getPublicExponent().equals(RSAKeyGenParameterSpec.F4)) {
             abort("Unsupported RSA exponent value for: " + keyId);
         }
+        int rsaKeySize = getRsaKeySize(publicKey);
         boolean found = false;
         for (short keySize : SKS_DEFAULT_RSA_SUPPORT) {
             if (keySize == rsaKeySize) {
@@ -1287,7 +1287,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         }
     }
 
-    int getRSAKeySize(RSAKey rsaKey) {
+    int getRsaKeySize(RSAKey rsaKey) {
         byte[] modblob = rsaKey.getModulus().toByteArray();
         return (modblob[0] == 0 ? modblob.length - 1 : modblob.length) * 8;
     }
@@ -2657,10 +2657,11 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         ///////////////////////////////////////////////////////////////////////////////////
         if (keyManagementKey != null) {
             if (keyManagementKey instanceof RSAPublicKey) {
-                checkRsaKeyCompatibility(getRSAKeySize((RSAPublicKey) keyManagementKey),
-                        ((RSAPublicKey) keyManagementKey).getPublicExponent(), "\"" + VAR_KEY_MANAGEMENT_KEY + "\"");
+                checkRsaKeyCompatibility((RSAPublicKey) keyManagementKey,
+                                         "\"" + VAR_KEY_MANAGEMENT_KEY + "\"");
             } else {
-                checkEcKeyCompatibility((ECPublicKey) keyManagementKey, "\"" + VAR_KEY_MANAGEMENT_KEY + "\"");
+                checkEcKeyCompatibility((ECPublicKey) keyManagementKey,
+                                        "\"" + VAR_KEY_MANAGEMENT_KEY + "\"");
             }
         }
 
@@ -2997,9 +2998,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             // Check key material for SKS compliance
             ///////////////////////////////////////////////////////////////////////////////////
             if (keyEntry.publicKey instanceof RSAPublicKey) {
-                checkRsaKeyCompatibility(getRSAKeySize((RSAPublicKey) keyEntry.publicKey),
-                                         ((RSAPublicKey) keyEntry.publicKey).getPublicExponent(),
-                                         keyEntry.id);
+                checkRsaKeyCompatibility((RSAPublicKey) keyEntry.publicKey, keyEntry.id);
             } else {
                 checkEcKeyCompatibility((ECPublicKey) keyEntry.publicKey, keyEntry.id);
             }

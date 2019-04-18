@@ -839,7 +839,7 @@ public class SEReferenceImplementation {
         throw new GeneralSecurityException("Unsupported EC curve");
     }
 
-    static String checkECKeyCompatibility(ECKey ecKey, String keyId) {
+    static String checkEcKeyCompatibility(ECKey ecKey, String keyId) {
         Algorithm ecType = getEcType(ecKey);
         if (ecType != null) {
             return ecType.jceName;
@@ -848,19 +848,21 @@ public class SEReferenceImplementation {
         return null;
     }
 
-    static void checkRSAKeyCompatibility(int rsaKey_size, BigInteger exponent, String keyId) {
-        if (!SKS_RSA_EXPONENT_SUPPORT && !exponent.equals(RSAKeyGenParameterSpec.F4)) {
+    static void checkRsaKeyCompatibility(RSAPublicKey publicKey, String keyId) {
+
+        if (!SKS_RSA_EXPONENT_SUPPORT && !publicKey.getPublicExponent().equals(RSAKeyGenParameterSpec.F4)) {
             abort("Unsupported RSA exponent value for: " + keyId);
         }
+        int rsaKeySize = getRsaKeySize(publicKey);
         boolean found = false;
-        for (short key_size : SKS_DEFAULT_RSA_SUPPORT) {
-            if (key_size == rsaKey_size) {
+        for (short keySize : SKS_DEFAULT_RSA_SUPPORT) {
+            if (keySize == rsaKeySize) {
                 found = true;
                 break;
             }
         }
         if (!found) {
-            abort("Unsupported RSA key size " + rsaKey_size + " for: " + keyId);
+            abort("Unsupported RSA key size " + rsaKeySize + " for: " + keyId);
         }
     }
 
@@ -870,7 +872,7 @@ public class SEReferenceImplementation {
         }
     }
 
-    static int getRSAKeySize(RSAKey rsaKey) {
+    static int getRsaKeySize(RSAKey rsaKey) {
         byte[] modblob = rsaKey.getModulus().toByteArray();
         return (modblob[0] == 0 ? modblob.length - 1 : modblob.length) * 8;
     }
@@ -1469,7 +1471,7 @@ public class SEReferenceImplementation {
             ///////////////////////////////////////////////////////////////////////////////////
             // Check that the key type matches the algorithm
             ///////////////////////////////////////////////////////////////////////////////////
-            checkECKeyCompatibility(publicKey, "\"" + SecureKeyStore.VAR_PUBLIC_KEY + "\"");
+            checkEcKeyCompatibility(publicKey, "\"" + SecureKeyStore.VAR_PUBLIC_KEY + "\"");
     
             ///////////////////////////////////////////////////////////////////////////////////
             // Finally, perform operation
@@ -1723,7 +1725,7 @@ public class SEReferenceImplementation {
             ///////////////////////////////////////////////////////////////////////////////////
             // Check server ECDH key compatibility
             ///////////////////////////////////////////////////////////////////////////////////
-            String jceName = checkECKeyCompatibility(serverEphemeralKey,
+            String jceName = checkEcKeyCompatibility(serverEphemeralKey,
                                                      "\"" + SecureKeyStore.VAR_SERVER_EPHEMERAL_KEY + "\"");
     
             ///////////////////////////////////////////////////////////////////////////////////
@@ -1731,12 +1733,11 @@ public class SEReferenceImplementation {
             ///////////////////////////////////////////////////////////////////////////////////
             if (keyManagementKey != null) {
                 if (keyManagementKey instanceof RSAPublicKey) {
-                    checkRSAKeyCompatibility(getRSAKeySize((RSAPublicKey) keyManagementKey),
-                            ((RSAPublicKey) keyManagementKey).getPublicExponent(),
-                            "\"" + SecureKeyStore.VAR_KEY_MANAGEMENT_KEY + "\"");
+                    checkRsaKeyCompatibility((RSAPublicKey) keyManagementKey,
+                                             "\"" + SecureKeyStore.VAR_KEY_MANAGEMENT_KEY + "\"");
                 } else {
-                    checkECKeyCompatibility((ECPublicKey) keyManagementKey, 
-                            "\"" + SecureKeyStore.VAR_KEY_MANAGEMENT_KEY + "\"");
+                    checkEcKeyCompatibility((ECPublicKey) keyManagementKey, 
+                                            "\"" + SecureKeyStore.VAR_KEY_MANAGEMENT_KEY + "\"");
                 }
             }
     
@@ -1907,7 +1908,7 @@ public class SEReferenceImplementation {
                     abort("Imported RSA key does not match certificate for: " + id);
                 }
             } else {
-                checkECKeyCompatibility((ECPrivateKey) decodedPrivateKey, id);
+                checkEcKeyCompatibility((ECPrivateKey) decodedPrivateKey, id);
             }
     
             ///////////////////////////////////////////////////////////////////////////////////
@@ -2127,6 +2128,16 @@ public class SEReferenceImplementation {
             }
             verifier.verify(mac);
     
+            ///////////////////////////////////////////////////////////////////////////////////
+            // Check key material for SKS compliance
+            ///////////////////////////////////////////////////////////////////////////////////
+            PublicKey certPublicKey = certificatePath[0].getPublicKey();
+            if (certPublicKey instanceof RSAPublicKey) {
+                checkRsaKeyCompatibility((RSAPublicKey) certPublicKey, id);
+            } else {
+                checkEcKeyCompatibility((ECPublicKey) certPublicKey, id);
+            }
+            
             ///////////////////////////////////////////////////////////////////////////////////
             // Update the sealed key with the certificate link
             ///////////////////////////////////////////////////////////////////////////////////
