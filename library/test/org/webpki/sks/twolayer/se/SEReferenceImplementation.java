@@ -631,6 +631,8 @@ public class SEReferenceImplementation {
         PrivateKey privateKey;
 
         byte[] symmetricKey;
+        
+        byte[] permittedAlgorithms;
 
         boolean isRsa() {
             return privateKey instanceof RSAKey;
@@ -641,6 +643,8 @@ public class SEReferenceImplementation {
             macBuilder.addBool(isExportable);
             macBuilder.addBool(isSymmetric);
             macBuilder.addArray(wrappedKey);
+            macBuilder.addArray(sha256OfPublicKeyOrCertificate);
+            macBuilder.addArray(permittedAlgorithms);
             return macBuilder.getResult();
         }
 
@@ -650,6 +654,7 @@ public class SEReferenceImplementation {
             byteWriter.writeBoolean(isSymmetric);
             byteWriter.writeBoolean(isExportable);
             byteWriter.writeArray(sha256OfPublicKeyOrCertificate);
+            byteWriter.writeArray(permittedAlgorithms);
             byteWriter.writeArray(createMAC(osInstanceKey));
             return byteWriter.getData();
         }
@@ -660,6 +665,7 @@ public class SEReferenceImplementation {
             isSymmetric = byteReader.readBoolean();
             isExportable = byteReader.readBoolean();
             sha256OfPublicKeyOrCertificate = byteReader.readArray(32);
+            permittedAlgorithms = byteReader.getArray();
             byte[] oldMac = byteReader.readArray(32);
             byteReader.checkEOF();
             byteReader.close();
@@ -1225,7 +1231,7 @@ public class SEReferenceImplementation {
             // Perform "sanity" checks
             ///////////////////////////////////////////////////////////////////////////////////
             coreCompatibilityCheck(publicKey, unwrappedKey.isRsa(), id);
-            String signatureAlgorithm = unwrappedKey.isRsa() ? "SHA256withRSA" : "SHA256withECDSA";
+            String signatureAlgorithm = unwrappedKey.isRsa() ? "NONEwithRSA" : "NONEwithECDSA";
             Signature sign = Signature.getInstance(signatureAlgorithm);
             sign.initSign(unwrappedKey.privateKey);
             sign.update(RSA_ENCRYPTION_OID);  // Any data could be used...
@@ -2238,6 +2244,7 @@ public class SEReferenceImplementation {
             verifier.addString(keyAlgorithm);
             verifier.addArray(keyParameters == null ? SecureKeyStore.ZERO_LENGTH_ARRAY : keyParameters);
             String prevAlg = "\0";
+            byte[] permittedAlgorithms = new byte[0];
             for (String endorsedAlgorithm : endorsedAlgorithms) {
                 ///////////////////////////////////////////////////////////////////////////////////
                 // Check that the algorithms are sorted and known
@@ -2302,6 +2309,7 @@ public class SEReferenceImplementation {
             unwrappedKey.isExportable = 
                     exportProtection != SecureKeyStore.EXPORT_DELETE_PROTECTION_NOT_ALLOWED;
             unwrappedKey.sha256OfPublicKeyOrCertificate = getSHA256(publicKey.getEncoded());
+            unwrappedKey.permittedAlgorithms = permittedAlgorithms;
             seKeyData.sealedKey = wrapKey(osInstanceKey, unwrappedKey, privateKey.getEncoded());
             seKeyData.provisioningState = unwrappedSessionKey.writeKey(osInstanceKey);
             seKeyData.attestation = attestation;
