@@ -14,6 +14,9 @@ public class KeyProperties {
     public static String DIGEST_SHA512 = "256";
     public static String DIGEST_NONE   = "0";
     public static final String SIGNATURE_PADDING_RSA_PKCS1 = "PKCS1";
+    
+    public static final String  ENCRYPTION_PADDING_RSA_PKCS1 ="PKCS1";
+    public static final String ENCRYPTION_PADDING_RSA_OAEP ="OAEP";
 
     
 }

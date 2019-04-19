@@ -268,6 +268,12 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         private static final long serialVersionUID = 1L;
 
         int keyHandle;
+//#if ANDROID
+
+// SKS update of keys mandate that keyHandles stay intact.
+// To cope with this requirement updated keys must be remapped...
+        Integer remappedKeyHandle;
+//#endif
 
         byte appUsage;
 
@@ -280,12 +286,12 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         X509Certificate[] certificatePath;
 
         byte[] symmetricKey;     // Defined by "importSymmetricKey"
-
-        LinkedHashSet<String> endorsedAlgorithms;
 //#if ANDROID
 
         LinkedHashSet<String> grantedDomains = new LinkedHashSet<String>();
 //#endif
+
+        LinkedHashSet<String> endorsedAlgorithms;
 
         String friendlyName;
 
@@ -318,7 +324,11 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
 //#if ANDROID
         PrivateKey getPrivateKey() throws GeneralSecurityException {
             return exportablePrivateKey == null ?
-              SKSStore.getPrivateKey(keyHandle) : exportablePrivateKey;
+              SKSStore.getPrivateKey(getKeyId()) : exportablePrivateKey;
+        }
+        
+        String getKeyId() {
+            return String.valueOf(remappedKeyHandle == null ? keyHandle : (int)remappedKeyHandle);
         }
 
 //#endif
@@ -1038,10 +1048,20 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         //////////////////////////////////////////////////////////////////////////////////////
         //  Diffie-Hellman Key Agreement
         //////////////////////////////////////////////////////////////////////////////////////
+//#if ANDROID
+
+        // ECDH is not supported by AndroidKeyStore
+/*
         addAlgorithm("https://webpki.github.io/sks/algorithm#ecdh.raw",
                      "ECDH",
                      ALG_ASYM_KA | ALG_EC_KEY);
-        
+*/
+//#else
+        addAlgorithm("https://webpki.github.io/sks/algorithm#ecdh.raw",
+                     "ECDH",
+                     ALG_ASYM_KA | ALG_EC_KEY);
+//#endif        
+
         //////////////////////////////////////////////////////////////////////////////////////
         //  Asymmetric Key Signatures
         //////////////////////////////////////////////////////////////////////////////////////
@@ -1792,6 +1812,13 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         ///////////////////////////////////////////////////////////////////////////////////
         // Delete key and optionally the entire provisioning object (if empty)
         ///////////////////////////////////////////////////////////////////////////////////
+//#if ANDROID
+        try {
+            SKSStore.deleteKey(keyEntry.getKeyId());
+        } catch (Exception e) {
+            abort(e);
+        }
+//#endif
         localDeleteKey(keyEntry);
         deleteEmptySession(keyEntry.owner);
     }
@@ -2675,6 +2702,11 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                         ///////////////////////////////////////////////////////////////////////////////////
                         // Remove space occupied by the new key and restore old key handle
                         ///////////////////////////////////////////////////////////////////////////////////
+//#if ANDROID
+                        // In Android updates are slightly more fuzzy...
+                        SKSStore.deleteKey(keyEntry.getKeyId());
+                        postOp.newKey.remappedKeyHandle = postOp.newKey.keyHandle;
+//#endif
                         keys.remove(postOp.newKey.keyHandle);
                         postOp.newKey.keyHandle = keyEntry.keyHandle;
                     }
@@ -3035,7 +3067,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                 checkEcKeyCompatibility((ECPrivateKey)MACRO_IMPORTED_PRIVATEKEY, keyEntry.id);
             }
 //#if ANDROID
-            SKSStore.setKeyEntry(keyEntry.keyHandle, importedPrivateKey, keyEntry.certificatePath);
+            SKSStore.importKey(keyEntry.getKeyId(), importedPrivateKey, keyEntry.certificatePath);
             logCertificateOperation(keyEntry, "private key import");
 //#endif
         } catch (Exception e) {
@@ -3343,7 +3375,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
 //#if ANDROID
             PublicKey publicKey;
             if (exportProtection == EXPORT_DELETE_PROTECTION_NOT_ALLOWED) {
-                publicKey = SKSStore.createSecureKeyPair(keyEntry.keyHandle,
+                publicKey = SKSStore.createSecureKeyPair(keyEntry.getKeyId(),
                                                          algParSpec,
                                                          keyFactory.equals("RSA"));
             } else {

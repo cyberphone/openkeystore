@@ -2276,11 +2276,20 @@ public class SKSTest {
         ECGenParameterSpec eccgen = new ECGenParameterSpec("secp256r1");
         generator.initialize(eccgen, new SecureRandom());
         KeyPair key_pair = generator.generateKeyPair();
-        byte[] z = device.sks.keyAgreement(key.keyHandle,
-                SecureKeyStore.ALGORITHM_ECDH_RAW,
-                null,
-                good_pin.getBytes("UTF-8"),
-                (ECPublicKey) key_pair.getPublic());
+        String ecdhAlgorithm = SecureKeyStore.ALGORITHM_ECDH_RAW;
+        byte[] z = null;
+        try {
+            z = device.sks.keyAgreement(key.keyHandle,
+                    ecdhAlgorithm,
+                    null,
+                    good_pin.getBytes("UTF-8"),
+                    (ECPublicKey) key_pair.getPublic());
+            assertTrue("has ECDH", supported_algorithms.contains(ecdhAlgorithm));
+        } catch (SKSException e) {
+            assertFalse("No ECDH", supported_algorithms.contains(ecdhAlgorithm));
+            checkException(e,"Unsupported algorithm: " + ecdhAlgorithm);
+            return;
+        }
         KeyAgreement key_agreement = KeyAgreement.getInstance("ECDH");
         key_agreement.init(key_pair.getPrivate());
         key_agreement.doPhase(key.getPublicKey(), true);

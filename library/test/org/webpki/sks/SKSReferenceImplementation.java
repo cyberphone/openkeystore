@@ -961,7 +961,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         addAlgorithm("https://webpki.github.io/sks/algorithm#ecdh.raw",
                      "ECDH",
                      ALG_ASYM_KA | ALG_EC_KEY);
-        
+
         //////////////////////////////////////////////////////////////////////////////////////
         //  Asymmetric Key Signatures
         //////////////////////////////////////////////////////////////////////////////////////

@@ -23,6 +23,9 @@ public class KeyGenParameterSpec {
         public Builder setSignaturePaddings(String... paddings) {
             return this;
         }
+        public Builder setEncryptionPaddings(String... paddings) {
+            return this;
+        }
         public Builder setCertificateSerialNumber(BigInteger serial) {
             return this;
         }

@@ -33,6 +33,8 @@ import java.security.SecureRandom;
 
 import java.security.cert.X509Certificate;
 
+import java.security.interfaces.RSAKey;
+
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.AlgorithmParameterSpec;
 
@@ -146,20 +148,25 @@ public abstract class SKSStore {
         }
     }
 
-    static PublicKey createSecureKeyPair(int keyHandle, 
+    static PublicKey createSecureKeyPair(String keyId, 
                                          AlgorithmParameterSpec algParSpec,
                                          boolean rsaFlag) throws GeneralSecurityException {
         KeyPairGenerator kpg = KeyPairGenerator.getInstance(rsaFlag ? 
                                     KeyProperties.KEY_ALGORITHM_RSA : KeyProperties.KEY_ALGORITHM_EC, 
                                                             ANDROID_KEYSTORE);
         KeyGenParameterSpec.Builder builder = 
-            new KeyGenParameterSpec.Builder(String.valueOf(keyHandle),
+            new KeyGenParameterSpec.Builder(keyId,
                     KeyProperties.PURPOSE_SIGN | (rsaFlag ?  KeyProperties.PURPOSE_DECRYPT : 0))
                 .setAlgorithmParameterSpec(algParSpec)
                 .setDigests(KeyProperties.DIGEST_NONE,
                             KeyProperties.DIGEST_SHA256,
                             KeyProperties.DIGEST_SHA384,
                             KeyProperties.DIGEST_SHA512);
+        if (rsaFlag) {
+            builder.setSignaturePaddings(KeyProperties.SIGNATURE_PADDING_RSA_PKCS1)
+                   .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1,
+                                          KeyProperties.ENCRYPTION_PADDING_RSA_OAEP);
+        }
         kpg.initialize(builder.build());
         return kpg.generateKeyPair().getPublic();
     }
@@ -177,18 +184,31 @@ public abstract class SKSStore {
         }
     }
     
-    static void setKeyEntry(int keyHandle, 
-                            PrivateKey privateKey, 
-                            X509Certificate[] certifcatePath) throws GeneralSecurityException {
-        hardwareBacked.setEntry(String.valueOf(keyHandle),
-                                new KeyStore.PrivateKeyEntry(privateKey, certifcatePath),
-                                new KeyProtection.Builder(KeyProperties.PURPOSE_SIGN)
-                                    .setDigests(KeyProperties.DIGEST_NONE).build());
+    static void importKey(String keyId, 
+                          PrivateKey privateKey, 
+                          X509Certificate[] certificatePath) throws GeneralSecurityException {
+        boolean rsaFlag = privateKey instanceof RSAKey;
+        KeyProtection.Builder builder =
+            new KeyProtection.Builder(KeyProperties.PURPOSE_SIGN |
+                                      (rsaFlag ?  KeyProperties.PURPOSE_DECRYPT : 0))
+                .setDigests(KeyProperties.DIGEST_NONE);
+        if (rsaFlag) {
+            builder.setSignaturePaddings(KeyProperties.SIGNATURE_PADDING_RSA_PKCS1)
+                   .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1,
+                                          KeyProperties.ENCRYPTION_PADDING_RSA_OAEP);
+        }
+        hardwareBacked.setEntry(keyId,
+                                new KeyStore.PrivateKeyEntry(privateKey, certificatePath),
+                                builder.build());
 
     }
 
-    static PrivateKey getPrivateKey(int keyHandle) throws GeneralSecurityException {
-        return (PrivateKey)hardwareBacked.getKey(String.valueOf(keyHandle), null);
+    static void deleteKey(String keyId) throws GeneralSecurityException {
+        hardwareBacked.deleteEntry(keyId);
+    }
+
+    static PrivateKey getPrivateKey(String keyId) throws GeneralSecurityException {
+        return (PrivateKey)hardwareBacked.getKey(keyId, null);
     }
 
     public static boolean isSupported(String algorithm) {

@@ -12,8 +12,13 @@ public class KeyProtection {
         public Builder(int purpose) {
             
         }
- 
         public Builder setDigests(String... digests) {
+            return this;
+        }
+        public Builder setSignaturePaddings(String... paddings) {
+            return this;
+        }
+        public Builder setEncryptionPaddings(String... paddings) {
             return this;
         }
         public ProtectionParameter build() {
