@@ -239,6 +239,7 @@ public class SEReferenceImplementation {
         byte[] pkcs1DigestInfo;
         ECParameterSpec ecParameterSpec;
         int ecPointLength;
+        byte byteAlgorithmId;
 
         void addEcCurve(int ecPointLength, byte[] samplePublicKey) {
             this.ecPointLength = ecPointLength;
@@ -253,8 +254,11 @@ public class SEReferenceImplementation {
 
     static LinkedHashMap<String, Algorithm> supportedAlgorithms = new LinkedHashMap<String, Algorithm>();
 
+    static byte byteAlgorithmId;
+    
     static Algorithm addAlgorithm(String uri, String jceName, int mask) {
         Algorithm alg = new Algorithm();
+        alg.byteAlgorithmId = byteAlgorithmId++;
         alg.mask = mask;
         alg.jceName = jceName;
         supportedAlgorithms.put(uri, alg);
@@ -632,7 +636,7 @@ public class SEReferenceImplementation {
 
         byte[] symmetricKey;
         
-        byte[] permittedAlgorithms;
+        byte[] byteEndorsedAlgorithms;
 
         boolean isRsa() {
             return privateKey instanceof RSAKey;
@@ -644,7 +648,7 @@ public class SEReferenceImplementation {
             macBuilder.addBool(isSymmetric);
             macBuilder.addArray(wrappedKey);
             macBuilder.addArray(sha256OfPublicKeyOrCertificate);
-            macBuilder.addArray(permittedAlgorithms);
+            macBuilder.addArray(byteEndorsedAlgorithms);
             return macBuilder.getResult();
         }
 
@@ -654,7 +658,7 @@ public class SEReferenceImplementation {
             byteWriter.writeBoolean(isSymmetric);
             byteWriter.writeBoolean(isExportable);
             byteWriter.writeArray(sha256OfPublicKeyOrCertificate);
-            byteWriter.writeArray(permittedAlgorithms);
+            byteWriter.writeArray(byteEndorsedAlgorithms);
             byteWriter.writeArray(createMAC(osInstanceKey));
             return byteWriter.getData();
         }
@@ -665,7 +669,7 @@ public class SEReferenceImplementation {
             isSymmetric = byteReader.readBoolean();
             isExportable = byteReader.readBoolean();
             sha256OfPublicKeyOrCertificate = byteReader.readArray(32);
-            permittedAlgorithms = byteReader.getArray();
+            byteEndorsedAlgorithms = byteReader.getArray();
             byte[] oldMac = byteReader.readArray(32);
             byteReader.checkEOF();
             byteReader.close();
@@ -1111,6 +1115,14 @@ public class SEReferenceImplementation {
             testSymmetricKey(algorithm, unwrappedKey.symmetricKey, "#" + keyHandle);
         } else if (unwrappedKey.isRsa() ^ (alg.mask & ALG_RSA_KEY) != 0) {
             abort((unwrappedKey.isRsa() ? "RSA" : "EC") + " key #" + keyHandle + " is incompatible with: " + algorithm, SKSException.ERROR_ALGORITHM);
+        }
+        if (unwrappedKey.byteEndorsedAlgorithms.length > 0) {
+            for (byte byteEndorsedAlgorithm : unwrappedKey.byteEndorsedAlgorithms) {
+                if (alg.byteAlgorithmId == byteEndorsedAlgorithm) {
+                    return alg;
+                }
+            }
+            abort("Algorithm not endorsed: " + algorithm, SKSException.ERROR_ALGORITHM);
         }
         return alg;
     }
@@ -2244,7 +2256,7 @@ public class SEReferenceImplementation {
             verifier.addString(keyAlgorithm);
             verifier.addArray(keyParameters == null ? SecureKeyStore.ZERO_LENGTH_ARRAY : keyParameters);
             String prevAlg = "\0";
-            byte[] permittedAlgorithms = new byte[0];
+            ByteArrayOutputStream byteEndorsedAlgorithms = new ByteArrayOutputStream();
             for (String endorsedAlgorithm : endorsedAlgorithms) {
                 ///////////////////////////////////////////////////////////////////////////////////
                 // Check that the algorithms are sorted and known
@@ -2259,6 +2271,7 @@ public class SEReferenceImplementation {
                 if ((alg.mask & ALG_NONE) != 0 && endorsedAlgorithms.length > 1) {
                     abort("Algorithm must be alone: " + endorsedAlgorithm);
                 }
+                byteEndorsedAlgorithms.write(alg.byteAlgorithmId);
                 verifier.addString(prevAlg = endorsedAlgorithm);
             }
             verifier.verify(mac);
@@ -2309,7 +2322,7 @@ public class SEReferenceImplementation {
             unwrappedKey.isExportable = 
                     exportProtection != SecureKeyStore.EXPORT_DELETE_PROTECTION_NOT_ALLOWED;
             unwrappedKey.sha256OfPublicKeyOrCertificate = getSHA256(publicKey.getEncoded());
-            unwrappedKey.permittedAlgorithms = permittedAlgorithms;
+            unwrappedKey.byteEndorsedAlgorithms = byteEndorsedAlgorithms.toByteArray();
             seKeyData.sealedKey = wrapKey(osInstanceKey, unwrappedKey, privateKey.getEncoded());
             seKeyData.provisioningState = unwrappedSessionKey.writeKey(osInstanceKey);
             seKeyData.attestation = attestation;
