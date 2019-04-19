@@ -7,7 +7,13 @@ public class KeyProperties {
     
     public static int PURPOSE_SIGN = 2;
     public static int PURPOSE_VERIFY = 4;
+    public static int PURPOSE_DECRYPT = 8;
     
-    public static int DIGEST_SHA256 = 256;
+    public static String DIGEST_SHA256 = "256";
+    public static String DIGEST_SHA384 = "256";
+    public static String DIGEST_SHA512 = "256";
+    public static String DIGEST_NONE   = "0";
+    public static final String SIGNATURE_PADDING_RSA_PKCS1 = "PKCS1";
+
     
 }

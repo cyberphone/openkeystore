@@ -17,7 +17,10 @@ public class KeyGenParameterSpec {
         public Builder setAlgorithmParameterSpec(AlgorithmParameterSpec g) {
             return this;
         }
-        public Builder setDigests(int alg) {
+        public Builder setDigests(String... digests) {
+            return this;
+        }
+        public Builder setSignaturePaddings(String... paddings) {
             return this;
         }
         public Builder setCertificateSerialNumber(BigInteger serial) {

@@ -273,7 +273,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
 
         PublicKey publicKey;     // In this implementation overwritten by "setCertificatePath"
 //#if ANDROID
-        byte[] exportablePrivateKey;  // Not stored in AndroidKeyStore
+        PrivateKey exportablePrivateKey;  // Not stored in AndroidKeyStore
 //#else
         PrivateKey privateKey;   // Overwritten if "importPrivateKey" is called
 //#endif
@@ -316,8 +316,9 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         }
 
 //#if ANDROID
-        PrivateKey getPrivateKey() {
-            return null;
+        PrivateKey getPrivateKey() throws GeneralSecurityException {
+            return exportablePrivateKey == null ?
+              SKSStore.getPrivateKey(keyHandle) : exportablePrivateKey;
         }
 
 //#endif
@@ -775,7 +776,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         SignatureWrapper signer;
 
         AttestationSignatureGenerator() throws GeneralSecurityException {
-            signer = new SignatureWrapper(attestationKey instanceof RSAPrivateKey ?
+            signer = new SignatureWrapper(attestationKey instanceof RSAKey ?
                                                                   "SHA256withRSA" : "SHA256withECDSA",
                                           attestationKey);
         }
@@ -824,7 +825,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         public SignatureWrapper(String algorithm, PrivateKey privateKey) throws GeneralSecurityException {
             instance = Signature.getInstance(algorithm);
             instance.initSign(privateKey);
-            rsaFlag = privateKey instanceof RSAPrivateKey;
+            rsaFlag = privateKey instanceof RSAKey;
             if (!rsaFlag) {
                 extendTo = getEcPointLength((ECKey) privateKey);
             }
@@ -1364,10 +1365,10 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
 
 //#if ANDROID
     void coreCompatibilityCheck(KeyEntry keyEntry, PrivateKey privateKey){
-        if (keyEntry.isRsa() ^ privateKey instanceof RSAPrivateKey) {
+        if (keyEntry.isRsa() ^ privateKey instanceof RSAKey) {
 //#else
     void coreCompatibilityCheck(KeyEntry keyEntry){
-        if (keyEntry.isRsa() ^ keyEntry.privateKey instanceof RSAPrivateKey) {
+        if (keyEntry.isRsa() ^ keyEntry.privateKey instanceof RSAKey) {
 //#endif
             abort("RSA/EC mixup between public and private keys for: " + keyEntry.id);
         }
@@ -1822,9 +1823,11 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         // Export key in raw unencrypted format
         ///////////////////////////////////////////////////////////////////////////////////
 //#if ANDROID
-        return keyEntry.isSymmetric() ? keyEntry.symmetricKey : keyEntry.exportablePrivateKey;
+        return keyEntry.isSymmetric() ? 
+                keyEntry.symmetricKey : keyEntry.exportablePrivateKey.getEncoded();
 //#else
-        return keyEntry.isSymmetric() ? keyEntry.symmetricKey : keyEntry.privateKey.getEncoded();
+        return keyEntry.isSymmetric() ?
+                keyEntry.symmetricKey : keyEntry.privateKey.getEncoded();
 //#endif
     }
 
@@ -2562,7 +2565,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
 //#else
                     coreCompatibilityCheck(keyEntry);
 //#endif
-                    String signatureAlgorithm = keyEntry.isRsa() ? "SHA256withRSA" : "SHA256withECDSA";
+                    String signatureAlgorithm = keyEntry.isRsa() ? "NONEwithRSA" : "NONEwithECDSA";
                     Signature sign = Signature.getInstance(signatureAlgorithm);
                     sign.initSign(keyEntry.MACRO_GET_PRIVATEKEY);
                     sign.update(RSA_ENCRYPTION_OID);  // Any data could be used...
@@ -3032,6 +3035,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                 checkEcKeyCompatibility((ECPrivateKey)MACRO_IMPORTED_PRIVATEKEY, keyEntry.id);
             }
 //#if ANDROID
+            SKSStore.setKeyEntry(keyEntry.keyHandle, importedPrivateKey, keyEntry.certificatePath);
             logCertificateOperation(keyEntry, "private key import");
 //#endif
         } catch (Exception e) {
@@ -3310,7 +3314,9 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             // Decode key algorithm specifier
             ///////////////////////////////////////////////////////////////////////////////////
             AlgorithmParameterSpec algParSpec = null;
+            String keyFactory;
             if ((kalg.mask & ALG_RSA_KEY) == ALG_RSA_KEY) {
+                keyFactory = "RSA";
                 int rsaKeySize = kalg.mask & ALG_RSA_GMSK;
                 BigInteger exponent = RSAKeyGenParameterSpec.F4;
                 if (keyParameters != null) {
@@ -3321,6 +3327,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                 }
                 algParSpec = new RSAKeyGenParameterSpec(rsaKeySize, exponent);
             } else {
+                keyFactory = "EC";
                 algParSpec = new ECGenParameterSpec(kalg.jceName);
             }
 
@@ -3334,10 +3341,24 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             // Generate the desired key pair
             ///////////////////////////////////////////////////////////////////////////////////
 //#if ANDROID
-            PublicKey publicKey = null;
+            PublicKey publicKey;
+            if (exportProtection == EXPORT_DELETE_PROTECTION_NOT_ALLOWED) {
+                publicKey = SKSStore.createSecureKeyPair(keyEntry.keyHandle,
+                                                         algParSpec,
+                                                         keyFactory.equals("RSA"));
+            } else {
+                SecureRandom secureRandom = serverSeed.length == 0 ? 
+                                                new SecureRandom() : new SecureRandom(serverSeed);
+                KeyPairGenerator kpg = KeyPairGenerator.getInstance(keyFactory);
+                kpg.initialize(algParSpec, secureRandom);
+                KeyPair keyPair = kpg.generateKeyPair();
+                keyEntry.exportablePrivateKey = keyPair.getPrivate();
+                publicKey = keyPair.getPublic();
+            }
 //#else
-            SecureRandom secureRandom = serverSeed.length == 0 ? new SecureRandom() : new SecureRandom(serverSeed);
-            KeyPairGenerator kpg = KeyPairGenerator.getInstance(algParSpec instanceof RSAKeyGenParameterSpec ? "RSA" : "EC");
+            SecureRandom secureRandom = serverSeed.length == 0 ?
+                                            new SecureRandom() : new SecureRandom(serverSeed);
+            KeyPairGenerator kpg = KeyPairGenerator.getInstance(keyFactory);
             kpg.initialize(algParSpec, secureRandom);
             KeyPair keyPair = kpg.generateKeyPair();
             PrivateKey privateKey = keyPair.getPrivate();

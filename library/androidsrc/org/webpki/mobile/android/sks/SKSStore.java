@@ -23,14 +23,18 @@ import java.io.ObjectOutputStream;
 
 import java.math.BigInteger;
 
+import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.SecureRandom;
 
 import java.security.cert.X509Certificate;
+
 import java.security.spec.ECGenParameterSpec;
+import java.security.spec.AlgorithmParameterSpec;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -42,6 +46,7 @@ import android.content.Context;
 import android.provider.Settings;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
+import android.security.keystore.KeyProtection;
 
 import javax.security.auth.x500.X500Principal;
 
@@ -141,6 +146,24 @@ public abstract class SKSStore {
         }
     }
 
+    static PublicKey createSecureKeyPair(int keyHandle, 
+                                         AlgorithmParameterSpec algParSpec,
+                                         boolean rsaFlag) throws GeneralSecurityException {
+        KeyPairGenerator kpg = KeyPairGenerator.getInstance(rsaFlag ? 
+                                    KeyProperties.KEY_ALGORITHM_RSA : KeyProperties.KEY_ALGORITHM_EC, 
+                                                            ANDROID_KEYSTORE);
+        KeyGenParameterSpec.Builder builder = 
+            new KeyGenParameterSpec.Builder(String.valueOf(keyHandle),
+                    KeyProperties.PURPOSE_SIGN | (rsaFlag ?  KeyProperties.PURPOSE_DECRYPT : 0))
+                .setAlgorithmParameterSpec(algParSpec)
+                .setDigests(KeyProperties.DIGEST_NONE,
+                            KeyProperties.DIGEST_SHA256,
+                            KeyProperties.DIGEST_SHA384,
+                            KeyProperties.DIGEST_SHA512);
+        kpg.initialize(builder.build());
+        return kpg.generateKeyPair().getPublic();
+    }
+
     public static synchronized void serializeSKS(String callerForLog, Context caller) {
         if (sks != null) {
             try {
@@ -152,6 +175,20 @@ public abstract class SKSStore {
                 Log.e(callerForLog, "Couldn't write SKS: " + e.getMessage());
             }
         }
+    }
+    
+    static void setKeyEntry(int keyHandle, 
+                            PrivateKey privateKey, 
+                            X509Certificate[] certifcatePath) throws GeneralSecurityException {
+        hardwareBacked.setEntry(String.valueOf(keyHandle),
+                                new KeyStore.PrivateKeyEntry(privateKey, certifcatePath),
+                                new KeyProtection.Builder(KeyProperties.PURPOSE_SIGN)
+                                    .setDigests(KeyProperties.DIGEST_NONE).build());
+
+    }
+
+    static PrivateKey getPrivateKey(int keyHandle) throws GeneralSecurityException {
+        return (PrivateKey)hardwareBacked.getKey(String.valueOf(keyHandle), null);
     }
 
     public static boolean isSupported(String algorithm) {
