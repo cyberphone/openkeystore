@@ -658,7 +658,7 @@ public class ProvSess {
                             String pin_value,
                             PINPol pinPolicy,
                             AppUsage appUsage,
-                            String[] endorsed_algorithm) throws SKSException, IOException, GeneralSecurityException {
+                            String[] endorsed_algorithms) throws SKSException, IOException, GeneralSecurityException {
         byte[] serverSeed = new byte[32];
         new SecureRandom().nextBytes(serverSeed);
         return createKey(id,
@@ -673,7 +673,7 @@ public class ProvSess {
                 appUsage,
                 "" /* friendlyName */,
                 new KeySpecifier(key_algorithm),
-                endorsed_algorithm);
+                endorsed_algorithms);
     }
 
 

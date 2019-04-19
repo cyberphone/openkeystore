@@ -82,6 +82,7 @@ import org.webpki.sks.SKSException;
 import org.webpki.sks.SecureKeyStore;
 
 
+
 import org.webpki.sks.ws.TrustedGUIAuthorization;
 import org.webpki.sks.ws.WSSpecific;
 
@@ -3186,4 +3187,25 @@ public class SKSTest {
             checkException(e, "Unsupported: \"devicePinProtection\"");
         }
     }
-}
+ 
+    @Test
+    public void test84() throws Exception {
+        ProvSess sess = new ProvSess(device);
+        GenKey key = sess.createKey("Key.1",
+                KeyAlgorithms.NIST_P_256,
+                null /* pin_value */,
+                null,
+                AppUsage.AUTHENTICATION,
+                new String[]{AsymSignatureAlgorithms.ECDSA_SHA256
+                        .getAlgorithmId(AlgorithmPreferences.SKS)})
+                            .setCertificate(cn());
+        sess.closeSession();
+        key.signData(AsymSignatureAlgorithms.ECDSA_SHA256, null, TEST_STRING);
+        try {
+            key.signData(AsymSignatureAlgorithms.ECDSA_SHA384, null, TEST_STRING);
+            fail("Should not accept");
+        } catch (SKSException e) {
+            assertTrue("Flag not endorsed", e.getMessage().contains("384"));
+        }
+    }
+ }
