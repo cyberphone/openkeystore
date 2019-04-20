@@ -320,7 +320,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
 //#if ANDROID
         PrivateKey getPrivateKey() throws GeneralSecurityException {
             return exportablePrivateKey == null ?
-              SKSStore.getPrivateKey(getKeyId()) : exportablePrivateKey;
+              HardwareKeyStore.getPrivateKey(getKeyId()) : exportablePrivateKey;
         }
         
         String getKeyId() {
@@ -1810,7 +1810,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         ///////////////////////////////////////////////////////////////////////////////////
 //#if ANDROID
         try {
-            SKSStore.deleteKey(keyEntry.getKeyId());
+            HardwareKeyStore.deleteKey(keyEntry.getKeyId());
         } catch (Exception e) {
             abort(e);
         }
@@ -2696,7 +2696,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                         ///////////////////////////////////////////////////////////////////////////////////
 //#if ANDROID
                         // In Android updates are slightly more fuzzy...
-                        SKSStore.deleteKey(keyEntry.getKeyId());
+                        HardwareKeyStore.deleteKey(keyEntry.getKeyId());
                         postOp.newKey.remappedKeyHandle = postOp.newKey.keyHandle;
 //#endif
                         keys.remove(postOp.newKey.keyHandle);
@@ -3059,7 +3059,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                 checkEcKeyCompatibility((ECPrivateKey)MACRO_IMPORTED_PRIVATEKEY, keyEntry.id);
             }
 //#if ANDROID
-            SKSStore.importKey(keyEntry.getKeyId(), importedPrivateKey, keyEntry.certificatePath);
+            HardwareKeyStore.importKey(keyEntry.getKeyId(), importedPrivateKey, keyEntry.certificatePath);
             logCertificateOperation(keyEntry, "private key import");
 //#endif
         } catch (Exception e) {
@@ -3367,7 +3367,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
 //#if ANDROID
             PublicKey publicKey;
             if (exportProtection == EXPORT_DELETE_PROTECTION_NOT_ALLOWED) {
-                publicKey = SKSStore.createSecureKeyPair(keyEntry.getKeyId(),
+                publicKey = HardwareKeyStore.createSecureKeyPair(keyEntry.getKeyId(),
                                                          algParSpec,
                                                          keyFactory.equals("RSA"));
             } else {

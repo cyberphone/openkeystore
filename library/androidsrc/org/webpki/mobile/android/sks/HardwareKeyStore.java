@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2016 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2019 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -52,7 +52,10 @@ import android.security.keystore.KeyProtection;
 
 import javax.security.auth.x500.X500Principal;
 
-public abstract class SKSStore {
+// This class holds all interfaces between SKS and the AndroidKeyStore.
+// It also provides SKS/AndroidKeyStore initialization and serialization support. 
+
+public abstract class HardwareKeyStore {
 
     private static final String PERSISTENCE_SKS   = "SKS";  // SKS persistence file
 
