@@ -842,12 +842,21 @@ public class SKSTest {
             cipher.init(Cipher.ENCRYPT_MODE, key.getPublicKey());
         }
         byte[] enc = cipher.doFinal(TEST_STRING);
+//#if ANDROID
+try {
+//#endif
         assertTrue("Encryption error: " + encryption_algorithm,
                 ArrayUtil.compare(device.sks.asymmetricKeyDecrypt(key.keyHandle,
                         encryption_algorithm.getAlgorithmId(AlgorithmPreferences.SKS),
                         null,
                         good_pin.getBytes("UTF-8"),
                         enc), TEST_STRING));
+//#if ANDROID
+} catch (SKSException e) {
+    assertTrue("Android OAEP", e.getMessage().contains("Unsupported MGF1 digest: SHA-256"));
+    return;
+}
+//#endif
         try {
             device.sks.asymmetricKeyDecrypt(key.keyHandle,
                     AsymSignatureAlgorithms.RSA_SHA256.getAlgorithmId(AlgorithmPreferences.SKS),

@@ -239,7 +239,7 @@ public class SEReferenceImplementation {
         byte[] pkcs1DigestInfo;
         ECParameterSpec ecParameterSpec;
         int ecPointLength;
-        byte byteAlgorithmId;
+        byte algorithmIndex;
 
         void addEcCurve(int ecPointLength, byte[] samplePublicKey) {
             this.ecPointLength = ecPointLength;
@@ -258,7 +258,7 @@ public class SEReferenceImplementation {
     
     static Algorithm addAlgorithm(String uri, String jceName, int mask) {
         Algorithm alg = new Algorithm();
-        alg.byteAlgorithmId = byteAlgorithmId++;
+        alg.algorithmIndex = byteAlgorithmId++;
         alg.mask = mask;
         alg.jceName = jceName;
         supportedAlgorithms.put(uri, alg);
@@ -636,7 +636,7 @@ public class SEReferenceImplementation {
 
         byte[] symmetricKey;
         
-        byte[] byteEndorsedAlgorithms;
+        byte[] endorsedAlgorithms;
 
         boolean isRsa() {
             return privateKey instanceof RSAKey;
@@ -648,7 +648,7 @@ public class SEReferenceImplementation {
             macBuilder.addBool(isSymmetric);
             macBuilder.addArray(wrappedKey);
             macBuilder.addArray(sha256OfPublicKeyOrCertificate);
-            macBuilder.addArray(byteEndorsedAlgorithms);
+            macBuilder.addArray(endorsedAlgorithms);
             return macBuilder.getResult();
         }
 
@@ -658,7 +658,7 @@ public class SEReferenceImplementation {
             byteWriter.writeBoolean(isSymmetric);
             byteWriter.writeBoolean(isExportable);
             byteWriter.writeArray(sha256OfPublicKeyOrCertificate);
-            byteWriter.writeArray(byteEndorsedAlgorithms);
+            byteWriter.writeArray(endorsedAlgorithms);
             byteWriter.writeArray(createMAC(osInstanceKey));
             return byteWriter.getData();
         }
@@ -669,7 +669,7 @@ public class SEReferenceImplementation {
             isSymmetric = byteReader.readBoolean();
             isExportable = byteReader.readBoolean();
             sha256OfPublicKeyOrCertificate = byteReader.readArray(32);
-            byteEndorsedAlgorithms = byteReader.getArray();
+            endorsedAlgorithms = byteReader.getArray();
             byte[] oldMac = byteReader.readArray(32);
             byteReader.checkEOF();
             byteReader.close();
@@ -736,12 +736,15 @@ public class SEReferenceImplementation {
         return result;
     }
 
-    static UnwrappedKey getUnwrappedKey(byte[] osInstanceKey, byte[] sealedKey) throws IOException, GeneralSecurityException {
+    static UnwrappedKey getUnwrappedKey(byte[] osInstanceKey, byte[] sealedKey)
+    throws IOException, GeneralSecurityException {
         UnwrappedKey unwrappedKey = new UnwrappedKey();
         unwrappedKey.readKey(osInstanceKey, sealedKey);
         byte[] data = unwrappedKey.wrappedKey;
         Cipher crypt = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        crypt.init(Cipher.DECRYPT_MODE, new SecretKeySpec(deriveKey(osInstanceKey, userKeyWrapperSecret), "AES"), new IvParameterSpec(data, 0, 16));
+        crypt.init(Cipher.DECRYPT_MODE, 
+                   new SecretKeySpec(deriveKey(osInstanceKey, userKeyWrapperSecret), "AES"), 
+                   new IvParameterSpec(data, 0, 16));
         byte[] rawKey = crypt.doFinal(data, 16, data.length - 16);
         if (unwrappedKey.isSymmetric) {
             unwrappedKey.symmetricKey = rawKey;
@@ -751,7 +754,8 @@ public class SEReferenceImplementation {
         return unwrappedKey;
     }
 
-    static byte[] wrapKey(byte[] osInstanceKey, UnwrappedKey unwrappedKey, byte[] rawKey) throws IOException, GeneralSecurityException {
+    static byte[] wrapKey(byte[] osInstanceKey, UnwrappedKey unwrappedKey, byte[] rawKey) 
+    throws IOException, GeneralSecurityException {
         Cipher crypt = Cipher.getInstance("AES/CBC/PKCS5Padding");
         byte[] iv = new byte[16];
         new SecureRandom().nextBytes(iv);
@@ -1109,16 +1113,18 @@ public class SEReferenceImplementation {
             abort("Algorithm does not match operation: " + algorithm, SKSException.ERROR_ALGORITHM);
         }
         if (((alg.mask & (ALG_SYM_ENC | ALG_HMAC)) != 0) ^ unwrappedKey.isSymmetric) {
-            abort((unwrappedKey.isSymmetric ? "S" : "As") + "ymmetric key #" + keyHandle + " is incompatible with: " + algorithm, SKSException.ERROR_ALGORITHM);
+            abort((unwrappedKey.isSymmetric ? "S" : "As") + "ymmetric key #" + 
+                  keyHandle + " is incompatible with: " + algorithm, SKSException.ERROR_ALGORITHM);
         }
         if (unwrappedKey.isSymmetric) {
             testSymmetricKey(algorithm, unwrappedKey.symmetricKey, "#" + keyHandle);
         } else if (unwrappedKey.isRsa() ^ (alg.mask & ALG_RSA_KEY) != 0) {
-            abort((unwrappedKey.isRsa() ? "RSA" : "EC") + " key #" + keyHandle + " is incompatible with: " + algorithm, SKSException.ERROR_ALGORITHM);
+            abort((unwrappedKey.isRsa() ? "RSA" : "EC") + " key #" + 
+                  keyHandle + " is incompatible with: " + algorithm, SKSException.ERROR_ALGORITHM);
         }
-        if (unwrappedKey.byteEndorsedAlgorithms.length > 0) {
-            for (byte byteEndorsedAlgorithm : unwrappedKey.byteEndorsedAlgorithms) {
-                if (alg.byteAlgorithmId == byteEndorsedAlgorithm) {
+        if (unwrappedKey.endorsedAlgorithms.length > 0) {
+            for (byte endorsedAlgorithm : unwrappedKey.endorsedAlgorithms) {
+                if (alg.algorithmIndex == endorsedAlgorithm) {
                     return alg;
                 }
             }
@@ -1810,7 +1816,8 @@ public class SEReferenceImplementation {
                 ska.addBool(privacyEnabled);
                 ska.addArray(serverEphemeralKey.getEncoded());
                 ska.addArray(clientEphemeralKey.getEncoded());
-                ska.addArray(keyManagementKey == null ? SecureKeyStore.ZERO_LENGTH_ARRAY : keyManagementKey.getEncoded());
+                ska.addArray(keyManagementKey == null ? 
+                     SecureKeyStore.ZERO_LENGTH_ARRAY : keyManagementKey.getEncoded());
                 ska.addInt(clientTime);
                 ska.addShort(sessionLifeTime);
                 ska.addShort(sessionKeyLimit);
@@ -1972,8 +1979,10 @@ public class SEReferenceImplementation {
             ///////////////////////////////////////////////////////////////////////////////////
             // Check for key length errors
             ///////////////////////////////////////////////////////////////////////////////////
-            if (encryptedKey.length > (SecureKeyStore.MAX_LENGTH_SYMMETRIC_KEY + SecureKeyStore.AES_CBC_PKCS5_PADDING)) {
-                abort("Symmetric key: " + id + " exceeds " + SecureKeyStore.MAX_LENGTH_SYMMETRIC_KEY + " bytes");
+            if (encryptedKey.length > (SecureKeyStore.MAX_LENGTH_SYMMETRIC_KEY + 
+                                       SecureKeyStore.AES_CBC_PKCS5_PADDING)) {
+                abort("Symmetric key: " + id + " exceeds " + 
+                      SecureKeyStore.MAX_LENGTH_SYMMETRIC_KEY + " bytes");
             }
     
             ///////////////////////////////////////////////////////////////////////////////////
@@ -2053,7 +2062,7 @@ public class SEReferenceImplementation {
             }
             if (extensionData.length > (subType == SecureKeyStore.SUB_TYPE_ENCRYPTED_EXTENSION ?
                     MAX_LENGTH_EXTENSION_DATA + SecureKeyStore.AES_CBC_PKCS5_PADDING
-                    :
+                                                 :
                     MAX_LENGTH_EXTENSION_DATA)) {
                 abort("Extension data exceeds " + MAX_LENGTH_EXTENSION_DATA + " bytes");
             }
@@ -2256,7 +2265,7 @@ public class SEReferenceImplementation {
             verifier.addString(keyAlgorithm);
             verifier.addArray(keyParameters == null ? SecureKeyStore.ZERO_LENGTH_ARRAY : keyParameters);
             String prevAlg = "\0";
-            ByteArrayOutputStream byteEndorsedAlgorithms = new ByteArrayOutputStream();
+            ByteArrayOutputStream endorsedAlgorithmIndices = new ByteArrayOutputStream();
             for (String endorsedAlgorithm : endorsedAlgorithms) {
                 ///////////////////////////////////////////////////////////////////////////////////
                 // Check that the algorithms are sorted and known
@@ -2271,7 +2280,7 @@ public class SEReferenceImplementation {
                 if ((alg.mask & ALG_NONE) != 0 && endorsedAlgorithms.length > 1) {
                     abort("Algorithm must be alone: " + endorsedAlgorithm);
                 }
-                byteEndorsedAlgorithms.write(alg.byteAlgorithmId);
+                endorsedAlgorithmIndices.write(alg.algorithmIndex);
                 verifier.addString(prevAlg = endorsedAlgorithm);
             }
             verifier.verify(mac);
@@ -2300,7 +2309,8 @@ public class SEReferenceImplementation {
             SecureRandom secure_random = serverSeed.length == 0 ? 
                                              new SecureRandom() : new SecureRandom(serverSeed);
             KeyPairGenerator kpg = 
-                    KeyPairGenerator.getInstance(algPar_spec instanceof RSAKeyGenParameterSpec ? "RSA" : "EC");
+                    KeyPairGenerator.getInstance(algPar_spec instanceof RSAKeyGenParameterSpec ? 
+                                                                                         "RSA" : "EC");
             kpg.initialize(algPar_spec, secure_random);
             KeyPair keyPair = kpg.generateKeyPair();
             PublicKey publicKey = keyPair.getPublic();
@@ -2322,7 +2332,7 @@ public class SEReferenceImplementation {
             unwrappedKey.isExportable = 
                     exportProtection != SecureKeyStore.EXPORT_DELETE_PROTECTION_NOT_ALLOWED;
             unwrappedKey.sha256OfPublicKeyOrCertificate = getSHA256(publicKey.getEncoded());
-            unwrappedKey.byteEndorsedAlgorithms = byteEndorsedAlgorithms.toByteArray();
+            unwrappedKey.endorsedAlgorithms = endorsedAlgorithmIndices.toByteArray();
             seKeyData.sealedKey = wrapKey(osInstanceKey, unwrappedKey, privateKey.getEncoded());
             seKeyData.provisioningState = unwrappedSessionKey.writeKey(osInstanceKey);
             seKeyData.attestation = attestation;

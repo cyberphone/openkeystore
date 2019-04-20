@@ -52,9 +52,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.ECParameterSpec;
-//#if !ANDROID
 import java.security.spec.MGF1ParameterSpec;
-//#endif
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.RSAKeyGenParameterSpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -70,10 +68,8 @@ import javax.crypto.KeyAgreement;
 import javax.crypto.Mac;
 
 import javax.crypto.spec.IvParameterSpec;
-//#if !ANDROID
 import javax.crypto.spec.OAEPParameterSpec;
 import javax.crypto.spec.PSource;
-//#endif
 import javax.crypto.spec.SecretKeySpec;
 
 import org.webpki.sks.DeviceInfo;
@@ -1971,17 +1967,13 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         ///////////////////////////////////////////////////////////////////////////////////
         try {
             Cipher cipher = Cipher.getInstance(alg.jceName);
-//#if ANDROID
-            cipher.init(Cipher.DECRYPT_MODE, keyEntry.MACRO_GET_PRIVATEKEY);
-//#else
             if ((alg.mask & ALG_HASH_256) != 0) {
-                cipher.init(Cipher.DECRYPT_MODE, keyEntry.privateKey,
+                cipher.init(Cipher.DECRYPT_MODE, keyEntry.MACRO_GET_PRIVATEKEY,
                     new OAEPParameterSpec(
                         "SHA-256", "MGF1", MGF1ParameterSpec.SHA256, PSource.PSpecified.DEFAULT));
             } else {
-                cipher.init(Cipher.DECRYPT_MODE, keyEntry.privateKey);
+                cipher.init(Cipher.DECRYPT_MODE, keyEntry.MACRO_GET_PRIVATEKEY);
             }
-//#endif
             return cipher.doFinal(data);
         } catch (Exception e) {
             abort(e);
