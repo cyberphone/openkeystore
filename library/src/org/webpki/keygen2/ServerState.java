@@ -33,6 +33,7 @@ import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import org.webpki.crypto.AlgorithmPreferences;
@@ -599,29 +600,16 @@ public class ServerState implements Serializable {
             return this;
         }
 
-        String[] getSortedAlgorithms(String[] algorithms) throws IOException {
-            int i = 0;
-            while (true) {
-                if (i < (algorithms.length - 1)) {
-                    if (algorithms[i].compareTo(algorithms[i + 1]) > 0) {
-                        String s = algorithms[i];
-                        algorithms[i] = algorithms[i + 1];
-                        algorithms[i + 1] = s;
-                        i = 0;
-                    } else {
-                        i++;
-                    }
-                } else {
-                    break;
-                }
-            }
-            return algorithms;
-        }
-
         String[] endorsedAlgorithms;
 
         public Key setEndorsedAlgorithms(String[] endorsedAlgorithms) throws IOException {
-            this.endorsedAlgorithms = getSortedAlgorithms(endorsedAlgorithms);
+            TreeSet<String> sortedAlgorithms = new TreeSet<String>();
+            for (String endorsedAlgorithm : endorsedAlgorithms) {
+                if (!sortedAlgorithms.add(endorsedAlgorithm)) {
+                    throw new IOException("Duplicate: " + endorsedAlgorithm);
+                }
+            }
+            this.endorsedAlgorithms = sortedAlgorithms.toArray(new String[0]);
             return this;
         }
 

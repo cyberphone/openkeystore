@@ -16,7 +16,7 @@
  */
 package org.webpki.sks;
 
-public class EnumeratedKey {
+public class EnumeratedKey implements Cloneable {
 
     public static final int INIT_ENUMERATION = 0;
 
@@ -43,5 +43,9 @@ public class EnumeratedKey {
         this.keyHandle = keyHandle;
         this.provisioningHandle = provisioningHandle;
     }
-
+    
+    @Override
+    public EnumeratedKey clone() {
+        return new EnumeratedKey(keyHandle, provisioningHandle);
+    }
 }

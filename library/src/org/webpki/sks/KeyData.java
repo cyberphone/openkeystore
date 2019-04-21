@@ -45,5 +45,4 @@ public class KeyData {
     public byte[] getAttestation() {
         return attestation;
     }
-
 }

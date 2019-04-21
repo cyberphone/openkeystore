@@ -18,6 +18,8 @@ package org.webpki.sks;
 
 import java.security.cert.X509Certificate;
 
+import java.util.LinkedHashSet;
+
 
 public class KeyAttributes {
 
@@ -29,10 +31,18 @@ public class KeyAttributes {
 
     String friendlyName;
 
-    String[] endorsedAlgorithms;
+    LinkedHashSet<String> endorsedAlgorithms;
 
-    String[] extensionTypes;
+    LinkedHashSet<String> extensionTypes;
 
+
+    static LinkedHashSet<String> fillSet(String[] stringArray) {
+        LinkedHashSet<String> hashSet = new LinkedHashSet<String>();
+        for(String string : stringArray) {
+            hashSet.add(string);
+        }
+        return hashSet;
+    }
 
     public boolean isSymmetricKey() {
         return symmetricKeyLength > 0;
@@ -59,11 +69,11 @@ public class KeyAttributes {
         return friendlyName;
     }
 
-    public String[] getEndorsedAlgorithms() {
+    public LinkedHashSet<String> getEndorsedAlgorithms() {
         return extensionTypes;
     }
 
-    public String[] getExtensionTypes() {
+    public LinkedHashSet<String> getExtensionTypes() {
         return extensionTypes;
     }
 
@@ -77,7 +87,7 @@ public class KeyAttributes {
         this.certificatePath = certificatePath;
         this.appUsage = appUsage;
         this.friendlyName = friendlyName;
-        this.endorsedAlgorithms = endorsedAlgorithms;
-        this.extensionTypes = extensionTypes;
+        this.endorsedAlgorithms = fillSet(endorsedAlgorithms);
+        this.extensionTypes = fillSet(extensionTypes);
     }
 }

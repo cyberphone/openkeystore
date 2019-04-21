@@ -18,6 +18,8 @@ package org.webpki.sks;
 
 import java.security.cert.X509Certificate;
 
+import java.util.LinkedHashSet;
+
 public class DeviceInfo {
     ///////////////////////////////////////////////////////////////////////////////////
     // "DeviceType" constants
@@ -70,9 +72,9 @@ public class DeviceInfo {
         return certificatePath;
     }
 
-    String[] supportedAlgorithms;
+    LinkedHashSet<String> supportedAlgorithms;
 
-    public String[] getSupportedAlgorithms() {
+    public LinkedHashSet<String> getSupportedAlgorithms() {
         return supportedAlgorithms;
     }
 
@@ -117,7 +119,7 @@ public class DeviceInfo {
         this.vendorName = vendorName;
         this.vendorDescription = vendorDescription;
         this.certificatePath = certificatePath;
-        this.supportedAlgorithms = supportedAlgorithms;
+        this.supportedAlgorithms = KeyAttributes.fillSet(supportedAlgorithms);
         this.cryptoDataSize = cryptoDataSize;
         this.extensionDataSize = extensionDataSize;
         this.devicePinSupport = devicePinSupport;

@@ -503,11 +503,8 @@ public class KeyGen2Test {
             InvocationResponseEncoder invocation_response = new InvocationResponseEncoder(invocation_request);
             Vector<String> matches = new Vector<String>();
             for (String want : invocation_request.getQueriedCapabilities()) {
-                for (String have : device_info.getSupportedAlgorithms()) {
-                    if (have.equals(want)) {
-                        matches.add(have);
-                        break;
-                    }
+                if (device_info.getSupportedAlgorithms().contains(want)) {
+                    matches.add(want);
                 }
             }
             for (String algorithm : matches) {

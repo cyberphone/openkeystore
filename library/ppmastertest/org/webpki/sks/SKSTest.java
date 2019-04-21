@@ -90,6 +90,7 @@ import android.support.test.runner.AndroidJUnit4;
 import android.support.test.InstrumentationRegistry;
 
 import org.junit.runner.RunWith;
+
 import org.webpki.mobile.android.sks.HardwareKeyStore;
 //#else
 import org.webpki.sks.ws.TrustedGUIAuthorization;

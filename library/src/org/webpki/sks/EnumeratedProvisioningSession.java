@@ -108,5 +108,4 @@ public class EnumeratedProvisioningSession {
         this.serverSessionId = serverSessionId;
         this.issuerUri = issuerUri;
     }
-
 }
