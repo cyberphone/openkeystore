@@ -37,6 +37,7 @@ import java.util.TreeSet;
 import java.util.Vector;
 
 import org.webpki.crypto.AlgorithmPreferences;
+import org.webpki.crypto.CryptoAlgorithms;
 import org.webpki.crypto.DeviceID;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyContainerTypes;
@@ -600,19 +601,18 @@ public class ServerState implements Serializable {
             return this;
         }
 
-        String[] endorsedAlgorithms;
+        TreeSet<String> endorsedAlgorithms = new TreeSet<String>();
 
-        public Key setEndorsedAlgorithms(String[] endorsedAlgorithms) throws IOException {
-            TreeSet<String> sortedAlgorithms = new TreeSet<String>();
-            for (String endorsedAlgorithm : endorsedAlgorithms) {
-                if (!sortedAlgorithms.add(endorsedAlgorithm)) {
-                    throw new IOException("Duplicate: " + endorsedAlgorithm);
-                }
+        public Key addEndorsedAlgorithm(String endorsedAlgorithm) throws IOException {
+            if (!endorsedAlgorithms.add(endorsedAlgorithm)) {
+                throw new IOException("Duplicate: " + endorsedAlgorithm);
             }
-            this.endorsedAlgorithms = sortedAlgorithms.toArray(new String[0]);
             return this;
         }
 
+        public Key addEndorsedAlgorithm(CryptoAlgorithms endorsedAlgorithm) throws IOException {
+            return addEndorsedAlgorithm(endorsedAlgorithm.getAlgorithmId(AlgorithmPreferences.SKS));
+        }
 
         public byte[] getEncryptedSymmetricKey() {
             return encryptedSymmetricKey;
@@ -907,8 +907,9 @@ public class ServerState implements Serializable {
                 wr.setBinary(KEY_PARAMETERS_JSON, keySpecifier.getKeyParameters());
             }
 
-            if (endorsedAlgorithms != null && endorsedAlgorithms.length > 0) {
-                wr.setStringArray(ENDORSED_ALGORITHMS_JSON, endorsedAlgorithms);
+            if (!endorsedAlgorithms.isEmpty()) {
+                wr.setStringArray(ENDORSED_ALGORITHMS_JSON,
+                                  endorsedAlgorithms.toArray(new String[0]));
             }
 
             wr.setBinary(MAC_JSON, keyMac = mac(keyPairMac.getResult(), SecureKeyStore.METHOD_CREATE_KEY_ENTRY));

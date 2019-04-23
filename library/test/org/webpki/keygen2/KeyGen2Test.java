@@ -991,11 +991,12 @@ public class KeyGen2Test {
                                     key_alg,
                                     pinPolicy);
             if (symmetricKey || encryption_key) {
-                kp.setEndorsedAlgorithms(new String[]{encryption_key ? SymEncryptionAlgorithms.AES256_CBC.getAlgorithmId(AlgorithmPreferences.SKS) : MACAlgorithms.HMAC_SHA1.getAlgorithmId(AlgorithmPreferences.SKS)});
+                kp.addEndorsedAlgorithm(encryption_key ?
+                    SymEncryptionAlgorithms.AES256_CBC : MACAlgorithms.HMAC_SHA1);
                 kp.setSymmetricKey(encryption_key ? AES32BITKEY : OTP_SEED);
             }
             if (key_agreement) {
-                kp.setEndorsedAlgorithms(new String[]{SecureKeyStore.ALGORITHM_ECDH_RAW});
+                kp.addEndorsedAlgorithm(SecureKeyStore.ALGORITHM_ECDH_RAW);
             }
             if (propertyBag) {
                 kp.addPropertyBag("http://host/prop")
