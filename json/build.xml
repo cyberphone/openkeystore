@@ -10,7 +10,7 @@
   <property name="keypassword" value="foo123"/>
   <property name="keyfilext" value=".p12"/>
   <property name="key.dir" location="keys"/>
-  <property name="dist.dir" value="location"/>
+  <property name="dist.dir" location="dist"/>
   <property name="temp.dir" location=".tmp"/>
   <property name="logotype.dir" location="logotype"/>
   
