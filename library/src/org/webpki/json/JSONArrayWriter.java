@@ -122,7 +122,7 @@ public class JSONArrayWriter implements Serializable {
         return setString(Base64URL.encode(value));
     }
 
-    JSONObjectWriter createWriteable() {
+    JSONObjectWriter createWriteable() throws IOException {
         JSONObject dummy = new JSONObject();
         dummy.properties.put(null, new JSONValue(JSONTypes.ARRAY, array));
         return new JSONObjectWriter(dummy);

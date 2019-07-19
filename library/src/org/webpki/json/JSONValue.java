@@ -16,6 +16,7 @@
  */
 package org.webpki.json;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 /**
@@ -31,10 +32,13 @@ class JSONValue implements Serializable {
 
     boolean preSet;    // Number serialization optimizer
 
-    boolean readFlag;  // For verifying that we dodn't forgot something
+    boolean readFlag;  // For verifying that we didn't forgot something
 
-    JSONValue(JSONTypes type, Object value) {
+    JSONValue(JSONTypes type, Object value) throws IOException {
         this.type = type;
         this.value = value;
+        if (value == null) {
+            throw new IOException("Value of type " + type.toString() + " must not be null");
+        }
     }
 }
