@@ -17,28 +17,23 @@
 package org.webpki.json;
 
 import java.io.IOException;
-
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.PublicKey;
-
 import java.security.cert.X509Certificate;
-
 import java.security.interfaces.RSAPublicKey;
-
 import java.util.Vector;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.KeyAlgorithms;
-
 import org.webpki.json.JSONBaseHTML.Extender;
 import org.webpki.json.JSONBaseHTML.RowInterface;
 import org.webpki.json.JSONBaseHTML.Types;
 import org.webpki.json.JSONBaseHTML.ProtocolObject.Row.Column;
-
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.DebugFormatter;
+import org.webpki.util.PEMDecoder;
 
 /**
  * Create an HTML description of JEF (JSON Encryption Format).
@@ -64,19 +59,16 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
 
     static final String SECURITY_CONSIDERATIONS = "Security Considerations";
  
-    static final String CRIT_TEST_VECTOR     = "p256#ecdh-es+a256kw@a256gcm@crit-jwk.json";
+    static final String EXTS_TEST_VECTOR     = "p256#ecdh-es+a256kw@a256gcm@exts-jwk.json";
     static final String SAMPLE_TEST_VECTOR   = "p256#ecdh-es+a128kw@a128gcm@kid.json";
     static final String SAMPLE_I_TEST_VECTOR = "p256#ecdh-es+a128kw@a128gcm@imp.json";
     static final String SAMPLE_A_TEST_VECTOR = "p256#ecdh-es+a256kw@a128cbc-hs256@kid.json";
     static final String MULT_TEST_VECTOR     = "p256#ecdh-es+a256kw,r2048#rsa-oaep-256@a128cbc-hs256@mult-kid.json";
-    static final String GLOB_ALG_TEST_VECTOR = "p256#ecdh-es+a256kw,p384#ecdh-es+a256kw@a128cbc-hs256@mult-glob+alg-kid.json";
     static final String JWK_TEST_VECTOR      = "p256#ecdh-es+a256kw@a128cbc-hs256@jwk.json";
-    static final String JKU_TEST_VECTOR      = "p256#ecdh-es+a256kw@a128cbc-hs256@jku.json";
-    static final String X5C_TEST_VECTOR      = "p256#ecdh-es+a256kw@a128cbc-hs256@x5c.json";
-    static final String X5U_TEST_VECTOR      = "p256#ecdh-es+a256kw@a128cbc-hs256@x5u.json";
+    static final String CER_TEST_VECTOR      = "p256#ecdh-es+a256kw@a128cbc-hs256@cer.json";
     static final String RSA_JWK_TEST_VECTOR  = "r2048#rsa-oaep-256@a256gcm@jwk.json";
     static final String RSA_IMP_TEST_VECTOR  = "r2048#rsa-oaep-256@a256gcm@imp.json";
-    static final String RSA_KID_TEST_VECTOR  = "r2048#rsa-oaep-256@a256gcm@kid.json";
+    static final String RSA_KID_TEST_VECTOR  = "r2048#rsa-oaep@a128gcm@kid.json";
     static final String P384_JWK_TEST_VECTOR = "p384#ecdh-es@a256cbc-hs512@jwk.json";
     static final String P521_JWK_TEST_VECTOR = "p521#ecdh-es+a256kw@a128cbc-hs256@jwk.json";
     
@@ -161,7 +153,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
         asymKey.keyId = key.getString("kid");
         key.removeProperty("kid");
         asymKey.keyPair = key.getKeyPair();
-        asymKey.certPath = json.readJson1(keyType + "certificate.x5c").getJSONArrayReader().getCertificatePath();
+        asymKey.certPath = PEMDecoder.getCertificatePath(json.readFile1(keyType + "certpath.pem"));
         return asymKey;
     }
 
@@ -182,11 +174,6 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
                    !recipient.hasProperty(JSONCryptoHelper.PUBLIC_KEY_JSON)) {
             options.setRequirePublicKeyInfo(false);
         }
-        if (recipient.hasProperty(JSONCryptoHelper.EXTENSIONS_JSON)) {
-            options.setPermittedExtensions(new JSONCryptoHelper.ExtensionHolder()
-                .addExtension(Extension1.class, true)
-                .addExtension(Extension2.class, true));
-        }
     }
 
     static String validateAsymEncryption (String fileName) throws IOException {
@@ -194,10 +181,12 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
         JSONObjectReader encryptedObject = json.readJson2(fileName);
         try {
             JSONObjectReader checker = encryptedObject.clone();
-            Vector<JSONDecryptionDecoder> recipients = new Vector<JSONDecryptionDecoder>();
-            if (checker.hasProperty(JSONCryptoHelper.KEY_ID_JSON)) {
-                options.setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED);
+            if (checker.hasProperty(JSONCryptoHelper.EXTENSIONS_JSON)) {
+                options.setPermittedExtensions(new JSONCryptoHelper.ExtensionHolder()
+                    .addExtension(Extension1.class, true)
+                    .addExtension(Extension2.class, true));
             }
+            Vector<JSONDecryptionDecoder> recipients = new Vector<JSONDecryptionDecoder>();
             if (checker.hasProperty(JSONCryptoHelper.RECIPIENTS_JSON)) {
                 JSONArrayReader recipientArray = checker.getArray(JSONCryptoHelper.RECIPIENTS_JSON);
                 do {
@@ -205,7 +194,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
                 } while (recipientArray.hasMore());
                 recipients = encryptedObject.getEncryptionObjects(options);
             } else {
-                scanObject(checker, options);
+                scanObject(checker.getObject(JSONCryptoHelper.ENCRYPTED_KEY_JSON), options);
                 recipients.add(encryptedObject.getEncryptionObject(options));
             }
             for (JSONDecryptionDecoder decoder : recipients) {
@@ -340,21 +329,19 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
           .append("This document specifies a container formatted in JSON ")
           .append(json.createReference(JSONBaseHTML.REF_JSON))
           .append(" for holding encrypted binary data, coined JEF (JSON Encryption Format)." + LINE_SEPARATOR +
-            "JEF was derived from IETF's JWE ")
+            "JEF is loosely derived from IETF's JWE ")
           .append(json.createReference(JSONBaseHTML.REF_JWE))
           .append(
-            " specification and supports a <i>subset</i> of the same algorithms ")
+            " specification and supports the same algorithms ")
           .append(json.createReference(JSONBaseHTML.REF_JWA))
           .append(". Public keys are represented as JWK ")
           .append(json.createReference(JSONBaseHTML.REF_JWK))
-          .append(" objects while the encryption container itself utilizes a notation similar to JCS ")
-          .append(json.createReference(JSONBaseHTML.REF_JCS))
+          .append(" objects while the encryption container itself utilizes a notation similar to the JSON " +
+                  "Signature Format ")
+          .append(json.createReference(JSONBaseHTML.REF_JSF))
           .append(" in order to maintain a consistent &quot;style&quot; in applications using encryption and signatures, " +
-                  "<i>including providing header information in plain text</i>."
-                  + LINE_SEPARATOR +
-                  "The JEF encryption scheme is fully compatible with the ES6 ")
-          .append(json.createReference(JSONBaseHTML.REF_ES6))
-          .append(" JSON/JavaScript serialization and parsing specification.");
+                  "including providing header information in plain text.  " +
+                  "The latter was the primary motivation for creating an alternative to JWE.");
 
         json.addParagraphObject(SAMPLE_OBJECT).append(
               "The following sample object is used to visualize the JEF specification:" +
@@ -437,26 +424,13 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
            showAsymEncryption("ECDH encryption object <i>requiring the same private key</i> " +
                    "as in the sample object while providing the key information " +
                    "through an in-line certificate path:",
-                   X5C_TEST_VECTOR) + 
-           showAsymEncryption(
-                   "ECDH encryption object <i>requiring the same private key</i> " +
-                           "as in the sample object while providing the key information " +
-                           "through an <i>external</i> certificate path:",
-                   X5U_TEST_VECTOR) + 
-           showAsymEncryption("ECDH encryption object <i>requiring the same private key</i> " +
-                   "as in the sample object while providing the key information " +
-                   "through an <i>external</i> public key:",
-                   JKU_TEST_VECTOR) + 
-           showKeySet (
-                   "JWK " + json.createReference(JSONBaseHTML.REF_JWK) +
-                   " key set associated with the preceeding encryption object:", 
-                   "p256") +
+                   CER_TEST_VECTOR) + 
            showAsymEncryption(
                    "ECDH encryption object <i>requiring the same private key</i> " +
                            "as in the sample object while providing the key information " +
                            "in line.  In addition, this object declares <code>" +
-                           JSONCryptoHelper.EXTENSIONS_JSON + "</code> extensions:",
-                   CRIT_TEST_VECTOR) + 
+                           JSONCryptoHelper.EXTENSIONS_JSON + "</code>:",
+                   EXTS_TEST_VECTOR) + 
            showKey(
                    "EC private key for decrypting the subsequent object:",
                     p384key) +
@@ -492,11 +466,6 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
                    "Multiple recipient encryption object <i>requiring the same private keys</i> " +
                    "as in the previous examples:",
                    MULT_TEST_VECTOR) +
-           showAsymEncryption(
-                   "Multiple recipient encryption object <i>requiring the same private keys</i> " +
-                           "as in the previous examples as well as using a <i>global</i> <code>" +
-                           JSONCryptoHelper.ALGORITHM_JSON + "</code> property:",
-                   GLOB_ALG_TEST_VECTOR) +
            aesCrypto(new String[]{"a128@a128gcm@kid.json",
                                   "a256@a128cbc-hs256@kid.json",
                                   "a256@a256gcm@imp.json",
@@ -509,7 +478,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
         json.addDocumentHistoryLine("2017-04-19", "0.4", "Changed public keys to use JWK " + json.createReference(JSONBaseHTML.REF_JWK) + " format");
         json.addDocumentHistoryLine("2017-04-25", "0.5", "Added KW and GCM algorithms");
         json.addDocumentHistoryLine("2017-05-15", "0.51", "Added test vectors and missing RSA-OAEP algorithm");
-        json.addDocumentHistoryLine("2018-01-15", "0.60", "Rewritten to reuse JWE " + json.createReference(JSONBaseHTML.REF_JWE) + " property names");
+        json.addDocumentHistoryLine("2019-03-15", "0.60", "Rewritten to use the JCS " + json.createReference(JSONBaseHTML.REF_JCS) + " canonicalization scheme");
 
         json.addParagraphObject("Author").append("JEF was developed by Anders Rundgren (<code>anders.rundgren.net@gmail.com</code>) as a part " +
                                                  "of the OpenKeyStore " +
@@ -541,39 +510,26 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
         .addString("</ul>")
             .newRow()
         .newColumn()
-            .addProperty(JSONCryptoHelper.ALGORITHM_JSON)
-            .addSymbolicValue("Algorithm")
+            .addProperty(JSONCryptoHelper.KEY_ID_JSON)
+            .addSymbolicValue("Key Identifier")
         .newColumn()
             .setType(Types.WEBPKI_DATA_TYPES.STRING)
         .newColumn()
-             .setChoice (false, 1)
+             .setChoice (false, 3)
         .newColumn()
-            .addString("<i>Optional</i>. See " +
-        json.globalLinkRef(KEY_ENCRYPTION, JSONCryptoHelper.ALGORITHM_JSON) +
-                   "." + Types.LINE_SEPARATOR +
-                   "Note: There <b>must</b> always be an <code>&quot;" + JSONCryptoHelper.ALGORITHM_JSON +
-                   "&quot;</code> identifier present. " +
-                   "However, for <i>multiple</i> encryptions schemes <code>&quot;" + JSONCryptoHelper.ALGORITHM_JSON +
-                   "&quot;</code> can either be provided at the top level (=shared), " +
-                   "or be suppled individually (local level) for each encryption object, not both." +
-                   Types.LINE_SEPARATOR +
-                   JSONBaseHTML.referToTestVector(GLOB_ALG_TEST_VECTOR))
+            .addString("<i>Optional</i>. Identifies a symmetric content encryption key.")
        .newRow()
 
         .newColumn()
-        .addProperty("...")
+        .addProperty(JSONCryptoHelper.ENCRYPTED_KEY_JSON)
         .addLink(KEY_ENCRYPTION)
     .newColumn()
-        .setType(Types.WEBPKI_DATA_TYPES.SPECIAL)
+        .setType(Types.WEBPKI_DATA_TYPES.OBJECT)
     .newColumn()
-             .setChoice (false, 2)
     .newColumn()
-        .addString("If an encryption scheme <i>for a single recipient</i> is targeted, the " +
-                   "applicable properties from " +
-                json.globalLinkRef(KEY_ENCRYPTION) +
-                    " <b>must</b> also be featured inside of the encryption " +
-                " object (=at the top level) as illustrated by the " +
-                    json.globalLinkRef(SAMPLE_OBJECT) + ".")
+        .addString("<i>Optional</i>. Single recepient using an encrypted key." + 
+                   Types.LINE_SEPARATOR +
+                   JSONBaseHTML.referToTestVector(JWK_TEST_VECTOR))
        .newRow()
         .newColumn()
         .addProperty(JSONCryptoHelper.RECIPIENTS_JSON)
@@ -582,10 +538,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
         .setType(Types.WEBPKI_DATA_TYPES.OBJECT)
     .newColumn()
     .newColumn()
-        .addString("If this property is defined, one or more recipients <b>must</b> each be provided "+
-                   "with a suitable " +
-                   json.globalLinkRef(KEY_ENCRYPTION) +
-                   " object."+ 
+        .addString("<i>Optional</i>. One or more recipients, each having a unique encrypted key." +
                    Types.LINE_SEPARATOR +
                    JSONBaseHTML.referToTestVector(MULT_TEST_VECTOR))
        .newRow()
@@ -615,7 +568,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
           JSONCryptoHelper.EXTENSIONS_JSON + "&quot;</code> objects. " +
           "Receivers are <i>recommended</i> introducing additional constraints like only accepting predefined extensions." +
           Types.LINE_SEPARATOR +
-          JSONBaseHTML.referToTestVector(CRIT_TEST_VECTOR))
+          JSONBaseHTML.referToTestVector(EXTS_TEST_VECTOR))
         .newRow()
         .newColumn()
           .addProperty(JSONCryptoHelper.IV_JSON)
@@ -642,9 +595,11 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
           .setType(Types.WEBPKI_DATA_TYPES.BYTE_ARRAY)
         .newColumn()
         .newColumn()
-          .addString("Encrypted data.").setNotes("Note that if neither <code>" + JSONCryptoHelper.KEY_ID_JSON +
-                      "</code> nor <code>" + "@@@" + 
-                      "</code> are defined, the (symmetric) data encryption key is assumed to known by the recipient.");
+          .addString("Encrypted data.")
+          .setNotes("Note that if neither <code>" + JSONCryptoHelper.KEY_ID_JSON +
+                    "</code> nor <code>" + JSONCryptoHelper.ENCRYPTED_KEY_JSON +
+                    "</code> nor <code>" + JSONCryptoHelper.RECIPIENTS_JSON + 
+                    "</code> are defined, the (symmetric) content encryption key is assumed to known by the recipient.");
           
              json.addSubItemTable(KEY_ENCRYPTION)
                 .newRow()
@@ -657,7 +612,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
              .setChoice (false, 1)
                     .newColumn()
             .addString("Key encryption algorithm. Currently the following JWE " +
-                                json.createReference (JSONBaseHTML.REF_JWE) +
+                                json.createReference(JSONBaseHTML.REF_JWE) +
                                 " algorithms are recognized:<ul>")
             .newExtensionRow(new Extender() {
                 @Override
@@ -702,7 +657,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
         .newColumn()
           .setType(Types.WEBPKI_DATA_TYPES.OBJECT)
         .newColumn()
-             .setChoice (false, 4)
+             .setChoice (false, 2)
         .newColumn()
           .addString("<i>Optional.</i> Public key associated with the encrypted (or derived) key." +
                     Types.LINE_SEPARATOR +
@@ -712,7 +667,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
           .addProperty(JSONCryptoHelper.CERTIFICATE_PATH_JSON)
           .addArrayList(Types.CERTIFICATE_PATH, 1)
         .newColumn()
-          .setType(Types.WEBPKI_DATA_TYPES.BYTE_ARRAY2)
+          .setType(Types.WEBPKI_DATA_TYPES.BYTE_ARRAY)
         .newColumn()
         .newColumn()
           .addString("<i>Optional.</i> Sorted array of X.509 ")
@@ -720,7 +675,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
           .addString(" certificates, where the <i>first</i> element <b>must</b> contain the <i style=\"white-space:nowrap\">encryption certificate</i>. " +
                       "The certificate path <b>must</b> be <i>contiguous</i> but is not required to be complete." +
                     Types.LINE_SEPARATOR +
-                    JSONBaseHTML.referToTestVector(X5C_TEST_VECTOR))
+                    JSONBaseHTML.referToTestVector(CER_TEST_VECTOR))
      .newRow(ECDH_PROPERTIES)
         .newColumn()
           .addProperty(JSONCryptoHelper.EPHEMERAL_KEY_JSON)
@@ -739,10 +694,10 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
         .newColumn()
         .newColumn()
           .addString("Ephemeral EC public key.")
-        .newRow()
+    .newRow()
         .newColumn()
-          .addProperty(JSONCryptoHelper.ENCRYPTED_KEY_JSON)
-          .addSymbolicValue(JSONCryptoHelper.ENCRYPTED_KEY_JSON)
+          .addProperty(JSONCryptoHelper.CIPHER_TEXT_JSON)
+          .addSymbolicValue(JSONCryptoHelper.CIPHER_TEXT_JSON)
         .newColumn()
           .setType(Types.WEBPKI_DATA_TYPES.BYTE_ARRAY)
         .newColumn()
@@ -750,8 +705,8 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
           .addString("Encrypted content encryption key.")
      .newRow(RSA_PROPERTIES)
         .newColumn()
-          .addProperty(JSONCryptoHelper.ENCRYPTED_KEY_JSON)
-          .addSymbolicValue(JSONCryptoHelper.ENCRYPTED_KEY_JSON)
+          .addProperty(JSONCryptoHelper.CIPHER_TEXT_JSON)
+          .addSymbolicValue(JSONCryptoHelper.CIPHER_TEXT_JSON)
         .newColumn()
           .setType(Types.WEBPKI_DATA_TYPES.BYTE_ARRAY)
         .newColumn()
@@ -759,7 +714,8 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
           .addString("Encrypted content encryption key.")
               .setNotes("Note that if neither <code>" + JSONCryptoHelper.KEY_ID_JSON +
                 "</code> nor <code>" + JSONCryptoHelper.PUBLIC_KEY_JSON + 
-                "</code> are defined, the associated key is assumed to known by the recipient.");
+                "</code> nor <code>" + JSONCryptoHelper.CERTIFICATE_PATH_JSON + 
+                "</code> are defined, the associated public key is assumed to be known by the recipient.");
 
         json.AddPublicKeyDefinitions();
 

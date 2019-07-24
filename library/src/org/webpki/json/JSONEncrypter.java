@@ -74,7 +74,8 @@ public abstract class JSONEncrypter implements Serializable {
         void createRecipient(JSONEncrypter encrypter, JSONObjectWriter currentRecipient)
         throws IOException, GeneralSecurityException {
             if (encrypter.keyEncryptionAlgorithm != null) {
-                currentRecipient.setString(JSONCryptoHelper.ALGORITHM_JSON, encrypter.keyEncryptionAlgorithm.joseName);
+                currentRecipient.setString(JSONCryptoHelper.ALGORITHM_JSON, 
+                                           encrypter.keyEncryptionAlgorithm.joseName);
             }
 
             if (encrypter.keyId != null) {

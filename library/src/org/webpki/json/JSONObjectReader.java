@@ -43,7 +43,7 @@ import org.webpki.util.ISODateTime;
  * <p>
  * Returned by the parser methods.
  * Also provides built-in support for decoding
- <a href="https://cyberphone.github.io/doc/security/jcs.html" target="_blank"><b>JCS (JSON Cleartext Signature)</b></a>
+ <a href="https://cyberphone.github.io/doc/security/jsf.html" target="_blank"><b>JSF (JSON Signature Format)</b></a>
  and
 <a href="https://cyberphone.github.io/doc/security/jef.html" target="_blank"><b>JEF (JSON Encryption Format)</b></a>
  constructs.</p>
@@ -506,8 +506,8 @@ public class JSONObjectReader implements Serializable, Cloneable {
     }
 
     /**
-     * Read and decode a <a href="https://cyberphone.github.io/doc/security/jcs.html" target="_blank"><b>JCS</b></a>
-     * <code>"signature"</code> object.
+     * Read and decode a <a href="https://cyberphone.github.io/doc/security/jsf.html" target="_blank"><b>JSF</b></a>
+     * signature object.
      * 
      * @param options Allowed/expected options
      * @return An object which can be used to verify keys etc.
@@ -530,8 +530,8 @@ public class JSONObjectReader implements Serializable, Cloneable {
 
     /**
      * Read and decode a
-     * <a href="https://cyberphone.github.io/doc/security/jcs.html" target="_blank"><b>JCS</b></a>
-     * <code>"signatures"</code> [] object.
+     * <a href="https://cyberphone.github.io/doc/security/jsf.html" target="_blank"><b>JSF</b></a>
+     * multi-signature object.
      * @param options Allowed/expected options
      * @return List with signature objects
      * @throws IOException &nbsp;
@@ -563,7 +563,7 @@ public class JSONObjectReader implements Serializable, Cloneable {
 
     /**
      * Read and decode a public key in
-     * <a href="https://cyberphone.github.io/doc/security/jcs.html" target="_blank"><b>JCS</b></a>
+     * <a href="https://cyberphone.github.io/doc/security/jsf.html" target="_blank"><b>JSF</b></a>
      * (<a href="https://tools.ietf.org/html/rfc7517" target="_blank"><b>JWK</b></a>) format.
      * 
      * @param algorithmPreferences JOSE or SKS notation expected
@@ -577,7 +577,7 @@ public class JSONObjectReader implements Serializable, Cloneable {
 
     /**
      * Read and decode a public key in
-     * <a href="https://cyberphone.github.io/doc/security/jcs.html" target="_blank"><b>JCS</b></a>
+     * <a href="https://cyberphone.github.io/doc/security/jsf.html" target="_blank"><b>JSF</b></a>
      * (<a href="https://tools.ietf.org/html/rfc7517" target="_blank"><b>JWK</b></a>) format.
      * This method is equivalent to <code>getPublicKey(AlgorithmPreferences.JOSE)</code>.
      * 
@@ -591,7 +591,7 @@ public class JSONObjectReader implements Serializable, Cloneable {
 
     /**
      * Read and decode a public key in
-     * <a href="https://cyberphone.github.io/doc/security/jcs.html" target="_blank"><b>JCS</b></a>
+     * <a href="https://cyberphone.github.io/doc/security/jsf.html" target="_blank"><b>JSF</b></a>
      * (<a href="https://tools.ietf.org/html/rfc7517" target="_blank"><b>JWK</b></a>) format.
      * Note: this method assumes that the current object only holds the actual public key structure (no property).
      * 
@@ -686,7 +686,7 @@ public class JSONObjectReader implements Serializable, Cloneable {
 
     /**
      * Read a certificate path in 
-     * <a href="https://cyberphone.github.io/doc/security/jcs.html" target="_blank"><b>JCS</b></a>
+     * <a href="https://cyberphone.github.io/doc/security/jsf.html" target="_blank"><b>JSF</b></a>
      * format.
      * <p>The array elements (base64url encoded certificates),
      * <b>must</b> be supplied in <i>strict issuance order</i>

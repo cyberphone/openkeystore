@@ -342,7 +342,7 @@ public class Signatures {
 
     static KeyPair readJwk(String keyType) throws Exception {
         JSONObjectReader jwkPlus = JSONParser.parse(ArrayUtil.readFile(baseKey + keyType + "privatekey.jwk"));
-        // Note: The built-in JWK decoder does not accept "kid" since it doesn't have a meaning in JCS or JEF. 
+        // Note: The built-in JWK decoder does not accept "kid" since it doesn't have a meaning in JSF or JEF. 
         if ((keyId = jwkPlus.getStringConditional("kid")) != null) {
             jwkPlus.removeProperty("kid");
         }

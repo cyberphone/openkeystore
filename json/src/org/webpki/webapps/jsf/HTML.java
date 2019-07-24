@@ -167,7 +167,7 @@ public class HTML {
                         null,
                         "<tr><td width=\"100%\" align=\"center\" valign=\"middle\">"
         + "<table style=\"max-width=\"300px\">"
-        + "<tr><td align=\"center\" style=\"font-weight:bolder;font-size:10pt;font-family:arial,verdana\">JSON Clear Text Signature<br>&nbsp;</td></tr>"
+        + "<tr><td align=\"center\" style=\"font-weight:bolder;font-size:10pt;font-family:arial,verdana\">JSF - JSON Signature Format<br>&nbsp;</td></tr>"
         + "<tr><td align=\"left\"><a href=\""
         + baseurl
         + "/verify\">Verify a JSF on the server</a></td></tr>"
@@ -180,8 +180,7 @@ public class HTML {
         + baseurl
         + "/webcrypto\">Create a JSF using WebCrypto</a></td></tr>"
         + "<tr><td>&nbsp;</td></tr>"
-        + "<tr><td>&nbsp;</td></tr>"
-        + "<tr><td align=\"left\"><a target=\"_blank\" href=\"https://cyberphone.github.io/doc/security/jose-jcs.html\">JSF Documentation</a></td></tr>"
+       + "<tr><td align=\"left\"><a target=\"_blank\" href=\"https://cyberphone.github.io/doc/security/jsf.html\">JSF Documentation</a></td></tr>"
         + "</table></td></tr>"));
     }
 

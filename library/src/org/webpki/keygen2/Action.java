@@ -20,23 +20,16 @@ import java.io.IOException;
 
 public enum Action {
 
-    MANAGE ("manage", true,  true,  true),
-    UNLOCK ("unlock", true,  false, true),
-    RESUME ("resume", false, false, false);
+    MANAGE ("manage", true),
+    UNLOCK ("unlock", false);
 
     private final String jsonName;             // As expressed in JSON
 
-    private final boolean provInitRequired;    // ProvisioningInitialization required else illegal
-
-    private final boolean lookupAllowed;       // CredentialDiscovery permitted
-
     private final boolean keyInitAllowed;      // KeyInitialization permitted
 
-    private Action(String jsonName, boolean lookupAllowed, boolean keyInitAllowed, boolean provInitRequired) {
+    private Action(String jsonName, boolean keyInitAllowed) {
         this.jsonName = jsonName;
-        this.lookupAllowed = lookupAllowed;
         this.keyInitAllowed = keyInitAllowed;
-        this.provInitRequired = provInitRequired;
     }
 
 
@@ -44,20 +37,9 @@ public enum Action {
         return jsonName;
     }
 
-
-    public boolean mayLookupCredentials() {
-        return lookupAllowed;
-    }
-
-
     public boolean mayInitializeKeys() {
         return keyInitAllowed;
     }
-
-    public boolean mustOrMustNotCreateSession() {
-        return provInitRequired;
-    }
-
 
     public static Action getActionFromString(String jsonName) throws IOException {
         for (Action action : Action.values()) {

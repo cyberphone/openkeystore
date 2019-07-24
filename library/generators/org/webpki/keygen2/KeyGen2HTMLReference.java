@@ -52,7 +52,6 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
     
     static final String SECTION_TERMINATION_MESSAGE   = "Termination Message";
     static final String SECTION_HTTP_DEPENDENCIES     = "HTTP Dependencies";
-    static final String SECTION_DEFERRED_ISSUANCE     = "Deferred Issuance";
     static final String ELLIPTIC_CURVE_SUPPORT        = "Elliptic Curve Support";
 
     static JSONBaseHTML json;
@@ -471,8 +470,8 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
                              String sksMethod,
                              String sksParameter) throws IOException {
         return new StringBuilder(rsaSupport ? "RSA or " : "")
-          .append("EC public key in JCS ")
-          .append(json.createReference(JSONBaseHTML.REF_JCS))
+          .append("EC public key in JSF ")
+          .append(json.createReference(JSONBaseHTML.REF_JSF))
           .append(" <code>&quot;" + JSONCryptoHelper.PUBLIC_KEY_JSON + "&quot;</code> format")
           .append(purpose)
           .append(".")
@@ -550,8 +549,8 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
             .append("." + LINE_SEPARATOR +
                      "Parts of the protocol rely on cryptographic constructs using JSON which " +
                      "initially were created for the KeyGen2 project, but later became an activity "+
-                     "of its own: JSON Cleartext Signature ")
-             .append(json.createReference(JSONBaseHTML.REF_JCS))
+                     "of its own: JSON Signature Format ")
+             .append(json.createReference(JSONBaseHTML.REF_JSF))
              .append("." + LINE_SEPARATOR +
                       "Finding the proper balance in a complex scheme like KeyGen2 is a combination of &quot;gut feeling&quot;, " +
                       "political considerations, available technology, foresight and market research. " +
@@ -602,17 +601,6 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
                                     json.globalLinkRef (KeyGen2Messages.PROVISIONING_FINALIZATION_RESPONSE.getName()) + " object to the server), " +
                                     "the browser <b>must</b> return to its &quot;normal&quot; state, ready for receiving a matching HTTP body containing a HTML page or similar."  + LINE_SEPARATOR +
                                     "Note that returned data <b>must</b> target the same <code>window</code> object which was used during invocation.");
-
-        json.addParagraphSubObject(SECTION_DEFERRED_ISSUANCE).append("To reduce costs for credential issuers, they may require users' " +
-                                    "filling in forms on the web with user-related information followed by a KeyGen2 sequence terminating (see " + json.globalLinkRef (SECTION_TERMINATION_MESSAGE) + ") after " +
-                                    json.globalLinkRef (KeyGen2Messages.KEY_CREATION_RESPONSE.getName()) + 
-                                    ". This mode <b>must</b> be indicated by setting " + json.globalLinkRef (KeyGen2Messages.KEY_CREATION_REQUEST.getName(), DEFERRED_ISSUANCE_JSON) + " to <code>true</code>." + LINE_SEPARATOR +
-                                    "After the issuer in some way have verified the user's claimed data (and typically also the SKS <code>Device&nbsp;ID</code>), " +
-                                    "the certification process is <i>resumed</i> by relaunching the " + json.globalLinkRef (KeyGen2Messages.INVOCATION_REQUEST.getName()) +
-                                    " (with " + json.globalLinkRef (KeyGen2Messages.INVOCATION_REQUEST.getName(), ACTION_JSON) + 
-                                    " set to <code>" + Action.RESUME.getJSONName () + "</code>) through a URL sent to the user via mail, SMS, QR-code or NFC. The KeyGen2 proxy <b>must</b> after reception of the " +
-                                    json.globalLinkRef (KeyGen2Messages.INVOCATION_REQUEST.getName()) + " verify that there actually is an <i>open</i> SKS provisioning session having a matching " +
-                                    json.globalLinkRef (KeyGen2Messages.INVOCATION_REQUEST.getName(), SERVER_SESSION_ID_JSON) + ".");
 
         json.addDataTypesDescription("");
         
@@ -670,7 +658,7 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
         
         json.addDocumentHistoryLine("2014-08-08", "0.7", "First official release");
         json.addDocumentHistoryLine("2014-12-08", "0.71", "Aligned KeyGen2 with the updated " + json.createReference(JSONBaseHTML.REF_SKS) + " and " + 
-                                    json.createReference(JSONBaseHTML.REF_JCS) + " specifications");
+                                    json.createReference(JSONBaseHTML.REF_JSF) + " specifications");
         json.addDocumentHistoryLine("2015-01-12", "0.72", "Updated version to match ECDSA signature encoding change");
         json.addDocumentHistoryLine("2016-01-25", "0.73", "Added JOSE algorithm support");
         json.addDocumentHistoryLine("2017-05-26", "0.80", "Removed unessesary bloat from the protocol");
@@ -701,16 +689,7 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
                           "</code> property gives (through a suitable GUI dialog) the user a hint of what the session in progress is about to perform. " +
                           "The valid constants are:<ul>" +
                           "<li><code>" + Action.MANAGE.getJSONName () + "</code> - Create, delete and/or update credentials</li>" +
-                          "<li style=\"padding-bottom:4pt;padding-top:4pt\"><code>" + Action.RESUME.getJSONName () + "</code> - Resume operation after an interrupted ")
-               .addLink(KeyGen2Messages.KEY_CREATION_RESPONSE.getName())
-               .addString(".  See ")
-               .addLink(SECTION_DEFERRED_ISSUANCE)
-               .addString(". A confirming client <b>must</b> after responding with ") 
-               .addLink(KeyGen2Messages.INVOCATION_RESPONSE.getName())
-               .addString(" only accept a ")
-               .addLink(KeyGen2Messages.PROVISIONING_FINALIZATION_REQUEST.getName())
-               .addString("</li>" +
-                           "<li><code>" + Action.UNLOCK.getJSONName () +
+                          "<li style=\"padding-bottom:4pt;padding-top:4pt\"><code>" + Action.UNLOCK.getJSONName () + 
                            "</code> - Unlock existing keys. A conforming client should disallow ")
                .addLink(KeyGen2Messages.KEY_CREATION_REQUEST.getName())
                .addString("</li></ul>")
@@ -1115,8 +1094,8 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
               .setType(WEBPKI_DATA_TYPES.OBJECT)
             .newColumn()
              .newColumn()
-              .addString("JCS ")
-              .addString(json.createReference(JSONBaseHTML.REF_JCS))
+              .addString("JSF ")
+              .addString(json.createReference(JSONBaseHTML.REF_JSF))
               .addString(" <code>&quot;" +JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON + "&quot;</code> object using a key management key signature covering the lookup specifier. " +
                          "Note that the <code>&quot;" + JSONCryptoHelper.PUBLIC_KEY_JSON + "&quot;</code> property <b>must</b> be present. " +
                          "See SKS appendix &quot;Remote Key Lookup&quot; for more details." + LINE_SEPARATOR +
@@ -1166,13 +1145,13 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
               .addProperty(JSONCryptoHelper.CERTIFICATE_PATH_JSON)
               .addArrayList(CERTIFICATE_PATH, 1)
             .newColumn()
-              .setType(WEBPKI_DATA_TYPES.BYTE_ARRAY2)
+              .setType(WEBPKI_DATA_TYPES.BYTE_ARRAY)
             .newColumn()
             .newColumn()
               .addString("Certificate path having identical representation to <code>&quot;" +
                           JSONCryptoHelper.CERTIFICATE_PATH_JSON +
-                          "&quot;</code> in JCS ")
-              .addString(json.createReference(JSONBaseHTML.REF_JCS))
+                          "&quot;</code> in JSF ")
+              .addString(json.createReference(JSONBaseHTML.REF_JSF))
               .addString(".")
           .newRow()
             .newColumn()
@@ -1401,7 +1380,7 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
             .newColumn()
             .newColumn()
               .addString("See <code>SKS:createKeyEntry." + KEY_ALGORITHM_JSON + "</code>. " +
-                          "Also see SKS &quot;Algorithm Support&quot;." + LINE_SEPARATOR +
+                          "See also SKS &quot;Algorithm Support&quot;." + LINE_SEPARATOR +
                           "The currently recognized key algorithms include:" +
                           JSONBaseHTML.enumerateStandardAlgorithms(KeyAlgorithms.values (), false, false))
           .newRow()
@@ -1424,7 +1403,7 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
               .setUsage(false)
             .newColumn()
               .addString("See <code>SKS:createKeyEntry." + ENDORSED_ALGORITHMS_JSON + "</code>. " +
-                          "Also see SKS &quot;Algorithm Support&quot;." + LINE_SEPARATOR +
+                          "See also SKS &quot;Algorithm Support&quot;." + LINE_SEPARATOR +
                           "Note that <i>endorsed algorithm URIs <b>must</b> be specified in strict lexical order</i>." + LINE_SEPARATOR +
                           "The currently recognized algorithms include:" +
                           JSONBaseHTML.enumerateStandardAlgorithms(MACAlgorithms.values (), true, false) +
@@ -1542,8 +1521,8 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
             .newColumn()
               .addString("Certificate path having identical representation to <code>&quot;" +
                           JSONCryptoHelper.CERTIFICATE_PATH_JSON +
-                          "&quot;</code> in JCS ")
-              .addString(json.createReference(JSONBaseHTML.REF_JCS))
+                          "&quot;</code> in JSF ")
+              .addString(json.createReference(JSONBaseHTML.REF_JSF))
               .addString("." + LINE_SEPARATOR +
                          "See <code>SKS:setCertificatePath.certificate</code>.")
           .newExtensionRow(new MAC("setCertificatePath"))
@@ -1836,8 +1815,8 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
             .newColumn()
               .addString("Device certificate path having identical representation to <code>&quot;" +
                           JSONCryptoHelper.CERTIFICATE_PATH_JSON +
-                          "&quot;</code> in JCS ")
-              .addString(json.createReference(JSONBaseHTML.REF_JCS))
+                          "&quot;</code> in JSF ")
+              .addString(json.createReference(JSONBaseHTML.REF_JSF))
               .addString(".");
         
         json.writeHTML();

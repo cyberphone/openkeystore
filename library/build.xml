@@ -346,10 +346,10 @@
        <param name="file.base2" value=""/>
        <param name="file.base3" value=""/>
      </antcall>
-     <!-- HTML Doc task for JCS -->
+     <!-- HTML Doc task for JSF -->
      <antcall target="_java2html">
        <param name="doc.class" value="org.webpki.json.JSONSignatureHTMLReference"/>
-       <param name="doc.file" value="${public_doc_dir}/jose-jcs.html"/>
+       <param name="doc.file" value="${public_doc_dir}/jsf.html"/>
        <param name="file.base1" value="${testdata_dir}/keys"/>
        <param name="file.base2" value="${testdata_dir}/signatures"/>
        <param name="file.base3" value="${testdata_dir}/data"/>
@@ -357,7 +357,7 @@
      <!-- HTML Doc task for JEF -->
      <antcall target="_java2html">
        <param name="doc.class" value="org.webpki.json.JSONEncryptionHTMLReference"/>
-       <param name="doc.file" value="${public_doc_dir}/jose-jef.html"/>
+       <param name="doc.file" value="${public_doc_dir}/jef.html"/>
        <param name="file.base1" value="${testdata_dir}/keys"/>
        <param name="file.base2" value="${testdata_dir}/encryption"/>
        <param name="file.base3" value="${testdata_dir}/data"/>

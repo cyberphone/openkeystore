@@ -130,7 +130,7 @@ public class JSONSignatureDecoder implements Serializable {
         signatureValue = innerSignatureObject.getBinary(JSONCryptoHelper.VALUE_JSON);
 
         //////////////////////////////////////////////////////////////////////////////////////
-        // Begin JSF core normalization                                                     //
+        // Begin JSF/JCS core normalization                                                 //
         //                                                                                  //
         // 1. Make a shallow copy of the signature object                                   //
         LinkedHashMap<String, JSONValue> savedProperties =                                  //
@@ -145,7 +145,7 @@ public class JSONSignatureDecoder implements Serializable {
         // 4. Restore the signature object                                                  //
         innerSignatureObject.root.properties = savedProperties;                             //
         //                                                                                  //
-        // End JCS core normalization                                                       //
+        // End JSF/JCS core normalization                                                   //
         //////////////////////////////////////////////////////////////////////////////////////
 
         if (options.exclusions != null) {

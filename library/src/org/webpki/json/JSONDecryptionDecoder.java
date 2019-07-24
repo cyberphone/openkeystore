@@ -69,7 +69,7 @@ public class JSONDecryptionDecoder {
             this.keyEncryption = keyEncryption;
 
             ///////////////////////////////////////////////////////////////////////////////////////////////
-            // Begin JEF normalization                                                                   //
+            // Begin JEF/JCS normalization                                                               //
             //                                                                                           //
             // 1. Make a shallow copy of the encryption object property list                             //
             LinkedHashMap<String, JSONValue> savedProperties =                                           //
@@ -86,7 +86,7 @@ public class JSONDecryptionDecoder {
             // 4. Restore encryption object property list                                                //
             encryptionObject.root.properties = savedProperties;                                          //
             //                                                                                           //
-            // End JEF normalization                                                                     //
+            // End JEF/JCS normalization                                                                 //
             ///////////////////////////////////////////////////////////////////////////////////////////////
 
             // Collect mandatory elements

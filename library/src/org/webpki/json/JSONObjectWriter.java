@@ -47,10 +47,10 @@ import org.webpki.util.Base64URL;
 import org.webpki.util.ISODateTime;
 
 /**
- * Creates JSON objects and performs serialization according to ES6.
+ * Creates JSON objects and performs serialization according to JCS and ES6.
  * <p>
  * Also provides built-in support for encoding
- <a href="https://cyberphone.github.io/doc/security/jcs.html" target="_blank"><b>JCS (JSON Cleartext Signature)</b></a>, 
+ <a href="https://cyberphone.github.io/doc/security/jsf.html" target="_blank"><b>JSF (JSON Signature Format)</b></a>, 
 <a href="https://cyberphone.github.io/doc/security/jef.html" target="_blank"><b>JEF (JSON Encryption Format)</b></a>
 and
 <a href="https://tools.ietf.org/html/rfc7517" target="_blank"><b>JWK</b></a>
@@ -580,9 +580,9 @@ public class JSONObjectWriter implements Serializable {
     }
 
     /**
-     * Set a <a href="https://cyberphone.github.io/doc/security/jcs.html" target="_blank"><b>JCS</b></a>
+     * Set a <a href="https://cyberphone.github.io/doc/security/jsf.html" target="_blank"><b>JSF</b></a>
      * <code>"signature"</code>object.<p>
-     * This method performs all the processing needed for adding a JCS signature to the current object.</p>
+     * This method performs all the processing needed for adding a JSF signature to the current object.</p>
      * @param signer The interface to the signing key and type
      * @return Current instance of {@link org.webpki.json.JSONObjectWriter}
      * @throws IOException In case there a problem with keys etc.
@@ -606,7 +606,7 @@ import org.webpki.json.JSONSignatureDecoder;
            .
            .
            .
-    public void signAndVerifyJCS(PrivateKey privateKey, PublicKey publicKey) throws IOException {
+    public void signAndVerifyJSF(PrivateKey privateKey, PublicKey publicKey) throws IOException {
     
         // Create an empty JSON document
         JSONObjectWriter writer = new JSONObjectWriter();
@@ -660,8 +660,8 @@ import org.webpki.json.JSONSignatureDecoder;
         return this;
     }
     /**
-     * Set a <a href="https://cyberphone.github.io/doc/security/jcs.html" target="_blank"><b>JCS</b></a>
-     * <code>"signatures"</code> [] object.<p>
+     * Set a <a href="https://cyberphone.github.io/doc/security/jsf.html" target="_blank"><b>JSF</b></a>
+     * multi-signature object.<p>
      * This method performs all the processing needed for adding multiple JSF signatures to the current object.</p>
      * @param signer Signature interface
      * @return Current instance of {@link org.webpki.json.JSONObjectWriter}
@@ -713,7 +713,7 @@ import org.webpki.json.JSONSignatureDecoder;
     }
 
     /**
-     * Create a <a href="https://cyberphone.github.io/doc/security/jcs.html" target="_blank">JCS</a>
+     * Create a <a href="https://cyberphone.github.io/doc/security/jsf.html" target="_blank">JSF</a>
      * (<a href="https://tools.ietf.org/html/rfc7517" target="_blank"><b>JWK</b></a>) formatted public key.<p>
      * Typical use:
      *<pre>
@@ -751,7 +751,7 @@ import org.webpki.json.JSONSignatureDecoder;
     }
 
     /**
-     * Set a <a href="https://cyberphone.github.io/doc/security/jcs.html" target="_blank">JCS</a>
+     * Set a <a href="https://cyberphone.github.io/doc/security/jsf.html" target="_blank">JSF</a>
      * (<a href="https://tools.ietf.org/html/rfc7517" target="_blank"><b>JWK</b></a>) formatted public key.<p>
      * Resulting JSON:
      * <pre>
@@ -771,7 +771,7 @@ import org.webpki.json.JSONSignatureDecoder;
     }
 
     /**
-     * Set a <a href="https://cyberphone.github.io/doc/security/jcs.html" target="_blank">JCS</a>
+     * Set a <a href="https://cyberphone.github.io/doc/security/jsf.html" target="_blank">JSF</a>
      * (<a href="https://tools.ietf.org/html/rfc7517" target="_blank"><b>JWK</b></a>) formatted public key.<p>
      * This method is equivalent to {@link #setPublicKey(PublicKey, AlgorithmPreferences)}
      * using {@link AlgorithmPreferences#JOSE} as second argument.</p>
@@ -784,7 +784,7 @@ import org.webpki.json.JSONSignatureDecoder;
     }
 
     /**
-     * Set a <a href="https://cyberphone.github.io/doc/security/jcs.html" target="_blank"><b>JCS</b></a>
+     * Set a <a href="https://cyberphone.github.io/doc/security/jsf.html" target="_blank"><b>JSF</b></a>
      * certificate path property.
      * <p>Each path element (certificate) is base64url encoded and the path must be
      * <i>sorted</i> where certificate[i] is signed by certificate[i + 1].</p><p>

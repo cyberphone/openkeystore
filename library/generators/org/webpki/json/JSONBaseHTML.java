@@ -69,6 +69,8 @@ public class JSONBaseHTML  {
     
     public static final String REF_JCS                 = "JCS";
 
+    public static final String REF_JSF                 = "JSF";
+
     public static final String REF_JEF                 = "JEF";
 
     public static final String REF_JWS                 = "RFC7515";
@@ -111,9 +113,9 @@ public class JSONBaseHTML  {
 
     public static final String REF_WEBIDL              = "WEBIDL";
     
-    public static final String JCS_PUBLIC_KEY_RSA      = "Additional RSA Properties";
+    public static final String JSF_PUBLIC_KEY_RSA      = "Additional RSA Properties";
 
-    public static final String JCS_PUBLIC_KEY_EC       = "Additional EC Properties";
+    public static final String JSF_PUBLIC_KEY_EC       = "Additional EC Properties";
 
     public static final String REMOTE_KEY_EXAMPLE      = "remotekeyexample";
     public static final String REMOTE_CERT_EXAMPLE     = "remotecertexample";
@@ -280,15 +282,20 @@ public class JSONBaseHTML  {
             "M. Watson, W3C&nbsp;Candidate&nbsp;Recommendation, December&nbsp;2014. " +
             externalWebReference ("https://www.w3.org/TR/WebCryptoAPI/"));
 
+        addReferenceEntry(REF_JSF,
+            "A. Rundgren, \"JSF - JSON Signature Format\", Work in progress, " +
+            "<span style=\"white-space: nowrap\">V0.80, Mars&nbsp;2019.</span> " +
+            externalWebReference ("https://cyberphone.github.io/doc/security/jsf.html"));
+
         addReferenceEntry(REF_JCS,
-            "A. Rundgren, \"JCS - JSON Cleartext Signature\", Work in progress, " +
-            "<span style=\"white-space: nowrap\">V0.80, January&nbsp;2018.</span> " +
-            externalWebReference ("https://cyberphone.github.io/doc/security/jose-jcs.html"));
+            "A. Rundgren, B. Jordan, S. Erdtman, \"JCS - JSON Canonicalization Scheme\", Work in progress, " +
+            "<span style=\"white-space: nowrap\">May&nbsp;2019.</span> " +
+            externalWebReference ("https://tools.ietf.org/html/draft-rundgren-json-canonicalization-scheme-06"));
 
         addReferenceEntry(REF_YASMIN,
-                "A. Rundgren, \"YASMIN - Yet Another jSon Message notatIoN\", Work in progress, " +
-                "<span style=\"white-space: nowrap\">V0.6, April&nbsp;2017.</span> " +
-                externalWebReference ("https://cyberphone.github.io/doc/web/yasmin.html"));
+            "A. Rundgren, \"YASMIN - Yet Another jSon Message notatIoN\", Work in progress, " +
+            "<span style=\"white-space: nowrap\">V0.6, April&nbsp;2017.</span> " +
+            externalWebReference ("https://cyberphone.github.io/doc/web/yasmin.html"));
 
         addReferenceEntry(REF_JEF,
             "A. Rundgren, \"JEF - JSON Encryption Format\", Work in progress, " +
@@ -1203,7 +1210,7 @@ public class JSONBaseHTML  {
     }
     
     static String referToTestVector(String name) throws IOException {
-        return "Also see the <a href=\"#" + makeLink(name) + "\">" + name + "</a> test vector.";
+        return "See also the <a href=\"#" + makeLink(name) + "\">" + name + "</a> test vector.";
     }
 
     String protocol_table_header;
@@ -1321,12 +1328,12 @@ public class JSONBaseHTML  {
           .newColumn()
             .addString("Key type indicator.  Currently the following types are recognized:<ul>" +
                     "<li>" + JSONBaseHTML.codeVer(JSONCryptoHelper.EC_PUBLIC_KEY, 6) + "See: ")
-                    .addLink (JCS_PUBLIC_KEY_EC)
+                    .addLink (JSF_PUBLIC_KEY_EC)
             .addString("</li><li>" + 
                      JSONBaseHTML.codeVer(JSONCryptoHelper.RSA_PUBLIC_KEY, 6) + "See: ")
-            .addLink (JCS_PUBLIC_KEY_RSA)
+            .addLink (JSF_PUBLIC_KEY_RSA)
             .addString("</li></ul>")
-       .newRow(JCS_PUBLIC_KEY_EC)
+       .newRow(JSF_PUBLIC_KEY_EC)
           .newColumn()
             .addProperty(JSONCryptoHelper.CRV_JSON)
             .addSymbolicValue("Curve Name")
@@ -1365,7 +1372,7 @@ public class JSONBaseHTML  {
                       "if the value of <code>" + JSONCryptoHelper.CRV_JSON + "</code> is <code>" +
                       KeyAlgorithms.NIST_P_256.getAlgorithmId (AlgorithmPreferences.JOSE) +
                       "</code>, the <i>decoded</i> argument <b>must</b> be 32 bytes.")
-      .newRow(JCS_PUBLIC_KEY_RSA)
+      .newRow(JSF_PUBLIC_KEY_RSA)
         .newColumn()
           .addProperty(JSONCryptoHelper.N_JSON)
           .addSymbolicValue("Modulus")
@@ -1373,7 +1380,7 @@ public class JSONBaseHTML  {
           .setType(Types.WEBPKI_DATA_TYPES.CRYPTO)
         .newColumn()
         .newColumn()
-          .addString("RSA modulus. Also see the ")
+          .addString("RSA modulus. See also the ")
           .addDataTypeLink (Types.WEBPKI_DATA_TYPES.CRYPTO)
           .addString(" data type.")
       .newRow()
@@ -1384,7 +1391,7 @@ public class JSONBaseHTML  {
           .setType(Types.WEBPKI_DATA_TYPES.CRYPTO)
         .newColumn()
         .newColumn()
-          .addString("RSA exponent. Also see the ")
+          .addString("RSA exponent. See also the ")
           .addDataTypeLink (Types.WEBPKI_DATA_TYPES.CRYPTO)
           .addString(" data type.")
         .setNotes("This object represents a <i>subset</i> of JWK " + createReference(REF_JWK) +".");
@@ -1428,7 +1435,7 @@ public class JSONBaseHTML  {
             .newColumn()
               .setType(Types.WEBPKI_DATA_TYPES.OBJECT)
             .newColumn()
-              .setChoice (false, 4)
+              .setChoice (false, 2)
             .newColumn()
               .addString("<i>Optional.</i> Public key object.")
           .newRow()
@@ -1455,18 +1462,18 @@ public class JSONBaseHTML  {
                   .addString("<i>Optional.</i> Array holding the names of one or more application specific extension properties " +
                   "also featured within the signature object." +
                   Types.LINE_SEPARATOR +
-                  "Extension names <b>must not</b> be <i>duplicated</i> or use any of the JCS <i>reserved words</i> " +
-                  enumerateAttributes(JSONCryptoHelper.jcsReservedWords.toArray(new String[0]), false) + ". " +
+                  "Extension names <b>must not</b> be <i>duplicated</i> or use any of the JSF <i>reserved words</i> " +
+                  enumerateAttributes(JSONCryptoHelper.jsfReservedWords.toArray(new String[0]), false) + ". " +
                   Types.LINE_SEPARATOR +
                   "Extensions intended for public consumption are <i>preferably</i> expressed as URIs " +
                   "(unless registered with IANA), " +
                   "while private schemes are free using any valid property name." + Types.LINE_SEPARATOR +
-                  "A conforming JCS implementation <b>must</b> <i>reject</i> signatures listing properties " +
+                  "A conforming JSF implementation <b>must</b> <i>reject</i> signatures listing properties " +
                   "that are not found as well as empty <code>&quot;" +
                   JSONCryptoHelper.EXTENSIONS_JSON + "&quot;</code> objects. " +
                   "Verifiers are <i>recommended</i> introducing additional constraints like only accepting predefined extensions." +
                   Types.LINE_SEPARATOR +
-                  "Also see <a href=\"#" + EXTENSION_EXAMPLE + "\">test&nbsp;vector</a>.")
+                  "See also <a href=\"#" + EXTENSION_EXAMPLE + "\">test&nbsp;vector</a>.")
              .newRow()
                 .newColumn()
                   .addProperty(JSONCryptoHelper.EXCLUDE_JSON)
@@ -1486,12 +1493,12 @@ public class JSONBaseHTML  {
                   "Property names that are to be excluded from the signature process " +
                   "<b>must not</b> be <i>duplicated</i> or override the signature object label. " +
                   Types.LINE_SEPARATOR +
-                  "A conforming JCS implementation <b>must</b> <i>reject</i> signatures containing listed properties " +
+                  "A conforming JSF implementation <b>must</b> <i>reject</i> signatures containing listed properties " +
                   "that are not found as well as empty <code>&quot;" +
                   JSONCryptoHelper.EXCLUDE_JSON + "&quot;</code> objects. " +
                   "Verifiers are <i>recommended</i> introducing additional constraints like only accepting predefined properties." +
                   Types.LINE_SEPARATOR +
-                  "Also see <a href=\"#" + EXCLUSION_EXAMPLE + "\">test&nbsp;vector</a>.")
+                  "See also <a href=\"#" + EXCLUSION_EXAMPLE + "\">test&nbsp;vector</a>.")
           .newRow()
             .newColumn()
               .addProperty(JSONCryptoHelper.VALUE_JSON)

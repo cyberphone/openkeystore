@@ -35,9 +35,10 @@ import org.webpki.json.JSONCryptoHelper.ExtensionHolder;
 
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.DebugFormatter;
+import org.webpki.util.PEMDecoder;
 
 /**
- * Create an HTML description of the JSON Clear-text Signature system.
+ * Create an HTML description of the JSON Signature Format.
  * 
  * @author Anders Rundgren
  */
@@ -127,7 +128,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
         asymKey.keyId = key.getString("kid");
         key.removeProperty("kid");
         asymKey.keyPair = key.getKeyPair();
-        asymKey.certPath = json.readJson1(keyType + "certificate.x5c").getJSONArrayReader().getCertificatePath();
+        asymKey.certPath = PEMDecoder.getCertificatePath(json.readFile1(keyType + "certpath.pem"));
         return asymKey;
     }
 
@@ -217,7 +218,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
     }
 
     public static void main (String args[]) throws Exception {
-        json = new JSONBaseHTML(args, "JOSE/JCS - JSON Cleartext Signature");
+        json = new JSONBaseHTML(args, "JSF - JSON Signature Format");
         
         json.setFavIcon("../webpkiorg.png");
 
@@ -237,42 +238,38 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
                                       CertificateUtil.getCertificateFromBlob (json.readFile1("rootca.cer")));        
         certroot = new JSONX509Verifier(new KeyStoreVerifier(keyStore));
         
-        json.addParagraphObject().append("<div style=\"margin-top:200pt;margin-bottom:200pt;text-align:center\"><span style=\"" + JSONBaseHTML.HEADER_STYLE + "\">JOSE-JCS</span>" +
-            "<br><span style=\"font-size:" + JSONBaseHTML.CHAPTER_FONT_SIZE + "\">&nbsp;<br>JSON Cleartext Signature</span></div>");
+        json.addParagraphObject().append("<div style=\"margin-top:200pt;margin-bottom:200pt;text-align:center\"><span style=\"" + JSONBaseHTML.HEADER_STYLE + "\">JSF</span>" +
+            "<br><span style=\"font-size:" + JSONBaseHTML.CHAPTER_FONT_SIZE + "\">&nbsp;<br>JSON Signature Format</span></div>");
         
         json.addTOC();
 
-        json.addParagraphObject("Introduction").append("JCS is a scheme for signing data expressed as JSON ")
+        json.addParagraphObject("Introduction").append("JSF is a scheme for signing data expressed as JSON ")
           .append(json.createReference(JSONBaseHTML.REF_JSON))
           .append(" objects, loosely modeled after XML&nbsp;DSig's ")
           .append(json.createReference(JSONBaseHTML.REF_XMLDSIG))
           .append(" &quot;enveloped&quot; signatures. " +
-            "Compared to its XML counterpart JCS is quite primitive but on the other hand it has proved to be " +
-            "simple to implement and use." +
             Types.LINE_SEPARATOR +
             "Unlike JWS ")
           .append(json.createReference(JSONBaseHTML.REF_JWS))
           .append(
             " which was designed for signing <i>any</i> kind of data, " +
-            "a JCS signature is intended to be an <i>integral part of a JSON object</i> " +
+            "a JSF signature is intended to be an <i>integral part of a JSON object</i> " +
             "with message centric systems like Yasmin ")
           .append(json.createReference(JSONBaseHTML.REF_YASMIN))
           .append(" as the primary target. " +
             "This concept was not originally considered " +
             "due to the lack of a standardized canonicalization method for JSON data. " +
-            "However, version 6 of ECMAScript ")
-           .append(json.createReference(JSONBaseHTML.REF_ES6))
-           .append(" introduced a simple to support <i>predictable serialization</i> scheme " +
-            "enabling both <i>data " +
-            "and header information to be provided in plain text</i>." + Types.LINE_SEPARATOR +
-            "In order to make library support of JCS straightforward in spite of having a different structure compared to JWS ")
+            "However, with the introduction of the JSON Canonicalization Scheme ")
+           .append(json.createReference(JSONBaseHTML.REF_JCS))
+           .append(" both data and header information could be provided in plain text while still being " +
+           "subject to cryptographic operations." + Types.LINE_SEPARATOR +
+            "In order to make library support of JSF straightforward in spite of having a different structure compared to JWS ")
           .append(json.createReference(JSONBaseHTML.REF_JWS))
-          .append(", JCS uses the same properties as well as cryptographic algorithms ")
+          .append(", JSF uses the same cryptographic algorithms ")
           .append(json.createReference(JSONBaseHTML.REF_JWA))
           .append(". " + Types.LINE_SEPARATOR +
-            "Due to the ECMAScript heritage" +
-            ", JCS may also be used for &quot;in-object&quot; JavaScript signatures, " +
-             "making JCS suitable for HTML5 applications. See " +
+            "JSF may also be used for &quot;in-object&quot; JavaScript signatures, " +
+             "making JSF suitable for HTML5 applications. See " +
              "<a href=\"#" + JSONBaseHTML.makeLink(ECMASCRIPT_MODE) + 
              "\"><span style=\"white-space:nowrap\">" +
              ECMASCRIPT_MODE + "</span></a>." + Types.LINE_SEPARATOR +
@@ -297,22 +294,22 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             "<b style=\"color:red;background:Yellow\">&#x20ac;</b>$<b style=\"color:red;background:Yellow\">" +
             "\\u000f\\nA</b>'B<b style=\"color:red;background:Yellow\">\\&quot;\\\\</b>\\\\\\&quot;" +
             "<b style=\"color:red;background:Yellow\">/</b>&quot;,&quot;numbers&quot;:[1e+30,4.5,6],&quot;signature&quot;<br>" + 
-            ":{&quot;alg&quot;:&quot;ES256&quot;,&quot;jwk&quot;:{&quot;kty&quot;" +
+            ":{&quot;alg&quot;:&quot;ES256&quot;,&quot;publicKey&quot;:{&quot;kty&quot;" +
             ":&quot;EC&quot;,&quot;crv&quot;:&quot;P-256&quot;,&quot;x&quot;:&quot;\u0000&quot;," +
             "&quot;y&quot;<br>:&quot;\u0000&quot;}}}");
         JSONObjectReader sampleSignatureDecoded = json.readJson2(SAMLE_TEST_VECTOR);
         updateNormalization(normalizedSampleSignature, "now", sampleSignatureDecoded);
         updateNormalization(normalizedSampleSignature, "x", sampleSignatureDecoded = 
-                       sampleSignatureDecoded.getObject(JSONCryptoHelper.VALUE_JSON)
+                       sampleSignatureDecoded.getObject(JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON)
                                                  .getObject(JSONCryptoHelper.PUBLIC_KEY_JSON));
         updateNormalization(normalizedSampleSignature, "y", sampleSignatureDecoded);
         
         json.addParagraphObject(SAMPLE_OBJECT).append(
-            "The following <i>cryptographically verifiable</i> sample signature is used to visualize the JCS specification:")
+            "The following <i>cryptographically verifiable</i> sample signature is used to visualize the JSF specification:")
         .append(sampleSignature)
         .append("The sample signature's payload consists of the properties above the <code>&quot;" +
             JSONCryptoHelper.VALUE_JSON + "&quot;</code> property. " +
-            "Note: JCS does <i>not</i> mandate any specific ordering of properties like in the sample." + LINE_SEPARATOR +
+            "Note: JSF does <i>not</i> mandate any specific ordering of properties like in the sample." + LINE_SEPARATOR +
             "For more examples see <a href=\"#" + JSONBaseHTML.makeLink(TEST_VECTORS) + 
                "\"><span style=\"white-space:nowrap\">" +
                TEST_VECTORS + "</span></a>.");
@@ -360,8 +357,8 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             json.createReference(JSONBaseHTML.REF_ES6) +
             " section <b>9.1.12</b>, albeit with the minor limitation outlined in " +
             json.globalLinkRef(ECMASCRIPT_CONSTRAINT) + "." + LINE_SEPARATOR +
-            "Also see " + json.globalLinkRef(INTEROPERABILITY) + "." + LINE_SEPARATOR +
-            "Applied on the sample signature, a conforming JCS normalization process should return the following JSON string:" +
+            "See also " + json.globalLinkRef(INTEROPERABILITY) + "." + LINE_SEPARATOR +
+            "Applied on the sample signature, a conforming JSF normalization process should return the following JSON string:" +
             "<div style=\"padding:4pt 0pt 15pt 20pt\"><code>")
          .append(normalizedSampleSignature)
          .append("</code></div>" +
@@ -374,26 +371,25 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             " property (together with the appropriate <i>signature verification key</i>), on the " +
             "<span style=\"white-space:nowrap\">UTF-8</span> representation of the " +
             "normalized textual data." + LINE_SEPARATOR +     
-            "Path validation (when applicable), is out of scope for JCS, but is <i>preferably</i> carried out as described in X.509 " +
+            "Path validation (when applicable), is out of scope for JSF, but is <i>preferably</i> carried out as described in X.509 " +
             json.createReference(JSONBaseHTML.REF_X509) +
             "." + LINE_SEPARATOR +
-            "The next sections cover the specifics of the JCS format.");
+            "The next sections cover the specifics of the JSF format.");
         
-        json.addDataTypesDescription("JCS consists of a top-level <code>&quot;" + JSONCryptoHelper.VALUE_JSON + "&quot;</code> property holding a composite JSON object. " + LINE_SEPARATOR);
+        json.addDataTypesDescription("JSF consists of a top-level <code>&quot;" + JSONCryptoHelper.VALUE_JSON + "&quot;</code> property holding a composite JSON object. " + LINE_SEPARATOR);
 
-        json.addProtocolTableEntry("JCS Objects")
-          .append("The following tables describe the JCS JSON structures in detail.");
+        json.addProtocolTableEntry("JSF Objects")
+          .append("The following tables describe the JSF JSON structures in detail.");
         
         json.addParagraphObject(MULTIPLE_SIGNATURES).append("Multiple signatures enable different keys to " +
         "<i>independently of each other</i> add a signature to a JSON object." + LINE_SEPARATOR +
         "The normalization procedure is essentially the same as for simple signatures but <b>must</b> also take the following in account as well:<ul>" +
-        "<li>The signature property <b>must</b> be <code>&quot;" + JSONCryptoHelper.VALUE_JSON + "&quot;</code>.</li>" +
         "<li>The <code>'['</code> and <code>']'</code> characters <b>must</b> be <i>included</i> in the normalized data for each " +
         "<a href=\"#" + JSONCryptoHelper.VALUE_JSON + "\">signature object</a>.</li>" +
         "<li>Each signature requires its own normalization process. During this process the other signature objects <b>must</b> (temporarily) be removed.</li>" +
         "<li>The <code>','</code> characters separating signature objects <b>must</b> be <i>excluded</i> from the normalized data.</li>" +
         "</ul>" +
-        "Also see <a href=\"#" + JSONBaseHTML.makeLink(COUNTER_SIGNATURES) + "\">" + COUNTER_SIGNATURES + "</a> and " +
+        "See also <a href=\"#" + JSONBaseHTML.makeLink(COUNTER_SIGNATURES) + "\">" + COUNTER_SIGNATURES + "</a> and " +
         "the <a href=\"#multisignaturesample\">multiple signature sample</a>.");
         
         json.addParagraphObject(SECURITY_CONSIDERATIONS ).append("This specification does (to the author's " +
@@ -403,7 +399,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
         json.setAppendixMode();
 
         json.addParagraphObject(TEST_VECTORS).append(
-        "This section holds test data which can be used to verify the correctness of a JCS implementation." + LINE_SEPARATOR +
+        "This section holds test data which can be used to verify the correctness of a JSF implementation." + LINE_SEPARATOR +
         "The <a href=\"#" + JSONBaseHTML.makeLink(SAMPLE_OBJECT) + "\">" + SAMPLE_OBJECT + "</a>" +
         " was signed by the following EC private key in JWK " + 
         json.createReference(JSONBaseHTML.REF_JWK) + " format:" +
@@ -419,7 +415,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
         "includes " +
         json.globalLinkRef(JSONCryptoHelper.VALUE_JSON, JSONCryptoHelper.EXTENSIONS_JSON) +
         " extensions:" + 
-        readAsymSignature("p256#es256@crit-jwk.json", p256key, new JSONCryptoHelper.Options()
+        readAsymSignature("p256#es256@exts-jwk.json", p256key, new JSONCryptoHelper.Options()
             .setPermittedExtensions(new ExtensionHolder()
                 .addExtension(Extension1.class, true)
                 .addExtension(Extension2.class, true))) +
@@ -432,14 +428,14 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             .setPermittedExclusions(new String[]{"myUnsignedData"})) +
         "The following signature object uses the same key as in the previous example but featured in " +
         "a certificate path:" +
-        readCertSignature("p256#es256@x5c.json") + LINE_SEPARATOR +
+        readCertSignature("p256#es256@cer.json") + LINE_SEPARATOR +
         "EC private key associated with the subsequent object:" +
         formatCode(p384key) +
         "The following object was signed by the key above:" +
         readAsymSignature("p384#es384@jwk.json", p384key, new JSONCryptoHelper.Options()) +
         "The following signature object uses the same key as in the previous example but featured in " +
         "a certificate path:" +
-        readCertSignature("p384#es384@x5c.json") + LINE_SEPARATOR +
+        readCertSignature("p384#es384@cer.json") + LINE_SEPARATOR +
         "EC private key associated with the subsequent object:" +
         formatCode(p521key) +
         "The following object was signed by the key above:" +
@@ -452,14 +448,14 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             .setRequirePublicKeyInfo(false)) +
         "The following signature object uses the same key as in the previous example but featured in " +
         "a certificate path:" +
-        readCertSignature("p521#es512@x5c.json") + LINE_SEPARATOR +
+        readCertSignature("p521#es512@cer.json") + LINE_SEPARATOR +
         "RSA private key associated with the subsequent object:" +
         formatCode(r2048key) +
         "The following object was signed by the key above:" +
         readAsymSignature("r2048#rs256@jwk.json", r2048key, new JSONCryptoHelper.Options()) +
         "The following signature object uses the same key as in the previous example but featured in " +
         "a certificate path:" +
-        readCertSignature("r2048#rs256@x5c.json") + LINE_SEPARATOR +
+        readCertSignature("r2048#rs256@cer.json") + LINE_SEPARATOR +
         "JWK " + json.createReference(JSONBaseHTML.REF_JWK) + 
         readSymSignature(new String[]{"a256#hs256@kid.json",
                                       "a384#hs384@kid.json",
@@ -493,77 +489,8 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
            "The code snippet below shows a signed JavaScript object:")
         .append(jsSignature)
         .append(
-           "This signature could be verified by the following code:" +
-           "<div style=\"padding:10pt 0pt 10pt 20pt\"><code>function&nbsp;convertToUTF8(string)&nbsp;{<br>" +
-            "&nbsp;&nbsp;var&nbsp;buffer&nbsp;=&nbsp;[];<br>" +
-            "&nbsp;&nbsp;for&nbsp;(var&nbsp;i&nbsp;=&nbsp;0;&nbsp;i&nbsp;&lt;&nbsp;string.length;&nbsp;i++)&nbsp;{<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;c&nbsp;=&nbsp;string.charCodeAt(i);<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(c&nbsp;&lt;&nbsp;128)&nbsp;{<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;buffer.push(c);<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;if&nbsp;((c&nbsp;&gt;&nbsp;127)&nbsp;&amp;&amp;&nbsp;(c&nbsp;&lt;&nbsp;2048))&nbsp;{<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;buffer.push((c&nbsp;&gt;&gt;&nbsp;6)&nbsp;|&nbsp;0xC0);<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;buffer.push((c&nbsp;&amp;&nbsp;0x3F)&nbsp;|&nbsp;0x80);<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;{<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;buffer.push((c&nbsp;&gt;&gt;&nbsp;12)&nbsp;|&nbsp;0xE0);<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;buffer.push(((c&nbsp;&gt;&gt;&nbsp;6)&nbsp;&amp;&nbsp;0x3F)&nbsp;|&nbsp;0x80);<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;buffer.push((c&nbsp;&amp;&nbsp;0x3F)&nbsp;|&nbsp;0x80);<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;}<br>" +
-            "&nbsp;&nbsp;}<br>" +
-            "&nbsp;&nbsp;return&nbsp;new&nbsp;Uint8Array(buffer);<br>" +
-            "}<br>" +
-            "<br>" +
-            "function&nbsp;decodeBase64URL(encoded)&nbsp;{<br>" +
-            "&nbsp;&nbsp;var&nbsp;string&nbsp;=&nbsp;atob(encoded.replace(/-/g,'+').replace(/_/g,'/'));<br>" +
-            "&nbsp;&nbsp;var&nbsp;buffer&nbsp;=&nbsp;[];<br>" +
-            "&nbsp;&nbsp;for&nbsp;(var&nbsp;i&nbsp;=&nbsp;0;&nbsp;i&nbsp;&lt;&nbsp;string.length;&nbsp;i++)&nbsp;{<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;buffer.push(string.charCodeAt(i));<br>" +
-            "&nbsp;&nbsp;}<br>" +
-            "&nbsp;&nbsp;return&nbsp;new&nbsp;Uint8Array(buffer);<br>" +
-            "}<br>" +
-            "<br>" +
-            "function&nbsp;verifySignature(jcs)&nbsp;{<br>" +
-            "&nbsp;&nbsp;<span style=\"color:green\">//&nbsp;Perform&nbsp;JCS&nbsp;normalization</span><br>" +
-            "&nbsp;&nbsp;var&nbsp;clone&nbsp;=&nbsp;Object.assign({},&nbsp;jcs." + JSONCryptoHelper.VALUE_JSON +
-            ");&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"color:green\">//&nbsp;Clone&nbsp;&quot;signature&quot;&nbsp;child object</span><br>" +
-            "&nbsp;&nbsp;var&nbsp;signature&nbsp;=&nbsp;decodeBase64URL(clone." + JSONCryptoHelper.VALUE_JSON +
-            ");&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"color:green\">//&nbsp;Get&nbsp;signature&nbsp;value</span><br>" +
-            "&nbsp;&nbsp;delete&nbsp;jcs." + JSONCryptoHelper.VALUE_JSON +"." + JSONCryptoHelper.VALUE_JSON +
-            ";&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
-            "<span style=\"color:green\">//&nbsp;Remove&nbsp;signature&nbsp;value&nbsp;property&nbsp;from&nbsp;signed&nbsp;object</span><br>" +
-            "&nbsp;&nbsp;var&nbsp;data&nbsp;=&nbsp;convertToUTF8(JSON.stringify(jcs));&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"color:green\">//&nbsp;Get&nbsp;normalized&nbsp;JSON&nbsp;string (signed data)</span><br>" +
-            "&nbsp;&nbsp;jcs." + JSONCryptoHelper.VALUE_JSON +
-            "&nbsp;=&nbsp;clone;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"color:green\">//&nbsp;Restore&nbsp;signed&nbsp;object</span><br>" +
-            "&nbsp;&nbsp;<span style=\"color:green\">//&nbsp;Perform&nbsp;the&nbsp;actual&nbsp;crypto,&nbsp;here&nbsp;using&nbsp;W3C&nbsp;WebCrypto</span> </code>")
-            .append(json.createReference(JSONBaseHTML.REF_WEB_CRYPTO))
-            .append("<code><br>" +
-            "&nbsp;&nbsp;crypto.subtle.importKey('jwk',&nbsp;clone." + JSONCryptoHelper.PUBLIC_KEY_JSON +
-            ",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"color:green\">//&nbsp;JCS&nbsp;public&nbsp;key&nbsp;is&nbsp;a&nbsp;JWK</span><br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;name:&nbsp;'ECDSA',&nbsp;namedCurve:&nbsp;clone." +
-            JSONCryptoHelper.PUBLIC_KEY_JSON +
-            "." + JSONCryptoHelper.CRV_JSON + "&nbsp;},<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;true,&nbsp;['verify']).then(function(publicKey)&nbsp;{<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;crypto.subtle.verify({&nbsp;name:&nbsp;'ECDSA',&nbsp;hash:&nbsp;{&nbsp;name:&nbsp;'SHA-256'&nbsp;}&nbsp;},&nbsp;<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;publicKey,&nbsp;signature,&nbsp;data).then(function(result)&nbsp;{<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;console.log('Success='&nbsp;+&nbsp;result);<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;});<br>" +
-            "&nbsp;&nbsp;});<br>" +
-            "}<br>" +
-            "<br>" +
-            "verifySignature(signedObject);<br></code></div>" + LINE_SEPARATOR +
-            "<span id=\"" + JSONBaseHTML.makeLink(ECMASCRIPT_CONSTRAINT) + "\">" +
-            "<b>Constraint when using JCS with ECMAScript</b></span>" + LINE_SEPARATOR +
-            "For JavaScript optimization reasons, ECMAScript's <code>JSON.parse()</code> "+
-            "internally <i>rearranges order of properties " +
-            "with names expressed as integers</i>, making a parsed JSON string like " +
-            "<code style=\"white-space:nowrap\">'{&quot;2&quot;:&quot;First&quot;,&quot;A&quot;:&quot;Next&quot;,&quot;1&quot;:&quot;Last&quot;}'</code>" +
-            " actually serialize as " +
-            "<code style=\"white-space:nowrap\">'{&quot;1&quot;:&quot;Last&quot;,&quot;2&quot;:&quot;First&quot;,&quot;A&quot;:&quot;Next&quot;}'</code>." +
-            LINE_SEPARATOR +
-            "Due to this fact, <i>signature creators</i> <b>must</b> (in the hopefully rather unusual case " +
-            "cross platform applications would mandate numeric property names), in an here unspecified " +
-            "way, &quot;emulate&quot; this scheme since this behavior is not intended to be " +
-            "an additional requirement to support by JSON tools in general in order to " +
-            "use this specification.");
+           "Due to the fact that the <code>JSON.stringify()</code> method converts JavaScript objects like above into " +
+           "JSON-compliant strings no special considerations are required for JavaScript.");
 
         json.addParagraphObject(COUNTER_SIGNATURES).append(
             "For counter signatures there are two entirely different solutions. " +
@@ -573,8 +500,8 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             "&nbsp;&nbsp;&quot;id&quot;: &quot;lADU_sO067Wlgoo52-9L&quot;,<br>" +
             "&nbsp;&nbsp;&quot;object&quot;: {&quot;type&quot;: &quot;house&quot;, &quot;price&quot;: &quot;$635,000&quot;},<br>" +
             "&nbsp;&nbsp;&quot;role&quot;: &quot;buyer&quot;,<br>" +
-            "&nbsp;&nbsp;&quot;timeStamp&quot;: &quot;2016-12-08T13:56:08Z&quot;,<br>" +
-            "&nbsp;&nbsp;&quot;" + JSONCryptoHelper.VALUE_JSON + "&quot;:&nbsp;{<br>" +
+            "&nbsp;&nbsp;&quot;timeStamp&quot;: &quot;2019-03-08T13:56:08Z&quot;,<br>" +
+            "&nbsp;&nbsp;&quot;" + JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON + "&quot;:&nbsp;{<br>" +
             "&nbsp;&nbsp;&nbsp;<span style=\"font-size:15pt\">&nbsp;</span></code><i>Original signature...</i><code><br>" +
             "&nbsp;&nbsp;}<br>" +
             "}</code></div>" +
@@ -584,24 +511,24 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             "&nbsp;&nbsp;&nbsp;&nbsp;&quot;id&quot;: &quot;lADU_sO067Wlgoo52-9L&quot;,<br>" +
             "&nbsp;&nbsp;&nbsp;&nbsp;&quot;object&quot;: {&quot;type&quot;: &quot;house&quot;, &quot;price&quot;: &quot;$635,000&quot;},<br>" +
             "&nbsp;&nbsp;&nbsp;&nbsp;&quot;role&quot;: &quot;buyer&quot;,<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&quot;timeStamp&quot;: &quot;2016-12-08T13:56:08Z&quot;,<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&quot;" + JSONCryptoHelper.VALUE_JSON + "&quot;:&nbsp;{<br>" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;&quot;timeStamp&quot;: &quot;2019-03-08T13:56:08Z&quot;,<br>" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;&quot;" + JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON + "&quot;:&nbsp;{<br>" +
             "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"font-size:15pt\">&nbsp;</span></code><i>Original signature...</i><code><br>" +
             "&nbsp;&nbsp;&nbsp;&nbsp;}<br>" +
             "&nbsp;&nbsp;},<br>" +
             "&nbsp;&nbsp;&quot;role&quot;: &quot;notary&quot;,<br>" +
             "&nbsp;&nbsp;&quot;timeStamp&quot;: &quot;2016-12-08T13:58:42Z&quot;,<br>" +
-            "&nbsp;&nbsp;&quot;" + JSONCryptoHelper.VALUE_JSON + "&quot;:&nbsp;{<br>" +
+            "&nbsp;&nbsp;&quot;" + JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON + "&quot;:&nbsp;{<br>" +
             "&nbsp;&nbsp;&nbsp;<span style=\"font-size:15pt\">&nbsp;</span></code><i>Counter signature...</i><code><br>" +
             "&nbsp;&nbsp;}<br>" +
             "}</code></div>" +
             "For sophisticated <i>peer based</i> counter signature schemes another possibility is using " +
             "<a href=\"#" + JSONBaseHTML.makeLink(MULTIPLE_SIGNATURES) + "\">" + MULTIPLE_SIGNATURES +
-            "</a>, <i>optionally</i> including a JCS " +
+            "</a>, <i>optionally</i> including a JSF " +
             json.globalLinkRef(JSONCryptoHelper.VALUE_JSON, JSONCryptoHelper.EXTENSIONS_JSON) +
             " extension holding application specific (per signature) metadata.");
 
-        json.addParagraphObject("Usage in Applications").append("JCS is a core element in a proof-of-concept application ")
+        json.addParagraphObject("Usage in Applications").append("JSF is a core element in a proof-of-concept application ")
          .append(json.createReference(JSONBaseHTML.REF_WEBPKI_FOR_ANDROID))
          .append(" running on Android." + LINE_SEPARATOR +
          "The sample code below is based on the Java reference implementation ")
@@ -637,11 +564,11 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
          "&nbsp;&nbsp;System.out.println(&quot;Returned&nbsp;data:&nbsp;&quot;&nbsp;+&nbsp;reader.getString(&quot;myProperty&quot;));<br>" +
          "}</code></div>");
         
-        json.addParagraphObject(INTEROPERABILITY).append("Since serialization of floating point numbers as specified by JCS is " +
+        json.addParagraphObject(INTEROPERABILITY).append("Since serialization of floating point numbers as specified by JSF is " +
          "(at the time of writing) not available for all platforms, you <i>may</i> for highest possible " + 
          "interoperability need to put such data in quotes.  Albeit a limitation, financial data is not natively supported by JSON either " +
          "due to the fact that JavaScript lacks support for big decimals." + LINE_SEPARATOR +
-         "JCS compatible reference implementations are available both for server Java and Android ")
+         "JSF compatible reference implementations are available both for server Java and Android ")
          .append(json.createReference(JSONBaseHTML.REF_OPENKEYSTORE))
          .append(". These implementations use ECMAScript number serialization when <i>creating</i> JSON data, making them compliant "+
          "with browsers and Node.js as well." +
@@ -691,33 +618,32 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
         json.addDocumentHistoryLine("2016-01-11", "0.59", "Added ECMAScript compatibility mode");
         json.addDocumentHistoryLine("2017-04-19", "0.60", "Changed public keys to use JWK " + json.createReference(JSONBaseHTML.REF_JWK) + " format");
         json.addDocumentHistoryLine("2017-05-18", "0.70", "Added multiple signatures and test vectors");
-        json.addDocumentHistoryLine("2017-11-18", "0.71", "Added detailed references to ECMAScript " + json.createReference(JSONBaseHTML.REF_ES6));
-        json.addDocumentHistoryLine("2018-01-05", "0.80", "Rewritten to reuse JWS " + json.createReference(JSONBaseHTML.REF_JWS) + " property names");
+        json.addDocumentHistoryLine("2019-03-05", "0.80", "Rewritten to use the JCS " + json.createReference(JSONBaseHTML.REF_JCS) + " canonicalization scheme");
 
-        json.addParagraphObject("Author").append("JCS was developed by Anders Rundgren (<code>anders.rundgren.net@gmail.com</code>) as a part " +
+        json.addParagraphObject("Author").append("JSF was developed by Anders Rundgren (<code>anders.rundgren.net@gmail.com</code>) as a part " +
                                                  "of the OpenKeyStore project " +
                                                  json.createReference(JSONBaseHTML.REF_OPENKEYSTORE)  + ".");
 
         json.addProtocolTable("Top Level Property")
           .newRow()
             .newColumn()
-              .addProperty (JSONCryptoHelper.VALUE_JSON)
-              .addLink(JSONCryptoHelper.VALUE_JSON)
+              .addProperty ("...")
+              .addLink(JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON)
             .newColumn()
               .setType (WEBPKI_DATA_TYPES.OBJECT)
             .newColumn()
               .setChoice (true, 2)
             .newColumn()
-              .addString("Mandatory top level property for <i>simple</i> signatures.")
+              .addString("Unique top level property for <i>simple</i> signatures.")
             .newRow()
            .newColumn()
-             .addProperty(JSONCryptoHelper.VALUE_JSON)
-             .addArrayLink(JSONCryptoHelper.VALUE_JSON, 1)
+             .addProperty("...")
+             .addArrayLink(JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON, 1)
            .newColumn()
              .setType(WEBPKI_DATA_TYPES.OBJECT)
            .newColumn()
            .newColumn()
-             .addString("Mandatory top level property for ")
+             .addString("Unique top level property for ")
              .addLink(MULTIPLE_SIGNATURES)
              .addString(".");
            
