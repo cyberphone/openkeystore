@@ -299,8 +299,8 @@ public class JSONBaseHTML  {
 
         addReferenceEntry(REF_JEF,
             "A. Rundgren, \"JEF - JSON Encryption Format\", Work in progress, " +
-            "<span style=\"white-space: nowrap\">V0.60, January&nbsp;2018.</span> " +
-            externalWebReference ("https://cyberphone.github.io/doc/security/jose-jef.html"));
+            "<span style=\"white-space: nowrap\">V0.60, Mars&nbsp;2019.</span> " +
+            externalWebReference ("https://cyberphone.github.io/doc/security/jef.html"));
 
         addReferenceEntry(REF_SKS, "A. Rundgren, \"Secure Key Store (SKS) - API and Architecture\", Work in progress, " +
             "<span style=\"white-space: nowrap\">V1.03, May&nbsp;2017.</span> " +
@@ -1353,11 +1353,12 @@ public class JSONBaseHTML  {
         .newColumn()
         .newColumn()
           .addString("EC curve point X. The length of this field <b>must</b> " +
-                      "be the full size of a coordinate for the curve specified in the <code>" + 
-                      JSONCryptoHelper.CRV_JSON + "</code> parameter.  For example, " +
-                      "if the value of <code>" + JSONCryptoHelper.CRV_JSON + "</code> is <code>" +
+                      "be the full size of a coordinate for the curve specified in the <code>&quot;" + 
+                      JSONCryptoHelper.CRV_JSON + "&quot;</code> parameter.  For example, " +
+                      "if the value of <code>&quot;" + JSONCryptoHelper.CRV_JSON +
+                      "&quot;</code> is <code>&quot;" +
                       KeyAlgorithms.NIST_P_521.getAlgorithmId (AlgorithmPreferences.JOSE) +
-                      "</code>, the <i>decoded</i> argument <b>must</b> be 66 bytes.")
+                      "&quot;</code>, the <i>decoded</i> argument <b>must</b> be 66 bytes.")
       .newRow()
         .newColumn()
           .addProperty(JSONCryptoHelper.Y_JSON)
@@ -1367,11 +1368,12 @@ public class JSONBaseHTML  {
         .newColumn()
         .newColumn()
           .addString("EC curve point Y. The length of this field <b>must</b> " +
-                      "be the full size of a coordinate for the curve specified in the <code>" + 
-                      JSONCryptoHelper.CRV_JSON + "</code> parameter.  For example, " +
-                      "if the value of <code>" + JSONCryptoHelper.CRV_JSON + "</code> is <code>" +
+                      "be the full size of a coordinate for the curve specified in the <code>&quot;" + 
+                      JSONCryptoHelper.CRV_JSON + "&quot;</code> parameter.  For example, " +
+                      "if the value of <code>&quot;" + JSONCryptoHelper.CRV_JSON +
+                      "&quot;</code> is <code>&quot;" +
                       KeyAlgorithms.NIST_P_256.getAlgorithmId (AlgorithmPreferences.JOSE) +
-                      "</code>, the <i>decoded</i> argument <b>must</b> be 32 bytes.")
+                      "&quot;</code>, the <i>decoded</i> argument <b>must</b> be 32 bytes.")
       .newRow(JSF_PUBLIC_KEY_RSA)
         .newColumn()
           .addProperty(JSONCryptoHelper.N_JSON)

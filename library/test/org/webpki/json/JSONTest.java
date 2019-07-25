@@ -3691,7 +3691,7 @@ public class JSONTest {
                     byte[] e,
                     byte[] t,
                     DataEncryptionAlgorithms enc) throws Exception {
-        byte[] pout = EncryptionCore.contentDecryption(enc,
+        byte[] pout = EncryptionCore.dataDecryption(enc,
                                                        k,
                                                        e,
                                                        iv,
@@ -3702,16 +3702,16 @@ public class JSONTest {
         iv = EncryptionCore.createIv(enc);
         EncryptionCore.SymmetricEncryptionResult symmetricEncryptionResult = 
                 EncryptionCore.dataEncryption(enc,
-                                                 k,
-                                                 iv,
-                                                 p,
-                                                 a);
-        pout = EncryptionCore.contentDecryption(enc,
-                                                k,
-                                                symmetricEncryptionResult.getCipherText(),
-                                                iv,
-                                                a,
-                                                symmetricEncryptionResult.getTag());
+                                              k,
+                                              iv,
+                                              p,
+                                              a);
+        pout = EncryptionCore.dataDecryption(enc,
+                                             k,
+                                             symmetricEncryptionResult.getCipherText(),
+                                             iv,
+                                             a,
+                                             symmetricEncryptionResult.getTag());
         assertTrue("pout 2", ArrayUtil.compare(p, pout));
 
         byte[] contentEncryptionKey = genRandom(enc.getKeyLength());
@@ -3757,10 +3757,10 @@ public class JSONTest {
         byte[] kek = keyEncryptionAlgorithm.isKeyWrap() ?
                 test.getObject("encrypting_key").getBinary("encrypted_key") : null;
         byte[] cek2 = EncryptionCore.receiverKeyAgreement(keyEncryptionAlgorithm, 
-                                            dataEncryptionAlgorithm,
-                                            (ECPublicKey)ephemeralKey.getPublic(),
-                                            staticKey.getPrivate(),
-                                            kek);
+                                                          dataEncryptionAlgorithm,
+                                                          (ECPublicKey)ephemeralKey.getPublic(),
+                                                          staticKey.getPrivate(),
+                                                          kek);
         if (!ArrayUtil.compare(cek, cek2)) {
             fail("Fail CEK");
         }
@@ -3768,8 +3768,8 @@ public class JSONTest {
         byte[] cipherText = test.getObject("output").getObject("json").getBinary("ciphertext");
         byte[] authData = test.getObject("encrypting_content").getString("protected_b64u").getBytes("UTF-8");
         byte[] tag = test.getObject("encrypting_content").getBinary("tag");
-        byte[] res = EncryptionCore.contentDecryption(dataEncryptionAlgorithm, 
-                                                      cek, cipherText, iv, authData, tag);
+        byte[] res = EncryptionCore.dataDecryption(dataEncryptionAlgorithm, 
+                                                   cek, cipherText, iv, authData, tag);
 
         if (!ArrayUtil.compare(res, plainText)) {
             fail("Fail plain text");
@@ -3791,17 +3791,17 @@ public class JSONTest {
                 byte[] iv = EncryptionCore.createIv(enc);
                 EncryptionCore.SymmetricEncryptionResult symmetricEncryptionResult = 
                         EncryptionCore.dataEncryption(enc,
-                                                         key,
-                                                         iv,
-                                                         plainText, 
-                                                         authData);
+                                                      key,
+                                                      iv,
+                                                      plainText, 
+                                                      authData);
                 if (!ArrayUtil.compare(plainText,
-                                       EncryptionCore.contentDecryption(enc,
-                                                                        key, 
-                                                                        symmetricEncryptionResult.getCipherText(), 
-                                                                        iv, 
-                                                                        authData,
-                                                                        symmetricEncryptionResult.getTag()))) {
+                                       EncryptionCore.dataDecryption(enc,
+                                                                     key, 
+                                                                     symmetricEncryptionResult.getCipherText(), 
+                                                                     iv, 
+                                                                     authData,
+                                                                     symmetricEncryptionResult.getTag()))) {
                     fail("compare " + enc);
                 }
             }

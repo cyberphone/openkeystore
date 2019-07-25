@@ -69,6 +69,8 @@ public class Signatures {
     
     static final String[] UNSIGNED_DATA = new String[]{"myUnsignedData"};
     
+    static String signatureLabel = JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON;
+    
     static JSONObjectWriter getMixedData() throws IOException {
         return new JSONObjectWriter()
             .setString("mySignedData", "something")
@@ -160,6 +162,9 @@ public class Signatures {
         
         arraySign("p256", false);
         arraySign("r2048", true);
+
+        signatureLabel = "authorizationSignature";
+        asymSignCore("p256", false,  true, false, false);
     }
 
     static void arraySign(String keyType, boolean exts) throws Exception {
@@ -251,7 +256,7 @@ public class Signatures {
     
     static String cleanSignature(byte[] signedData) throws IOException {
         JSONObjectReader reader = JSONParser.parse(signedData);
-        JSONObjectReader signature = reader.getObject(JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON);
+        JSONObjectReader signature = reader.getObject(signatureLabel);
         if (signature.hasProperty(JSONCryptoHelper.SIGNERS_JSON)) {
             JSONArrayReader array = signature.getArray(JSONCryptoHelper.SIGNERS_JSON);
             while (array.hasMore()) {
@@ -317,8 +322,8 @@ public class Signatures {
     }
 
     static byte[] createSignature(JSONSigner signer) throws Exception {
-        String signed = parseDataToSign().setSignature(signer).toString();
-        int i = signed.indexOf(",\n  \"" + JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON + "\":");
+        String signed = parseDataToSign().setSignature(signatureLabel, signer).toString();
+        int i = signed.indexOf(",\n  \"" + signatureLabel + "\":");
         String unsigned = getDataToSign();
         int j = unsigned.lastIndexOf("\n}");
         return (unsigned.substring(0,j) + signed.substring(i)).getBytes("UTF-8");
@@ -334,7 +339,7 @@ public class Signatures {
             return dataToSign.serializeToBytes(JSONOutputFormats.PRETTY_PRINT);
         }
         String signed = dataToSign.toString();
-        int i = signed.indexOf(",\n  \"" + JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON + "\":");
+        int i = signed.indexOf(",\n  \"" + signatureLabel + "\":");
         String unsigned = getDataToSign();
         int j = unsigned.lastIndexOf("\n}");
         return (unsigned.substring(0,j) + signed.substring(i)).getBytes("UTF-8");
@@ -455,8 +460,11 @@ public class Signatures {
             options.setPermittedExclusions(UNSIGNED_DATA);
         }
         String addedFeature = wantExtensions ? "exts-" : (wantExclusions ? "excl-" : "");
+        if (!signatureLabel.startsWith("s")) {
+            addedFeature += "cstm-";
+        }
         JSONSignatureDecoder decoder = 
-            JSONParser.parse(signedData).getSignature(options);
+            JSONParser.parse(signedData).getSignature(signatureLabel, options);
         optionalUpdate(baseSignatures + prefix(keyType) + getAlgorithm(decoder) + '@' +  
                 addedFeature + keyIndicator(wantKeyId, wantPublicKey), signedData, true);
         return decoder;

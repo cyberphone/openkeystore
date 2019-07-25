@@ -68,26 +68,27 @@ public class JSONDecryptionDecoder {
             this.globalEncryptionObject = encryptionObject;
             this.keyEncryption = keyEncryption;
 
-            ///////////////////////////////////////////////////////////////////////////////////////////////
-            // Begin JEF/JCS normalization                                                               //
-            //                                                                                           //
-            // 1. Make a shallow copy of the encryption object property list                             //
-            LinkedHashMap<String, JSONValue> savedProperties =                                           //
-                    new LinkedHashMap<String, JSONValue>(encryptionObject.root.properties);              //
-            //                                                                                           //
-            // 2. Hide these properties from the serializer..                                            //
-            encryptionObject.root.properties.remove(JSONCryptoHelper.IV_JSON);                           //
-            encryptionObject.root.properties.remove(JSONCryptoHelper.TAG_JSON);                          //
-            encryptionObject.root.properties.remove(JSONCryptoHelper.CIPHER_TEXT_JSON);                  //
-            //                                                                                           //
-            // 3. Canonicalize                                                                           //
-            authenticatedData = encryptionObject.serializeToBytes(JSONOutputFormats.CANONICALIZED);      //
-            //                                                                                           //
-            // 4. Restore encryption object property list                                                //
-            encryptionObject.root.properties = savedProperties;                                          //
-            //                                                                                           //
-            // End JEF/JCS normalization                                                                 //
-            ///////////////////////////////////////////////////////////////////////////////////////////////
+            ///////////////////////////////////////////////////////////////////////////////////
+            // Begin JEF/JCS normalization                                                   //
+            //                                                                               //
+            // 1. Make a shallow copy of the encryption object property list                 //
+            LinkedHashMap<String, JSONValue> savedProperties =                               //
+                    new LinkedHashMap<String, JSONValue>(encryptionObject.root.properties);  //
+            //                                                                               //
+            // 2. Hide these properties from the serializer..                                //
+            encryptionObject.root.properties.remove(JSONCryptoHelper.IV_JSON);               //
+            encryptionObject.root.properties.remove(JSONCryptoHelper.TAG_JSON);              //
+            encryptionObject.root.properties.remove(JSONCryptoHelper.CIPHER_TEXT_JSON);      //
+            //                                                                               //
+            // 3. Canonicalize                                                               //
+            authenticatedData =                                                              //
+                    encryptionObject.serializeToBytes(JSONOutputFormats.CANONICALIZED);      //
+            //                                                                               //
+            // 4. Restore encryption object property list                                    //
+            encryptionObject.root.properties = savedProperties;                              //
+            //                                                                               //
+            // End JEF/JCS normalization                                                     //
+            ///////////////////////////////////////////////////////////////////////////////////
 
             // Collect mandatory elements
             dataEncryptionAlgorithm = DataEncryptionAlgorithms
@@ -98,7 +99,8 @@ public class JSONDecryptionDecoder {
         }
     }
 
-    LinkedHashMap<String,JSONCryptoHelper.Extension> extensions = new LinkedHashMap<String,JSONCryptoHelper.Extension>();
+    LinkedHashMap<String,JSONCryptoHelper.Extension> extensions = 
+            new LinkedHashMap<String,JSONCryptoHelper.Extension>();
 
     private PublicKey publicKey;
     
@@ -202,12 +204,12 @@ public class JSONDecryptionDecoder {
     }
 
     private byte[] localDecrypt(byte[] dataDecryptionKey) throws IOException, GeneralSecurityException {
-        return EncryptionCore.contentDecryption(holder.dataEncryptionAlgorithm,
-                                                dataDecryptionKey,
-                                                holder.encryptedData,
-                                                holder.iv,
-                                                holder.authenticatedData,
-                                                holder.tag);
+        return EncryptionCore.dataDecryption(holder.dataEncryptionAlgorithm,
+                                             dataDecryptionKey,
+                                             holder.encryptedData,
+                                             holder.iv,
+                                             holder.authenticatedData,
+                                             holder.tag);
     }
 
     /**
@@ -217,7 +219,8 @@ public class JSONDecryptionDecoder {
      * @throws IOException &nbsp;
      * @throws GeneralSecurityException &nbsp;
      */
-    public byte[] getDecryptedData(byte[] dataDecryptionKey) throws IOException, GeneralSecurityException {
+    public byte[] getDecryptedData(byte[] dataDecryptionKey) throws IOException, 
+                                                                    GeneralSecurityException {
         require(false);
         return localDecrypt(dataDecryptionKey);
     }
@@ -229,7 +232,8 @@ public class JSONDecryptionDecoder {
      * @throws IOException &nbsp;
      * @throws GeneralSecurityException &nbsp;
      */
-    public byte[] getDecryptedData(PrivateKey privateKey) throws IOException, GeneralSecurityException {
+    public byte[] getDecryptedData(PrivateKey privateKey) throws IOException, 
+                                                                 GeneralSecurityException {
         require(true);
         return localDecrypt(keyEncryptionAlgorithm.isRsa() ?
                 EncryptionCore.rsaDecryptKey(keyEncryptionAlgorithm,

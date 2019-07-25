@@ -308,11 +308,12 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
 
         JSONObjectReader ecdhEncryption = json.readJson2(SAMPLE_TEST_VECTOR);
         JSONObjectReader authData = ecdhEncryption.clone();
+        authData.removeProperty(JSONCryptoHelper.IV_JSON);
         authData.removeProperty(JSONCryptoHelper.TAG_JSON);
         authData.removeProperty(JSONCryptoHelper.CIPHER_TEXT_JSON);
-        String formattedAuthData = authData.serializeToString(JSONOutputFormats.NORMALIZED);
+        String formattedAuthData = authData.serializeToString(JSONOutputFormats.CANONICALIZED);
         for (int l = formattedAuthData.length(), j = 0, i = 0; i < l; i++) {
-            if (i % 111 == 0 && i > 0) {
+            if (i % 100 == 0 && i > 0) {
                 formattedAuthData = formattedAuthData.substring(0, i + j) + 
                         "<br>" + formattedAuthData.substring(i + j);
                 j += 4;
@@ -361,26 +362,26 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
                 "Prerequisite: A JSON object in accordance with ")
               .append(json.createReference(JSONBaseHTML.REF_JSON))
               .append(" containing properly formatted JEF data." + LINE_SEPARATOR +
-                "Parsing restrictions:<ul>" +
-                "<li>The original property serialization order <b>must</b> be <i>preserved</i>.</li>" +
-                "<li style=\"padding-top:4pt\">There <b>must not</b> be any not here defined properties inside of a JEF object.</li>" +
-                "</ul>Since JEF uses the same algorithms as JWE " +
+                "Note that there <b>must not</b> be any not here defined properties inside of a JEF object " + 
+                " and that the use of JCS " + json.createReference(JSONBaseHTML.REF_JCS) +
+                " implies certain constraints on optional extension data." +     
+                LINE_SEPARATOR +
+                "Since JEF uses the same algorithms as JWE " +
                 json.createReference(JSONBaseHTML.REF_JWE) +
                 " the JWA " + json.createReference(JSONBaseHTML.REF_JWA) +
                 " reference apply with one important exception: <i>Additional Authenticated Data</i> " +
                 "used by the symmetric ciphers. " +
                 "This difference is due to the way encryption meta-data is formatted. " +
-                "The process for creating <i>Additional Authenticated Data</i> is as follows:<ul>" +
-                "<li>The <i>top level</i> properties " +
-                "<code>" + JSONCryptoHelper.TAG_JSON + "</code> and <code>" + 
+                "The process for creating <i>Additional Authenticated Data</i> <b>must</b> be performed as follows:<ol>" +
+                "<li value=\"1\">The <i>top level</i> properties " +
+                "<code>" + JSONCryptoHelper.IV_JSON + 
+                "</code>, <code>" + JSONCryptoHelper.TAG_JSON + "</code> and <code>" + 
                 JSONCryptoHelper.CIPHER_TEXT_JSON +
-                "</code> (including leading <i>or</i> trailing <code>','</code> characters) " +
-                "<b>must</b> " + "be deleted from the JEF object.</li>" +
-                "<li style=\"padding-top:4pt\">Whitespace <b>must</b> be removed which in practical terms means removal of all characters outside of quoted strings " +
-                "having a value of x09, x0a, x0d or x20.</li>" +
-                "<li style=\"padding-top:4pt\">Now the JEF object <b>must</b> be " +
-                "<i>recreated</i> using the actual text left after applying the previous measures.</li>" +
-                "</ul>" +
+                "</code> are <i>deleted</i> from the JEF object.</li>" +
+                "<li style=\"padding-top:4pt\">The <i>Additional Authenticated Data</i> is retrieved by running the " +
+                "JCS " + json.createReference(JSONBaseHTML.REF_JCS) +
+                " canonicalization method over the remaining JEF object.</li>" +
+                "</ol>" +
                 "Applied on the <a href=\"#" + JSONBaseHTML.makeLink(SAMPLE_OBJECT) + "\">" + SAMPLE_OBJECT +
                 "</a>, a conforming JEF <i>Additional Authenticated Data</i> process should return the following JSON string:" +
                 "<div style=\"padding:10pt 0pt 10pt 20pt\"><code>" + formattedAuthData + "</code></div>" +
@@ -527,7 +528,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
         .setType(Types.WEBPKI_DATA_TYPES.OBJECT)
     .newColumn()
     .newColumn()
-        .addString("<i>Optional</i>. Single recepient using an encrypted key." + 
+        .addString("<i>Optional</i>. Single recipient using an encrypted key." + 
                    Types.LINE_SEPARATOR +
                    JSONBaseHTML.referToTestVector(JWK_TEST_VECTOR))
        .newRow()
@@ -553,9 +554,9 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
           .addString("<i>Optional.</i> Array holding the names of one or more application specific extension properties " +
           "featured in the " +
                   json.globalLinkRef(KEY_ENCRYPTION) +
-          " object (or the top level object " +
-          "for the case there is no <code>&quot;" + JSONCryptoHelper.RECIPIENTS_JSON + 
-          "&quot;</code> element)." +
+          " objects (or in the top level object " +
+          "if there are no <code>&quot;" + JSONCryptoHelper.RECIPIENTS_JSON + 
+          "&quot;</code> or <code>" + JSONCryptoHelper.ENCRYPTED_KEY_JSON + "</code> elements)." +
           Types.LINE_SEPARATOR +
           "Extension names <b>must not</b> be <i>duplicated</i> or use any of the JEF <i>reserved words</i> " +
           JSONBaseHTML.enumerateAttributes(JSONCryptoHelper.jefReservedWords.toArray(new String[0]), false) + ". " +

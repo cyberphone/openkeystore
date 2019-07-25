@@ -249,7 +249,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
           .append(json.createReference(JSONBaseHTML.REF_XMLDSIG))
           .append(" &quot;enveloped&quot; signatures. " +
             Types.LINE_SEPARATOR +
-            "Unlike JWS ")
+            "Unlike JSON Web Signature (JWS) ")
           .append(json.createReference(JSONBaseHTML.REF_JWS))
           .append(
             " which was designed for signing <i>any</i> kind of data, " +
@@ -263,11 +263,10 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
            .append(json.createReference(JSONBaseHTML.REF_JCS))
            .append(" both data and header information could be provided in plain text while still being " +
            "subject to cryptographic operations." + Types.LINE_SEPARATOR +
-            "In order to make library support of JSF straightforward in spite of having a different structure compared to JWS ")
-          .append(json.createReference(JSONBaseHTML.REF_JWS))
-          .append(", JSF uses the same cryptographic algorithms ")
+            "In order to make library support of JSF straightforward in spite of " +
+           "having a different structure compared to JWS, JSF uses the same JWA ")
           .append(json.createReference(JSONBaseHTML.REF_JWA))
-          .append(". " + Types.LINE_SEPARATOR +
+          .append(" cryptographic algorithms." + Types.LINE_SEPARATOR +
             "JSF may also be used for &quot;in-object&quot; JavaScript signatures, " +
              "making JSF suitable for HTML5 applications. See " +
              "<a href=\"#" + JSONBaseHTML.makeLink(ECMASCRIPT_MODE) + 

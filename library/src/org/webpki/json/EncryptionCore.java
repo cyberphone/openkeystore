@@ -282,12 +282,12 @@ class EncryptionCore {
      * @return The data in clear
      * @throws GeneralSecurityException &nbsp;
      */
-    public static byte[] contentDecryption(DataEncryptionAlgorithms dataEncryptionAlgorithm,
-                                           byte[] key,
-                                           byte[] cipherText,
-                                           byte[] iv,
-                                           byte[] authData,
-                                           byte[] tag) throws GeneralSecurityException {
+    public static byte[] dataDecryption(DataEncryptionAlgorithms dataEncryptionAlgorithm,
+                                        byte[] key,
+                                        byte[] cipherText,
+                                        byte[] iv,
+                                        byte[] authData,
+                                        byte[] tag) throws GeneralSecurityException {
         check(key, "key", dataEncryptionAlgorithm.keyLength, dataEncryptionAlgorithm);
         check(iv, "iv", dataEncryptionAlgorithm.ivLength, dataEncryptionAlgorithm);
         check(tag, "tag", dataEncryptionAlgorithm.tagLength, dataEncryptionAlgorithm);
