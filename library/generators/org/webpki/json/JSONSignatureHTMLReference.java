@@ -47,8 +47,6 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
     static JSONBaseHTML json;
     static RowInterface row;
     
-    static final String INTEROPERABILITY    = "Interoperability";
-
     static final String ECMASCRIPT_MODE     = "ECMAScript Mode";
 
     static final String TEST_VECTORS        = "Test Vectors";
@@ -63,7 +61,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
     
     static final String ECMASCRIPT_CONSTRAINT = "ECMAScript Constraint";
     
-    static final String SAMLE_TEST_VECTOR     = "p256#es256@jwk.json";
+    static final String SAMPLE_TEST_VECTOR    = "p256#es256@jwk.json";
 
     static JSONObjectReader readJSON(String name) throws IOException {
         return JSONParser.parse(ArrayUtil.getByteArrayFromInputStream(JSONEncryptionHTMLReference.class.getResourceAsStream(name)));
@@ -226,6 +224,10 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
         AsymKey p384key = readAsymKey("p384");
         AsymKey p521key = readAsymKey("p521");
         AsymKey r2048key = readAsymKey("r2048");
+        asymmetricKeys.add(p256key);
+        asymmetricKeys.add(p384key);
+        asymmetricKeys.add(p521key);
+        asymmetricKeys.add(r2048key);
         
         symmetricKeys.add(readSymKey("a128bitkey"));
         symmetricKeys.add(readSymKey("a256bitkey"));
@@ -276,7 +278,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
           .append(json.createReference(JSONBaseHTML.REF_JEF))
           .append(" which deals with JSON encryption.");
 
-        String sampleSignature = readAsymSignature(SAMLE_TEST_VECTOR, p256key, new JSONCryptoHelper.Options());
+        String sampleSignature = readAsymSignature(SAMPLE_TEST_VECTOR, p256key, new JSONCryptoHelper.Options());
         int beginValue = sampleSignature.indexOf("},");
         sampleSignature = sampleSignature.substring(0, ++beginValue) + "<span style=\"background:#f0f0f0\">,</span>" + sampleSignature.substring(++beginValue);
         beginValue = sampleSignature.indexOf("&quot;" + JSONCryptoHelper.VALUE_JSON + "&quot;");
@@ -287,104 +289,74 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
         sampleSignature = sampleSignature.substring(0, beginValue) + 
                 "</span>" + 
                 sampleSignature.substring(beginValue);
-
-        StringBuilder normalizedSampleSignature = new StringBuilder(
-            "{&quot;now&quot;:&quot;\u0000&quot;,&quot;escapeMe&quot;:&quot;" +
-            "<b style=\"color:red;background:Yellow\">&#x20ac;</b>$<b style=\"color:red;background:Yellow\">" +
-            "\\u000f\\nA</b>'B<b style=\"color:red;background:Yellow\">\\&quot;\\\\</b>\\\\\\&quot;" +
-            "<b style=\"color:red;background:Yellow\">/</b>&quot;,&quot;numbers&quot;:[1e+30,4.5,6],&quot;signature&quot;<br>" + 
-            ":{&quot;alg&quot;:&quot;ES256&quot;,&quot;publicKey&quot;:{&quot;kty&quot;" +
-            ":&quot;EC&quot;,&quot;crv&quot;:&quot;P-256&quot;,&quot;x&quot;:&quot;\u0000&quot;," +
-            "&quot;y&quot;<br>:&quot;\u0000&quot;}}}");
-        JSONObjectReader sampleSignatureDecoded = json.readJson2(SAMLE_TEST_VECTOR);
-        updateNormalization(normalizedSampleSignature, "now", sampleSignatureDecoded);
-        updateNormalization(normalizedSampleSignature, "x", sampleSignatureDecoded = 
-                       sampleSignatureDecoded.getObject(JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON)
-                                                 .getObject(JSONCryptoHelper.PUBLIC_KEY_JSON));
-        updateNormalization(normalizedSampleSignature, "y", sampleSignatureDecoded);
         
+        JSONObjectReader parsedSample = JSONParser.parse(readSignature(SAMPLE_TEST_VECTOR));
+        parsedSample.getObject(JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON).removeProperty(JSONCryptoHelper.VALUE_JSON);
+
         json.addParagraphObject(SAMPLE_OBJECT).append(
             "The following <i>cryptographically verifiable</i> sample signature is used to visualize the JSF specification:")
         .append(sampleSignature)
         .append("The sample signature's payload consists of the properties above the <code>&quot;" +
-            JSONCryptoHelper.VALUE_JSON + "&quot;</code> property. " +
+            JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON + "&quot;</code> property. " +
             "Note: JSF does <i>not</i> mandate any specific ordering of properties like in the sample." + LINE_SEPARATOR +
-            "For more examples see <a href=\"#" + JSONBaseHTML.makeLink(TEST_VECTORS) + 
-               "\"><span style=\"white-space:nowrap\">" +
-               TEST_VECTORS + "</span></a>.");
-
-        json.addParagraphObject("Signature Scope").append(
+            "For more examples see " +
+            json.globalLinkRef(TEST_VECTORS) + 
+            "." + LINE_SEPARATOR +
             "The scope of a signature (what is actually signed) comprises all " +
             "properties including possible child objects of the JSON " +
             "object holding the <code>&quot;" + JSONCryptoHelper.VALUE_JSON +
-            "&quot;</code> property except for the <code>&quot;" + JSONCryptoHelper.VALUE_JSON + "&quot;</code> property (shaded area in the sample).");
+            "&quot;</code> property except for the <code>&quot;" + 
+            JSONCryptoHelper.VALUE_JSON + "&quot;</code> property itself (shaded area in the sample).");
+        
+        json.addDataTypesDescription("JSF consists of a top-level property holding a composite JSON object. " + LINE_SEPARATOR);
 
-        json.addParagraphObject("Normalization and Signature Validation").append(
+        json.addProtocolTableEntry("JSF Objects")
+          .append("The following tables describe the JSF JSON structures in detail.");
+        
+        json.addParagraphObject("Signature Validation").append(
+            "JSF implementors are presumed to be familiar with JWS " +
+                        json.createReference(JSONBaseHTML.REF_JWS) + "." + LINE_SEPARATOR +
             "Prerequisite: A JSON object in accordance with ")
           .append(json.createReference(JSONBaseHTML.REF_JSON))
-          .append(" supplied as a <i>textual string</i> containing a top level <code>&quot;" + JSONCryptoHelper.VALUE_JSON + "&quot;</code> property." + LINE_SEPARATOR +
-            "Additional input data constraints:<ul>" +
-            "<li>JSON data of the type <code>&quot;Number&quot;</code>, <b>must</b> <i>already during " +
-            "signature creation</i> have been serialized according to ECMAScript " +
-            json.createReference(JSONBaseHTML.REF_ES6) +
-            " section <b>7.1.12.1</b> including NOTE 2 (implemented by for example V8 " +
-            json.createReference(JSONBaseHTML.REF_V8) +
-            "), in order to achieve maximum interoperability.</li>" +
-            "<li style=\"padding-top:4pt\">Property names within an object <b>must</b> be <i>unique</i>.</li>" +
-            "<li style=\"padding-top:4pt\">There <b>must not</b> be any not here defined properties inside of the <code>" + 
-            JSONCryptoHelper.VALUE_JSON + "</code> sub object.</li>" +
-            "</ul>" +
-            "The normalization steps are as follows:<ul>" +
-            "<li>Whitespace <b>must</b> be removed which in practical terms means removal of all characters outside of quoted strings " +
-            "having a value of x09, x0a, x0d or x20.</li>" +
-            "<li style=\"padding-top:4pt\">The " + json.globalLinkRef(JSONCryptoHelper.VALUE_JSON, JSONCryptoHelper.VALUE_JSON) + " property " +
-            "(including leading <i>or</i> trailing <code>','</code>) <b>must</b> be deleted from the " +
-            json.globalLinkRef(JSONCryptoHelper.VALUE_JSON) + " sub object.</li>" +
-            "<li style=\"padding-top:4pt\">JSON <code>'\\/'</code> escape sequences within quoted strings <b>must</b> be treated as &quot;degenerate&quot; equivalents to <code>'/'</code> by rewriting them.</li>" +
-            "<li style=\"padding-top:4pt\">As implied by ECMAScript " +
-            json.createReference(JSONBaseHTML.REF_ES6) +
-            " section <b>24.3.2.2</b>:<ul style=\"padding-top:2pt;padding-bottom:4pt\"><li>" +
-            "Unicode escape sequences (<code>\\uhhhh</code>) within quoted strings <b>must</b> be adjusted as follows: " +
-            "If the Unicode value falls within the traditional ASCII control character range (0x00 - 0x1f), " +
-            "it <b>must</b> be rewritten in <i>lowercase</i> hexadecimal notation unless it is one of the predefined " +
-            "JSON escapes (<code>\\\"&nbsp;\\\\&nbsp;\\b&nbsp;\\f&nbsp;\\n&nbsp;\\r&nbsp;\\t</code>) " +
-            "because the latter have <i>precedence</i>. If the Unicode value is " +
-            "outside of the ASCII control character range, it <b>must</b> " +
-            "be replaced by the corresponding Unicode character.</li></ul></li></ul>" +
-            "Note: A practical consequence of this arrangement is that the original property order is <i>preserved</i>. " +
-            "This is also compliant with ECMAScript JSON serialization as described in " +
-            json.createReference(JSONBaseHTML.REF_ES6) +
-            " section <b>9.1.12</b>, albeit with the minor limitation outlined in " +
-            json.globalLinkRef(ECMASCRIPT_CONSTRAINT) + "." + LINE_SEPARATOR +
-            "See also " + json.globalLinkRef(INTEROPERABILITY) + "." + LINE_SEPARATOR +
-            "Applied on the sample signature, a conforming JSF normalization process should return the following JSON string:" +
-            "<div style=\"padding:4pt 0pt 15pt 20pt\"><code>")
-         .append(normalizedSampleSignature)
-         .append("</code></div>" +
-            "The text in <code><b style=\"color:red;background:Yellow\">red</b></code> highlights the string normalization process. " +
+          .append(
+            " containing an arbitrary but unique top level " +
+            "property holding a JSF " +
+            json.globalLinkRef(JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON) +
+            " object." + LINE_SEPARATOR +
+            "Note that there <b>must not</b> be any not here defined properties inside of the signature object " + 
+            " and that the use of JCS " + json.createReference(JSONBaseHTML.REF_JCS) +
+            " implies certain constraints on the JSON data." +     
+            LINE_SEPARATOR +
+            "Since JSF uses the same algorithms as JWS, the JWA " + json.createReference(JSONBaseHTML.REF_JWA) +
+            " reference apply. " +
+            "The process for recreating the signed data <b>must</b> be performed as follows:<ol>" +
+            "<li value=\"1\">The <code>&quot;" + JSONCryptoHelper.VALUE_JSON + "&quot;</code> property " +
+            "is <i>deleted</i> from the JSF signature object.</li>" +
+            "<li style=\"padding-top:4pt\">The signed data is retrieved by running the " +
+            "JCS " + json.createReference(JSONBaseHTML.REF_JCS) +
+            " canonicalization method over the remaining object in its entirety.</li>" +
+            "</ol>" + LINE_SEPARATOR +
+            "Applied on the sample signature, a conforming JSF normalization process should return the following JSON string:")
+         .append(formatCode(parsedSample.serializeToString(JSONOutputFormats.CANONICALIZED)))
+         .append(
             "<i>Note that the output string was folded for improving readability</i>. " + LINE_SEPARATOR +
             "The signature supplied in the " +
-            json.globalLinkRef(JSONCryptoHelper.VALUE_JSON, JSONCryptoHelper.VALUE_JSON) +
+            json.globalLinkRef(JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON, JSONCryptoHelper.VALUE_JSON) +
             " property can now be validated by applying the algorithm specified in the " +
-            json.globalLinkRef(JSONCryptoHelper.VALUE_JSON, JSONCryptoHelper.ALGORITHM_JSON) + 
+            json.globalLinkRef(JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON, JSONCryptoHelper.ALGORITHM_JSON) + 
             " property (together with the appropriate <i>signature verification key</i>), on the " +
             "<span style=\"white-space:nowrap\">UTF-8</span> representation of the " +
             "normalized textual data." + LINE_SEPARATOR +     
             "Path validation (when applicable), is out of scope for JSF, but is <i>preferably</i> carried out as described in X.509 " +
             json.createReference(JSONBaseHTML.REF_X509) +
-            "." + LINE_SEPARATOR +
-            "The next sections cover the specifics of the JSF format.");
-        
-        json.addDataTypesDescription("JSF consists of a top-level <code>&quot;" + JSONCryptoHelper.VALUE_JSON + "&quot;</code> property holding a composite JSON object. " + LINE_SEPARATOR);
+            ".");
 
-        json.addProtocolTableEntry("JSF Objects")
-          .append("The following tables describe the JSF JSON structures in detail.");
-        
         json.addParagraphObject(MULTIPLE_SIGNATURES).append("Multiple signatures enable different keys to " +
         "<i>independently of each other</i> add a signature to a JSON object." + LINE_SEPARATOR +
         "The normalization procedure is essentially the same as for simple signatures but <b>must</b> also take the following in account as well:<ul>" +
         "<li>The <code>'['</code> and <code>']'</code> characters <b>must</b> be <i>included</i> in the normalized data for each " +
-        "<a href=\"#" + JSONCryptoHelper.VALUE_JSON + "\">signature object</a>.</li>" +
+        json.globalLinkRef(JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON) +
+        " object.</li>" +
         "<li>Each signature requires its own normalization process. During this process the other signature objects <b>must</b> (temporarily) be removed.</li>" +
         "<li>The <code>','</code> characters separating signature objects <b>must</b> be <i>excluded</i> from the normalized data.</li>" +
         "</ul>" +
@@ -455,7 +427,6 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
         "The following signature object uses the same key as in the previous example but featured in " +
         "a certificate path:" +
         readCertSignature("r2048#rs256@cer.json") + LINE_SEPARATOR +
-        "JWK " + json.createReference(JSONBaseHTML.REF_JWK) + 
         readSymSignature(new String[]{"a256#hs256@kid.json",
                                       "a384#hs384@kid.json",
                                       "a512#hs512@kid.json"}) + LINE_SEPARATOR +
@@ -469,7 +440,8 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
         "The certificate based signatures share a common root (here supplied in PEM ")
         .append(json.createReference(JSONBaseHTML.REF_PEM))
         .append(" format), which can be used for path validation:")
-        .append(pemFile("rootca.pem").replace(" 10pt ", " 0pt "));
+        .append(pemFile("rootca.pem").replace(" 10pt ", " 0pt "))
+        .append(formatCode(readSignature("p256#es256@cstm-jwk.json")));
 
         String jsSignature = formatCode("var signedObject = " +
                                         new String(json.readFile2("p256#es256@jwk.js"), "utf-8") + ";");
@@ -562,34 +534,6 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
          "&nbsp;&nbsp;<span style=\"color:green\">//&nbsp;Print&nbsp;document&nbsp;payload&nbsp;on&nbsp;the&nbsp;console</span><br>" +
          "&nbsp;&nbsp;System.out.println(&quot;Returned&nbsp;data:&nbsp;&quot;&nbsp;+&nbsp;reader.getString(&quot;myProperty&quot;));<br>" +
          "}</code></div>");
-        
-        json.addParagraphObject(INTEROPERABILITY).append("Since serialization of floating point numbers as specified by JSF is " +
-         "(at the time of writing) not available for all platforms, you <i>may</i> for highest possible " + 
-         "interoperability need to put such data in quotes.  Albeit a limitation, financial data is not natively supported by JSON either " +
-         "due to the fact that JavaScript lacks support for big decimals." + LINE_SEPARATOR +
-         "JSF compatible reference implementations are available both for server Java and Android ")
-         .append(json.createReference(JSONBaseHTML.REF_OPENKEYSTORE))
-         .append(". These implementations use ECMAScript number serialization when <i>creating</i> JSON data, making them compliant "+
-         "with browsers and Node.js as well." +
-         LINE_SEPARATOR + 
-         "Pyhton users can get the required parser behavior (modulo floating point data...) by using the following constructs:<div style=\"padding:10pt 0pt 0pt 20pt\"><code>" +
-         "jsonObject = json.loads(jcsSignedData,object_pairs_hook=collections.OrderedDict)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"color:green\"># Parse JSON while keeping original property order</span><br>" +
-         "signatureObject = jsonObject['" + JSONCryptoHelper.VALUE_JSON + 
-          "']&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
-          "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"color:green\"># As described in this document</span><br>" +
-         "clonedSignatureObject = collections.OrderedDict(signatureObject)" +
-          "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
-         "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"color:green\"># For non-destructive signature validation</span><br>" +
-         "signatureValue = signatureObject.pop('" + JSONCryptoHelper.VALUE_JSON + "')" +
-         "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
-         "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
-         "<span style=\"color:green\"># In Base64URL notation</span><br>" +
-         "normalizedSignedData = json.dumps(jsonObject,separators=(',',':'),ensure_ascii=False)" +
-         "&nbsp;&nbsp;<span style=\"color:green\"># In Unicode</span><br>" +
-         "jsonObject['" + JSONCryptoHelper.VALUE_JSON + "'] = clonedSignatureObject" +
-         "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
-         "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"color:green\"># Restore JSON object" + 
-         "</span></code></div><div style=\"padding:5pt 0pt 0pt 200pt\"><i>... Signature Validation Code ...</i></div>");   
 
         json.addParagraphObject("Acknowledgements").append("During the initial phases of the design process, highly appreciated " +
        "feedback were provided by Manu&nbsp;Sporny, Jim&nbsp;Klo, " +

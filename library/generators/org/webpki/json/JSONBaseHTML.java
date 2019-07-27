@@ -1311,9 +1311,11 @@ public class JSONBaseHTML  {
     public void addDocumentHistoryLine (String date, String version, String comment) throws IOException {
         if (doc_history == null) {
             doc_history = addParagraphObject("Document History")
-                       .append("<table class=\"tftable\"><tr><th>Date</th><th>Ver</th><th>Comment</th></tr></table>");
+             .append("<table class=\"tftable\"><tr><th>Date</th><th>Ver</th><th>Comment</th></tr></table>");
         }
-        doc_history.insert (doc_history.lastIndexOf ("</table>"), "<tr><td>" + date + "</td><td style=\"text-align:center\">" + version + "</td><td>" + comment + "</td></tr>");
+        doc_history.insert (doc_history.lastIndexOf ("</table>"), "<tr><td>" + 
+                            date + "</td><td style=\"text-align:center\">" + version + 
+                            "</td><td>" + comment + "</td></tr>");
     }
     
     public void AddPublicKeyDefinitions() throws IOException {
@@ -1343,7 +1345,8 @@ public class JSONBaseHTML  {
           .newColumn()
             .addString("EC curve name. The currently recognized EC curves include:")
             .addString(enumerateJOSEAlgorithms(KeyAlgorithms.values()))
-            .addString("Note: If <i>proprietary</i> curve names are added, they <b>must</b> be expressed as URIs.")
+            .addString("Note: If <i>proprietary</i> curve names are " +
+                       "added, they <b>must</b> be expressed as URIs.")
       .newRow()
         .newColumn()
           .addProperty(JSONCryptoHelper.X_JSON)
@@ -1419,7 +1422,8 @@ public class JSONBaseHTML  {
               .addString(createReference(REF_JWA))
               .addString(" symmetric key algorithms include:")
               .addString(enumerateJOSEAlgorithms(MACAlgorithms.values()))
-              .addString("Note: If <i>proprietary</i> signature algorithms are added, they <b>must</b> be expressed as URIs.")
+              .addString("Note: If <i>proprietary</i> signature algorithms are " +
+                         "added, they <b>must</b> be expressed as URIs.")
           .newRow()
             .newColumn()
               .addProperty(JSONCryptoHelper.KEY_ID_JSON)
@@ -1429,7 +1433,8 @@ public class JSONBaseHTML  {
             .newColumn()
               .setChoice (false, 1)
             .newColumn()
-              .addString("<i>Optional.</i> Application specific string identifying the signature key.")
+              .addString("<i>Optional.</i> Application specific string " +
+                         "identifying the signature key.")
           .newRow()
             .newColumn()
               .addProperty(JSONCryptoHelper.PUBLIC_KEY_JSON)
@@ -1445,13 +1450,15 @@ public class JSONBaseHTML  {
           .addProperty(JSONCryptoHelper.CERTIFICATE_PATH_JSON)
           .addArrayList(Types.CERTIFICATE_PATH, 1)
         .newColumn()
-          .setType(Types.WEBPKI_DATA_TYPES.BYTE_ARRAY2)
+          .setType(Types.WEBPKI_DATA_TYPES.BYTE_ARRAY)
         .newColumn()
         .newColumn()
           .addString("<i>Optional.</i> Sorted array of X.509 ")
           .addString(createReference(REF_X509))
-          .addString(" certificates, where the <i>first</i> element <b>must</b> contain the <i style=\"white-space:nowrap\">signature certificate</i>. " +
-                      "The certificate path <b>must</b> be <i>contiguous</i> but is not required to be complete.")
+          .addString(" certificates, where the <i>first</i> element <b>must</b> " +
+                     "contain the <i style=\"white-space:nowrap\">signature certificate</i>. " +
+                     "The certificate path <b>must</b> be <i>contiguous</i> " +
+                     "but is not required to be complete.")
              .newRow()
                 .newColumn()
                   .addProperty(JSONCryptoHelper.EXTENSIONS_JSON)
@@ -1461,19 +1468,23 @@ public class JSONBaseHTML  {
                 .newColumn()
                   .setChoice (false, 1)
                 .newColumn()
-                  .addString("<i>Optional.</i> Array holding the names of one or more application specific extension properties " +
+                  .addString("<i>Optional.</i> Array holding the names of one or " +
+                             "more application specific extension properties " +
                   "also featured within the signature object." +
                   Types.LINE_SEPARATOR +
-                  "Extension names <b>must not</b> be <i>duplicated</i> or use any of the JSF <i>reserved words</i> " +
+                  "Extension names <b>must not</b> be <i>duplicated</i> or use any " +
+                  "of the JSF <i>reserved words</i> " +
                   enumerateAttributes(JSONCryptoHelper.jsfReservedWords.toArray(new String[0]), false) + ". " +
                   Types.LINE_SEPARATOR +
                   "Extensions intended for public consumption are <i>preferably</i> expressed as URIs " +
                   "(unless registered with IANA), " +
                   "while private schemes are free using any valid property name." + Types.LINE_SEPARATOR +
-                  "A conforming JSF implementation <b>must</b> <i>reject</i> signatures listing properties " +
+                  "A conforming JSF implementation <b>must</b> " +
+                  "<i>reject</i> signatures listing properties " +
                   "that are not found as well as empty <code>&quot;" +
                   JSONCryptoHelper.EXTENSIONS_JSON + "&quot;</code> objects. " +
-                  "Verifiers are <i>recommended</i> introducing additional constraints like only accepting predefined extensions." +
+                  "Verifiers are <i>recommended</i> introducing additional " +
+                  "constraints like only accepting predefined extensions." +
                   Types.LINE_SEPARATOR +
                   "See also <a href=\"#" + EXTENSION_EXAMPLE + "\">test&nbsp;vector</a>.")
              .newRow()
@@ -1485,20 +1496,25 @@ public class JSONBaseHTML  {
                 .newColumn()
                   .setChoice (false, 1)
                 .newColumn()
-                  .addString("<i>Optional.</i> Array holding the names of one or more properties " +
+                  .addString("<i>Optional.</i> Array holding the names " +
+                  "of one or more properties " +
                   "featured on the same level as the <code>&quot;signature" + 
-                  "&quot;</code> property, that <b>must</b> be <i>excluded</i> from the signature process." +
+                  "&quot;</code> property, that <b>must</b> be " +
+                  "<i>excluded</i> from the signature process." +
                   Types.LINE_SEPARATOR +
-                  "Note that the <code>&quot;" + JSONCryptoHelper.EXCLUDE_JSON + "&quot;</code> property itself, <b>must</b> also " +
+                  "Note that the <code>&quot;" + JSONCryptoHelper.EXCLUDE_JSON + 
+                  "&quot;</code> property itself, <b>must</b> also " +
                   "be excluded from the signature process." + 
                   Types.LINE_SEPARATOR +
                   "Property names that are to be excluded from the signature process " +
                   "<b>must not</b> be <i>duplicated</i> or override the signature object label. " +
                   Types.LINE_SEPARATOR +
-                  "A conforming JSF implementation <b>must</b> <i>reject</i> signatures containing listed properties " +
+                  "A conforming JSF implementation <b>must</b> <i>reject</i> " +
+                  "signatures containing listed properties " +
                   "that are not found as well as empty <code>&quot;" +
                   JSONCryptoHelper.EXCLUDE_JSON + "&quot;</code> objects. " +
-                  "Verifiers are <i>recommended</i> introducing additional constraints like only accepting predefined properties." +
+                  "Verifiers are <i>recommended</i> introducing additional " +
+                  "constraints like only accepting predefined properties." +
                   Types.LINE_SEPARATOR +
                   "See also <a href=\"#" + EXCLUSION_EXAMPLE + "\">test&nbsp;vector</a>.")
           .newRow()
@@ -1537,15 +1553,24 @@ public class JSONBaseHTML  {
     public String createDialog(String header, String content) {
         if (!has_already_out_dialog_styles) {
             has_already_out_dialog_styles = true;
-            addGlobalStyle(".dlgbtn {border-radius:3pt;border-color:grey;border-style:solid;border-width:2pt;background-color:lightgrey;padding:2pt 4pt 2pt 4pt;margin-bottom:2pt;display:inline-block}\n" +
-                           ".dlgtext {border-color:black;border-style:solid;border-width:1pt;padding:2pt 4pt 2pt 4pt;font-weight:bold;font-family:\"Courier New\",courier,helvetica}\n" +
-                           ".dlgtbl {padding:0px;margin-top:10pt;margin-bottom:10pt;margin-left:auto;margin-right:auto;border-color:grey;border-style:solid;border-width:1pt;border-spacing:0px;box-shadow:3pt 3pt 3pt #D0D0D0}\n" +
+            addGlobalStyle(".dlgbtn {border-radius:3pt;border-color:grey;" +
+                           "border-style:solid;border-width:2pt;background-color:lightgrey;" +
+                           "padding:2pt 4pt 2pt 4pt;margin-bottom:2pt;display:inline-block}\n" +
+                           ".dlgtext {border-color:black;border-style:solid;" +
+                           "border-width:1pt;padding:2pt 4pt 2pt 4pt;font-weight:bold;" +
+                           "font-family:\"Courier New\",courier,helvetica}\n" +
+                           ".dlgtbl {padding:0px;margin-top:10pt;margin-bottom:10pt;" +
+                           "margin-left:auto;margin-right:auto;border-color:grey;" +
+                           "border-style:solid;border-width:1pt;border-spacing:0px;box-shadow:3pt 3pt 3pt #D0D0D0}\n" +
                            ".dlgtbl td {background-color:white;border-width:0px}\n");
         }
         return 
-          "<table class=\"dlgtbl\"><tr><td colspan=\"2\" style=\"text-align:center;font-size:14pt;font-family:arial,verdana,helvetica;background-color:lightblue;border-width:0pt 0pt 1pt 0pt\">" +
+          "<table class=\"dlgtbl\"><tr><td colspan=\"2\" style=\"text-align:center;" +
+          "font-size:14pt;font-family:arial,verdana,helvetica;background-color:lightblue;" +
+          "border-width:0pt 0pt 1pt 0pt\">" +
           header + "</td></tr>" + content +
-          "<tr><td><div class=\"dlgbtn\">Cancel</div></td><td style=\"text-align:right\"><div class=\"dlgbtn\">&nbsp;&nbsp;OK&nbsp;&nbsp;</div></td></tr>" +
+          "<tr><td><div class=\"dlgbtn\">Cancel</div></td><td style=\"text-align:right\">" +
+          "<div class=\"dlgbtn\">&nbsp;&nbsp;OK&nbsp;&nbsp;</div></td></tr>" +
           "</table>";      
     }
 
