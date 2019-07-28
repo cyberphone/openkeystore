@@ -1489,7 +1489,7 @@ public class JSONBaseHTML  {
                   "See also <a href=\"#" + EXTENSION_EXAMPLE + "\">test&nbsp;vector</a>.")
              .newRow()
                 .newColumn()
-                  .addProperty(JSONCryptoHelper.EXCLUDE_JSON)
+                  .addProperty(JSONCryptoHelper.EXCLUDES_JSON)
                   .addArrayList(Types.PROPERTY_LIST, 1)
                 .newColumn()
                   .setType(Types.WEBPKI_DATA_TYPES.STRING)
@@ -1502,7 +1502,7 @@ public class JSONBaseHTML  {
                   "&quot;</code> property, that <b>must</b> be " +
                   "<i>excluded</i> from the signature process." +
                   Types.LINE_SEPARATOR +
-                  "Note that the <code>&quot;" + JSONCryptoHelper.EXCLUDE_JSON + 
+                  "Note that the <code>&quot;" + JSONCryptoHelper.EXCLUDES_JSON + 
                   "&quot;</code> property itself, <b>must</b> also " +
                   "be excluded from the signature process." + 
                   Types.LINE_SEPARATOR +
@@ -1512,7 +1512,7 @@ public class JSONBaseHTML  {
                   "A conforming JSF implementation <b>must</b> <i>reject</i> " +
                   "signatures containing listed properties " +
                   "that are not found as well as empty <code>&quot;" +
-                  JSONCryptoHelper.EXCLUDE_JSON + "&quot;</code> objects. " +
+                  JSONCryptoHelper.EXCLUDES_JSON + "&quot;</code> objects. " +
                   "Verifiers are <i>recommended</i> introducing additional " +
                   "constraints like only accepting predefined properties." +
                   Types.LINE_SEPARATOR +

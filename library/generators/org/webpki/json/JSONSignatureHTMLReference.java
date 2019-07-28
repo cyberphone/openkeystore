@@ -26,12 +26,13 @@ import java.security.cert.X509Certificate;
 
 import java.util.Vector;
 
+import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.CertificateUtil;
+import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyStoreVerifier;
 
 import org.webpki.json.JSONBaseHTML.RowInterface;
 import org.webpki.json.JSONBaseHTML.Types;
-import org.webpki.json.JSONCryptoHelper.ExtensionHolder;
 
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.DebugFormatter;
@@ -47,22 +48,23 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
     static JSONBaseHTML json;
     static RowInterface row;
     
-    static final String ECMASCRIPT_MODE     = "ECMAScript Mode";
+    static final String ECMASCRIPT_MODE         = "ECMAScript Mode";
 
-    static final String TEST_VECTORS        = "Test Vectors";
+    static final String TEST_VECTORS            = "Test Vectors";
     
-    static final String MULTIPLE_SIGNATURES = "Multiple Signatures";
-
-    static final String COUNTER_SIGNATURES  = "Counter Signatures";
+    static final String MULTIPLE_SIGNATURES     = "Multiple Signatures";
     
-    static final String SAMPLE_OBJECT       = "Sample Object";
+    static final String COUNTER_SIGNATURES      = "Counter Signatures";
+    
+    static final String SAMPLE_OBJECT           = "Sample Object";
 
     static final String SECURITY_CONSIDERATIONS = "Security Considerations";
     
-    static final String ECMASCRIPT_CONSTRAINT = "ECMAScript Constraint";
+    static final String ECMASCRIPT_CONSTRAINT   = "ECMAScript Constraint";
     
-    static final String SAMPLE_TEST_VECTOR    = "p256#es256@jwk.json";
-
+    static final String FILE_SAMPLE_SIGN      = "p256#es256@jwk.json";
+    static final String FILE_MULT_SIGN        = "p256#es256,r2048#rs256@mult-jwk.json";
+ 
     static JSONObjectReader readJSON(String name) throws IOException {
         return JSONParser.parse(ArrayUtil.getByteArrayFromInputStream(JSONEncryptionHTMLReference.class.getResourceAsStream(name)));
     }
@@ -142,34 +144,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
         return new String(json.readFile2(name), "UTF-8");
     }
     
-    static String readAsymSignature(String name, 
-                                    AsymKey asymKey,
-                                    JSONCryptoHelper.Options options) throws IOException, GeneralSecurityException {
-        String raw = readSignature(name);
-        JSONObjectReader rd = JSONParser.parse(raw);
-        JSONSignatureDecoder verifier = rd.getSignature(options);
-        verifier.verify(new JSONAsymKeyVerifier(asymKey.keyPair.getPublic()));        
-        return formatCode(raw);
-    }
-
-    static String readMultiSignature(String name, 
-                                     AsymKey asymKey1,
-                                     AsymKey asymKey2) throws IOException, GeneralSecurityException {
-        String raw = readSignature(name);
-        JSONObjectReader rd = JSONParser.parse(raw);
-        Vector<JSONSignatureDecoder> verifiers = rd.getMultiSignature(new JSONCryptoHelper.Options());
-        verifiers.get(0).verify(new JSONAsymKeyVerifier(asymKey1.keyPair.getPublic()));
-        verifiers.get(1).verify(new JSONAsymKeyVerifier(asymKey2.keyPair.getPublic()));
-        return formatCode(raw);
-    }
-
     static JSONX509Verifier certroot;
-
-    static String readCertSignature(String name) throws IOException, GeneralSecurityException {
-        String raw = readSignature(name);
-        JSONParser.parse(raw).getSignature(new JSONCryptoHelper.Options()).verify(certroot);
-        return formatCode(raw);
-    }
 
     static void updateNormalization(StringBuilder normalizedSampleSignature,
                                     String property,
@@ -213,6 +188,100 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             }
         }
         return s.toString();
+    }
+
+    static void scanObject(JSONObjectReader coreSignature, JSONCryptoHelper.Options options) throws IOException {
+        if (coreSignature.hasProperty(JSONCryptoHelper.KEY_ID_JSON) && 
+            options.keyIdOption == JSONCryptoHelper.KEY_ID_OPTIONS.FORBIDDEN) {
+            options.setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.OPTIONAL);
+        }
+        if (!coreSignature.hasProperty(JSONCryptoHelper.CERTIFICATE_PATH_JSON) &&
+            !coreSignature.hasProperty(JSONCryptoHelper.PUBLIC_KEY_JSON)) {
+            options.setRequirePublicKeyInfo(false);
+        }
+    }
+    
+    static String validateAsymSignature (String fileName) throws IOException {
+        System.out.println(fileName);
+        JSONCryptoHelper.Options options = new JSONCryptoHelper.Options();
+        JSONObjectReader signedObject = json.readJson2(fileName);
+        try {
+            JSONObjectReader checker = signedObject.clone();
+            String signatureLabel = JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON;
+            if (!checker.hasProperty(JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON)) {
+                signatureLabel = "authorizationSignature";
+            }
+            checker = checker.getObject(signatureLabel);
+            if (checker.hasProperty(JSONCryptoHelper.EXTENSIONS_JSON)) {
+                options.setPermittedExtensions(new JSONCryptoHelper.ExtensionHolder()
+                    .addExtension(Extension1.class, true)
+                    .addExtension(Extension2.class, true));
+            }
+            if (checker.hasProperty(JSONCryptoHelper.EXCLUDES_JSON)) {
+                options.setPermittedExclusions(checker.getStringArray(JSONCryptoHelper.EXCLUDES_JSON));
+            }
+            Vector<JSONSignatureDecoder> signers = new Vector<JSONSignatureDecoder>();
+            if (checker.hasProperty(JSONCryptoHelper.SIGNERS_JSON)) {
+                JSONArrayReader signerArray = checker.getArray(JSONCryptoHelper.SIGNERS_JSON);
+                do {
+                    scanObject(signerArray.getObject(), options);
+                } while (signerArray.hasMore());
+                signers = signedObject.getMultiSignature(signatureLabel, options);
+            } else {
+                scanObject(checker, options);
+                signers.add(signedObject.getSignature(signatureLabel, options));
+            }
+          done:
+            for (JSONSignatureDecoder decoder : signers) {
+                String keyId = decoder.getKeyId();
+                if (decoder.getSignatureType() == JSONSignatureTypes.X509_CERTIFICATE) {
+                    decoder.verify(certroot);
+                    continue done;
+                } else if (keyId != null) {
+                    for (AsymKey localKey : asymmetricKeys) {
+                        if (keyId.equals(localKey.keyId)) {
+                            decoder.verify(new JSONAsymKeyVerifier(localKey.keyPair.getPublic()));;
+                            continue done;
+                        }
+                    }
+                } else if (decoder.getPublicKey() == null) {
+                     for (AsymKey localKey : asymmetricKeys) {
+                        if (((AsymSignatureAlgorithms)decoder.getAlgorithm()) == 
+                                KeyAlgorithms.getKeyAlgorithm(localKey.keyPair.getPublic()).getRecommendedSignatureAlgorithm()) {
+                            decoder.verify(new JSONAsymKeyVerifier(localKey.keyPair.getPublic()));;
+                            continue done;
+                        }
+                    }
+                } else {
+                    continue done;
+                }
+                throw new IOException("No key!");
+            }
+        } catch (Exception e) {
+            throw new IOException("Failed on file " + fileName + ", " + e.getMessage());
+        }
+        return signedObject.toString();
+    }
+
+    static String showTextAndCode(String text, String fileName, String code) throws IOException {
+        String link = JSONBaseHTML.makeLink(fileName);
+        return "<div style=\"cursor:pointer;font-weight:bold;padding:10pt 0 7pt 0\" onclick=\"document.location.href='#" +
+               link + "'\" id=\"" + link + 
+               "\">" + fileName + "</div>" +
+               text + 
+               formatCode(code);
+    }
+
+    static String showAsymSignature(String text, String signatureFile) throws IOException {
+        return showTextAndCode(text, signatureFile, validateAsymSignature(signatureFile));
+    }
+
+    static String showKey(String text, CoreKey key) throws IOException {
+        return showTextAndCode(text, key.fileName, key.text);
+    }
+    
+    static String keyLink(CoreKey key) throws IOException {
+        return json.globalLinkRef(key.fileName);
     }
 
     public static void main (String args[]) throws Exception {
@@ -278,10 +347,13 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
           .append(json.createReference(JSONBaseHTML.REF_JEF))
           .append(" which deals with JSON encryption.");
 
-        String sampleSignature = readAsymSignature(SAMPLE_TEST_VECTOR, p256key, new JSONCryptoHelper.Options());
+        String sampleSignature = formatCode(validateAsymSignature(FILE_SAMPLE_SIGN));
         int beginValue = sampleSignature.indexOf("},");
-        sampleSignature = sampleSignature.substring(0, ++beginValue) + "<span style=\"background:#f0f0f0\">,</span>" + sampleSignature.substring(++beginValue);
-        beginValue = sampleSignature.indexOf("&quot;" + JSONCryptoHelper.VALUE_JSON + "&quot;");
+        sampleSignature = sampleSignature.substring(0, ++beginValue) +
+                "<span style=\"background:#f0f0f0\">,</span>" + 
+                sampleSignature.substring(++beginValue);
+        beginValue = sampleSignature.indexOf("&quot;" + 
+                JSONCryptoHelper.VALUE_JSON + "&quot;");
         sampleSignature = sampleSignature.substring(0, beginValue) + 
                 "<span style=\"background:#f0f0f0\">" + 
                 sampleSignature.substring(beginValue);
@@ -290,8 +362,9 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
                 "</span>" + 
                 sampleSignature.substring(beginValue);
         
-        JSONObjectReader parsedSample = JSONParser.parse(readSignature(SAMPLE_TEST_VECTOR));
-        parsedSample.getObject(JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON).removeProperty(JSONCryptoHelper.VALUE_JSON);
+        JSONObjectReader parsedSample = JSONParser.parse(readSignature(FILE_SAMPLE_SIGN));
+        parsedSample.getObject(JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON)
+            .removeProperty(JSONCryptoHelper.VALUE_JSON);
 
         json.addParagraphObject(SAMPLE_OBJECT).append(
             "The following <i>cryptographically verifiable</i> sample signature is used to visualize the JSF specification:")
@@ -352,16 +425,18 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             ".");
 
         json.addParagraphObject(MULTIPLE_SIGNATURES).append("Multiple signatures enable different keys to " +
-        "<i>independently of each other</i> add a signature to a JSON object." + LINE_SEPARATOR +
-        "The normalization procedure is essentially the same as for simple signatures but <b>must</b> also take the following in account as well:<ul>" +
+        "<i>independently of each other</i> add a signature to a JSON object. " + 
+        "See the " + "<a href=\"#" + JSONBaseHTML.makeLink(FILE_MULT_SIGN) + "\">Multi Signature Sample</a>." +
+        LINE_SEPARATOR +
+        "The normalization procedure is essentially the same as for simple signatures but <b>must</b> also take the following in account:<ul>" +
         "<li>The <code>'['</code> and <code>']'</code> characters <b>must</b> be <i>included</i> in the normalized data for each " +
         json.globalLinkRef(JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON) +
         " object.</li>" +
         "<li>Each signature requires its own normalization process. During this process the other signature objects <b>must</b> (temporarily) be removed.</li>" +
         "<li>The <code>','</code> characters separating signature objects <b>must</b> be <i>excluded</i> from the normalized data.</li>" +
         "</ul>" +
-        "See also <a href=\"#" + JSONBaseHTML.makeLink(COUNTER_SIGNATURES) + "\">" + COUNTER_SIGNATURES + "</a> and " +
-        "the <a href=\"#multisignaturesample\">multiple signature sample</a>.");
+        "See also " + json.globalLinkRef(COUNTER_SIGNATURES) + 
+        ".");
         
         json.addParagraphObject(SECURITY_CONSIDERATIONS ).append("This specification does (to the author's " +
         "knowledge), not introduce additional vulnerabilities " +
@@ -370,78 +445,83 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
         json.setAppendixMode();
 
         json.addParagraphObject(TEST_VECTORS).append(
-        "This section holds test data which can be used to verify the correctness of a JSF implementation." + LINE_SEPARATOR +
-        "The <a href=\"#" + JSONBaseHTML.makeLink(SAMPLE_OBJECT) + "\">" + SAMPLE_OBJECT + "</a>" +
-        " was signed by the following EC private key in JWK " + 
-        json.createReference(JSONBaseHTML.REF_JWK) + " format:" +
-        formatCode(p256key) + 
-        "The following signature object which uses a " +
-        json.globalLinkRef(JSONCryptoHelper.VALUE_JSON, JSONCryptoHelper.KEY_ID_JSON) +
-        " for identifying the public key can be verified with the key above:" + 
-        readAsymSignature("p256#es256@kid.json", p256key, new JSONCryptoHelper.Options()
-            .setRequirePublicKeyInfo(false)
-            .setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED)) +
-        "<span id=\"" + JSONBaseHTML.EXTENSION_EXAMPLE +
-        "\">The</span> following signature object uses the same key as in the previous example but also " +
-        "includes " +
-        json.globalLinkRef(JSONCryptoHelper.VALUE_JSON, JSONCryptoHelper.EXTENSIONS_JSON) +
-        " extensions:" + 
-        readAsymSignature("p256#es256@exts-jwk.json", p256key, new JSONCryptoHelper.Options()
-            .setPermittedExtensions(new ExtensionHolder()
-                .addExtension(Extension1.class, true)
-                .addExtension(Extension2.class, true))) +
-        "<span id=\"" + JSONBaseHTML.EXCLUSION_EXAMPLE +
-        "\">The</span> following signature object uses the same key as in the previous example but also " +
-        "specifies " +
-        json.globalLinkRef(JSONCryptoHelper.VALUE_JSON, JSONCryptoHelper.EXCLUDE_JSON) +
-        " properties:" + 
-        readAsymSignature("p256#es256@excl-jwk.json", p256key, new JSONCryptoHelper.Options()
-            .setPermittedExclusions(new String[]{"myUnsignedData"})) +
-        "The following signature object uses the same key as in the previous example but featured in " +
-        "a certificate path:" +
-        readCertSignature("p256#es256@cer.json") + LINE_SEPARATOR +
-        "EC private key associated with the subsequent object:" +
-        formatCode(p384key) +
-        "The following object was signed by the key above:" +
-        readAsymSignature("p384#es384@jwk.json", p384key, new JSONCryptoHelper.Options()) +
-        "The following signature object uses the same key as in the previous example but featured in " +
-        "a certificate path:" +
-        readCertSignature("p384#es384@cer.json") + LINE_SEPARATOR +
-        "EC private key associated with the subsequent object:" +
-        formatCode(p521key) +
-        "The following object was signed by the key above:" +
-        readAsymSignature("p521#es512@jwk.json", p521key, new JSONCryptoHelper.Options()) +
-        "The following signature object uses the same key as in the previous example but builds on that " +
-        "the key to use is <i>implicitly known</i> since the object neither contains a <code>" +
-        JSONCryptoHelper.KEY_ID_JSON + "</code>, nor a <code>" + 
-        JSONCryptoHelper.PUBLIC_KEY_JSON + "</code> property:" +
-        readAsymSignature("p521#es512@imp.json", p521key, new JSONCryptoHelper.Options()
-            .setRequirePublicKeyInfo(false)) +
-        "The following signature object uses the same key as in the previous example but featured in " +
-        "a certificate path:" +
-        readCertSignature("p521#es512@cer.json") + LINE_SEPARATOR +
-        "RSA private key associated with the subsequent object:" +
-        formatCode(r2048key) +
-        "The following object was signed by the key above:" +
-        readAsymSignature("r2048#rs256@jwk.json", r2048key, new JSONCryptoHelper.Options()) +
-        "The following signature object uses the same key as in the previous example but featured in " +
-        "a certificate path:" +
-        readCertSignature("r2048#rs256@cer.json") + LINE_SEPARATOR +
+        "This section holds test data which can be used to verify the correctness of a JSF implementation." +
+        showKey(
+            "The " + json.globalLinkRef(SAMPLE_OBJECT) +
+            " was signed by the following EC private key in the JWK " + 
+            json.createReference(JSONBaseHTML.REF_JWK) + " format:",
+            p256key) + 
+        showAsymSignature(
+            "The following signature object which uses a " +
+            json.globalLinkRef(JSONCryptoHelper.VALUE_JSON, JSONCryptoHelper.KEY_ID_JSON) +
+            " for identifying the public key can be verified with the key above:", 
+            "p256#es256@kid.json") +
+        showAsymSignature(
+            "The following signature object uses the same key as in the previous example but also " +
+            "includes " +
+            json.globalLinkRef(JSONCryptoHelper.VALUE_JSON, JSONCryptoHelper.EXTENSIONS_JSON) +
+            " :",
+            "p256#es256@exts-jwk.json") +
+        showAsymSignature(
+            "The following signature object uses the same key as in the previous example but also " +
+            "specifies " +
+            json.globalLinkRef(JSONCryptoHelper.VALUE_JSON, JSONCryptoHelper.EXCLUDES_JSON) +
+            " properties:",
+            "p256#es256@excl-jwk.json") +
+        showAsymSignature(
+            "The following signature object uses the same key as in the previous example but featured in " +
+            "a certificate path:",
+            "p256#es256@cer.json") +
+        showAsymSignature(
+            "The following signature object uses the same key as in the previous example but " +
+            "features another property for holding the " + 
+            json.globalLinkRef(JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON) +
+            " object:",
+            "p256#es256@cstm-jwk.json") +
+        showKey("EC private key associated with the subsequent object:", p384key) +
+        showAsymSignature(
+            "The following object was signed by the key above:",
+            "p384#es384@jwk.json") +
+        showAsymSignature(
+            "The following signature object uses the same key as in the previous example but featured in " +
+            "a certificate path:",
+            "p384#es384@cer.json") +
+        showKey("EC private key associated with the subsequent object:", p521key) +
+        showAsymSignature("The following object was signed by the key above:",
+                          "p521#es512@jwk.json") +
+        showAsymSignature(
+            "The following signature object uses the same key as in the previous example but builds on that " +
+            "the key to use is <i>implicitly known</i> since the object neither contains a <code>" +
+            JSONCryptoHelper.KEY_ID_JSON + "</code>, nor a <code>" + 
+            JSONCryptoHelper.PUBLIC_KEY_JSON + "</code> property:",
+            "p521#es512@imp.json") +
+        showAsymSignature(
+            "The following signature object uses the same key as in the previous example but featured in " +
+            "a certificate path:",
+            "p521#es512@cer.json") +
+        showKey("RSA private key associated with the subsequent object:",
+                r2048key) +
+        showAsymSignature(
+            "The following object was signed by the key above:",
+            "r2048#rs256@jwk.json") +
+        showAsymSignature(
+            "The following signature object uses the same key as in the previous example but featured in " +
+            "a certificate path:",
+            "r2048#rs256@cer.json") +
         readSymSignature(new String[]{"a256#hs256@kid.json",
                                       "a384#hs384@kid.json",
-                                      "a512#hs512@kid.json"}) + LINE_SEPARATOR +
-        "The following is a multiple signature (see " +
-        "<a href=\"#" + JSONBaseHTML.makeLink(MULTIPLE_SIGNATURES) + "\">" +
-        MULTIPLE_SIGNATURES +
-        "</a>) using the <code id=\"multisignaturesample\">&quot;" +  p256key.keyId + "&quot;</code>" +
-        " and <code>&quot;" +  r2048key.keyId + "&quot;</code> keys:" +
-        readMultiSignature("p256#es256,r2048#rs256@mult-jwk.json", p256key, r2048key) +
+                                      "a512#hs512@kid.json"}) +
+        showAsymSignature(
+            "The following is a multiple signature (see " +
+            json.globalLinkRef(MULTIPLE_SIGNATURES) +
+            ") using the " + keyLink(p256key) +
+            " and " +  keyLink(r2048key) + " keys:",
+            FILE_MULT_SIGN) +
         LINE_SEPARATOR +
         "The certificate based signatures share a common root (here supplied in PEM ")
         .append(json.createReference(JSONBaseHTML.REF_PEM))
         .append(" format), which can be used for path validation:")
-        .append(pemFile("rootca.pem").replace(" 10pt ", " 0pt "))
-        .append(formatCode(readSignature("p256#es256@cstm-jwk.json")));
+        .append(pemFile("rootca.pem").replace(" 10pt ", " 0pt "));
 
         String jsSignature = formatCode("var signedObject = " +
                                         new String(json.readFile2("p256#es256@jwk.js"), "utf-8") + ";");

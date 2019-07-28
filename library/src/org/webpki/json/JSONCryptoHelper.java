@@ -55,7 +55,7 @@ public class JSONCryptoHelper implements Serializable {
 
     public static final String EPHEMERAL_KEY_JSON      = "ephemeralKey";   // JWK subset
 
-    public static final String EXCLUDE_JSON            = "exclude";        // JSF specific non-protected
+    public static final String EXCLUDES_JSON           = "excludes";       // JSF specific non-protected
 
     public static final String EXTENSIONS_JSON         = "extensions";     // JSF/JEF extensions
 
@@ -101,7 +101,7 @@ public class JSONCryptoHelper implements Serializable {
     static {
         jsfReservedWords.add(ALGORITHM_JSON);
         jsfReservedWords.add(EXTENSIONS_JSON);
-        jsfReservedWords.add(EXCLUDE_JSON);
+        jsfReservedWords.add(EXCLUDES_JSON);
         jsfReservedWords.add(KEY_ID_JSON);
         jsfReservedWords.add(PUBLIC_KEY_JSON);
         jsfReservedWords.add(CERTIFICATE_PATH_JSON);

@@ -565,12 +565,12 @@ public class JSONObjectWriter implements Serializable {
             JSONObjectReader rd = new JSONObjectReader(signedObject).clone();
             for (String property : signer.excluded) {
                 if (!rd.hasProperty(property)) {
-                    throw new IOException("Missing \"" + JSONCryptoHelper.EXCLUDE_JSON + "\" property: " + property);
+                    throw new IOException("Missing \"" + JSONCryptoHelper.EXCLUDES_JSON + "\" property: " + property);
                 }
                 rd.removeProperty(property);
             }
             signedObject = new JSONObjectWriter(rd);
-            outerObject.setStringArray(JSONCryptoHelper.EXCLUDE_JSON, signer.excluded);
+            outerObject.setStringArray(JSONCryptoHelper.EXCLUDES_JSON, signer.excluded);
         }
 
         // Finally, the signature itself
@@ -683,14 +683,14 @@ import org.webpki.json.JSONSignatureDecoder;
             }
             if (signer.excluded != null) {
                 throw new IOException("Only the first signer can set \"" + 
-                                      JSONCryptoHelper.EXCLUDE_JSON + "\"");
+                                      JSONCryptoHelper.EXCLUDES_JSON + "\"");
             }
             JSONArrayReader signatureArray = reader.getArray(JSONCryptoHelper.SIGNERS_JSON);
             do {
                 oldSignatures.add(signatureArray.getObject().root);
             } while (signatureArray.hasMore());
-            if (reader.hasProperty(JSONCryptoHelper.EXCLUDE_JSON)) {
-                signer.setExcluded(reader.getStringArray(JSONCryptoHelper.EXCLUDE_JSON));
+            if (reader.hasProperty(JSONCryptoHelper.EXCLUDES_JSON)) {
+                signer.setExcluded(reader.getStringArray(JSONCryptoHelper.EXCLUDES_JSON));
             }
             if (reader.hasProperty(JSONCryptoHelper.EXTENSIONS_JSON)) {
                 signer.setExtensionNames(reader.getStringArray(JSONCryptoHelper.EXTENSIONS_JSON));

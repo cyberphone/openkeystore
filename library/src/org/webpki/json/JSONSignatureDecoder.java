@@ -101,30 +101,30 @@ public class JSONSignatureDecoder implements Serializable {
 
         // Note: the following section will not execute for array signatures
         if (options.exclusions == null) {
-            if (outerSignatureObject.hasProperty(JSONCryptoHelper.EXCLUDE_JSON)) {
-                throw new IOException("Use of \"" + JSONCryptoHelper.EXCLUDE_JSON +
+            if (outerSignatureObject.hasProperty(JSONCryptoHelper.EXCLUDES_JSON)) {
+                throw new IOException("Use of \"" + JSONCryptoHelper.EXCLUDES_JSON +
                                       "\" must be set in options");
             }
         } else {
             saveExcluded = new LinkedHashMap<String, JSONValue>(signedData.root.properties);
             LinkedHashSet<String> parsedExcludes = 
-                    checkExcluded(outerSignatureObject.getStringArray(JSONCryptoHelper.EXCLUDE_JSON));
+                    checkExcluded(outerSignatureObject.getStringArray(JSONCryptoHelper.EXCLUDES_JSON));
             for (String excluded : parsedExcludes.toArray(new String[0])) {
                 if (!options.exclusions.contains(excluded)) {
-                    throw new IOException("Unexpected \"" + JSONCryptoHelper.EXCLUDE_JSON + 
+                    throw new IOException("Unexpected \"" + JSONCryptoHelper.EXCLUDES_JSON + 
                                           "\" property: " + excluded);
                 }
                 signedData.root.properties.remove(excluded);
             }
             for (String excluded : options.exclusions.toArray(new String[0])) {
                 if (!parsedExcludes.contains(excluded)) {
-                    throw new IOException("Missing \"" + JSONCryptoHelper.EXCLUDE_JSON +
+                    throw new IOException("Missing \"" + JSONCryptoHelper.EXCLUDES_JSON +
                                           "\" property: " + excluded);
                 }
             }
             // Hide the exclude property from the serializer...
-            saveExcludeArray = outerSignatureObject.root.properties.get(JSONCryptoHelper.EXCLUDE_JSON);
-            outerSignatureObject.root.properties.put(JSONCryptoHelper.EXCLUDE_JSON, null);
+            saveExcludeArray = outerSignatureObject.root.properties.get(JSONCryptoHelper.EXCLUDES_JSON);
+            outerSignatureObject.root.properties.put(JSONCryptoHelper.EXCLUDES_JSON, null);
         }
 
         signatureValue = innerSignatureObject.getBinary(JSONCryptoHelper.VALUE_JSON);
@@ -150,7 +150,7 @@ public class JSONSignatureDecoder implements Serializable {
 
         if (options.exclusions != null) {
             signedData.root.properties = saveExcluded;
-            outerSignatureObject.root.properties.put(JSONCryptoHelper.EXCLUDE_JSON, saveExcludeArray);
+            outerSignatureObject.root.properties.put(JSONCryptoHelper.EXCLUDES_JSON, saveExcludeArray);
         }
 
         // Check for unread (=forbidden) data                                            //
@@ -331,12 +331,12 @@ public class JSONSignatureDecoder implements Serializable {
 
     static LinkedHashSet<String> checkExcluded(String[] excluded) throws IOException {
         if (excluded.length == 0) {
-            throw new IOException("Empty \"" + JSONCryptoHelper.EXCLUDE_JSON + "\" array not allowed");
+            throw new IOException("Empty \"" + JSONCryptoHelper.EXCLUDES_JSON + "\" array not allowed");
         }
         LinkedHashSet<String> ex = new LinkedHashSet<String>();
         for (String property : excluded) {
             if (!ex.add(property)) {
-                throw new IOException("Duplicate \"" + JSONCryptoHelper.EXCLUDE_JSON + "\" property: " + property);
+                throw new IOException("Duplicate \"" + JSONCryptoHelper.EXCLUDES_JSON + "\" property: " + property);
             }
         }
         return ex;

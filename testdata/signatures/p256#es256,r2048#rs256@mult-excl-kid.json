@@ -5,12 +5,12 @@
     "signers": [{
       "algorithm": "ES256",
       "keyId": "example.com:p256",
-      "value": "v_Y-HY7MIjImMU9nP6td4QSrmnpa1Oi0WlaYu8IRcB2xMcCnH4hJ0qL_LY3KX-ou0FnaVPQu80oVr48UmdaDPQ"
+      "value": "4TNtGVbvViLLvHnxK-_V_yCdCljWyDBCgKLFV5109OXNu78gKxPbKERqIPwJ_pr2-rx7_nsHXk4cLzuPW8B8UQ"
     },{
       "algorithm": "RS256",
       "keyId": "example.com:r2048",
       "value": "gi4VgggTcn1jKAFANRBK9a8BLN5oIlABLdZERnhHTDY31l57P26WbY5Q7ACqE9w24BE6cRXEDACD3gLFsGIEPhu3EOE38fWWkR-5Y9hfGSJO64vSFxVEktYsf5XKyeCTtMLApmJu1wjggmB5UuC1gKuecy0ChnfJFnrPE46B9TLGOoYskjEqGJRlgPHvvqo7euFkDM61Wz1vggIq-xfqih_FYgz42280Yy2HzE-GDZXTNfji1ka7DTjujLnCjfLAQa7-65H60KFHnrMULe6k9PZiwfoSykMm3TYOF-c9hWdjwpbqOBeB-CPOg92ACBSh6cOtcHqVGVTqW_-9hj0G_w"
     }],
-    "exclude": ["myUnsignedData"]
+    "excludes": ["myUnsignedData"]
   }
 }

@@ -10,7 +10,7 @@
         "x": "censDzcMEkgiePz6DXB7cDuwFemshAFR90UNVQFCg8Q",
         "y": "xq8rze6ewG0-eVcSF72J77gKiD0IHnzpwHaU7t6nVeY"
       },
-      "value": "EHNO0SfkE0TSMoRfIEYqek5vSenVHcyDeo6TWl_65zZJ3JghYfA-PSTrSNfGRT0m_lKpLM2jWDoqUBlmi2PENQ"
+      "value": "Sxj8uLPu5B1Kij_mE4hTKMQerGSqWilV-S-xE1FKB4f9BJhByzB3a7PHuZD9CWKeFkK0uO2nAqoVjPf3mP_epQ"
     },{
       "algorithm": "ES384",
       "publicKey": {
@@ -19,8 +19,8 @@
         "x": "GLfdsvEwphRzS_twup7UFPVOk7_CKgHZ7dt_fJ2QHPBdJa1c5pfJcRIWTfT0lpg9",
         "y": "ovA5_QXmFbj9U4pjZ1AX_ZdVyIRZUBWW9cuZda_tupKfWQfmcQHzDmHGHbxl9Xxl"
       },
-      "value": "PJI3v6v7Hz5V-dTlbkyFVntC4ANp8zi5R9wjU1_vD5HQR4fjI03hCeCt_LZIYf9-Re6_0bhWF9QF0VkoG7S-aLXlDbEgxYbccYB7n2jDnICnvFwcDaNiYlAohnFk8SnJ"
+      "value": "Mb9A3DVJWRfaWNkuUuhGRLJmFlHZ5HEpOAkDULQAMFCiQ3s23WlMuJ65gZoh7TGKCWYuNJqy4OrwR21Lynr3Ts4Zi2-sGzNtxe-NO8YmJOQ4KiswOvwiWoYtXAyARBnX"
     }],
-    "exclude": ["myUnsignedData"]
+    "excludes": ["myUnsignedData"]
   }
 }

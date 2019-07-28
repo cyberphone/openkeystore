@@ -14,7 +14,7 @@
       "https://example.com/extension": {
         "life-is-great": true
       },
-      "value": "Cuv5q7hxvc9OvG8cXsfkmZnh5rIKU8ADSHUmBoU_BafI2Xt8FaoPcK36Nm-MRzOBtCV6v7Qn03m55WmYO-tw7g"
+      "value": "ANCEBuN6dUvbqn9xXhSYKwauZ9ieI_AOR_i3Yi2Zik54ac_Ypw0iM8QR-ovZ2G0zxzbCRdr_7h-wcOfbPB2New"
     },{
       "algorithm": "ES384",
       "publicKey": {
@@ -24,9 +24,9 @@
         "y": "ovA5_QXmFbj9U4pjZ1AX_ZdVyIRZUBWW9cuZda_tupKfWQfmcQHzDmHGHbxl9Xxl"
       },
       "otherExt": "Other Data",
-      "value": "DVxxm2QDvvlxKpBV3vgWKobmah0_4BM3nVirCdLX0DZFit-z-fOEIVQJDtEifqVExPdmN_y2lNJ4myjPv1GMJ0UuqCe6LPbqDvZ755rrLI7uWlKheaZDYK5fhkMAXpXt"
+      "value": "PvexMJRKlGYU5FwZDJPbgnBC6LFFN8qVgwpp256ndfRilxoOhms53szbdYbWta6kRymcNSn_jRf7A9TJNcpEtqzggQR3J1vH8C_RyBcXe_JI3QoAR-fS7bJhvX5lXQoV"
     }],
     "extensions": ["otherExt", "https://example.com/extension"],
-    "exclude": ["myUnsignedData"]
+    "excludes": ["myUnsignedData"]
   }
 }
