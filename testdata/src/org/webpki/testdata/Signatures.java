@@ -461,7 +461,7 @@ public class Signatures {
         }
         String addedFeature = wantExtensions ? "exts-" : (wantExclusions ? "excl-" : "");
         if (!signatureLabel.startsWith("s")) {
-            addedFeature += "cstm-";
+            addedFeature += "name-";
         }
         JSONSignatureDecoder decoder = 
             JSONParser.parse(signedData).getSignature(signatureLabel, options);
