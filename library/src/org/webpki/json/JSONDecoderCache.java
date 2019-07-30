@@ -74,9 +74,7 @@ public class JSONDecoderCache implements Serializable {
                 reader.checkForUnread();
             }
             return decoder;
-        } catch (InstantiationException e) {
-            throw new IOException(e);
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             throw new IOException(e);
         }
     }
@@ -95,9 +93,7 @@ public class JSONDecoderCache implements Serializable {
             if (classMap.put(objectTypeIdentifier, decoder.getClass()) != null) {
                 throw new IOException("JSON document type already defined: " + objectTypeIdentifier);
             }
-        } catch (InstantiationException e) {
-            throw new IOException("Class " + jsonDecoder.getName() + " is not a valid JSONDecoder", e);
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             throw new IOException("Class " + jsonDecoder.getName() + " is not a valid JSONDecoder", e);
         }
     }

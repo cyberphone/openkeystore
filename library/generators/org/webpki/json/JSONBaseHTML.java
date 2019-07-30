@@ -29,7 +29,6 @@ import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.CryptoAlgorithms;
 import org.webpki.crypto.AsymSignatureAlgorithms;
-import org.webpki.crypto.MACAlgorithms;
 
 import org.webpki.util.ArrayUtil;
 
@@ -116,11 +115,6 @@ public class JSONBaseHTML  {
     public static final String JSF_PUBLIC_KEY_RSA      = "Additional RSA Properties";
 
     public static final String JSF_PUBLIC_KEY_EC       = "Additional EC Properties";
-
-    public static final String REMOTE_KEY_EXAMPLE      = "remotekeyexample";
-    public static final String REMOTE_CERT_EXAMPLE     = "remotecertexample";
-    public static final String EXTENSION_EXAMPLE       = "extensionexample";
-    public static final String EXCLUSION_EXAMPLE       = "exclusionexample";
 
     String file_name;
     String subsystem_name;
@@ -1403,140 +1397,6 @@ public class JSONBaseHTML  {
         
     }
 
-    public void addJSONSignatureDefinitions () throws IOException {
-// TODO
-        addSubItemTable(JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON)
-          .newRow()
-            .newColumn()
-              .addProperty(JSONCryptoHelper.ALGORITHM_JSON)
-              .addSymbolicValue("Algorithm")
-            .newColumn()
-              .setType(Types.WEBPKI_DATA_TYPES.STRING)
-            .newColumn()
-            .newColumn()
-              .addString("Signature algorithm. The currently recognized JWA ")
-              .addString(createReference(REF_JWA))
-              .addString(" asymmetric key algorithms include:")
-              .addString(enumerateJOSEAlgorithms(AsymSignatureAlgorithms.values()))
-              .addString("The currently recognized JWA ")
-              .addString(createReference(REF_JWA))
-              .addString(" symmetric key algorithms include:")
-              .addString(enumerateJOSEAlgorithms(MACAlgorithms.values()))
-              .addString("Note: If <i>proprietary</i> signature algorithms are " +
-                         "added, they <b>must</b> be expressed as URIs.")
-          .newRow()
-            .newColumn()
-              .addProperty(JSONCryptoHelper.KEY_ID_JSON)
-              .addSymbolicValue("Identifier")
-            .newColumn()
-              .setType(Types.WEBPKI_DATA_TYPES.STRING)
-            .newColumn()
-              .setChoice (false, 1)
-            .newColumn()
-              .addString("<i>Optional.</i> Application specific string " +
-                         "identifying the signature key.")
-          .newRow()
-            .newColumn()
-              .addProperty(JSONCryptoHelper.PUBLIC_KEY_JSON)
-              .addLink (JSONCryptoHelper.PUBLIC_KEY_JSON)
-            .newColumn()
-              .setType(Types.WEBPKI_DATA_TYPES.OBJECT)
-            .newColumn()
-              .setChoice (false, 2)
-            .newColumn()
-              .addString("<i>Optional.</i> Public key object.")
-          .newRow()
-        .newColumn()
-          .addProperty(JSONCryptoHelper.CERTIFICATE_PATH_JSON)
-          .addArrayList(Types.CERTIFICATE_PATH, 1)
-        .newColumn()
-          .setType(Types.WEBPKI_DATA_TYPES.BYTE_ARRAY)
-        .newColumn()
-        .newColumn()
-          .addString("<i>Optional.</i> Sorted array of X.509 ")
-          .addString(createReference(REF_X509))
-          .addString(" certificates, where the <i>first</i> element <b>must</b> " +
-                     "contain the <i style=\"white-space:nowrap\">signature certificate</i>. " +
-                     "The certificate path <b>must</b> be <i>contiguous</i> " +
-                     "but is not required to be complete.")
-             .newRow()
-                .newColumn()
-                  .addProperty(JSONCryptoHelper.EXTENSIONS_JSON)
-                  .addArrayList(Types.PROPERTY_LIST, 1)
-                .newColumn()
-                  .setType(Types.WEBPKI_DATA_TYPES.STRING)
-                .newColumn()
-                  .setChoice (false, 1)
-                .newColumn()
-                  .addString("<i>Optional.</i> Array holding the names of one or " +
-                             "more application specific extension properties " +
-                  "also featured within the signature object." +
-                  Types.LINE_SEPARATOR +
-                  "Extension names <b>must not</b> be <i>duplicated</i> or use any " +
-                  "of the JSF <i>reserved words</i> " +
-                  enumerateAttributes(JSONCryptoHelper.jsfReservedWords.toArray(new String[0]), false) + ". " +
-                  Types.LINE_SEPARATOR +
-                  "Extensions intended for public consumption are <i>preferably</i> expressed as URIs " +
-                  "(unless registered with IANA), " +
-                  "while private schemes are free using any valid property name." + Types.LINE_SEPARATOR +
-                  "A conforming JSF implementation <b>must</b> " +
-                  "<i>reject</i> signatures listing properties " +
-                  "that are not found as well as empty <code>&quot;" +
-                  JSONCryptoHelper.EXTENSIONS_JSON + "&quot;</code> objects. " +
-                  "Verifiers are <i>recommended</i> introducing additional " +
-                  "constraints like only accepting predefined extensions." +
-                  Types.LINE_SEPARATOR +
-                  "See also <a href=\"#" + EXTENSION_EXAMPLE + "\">test&nbsp;vector</a>.")
-             .newRow()
-                .newColumn()
-                  .addProperty(JSONCryptoHelper.EXCLUDES_JSON)
-                  .addArrayList(Types.PROPERTY_LIST, 1)
-                .newColumn()
-                  .setType(Types.WEBPKI_DATA_TYPES.STRING)
-                .newColumn()
-                  .setChoice (false, 1)
-                .newColumn()
-                  .addString("<i>Optional.</i> Array holding the names " +
-                  "of one or more properties " +
-                  "featured on the same level as the <code>&quot;signature" + 
-                  "&quot;</code> property, that <b>must</b> be " +
-                  "<i>excluded</i> from the signature process." +
-                  Types.LINE_SEPARATOR +
-                  "Note that the <code>&quot;" + JSONCryptoHelper.EXCLUDES_JSON + 
-                  "&quot;</code> property itself, <b>must</b> also " +
-                  "be excluded from the signature process." + 
-                  Types.LINE_SEPARATOR +
-                  "Property names that are to be excluded from the signature process " +
-                  "<b>must not</b> be <i>duplicated</i> or override the signature object label. " +
-                  Types.LINE_SEPARATOR +
-                  "A conforming JSF implementation <b>must</b> <i>reject</i> " +
-                  "signatures containing listed properties " +
-                  "that are not found as well as empty <code>&quot;" +
-                  JSONCryptoHelper.EXCLUDES_JSON + "&quot;</code> objects. " +
-                  "Verifiers are <i>recommended</i> introducing additional " +
-                  "constraints like only accepting predefined properties." +
-                  Types.LINE_SEPARATOR +
-                  "See also <a href=\"#" + EXCLUSION_EXAMPLE + "\">test&nbsp;vector</a>.")
-          .newRow()
-            .newColumn()
-              .addProperty(JSONCryptoHelper.VALUE_JSON)
-              .addSymbolicValue("Signature")
-            .newColumn()
-              .setType(Types.WEBPKI_DATA_TYPES.BYTE_ARRAY)
-            .newColumn()
-            .newColumn()
-              .addString("The signature data." +
-              " Note that the <i>binary</i> representation <b>must</b> follow the JWA " + 
-                      createReference(REF_JWA) + " specifications.")
-              .setNotes ("Note that asymmetric key signatures are <i>not required</i> providing an associated " +
-                  enumerateAttributes(new String[]{JSONCryptoHelper.PUBLIC_KEY_JSON,
-                                                   JSONCryptoHelper.CERTIFICATE_PATH_JSON}, false) + 
-                   " property since the key may be given by the context or through the <code>&quot;" + 
-                   JSONCryptoHelper.KEY_ID_JSON + "&quot;</code> property.");
-
-        AddPublicKeyDefinitions();
-    }
-
     public void addTOC() {
         new TOC();
     }
@@ -1574,21 +1434,18 @@ public class JSONBaseHTML  {
           "</table>";      
     }
 
-    public String addInvocationText(String protocol_name, Class<? extends JSONDecoder> invocation_class)
-            throws IOException {
-        JSONDecoder decoder = null;
+    public String addInvocationText(String protocolName, Class<? extends JSONDecoder> invocationClass)
+        throws IOException {
         try {
-            decoder = invocation_class.newInstance();
-        } catch (InstantiationException e) {
-            throw new IOException(e);
-        } catch (IllegalAccessException e) {
+            invocationClass.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
             throw new IOException(e);
         }
         return
           "Since the interface between the Web and native applications is not (yet) standardized, the " +
-          "invocation of " + protocol_name + " relies on browser and platform specific solutions. " +
+          "invocation of " + protocolName + " relies on browser and platform specific solutions. " +
           "For Android, &quot;Intents&quot; are currently utilized for handing over an invocation URL " +
-          "(including possible session cookies), to a local " + protocol_name + " &quot;App&quot;.";
+          "(including possible session cookies), to a local " + protocolName + " &quot;App&quot;.";
     }
 
     public void setFavIcon(String favIcon) {
