@@ -1204,7 +1204,11 @@ public class JSONBaseHTML  {
     }
     
     static String referToTestVector(String name) throws IOException {
-        return "See also the <a href=\"#" + makeLink(name) + "\">" + name + "</a> test vector.";
+        return "See also the " + globalLinkRef(name) + " test vector.";
+    }
+
+    static String referToTestVectors(String name1, String name2) throws IOException {
+        return "See also the " + globalLinkRef(name1) + " and " + globalLinkRef(name2) + " test vectors.";
     }
 
     String protocol_table_header;
@@ -1267,11 +1271,11 @@ public class JSONBaseHTML  {
         return s.toString();
     }
 
-    public String globalLinkRef(String name) throws IOException {
+    public static String globalLinkRef(String name) throws IOException {
         return "<a href=\"#" + makeLink(name) + "\">" + makeName(name) +"</a>"; 
     }
 
-    public String globalLinkRef(String parent, String name) throws IOException {
+    public static String globalLinkRef(String parent, String name) throws IOException {
         return "<a href=\"#" + makeLink(parent) + "." + makeLink(name) + "\">" + makeName(name) +"</a>"; 
     }
 

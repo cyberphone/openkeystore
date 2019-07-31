@@ -445,7 +445,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
                            "as in the sample object while using a different set of " +
                            "algorithms both for key encryption and content encryption. " +
                            "The public key is specified through a " +
-                           json.globalLinkRef(KEY_ENCRYPTION, JSONCryptoHelper.KEY_ID_JSON) + ":" ,
+                           JSONBaseHTML.globalLinkRef(KEY_ENCRYPTION, JSONCryptoHelper.KEY_ID_JSON) + ":" ,
                    SAMPLE_A_TEST_VECTOR) +
            showAsymEncryption(
                    "ECDH encryption object <i>requiring the same private key</i> " +
@@ -463,7 +463,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
                    "ECDH encryption object <i>requiring the same private key</i> " +
                    "as in the sample object while providing the key information " +
                    "in line.  In addition, this object declares " +
-                   json.globalLinkRef(ENCRYPTION_OBJECT, JSONCryptoHelper.EXTENSIONS_JSON) + ":",
+                   JSONBaseHTML.globalLinkRef(ENCRYPTION_OBJECT, JSONCryptoHelper.EXTENSIONS_JSON) + ":",
                    EXTS_TEST_VECTOR) + 
            showKey(
                    "EC private key for decrypting the subsequent object:",
@@ -589,7 +589,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
         .newColumn()
           .addString("<i>Optional.</i> Array holding the names of one or more application specific extension properties " +
           "featured in the " +
-                  json.globalLinkRef(KEY_ENCRYPTION) +
+                  JSONBaseHTML.globalLinkRef(KEY_ENCRYPTION) +
           " objects (or in the top level object " +
           "if there are no <code>&quot;" + JSONCryptoHelper.RECIPIENTS_JSON + 
           "&quot;</code> or <code>&quot;" + JSONCryptoHelper.ENCRYPTED_KEY_JSON + "&quot;</code> elements)." +

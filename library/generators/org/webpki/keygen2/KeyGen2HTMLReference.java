@@ -78,13 +78,13 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
                   "In addition, the issuer <i>may</i> perform a client platform capability query.");
             bar(14);
             sign("ProvisioningInitialization", "Creation of a <i>shared session key</i> securing the rest of the interactions between the issuer and the SKS. " +
-                  "To support future updates of provisioned credentials, the issuer <i>may</i> also provide a " + json.globalLinkRef (KeyGen2Messages.PROVISIONING_INITIALIZATION_REQUEST.getName(), KEY_MANAGEMENT_KEY_JSON) + ".");
+                  "To support future updates of provisioned credentials, the issuer <i>may</i> also provide a " + JSONBaseHTML.globalLinkRef (KeyGen2Messages.PROVISIONING_INITIALIZATION_REQUEST.getName(), KEY_MANAGEMENT_KEY_JSON) + ".");
             bar(14);
             sign("CredentialDiscovery", "<i>Optional</i>: Issuer lookup of already provisioned SKS credentials. " +
                   "This is primarily used when keys need to be updated or unlocked.");
             bar(14);
             sign("KeyCreation", "Creation of asymmetric key pairs in the SKS. " +
-                  "If user-defined PINs are to be set, this is carried out during " + json.globalLinkRef (KeyGen2Messages.KEY_CREATION_REQUEST.getName()) + ". " +
+                  "If user-defined PINs are to be set, this is carried out during " + JSONBaseHTML.globalLinkRef (KeyGen2Messages.KEY_CREATION_REQUEST.getName()) + ". " +
                   "After key pairs have been created the public keys are sent to the issuer for certification.");
             bar(14);
             sign("ProvisioningFinalization", "Deployment of credentials and associated attributes as well as " +
@@ -94,9 +94,9 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
             bar(6);
             s.append("<tr><td style=\"padding:0px\"><div style=\"margin-left:auto;margin-right:auto;width:0pt;height:0px;border-style: solid;border-width: 8pt 4pt 0pt 4pt" +
                       ";border-color:" + BAR_COLOR + " transparent transparent transparent\"></div></td><td></td></tr></table>" +
-                      "The result of the " + json.globalLinkRef (KeyGen2Messages.PROVISIONING_FINALIZATION_RESPONSE.getName()) +
+                      "The result of the " + JSONBaseHTML.globalLinkRef (KeyGen2Messages.PROVISIONING_FINALIZATION_RESPONSE.getName()) +
                       " is anticipated to be a custom " + 
-                      json.globalLinkRef (SECTION_TERMINATION_MESSAGE) +
+                      JSONBaseHTML.globalLinkRef (SECTION_TERMINATION_MESSAGE) +
                       ", typically telling the user that the operation succeeded.");
         }
 
@@ -480,7 +480,7 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
                           LINE_SEPARATOR + "See <code>SKS:" +
                           sksMethod + "." + sksParameter + "</code>.") 
           .append(LINE_SEPARATOR + "For EC curve support see ")
-          .append(json.globalLinkRef(ELLIPTIC_CURVE_SUPPORT))
+          .append(JSONBaseHTML.globalLinkRef(ELLIPTIC_CURVE_SUPPORT))
           .append('.')
           .toString();
     }
@@ -588,8 +588,8 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
         json.addParagraphSubObject("Error Handling").append("Errors occurring on the <i>client's side</i> <b>must</b> terminate the session " +
                                     "and display an error dialog telling the user what happened." + LINE_SEPARATOR +
                                     "<i>Server-side</i> errors <b>must</b> abort the current server operation and return an appropriate " +
-                                    json.globalLinkRef (SECTION_TERMINATION_MESSAGE) + " to the user. If the KeyGen2 proxy at this stage is rather expecting a KeyGen2 protocol object (see " +
-                                    json.globalLinkRef (SECTION_HTTP_DEPENDENCIES) + "), the client session <b>must</b> be terminated." + LINE_SEPARATOR +
+                                    JSONBaseHTML.globalLinkRef (SECTION_TERMINATION_MESSAGE) + " to the user. If the KeyGen2 proxy at this stage is rather expecting a KeyGen2 protocol object (see " +
+                                    JSONBaseHTML.globalLinkRef (SECTION_HTTP_DEPENDENCIES) + "), the client session <b>must</b> be terminated." + LINE_SEPARATOR +
                                     "Whenever a KeyGen2 client session is aborted, the proxy <i>should</i> also abort the associated, potentially active SKS provisioning session (see <code>abortProvisioningSession</code>).");
         
         json.addParagraphSubObject("Key Management Operations").append("KeyGen2 provides built-in support for the SKS key management operations " +
@@ -598,7 +598,7 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
                                     json.createReference(JSONBaseHTML.REF_SKS) + " <i>Appendix D, Remote Key Lookup</i>."); 
 
         json.addParagraphSubObject(SECTION_TERMINATION_MESSAGE).append("When a KeyGen2 protocol sequence terminates (like when the proxy has sent a " +
-                                    json.globalLinkRef (KeyGen2Messages.PROVISIONING_FINALIZATION_RESPONSE.getName()) + " object to the server), " +
+                                    JSONBaseHTML.globalLinkRef (KeyGen2Messages.PROVISIONING_FINALIZATION_RESPONSE.getName()) + " object to the server), " +
                                     "the browser <b>must</b> return to its &quot;normal&quot; state, ready for receiving a matching HTTP body containing a HTML page or similar."  + LINE_SEPARATOR +
                                     "Note that returned data <b>must</b> target the same <code>window</code> object which was used during invocation.");
 
@@ -647,7 +647,7 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
                         new ProtocolStep("ProvisioningFinalizationRequest.json", "The finalization message which will only be sent to the server if the previous steps were successful." +
 "<br>&nbsp;<br>SKS API Reference: <code>closeProvisioningSession</code>."),
                         new ProtocolStep("ProvisioningFinalizationResponse.json", "Here the user is supposed to receive an issuer-specific web-page telling what to do next. " +
-"See " + json.globalLinkRef(SECTION_TERMINATION_MESSAGE) + ".")});
+"See " + JSONBaseHTML.globalLinkRef(SECTION_TERMINATION_MESSAGE) + ".")});
 
         json.addParagraphObject("Acknowledgements").append("The design of the KeyGen2 protocol was &quot;inspired&quot; by several predecessors, most notably IETF's DSKPP ")
                           .append(json.createReference(JSONBaseHTML.REF_DSKPP))
@@ -865,7 +865,7 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
             .newColumn()
               .addString(sksAsymKey(false,
                                     ", using an <i>identical curve</i> to " +
-                                     json.globalLinkRef(KeyGen2Messages.PROVISIONING_INITIALIZATION_REQUEST.getName(), 
+                                     JSONBaseHTML.globalLinkRef(KeyGen2Messages.PROVISIONING_INITIALIZATION_REQUEST.getName(), 
                                                         SERVER_EPHEMERAL_KEY_JSON),
                                     "createProvisioningSession",
                                     CLIENT_EPHEMERAL_KEY_JSON))
@@ -1038,7 +1038,7 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
                                    ", containing a <i>previous generation</i> key management key." + LINE_SEPARATOR +
                           "Note that <code>SKS:updateKeyManagementKey." + KEY_MANAGEMENT_KEY_JSON + "</code>" +
                           " refers to the <i>new</i> key management key specified in the object <i>immediately above</i> this " +
-              json.globalLinkRef(singularis(UPDATABLE_KEY_MANAGEMENT_KEYS_JSON)) +
+              JSONBaseHTML.globalLinkRef(singularis(UPDATABLE_KEY_MANAGEMENT_KEYS_JSON)) +
               " object",
                                     null,
                                     null))
