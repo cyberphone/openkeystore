@@ -297,7 +297,7 @@ public class JSONBaseHTML  {
             externalWebReference ("https://cyberphone.github.io/doc/security/jef.html"));
 
         addReferenceEntry(REF_SKS, "A. Rundgren, \"Secure Key Store (SKS) - API and Architecture\", Work in progress, " +
-            "<span style=\"white-space: nowrap\">V1.03, May&nbsp;2017.</span> " +
+            "<span style=\"white-space: nowrap\">V1.05, April&nbsp;2019.</span> " +
             externalWebReference ("https://cyberphone.github.io/doc/security/sks-api-arch.pdf"));
 
         addReferenceEntry(REF_WEBPKI_FOR_ANDROID, "\"WebPKI Suite\", " +
@@ -1397,7 +1397,7 @@ public class JSONBaseHTML  {
           .addString("RSA exponent. See also the ")
           .addDataTypeLink (Types.WEBPKI_DATA_TYPES.CRYPTO)
           .addString(" data type.")
-        .setNotes("This object represents a <i>subset</i> of JWK " + createReference(REF_JWK) +".");
+        .setNotes("This object represents a <i>true subset</i> of JWK " + createReference(REF_JWK) +".");
         
     }
 

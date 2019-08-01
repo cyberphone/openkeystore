@@ -163,9 +163,10 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
         normalizedSampleSignature.deleteCharAt(i);
         normalizedSampleSignature.insert(i, sampleSignatureDecoded.getString(property));
     }
+
     static String pemFile(String name) throws IOException {
         String pem = new String(json.readFile1(name), "UTF-8");
-        return formatCode(pem.substring(0, pem.length() - 1));
+        return pem.substring(0, pem.length() - 1);
     }
     
     static String readSymSignature(String[] encObjects) throws IOException, GeneralSecurityException {
@@ -359,6 +360,9 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
                 " and " +  keyLink(key2) + " keys" + options + ":";
     }
 
+    static String jwsCounterPart(String keyword) {
+        return ("JWS counterpart: <code>&quot;" + keyword + "&quot;</code>.");
+    }
     public static void main (String args[]) throws Exception {
         json = new JSONBaseHTML(args, "JSF - JSON Signature Format");
         
@@ -456,8 +460,10 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             "&quot;</code> property except for the <code>&quot;" + 
             JSONCryptoHelper.VALUE_JSON + "&quot;</code> property itself (shaded area in the sample).");
         
-        json.addDataTypesDescription("JSF consists of an arbitrary top-level " +
-            "property holding a composite JSON object (" +
+        json.addDataTypesDescription("JSF consists of an <i>arbitrary but unique top level " +
+            "property</i> (see " +
+            JSONBaseHTML.globalLinkRef(FILE_NAME_SIGN) +
+            ") holding a composite JSON object (" +
             JSONBaseHTML.globalLinkRef(SIGNATURE_CORE_OBJECT) +
             " or " + 
             JSONBaseHTML.globalLinkRef(MULTI_SIGNATURE_OBJECT) +
@@ -472,8 +478,10 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             "Prerequisite: A JSON object in accordance with ")
           .append(json.createReference(JSONBaseHTML.REF_JSON))
           .append(
-            " containing an arbitrary but unique top level " +
-            "property holding a JSF " +
+            " containing an <i>arbitrary but unique top level " +
+            "property</i> (see " +
+            JSONBaseHTML.globalLinkRef(FILE_NAME_SIGN) +
+            ") holding a JSF " +
             JSONBaseHTML.globalLinkRef(SIGNATURE_CORE_OBJECT) +
             " (or " + 
             JSONBaseHTML.globalLinkRef(MULTI_SIGNATURE_OBJECT) +
@@ -508,7 +516,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             JSONBaseHTML.globalLinkRef(SIGNATURE_CORE_OBJECT, JSONCryptoHelper.ALGORITHM_JSON) + 
             " property (together with the appropriate <i>signature verification key</i>), on the " +
             "<span style=\"white-space:nowrap\">UTF-8</span> representation of the " +
-            "normalized textual data." + LINE_SEPARATOR +     
+            "canonicalized textual data." + LINE_SEPARATOR +     
             "Path validation (when applicable), is out of scope for JSF, " +
             "but is <i>preferably</i> carried out as described in X.509 " +
             json.createReference(JSONBaseHTML.REF_X509) +
@@ -519,8 +527,8 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             "<li value=\"1\">Create a JSF object with all components defined except for the <code>&quot;" + 
             JSONCryptoHelper.VALUE_JSON + "&quot;</code> property.</li>" +
             "<li style=\"padding-top:4pt\">Add the JSF object to the <i>top level</i> JSON object to be " +
-            "signed using any valid JSON property name which does clash with the other <i>top level</i> properties.</li>" +
-            "<li style=\"padding-top:4pt\">Generate the proper normalized form of the JSON object to be " +
+            "signed using any valid JSON property name which does not clash with the other <i>top level</i> properties.</li>" +
+            "<li style=\"padding-top:4pt\">Generate the required format of the JSON object to be " +
             "signed by running the " +
             "JCS " + json.createReference(JSONBaseHTML.REF_JCS) +
             " canonicalization method over the JSON object in its entirety.</li>" +
@@ -647,11 +655,11 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
                 " where the public keys are identified by " +
                 KEY_ID_REFERENCE + " properties" + EXCLUDES_REFERENCE),
             FILE_MULT_EXCL_SIGN) +
-        LINE_SEPARATOR +
-        "The certificate based signatures share a common root (here supplied in PEM ")
-        .append(json.createReference(JSONBaseHTML.REF_PEM))
-        .append(" format), which can be used for path validation:")
-        .append(pemFile("rootca.pem").replace(" 10pt ", " 0pt "));
+        showTextAndCode("The certificate based signatures share a common root (here supplied in PEM " +
+            json.createReference(JSONBaseHTML.REF_PEM) +
+            " format), which can be used for path validation:",
+            "rootca.pem",
+            pemFile("rootca.pem")).replace(" 10pt ", " 0pt "));
 
         String jsSignature = formatCode("var signedObject = " +
                                         new String(json.readFile2("p256#es256@jwk.js"), "utf-8") + ";");
@@ -818,7 +826,8 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
               .addString(" symmetric key algorithms include:")
               .addString(JSONBaseHTML.enumerateJOSEAlgorithms(MACAlgorithms.values()))
               .addString("Note: If <i>proprietary</i> signature algorithms are " +
-                         "added, they <b>must</b> be expressed as URIs.")
+                         "added, they <b>must</b> be expressed as URIs." + Types.LINE_SEPARATOR + 
+                         jwsCounterPart("alg"))
           .newRow()
             .newColumn()
               .addProperty(JSONCryptoHelper.KEY_ID_JSON)
@@ -829,7 +838,8 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
               .setChoice (false, 1)
             .newColumn()
               .addString("<i>Optional.</i> Application specific string " +
-                         "identifying the signature key.")
+                         "identifying the signature key." + Types.LINE_SEPARATOR + 
+                         jwsCounterPart("kid"))
           .newRow()
             .newColumn()
               .addProperty(JSONCryptoHelper.PUBLIC_KEY_JSON)
@@ -839,7 +849,8 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             .newColumn()
               .setChoice (false, 2)
             .newColumn()
-              .addString("<i>Optional.</i> Public key object.")
+              .addString("<i>Optional.</i> Public key object." + Types.LINE_SEPARATOR + 
+                      jwsCounterPart("jwk"))
           .newRow()
         .newColumn()
           .addProperty(JSONCryptoHelper.CERTIFICATE_PATH_JSON)
@@ -853,7 +864,8 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
           .addString(" certificates, where the <i>first</i> element <b>must</b> " +
                      "contain the <i style=\"white-space:nowrap\">signature certificate</i>. " +
                      "The certificate path <b>must</b> be <i>contiguous</i> " +
-                     "but is not required to be complete.")
+                     "but is not required to be complete." + Types.LINE_SEPARATOR + 
+                     jwsCounterPart("x5c"))
           .newRow()
             .newColumn()
               .addProperty(JSONCryptoHelper.VALUE_JSON)
@@ -897,7 +909,8 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
               "A conforming JSF implementation <b>must</b> support <i>optional</i> extensions values, as well " +
               "as an option to only accept <i>predefined</i> extension property names." +
               Types.LINE_SEPARATOR +
-              JSONBaseHTML.referToTestVectors(FILE_EXTS_SIGN, FILE_MULT_EXTS_SIGN))
+              JSONBaseHTML.referToTestVectors(FILE_EXTS_SIGN, FILE_MULT_EXTS_SIGN) + Types.LINE_SEPARATOR + 
+              jwsCounterPart("crit"))
          .newRow()
             .newColumn()
               .addProperty(JSONCryptoHelper.EXCLUDES_JSON)

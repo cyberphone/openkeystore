@@ -109,7 +109,7 @@ public class JSONCryptoHelper implements Serializable {
     }
 
     /**
-     * For building "critical" decoders
+     * For building "extensions" decoders
      */
     public static abstract class Extension {
         
@@ -124,7 +124,7 @@ public class JSONCryptoHelper implements Serializable {
     }
 
     /**
-     * Holds list of supported "critical" extension decoders.
+     * Holds list of supported "extensions" decoders.
      *
      */
     public static class ExtensionHolder {
