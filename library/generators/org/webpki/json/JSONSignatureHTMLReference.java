@@ -304,7 +304,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
 
     static String implicitKeySignature(AsymKey key) throws IOException {
         return coreSignatureDescription(key) +
-                " where the public key is supposed to be <i>implicitly</i> known by the verifier:";
+                " while the public key is supposed to be <i>implicitly</i> known by the verifier:";
     }
     
     static String explicitKeySignature(AsymKey key) throws IOException {
@@ -313,7 +313,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
 
     static String certificateSignature(AsymKey key) throws IOException {
         return coreSignatureDescription(key) +
-                " where the public key is featured in a " +
+                " while the public key is featured in a " +
                 JSONBaseHTML.globalLinkRef(SIGNATURE_CORE_OBJECT, JSONCryptoHelper.CERTIFICATE_PATH_JSON) + ":";
     }
 
@@ -350,7 +350,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
 
     static String keyIdSignature(AsymKey key) throws IOException {
         return coreSignatureDescription(key) +
-                " where the public key is identified by a " + KEY_ID_REFERENCE + " property:";
+                " while the public key is identified by a " + KEY_ID_REFERENCE + " property:";
     }
     
     static String multiSignatureText(AsymKey key1, AsymKey key2, String options) throws IOException {
@@ -646,13 +646,13 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             FILE_MULT_SIGN) +
         showAsymSignature(
             multiSignatureText(p256key, r2048key,
-                " where the public keys are identified by " +
+                " while the public keys are identified by " +
                 KEY_ID_REFERENCE + " properties" + EXTENSION_REFERENCE +
                 ". Note that this JSF features <i>optional</i> extension arguments (the second signature lacks one element)"),
             FILE_MULT_EXTS_SIGN) +
         showAsymSignature(
             multiSignatureText(p256key, r2048key,
-                " where the public keys are identified by " +
+                " while the public keys are identified by " +
                 KEY_ID_REFERENCE + " properties" + EXCLUDES_REFERENCE),
             FILE_MULT_EXCL_SIGN) +
         showTextAndCode("The certificate based signatures share a common root (here supplied in PEM " +

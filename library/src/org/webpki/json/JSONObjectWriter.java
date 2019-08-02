@@ -268,16 +268,18 @@ public class JSONObjectWriter implements Serializable {
 
     /**
      * Set a <code>Money</code> property.<p>
-     * Note: this is a <i>mapped</i> type since there is no <code>Money</code> type in JSON.</p><p>
+     * Note: this is a <i>mapped</i> type since there is no <code>Money</code> type in JSON.</p>
+     * <p>Specification: <a href="https://www.w3.org/TR/payment-request/#dfn-valid-decimal-monetary-value" 
+     * target="_blank">https://www.w3.org/TR/payment-request/#dfn-valid-decimal-monetary-value</a>.</p>
      * Sample:
      * <pre>
-     *    "amount": "568790.25"
+     *    "amount": "460.25"
      * </pre>
      * @param name Property
      * @param value Value
      * @return Current instance of {@link org.webpki.json.JSONObjectWriter}
      * @throws IOException &nbsp;
-     * @see #setMoney(String, BigDecimal, Integer)
+     * @see #setMoney(String, BigDecimal, int)
      */
     public JSONObjectWriter setMoney(String name, BigDecimal value) throws IOException {
         return setString(name, moneyToString(value, null));
@@ -286,6 +288,12 @@ public class JSONObjectWriter implements Serializable {
     /**
      * Set a <code>Money</code> property.<p>
      * Note: this is a <i>mapped</i> type since there is no <code>Money</code> type in JSON.</p>
+     * <p>Specification: <a href="https://www.w3.org/TR/payment-request/#dfn-valid-decimal-monetary-value" 
+     * target="_blank">https://www.w3.org/TR/payment-request/#dfn-valid-decimal-monetary-value</a>.</p>
+     * Sample:
+     * <pre>
+     *    "amount": "460.25"
+     * </pre>
      * @param name Property
      * @param value Value
      * @param decimals Number of fractional digits
@@ -293,7 +301,7 @@ public class JSONObjectWriter implements Serializable {
      * @throws IOException &nbsp;
      * @see #setMoney(String, BigDecimal)
      */
-    public JSONObjectWriter setMoney(String name, BigDecimal value, Integer decimals) throws IOException {
+    public JSONObjectWriter setMoney(String name, BigDecimal value, int decimals) throws IOException {
         return setString(name, moneyToString(value, decimals));
     }
 

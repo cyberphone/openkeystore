@@ -278,7 +278,6 @@ public class JSONObjectReader implements Serializable, Cloneable {
     /**
      * Read a Money property.<p>
      * Note: Since JSON does not support a native Money type, this method builds on <i>mapping</i>.</p>
-     * Note: This method is equivalent to <code>getMoney(name, null)</code>.
      * @param name Property
      * @return Java <code>BigInteger</code>
      * @throws IOException &nbsp;
@@ -295,9 +294,9 @@ public class JSONObjectReader implements Serializable, Cloneable {
      * @param decimals Required number of fractional digits or <b>null</b> if unspecified
      * @return Java <code>BigDecimal</code>
      * @throws IOException &nbsp;
-     * @see JSONObjectWriter#setMoney(String, BigDecimal, Integer)
+     * @see JSONObjectWriter#setMoney(String, BigDecimal, int)
      */
-    public BigDecimal getMoney(String name, Integer decimals) throws IOException {
+    public BigDecimal getMoney(String name, int decimals) throws IOException {
         return parseMoney(getString(name), decimals);
     }
 

@@ -358,9 +358,9 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
             "JEF is loosely derived from IETF's JWE ")
           .append(json.createReference(JSONBaseHTML.REF_JWE))
           .append(
-            " specification and supports the same algorithms ")
+            " specification and supports the same JWA ")
           .append(json.createReference(JSONBaseHTML.REF_JWA))
-          .append(". Public keys are represented as JWK ")
+          .append(" cryptographic algorithms. Public keys are represented as JWK ")
           .append(json.createReference(JSONBaseHTML.REF_JWK))
           .append(" objects while the encryption container itself utilizes a notation similar to the JSON " +
                   "Signature Format ")
