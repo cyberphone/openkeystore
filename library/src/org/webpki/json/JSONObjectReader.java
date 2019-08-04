@@ -60,7 +60,7 @@ public class JSONObjectReader implements Serializable, Cloneable {
 
     private static final long serialVersionUID = 1L;
 
-    static final Pattern DECIMAL_PATTERN = Pattern.compile("-?([1-9][0-9]*|0)[\\.][0-9]+");
+    static final Pattern DECIMAL_PATTERN = Pattern.compile("-?([1-9][0-9]*|0)(\\.[0-9]+)?");
     static final Pattern INTEGER_PATTERN = Pattern.compile("-?[1-9][0-9]*|0");
 
     JSONObject root;
@@ -268,11 +268,11 @@ public class JSONObjectReader implements Serializable, Cloneable {
                 DECIMAL_PATTERN.matcher(value).matches()) {
             BigDecimal parsed = new BigDecimal(value);
             if (decimals != null && parsed.scale() != decimals) {
-                throw new IOException("Incorrect number of decimals in \"BigDecimal\": " + parsed.scale());
+                throw new IOException("Incorrect number of decimals in \"Money\": " + parsed.scale());
             }
             return parsed;
         }
-        throw new IOException("Malformed \"BigDecimal\": " + value);
+        throw new IOException("Malformed \"Money\": " + value);
     }
 
     /**
