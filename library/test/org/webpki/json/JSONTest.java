@@ -2878,7 +2878,7 @@ public class JSONTest {
                     .toString()).getMoney("big", 2);
             fail("bd");
         } catch (Exception e) {
-            checkException(e, "Incorrect number of decimals in \"BigDecimal\": 0");
+            checkException(e, "Incorrect number of decimals in \"Money\": 0");
         }
     }
 
