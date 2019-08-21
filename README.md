@@ -9,8 +9,8 @@ The project also defines KeyGen2 which is a credential provisioning and manageme
 for SKS:<br>
 https://cyberphone.github.io/doc/security/keygen2.html
 
-The JSON library supports a clear text signature system called JCS:<br>
-https://cyberphone.github.io/doc/security/jcs.html<br>
+The JSON library supports a clear text signature system called JSF:<br>
+https://cyberphone.github.io/doc/security/jsf.html<br>
 as well as a "matching" encryption scheme coined JEF:<br>
 https://cyberphone.github.io/doc/security/jef.html
 
