@@ -18,7 +18,7 @@ package org.webpki.net;
 
 public interface MobileProxyParameters {
 
-    // A proxy URI looks like: SCHEME + '//:' + HOST + data
+    // A proxy URI looks like: SCHEME + '://' + HOST + data
     
     String HOST_SATURN       = "saturn";
     String HOST_KEYGEN2      = "keygen2";
@@ -29,4 +29,19 @@ public interface MobileProxyParameters {
     String SCHEME_URLHANDLER = "intent";
     
     String ANDROID_PACKAGE_NAME = "org.webpki.mobile.android";
+    
+    String W3CPAY_GOTO_URL   = "goto";    // Object.details.W3CPAY_GOTO_URL
+    
+    // Proxy URL Parameters
+    String PUP_COOKIE        = "cookie";  // Optional
+    String PUP_INIT_URL      = "init";
+    String PUP_MAIN_URL      = "url";
+    String PUP_CANCEL_URL    = "cncl";
+    String PUP_VERSIONS      = "ver";     // Required "App" versions x.yy-x.yy
+
+    // QR code invocations may present a local result screen or
+    // may also start a browser at a normal URL.  It is up to
+    // each service to decide how to deal with this.
+    String QRCODE_LOCAL_SUCCESS_URL = SCHEME_QRCODE + "://success";
+    String QRCODE_LOCAL_CANCEL_URL  = SCHEME_QRCODE + "://cancel";
 }
