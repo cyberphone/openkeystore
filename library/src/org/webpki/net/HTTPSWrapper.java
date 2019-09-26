@@ -548,7 +548,8 @@ public class HTTPSWrapper {
         // Read response data
         ////////////////////////////////////////////
         response_code = conn.getResponseCode();
-        if (response_code == HttpURLConnection.HTTP_OK) {
+        if (response_code == HttpURLConnection.HTTP_OK || 
+            response_code == HttpURLConnection.HTTP_CREATED) {
             server_data = ArrayUtil.getByteArrayFromInputStream(conn.getInputStream());
         } else {
             InputStream is = conn.getErrorStream();
