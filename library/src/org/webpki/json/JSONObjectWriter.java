@@ -644,10 +644,10 @@ import org.webpki.json.JSONSignatureDecoder;
     "<span style="color:#C00000">publicKey</span>": {
       "<span style="color:#C00000">kty</span>": "<span style="color:#0000C0">EC</span>",
       "<span style="color:#C00000">crv</span>": "<span style="color:#0000C0">P-256</span>",
-      "<span style="color:#C00000">x</span>": "<span style="color:#0000C0">vlYxD4dtFJOp1_8_QUcieWCW-4KrLMmFL2rpkY1bQDs</span>",
-      "<span style="color:#C00000">y</span>": "<span style="color:#0000C0">fxEF70yJenP3SPHM9hv-EnvhG6nXr3_S-fDqoj-F6yM</span>"
+      "<span style="color:#C00000">x</span>": "<span style="color:#0000C0">PxlJQu9Q6dOvM4LKoZUh2XIe9-pdcLkvKfBfQk11Sb0</span>",
+      "<span style="color:#C00000">y</span>": "<span style="color:#0000C0">6IDquxrbdq5ABe4-HQ78_dhM6eEBUbvDtdqK31YfRP8</span>"
     },
-    "<span style="color:#C00000">value</span>": "<span style="color:#0000C0">23NSrdC9ol5N3-wYPxdV4w8Ylm_mhUNijbCuJ3G_DqWGiN5j8X5qZxyBo2yy8kGou4yBh74egauup7u2KYytLQ</span>"
+    "<span style="color:#C00000">value</span>": "<span style="color:#0000C0">vHXWLfhmkl2qk3Eo5gwBFJy68RFMCJziviO8QkUAwarjNL4yrd5VGbYnYzoVLWj50up5A908_8eVDt_W0xJo7g</span>"
   }
 }
 </pre></div>    
