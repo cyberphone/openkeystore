@@ -3608,6 +3608,16 @@ public class JSONTest {
         signatures.get(0).verify(new JSONAsymKeyVerifier(p256.getPublic()));
         signatures.get(1).verify(new JSONAsymKeyVerifier(p521.getPublic()));
 
+        writer = new JSONObjectWriter()
+            .setString("myData", "cool")
+            .setChainedSignature(new JSONAsymKeySigner(p256.getPrivate(), p256.getPublic(), null))
+            .setChainedSignature(new JSONAsymKeySigner(r2048.getPrivate(), r2048.getPublic(), null))
+            .setChainedSignature(new JSONAsymKeySigner(p521.getPrivate(), p521.getPublic(), null));
+        signatures = new JSONObjectReader(writer).getSignatureChain(new JSONCryptoHelper.Options());
+        signatures.get(0).verify(new JSONAsymKeyVerifier(p256.getPublic()));
+        signatures.get(1).verify(new JSONAsymKeyVerifier(r2048.getPublic()));
+        signatures.get(2).verify(new JSONAsymKeyVerifier(p521.getPublic()));
+
         signature = readSignature("p256#es256,r2048#rs256@chai-jwk.json");
         try {
             signature.getSignature(new JSONCryptoHelper.Options());

@@ -551,7 +551,7 @@ public class JSONObjectReader implements Serializable, Cloneable {
             if (chained) {
                 for (int i = 0; i < includedLinks; i++) {
                     arrayReader.array.add(new JSONValue(JSONTypes.OBJECT, 
-                                                        signatureObjects.elementAt(0).root));
+                                                        signatureObjects.elementAt(i).root));
                 }
                 includedLinks++;
             }
