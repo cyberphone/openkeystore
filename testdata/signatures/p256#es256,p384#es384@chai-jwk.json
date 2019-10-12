@@ -1,0 +1,26 @@
+{
+  "now": "2019-02-10T11:23:06Z",
+  "name": "Joe",
+  "id": 2200063,
+  "signature": {
+    "chain": [{
+      "algorithm": "ES256",
+      "publicKey": {
+        "kty": "EC",
+        "crv": "P-256",
+        "x": "censDzcMEkgiePz6DXB7cDuwFemshAFR90UNVQFCg8Q",
+        "y": "xq8rze6ewG0-eVcSF72J77gKiD0IHnzpwHaU7t6nVeY"
+      },
+      "value": "KcQicsPVz1WRCwcc5DbMscu3Pip_7d46qNpTcD6nT0A98dW1DWy3-0ATpNGGtvLm4HWYumhA1ySRYumq3OaWsg"
+    },{
+      "algorithm": "ES384",
+      "publicKey": {
+        "kty": "EC",
+        "crv": "P-384",
+        "x": "GLfdsvEwphRzS_twup7UFPVOk7_CKgHZ7dt_fJ2QHPBdJa1c5pfJcRIWTfT0lpg9",
+        "y": "ovA5_QXmFbj9U4pjZ1AX_ZdVyIRZUBWW9cuZda_tupKfWQfmcQHzDmHGHbxl9Xxl"
+      },
+      "value": "kfABQv8Z9uMly3MM6BF-JW9qIdrAeWS4iAOxf4rrPki83SwxFWlujVWORYHb_yoKPzxykOL0Vu-FsgfE2Y2S_7xxh88KAP45hc8o3DyZmR00bif4EJiHx1xzIt1tQ5VT"
+    }]
+  }
+}

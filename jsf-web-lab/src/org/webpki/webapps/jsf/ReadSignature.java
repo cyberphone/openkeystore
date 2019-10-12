@@ -141,9 +141,14 @@ public class ReadSignature {
                     JSONObjectReader inner = outer;
                     JSONCryptoHelper.Options options = new JSONCryptoHelper.Options();
                     String algo = null;
+                    boolean chained = false;
                     if (outer.hasProperty(JSONCryptoHelper.SIGNERS_JSON)) {
                         multi = true;
                         inner = outer.getArray(JSONCryptoHelper.SIGNERS_JSON).getObject();
+                    } else if (outer.hasProperty(JSONCryptoHelper.CHAIN_JSON)) {
+                        chained = true;
+                        multi = true;
+                        inner = outer.getArray(JSONCryptoHelper.CHAIN_JSON).getObject();
                     }
                     algo = inner.getString(JSONCryptoHelper.ALGORITHM_JSON);
                     options.setAlgorithmPreferences(AlgorithmPreferences.JOSE_ACCEPT_PREFER);
@@ -168,7 +173,8 @@ public class ReadSignature {
                         }
                     }
                     if (multi) {
-                        for (JSONSignatureDecoder signature : rd.getMultiSignature(options)) {
+                        for (JSONSignatureDecoder signature : chained ?
+                                rd.getSignatureChain(options) : rd.getMultiSignature(options)) {
                             processOneSignature(signature, preselectedKey);
                         }
                     } else {

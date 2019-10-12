@@ -3607,6 +3607,19 @@ public class JSONTest {
         assertTrue(signatures.size() == 2);
         signatures.get(0).verify(new JSONAsymKeyVerifier(p256.getPublic()));
         signatures.get(1).verify(new JSONAsymKeyVerifier(p521.getPublic()));
+
+        signature = readSignature("p256#es256,r2048#rs256@chai-jwk.json");
+        try {
+            signature.getSignature(new JSONCryptoHelper.Options());
+            fail("Must not pass");
+        } catch (Exception e) {
+            checkException(e, "Use \"getSignatureChain()\" for this object");
+        }
+        signatures = signature.getSignatureChain(new JSONCryptoHelper.Options());
+        assertTrue(signatures.size() == 2);
+        signatures.get(0).verify(new JSONAsymKeyVerifier(p256.getPublic()));
+        signatures.get(1).verify(new JSONAsymKeyVerifier(r2048.getPublic()));
+        
         readSymSignatures(new String[]{"a256#hs256@kid.json",
                                        "a384#hs384@kid.json",
                                        "a512#hs512@kid.json"});

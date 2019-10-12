@@ -524,7 +524,47 @@ public class JSONObjectReader implements Serializable, Cloneable {
         if (signatureObject.hasProperty(JSONCryptoHelper.SIGNERS_JSON)) {
             throw new IOException("Use \"getMultiSignature()\" for this object");
         }
+        if (signatureObject.hasProperty(JSONCryptoHelper.CHAIN_JSON)) {
+            throw new IOException("Use \"getSignatureChain()\" for this object");
+        }
         return new JSONSignatureDecoder(this, signatureObject, signatureObject, options);
+    }
+    
+    Vector<JSONSignatureDecoder> getSignatureArray(String signatureLabel, 
+                                                    JSONCryptoHelper.Options options,
+                                                    boolean chained) throws IOException {
+        options.encryptionMode(false);
+        JSONObjectReader outerSignatureObject = getObject(signatureLabel);
+        JSONArrayReader arrayReader = 
+                outerSignatureObject.getArray(chained ?
+                        JSONCryptoHelper.CHAIN_JSON : JSONCryptoHelper.SIGNERS_JSON);
+        @SuppressWarnings("unchecked")
+        Vector<JSONValue> save = (Vector<JSONValue>) arrayReader.array.clone();
+        Vector<JSONSignatureDecoder> signatures = new Vector<JSONSignatureDecoder>();
+        Vector<JSONObjectReader> signatureObjects = new Vector<JSONObjectReader>();
+        do {
+            signatureObjects.add(arrayReader.getObject());
+        } while(arrayReader.hasMore());
+        int includedLinks = 0;
+        for (JSONObjectReader innerSignatureObject : signatureObjects) {
+            arrayReader.array.clear();
+            if (chained) {
+                for (int i = 0; i < includedLinks; i++) {
+                    arrayReader.array.add(new JSONValue(JSONTypes.OBJECT, 
+                                                        signatureObjects.elementAt(0).root));
+                }
+                includedLinks++;
+            }
+            arrayReader.array.add(new JSONValue(JSONTypes.OBJECT,
+                                                innerSignatureObject.root));
+            signatures.add(new JSONSignatureDecoder(this, 
+                                                    innerSignatureObject,
+                                                    outerSignatureObject,
+                                                    options));
+        }
+        arrayReader.array.clear();
+        arrayReader.array.addAll(save);
+        return signatures;
     }
 
     /**
@@ -540,24 +580,23 @@ public class JSONObjectReader implements Serializable, Cloneable {
     }
     
     public Vector<JSONSignatureDecoder> getMultiSignature(String signatureLabel, JSONCryptoHelper.Options options) throws IOException {
-        options.encryptionMode(false);
-        JSONObjectReader outerSignatureObject = getObject(signatureLabel);
-        JSONArrayReader arrayReader = outerSignatureObject.getArray(JSONCryptoHelper.SIGNERS_JSON);
-        @SuppressWarnings("unchecked")
-        Vector<JSONValue> save = (Vector<JSONValue>) arrayReader.array.clone();
-        Vector<JSONSignatureDecoder> signatures = new Vector<JSONSignatureDecoder>();
-        Vector<JSONObjectReader> signatureObjects = new Vector<JSONObjectReader>();
-        do {
-            signatureObjects.add(arrayReader.getObject());
-        } while(arrayReader.hasMore());
-        for (JSONObjectReader innerSignatureObject : signatureObjects) {
-            arrayReader.array.clear();
-            arrayReader.array.add(new JSONValue(JSONTypes.OBJECT, innerSignatureObject.root));
-            signatures.add(new JSONSignatureDecoder(this, innerSignatureObject, outerSignatureObject, options));
-        }
-        arrayReader.array.clear();
-        arrayReader.array.addAll(save);
-        return signatures;
+        return getSignatureArray(signatureLabel, options, false);
+    }
+
+    /**
+     * Read and decode a
+     * <a href="https://cyberphone.github.io/doc/security/jsf.html" target="_blank"><b>JSF</b></a>
+     * chained-signature object.
+     * @param options Allowed/expected options
+     * @return List with signature objects
+     * @throws IOException &nbsp;
+     */
+    public Vector<JSONSignatureDecoder> getSignatureChain(JSONCryptoHelper.Options options) throws IOException {
+        return getSignatureChain(JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON, options);
+    }
+    
+    public Vector<JSONSignatureDecoder> getSignatureChain(String signatureLabel, JSONCryptoHelper.Options options) throws IOException {
+        return getSignatureArray(signatureLabel, options, true);
     }
 
     /**

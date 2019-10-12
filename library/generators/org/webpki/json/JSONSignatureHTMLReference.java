@@ -55,6 +55,8 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
     
     static final String MULTIPLE_SIGNATURES     = "Multiple Signatures";
     
+    static final String SIGNATURE_CHAINS        = "Signature Chains";
+    
     static final String COUNTER_SIGNATURES      = "Counter Signatures";
     
     static final String SAMPLE_OBJECT           = "Sample Object";
@@ -66,9 +68,11 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
     static final String GLOBAL_SIGNATURE_OPTIONS = "Global Signature Options";
     static final String SIGNATURE_CORE_OBJECT    = "signaturecore";
     static final String MULTI_SIGNATURE_OBJECT   = "multisignature";
+    static final String SIGNATURE_CHAIN_OBJECT   = "signaturechain";
     
     static final String FILE_SAMPLE_SIGN         = "p256#es256@jwk.json";
     static final String FILE_MULT_SIGN           = "p256#es256,r2048#rs256@mult-jwk.json";
+    static final String FILE_CHAIN_SIGN          = "p256#es256,r2048#rs256@chai-jwk.json";
     static final String FILE_MULT_EXTS_SIGN      = "p256#es256,r2048#rs256@mult-exts-kid.json";
     static final String FILE_MULT_EXCL_SIGN      = "p256#es256,r2048#rs256@mult-excl-kid.json";
     static final String FILE_EXTS_SIGN           = "p256#es256@exts-jwk.json";
@@ -239,6 +243,12 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
                     scanObject(signerArray.getObject(), options);
                 } while (signerArray.hasMore());
                 signers = signedObject.getMultiSignature(signatureLabel, options);
+            } else if (checker.hasProperty(JSONCryptoHelper.CHAIN_JSON)) {
+                JSONArrayReader signerArray = checker.getArray(JSONCryptoHelper.CHAIN_JSON);
+                do {
+                    scanObject(signerArray.getObject(), options);
+                } while (signerArray.hasMore());
+                signers = signedObject.getSignatureChain(signatureLabel, options);
             } else {
                 scanObject(checker, options);
                 signers.add(signedObject.getSignature(signatureLabel, options));
@@ -360,6 +370,13 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
                 " and " +  keyLink(key2) + " keys" + options + ":";
     }
 
+    static String signatureChainText(AsymKey key1, AsymKey key2, String options) throws IOException {
+        return "The following object was signed by chained signatures (see " +
+                JSONBaseHTML.globalLinkRef(SIGNATURE_CHAINS) +
+                ") using the " + keyLink(key1) +
+                " and " +  keyLink(key2) + " keys" + options + ":";
+    }
+
     static String jwsCounterPart(String keyword) {
         return ("JWS counterpart: <code>&quot;" + keyword + "&quot;</code>.");
     }
@@ -465,8 +482,10 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             JSONBaseHTML.globalLinkRef(FILE_NAME_SIGN) +
             ") holding a composite JSON object (" +
             JSONBaseHTML.globalLinkRef(SIGNATURE_CORE_OBJECT) +
-            " or " + 
+            ", " + 
             JSONBaseHTML.globalLinkRef(MULTI_SIGNATURE_OBJECT) +
+            " or " + 
+            JSONBaseHTML.globalLinkRef(SIGNATURE_CHAIN_OBJECT) +
             ")." + LINE_SEPARATOR);
 
         json.addProtocolTableEntry("JSF Objects")
@@ -483,9 +502,11 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             JSONBaseHTML.globalLinkRef(FILE_NAME_SIGN) +
             ") holding a JSF " +
             JSONBaseHTML.globalLinkRef(SIGNATURE_CORE_OBJECT) +
-            " (or " + 
+            ", " + 
             JSONBaseHTML.globalLinkRef(MULTI_SIGNATURE_OBJECT) +
-            ") object." + LINE_SEPARATOR +
+            "or " + 
+            JSONBaseHTML.globalLinkRef(SIGNATURE_CHAIN_OBJECT) +
+            " object." + LINE_SEPARATOR +
             "Note that there <b>must not</b> be any not here defined properties inside of the signature object " + 
             " and that the use of JCS " + json.createReference(JSONBaseHTML.REF_JCS) +
             " implies certain constraints on the JSON data." +     
@@ -554,14 +575,30 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             "be <i>included</i> in the normalized data for each " +
             JSONBaseHTML.globalLinkRef(SIGNATURE_CORE_OBJECT) +
             " object.</li>" +
-            "<li>Each signature requires its own normalization process. During this " +
+            "<li style=\"padding-top:4pt\">Each signature requires its own normalization process. During this " +
             "process the other signature objects <b>must</b> (temporarily) be removed.</li>" +
-            "<li>The <code>','</code> characters separating signature objects <b>must</b> " +
+            "<li style=\"padding-top:4pt\">The <code>','</code> characters separating signature objects <b>must</b> " +
             "be <i>excluded</i> from the normalized data.</li>" +
             "</ul>" +
             "See also " + JSONBaseHTML.globalLinkRef(COUNTER_SIGNATURES) + 
             ".");
         
+        json.addParagraphObject(SIGNATURE_CHAINS).append("Signature chains require that each added signature " +
+            "object does not only sign the data but the preceding signature objects as well. " + 
+            "See the " + "<a href=\"#" + JSONBaseHTML.makeLink(FILE_CHAIN_SIGN) + "\">Signature Chain Sample</a>." +
+            LINE_SEPARATOR +
+            "The normalization procedure is essentially the same as for simple " +
+            "signatures but <b>must</b> also take the following in account:<ul>" +
+            "<li>The <code>'['</code> and <code>']'</code> characters <b>must</b> " +
+            "be <i>included</i> in the normalized data for each " +
+            JSONBaseHTML.globalLinkRef(SIGNATURE_CORE_OBJECT) +
+            " object.</li>" +
+            "<li style=\"padding-top:4pt\">Each signature requires its own normalization process. During signature validation, " +
+            "array wise higher order signature objects <b>must</b> (temporarily) be removed.</li>" +
+             "</ul>" +
+            "See also " + JSONBaseHTML.globalLinkRef(COUNTER_SIGNATURES) + 
+            ".");
+
         json.addParagraphObject(SECURITY_CONSIDERATIONS ).append("This specification does (to the author's " +
             "knowledge), not introduce additional vulnerabilities " +
             "over what is specified for JWS " + json.createReference(JSONBaseHTML.REF_JWS) + ".");
@@ -655,6 +692,9 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
                 " while the public keys are identified by " +
                 KEY_ID_REFERENCE + " properties" + EXCLUDES_REFERENCE),
             FILE_MULT_EXCL_SIGN) +
+        showAsymSignature(
+            signatureChainText(p256key, r2048key,""),
+            FILE_CHAIN_SIGN) +
         showTextAndCode("The certificate based signatures share a common root (here supplied in PEM " +
             json.createReference(JSONBaseHTML.REF_PEM) +
             " format), which can be used for path validation:",
@@ -682,8 +722,9 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
            "JSON-compliant strings no special considerations are required for JavaScript.");
 
         json.addParagraphObject(COUNTER_SIGNATURES).append(
-            "For counter signatures there are two entirely different solutions. " +
-            "One way dealing with counter signatures is using an " +
+            "For counter signatures there are several different solutions where " +
+            JSONBaseHTML.globalLinkRef(SIGNATURE_CHAINS) + " is the most straightforward." + LINE_SEPARATOR +
+            "Another way dealing with counter signatures is using an " +
             "application level counter signing solution like the following:" +
             "<div style=\"padding:10pt 0pt 10pt 20pt\"><code>{<br>" +
             "&nbsp;&nbsp;&quot;id&quot;: &quot;lADU_sO067Wlgoo52-9L&quot;,<br>" +
@@ -713,8 +754,8 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             "&nbsp;&nbsp;}<br>" +
             "}</code></div>" +
             "For sophisticated <i>peer based</i> counter signature schemes another possibility is using " +
-            "<a href=\"#" + JSONBaseHTML.makeLink(MULTIPLE_SIGNATURES) + "\">" + MULTIPLE_SIGNATURES +
-            "</a>, <i>optionally</i> including JSF " +
+            JSONBaseHTML.globalLinkRef(MULTIPLE_SIGNATURES) + 
+            ", <i>optionally</i> including JSF " +
             JSONBaseHTML.globalLinkRef(GLOBAL_SIGNATURE_OPTIONS, JSONCryptoHelper.EXTENSIONS_JSON) +
             " holding application specific (per signature) metadata.");
 
@@ -781,6 +822,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
         json.addDocumentHistoryLine("2017-04-19", "0.60", "Changed public keys to use JWK " + json.createReference(JSONBaseHTML.REF_JWK) + " format");
         json.addDocumentHistoryLine("2017-05-18", "0.70", "Added multiple signatures and test vectors");
         json.addDocumentHistoryLine("2019-03-05", "0.80", "Rewritten to use the JCS " + json.createReference(JSONBaseHTML.REF_JCS) + " canonicalization scheme");
+        json.addDocumentHistoryLine("2019-10-12", "0.81", "Added signature chains (<code>" + JSONCryptoHelper.CHAIN_JSON + "</code>)");
 
         json.addParagraphObject("Author").append("JSF was developed by Anders Rundgren (<code>anders.rundgren.net@gmail.com</code>) as a part " +
                                                  "of the OpenKeyStore project " +
@@ -794,10 +836,10 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             .newColumn()
               .setType (WEBPKI_DATA_TYPES.OBJECT)
             .newColumn()
-              .setChoice (true, 2)
+              .setChoice (true, 3)
             .newColumn()
               .addString("Unique top level property for <i>simple</i> signatures.")
-            .newRow()
+         .newRow()
            .newColumn()
              .addProperty("...")
              .addLink(MULTI_SIGNATURE_OBJECT)
@@ -806,7 +848,17 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
            .newColumn()
            .newColumn()
              .addString("Unique top level property for ")
-             .addLink(MULTIPLE_SIGNATURES);
+             .addLink(MULTIPLE_SIGNATURES)
+        .newRow()
+        .newColumn()
+          .addProperty("...")
+          .addLink(SIGNATURE_CHAIN_OBJECT)
+        .newColumn()
+          .setType(WEBPKI_DATA_TYPES.OBJECT)
+        .newColumn()
+        .newColumn()
+          .addString("Unique top level property for ")
+          .addLink(SIGNATURE_CHAINS);
         
         json.addSubItemTable(SIGNATURE_CORE_OBJECT)
           .newRow()
@@ -949,6 +1001,18 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
            .addString("Array holding ")
            .addLink(MULTIPLE_SIGNATURES);
         
+        json.addSubItemTable(SIGNATURE_CHAIN_OBJECT)
+        .newRow()
+          .newColumn()
+            .addProperty (JSONCryptoHelper.CHAIN_JSON)
+            .addArrayLink(SIGNATURE_CORE_OBJECT, 1)
+         .newColumn()
+           .setType(WEBPKI_DATA_TYPES.OBJECT)
+         .newColumn()
+         .newColumn()
+           .addString("Array holding ")
+           .addLink(SIGNATURE_CHAINS);
+
         json.AddPublicKeyDefinitions();
 
         json.writeHTML();

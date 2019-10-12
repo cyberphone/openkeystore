@@ -145,16 +145,18 @@ public class Signatures {
             symmSign(512, MACAlgorithms.HMAC_SHA512, i == 0);
         }
         
-        multipleSign("p256", "r2048",  false, false, false, null);
-        multipleSign("p256", "p384",   false, false, false, null);
-        multipleSign("p256", "p256-2", false, false, false, AsymSignatureAlgorithms.ECDSA_SHA256);
-        multipleSign("p256", "p256-2", false, false, true,  AsymSignatureAlgorithms.ECDSA_SHA256);
-        multipleSign("p256", "p384",   false, true,  false, null);
-        multipleSign("p256", "r2048",  false, true,  true,  null);
-        multipleSign("p256", "r2048",  false, false, true,  null);
-        multipleSign("p256", "r2048",  true,  false, true,  null);
-        multipleSign("p256", "p384",   true,  false, false, null);
-        multipleSign("p256", "p384",   true,  true,  false, null);
+        for (boolean chained : new boolean[]{false,true}) {
+            arraySign("p256", "r2048",  false, false, false, null, chained);
+            arraySign("p256", "p384",   false, false, false, null, chained);
+            arraySign("p256", "p256-2", false, false, false, AsymSignatureAlgorithms.ECDSA_SHA256, chained);
+            arraySign("p256", "p256-2", false, false, true,  AsymSignatureAlgorithms.ECDSA_SHA256, chained);
+            arraySign("p256", "p384",   false, true,  false, null, chained);
+            arraySign("p256", "r2048",  false, true,  true,  null, chained);
+            arraySign("p256", "r2048",  false, false, true,  null, chained);
+            arraySign("p256", "r2048",  true,  false, true,  null, chained);
+            arraySign("p256", "p384",   true,  false, false, null, chained);
+            arraySign("p256", "p384",   true,  true,  false, null, chained);
+        }
 
         asymSignCore("p256", false, true,  true,  false); 
         asymSignCore("p256", false, true,  false, true);
@@ -262,6 +264,11 @@ public class Signatures {
             while (array.hasMore()) {
                 array.getObject().removeProperty(JSONCryptoHelper.VALUE_JSON);
             }
+        } else if (signature.hasProperty(JSONCryptoHelper.CHAIN_JSON)) {
+            JSONArrayReader array = signature.getArray(JSONCryptoHelper.CHAIN_JSON);
+            while (array.hasMore()) {
+                array.getObject().removeProperty(JSONCryptoHelper.VALUE_JSON);
+            }
         } else {
             signature.removeProperty(JSONCryptoHelper.VALUE_JSON);
         }
@@ -330,10 +337,15 @@ public class Signatures {
     }
     
     static byte[] createSignatures(Vector<JSONSigner> signers,
-                                   boolean excl) throws Exception {
+                                   boolean excl,
+                                   boolean chained) throws Exception {
         JSONObjectWriter dataToSign = excl ? getMixedData() : parseDataToSign();
         for (JSONSigner signer : signers) {
-            dataToSign.setMultiSignature(signer);
+            if (chained) {
+                dataToSign.setChainedSignature(signer);
+            } else {
+                dataToSign.setMultiSignature(signer);
+            }
         }
         if (excl) {
             return dataToSign.serializeToBytes(JSONOutputFormats.PRETTY_PRINT);
@@ -354,9 +366,10 @@ public class Signatures {
         return jwkPlus.getKeyPair();
     }
     
-    static void multipleSign(String keyType1, String keyType2, 
-                             boolean exts, boolean excl, boolean wantKeyId, 
-                             AsymSignatureAlgorithms globalAlgorithm) throws Exception {
+    static void arraySign(String keyType1, String keyType2, 
+                          boolean exts, boolean excl, boolean wantKeyId, 
+                          AsymSignatureAlgorithms globalAlgorithm,
+                          boolean chained) throws Exception {
         KeyPair keyPair1 = readJwk(keyType1);
         String keyId1 = keyId;
         KeyPair keyPair2 = readJwk(keyType2);
@@ -400,16 +413,20 @@ public class Signatures {
             options.setRequirePublicKeyInfo(false);
             options.setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED);
         }
-        byte[] signedData = createSignatures(signers, excl);
-        Vector<JSONSignatureDecoder> signatures = JSONParser.parse(signedData).getMultiSignature(options);
+        byte[] signedData = createSignatures(signers, excl, chained);
+        Vector<JSONSignatureDecoder> signatures = chained ?
+                JSONParser.parse(signedData).getSignatureChain(options) 
+                                                          : 
+                JSONParser.parse(signedData).getMultiSignature(options);
         signatures.get(0).verify(new JSONAsymKeyVerifier(keyPair1.getPublic()));
         signatures.get(1).verify(new JSONAsymKeyVerifier(keyPair2.getPublic()));
         if (signatures.size() != 2) {
-            throw new Exception("Wrong multi");
+            throw new Exception("Wrong array signature");
         }
         optionalUpdate(baseSignatures + prefix(keyType1) + getAlgorithm(signatures.get(0)) + ","
                                       + prefix(keyType2) + getAlgorithm(signatures.get(1))
-                                      + "@mult" + fileExt + (wantKeyId ? "-kid.json" : "-jwk.json"),
+                                      + (chained ? "@chai" : "@mult") 
+                                      + fileExt + (wantKeyId ? "-kid.json" : "-jwk.json"),
                        signedData,
                        true);
      }

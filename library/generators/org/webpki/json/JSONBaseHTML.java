@@ -278,7 +278,7 @@ public class JSONBaseHTML  {
 
         addReferenceEntry(REF_JSF,
             "A. Rundgren, \"JSF - JSON Signature Format\", Work in progress, " +
-            "<span style=\"white-space: nowrap\">V0.80, Mars&nbsp;2019.</span> " +
+            "<span style=\"white-space: nowrap\">V0.81, October&nbsp;2019.</span> " +
             externalWebReference ("https://cyberphone.github.io/doc/security/jsf.html"));
 
         addReferenceEntry(REF_JCS,

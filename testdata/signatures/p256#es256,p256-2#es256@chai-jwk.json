@@ -1,0 +1,26 @@
+{
+  "now": "2019-02-10T11:23:06Z",
+  "name": "Joe",
+  "id": 2200063,
+  "signature": {
+    "chain": [{
+      "algorithm": "ES256",
+      "publicKey": {
+        "kty": "EC",
+        "crv": "P-256",
+        "x": "censDzcMEkgiePz6DXB7cDuwFemshAFR90UNVQFCg8Q",
+        "y": "xq8rze6ewG0-eVcSF72J77gKiD0IHnzpwHaU7t6nVeY"
+      },
+      "value": "dDVl_uVZY3sUv1Mh3TKqnZLQk0gmcqqkbDHbimSpyXL1AYX4hfJbNlwu2dGx0yFQJv42fDHBKWGgeC2p5m8qWg"
+    },{
+      "algorithm": "ES256",
+      "publicKey": {
+        "kty": "EC",
+        "crv": "P-256",
+        "x": "RgdKcWxBsnqeryzoEv3B5KE9qAQc-nBZEV_A23uQoPs",
+        "y": "73UtZIe1Qfil1WM9Hq1ZiPXWnI1Tu7N__goVvTyjURk"
+      },
+      "value": "jyWUxs1ZVpVtkzjqNpZECMKplMv1plcGH-brAtvueiv5YrtH_gMAkpwOl1A_dw8sXLIloEiYnxz1UtsVUAK5KQ"
+    }]
+  }
+}

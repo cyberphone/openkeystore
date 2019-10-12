@@ -43,6 +43,8 @@ public class JSONCryptoHelper implements Serializable {
 
     public static final String CERTIFICATE_PATH_JSON   = "certificatePath";// X.509 Certificate path
 
+    public static final String CHAIN_JSON              = "chain";          // JSF specific
+
     public static final String CIPHER_TEXT_JSON        = "cipherText";     // JEF specific
 
     public static final String CRV_JSON                = "crv";            // JWK
@@ -84,27 +86,29 @@ public class JSONCryptoHelper implements Serializable {
 
     static {
         jefReservedWords.add(ALGORITHM_JSON);
-        jefReservedWords.add(IV_JSON);
-        jefReservedWords.add(TAG_JSON);
+        jefReservedWords.add(CERTIFICATE_PATH_JSON);
+        jefReservedWords.add(CIPHER_TEXT_JSON);
         jefReservedWords.add(ENCRYPTED_KEY_JSON);
         jefReservedWords.add(EPHEMERAL_KEY_JSON);
-        jefReservedWords.add(CIPHER_TEXT_JSON);
-        jefReservedWords.add(RECIPIENTS_JSON);
         jefReservedWords.add(EXTENSIONS_JSON);
+        jefReservedWords.add(IV_JSON);
         jefReservedWords.add(KEY_ID_JSON);
         jefReservedWords.add(PUBLIC_KEY_JSON);
-        jefReservedWords.add(CERTIFICATE_PATH_JSON);
+        jefReservedWords.add(RECIPIENTS_JSON);
+        jefReservedWords.add(TAG_JSON);
     }
 
     static final LinkedHashSet<String> jsfReservedWords = new LinkedHashSet<String>();
 
     static {
         jsfReservedWords.add(ALGORITHM_JSON);
+        jsfReservedWords.add(CERTIFICATE_PATH_JSON);
+        jsfReservedWords.add(CHAIN_JSON);
         jsfReservedWords.add(EXTENSIONS_JSON);
         jsfReservedWords.add(EXCLUDES_JSON);
         jsfReservedWords.add(KEY_ID_JSON);
         jsfReservedWords.add(PUBLIC_KEY_JSON);
-        jsfReservedWords.add(CERTIFICATE_PATH_JSON);
+        jsfReservedWords.add(SIGNERS_JSON);
         jsfReservedWords.add(VALUE_JSON);
     }
 

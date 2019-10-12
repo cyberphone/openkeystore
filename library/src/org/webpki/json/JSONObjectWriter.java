@@ -667,6 +667,56 @@ import org.webpki.json.JSONSignatureDecoder;
         coreSign(signer, signatureObject, signatureObject, this);
         return this;
     }
+    
+    JSONObjectWriter setSignatureArrayElement(String signatureLabel,
+                                              JSONSigner signer,
+                                              boolean chained) throws IOException {       
+        JSONObjectReader reader = new JSONObjectReader(root);
+        Vector<JSONObject> oldSignatures = new Vector<JSONObject>();
+        String keyWord = chained ? JSONCryptoHelper.CHAIN_JSON : JSONCryptoHelper.SIGNERS_JSON;
+        if (reader.hasProperty(signatureLabel)) {
+            reader = reader.getObject(signatureLabel);
+            if (signer.extensionNames != null) {
+                throw new IOException("Only the first signer can set \"" + 
+                                      JSONCryptoHelper.EXTENSIONS_JSON + "\"");
+            }
+            if (signer.excluded != null) {
+                throw new IOException("Only the first signer can set \"" + 
+                                      JSONCryptoHelper.EXCLUDES_JSON + "\"");
+            }
+            JSONArrayReader signatureArray = reader.getArray(keyWord);
+            do {
+                oldSignatures.add(signatureArray.getObject().root);
+            } while (signatureArray.hasMore());
+            if (reader.hasProperty(JSONCryptoHelper.EXCLUDES_JSON)) {
+                signer.setExcluded(reader.getStringArray(JSONCryptoHelper.EXCLUDES_JSON));
+            }
+            if (reader.hasProperty(JSONCryptoHelper.EXTENSIONS_JSON)) {
+                signer.setExtensionNames(reader.getStringArray(JSONCryptoHelper.EXTENSIONS_JSON));
+            }
+            setupForRewrite(signatureLabel);
+        }
+        JSONObjectWriter globalSignatureObject = setObject(signatureLabel);
+        JSONArrayWriter signatureArray = globalSignatureObject.setArray(keyWord);
+        if (!chained) {
+            coreSign(signer, signatureArray.setObject(), globalSignatureObject, this);
+        }
+        int q = oldSignatures.size();
+        while (--q >= 0) {
+            signatureArray.array.insertElementAt(new JSONValue(JSONTypes.OBJECT,
+                                                               oldSignatures.get(q)), 0);
+        }
+        if (chained) {
+            coreSign(signer, signatureArray.setObject(), globalSignatureObject, this);
+        }
+        /*
+        if (multiSignatureHeader.optionalFormatVerifier != null) {
+            new JSONObjectReader(root).getMultiSignature(signatureLabel, multiSignatureHeader.optionalFormatVerifier);
+        }
+        */
+        return this;
+    }
+
     /**
      * Set a <a href="https://cyberphone.github.io/doc/security/jsf.html" target="_blank"><b>JSF</b></a>
      * multi-signature object.<p>
@@ -681,43 +731,24 @@ import org.webpki.json.JSONSignatureDecoder;
 
     public JSONObjectWriter setMultiSignature(String signatureLabel,
                                               JSONSigner signer) throws IOException {
-        JSONObjectReader reader = new JSONObjectReader(root);
-        Vector<JSONObject> oldSignatures = new Vector<JSONObject>();
-        if (reader.hasProperty(signatureLabel)) {
-            reader = reader.getObject(signatureLabel);
-            if (signer.extensionNames != null) {
-                throw new IOException("Only the first signer can set \"" + 
-                                      JSONCryptoHelper.EXTENSIONS_JSON + "\"");
-            }
-            if (signer.excluded != null) {
-                throw new IOException("Only the first signer can set \"" + 
-                                      JSONCryptoHelper.EXCLUDES_JSON + "\"");
-            }
-            JSONArrayReader signatureArray = reader.getArray(JSONCryptoHelper.SIGNERS_JSON);
-            do {
-                oldSignatures.add(signatureArray.getObject().root);
-            } while (signatureArray.hasMore());
-            if (reader.hasProperty(JSONCryptoHelper.EXCLUDES_JSON)) {
-                signer.setExcluded(reader.getStringArray(JSONCryptoHelper.EXCLUDES_JSON));
-            }
-            if (reader.hasProperty(JSONCryptoHelper.EXTENSIONS_JSON)) {
-                signer.setExtensionNames(reader.getStringArray(JSONCryptoHelper.EXTENSIONS_JSON));
-            }
-            setupForRewrite(signatureLabel);
-        }
-        JSONObjectWriter globalSignatureObject = setObject(signatureLabel);
-        JSONArrayWriter signatureArray = globalSignatureObject.setArray(JSONCryptoHelper.SIGNERS_JSON);
-        coreSign(signer, signatureArray.setObject(), globalSignatureObject, this);
-        int q = oldSignatures.size();
-        while (--q >= 0) {
-            signatureArray.array.insertElementAt(new JSONValue(JSONTypes.OBJECT, oldSignatures.get(q)), 0);
-        }
-        /*
-        if (multiSignatureHeader.optionalFormatVerifier != null) {
-            new JSONObjectReader(root).getMultiSignature(signatureLabel, multiSignatureHeader.optionalFormatVerifier);
-        }
-        */
-        return this;
+        return setSignatureArrayElement(signatureLabel, signer, false);
+    }
+
+    /**
+     * Set a <a href="https://cyberphone.github.io/doc/security/jsf.html" target="_blank"><b>JSF</b></a>
+     * chained-signature object.<p>
+     * This method performs all the processing needed for adding multiple JSF signatures to the current object.</p>
+     * @param signer Signature interface
+     * @return Current instance of {@link org.webpki.json.JSONObjectWriter}
+     * @throws IOException In case there a problem with keys etc.
+     */
+    public JSONObjectWriter setChainedSignature(JSONSigner signer) throws IOException {
+        return setChainedSignature(SIGNATURE_DEFAULT_LABEL_JSON, signer);
+    }
+
+    public JSONObjectWriter setChainedSignature(String signatureLabel,
+                                              JSONSigner signer) throws IOException {
+        return setSignatureArrayElement(signatureLabel, signer, true);
     }
 
     /**
