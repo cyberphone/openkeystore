@@ -545,15 +545,10 @@ public class JSONObjectReader implements Serializable, Cloneable {
         do {
             signatureObjects.add(arrayReader.getObject());
         } while(arrayReader.hasMore());
-        int includedLinks = 0;
+        arrayReader.array.clear();
         for (JSONObjectReader innerSignatureObject : signatureObjects) {
-            arrayReader.array.clear();
-            if (chained) {
-                for (int i = 0; i < includedLinks; i++) {
-                    arrayReader.array.add(new JSONValue(JSONTypes.OBJECT, 
-                                                        signatureObjects.elementAt(i).root));
-                }
-                includedLinks++;
+            if (!chained) {
+                arrayReader.array.clear();
             }
             arrayReader.array.add(new JSONValue(JSONTypes.OBJECT,
                                                 innerSignatureObject.root));
