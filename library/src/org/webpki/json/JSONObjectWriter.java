@@ -753,7 +753,7 @@ import org.webpki.json.JSONSignatureDecoder;
     }
 
     public JSONObjectWriter setChainedSignature(String signatureLabel,
-                                               JSONSigner signer) throws IOException {
+                                                JSONSigner signer) throws IOException {
         return setSignatureArrayElement(signatureLabel, signer, true);
     }
 
