@@ -71,8 +71,9 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
     static final String SIGNATURE_CHAIN_OBJECT   = "signaturechain";
     
     static final String FILE_SAMPLE_SIGN         = "p256#es256@jwk.json";
-    static final String FILE_MULT_SIGN           = "p256#es256,r2048#rs256@mult-jwk.json";
     static final String FILE_CHAIN_SIGN          = "p256#es256,r2048#rs256@chai-jwk.json";
+    static final String FILE_CHAIN_EXTS_SIGN     = "p256#es256,r2048#rs256@chai-exts-kid.json";
+    static final String FILE_MULT_SIGN           = "p256#es256,r2048#rs256@mult-jwk.json";
     static final String FILE_MULT_EXTS_SIGN      = "p256#es256,r2048#rs256@mult-exts-kid.json";
     static final String FILE_MULT_EXCL_SIGN      = "p256#es256,r2048#rs256@mult-excl-kid.json";
     static final String FILE_EXTS_SIGN           = "p256#es256@exts-jwk.json";
@@ -371,7 +372,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
     }
 
     static String signatureChainText(AsymKey key1, AsymKey key2, String options) throws IOException {
-        return "The following object was signed by chained signatures (see " +
+        return "The following object was signed by a chain of signatures (see " +
                 JSONBaseHTML.globalLinkRef(SIGNATURE_CHAINS) +
                 ") using the " + keyLink(key1) +
                 " and " +  keyLink(key2) + " keys" + options + ":";
@@ -695,6 +696,12 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
         showAsymSignature(
             signatureChainText(p256key, r2048key,""),
             FILE_CHAIN_SIGN) +
+        showAsymSignature(
+            signatureChainText(p256key, r2048key,
+            " while the public keys are identified by " +
+            KEY_ID_REFERENCE + " properties" + EXTENSION_REFERENCE +
+            ". Note that this JSF features <i>optional</i> extension arguments (the second signature lacks one element)"),
+            FILE_CHAIN_EXTS_SIGN) +
         showTextAndCode("The certificate based signatures share a common root (here supplied in PEM " +
             json.createReference(JSONBaseHTML.REF_PEM) +
             " format), which can be used for path validation:",

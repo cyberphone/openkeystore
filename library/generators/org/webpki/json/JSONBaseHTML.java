@@ -283,8 +283,8 @@ public class JSONBaseHTML  {
 
         addReferenceEntry(REF_JCS,
             "A. Rundgren, B. Jordan, S. Erdtman, \"JCS - JSON Canonicalization Scheme\", Work in progress, " +
-            "<span style=\"white-space: nowrap\">May&nbsp;2019.</span> " +
-            externalWebReference ("https://tools.ietf.org/html/draft-rundgren-json-canonicalization-scheme-06"));
+            "<span style=\"white-space: nowrap\">September&nbsp;2019.</span> " +
+            externalWebReference ("https://tools.ietf.org/html/draft-rundgren-json-canonicalization-scheme-13"));
 
         addReferenceEntry(REF_YASMIN,
             "A. Rundgren, \"YASMIN - Yet Another jSon Message notatIoN\", Work in progress, " +
