@@ -505,7 +505,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             JSONBaseHTML.globalLinkRef(SIGNATURE_CORE_OBJECT) +
             ", " + 
             JSONBaseHTML.globalLinkRef(MULTI_SIGNATURE_OBJECT) +
-            "or " + 
+            " or " + 
             JSONBaseHTML.globalLinkRef(SIGNATURE_CHAIN_OBJECT) +
             " object." + LINE_SEPARATOR +
             "Note that there <b>must not</b> be any not here defined properties inside of the signature object " + 
