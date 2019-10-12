@@ -42,7 +42,7 @@ public class VerifyServlet extends HttpServlet {
         String json = CreateServlet.getTextArea(request);
 
         RequestDispatcher rd = request.getRequestDispatcher("request?"
-                + RequestServlet.JWS_ARGUMENT + "="
+                + RequestServlet.JSF_ARGUMENT + "="
                 + Base64URL.encode(json.getBytes("UTF-8")));
         rd.forward(request, response);
     }

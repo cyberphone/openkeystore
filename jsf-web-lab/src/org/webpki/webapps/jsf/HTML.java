@@ -155,7 +155,7 @@ public class HTML {
     public static String fancyText(int rows, String content) {
         return "<textarea style=\"margin-top:3pt;" + TEXT_BOX + COMMON_BOX
         + "\" rows=\"" + rows + "\" maxlength=\"100000\" name=\""
-        + RequestServlet.JWS_ARGUMENT + "\">" + content + "</textarea>";
+        + RequestServlet.JSF_ARGUMENT + "\">" + content + "</textarea>";
     }
 
     public static void homePage(HttpServletResponse response, String baseurl)
@@ -453,7 +453,7 @@ public class HTML {
         + "//////////////////////////////////////////////////////////////////////////\n"
         + "function verifySignatureOnServer() {\n"
         + "  document.location.href = 'request?"
-        + RequestServlet.JWS_ARGUMENT
+        + RequestServlet.JSF_ARGUMENT
         + "="
         + "' + "
         + "convertToBase64URL(convertToUTF8(JSON.stringify(jsonObject)));\n"

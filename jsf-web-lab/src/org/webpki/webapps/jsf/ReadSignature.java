@@ -22,6 +22,7 @@ import java.math.BigInteger;
 
 import java.security.GeneralSecurityException;
 import java.security.PublicKey;
+
 import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPublicKey;
 
@@ -143,9 +144,8 @@ public class ReadSignature {
                     if (outer.hasProperty(JSONCryptoHelper.SIGNERS_JSON)) {
                         multi = true;
                         inner = outer.getArray(JSONCryptoHelper.SIGNERS_JSON).getObject();
-                    } else {
-                        algo = inner.getString(JSONCryptoHelper.ALGORITHM_JSON);
                     }
+                    algo = inner.getString(JSONCryptoHelper.ALGORITHM_JSON);
                     options.setAlgorithmPreferences(AlgorithmPreferences.JOSE_ACCEPT_PREFER);
                     boolean asymAlg = true;
                     for (MACAlgorithms macs : MACAlgorithms.values()) {
