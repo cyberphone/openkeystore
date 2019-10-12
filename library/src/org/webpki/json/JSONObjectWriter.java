@@ -50,8 +50,10 @@ import org.webpki.util.ISODateTime;
  * Creates JSON objects and performs serialization according to JCS and ES6.
  * <p>
  * Also provides built-in support for encoding
- <a href="https://cyberphone.github.io/doc/security/jsf.html" target="_blank"><b>JSF (JSON Signature Format)</b></a>, 
-<a href="https://cyberphone.github.io/doc/security/jef.html" target="_blank"><b>JEF (JSON Encryption Format)</b></a>
+ <a href="https://cyberphone.github.io/doc/security/jsf.html" 
+ target="_blank"><b>JSF (JSON Signature Format)</b></a>, 
+<a href="https://cyberphone.github.io/doc/security/jef.html" 
+target="_blank"><b>JEF (JSON Encryption Format)</b></a>
 and
 <a href="https://tools.ietf.org/html/rfc7517" target="_blank"><b>JWK</b></a>
  objects.</p>
@@ -508,7 +510,9 @@ public class JSONObjectWriter implements Serializable {
      * @return An instance of {@link org.webpki.json.JSONObjectWriter}
      * @throws IOException &nbsp;
      */
-    public JSONObjectWriter copyElement(String newName, String sourceName, JSONObjectReader source) throws IOException {
+    public JSONObjectWriter copyElement(String newName, 
+                                        String sourceName,
+                                        JSONObjectReader source) throws IOException {
         return setProperty(newName, source.getProperty(sourceName));
     }
 
@@ -573,7 +577,9 @@ public class JSONObjectWriter implements Serializable {
             JSONObjectReader rd = new JSONObjectReader(signedObject).clone();
             for (String property : signer.excluded) {
                 if (!rd.hasProperty(property)) {
-                    throw new IOException("Missing \"" + JSONCryptoHelper.EXCLUDES_JSON + "\" property: " + property);
+                    throw new IOException("Missing \"" + 
+                                          JSONCryptoHelper.EXCLUDES_JSON + 
+                                          "\" property: " + property);
                 }
                 rd.removeProperty(property);
             }
@@ -747,7 +753,7 @@ import org.webpki.json.JSONSignatureDecoder;
     }
 
     public JSONObjectWriter setChainedSignature(String signatureLabel,
-                                              JSONSigner signer) throws IOException {
+                                               JSONSigner signer) throws IOException {
         return setSignatureArrayElement(signatureLabel, signer, true);
     }
 
@@ -771,7 +777,9 @@ import org.webpki.json.JSONSignatureDecoder;
      * @return New instance of {@link org.webpki.json.JSONObjectWriter}
      * @throws IOException &nbsp;
      */
-    public static JSONObjectWriter createCorePublicKey(PublicKey publicKey, AlgorithmPreferences algorithmPreferences) throws IOException {
+    public static JSONObjectWriter createCorePublicKey(PublicKey publicKey, 
+                                                       AlgorithmPreferences algorithmPreferences)
+    throws IOException {
         JSONObjectWriter corePublicKey = new JSONObjectWriter();
         KeyAlgorithms keyAlg = KeyAlgorithms.getKeyAlgorithm(publicKey);
         if (keyAlg.isRSAKey()) {
@@ -805,8 +813,11 @@ import org.webpki.json.JSONSignatureDecoder;
      * @return Current instance of {@link org.webpki.json.JSONObjectWriter}
      * @throws IOException &nbsp;
      */
-    public JSONObjectWriter setPublicKey(PublicKey publicKey, AlgorithmPreferences algorithmPreferences) throws IOException {
-        return setObject(JSONCryptoHelper.PUBLIC_KEY_JSON, createCorePublicKey(publicKey, algorithmPreferences));
+    public JSONObjectWriter setPublicKey(PublicKey publicKey, 
+                                         AlgorithmPreferences algorithmPreferences)
+    throws IOException {
+        return setObject(JSONCryptoHelper.PUBLIC_KEY_JSON, 
+                         createCorePublicKey(publicKey, algorithmPreferences));
     }
 
     /**
@@ -835,7 +846,8 @@ import org.webpki.json.JSONSignatureDecoder;
      * @return Current instance of {@link org.webpki.json.JSONObjectWriter}
      * @throws IOException &nbsp;
      */
-    public JSONObjectWriter setCertificatePath(X509Certificate[] certificatePath) throws IOException {
+    public JSONObjectWriter setCertificatePath(X509Certificate[] certificatePath) 
+    throws IOException {
         return setArray(JSONCryptoHelper.CERTIFICATE_PATH_JSON, 
                         JSONArrayWriter.createCoreCertificatePath(certificatePath));
     }
@@ -850,9 +862,10 @@ import org.webpki.json.JSONSignatureDecoder;
      * @throws IOException &nbsp;
      * @throws GeneralSecurityException &nbsp;
      */
-    public static JSONObjectWriter createEncryptionObject(byte[] unencryptedData,
-                                                          DataEncryptionAlgorithms dataEncryptionAlgorithm,
-                                                          JSONEncrypter encrypter)
+    public static JSONObjectWriter 
+            createEncryptionObject(byte[] unencryptedData,
+                                   DataEncryptionAlgorithms dataEncryptionAlgorithm,
+                                   JSONEncrypter encrypter)
     throws IOException, GeneralSecurityException {
         JSONEncrypter.Header header = 
                 new JSONEncrypter.Header(dataEncryptionAlgorithm, encrypter);
@@ -874,9 +887,10 @@ import org.webpki.json.JSONSignatureDecoder;
      * @throws IOException &nbsp;
      * @throws GeneralSecurityException &nbsp;
      */
-    public static JSONObjectWriter createEncryptionObjects(byte[] unencryptedData,
-                                                           DataEncryptionAlgorithms dataEncryptionAlgorithm,
-                                                           Vector<JSONEncrypter> encrypters)
+    public static JSONObjectWriter 
+            createEncryptionObjects(byte[] unencryptedData,
+                                    DataEncryptionAlgorithms dataEncryptionAlgorithm,
+                                    Vector<JSONEncrypter> encrypters)
     throws IOException, GeneralSecurityException {
         if (encrypters.isEmpty()) {
             throw new IOException("Empty encrypter list");
@@ -943,7 +957,8 @@ import org.webpki.json.JSONSignatureDecoder;
         buffer.append('{');
         indentLine();
         boolean next = false;
-        for (String property : canonicalized ? new TreeSet<String>(object.properties.keySet()) : object.properties.keySet()) {
+        for (String property : canonicalized ? 
+                new TreeSet<String>(object.properties.keySet()) : object.properties.keySet()) {
             JSONValue jsonValue = object.properties.get(property);
             if (jsonValue == null) {
                 continue;
@@ -1069,7 +1084,8 @@ import org.webpki.json.JSONSignatureDecoder;
         boolean quoted = !property || !javaScriptMode || !JS_ID_PATTERN.matcher(string).matches();
         if (htmlMode) {
             buffer.append("&quot;<span style=\"color:")
-                    .append(property ? string.startsWith("@") ? htmlKeywordColor : htmlPropertyColor : htmlStringColor)
+                    .append(property ? string.startsWith("@") ? 
+                            htmlKeywordColor : htmlPropertyColor : htmlStringColor)
                     .append("\">");
         } else if (quoted) {
             buffer.append('"');
@@ -1180,7 +1196,8 @@ import org.webpki.json.JSONSignatureDecoder;
     @SuppressWarnings("unchecked")
     public String serializeToString(JSONOutputFormats outputFormat) throws IOException {
         buffer = new StringBuilder();
-        indentFactor = outputFormat == JSONOutputFormats.PRETTY_HTML ? htmlIndent : STANDARD_INDENT;
+        indentFactor = outputFormat == JSONOutputFormats.PRETTY_HTML ? 
+                                                          htmlIndent : STANDARD_INDENT;
         prettyPrint = outputFormat.pretty;
         javaScriptMode = outputFormat.javascript;
         htmlMode = outputFormat.html;
