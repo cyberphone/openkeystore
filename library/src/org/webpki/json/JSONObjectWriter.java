@@ -50,22 +50,22 @@ import org.webpki.util.ISODateTime;
  * Creates JSON objects and performs serialization according to JCS and ES6.
  * <p>
  * Also provides built-in support for encoding
- <a href="https://cyberphone.github.io/doc/security/jsf.html" 
- target="_blank"><b>JSF (JSON Signature Format)</b></a>, 
-<a href="https://cyberphone.github.io/doc/security/jef.html" 
-target="_blank"><b>JEF (JSON Encryption Format)</b></a>
-and
-<a href="https://tools.ietf.org/html/rfc7517" target="_blank"><b>JWK</b></a>
- objects.</p>
+ * <a href="https://cyberphone.github.io/doc/security/jsf.html" 
+ * target="_blank"><b>JSF (JSON Signature Format)</b></a>, 
+ * <a href="https://cyberphone.github.io/doc/security/jef.html" 
+ * target="_blank"><b>JEF (JSON Encryption Format)</b></a>
+ * and
+ * <a href="https://tools.ietf.org/html/rfc7517" target="_blank"><b>JWK</b></a>
+ * objects.</p>
  */
 public class JSONObjectWriter implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     static final int STANDARD_INDENT = 2;
-
+    
     /**
-     * Integers outside of this range are not natively supported by JSON.
+     * Integers outside of this range are not natively supported by I-JSON/JavaScript.
      */
     public static final long MAX_INTEGER  = 9007199254740992L; // 2^53 ("53-bit precision")
 
@@ -786,10 +786,12 @@ import org.webpki.json.JSONSignatureDecoder;
             corePublicKey.setString(JSONCryptoHelper.KTY_JSON, JSONCryptoHelper.RSA_PUBLIC_KEY);
             RSAPublicKey rsaPublicKey = (RSAPublicKey) publicKey;
             corePublicKey.setCryptoBinary(rsaPublicKey.getModulus(), JSONCryptoHelper.N_JSON);
-            corePublicKey.setCryptoBinary(rsaPublicKey.getPublicExponent(), JSONCryptoHelper.E_JSON);
+            corePublicKey.setCryptoBinary(rsaPublicKey.getPublicExponent(), 
+                                          JSONCryptoHelper.E_JSON);
         } else {
             corePublicKey.setString(JSONCryptoHelper.KTY_JSON, JSONCryptoHelper.EC_PUBLIC_KEY);
-            corePublicKey.setString(JSONCryptoHelper.CRV_JSON, keyAlg.getAlgorithmId(algorithmPreferences));
+            corePublicKey.setString(JSONCryptoHelper.CRV_JSON, 
+                                    keyAlg.getAlgorithmId(algorithmPreferences));
             ECPoint ecPoint = ((ECPublicKey) publicKey).getW();
             corePublicKey.setCurvePoint(ecPoint.getAffineX(), JSONCryptoHelper.X_JSON, keyAlg);
             corePublicKey.setCurvePoint(ecPoint.getAffineY(), JSONCryptoHelper.Y_JSON, keyAlg);
@@ -879,7 +881,7 @@ import org.webpki.json.JSONSignatureDecoder;
 
     /**
      * Create a <a href="https://cyberphone.github.io/doc/security/jef.html" target="_blank"><b>JEF</b></a>
-     * encrypted object fo multiple recipients.
+     * encrypted object for multiple recipients.
      * @param unencryptedData Data to be encrypted
      * @param dataEncryptionAlgorithm Content encryption algorithm
      * @param encrypters Holds keys etc.
