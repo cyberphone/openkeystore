@@ -3608,6 +3608,43 @@ public class JSONTest {
         signatures.get(0).verify(new JSONAsymKeyVerifier(p256.getPublic()));
         signatures.get(1).verify(new JSONAsymKeyVerifier(p521.getPublic()));
 
+        // Check exclude error handling
+        signature = readSignature("p256#es256,p384#es384@mult-excl-jwk.json");
+        try {
+            signature.clone().getMultiSignature(new JSONCryptoHelper.Options());
+            fail("Must not pass");
+        } catch (Exception e) {
+            checkException(e, "Use of \"excludes\" must be set in options");
+        }
+        try {
+            signature.clone().getMultiSignature(new JSONCryptoHelper.Options()
+                .setPermittedExclusions(new String[]{"hithere!","myUnsignedData"}));
+            fail("Must not pass");
+        } catch (Exception e) {
+            checkException(e, "Missing \"excludes\" property: hithere!");
+        }
+        try {
+            signature.clone().getMultiSignature(new JSONCryptoHelper.Options()
+                .setPermittedExclusions(new String[]{"hithere!"}));
+            fail("Must not pass");
+        } catch (Exception e) {
+            checkException(e, "Unexpected \"excludes\" property: myUnsignedData");
+        }
+        try {
+            signature.clone().removeProperty("myUnsignedData")
+                .getMultiSignature(new JSONCryptoHelper.Options()
+                    .setPermittedExclusions(new String[]{"myUnsignedData"}));
+            fail("Must not pass");
+        } catch (Exception e) {
+            checkException(e, "Excluded property \"myUnsignedData\" not found");
+        }
+
+        // Check than excluded processing does modify data
+        writer = new JSONObjectWriter(signature);
+        signature.getMultiSignature(new JSONCryptoHelper.Options()
+            .setPermittedExclusions(new String[]{"myUnsignedData"}));
+        assertTrue("Ext", writer.toString().equals(signature.toString()));
+
         writer = new JSONObjectWriter()
             .setString("myData", "cool")
             .setChainedSignature(new JSONAsymKeySigner(p256.getPrivate(), p256.getPublic(), null))

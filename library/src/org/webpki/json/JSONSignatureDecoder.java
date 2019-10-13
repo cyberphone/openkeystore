@@ -113,6 +113,9 @@ public class JSONSignatureDecoder implements Serializable {
                     throw new IOException("Unexpected \"" + JSONCryptoHelper.EXCLUDES_JSON + 
                                           "\" property: " + excluded);
                 }
+                if (!signedData.root.properties.containsKey(excluded)) {
+                    throw new IOException("Excluded property \"" + excluded + "\" not found");
+                }
                 signedData.root.properties.remove(excluded);
             }
             for (String excluded : options.exclusions.toArray(new String[0])) {
