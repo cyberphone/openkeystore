@@ -99,7 +99,6 @@ public class JSONSignatureDecoder implements Serializable {
         LinkedHashMap<String, JSONValue> saveExcluded = null;
         JSONValue saveExcludeArray = null;
 
-        // Note: the following section will not execute for array signatures
         if (options.exclusions == null) {
             if (outerSignatureObject.hasProperty(JSONCryptoHelper.EXCLUDES_JSON)) {
                 throw new IOException("Use of \"" + JSONCryptoHelper.EXCLUDES_JSON +
