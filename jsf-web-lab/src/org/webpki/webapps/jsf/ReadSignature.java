@@ -42,6 +42,9 @@ import org.webpki.json.JSONSignatureDecoder;
 import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONSymKeyVerifier;
 import org.webpki.json.JSONTypes;
+// Test only
+import org.webpki.json.Extension1;
+import org.webpki.json.Extension2;
 
 import org.webpki.util.DebugFormatter;
 
@@ -136,10 +139,18 @@ public class ReadSignature {
             switch (rd.getPropertyType(property)) {
             case OBJECT:
                 if (property.equals(JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON)) {
+                    JSONCryptoHelper.Options options = new JSONCryptoHelper.Options();
                     boolean multi = false;
                     JSONObjectReader outer = rd.getObject(JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON);
+                    if (outer.hasProperty(JSONCryptoHelper.EXTENSIONS_JSON)) {
+                        options.setPermittedExtensions(new JSONCryptoHelper.ExtensionHolder()
+                            .addExtension(Extension1.class, false)
+                            .addExtension(Extension2.class, false));
+                    }
+                    if (outer.hasProperty(JSONCryptoHelper.EXCLUDES_JSON)) {
+                        options.setPermittedExclusions(outer.getStringArray(JSONCryptoHelper.EXCLUDES_JSON));
+                    }
                     JSONObjectReader inner = outer;
-                    JSONCryptoHelper.Options options = new JSONCryptoHelper.Options();
                     String algo = null;
                     boolean chained = false;
                     if (outer.hasProperty(JSONCryptoHelper.SIGNERS_JSON)) {
