@@ -22,14 +22,21 @@ import org.webpki.json.JSONCryptoHelper;
 import org.webpki.json.JSONObjectReader;
 
 public class Extension1 extends JSONCryptoHelper.Extension {
+    
+    String value;
 
     @Override
     protected void decode(JSONObjectReader rd) throws IOException {
-        rd.getString(getExtensionUri());
+        value = rd.getString(getExtensionUri());
     }
 
     @Override
     public String getExtensionUri() {
         return "otherExt";
+    }
+
+    @Override
+    public String toString() {
+        return value;
     }
 }
