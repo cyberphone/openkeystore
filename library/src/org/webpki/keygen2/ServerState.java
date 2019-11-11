@@ -43,6 +43,8 @@ import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyContainerTypes;
 
 import org.webpki.json.JSONArrayWriter;
+import org.webpki.json.JSONDecoder;
+import org.webpki.json.JSONDecoderCache;
 import org.webpki.json.JSONObjectWriter;
 
 import org.webpki.sks.AppUsage;
@@ -63,6 +65,24 @@ import org.webpki.util.MIMETypedObject;
 public class ServerState implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
+    static final JSONDecoderCache keygen2JSONCache = new JSONDecoderCache();
+
+    static {
+        try {
+            keygen2JSONCache.addToCache(InvocationResponseDecoder.class);
+            keygen2JSONCache.addToCache(ProvisioningInitializationResponseDecoder.class);
+            keygen2JSONCache.addToCache(CredentialDiscoveryResponseDecoder.class);
+            keygen2JSONCache.addToCache(KeyCreationResponseDecoder.class);
+            keygen2JSONCache.addToCache(ProvisioningFinalizationResponseDecoder.class);
+        } catch (IOException e) {
+            new RuntimeException(e);
+        }
+    }
+
+    public static JSONDecoder parseReceivedMessage(byte[] json) throws IOException {
+        return keygen2JSONCache.parse(json);
+    }
 
     public enum ProtocolPhase {INVOCATION,
                                PROVISIONING_INITIALIZATION,

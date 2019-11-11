@@ -407,7 +407,7 @@ public class KeyGen2Test {
     }
 
     class Client {
-        JSONDecoderCache client_xml_cache;
+        JSONDecoderCache client_json_cache;
 
         int provisioning_handle;
 
@@ -422,12 +422,12 @@ public class KeyGen2Test {
         DeviceInfo device_info;
 
         Client() throws IOException {
-            client_xml_cache = new JSONDecoderCache();
-            client_xml_cache.addToCache(InvocationRequestDecoder.class);
-            client_xml_cache.addToCache(ProvisioningInitializationRequestDecoder.class);
-            client_xml_cache.addToCache(CredentialDiscoveryRequestDecoder.class);
-            client_xml_cache.addToCache(KeyCreationRequestDecoder.class);
-            client_xml_cache.addToCache(ProvisioningFinalizationRequestDecoder.class);
+            client_json_cache = new JSONDecoderCache();
+            client_json_cache.addToCache(InvocationRequestDecoder.class);
+            client_json_cache.addToCache(ProvisioningInitializationRequestDecoder.class);
+            client_json_cache.addToCache(CredentialDiscoveryRequestDecoder.class);
+            client_json_cache.addToCache(KeyCreationRequestDecoder.class);
+            client_json_cache.addToCache(ProvisioningFinalizationRequestDecoder.class);
         }
 
         private void abort(String message) throws IOException, SKSException {
@@ -496,7 +496,7 @@ public class KeyGen2Test {
         // Get platform request and respond with SKS compatible data
         ///////////////////////////////////////////////////////////////////////////////////
         byte[] invocationResponse(byte[] json_data) throws IOException {
-            invocation_request = (InvocationRequestDecoder) client_xml_cache.parse(json_data);
+            invocation_request = (InvocationRequestDecoder) client_json_cache.parse(json_data);
             assertTrue("Languages", invocation_request.getOptionalLanguageList() == null ^ languages);
             assertTrue("Key containers", invocation_request.getOptionalKeyContainerList() == null ^ key_container_list);
             device_info = sks.getDeviceInfo();
@@ -533,7 +533,7 @@ public class KeyGen2Test {
         // Get provisioning session request and respond with ephemeral keys and and attest
         ///////////////////////////////////////////////////////////////////////////////////
         byte[] provSessResponse(byte[] json_data) throws IOException, GeneralSecurityException {
-            prov_sess_req = (ProvisioningInitializationRequestDecoder) client_xml_cache.parse(json_data);
+            prov_sess_req = (ProvisioningInitializationRequestDecoder) client_json_cache.parse(json_data);
             scanForKeyManagementKeyUpdates(prov_sess_req.getKeyManagementKeyUpdateHolderRoot());
             GregorianCalendar clientTime = new GregorianCalendar();
             ProvisioningSession sess =
@@ -564,7 +564,7 @@ public class KeyGen2Test {
         // Get credential doscovery request
         ///////////////////////////////////////////////////////////////////////////////////
         byte[] creDiscResponse(byte[] json_data) throws IOException, GeneralSecurityException {
-            cre_disc_req = (CredentialDiscoveryRequestDecoder) client_xml_cache.parse(json_data);
+            cre_disc_req = (CredentialDiscoveryRequestDecoder) client_json_cache.parse(json_data);
             CredentialDiscoveryResponseEncoder cdre = new CredentialDiscoveryResponseEncoder(cre_disc_req);
             for (CredentialDiscoveryRequestDecoder.LookupSpecifier ls : cre_disc_req.getLookupSpecifiers()) {
                 CredentialDiscoveryResponseEncoder.LookupResult lr = cdre.addLookupResult(ls.getID());
@@ -598,7 +598,7 @@ public class KeyGen2Test {
         // Get key initialization request and respond with freshly generated public keys
         ///////////////////////////////////////////////////////////////////////////////////
         byte[] keyCreResponse(byte[] json_data) throws IOException {
-            key_creation_request = (KeyCreationRequestDecoder) client_xml_cache.parse(json_data);
+            key_creation_request = (KeyCreationRequestDecoder) client_json_cache.parse(json_data);
             KeyCreationResponseEncoder key_creation_response = new KeyCreationResponseEncoder(key_creation_request);
             for (KeyCreationRequestDecoder.UserPINDescriptor upd : key_creation_request.getUserPINDescriptors()) {
                 upd.setPIN(new String(USER_DEFINED_PIN, "UTF-8"), true);
@@ -665,7 +665,7 @@ public class KeyGen2Test {
         ///////////////////////////////////////////////////////////////////////////////////
         byte[] creFinalizeResponse(byte[] json_data) throws IOException, GeneralSecurityException {
             ProvisioningFinalizationRequestDecoder prov_final_request =
-                    (ProvisioningFinalizationRequestDecoder) client_xml_cache.parse(json_data);
+                    (ProvisioningFinalizationRequestDecoder) client_json_cache.parse(json_data);
             /* 
                Note: we could have used the saved provisioning_handle but that would not
                work for certifications that are delayed.  The following code is working
@@ -763,9 +763,6 @@ public class KeyGen2Test {
         byte[] LOGO_SHA256 = {0, 5, 6, 6, 0, 5, 6, 6, 0, 5, 6, 6, 0, 5, 6, 6, 0, 5, 6, 6, 0, 5, 6, 6, 0, 5, 6, 6, 0, 5, 6, 6};
         static final int LOGO_WIDTH = 200;
         static final int LOGO_HEIGHT = 150;
-
-        JSONDecoderCache server_xml_cache;
-
         int pin_retry_limit = 3;
 
         ServerState serverState;
@@ -781,12 +778,7 @@ public class KeyGen2Test {
         String aborted;
 
         Server() throws Exception {
-            server_xml_cache = new JSONDecoderCache();
-            server_xml_cache.addToCache(InvocationResponseDecoder.class);
-            server_xml_cache.addToCache(ProvisioningInitializationResponseDecoder.class);
-            server_xml_cache.addToCache(CredentialDiscoveryResponseDecoder.class);
-            server_xml_cache.addToCache(KeyCreationResponseDecoder.class);
-            server_xml_cache.addToCache(ProvisioningFinalizationResponseDecoder.class);
+
         }
 
         void getProvSess(JSONDecoder xml_object) throws IOException, GeneralSecurityException {
@@ -864,7 +856,7 @@ public class KeyGen2Test {
         // Create a provisioning session request for the client
         ///////////////////////////////////////////////////////////////////////////////////
         byte[] provSessRequest(byte[] json_data) throws IOException, GeneralSecurityException {
-            InvocationResponseDecoder invocation_response = (InvocationResponseDecoder) server_xml_cache.parse(json_data);
+            InvocationResponseDecoder invocation_response = (InvocationResponseDecoder) ServerState.parseReceivedMessage(json_data);
             serverState.update(invocation_response);
             if (ask_for_exponent) {
                 if (serverState.isFeatureSupported(KeyAlgorithms.RSA2048_EXP.getAlgorithmId(AlgorithmPreferences.SKS))) {
@@ -901,7 +893,7 @@ public class KeyGen2Test {
         // Create credential discover request for the client
         ///////////////////////////////////////////////////////////////////////////////////
         byte[] creDiscRequest(byte[] json_data) throws IOException, GeneralSecurityException {
-            getProvSess(server_xml_cache.parse(json_data));
+            getProvSess(ServerState.parseReceivedMessage(json_data));
             CredentialDiscoveryRequestEncoder cdre = new CredentialDiscoveryRequestEncoder(serverState);
             cdre.addLookupDescriptor(serverCryptoInterface.enumerateKeyManagementKeys()[0]);
 
@@ -932,7 +924,7 @@ public class KeyGen2Test {
         // Create a key creation request for the client
         ///////////////////////////////////////////////////////////////////////////////////
         byte[] keyCreRequest(byte[] json_data) throws IOException, GeneralSecurityException {
-            JSONDecoder xml_object = server_xml_cache.parse(json_data);
+            JSONDecoder xml_object = ServerState.parseReceivedMessage(json_data);
             if (xml_object instanceof ProvisioningInitializationResponseDecoder) {
                 getProvSess(xml_object);
             } else {
@@ -1063,7 +1055,7 @@ public class KeyGen2Test {
             if (plain_unlock_key == null) {
                 boolean temp_set_private_key = set_private_key;
                 boolean otp = symmetricKey && !encryption_key;
-                KeyCreationResponseDecoder key_init_response = (KeyCreationResponseDecoder) server_xml_cache.parse(json_data);
+                KeyCreationResponseDecoder key_init_response = (KeyCreationResponseDecoder) ServerState.parseReceivedMessage(json_data);
                 serverState.update(key_init_response);
                 for (ServerState.Key key_prop : serverState.getKeys()) {
                     boolean auth = key_prop.getAppUsage() == AppUsage.AUTHENTICATION;
@@ -1149,7 +1141,7 @@ public class KeyGen2Test {
 
                 }
             } else {
-                CredentialDiscoveryResponseDecoder cdrd = (CredentialDiscoveryResponseDecoder) server_xml_cache.parse(json_data);
+                CredentialDiscoveryResponseDecoder cdrd = (CredentialDiscoveryResponseDecoder) ServerState.parseReceivedMessage(json_data);
                 serverState.update(cdrd);
                 CredentialDiscoveryResponseDecoder.LookupResult[] lres = cdrd.getLookupResults();
 // TODO verify
@@ -1166,7 +1158,7 @@ public class KeyGen2Test {
         // Finally we get the attestested response
         ///////////////////////////////////////////////////////////////////////////////////
         void creFinalizeResponse(byte[] json_data) throws IOException {
-            ProvisioningFinalizationResponseDecoder prov_final_response = (ProvisioningFinalizationResponseDecoder) server_xml_cache.parse(json_data);
+            ProvisioningFinalizationResponseDecoder prov_final_response = (ProvisioningFinalizationResponseDecoder) ServerState.parseReceivedMessage(json_data);
             serverState.update(prov_final_response);
 
             ///////////////////////////////////////////////////////////////////////////////////
