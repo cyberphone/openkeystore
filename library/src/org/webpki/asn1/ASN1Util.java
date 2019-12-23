@@ -26,12 +26,12 @@ public class ASN1Util {
     public final static ASN1Boolean STATIC_TRUE = new ASN1Boolean(true);
     public final static ASN1Boolean STATIC_FALSE = new ASN1Boolean(false);
 
-    static boolean deepCompare(Vector<BaseASN1Object> a, Vector<BaseASN1Object> b) {
+    static boolean deepCompare(ArrayList<BaseASN1Object> a, ArrayList<BaseASN1Object> b) {
         if (a.size() != b.size()) {
             return false;
         }
         for (int i = 0; i < a.size(); i++) {
-            if (!(a.elementAt(i)).deepCompare(b.elementAt(i))) {
+            if (!(a.get(i)).deepCompare(b.get(i))) {
                 return false;
             }
         }

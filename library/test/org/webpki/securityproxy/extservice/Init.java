@@ -16,7 +16,7 @@
  */
 package org.webpki.securityproxy.extservice;
 
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletContextEvent;
@@ -35,7 +35,7 @@ public class Init implements ServletContextListener, ServerUploadHandler {
 
     private static final int HISTORY = 20;
 
-    static Vector<SampleUploadObject> uploads = new Vector<SampleUploadObject>();
+    static ArrayList<SampleUploadObject> uploads = new ArrayList<SampleUploadObject>();
 
     @Override
     public void contextInitialized(ServletContextEvent event) {
@@ -51,7 +51,7 @@ public class Init implements ServletContextListener, ServerUploadHandler {
     public void handleUploadedData(JavaUploadInterface upload_payload) {
         uploads.add(0, (SampleUploadObject) upload_payload);
         if (uploads.size() > HISTORY) {
-            uploads.setSize(HISTORY);
+            uploads = (ArrayList<SampleUploadObject>) uploads.subList(0, HISTORY);
         }
         logger.info("Uploaded data reached service");
     }

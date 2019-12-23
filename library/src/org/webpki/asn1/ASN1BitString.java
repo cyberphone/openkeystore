@@ -74,14 +74,14 @@ public final class ASN1BitString extends Binary {
             value = new byte[decoder.length - 1];
             System.arraycopy(decoder.content(), 1, value, 0, decoder.length - 1);
         } else {
-            Vector<BaseASN1Object> v = readComponents(decoder);
+            ArrayList<BaseASN1Object> v = readComponents(decoder);
 
             ASN1BitString bs;
 
             int length = 0;
 
             for (int i = 0; i < v.size(); i++) {
-                length += ((ASN1BitString) v.elementAt(i)).value.length;
+                length += ((ASN1BitString) v.get(i)).value.length;
             }
 
             value = new byte[length];
@@ -89,7 +89,7 @@ public final class ASN1BitString extends Binary {
             int offset = 0;
 
             for (int i = 0; i < v.size() - 1; i++) {
-                bs = (ASN1BitString) v.elementAt(i);
+                bs = (ASN1BitString) v.get(i);
                 if (bs.unusedBits != 0) {
                     throw new IOException("Unused bits in sub-bitstring (only allowed in last substring).");
                 }
@@ -97,7 +97,7 @@ public final class ASN1BitString extends Binary {
                 offset += bs.value.length;
             }
 
-            bs = (ASN1BitString) v.lastElement();
+            bs = (ASN1BitString) v.get(v.size() - 1);
             System.arraycopy(bs.value, 0, value, offset, bs.value.length);
             unusedBits = bs.unusedBits;
         }

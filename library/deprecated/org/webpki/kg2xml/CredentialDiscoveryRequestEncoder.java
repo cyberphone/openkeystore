@@ -25,7 +25,7 @@ import java.security.PublicKey;
 import java.security.interfaces.ECPublicKey;
 
 import java.util.Date;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import javax.security.auth.x500.X500Principal;
 
@@ -281,7 +281,7 @@ public class CredentialDiscoveryRequestEncoder extends CredentialDiscoveryReques
  
     private String prefix;  // Default: no prefix
     
-    Vector<LookupDescriptor> lookup_descriptors = new Vector<LookupDescriptor> ();
+    ArrayList<LookupDescriptor> lookup_descriptors = new ArrayList<LookupDescriptor> ();
 
     String lookupPrefix = "Lookup.";
     

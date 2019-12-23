@@ -18,7 +18,7 @@ package org.webpki.kg2xml;
 
 import java.io.IOException;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import java.security.PublicKey;
 
@@ -33,7 +33,7 @@ import static org.webpki.kg2xml.KeyGen2Constants.*;
 
 public class KeyCreationResponseEncoder extends KeyCreationResponse
   {
-    private Vector<GeneratedPublicKey> generatedKeys = new Vector<GeneratedPublicKey> ();
+    private ArrayList<GeneratedPublicKey> generatedKeys = new ArrayList<GeneratedPublicKey> ();
 
     private String prefix;  // Default: no prefix
 

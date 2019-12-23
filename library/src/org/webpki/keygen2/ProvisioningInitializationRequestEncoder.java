@@ -24,7 +24,7 @@ import java.security.PublicKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPublicKey;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.webpki.sks.SecureKeyStore;
 
@@ -56,7 +56,7 @@ public class ProvisioningInitializationRequestEncoder extends ServerEncoder {
 
         byte[] authorization;
 
-        Vector<KeyManagementKeyUpdateHolder> children = new Vector<KeyManagementKeyUpdateHolder>();
+        ArrayList<KeyManagementKeyUpdateHolder> children = new ArrayList<KeyManagementKeyUpdateHolder>();
 
         KeyManagementKeyUpdateHolder(PublicKey keyManagementKey) {
             this.keyManagementKey = keyManagementKey;

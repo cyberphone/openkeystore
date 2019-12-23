@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.TreeSet;
-import java.util.Vector;
 
 import java.io.FileOutputStream;
 import java.io.File;
@@ -353,7 +352,7 @@ public class WSCreator extends XMLObjectWrapper {
 
     }
 
-    static Vector<DataType> types = new Vector<DataType>();
+    static ArrayList<DataType> types = new ArrayList<DataType>();
 
     static {
         //                       NULL    WSDL               DESC       C#        Java       Holder
@@ -508,7 +507,7 @@ public class WSCreator extends XMLObjectWrapper {
         }
 
         public Collection<Property> filteredParameters(boolean output) {
-            Collection<Property> props = new Vector<Property>();
+            Collection<Property> props = new ArrayList<Property>();
             if (output && return_prop != null) {
                 props.add(return_prop);
             }
@@ -604,7 +603,7 @@ public class WSCreator extends XMLObjectWrapper {
     }
 
     LinkedHashMap<String, WSException> exceptions = new LinkedHashMap<String, WSException>();
-    Vector<Method> methods = new Vector<Method>();
+    ArrayList<Method> methods = new ArrayList<Method>();
     LinkedHashMap<String, RewriteRule> dotnet_rewrite_rules = new LinkedHashMap<String, RewriteRule>();
     LinkedHashMap<String, SuppressRule> dotnet_suppress_rules = new LinkedHashMap<String, SuppressRule>();
     LinkedHashMap<String, EmbedRule> dotnet_embed_rules = new LinkedHashMap<String, EmbedRule>();

@@ -20,7 +20,7 @@ import java.io.IOException;
 
 import java.security.cert.X509Certificate;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.webpki.json.JSONArrayReader;
 import org.webpki.json.JSONObjectReader;
@@ -66,7 +66,7 @@ public class CredentialDiscoveryResponseDecoder extends KeyGen2Validator {
 
         LookupResult() {}
 
-        Vector<MatchingCredential> matchingCredentials = new Vector<MatchingCredential>();
+        ArrayList<MatchingCredential> matchingCredentials = new ArrayList<MatchingCredential>();
 
         LookupResult(JSONObjectReader rd) throws IOException {
             id = KeyGen2Validator.getID(rd, ID_JSON);
@@ -92,7 +92,7 @@ public class CredentialDiscoveryResponseDecoder extends KeyGen2Validator {
         }
     }
 
-    private Vector<LookupResult> lookupResults = new Vector<LookupResult>();
+    private ArrayList<LookupResult> lookupResults = new ArrayList<LookupResult>();
 
     String clientSessionId;
 

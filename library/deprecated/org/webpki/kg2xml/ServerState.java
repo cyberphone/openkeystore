@@ -33,7 +33,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Set;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.webpki.crypto.DeviceID;
 import org.webpki.crypto.HashAlgorithms;
@@ -133,7 +133,7 @@ public class ServerState implements Serializable
           }
       }
   
-    Vector<PostProvisioningTargetKey> post_operations = new Vector<PostProvisioningTargetKey> ();
+    ArrayList<PostProvisioningTargetKey> post_operations = new ArrayList<PostProvisioningTargetKey> ();
   
     public abstract class ExtensionInterface implements Serializable
       {
@@ -495,7 +495,7 @@ public class ServerState implements Serializable
             wr.setStringAttribute (FORMAT_ATTR, format.getProtocolName ());
             if (!patternRestrictions.isEmpty ())
               {
-                Vector<String> prs = new Vector<String> ();
+                ArrayList<String> prs = new ArrayList<String> ();
                 for (PatternRestriction pr : patternRestrictions)
                   {
                     prs.add (pr.getProtocolName ());
@@ -564,7 +564,7 @@ public class ServerState implements Serializable
         
         public PropertyBag[] getPropertyBags ()
           {
-            Vector<PropertyBag> prop_bags = new Vector<PropertyBag> ();
+            ArrayList<PropertyBag> prop_bags = new ArrayList<PropertyBag> ();
             for (ExtensionInterface ei : extensions.values ())
               {
                 if (ei instanceof PropertyBag)
@@ -1038,7 +1038,7 @@ public class ServerState implements Serializable
 
     LinkedHashMap<String,Key> requested_keys = new LinkedHashMap<String,Key> ();
 
-    Vector<ImagePreference> image_preferences; 
+    ArrayList<ImagePreference> image_preferences; 
 
     String serverSessionId;
 
@@ -1361,7 +1361,7 @@ public class ServerState implements Serializable
     
     public ImagePreference[] getImagePreferences (String type)
       {
-        Vector<ImagePreference> matching = new Vector<ImagePreference> ();
+        ArrayList<ImagePreference> matching = new ArrayList<ImagePreference> ();
         for (ImagePreference impref : image_preferences)
           {
             if (impref.type.equals (type))

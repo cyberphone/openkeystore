@@ -25,7 +25,7 @@ import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.RSAKeyGenParameterSpec;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.KeyAlgorithms;
@@ -138,7 +138,7 @@ public class Keys {
             show();
         }
         try {
-            Vector<KeyAlgorithms> ecs = new Vector<KeyAlgorithms>();
+            ArrayList<KeyAlgorithms> ecs = new ArrayList<KeyAlgorithms>();
             for (KeyAlgorithms ka : KeyAlgorithms.values()) {
                 if (ka.isECKey()) {
                     ecs.add(ka);

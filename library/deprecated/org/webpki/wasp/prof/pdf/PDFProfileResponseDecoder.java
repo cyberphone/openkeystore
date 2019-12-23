@@ -19,7 +19,7 @@ package org.webpki.wasp.prof.pdf;
 import java.io.IOException;
 
 import java.util.GregorianCalendar;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import java.security.cert.X509Certificate;
 
@@ -178,7 +178,7 @@ public class PDFProfileResponseDecoder extends XMLObjectWrapper implements Signa
     public boolean match(SignatureProfileEncoder spreenc,
                          DocumentData doc_data,
                          DocumentReferences doc_refs,
-                         Vector<CertificateFilter> cert_filters,
+                         ArrayList<CertificateFilter> cert_filters,
                          String id,
                          byte[] expected_fingerprint)
             throws IOException {

@@ -2,7 +2,7 @@ package org.webpki.xml;
 
 import java.io.ByteArrayInputStream;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -87,7 +87,7 @@ public class SchemaFactoryBug {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(true);
             DocumentBuilder parser = dbf.newDocumentBuilder();
-            Vector<DOMSource> xsds = new Vector<DOMSource>();
+            ArrayList<DOMSource> xsds = new ArrayList<DOMSource>();
             xsds.add(getDOM(parser, xsd1));
             xsds.add(getDOM(parser, xsd2));
             xsds.add(getDOM(parser, xsd3));
@@ -98,7 +98,7 @@ public class SchemaFactoryBug {
             Element element = document.getDocumentElement();
             System.out.println("E=" + element.getLocalName() + " NS=" + element.lookupNamespaceURI(element.getPrefix()));
             schema = null;
-            Vector<DOMSource> xsds2 = new Vector<DOMSource>();
+            ArrayList<DOMSource> xsds2 = new ArrayList<DOMSource>();
             xsds2.add(getDOM(parser, xsd1));
             xsds2.add(getDOM(parser, xsd2));
             Schema schema2 = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(xsds2.toArray(new DOMSource[0]));

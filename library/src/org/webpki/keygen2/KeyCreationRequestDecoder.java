@@ -18,7 +18,7 @@ package org.webpki.keygen2;
 
 import java.io.IOException;
 
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.EnumSet;
 
@@ -549,7 +549,7 @@ public class KeyCreationRequestDecoder extends ClientDecoder {
             ///////////////////////////////////////////////////////////////////////////////////
             // Check that PIN grouping rules are followed
             ///////////////////////////////////////////////////////////////////////////////////
-            Vector<KeyObject> keysNeedingPin = new Vector<KeyObject>();
+            ArrayList<KeyObject> keysNeedingPin = new ArrayList<KeyObject>();
             for (KeyObject key : requestObjects) {
                 if (key.pinPolicy == pinPolicy) {
                     switch (pinPolicy.grouping) {
@@ -605,13 +605,13 @@ public class KeyCreationRequestDecoder extends ClientDecoder {
     }
 
 
-    public Vector<KeyObject> getKeyObjects() throws IOException {
+    public ArrayList<KeyObject> getKeyObjects() throws IOException {
         return requestObjects;
     }
 
 
-    public Vector<UserPINDescriptor> getUserPINDescriptors() {
-        Vector<UserPINDescriptor> userPinPolicies = new Vector<UserPINDescriptor>();
+    public ArrayList<UserPINDescriptor> getUserPINDescriptors() {
+        ArrayList<UserPINDescriptor> userPinPolicies = new ArrayList<UserPINDescriptor>();
         for (KeyObject key : requestObjects) {
             if (key.getPINPolicy() != null && key.getPINPolicy().getUserDefinedFlag()) {
                 UserPINDescriptor pinDescriptor = new UserPINDescriptor(key.pinPolicy, key.appUsage);
@@ -676,7 +676,7 @@ public class KeyCreationRequestDecoder extends ClientDecoder {
     }
 
 
-    private Vector<KeyObject> requestObjects = new Vector<KeyObject>();
+    private ArrayList<KeyObject> requestObjects = new ArrayList<KeyObject>();
 
     private boolean deferredIssuance;
 

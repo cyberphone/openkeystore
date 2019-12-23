@@ -18,7 +18,7 @@ package org.webpki.wasp;
 
 import java.io.IOException;
 
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 import org.w3c.dom.Element;
@@ -40,9 +40,9 @@ public class DocumentReferences {
 
     Reference processing_document;
 
-    Vector<Reference> embedded_objects = new Vector<Reference>();
+    ArrayList<Reference> embedded_objects = new ArrayList<Reference>();
 
-    Vector<Reference> attachments = new Vector<Reference>();
+    ArrayList<Reference> attachments = new ArrayList<Reference>();
 
     private Hashtable<String, Reference> all_elements = new Hashtable<String, Reference>();
 
@@ -219,7 +219,7 @@ public class DocumentReferences {
     }
 
 
-    private void readMultiple(String name, Vector<Reference> container, boolean attachment, DOMReaderHelper rd) throws IOException {
+    private void readMultiple(String name, ArrayList<Reference> container, boolean attachment, DOMReaderHelper rd) throws IOException {
         while (rd.hasNext(name)) {
             container.add(readReference(attachment, rd));
         }
@@ -276,13 +276,13 @@ public class DocumentReferences {
 
     }
 
-    private boolean compare(Vector<Reference> arg1, Vector<Reference> arg2) {
+    private boolean compare(ArrayList<Reference> arg1, ArrayList<Reference> arg2) {
         int i = arg1.size();
         if (arg2.size() != i) {
             return false;
         }
         while (--i >= 0) {
-            if (!compare(arg1.elementAt(i), arg2.elementAt(i))) {
+            if (!compare(arg1.get(i), arg2.get(i))) {
                 return false;
             }
         }

@@ -20,7 +20,7 @@ import java.io.IOException;
 
 import java.util.GregorianCalendar;
 import java.util.LinkedHashSet;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.CertificateFilter;
@@ -46,7 +46,7 @@ public class AuthenticationRequestDecoder extends ClientDecoder {
 
     LinkedHashSet<String> clientFeatures = new LinkedHashSet<String>();
 
-    Vector<CertificateFilter> certificateFilters = new Vector<CertificateFilter>();
+    ArrayList<CertificateFilter> certificateFilters = new ArrayList<CertificateFilter>();
 
     String[] languages;
 

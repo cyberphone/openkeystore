@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.security.interfaces.ECPublicKey;
 
 import java.util.Date;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.webpki.xml.XMLObjectWrapper;
 import org.webpki.xml.DOMReaderHelper;
@@ -52,7 +52,7 @@ abstract class ProvisioningInitializationRequest extends XMLObjectWrapper
 
     String virtual_machine_friendly_name;  // Optional, defined => Virtual machine defined
     
-    Vector<String> client_attributes = new Vector<String> ();
+    ArrayList<String> client_attributes = new ArrayList<String> ();
     
     int sessionLifeTime;
 

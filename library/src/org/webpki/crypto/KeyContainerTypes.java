@@ -19,7 +19,7 @@ package org.webpki.crypto;
 import java.io.IOException;
 
 import java.util.LinkedHashSet;
-import java.util.Vector;
+import java.util.ArrayList;
 
 
 public enum KeyContainerTypes {
@@ -84,7 +84,7 @@ public enum KeyContainerTypes {
         if (listOfGrantedTypes == null) {
             return null;
         }
-        Vector<String> list = new Vector<String>();
+        ArrayList<String> list = new ArrayList<String>();
         for (KeyContainerTypes type : listOfGrantedTypes) {
             list.add(type.getName());
         }

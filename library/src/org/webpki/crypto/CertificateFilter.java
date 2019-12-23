@@ -22,7 +22,7 @@ import java.math.BigInteger;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import java.util.regex.Pattern;
 
@@ -282,7 +282,7 @@ public class CertificateFilter {
     public CertificateFilter setKeyUsageRules(KeyUsageBits[] required, KeyUsageBits[] disallowed) throws IOException {
         nullCheck(required);
         nullCheck(disallowed);
-        Vector<String> list = new Vector<String>();
+        ArrayList<String> list = new ArrayList<String>();
         for (KeyUsageBits kub : required) {
             list.add(kub.getX509Name());
         }

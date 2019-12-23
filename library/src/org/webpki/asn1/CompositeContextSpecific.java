@@ -17,13 +17,13 @@
 package org.webpki.asn1;
 
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * This needs to be checked.
  */
 public final class CompositeContextSpecific extends Composite {
-    public CompositeContextSpecific(int tagNumber, Vector<BaseASN1Object> components) {
+    public CompositeContextSpecific(int tagNumber, ArrayList<BaseASN1Object> components) {
         super(CONTEXT, tagNumber, components);
     }
 
@@ -33,7 +33,7 @@ public final class CompositeContextSpecific extends Composite {
 
     public CompositeContextSpecific(int tagNumber, BaseASN1Object value) {
         super(CONTEXT, tagNumber);
-        components.addElement(value);
+        components.add(value);
     }
 
     CompositeContextSpecific(DerDecoder decoder) throws IOException {

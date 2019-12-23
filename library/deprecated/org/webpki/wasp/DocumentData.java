@@ -17,7 +17,7 @@
 package org.webpki.wasp;
 
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Element;
@@ -38,7 +38,7 @@ public class DocumentData extends XMLObjectWrapper {
 
     Node root;
 
-    Vector<RootDocument> documents = new Vector<RootDocument>();
+    ArrayList<RootDocument> documents = new ArrayList<RootDocument>();
 
     public static final String DOCUMENT_DATA_ELEM = "DocumentData";
 
@@ -189,7 +189,7 @@ public class DocumentData extends XMLObjectWrapper {
             return false;
         }
         while (--i >= 0) {
-            RootDocument the_doc = dd.documents.elementAt(i);
+            RootDocument the_doc = dd.documents.get(i);
             if (!the_doc.equals(getDocument(the_doc.content_id))) {
                 return false;
             }

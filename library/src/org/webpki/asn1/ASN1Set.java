@@ -24,13 +24,13 @@ public final class ASN1Set extends Composite {
         super(SET, components);
     }
 
-    public ASN1Set(Vector<BaseASN1Object> components) {
+    public ASN1Set(ArrayList<BaseASN1Object> components) {
         super(SET, components);
     }
 
     public ASN1Set(BaseASN1Object component) {
         super(SET);
-        this.components.addElement(component);
+        this.components.add(component);
     }
 
     ASN1Set(DerDecoder decoder) throws IOException {

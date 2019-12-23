@@ -19,7 +19,7 @@ package org.webpki.crypto;
 import java.io.IOException;
 import java.io.ByteArrayInputStream;
 
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.HashSet;
 
@@ -74,7 +74,7 @@ public class CertificateUtil {
     }
 
     public static X509Certificate[] getSortedPathFromPKCS7Bag(byte[] bag) throws IOException {
-        Vector<byte[]> certs = new Vector<byte[]>();
+        ArrayList<byte[]> certs = new ArrayList<byte[]>();
 
         ASN1Sequence outer = ParseUtil.sequence(DerDecoder.decode(bag));
         for (int i = 0; i < outer.size(); i++) {
@@ -99,7 +99,7 @@ public class CertificateUtil {
         if (keyUsage == null) {
             return null;
         }
-        Vector<String> keyUsageSet = new Vector<String>();
+        ArrayList<String> keyUsageSet = new ArrayList<String>();
         int i = 0;
         for (KeyUsageBits kub : KeyUsageBits.values()) {
             if (i < keyUsage.length) {
@@ -201,7 +201,7 @@ public class CertificateUtil {
         if (outer == null) {
             return null;
         }
-        Vector<String> uris = new Vector<String>();
+        ArrayList<String> uris = new ArrayList<String>();
         for (int q = 0; q < outer.size(); q++) {
             ASN1Sequence inner = ParseUtil.sequence(ParseUtil.sequence(outer.get(q)));
             if (inner.size() != 2) {
@@ -335,7 +335,7 @@ public class CertificateUtil {
             System.out.println("\nCheck path for:\n   {certificate-in-der-format}...");
         } else {
             try {
-                Vector<byte[]> certPath = new Vector<byte[]>();
+                ArrayList<byte[]> certPath = new ArrayList<byte[]>();
                 for (String file : args) {
                     certPath.add(ArrayUtil.readFile(file));
                 }
@@ -371,7 +371,7 @@ public class CertificateUtil {
     }
 
     public static X509Certificate[] makeCertificatePath(List<byte[]> certificateBlobs) throws IOException {
-        Vector<X509Certificate> certificates = new Vector<X509Certificate>();
+        ArrayList<X509Certificate> certificates = new ArrayList<X509Certificate>();
         for (byte[] certificateBlob : certificateBlobs) {
             try {
                 CertificateFactory cf = CertificateFactory.getInstance("X.509");

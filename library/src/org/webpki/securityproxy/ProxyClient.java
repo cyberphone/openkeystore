@@ -22,7 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.BufferedInputStream;
 
 import java.util.Date;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -328,9 +328,9 @@ public class ProxyClient {
 
     private InternalIdleObject idle_object;
 
-    private Vector<ProxyChannel> channels = new Vector<ProxyChannel>();
+    private ArrayList<ProxyChannel> channels = new ArrayList<ProxyChannel>();
 
-    private Vector<InternalUploadObject> upload_objects = new Vector<InternalUploadObject>();
+    private ArrayList<InternalUploadObject> upload_objects = new ArrayList<InternalUploadObject>();
 
     private void prepareForSSL() {
         if (proxy_url.startsWith("https:") && (proxy_service_truststore != null || proxy_service_keystore != null)) {

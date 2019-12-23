@@ -21,7 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.InputStream;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Document;
@@ -48,7 +48,7 @@ public abstract class XMLObjectWrapper {
 
     boolean output_ns_attribute = true;
 
-    Vector<XMLObjectWrapper> wrapped_children = new Vector<XMLObjectWrapper>();
+    ArrayList<XMLObjectWrapper> wrapped_children = new ArrayList<XMLObjectWrapper>();
 
     DOMWriterHelper parent_writer;
 

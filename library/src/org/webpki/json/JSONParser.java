@@ -18,7 +18,7 @@ package org.webpki.json;
 
 import java.io.IOException;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import java.util.regex.Pattern;
 
@@ -132,7 +132,7 @@ public class JSONParser {
     }
 
     JSONValue scanArray() throws IOException {
-        Vector<JSONValue> array = new Vector<JSONValue>();
+        ArrayList<JSONValue> array = new ArrayList<JSONValue>();
         boolean next = false;
         while (testNextNonWhiteSpaceChar() != RIGHT_BRACKET) {
             if (next) {

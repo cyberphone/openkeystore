@@ -21,7 +21,7 @@ import java.io.ByteArrayOutputStream;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import java.util.logging.Logger;
 
@@ -69,13 +69,13 @@ public class ProxyServer {
 
     private static HashMap<String, ProxyServer> services = new HashMap<String, ProxyServer>();
 
-    private Vector<RequestDescriptor> response_queue = new Vector<RequestDescriptor>();
+    private ArrayList<RequestDescriptor> response_queue = new ArrayList<RequestDescriptor>();
 
-    private Vector<RequestDescriptor> waiting_callers = new Vector<RequestDescriptor>();
+    private ArrayList<RequestDescriptor> waiting_callers = new ArrayList<RequestDescriptor>();
 
-    private Vector<ServerUploadHandler> upload_event_subscribers = new Vector<ServerUploadHandler>();
+    private ArrayList<ServerUploadHandler> upload_event_subscribers = new ArrayList<ServerUploadHandler>();
 
-    private Vector<ProxyRequest> proxies = new Vector<ProxyRequest>();
+    private ArrayList<ProxyRequest> proxies = new ArrayList<ProxyRequest>();
 
     private long next_caller_id;
 
@@ -526,7 +526,7 @@ public class ProxyServer {
         logger.info((server_conf == null ? "Resetting" : "Starting") + " Service=" + service_name + (server_conf == null ? "" : " ID=" + server_conf.client_id));
     }
 
-    private void resetRequest(Vector<RequestDescriptor> request) {
+    private void resetRequest(ArrayList<RequestDescriptor> request) {
         synchronized (request) {
             while (!request.isEmpty()) {
                 RequestDescriptor rd = request.remove(0);

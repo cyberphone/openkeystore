@@ -19,7 +19,7 @@ package org.webpki.kg2xml;
 import java.io.IOException;
 
 import java.util.Date;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import java.security.PublicKey;
 
@@ -40,7 +40,7 @@ public class ProvisioningInitializationRequestDecoder extends ProvisioningInitia
   {
     public class KeyManagementKeyUpdateHolder
       {
-        Vector<KeyManagementKeyUpdateHolder> children = new Vector<KeyManagementKeyUpdateHolder> ();
+        ArrayList<KeyManagementKeyUpdateHolder> children = new ArrayList<KeyManagementKeyUpdateHolder> ();
         
         PublicKey kmk;
 

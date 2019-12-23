@@ -20,7 +20,7 @@ import java.io.IOException;
 
 import java.security.GeneralSecurityException;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.w3c.dom.Document;
 
@@ -50,9 +50,9 @@ public class KeyCreationRequestEncoder extends KeyCreationRequest
     
     private boolean need_signature_ns;
     
-    Vector<String> written_pin = new Vector<String> ();
+    ArrayList<String> written_pin = new ArrayList<String> ();
 
-    Vector<String> written_puk = new Vector<String> ();
+    ArrayList<String> written_puk = new ArrayList<String> ();
 
     private String key_entry_algorithm = SecureKeyStore.ALGORITHM_KEY_ATTEST_1;
 

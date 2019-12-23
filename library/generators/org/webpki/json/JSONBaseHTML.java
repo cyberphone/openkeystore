@@ -23,7 +23,7 @@ import java.net.URLEncoder;
 
 import java.util.LinkedHashMap;
 import java.util.TreeSet;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.KeyAlgorithms;
@@ -681,14 +681,18 @@ public class JSONBaseHTML  {
         boolean main_object;
         String notes;
         
-        Vector<Row> rows = new Vector<Row>();
+        ArrayList<Row> rows = new ArrayList<Row>();
         
         public class Row {
-            Vector<Column> columns = new Vector<Column>();
+            ArrayList<Column> columns = new ArrayList<Column>();
             boolean set_group;
             int depth;
             String property_link;
             String header;
+            
+            Column lastColumn() {
+                return columns.get(columns.size() - 1);
+            }
             
             public class Column implements RowInterface {
                 StringBuilder column = new StringBuilder();
@@ -698,15 +702,19 @@ public class JSONBaseHTML  {
                     columns.add(this);
                     this.parent = parent;
                 }
-
+                
+                private Row lastRow() {
+                    return rows.get(rows.size() - 1);
+                }
+                
                 public Column newColumn() {
-                    if (rows.lastElement().columns.size () == 2 && rows.lastElement().columns.lastElement().column.length () ==  0) {
-                        rows.lastElement().columns.lastElement().column.append("string");
+                    if (lastRow().columns.size () == 2 && lastRow().lastColumn().column.length () ==  0) {
+                        lastRow().lastColumn().column.append("string");
                     }
-                    if (rows.lastElement().columns.size () == 3 && rows.lastElement().columns.lastElement().column.length () ==  0) {
-                        rows.lastElement().columns.lastElement().column.append(MANDATORY);
+                    if (lastRow().columns.size () == 3 && lastRow().lastColumn().column.length () ==  0) {
+                        lastRow().lastColumn().column.append(MANDATORY);
                     }
-                    return rows.lastElement().newColumn();
+                    return lastRow().newColumn();
                 }
 
                 @Override
@@ -896,7 +904,7 @@ public class JSONBaseHTML  {
 
                 public Column setNotes(String notes) throws IOException {
                     if (notes != null) {
-                        protocol_objects.lastElement().setNotes(notes);
+                        protocol_objects.get(protocol_objects.size() - 1).setNotes(notes);
                     }
                     return this;
                 }
@@ -1013,9 +1021,9 @@ public class JSONBaseHTML  {
         }
     }
 
-    Vector<ProtocolObject> protocol_objects = new Vector<ProtocolObject> ();
+    ArrayList<ProtocolObject> protocol_objects = new ArrayList<ProtocolObject> ();
     
-    Vector<Content> division_objects = new Vector<Content> ();
+    ArrayList<Content> division_objects = new ArrayList<Content> ();
     
     StringBuilder html;
     int local_toc_sec;

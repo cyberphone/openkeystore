@@ -18,7 +18,7 @@ package org.webpki.kg2xml;
 
 import java.io.IOException;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import java.security.cert.X509Certificate;
 
@@ -214,7 +214,7 @@ public class ProvisioningFinalizationRequestDecoder extends ProvisioningFinaliza
             super (rd, cpk);
           }
 
-        Vector<Property> properties = new Vector<Property> ();
+        ArrayList<Property> properties = new ArrayList<Property> ();
 
         @Override
         public byte getSubType ()
@@ -296,7 +296,7 @@ public class ProvisioningFinalizationRequestDecoder extends ProvisioningFinaliza
         
         boolean trust_anchor;
 
-        Vector<Extension> extensions = new Vector<Extension> ();
+        ArrayList<Extension> extensions = new ArrayList<Extension> ();
         
         PostOperation postOperation;
 
@@ -453,11 +453,11 @@ public class ProvisioningFinalizationRequestDecoder extends ProvisioningFinaliza
                                   post_op);
       }
 
-    private Vector<IssuedCredential> issued_keys = new Vector<IssuedCredential> ();
+    private ArrayList<IssuedCredential> issued_keys = new ArrayList<IssuedCredential> ();
     
-    private Vector<PostOperation> post_unlock_keys = new Vector<PostOperation> ();
+    private ArrayList<PostOperation> post_unlock_keys = new ArrayList<PostOperation> ();
       
-    private Vector<PostOperation> post_delete_keys = new Vector<PostOperation> ();
+    private ArrayList<PostOperation> post_delete_keys = new ArrayList<PostOperation> ();
     
     private String clientSessionId;
 

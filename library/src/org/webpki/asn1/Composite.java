@@ -22,29 +22,29 @@ import java.util.*;
 import org.webpki.util.ArrayUtil;
 
 public abstract class Composite extends BaseASN1Object {
-    Vector<BaseASN1Object> components;
+    ArrayList<BaseASN1Object> components;
 
     /**
      * Create object.
      */
     Composite(int tagClass, int tagNumber) {
         super(tagClass, tagNumber, false);
-        components = new Vector<BaseASN1Object>();
+        components = new ArrayList<BaseASN1Object>();
     }
 
     /**
      * Create object.
      */
     @SuppressWarnings("unchecked")
-    Composite(int tagClass, int tagNumber, Vector<BaseASN1Object> components) {
+    Composite(int tagClass, int tagNumber, ArrayList<BaseASN1Object> components) {
         this(tagClass, tagNumber);
-        this.components = (Vector<BaseASN1Object>) components.clone();
+        this.components = (ArrayList<BaseASN1Object>) components.clone();
     }
 
     /**
      * Create object.
      */
-    Composite(int tagNumber, Vector<BaseASN1Object> components) {
+    Composite(int tagNumber, ArrayList<BaseASN1Object> components) {
         this(UNIVERSAL, tagNumber, components);
     }
 
@@ -53,9 +53,9 @@ public abstract class Composite extends BaseASN1Object {
      */
     Composite(int tagClass, int tagNumber, BaseASN1Object[] components) {
         this(tagClass, tagNumber);
-        this.components = new Vector<BaseASN1Object>();
+        this.components = new ArrayList<BaseASN1Object>();
         for (int i = 0; i < components.length; i++)
-            this.components.addElement(components[i]);
+            this.components.add(components[i]);
     }
 
     /**
@@ -83,8 +83,8 @@ public abstract class Composite extends BaseASN1Object {
     }
 
     @SuppressWarnings("unchecked")
-    public Vector<BaseASN1Object> components() {
-        return (Vector<BaseASN1Object>) components.clone();
+    public ArrayList<BaseASN1Object> components() {
+        return (ArrayList<BaseASN1Object>) components.clone();
     }
 
     public int size() {
@@ -92,7 +92,7 @@ public abstract class Composite extends BaseASN1Object {
     }
 
     public BaseASN1Object get(int i) {
-        return components.elementAt(i);
+        return components.get(i);
     }
 
     public void encode(Encoder encoder) throws IOException {
@@ -105,7 +105,7 @@ public abstract class Composite extends BaseASN1Object {
         byte[][] t = new byte[components.size()][];
         int length = 0;
         for (int i = 0; i < t.length; i++) {
-            t[i] = (components.elementAt(i)).encode();
+            t[i] = (components.get(i)).encode();
             length += t[i].length;
         }
         java.io.ByteArrayOutputStream os = new java.io.ByteArrayOutputStream();
@@ -212,7 +212,7 @@ public abstract class Composite extends BaseASN1Object {
         s.append("\n  " + getByteNumberBlanks() + prefix + "{");
         for (int i = 0; i < components.size(); i++) {
             s.append("\n");
-            components.elementAt(i).toString(s, prefix + "    ");
+            components.get(i).toString(s, prefix + "    ");
         }
         s.append("\n  " + getByteNumberBlanks() + prefix + "}");
     }

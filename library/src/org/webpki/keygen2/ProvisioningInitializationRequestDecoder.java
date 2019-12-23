@@ -19,7 +19,7 @@ package org.webpki.keygen2;
 import java.io.IOException;
 
 import java.util.GregorianCalendar;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import java.security.PublicKey;
 
@@ -40,7 +40,7 @@ public class ProvisioningInitializationRequestDecoder extends ClientDecoder {
     private static final long serialVersionUID = 1L;
 
     public class KeyManagementKeyUpdateHolder {
-        Vector<KeyManagementKeyUpdateHolder> children = new Vector<KeyManagementKeyUpdateHolder>();
+        ArrayList<KeyManagementKeyUpdateHolder> children = new ArrayList<KeyManagementKeyUpdateHolder>();
 
         PublicKey kmk;
 

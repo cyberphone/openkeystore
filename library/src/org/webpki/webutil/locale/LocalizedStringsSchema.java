@@ -18,7 +18,7 @@ package org.webpki.webutil.locale;
 
 import java.io.IOException;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.webpki.xml.XMLObjectWrapper;
 import org.webpki.xml.DOMReaderHelper;
@@ -44,9 +44,9 @@ public class LocalizedStringsSchema extends XMLObjectWrapper {
         return "LocalizedStrings";
     }
 
-    private Vector<String> lsname = new Vector<String>();
+    private ArrayList<String> lsname = new ArrayList<String>();
 
-    private Vector<String> lsvalue = new Vector<String>();
+    private ArrayList<String> lsvalue = new ArrayList<String>();
 
     private String language;
 
@@ -83,10 +83,10 @@ public class LocalizedStringsSchema extends XMLObjectWrapper {
             int j = -1;
             boolean found = false;
             while (++j < l) {
-                if (lsname.elementAt(j) != null && template[i].lsname.equals(lsname.elementAt(j))) {
+                if (lsname.get(j) != null && template[i].lsname.equals(lsname.get(j))) {
                     if (res[template[i].handle] == null) {
-                        res[template[i].handle] = lsvalue.elementAt(j);
-                        lsname.setElementAt(null, j);
+                        res[template[i].handle] = lsvalue.get(j);
+                        lsname.set(j, null);
                         found = true;
                         break;
                     } else {
@@ -107,8 +107,8 @@ public class LocalizedStringsSchema extends XMLObjectWrapper {
         rd.getChild();
 
         while (rd.hasNext("LString")) {
-            lsvalue.addElement(rd.getString());
-            lsname.addElement(rd.getAttributeHelper().getString("Name"));
+            lsvalue.add(rd.getString());
+            lsname.add(rd.getAttributeHelper().getString("Name"));
         }
     }
 

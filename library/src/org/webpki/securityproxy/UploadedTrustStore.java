@@ -18,7 +18,7 @@ package org.webpki.securityproxy;
 
 import java.security.cert.X509Certificate;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * Predefined trust-anchor upload payload
@@ -26,7 +26,7 @@ import java.util.Vector;
 public class UploadedTrustStore implements JavaUploadInterface {
     private static final long serialVersionUID = 1L;
 
-    Vector<X509Certificate> certs = new Vector<X509Certificate>();
+    ArrayList<X509Certificate> certs = new ArrayList<X509Certificate>();
 
     public void addCertificate(X509Certificate cert) {
         certs.add(cert);

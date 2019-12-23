@@ -18,7 +18,7 @@ package org.webpki.wasp;
 
 import java.io.IOException;
 
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Date;
 
 import java.security.SecureRandom;
@@ -48,9 +48,9 @@ public class SignatureRequestEncoder extends SignatureRequest {
 
     private String domain_id;
 
-    Vector<SignatureProfileEncoder> signature_profiles = new Vector<SignatureProfileEncoder>();
+    ArrayList<SignatureProfileEncoder> signature_profiles = new ArrayList<SignatureProfileEncoder>();
 
-    Vector<CertificateFilter> certificateFilters = new Vector<CertificateFilter>();
+    ArrayList<CertificateFilter> certificateFilters = new ArrayList<CertificateFilter>();
 
     DocumentReferences document_references = new DocumentReferences();
 

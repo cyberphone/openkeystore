@@ -20,7 +20,7 @@ import java.io.IOException;
 
 import java.math.BigInteger;
 
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -111,7 +111,7 @@ public class CA {
 
 
     private class Extensions {
-        Vector<ASN1Sequence> extensions = new Vector<ASN1Sequence>();
+        ArrayList<ASN1Sequence> extensions = new ArrayList<ASN1Sequence>();
 
         void add(CertificateExtensions extension, boolean critical, BaseASN1Object argument) throws IOException {
             BaseASN1Object[] o = new BaseASN1Object[critical ? 3 : 2];

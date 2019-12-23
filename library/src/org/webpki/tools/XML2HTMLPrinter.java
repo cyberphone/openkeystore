@@ -21,7 +21,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import java.net.URLEncoder;
 
@@ -117,7 +117,7 @@ public class XML2HTMLPrinter {
     private boolean htmlmode;
 
     private class Keeper {
-        Vector<NameValue> items = new Vector<NameValue>();
+        ArrayList<NameValue> items = new ArrayList<NameValue>();
 
         class NameValue {
             String name;
@@ -137,23 +137,19 @@ public class XML2HTMLPrinter {
         }
 
         String getName(int index) {
-            return items.elementAt(index).name;
+            return items.get(index).name;
         }
 
         boolean isComment(int index) {
-            return items.elementAt(index).element_type == ELEMENT_COMMENT;
+            return items.get(index).element_type == ELEMENT_COMMENT;
         }
 
         boolean isCDATA(int index) {
-            return items.elementAt(index).element_type == ELEMENT_CDATA;
+            return items.get(index).element_type == ELEMENT_CDATA;
         }
 
         String getString(int index) {
-            return items.elementAt(index).value;
-        }
-
-        int getInt(int index) {
-            return Integer.parseInt(getString(index));
+            return items.get(index).value;
         }
 
         int size() {
@@ -176,7 +172,7 @@ public class XML2HTMLPrinter {
             if (!next) bad("Missing identifier");
             NameValue nv = new NameValue();
             nv.name = xmldata.substring(start, curr_index);
-            items.addElement(nv);
+            items.add(nv);
             return nv;
         }
 
@@ -193,11 +189,11 @@ public class XML2HTMLPrinter {
     private class Elements extends Keeper {
 
         Elements getChildElements(int index) {
-            return items.elementAt(index).children;
+            return items.get(index).children;
         }
 
         Attributes getAttributes(int index) {
-            return items.elementAt(index).attr;
+            return items.get(index).attr;
         }
 
         void getComment() throws IOException {
@@ -209,7 +205,7 @@ public class XML2HTMLPrinter {
                 if (testChar('-') && testNextChar('-') && testNextNextChar('>')) {
                     nv.name = xmldata.substring(start, curr_index += 3);
                     nv.element_type = ELEMENT_COMMENT;
-                    items.addElement(nv);
+                    items.add(nv);
                     return;
                 }
                 curr_index++;
@@ -225,7 +221,7 @@ public class XML2HTMLPrinter {
                 if (testChar(']') && testNextChar(']') && testNextNextChar('>')) {
                     nv.name = xmldata.substring(start, curr_index += 3);
                     nv.element_type = ELEMENT_CDATA;
-                    items.addElement(nv);
+                    items.add(nv);
                     return;
                 }
                 curr_index++;

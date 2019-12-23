@@ -20,7 +20,7 @@ import java.io.IOException;
 
 import java.util.GregorianCalendar;
 import java.util.LinkedHashSet;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
@@ -55,9 +55,9 @@ public class AuthenticationRequestEncoder extends ServerEncoder {
 
     LinkedHashSet<AsymSignatureAlgorithms> signatureAlgorithms = new LinkedHashSet<AsymSignatureAlgorithms>();
 
-    Vector<CertificateFilter> certificateFilters = new Vector<CertificateFilter>();
+    ArrayList<CertificateFilter> certificateFilters = new ArrayList<CertificateFilter>();
 
-    Vector<String> requestedClientFeatures = new Vector<String>();
+    ArrayList<String> requestedClientFeatures = new ArrayList<String>();
 
     String serverTime;
 

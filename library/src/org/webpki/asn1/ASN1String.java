@@ -38,19 +38,19 @@ public abstract class ASN1String extends Simple {
         if (isPrimitive()) {
             value = decoder.content();
         } else {
-            Vector<BaseASN1Object> subParts = readComponents(decoder);
+            ArrayList<BaseASN1Object> subParts = readComponents(decoder);
             int length = 0;
 
-            for (Enumeration<BaseASN1Object> e = subParts.elements(); e.hasMoreElements(); ) {
-                length += ((ASN1OctetString) e.nextElement()).value.length;
+            for (BaseASN1Object e : subParts) {
+                length += ((ASN1OctetString) e).value.length;
             }
 
             value = new byte[length];
 
             int o = 0;
 
-            for (Enumeration<BaseASN1Object> e = subParts.elements(); e.hasMoreElements(); ) {
-                byte[] t = ((ASN1OctetString) e.nextElement()).value;
+            for (BaseASN1Object e : subParts) {
+                byte[] t = ((ASN1OctetString) e).value;
                 System.arraycopy(t, 0, value, o, t.length);
                 o += t.length;
             }

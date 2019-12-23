@@ -20,7 +20,7 @@ import java.io.IOException;
 
 import java.security.cert.X509Certificate;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.webpki.xml.DOMReaderHelper;
 import org.webpki.xml.DOMAttributeReaderHelper;
@@ -69,7 +69,7 @@ public class CredentialDiscoveryResponseDecoder extends CredentialDiscoveryRespo
 
         LookupResult () { }
         
-        Vector<MatchingCredential> matching_credentials = new Vector<MatchingCredential> ();
+        ArrayList<MatchingCredential> matching_credentials = new ArrayList<MatchingCredential> ();
 
         LookupResult (DOMReaderHelper rd) throws IOException
           {
@@ -104,7 +104,7 @@ public class CredentialDiscoveryResponseDecoder extends CredentialDiscoveryRespo
           }
       }
 
-    private Vector<LookupResult> lookup_results = new Vector<LookupResult> ();
+    private ArrayList<LookupResult> lookup_results = new ArrayList<LookupResult> ();
     
     String clientSessionId;
 

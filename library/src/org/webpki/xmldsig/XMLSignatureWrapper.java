@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.io.Serializable;
 
 import java.math.BigInteger;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import java.util.GregorianCalendar;
 
@@ -263,7 +263,7 @@ public class XMLSignatureWrapper extends XMLObjectWrapper implements Serializabl
 
 
     private static X509Certificate[] readSortedX509Data(DOMReaderHelper rd, XMLSignatureWrapper sigwrap) throws IOException {
-        Vector<X509Certificate> certificates = new Vector<X509Certificate>();
+        ArrayList<X509Certificate> certificates = new ArrayList<X509Certificate>();
         rd.getNext(X509_DATA_ELEM);
         rd.getChild();
 
@@ -289,7 +289,7 @@ public class XMLSignatureWrapper extends XMLObjectWrapper implements Serializabl
                 }
                 sigwrap.x509SubjectName = rd.getString(X509_SUBJECT_NAME_ELEM);
             } else if (rd.hasNext(X509_CERTIFICATE_ELEM)) {
-                certificates.addElement(CertificateUtil.getCertificateFromBlob(rd.getBinary(X509_CERTIFICATE_ELEM)));
+                certificates.add(CertificateUtil.getCertificateFromBlob(rd.getBinary(X509_CERTIFICATE_ELEM)));
             } else {
                 throw new IOException("Invalid element in \"X509Data\" for this profile encountered");
             }

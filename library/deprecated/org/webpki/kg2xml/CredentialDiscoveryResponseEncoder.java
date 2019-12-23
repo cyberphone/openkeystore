@@ -20,7 +20,7 @@ import java.io.IOException;
 
 
 import java.util.LinkedHashMap;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import java.security.cert.X509Certificate;
 
@@ -47,7 +47,7 @@ public class CredentialDiscoveryResponseEncoder extends CredentialDiscoveryRespo
       {
         String id;
         
-        Vector<MatchingCredential> matching_credentials = new Vector<MatchingCredential> ();
+        ArrayList<MatchingCredential> matching_credentials = new ArrayList<MatchingCredential> ();
 
         LookupResult (String id)
           {
@@ -68,7 +68,7 @@ public class CredentialDiscoveryResponseEncoder extends CredentialDiscoveryRespo
  
     private String prefix;  // Default: no prefix
     
-    Vector<LookupResult> lookup_results = new Vector<LookupResult> ();
+    ArrayList<LookupResult> lookup_results = new ArrayList<LookupResult> ();
     
     LinkedHashMap<String,CredentialDiscoveryRequestDecoder.LookupSpecifier> ref;
 

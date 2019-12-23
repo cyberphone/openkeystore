@@ -2,7 +2,7 @@ package com.example.es6numbers;
 
 import java.io.FileOutputStream;
 import java.util.LinkedHashMap;
-import java.util.Vector;
+import java.util.ArrayList;
 
 public class PropertyTest {
 
@@ -38,7 +38,7 @@ public class PropertyTest {
     static void test(int numberOfProperties) throws Exception {
         write("<tr><td>" + numberOfProperties + "</td><td id=\"n" + numberOfProperties + "\">Not tested yet</td></tr>");
         LinkedHashMap<String,String> values = new LinkedHashMap<String,String>();
-        Vector<String> deletes = new Vector<String> ();
+        ArrayList<String> deletes = new ArrayList<String> ();
         int q = 1;
         while (q <= numberOfProperties) {
             String value = String.valueOf(q);

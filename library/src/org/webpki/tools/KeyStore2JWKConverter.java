@@ -23,7 +23,7 @@ import java.math.BigInteger;
 
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import java.security.KeyStore;
 import java.security.PublicKey;
@@ -135,7 +135,7 @@ public class KeyStore2JWKConverter {
                     writeJwk(fis, publicKey, alias);
                 }
                 if (certificateFlag) {
-                    Vector<X509Certificate> certPath = new Vector<X509Certificate>();
+                    ArrayList<X509Certificate> certPath = new ArrayList<X509Certificate>();
                     for (Certificate cert : ks.getCertificateChain(alias)) {
                         certPath.add((X509Certificate) cert);
                     }

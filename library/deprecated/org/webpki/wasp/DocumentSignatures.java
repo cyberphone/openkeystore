@@ -18,7 +18,7 @@ package org.webpki.wasp;
 
 import java.io.IOException;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -65,7 +65,7 @@ public class DocumentSignatures {
     }
 
 
-    Vector<ContentIDAndDigest> signatures = new Vector<ContentIDAndDigest>();
+    ArrayList<ContentIDAndDigest> signatures = new ArrayList<ContentIDAndDigest>();
 
 
     @SuppressWarnings("unused")

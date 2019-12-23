@@ -34,12 +34,11 @@ import java.net.Socket;
 import java.net.URL;
 import java.net.HttpURLConnection;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.LinkedHashMap;
@@ -145,9 +144,9 @@ public class HTTPSWrapper {
     private String key_store_password;
     private String request_method;
 
-    private LinkedHashMap<String, Vector<String>> request_headers = new LinkedHashMap<String, Vector<String>>();
+    private LinkedHashMap<String, ArrayList<String>> request_headers = new LinkedHashMap<String, ArrayList<String>>();
 
-    private LinkedHashMap<String, Vector<String>> response_headers = new LinkedHashMap<String, Vector<String>>();
+    private LinkedHashMap<String, ArrayList<String>> response_headers = new LinkedHashMap<String, ArrayList<String>>();
 
     private byte[] server_data;
 
@@ -565,7 +564,7 @@ public class HTTPSWrapper {
         for (String key : headers.keySet()) {
             if (key != null) // Protection against a bug in URLConnection
             {
-                Vector<String> values = new Vector<String>();
+                ArrayList<String> values = new ArrayList<String>();
                 for (String value : headers.get(key)) {
                     values.add(value);
                 }
@@ -752,7 +751,7 @@ public class HTTPSWrapper {
                 return;
             }
         }
-        Vector<String> v = new Vector<String>();
+        ArrayList<String> v = new ArrayList<String>();
         v.add(value);
         request_headers.put(name, v);
     }
@@ -788,7 +787,7 @@ public class HTTPSWrapper {
     public String getHeaderValue(String name) {
         for (String key : response_headers.keySet()) {
             if (key.equalsIgnoreCase(name)) {
-                return response_headers.get(key).elementAt(0);
+                return response_headers.get(key).get(0);
             }
         }
         return null;
@@ -816,7 +815,7 @@ public class HTTPSWrapper {
      *
      * @return Structure containing all the headers and associated values for this call.
      */
-    public LinkedHashMap<String, Vector<String>> getHeaders() {
+    public LinkedHashMap<String, ArrayList<String>> getHeaders() {
         return response_headers;
     }
 
@@ -974,7 +973,7 @@ public class HTTPSWrapper {
 
     private static class CommandLine {
 
-        Vector<CmdLineArgument> list = new Vector<CmdLineArgument>();
+        ArrayList<CmdLineArgument> list = new ArrayList<CmdLineArgument>();
 
         int max_display;
 
@@ -995,7 +994,7 @@ public class HTTPSWrapper {
             String command;
             String optargument;
             String defaultvalue;
-            Vector<String> argvalue = new Vector<String>();
+            ArrayList<String> argvalue = new ArrayList<String>();
             CmdFrequency frequency;
             boolean found;
 
@@ -1035,7 +1034,7 @@ public class HTTPSWrapper {
                 if (argvalue.size() != 1) {
                     bad("Internal argument error for command: " + command);
                 }
-                return argvalue.elementAt(0).trim();
+                return argvalue.get(0).trim();
             }
 
         }
@@ -1516,7 +1515,7 @@ public class HTTPSWrapper {
 
             if (CMD_dump_headers.found) {
                 System.out.println("\nHeaders:\n" + wrap.getResponseCode() + " " + wrap.getResponseMessage());
-                LinkedHashMap<String, Vector<String>> headers = wrap.getHeaders();
+                LinkedHashMap<String, ArrayList<String>> headers = wrap.getHeaders();
                 for (String key : headers.keySet()) {
                     for (String value : headers.get(key)) {
                         System.out.println(key + ": " + value);

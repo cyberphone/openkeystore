@@ -35,7 +35,7 @@ import java.security.spec.RSAKeyGenParameterSpec;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyAgreement;
@@ -101,7 +101,7 @@ public class SKSTest {
 
     static boolean standalone_testing;
 
-    static Vector<Integer> prov_sessions = new Vector<Integer>();
+    static ArrayList<Integer> prov_sessions = new ArrayList<Integer>();
 
     static Device device;
     

@@ -61,7 +61,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyAgreement;
@@ -329,8 +329,8 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
 
 //#endif
         @SuppressWarnings("fallthrough")
-        Vector<KeyEntry> getPinSynchronizedKeys() {
-            Vector<KeyEntry> group = new Vector<KeyEntry>();
+        ArrayList<KeyEntry> getPinSynchronizedKeys() {
+            ArrayList<KeyEntry> group = new ArrayList<KeyEntry>();
             if (pinPolicy.grouping == PIN_GROUPING_NONE) {
                 group.add(this);
             } else {
@@ -590,7 +590,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         LinkedHashMap<String, Boolean> names = new LinkedHashMap<String, Boolean>();
 
         // Post provisioning management
-        Vector<PostProvisioningObject> postProvisioningObjects = new Vector<PostProvisioningObject>();
+        ArrayList<PostProvisioningObject> postProvisioningObjects = new ArrayList<PostProvisioningObject>();
 
         boolean privacyEnabled;
         String clientSessionId;

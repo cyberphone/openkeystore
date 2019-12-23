@@ -30,7 +30,7 @@ import java.security.interfaces.RSAPublicKey;
 
 import java.util.EnumSet;
 import java.util.Enumeration;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymEncryptionAlgorithms;
@@ -77,7 +77,7 @@ public class PKCS12Import {
         }
         CustomCryptoProvider.forcedLoad(true);
         KeyStore ks = KeyStoreReader.loadKeyStore(argc[0], argc[1]);
-        Vector<X509Certificate> cert_path = new Vector<X509Certificate>();
+        ArrayList<X509Certificate> cert_path = new ArrayList<X509Certificate>();
         PrivateKey privateKey = null;
         Enumeration<String> aliases = ks.aliases();
         while (aliases.hasMoreElements()) {
@@ -90,7 +90,7 @@ public class PKCS12Import {
                 break;
             }
         }
-        PublicKey publicKey = cert_path.firstElement().getPublicKey();
+        PublicKey publicKey = cert_path.get(0).getPublicKey();
         boolean rsaFlag = publicKey instanceof RSAPublicKey;
         if (privateKey == null) {
             throw new IOException("No private key!");
@@ -169,7 +169,7 @@ public class PKCS12Import {
         key.setCertificatePath(cert_path.toArray(new X509Certificate[0]));
         key.setPrivateKey(new KeyPair(publicKey, privateKey));
         sess.closeSession();
-        System.out.println("Imported Subject: " + cert_path.firstElement().getSubjectX500Principal().getName() + "\nID=#" + key.keyHandle +
+        System.out.println("Imported Subject: " + cert_path.get(0).getSubjectX500Principal().getName() + "\nID=#" + key.keyHandle +
                 ", " + (rsaFlag ? "RSA" : "EC") + " Key with " + prot);
     }
 }

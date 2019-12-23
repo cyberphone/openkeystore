@@ -24,7 +24,7 @@ import java.security.KeyStore;
 
 import java.security.cert.X509Certificate;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
@@ -336,7 +336,7 @@ public class Signatures {
         return (unsigned.substring(0,j) + signed.substring(i)).getBytes("UTF-8");
     }
     
-    static byte[] createSignatures(Vector<JSONSigner> signers,
+    static byte[] createSignatures(ArrayList<JSONSigner> signers,
                                    boolean excl,
                                    boolean chained) throws Exception {
         JSONObjectWriter dataToSign = excl ? getMixedData() : parseDataToSign();
@@ -374,7 +374,7 @@ public class Signatures {
         String keyId1 = keyId;
         KeyPair keyPair2 = readJwk(keyType2);
         String keyId2 = keyId;
-        Vector<JSONSigner> signers = new Vector<JSONSigner>();
+        ArrayList<JSONSigner> signers = new ArrayList<JSONSigner>();
         JSONAsymKeySigner signer = new JSONAsymKeySigner(keyPair1.getPrivate(), keyPair1.getPublic(), null);
         if (exts) {
             setExtensionData(signer, true);
@@ -414,7 +414,7 @@ public class Signatures {
             options.setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED);
         }
         byte[] signedData = createSignatures(signers, excl, chained);
-        Vector<JSONSignatureDecoder> signatures = chained ?
+        ArrayList<JSONSignatureDecoder> signatures = chained ?
                 JSONParser.parse(signedData).getSignatureChain(options) 
                                                           : 
                 JSONParser.parse(signedData).getMultiSignature(options);

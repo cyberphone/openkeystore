@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.io.Serializable;
 
 import java.util.LinkedHashMap;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * Local support class for holding JSON objects.
@@ -58,7 +58,7 @@ class JSONObject implements Serializable {
 
     @SuppressWarnings("unchecked")
     static void checkArrayForUnread(JSONValue array, String name) throws IOException {
-        for (JSONValue arrayElement : (Vector<JSONValue>) array.value) {
+        for (JSONValue arrayElement : (ArrayList<JSONValue>) array.value) {
             if (arrayElement.type == JSONTypes.OBJECT) {
                 checkObjectForUnread((JSONObject) arrayElement.value);
             } else if (arrayElement.type == JSONTypes.ARRAY) {
@@ -83,7 +83,7 @@ class JSONObject implements Serializable {
 
     @SuppressWarnings("unchecked")
     static void setArrayAsRead(JSONValue array) throws IOException {
-        for (JSONValue arrayElement : (Vector<JSONValue>) array.value) {
+        for (JSONValue arrayElement : (ArrayList<JSONValue>) array.value) {
             if (arrayElement.type == JSONTypes.OBJECT) {
                 setObjectAsRead((JSONObject) arrayElement.value);
             } else if (arrayElement.type == JSONTypes.ARRAY) {

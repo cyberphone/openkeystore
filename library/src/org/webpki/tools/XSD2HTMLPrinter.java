@@ -21,7 +21,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import java.net.URLEncoder;
 
@@ -104,7 +104,7 @@ public class XSD2HTMLPrinter {
     private boolean paginate;
 
     private class Keeper {
-        Vector<NameValue> items = new Vector<NameValue>();
+        ArrayList<NameValue> items = new ArrayList<NameValue>();
 
         class NameValue {
             String name;
@@ -129,40 +129,40 @@ public class XSD2HTMLPrinter {
         }
 
         String getName(int index) {
-            return items.elementAt(index).name;
+            return items.get(index).name;
         }
 
         int getPos(int index) {
-            return items.elementAt(index).pos;
+            return items.get(index).pos;
         }
 
         int getEmpty(int index) {
-            return items.elementAt(index).empty;
+            return items.get(index).empty;
         }
 
         int getEmptyLinesBeforeLeave(int index) {
-            int i = items.elementAt(index).emptylinebeforeleave;
+            int i = items.get(index).emptylinebeforeleave;
             return i >= 0 ? i : 0;
         }
 
         int getLine(int index) {
-            return items.elementAt(index).line;
+            return items.get(index).line;
         }
 
         boolean isComment(int index) {
-            return items.elementAt(index).element_type == ELEMENT_COMMENT;
+            return items.get(index).element_type == ELEMENT_COMMENT;
         }
 
         boolean getPageBreakBefore(int index) {
-            return items.elementAt(index).page_break_before;
+            return items.get(index).page_break_before;
         }
 
         boolean isCDATA(int index) {
-            return items.elementAt(index).element_type == ELEMENT_CDATA;
+            return items.get(index).element_type == ELEMENT_CDATA;
         }
 
         String getString(int index) {
-            return items.elementAt(index).value;
+            return items.get(index).value;
         }
 
         int size() {
@@ -188,7 +188,7 @@ public class XSD2HTMLPrinter {
             nv.pos = pos;
             nv.line = line;
             nv.name = xmldata.substring(start, curr_index);
-            items.addElement(nv);
+            items.add(nv);
             pos += curr_index - start;
             return nv;
         }
@@ -206,11 +206,11 @@ public class XSD2HTMLPrinter {
     private class Elements extends Keeper {
 
         Elements getChildElements(int index) {
-            return items.elementAt(index).children;
+            return items.get(index).children;
         }
 
         Attributes getAttributes(int index) {
-            return items.elementAt(index).attr;
+            return items.get(index).attr;
         }
 
         void getComment(int emptylines) throws IOException {
@@ -225,7 +225,7 @@ public class XSD2HTMLPrinter {
                     curr_index += 3;
                     nv.element_type = ELEMENT_COMMENT;
                     nv.page_break_before = testChar(' ');
-                    items.addElement(nv);
+                    items.add(nv);
                     return;
                 }
                 if (!scanPastWhiteSpace()) curr_index++;
@@ -241,7 +241,7 @@ public class XSD2HTMLPrinter {
                 if (testChar(']') && testNextChar(']') && testNextNextChar('>')) {
                     nv.name = xmldata.substring(start, curr_index += 3);
                     nv.element_type = ELEMENT_CDATA;
-                    items.addElement(nv);
+                    items.add(nv);
                     return;
                 }
                 scanPastWhiteSpace();

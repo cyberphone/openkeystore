@@ -39,7 +39,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.RSAPublicKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.webpki.asn1.ASN1Sequence;
 import org.webpki.asn1.BaseASN1Object;
@@ -144,11 +144,11 @@ public class PEMDecoder {
         return certPath[certPath.length - 1];
     }
 
-    private static Vector<byte[]> decodePemObjects(byte[]pemBlob, String itemType) throws IOException {
+    private static ArrayList<byte[]> decodePemObjects(byte[]pemBlob, String itemType) throws IOException {
         String pemString = new String(pemBlob, "utf-8");
         String header = "-----BEGIN " + itemType + "-----";
         String footer = "-----END "   + itemType + "-----";
-        Vector<byte[]> objects = new Vector<byte[]>();
+        ArrayList<byte[]> objects = new ArrayList<byte[]>();
         int start = 0;
         while (true) {
             start = pemString.indexOf(header, start);
@@ -168,10 +168,10 @@ public class PEMDecoder {
     }
     
     private static byte[] decodePemObject(byte[]pemBlob, String itemType) throws IOException {
-        Vector<byte[]> objects = decodePemObjects(pemBlob, itemType);
+        ArrayList<byte[]> objects = decodePemObjects(pemBlob, itemType);
         if (objects.size() != 1) {
             throw new IOException("Only expected one: " + itemType);
         }
-        return objects.firstElement();
+        return objects.get(0);
     }
 }

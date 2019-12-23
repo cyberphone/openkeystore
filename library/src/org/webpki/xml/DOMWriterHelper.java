@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.math.BigDecimal;
 import java.util.EnumSet;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
 import java.text.SimpleDateFormat;
@@ -113,7 +113,7 @@ public class DOMWriterHelper {
 
     private boolean pretty_printing = true;
 
-    private Vector<String> stack = new Vector<String>();
+    private ArrayList<String> stack = new ArrayList<String>();
 
     public String pushPrefix(String subprefix) {
         String oldprefix = this.subprefix;
@@ -123,8 +123,9 @@ public class DOMWriterHelper {
     }
 
     public void popPrefix() {
-        subprefix = stack.lastElement();
-        stack.removeElementAt(stack.size() - 1);
+        int lastIndex = stack.size() - 1;
+        subprefix = stack.get(lastIndex);
+        stack.remove(lastIndex);
     }
 
     public void FixStartElement() {
@@ -194,7 +195,7 @@ public class DOMWriterHelper {
         if (indent_flag) indent.setLength(indent.length() - 2);
     }
 
-    private Element addElement(Element e) {
+    private Element add(Element e) {
         indent.append("  ");
         if (pretty_printing) {
             navCurrent.appendChild(doc.createTextNode(indent.toString()));
@@ -203,8 +204,8 @@ public class DOMWriterHelper {
         return current = (Element) navCurrent.appendChild(e);
     }
 
-    private Element addElement(String name) {
-        return addElement(doc.createElement(subprefix == null ? name : subprefix + ":" + name));
+    private Element add(String name) {
+        return add(doc.createElement(subprefix == null ? name : subprefix + ":" + name));
     }
 
 
@@ -216,7 +217,7 @@ public class DOMWriterHelper {
      * @see <a href="#current">DOMWriterHelper cursor state</a>
      */
     public Element addChildElement(String name) {
-        navCurrent = addElement(name);
+        navCurrent = add(name);
         indent.append("  ");
         return navCurrent;
     }
@@ -230,7 +231,7 @@ public class DOMWriterHelper {
      * @see <a href="#current">DOMWriterHelper cursor state</a>
      */
     public Element addChildElementNS(String ns, String name) {
-        navCurrent = addElement(doc.createElementNS(ns, subprefix == null ? name : subprefix + ":" + name));
+        navCurrent = add(doc.createElementNS(ns, subprefix == null ? name : subprefix + ":" + name));
         indent.append("  ");
         return navCurrent;
     }
@@ -270,7 +271,7 @@ public class DOMWriterHelper {
      * @see <a href="#current">DOMWriterHelper cursor state</a>
      */
     public void addEmptyElement(String name) {
-        addElement(name);
+        add(name);
     }
 
     /**
@@ -298,7 +299,7 @@ public class DOMWriterHelper {
         if (value == null) {
             throw new NullPointerException("Null value text elements not allowed.");
         }
-        addElement(name);
+        add(name);
         return (Text) current.appendChild(doc.createTextNode(value));
     }
 
@@ -315,7 +316,7 @@ public class DOMWriterHelper {
         if (value == null) {
             throw new NullPointerException("Null value text elements not allowed.");
         }
-        addElement(doc.createElementNS(ns, subprefix == null ? name : subprefix + ":" + name));
+        add(doc.createElementNS(ns, subprefix == null ? name : subprefix + ":" + name));
         return (Text) current.appendChild(doc.createTextNode(value));
     }
 
@@ -331,7 +332,7 @@ public class DOMWriterHelper {
         if (value == null) {
             throw new NullPointerException("Null value CDATA elements not allowed.");
         }
-        addElement(name);
+        add(name);
         return (CDATASection) current.appendChild(doc.createCDATASection(value));
     }
 

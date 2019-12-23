@@ -18,7 +18,7 @@ package org.webpki.wasp;
 
 import java.io.IOException;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.webpki.crypto.CertificateFilter;
 
@@ -45,11 +45,11 @@ abstract class AuthenticationRequest extends XMLObjectWrapper {
 
     int expires;
 
-    Vector<AuthenticationProfile> authentication_profiles = new Vector<AuthenticationProfile>();
+    ArrayList<AuthenticationProfile> authentication_profiles = new ArrayList<AuthenticationProfile>();
 
-    Vector<CertificateFilter> certificateFilters = new Vector<CertificateFilter>();
+    ArrayList<CertificateFilter> certificateFilters = new ArrayList<CertificateFilter>();
 
-    Vector<String> requested_client_platform_features = new Vector<String>();
+    ArrayList<String> requested_client_platform_features = new ArrayList<String>();
 
     AuthenticationRequest() {
     }

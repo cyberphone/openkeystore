@@ -18,7 +18,7 @@ package org.webpki.kg2xml;
 
 import java.io.IOException;
 
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.EnumSet;
 
@@ -625,7 +625,7 @@ public class KeyCreationRequestDecoder extends KeyCreationRequest
             ///////////////////////////////////////////////////////////////////////////////////
             // Check that PIN grouping rules are followed
             ///////////////////////////////////////////////////////////////////////////////////
-            Vector<KeyObject> keys_needing_pin = new Vector<KeyObject> ();
+            ArrayList<KeyObject> keys_needing_pin = new ArrayList<KeyObject> ();
             for (KeyObject key : request_objects)
               {
                 if (key.pinPolicy == pinPolicy)
@@ -695,15 +695,15 @@ public class KeyCreationRequestDecoder extends KeyCreationRequest
       }
 
 
-    public Vector<KeyObject> getKeyObjects () throws IOException
+    public ArrayList<KeyObject> getKeyObjects () throws IOException
       {
         return request_objects;
       }
 
 
-    public Vector<UserPINDescriptor> getUserPINDescriptors ()
+    public ArrayList<UserPINDescriptor> getUserPINDescriptors ()
       {
-        Vector<UserPINDescriptor> user_pin_policies = new Vector<UserPINDescriptor>();
+        ArrayList<UserPINDescriptor> user_pin_policies = new ArrayList<UserPINDescriptor>();
         for (KeyObject key: request_objects)
           {
             if (key.getPINPolicy () != null && key.getPINPolicy ().getUserDefinedFlag ())
@@ -794,7 +794,7 @@ public class KeyCreationRequestDecoder extends KeyCreationRequest
       }
 
 
-    private Vector<KeyObject> request_objects = new Vector<KeyObject> ();
+    private ArrayList<KeyObject> request_objects = new ArrayList<KeyObject> ();
       
     private String submitUrl;
 

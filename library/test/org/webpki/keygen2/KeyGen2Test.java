@@ -43,7 +43,7 @@ import java.security.spec.ECGenParameterSpec;
 import java.security.spec.RSAKeyGenParameterSpec;
 
 import java.util.GregorianCalendar;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import javax.crypto.KeyAgreement;
 import javax.security.auth.x500.X500Principal;
@@ -362,7 +362,7 @@ public class KeyGen2Test {
         KeyCreator kc = new KeyCreator();
         kc.addPIN(format, null, patterns);
         kc.addKey(AppUsage.AUTHENTICATION);
-        KeyCreationRequestDecoder.UserPINDescriptor upd = kc.parse().getUserPINDescriptors().elementAt(0);
+        KeyCreationRequestDecoder.UserPINDescriptor upd = kc.parse().getUserPINDescriptors().get(0);
         KeyCreationRequestDecoder.UserPINError pin_test = upd.setPIN(pin, false);
         KeyCreationRequestDecoder.UserPINError pin_set = upd.setPIN(pin, true);
         if ((pin_test == null) ^ (pin_set == null)) {
@@ -501,7 +501,7 @@ public class KeyGen2Test {
             assertTrue("Key containers", invocation_request.getOptionalKeyContainerList() == null ^ key_container_list);
             device_info = sks.getDeviceInfo();
             InvocationResponseEncoder invocation_response = new InvocationResponseEncoder(invocation_request);
-            Vector<String> matches = new Vector<String>();
+            ArrayList<String> matches = new ArrayList<String>();
             for (String want : invocation_request.getQueriedCapabilities()) {
                 if (device_info.getSupportedAlgorithms().contains(want)) {
                     matches.add(want);
@@ -1094,7 +1094,7 @@ public class KeyGen2Test {
                         gen_private_key = kp.getPrivate();
                     }
 
-                    Vector<X509Certificate> cert_path = new Vector<X509Certificate>();
+                    ArrayList<X509Certificate> cert_path = new ArrayList<X509Certificate>();
                     cert_path.add(new CA().createCert(cert_spec,
                             DistinguishedName.subjectDN((X509Certificate) DemoKeyStore.getSubCAKeyStore().getCertificate("mykey")),
                             new BigInteger(String.valueOf(new GregorianCalendar().getTimeInMillis())),
@@ -1155,7 +1155,7 @@ public class KeyGen2Test {
         }
 
         ///////////////////////////////////////////////////////////////////////////////////
-        // Finally we get the attestested response
+        // Finally we get the attested response
         ///////////////////////////////////////////////////////////////////////////////////
         void creFinalizeResponse(byte[] json_data) throws IOException {
             ProvisioningFinalizationResponseDecoder prov_final_response = (ProvisioningFinalizationResponseDecoder) ServerState.parseReceivedMessage(json_data);

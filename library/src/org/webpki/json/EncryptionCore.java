@@ -276,7 +276,7 @@ class EncryptionCore {
      * @param dataEncryptionAlgorithm Algorithm to use
      * @param key The encryption key
      * @param cipherText The data to be decrypted
-     * @param iv Initialization Vector
+     * @param iv Initialization ArrayList
      * @param authData Additional input used for authentication puposes
      * @param tag Authentication tag
      * @return The data in clear

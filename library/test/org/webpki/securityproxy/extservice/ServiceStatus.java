@@ -61,7 +61,7 @@ public class ServiceStatus extends HttpServlet {
     }
 
     private void printElem(StringBuilder s, int index) {
-        s.append(new Date(Init.uploads.elementAt(index).getTimeStamp()).toString());
+        s.append(new Date(Init.uploads.get(index).getTimeStamp()).toString());
     }
 
     @Override

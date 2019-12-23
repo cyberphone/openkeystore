@@ -18,7 +18,7 @@ package org.webpki.ca;
 
 import java.io.IOException;
 
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.EnumSet;
 
@@ -61,24 +61,24 @@ public class CertSpec {
 
     Set<ExtendedKeyUsages> extended_key_usage_set = EnumSet.noneOf(ExtendedKeyUsages.class);
 
-    Vector<String> cert_policy_oids = new Vector<String>();
+    ArrayList<String> cert_policy_oids = new ArrayList<String>();
 
-    Vector<String[]> aia_locators = new Vector<String[]>();
+    ArrayList<String[]> aia_locators = new ArrayList<String[]>();
 
-    Vector<String> crl_dist_points = new Vector<String>();
+    ArrayList<String> crl_dist_points = new ArrayList<String>();
 
     private boolean has_given_key_usage;
 
     private boolean default_key_usage;
 
-    private Vector<RelativeDistinguishedName> subject = new Vector<RelativeDistinguishedName>();
+    private ArrayList<RelativeDistinguishedName> subject = new ArrayList<RelativeDistinguishedName>();
 
     /**
      * Components for the <code>subjectAltName</code>.
      * The names used in this list should be the integer constants defined in
      * {@link org.webpki.asn1.cert.SubjectAltNameTypes SubjectAltNameTypes}.
      */
-    Vector<NameValue> subjectAltName = new Vector<NameValue>();
+    ArrayList<NameValue> subjectAltName = new ArrayList<NameValue>();
 
 
     DistinguishedName getSubjectDistinguishedName() {
@@ -154,7 +154,7 @@ public class CertSpec {
 
 
     public void setSubject(String subject) throws IOException {
-        Vector<String> dns = new Vector<String>();
+        ArrayList<String> dns = new ArrayList<String>();
         boolean quote = false;
         StringBuilder s = new StringBuilder();
         int q = 0;

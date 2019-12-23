@@ -27,7 +27,7 @@ import java.security.cert.X509Certificate;
 import java.security.interfaces.ECPublicKey;
 
 import java.util.LinkedHashMap;
-import java.util.Vector;
+import java.util.ArrayList;
 
 ////////////////////////////////////////////////////////////////////////////////////
 // JEF is effectively a "remake" of of JWE.  Why a remake?  Because the           //
@@ -254,7 +254,7 @@ public class JSONDecryptionDecoder {
      * @throws IOException &nbsp;
      * @throws GeneralSecurityException &nbsp;
      */
-    public byte[] getDecryptedData(Vector<DecryptionKeyHolder> decryptionKeys)
+    public byte[] getDecryptedData(ArrayList<DecryptionKeyHolder> decryptionKeys)
     throws IOException, GeneralSecurityException {
         boolean notFound = true;
         for (DecryptionKeyHolder decryptionKey : decryptionKeys) {

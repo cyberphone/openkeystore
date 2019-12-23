@@ -25,7 +25,7 @@ import java.security.Signature;
 import java.security.interfaces.RSAPublicKey;
 
 import java.util.Date;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.w3c.dom.Document;
 
@@ -58,7 +58,7 @@ public class ProvisioningInitializationRequestEncoder extends ProvisioningInitia
         
         byte[] authorization;
         
-        Vector<KeyManagementKeyUpdateHolder> children = new Vector<KeyManagementKeyUpdateHolder> ();
+        ArrayList<KeyManagementKeyUpdateHolder> children = new ArrayList<KeyManagementKeyUpdateHolder> ();
         
         KeyManagementKeyUpdateHolder (PublicKey keyManagementKey)
           {

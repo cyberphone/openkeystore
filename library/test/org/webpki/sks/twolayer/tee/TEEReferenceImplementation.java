@@ -30,7 +30,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.webpki.sks.DeviceInfo;
 import org.webpki.sks.EnumeratedKey;
@@ -196,8 +196,8 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
         }
 
         @SuppressWarnings("fallthrough")
-        Vector<KeyEntry> getPINSynchronizedKeys() {
-            Vector<KeyEntry> group = new Vector<KeyEntry>();
+        ArrayList<KeyEntry> getPINSynchronizedKeys() {
+            ArrayList<KeyEntry> group = new ArrayList<KeyEntry>();
             if (pinPolicy.grouping == PIN_GROUPING_NONE) {
                 group.add(this);
             } else {
@@ -426,7 +426,7 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
         LinkedHashMap<String, Boolean> names = new LinkedHashMap<String, Boolean>();
 
         // Post provisioning management
-        Vector<PostProvisioningObject> postProvisioning_objects = new Vector<PostProvisioningObject>();
+        ArrayList<PostProvisioningObject> postProvisioning_objects = new ArrayList<PostProvisioningObject>();
 
         boolean privacyEnabled;
         String clientSessionId;

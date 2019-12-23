@@ -18,7 +18,7 @@ package org.webpki.keygen2;
 
 import java.io.IOException;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import java.security.PublicKey;
 
@@ -38,7 +38,7 @@ public class KeyCreationResponseEncoder extends JSONEncoder {
 
     String serverSessionId;
 
-    Vector<GeneratedPublicKey> generatedKeys = new Vector<GeneratedPublicKey>();
+    ArrayList<GeneratedPublicKey> generatedKeys = new ArrayList<GeneratedPublicKey>();
 
     private class GeneratedPublicKey {
         String id;

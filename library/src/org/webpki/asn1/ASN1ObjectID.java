@@ -49,19 +49,19 @@ public final class ASN1ObjectID extends Simple {
     }
 
     public void encode(Encoder encoder) throws IOException {
-        Vector<BigInteger> v = new Vector<BigInteger>();
+        ArrayList<BigInteger> v = new ArrayList<BigInteger>();
 
         StringTokenizer st = new StringTokenizer(id, ".");
         while (st.hasMoreTokens()) {
-            v.addElement(new BigInteger(st.nextToken()));
+            v.add(new BigInteger(st.nextToken()));
         }
 
-        v.setElementAt(v.elementAt(0).multiply(new BigInteger("40")).add(v.remove(1)), 0);
+        v.set(0, v.get(0).multiply(new BigInteger("40")).add(v.remove(1)));
 
         int length = 0;
         byte[][] oid_bytes = new byte[v.size()][];
         for (int i = 0; i < v.size(); i++) {
-            BigInteger subID = v.elementAt(i);
+            BigInteger subID = v.get(i);
             byte[] t = new byte[(subID.bitLength() + 6) / 7];
             if (t.length == 0) {
                 t = new byte[]{0};

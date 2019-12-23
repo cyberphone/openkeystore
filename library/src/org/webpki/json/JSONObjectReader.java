@@ -29,7 +29,7 @@ import java.security.cert.X509Certificate;
 
 import java.util.EnumSet;
 import java.util.GregorianCalendar;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import java.util.regex.Pattern;
 
@@ -357,7 +357,7 @@ public class JSONObjectReader implements Serializable, Cloneable {
     @SuppressWarnings("unchecked")
     public JSONArrayReader getJSONArrayReader() {
         return root.properties.containsKey(null) ?
-                new JSONArrayReader((Vector<JSONValue>) root.properties.get(null).value) : null;
+                new JSONArrayReader((ArrayList<JSONValue>) root.properties.get(null).value) : null;
     }
 
     /**
@@ -396,7 +396,7 @@ public class JSONObjectReader implements Serializable, Cloneable {
     @SuppressWarnings("unchecked")
     public JSONArrayReader getArray(String name) throws IOException {
         JSONValue value = getProperty(name, JSONTypes.ARRAY);
-        return new JSONArrayReader((Vector<JSONValue>) value.value);
+        return new JSONArrayReader((ArrayList<JSONValue>) value.value);
     }
 
     /**
@@ -453,9 +453,9 @@ public class JSONObjectReader implements Serializable, Cloneable {
     }
 
     String[] getSimpleArray(String name, JSONTypes expectedType) throws IOException {
-        Vector<String> array = new Vector<String>();
+        ArrayList<String> array = new ArrayList<String>();
         @SuppressWarnings("unchecked")
-        Vector<JSONValue> arrayElements = ((Vector<JSONValue>) getProperty(name, JSONTypes.ARRAY).value);
+        ArrayList<JSONValue> arrayElements = ((ArrayList<JSONValue>) getProperty(name, JSONTypes.ARRAY).value);
         for (JSONValue value : arrayElements) {
             JSONTypes.compatibilityTest(expectedType, value);
             value.readFlag = true;
@@ -477,10 +477,10 @@ public class JSONObjectReader implements Serializable, Cloneable {
     /**
      * Read an array of base64url encoded JSON strings.
      * @param name Property
-     * @return Vector holding arrays of bytes
+     * @return ArrayList holding arrays of bytes
      * @throws IOException &nbsp;
      */
-    public Vector<byte[]> getBinaryArray(String name) throws IOException {
+    public ArrayList<byte[]> getBinaryArray(String name) throws IOException {
         return getArray(name).getBinaryArray();
     }
 
@@ -541,7 +541,7 @@ public class JSONObjectReader implements Serializable, Cloneable {
         return new JSONSignatureDecoder(this, signatureObject, signatureObject, options);
     }
     
-    Vector<JSONSignatureDecoder> getSignatureArray(String signatureLabel, 
+    ArrayList<JSONSignatureDecoder> getSignatureArray(String signatureLabel, 
                                                    JSONCryptoHelper.Options options,
                                                    boolean chained) throws IOException {
         options.encryptionMode(false);
@@ -550,9 +550,9 @@ public class JSONObjectReader implements Serializable, Cloneable {
                 outerSignatureObject.getArray(chained ?
                         JSONCryptoHelper.CHAIN_JSON : JSONCryptoHelper.SIGNERS_JSON);
         @SuppressWarnings("unchecked")
-        Vector<JSONValue> save = (Vector<JSONValue>) arrayReader.array.clone();
-        Vector<JSONSignatureDecoder> signatures = new Vector<JSONSignatureDecoder>();
-        Vector<JSONObjectReader> signatureObjects = new Vector<JSONObjectReader>();
+        ArrayList<JSONValue> save = (ArrayList<JSONValue>) arrayReader.array.clone();
+        ArrayList<JSONSignatureDecoder> signatures = new ArrayList<JSONSignatureDecoder>();
+        ArrayList<JSONObjectReader> signatureObjects = new ArrayList<JSONObjectReader>();
         do {
             signatureObjects.add(arrayReader.getObject());
         } while(arrayReader.hasMore());
@@ -581,12 +581,12 @@ public class JSONObjectReader implements Serializable, Cloneable {
      * @return List with signature objects
      * @throws IOException &nbsp;
      */
-    public Vector<JSONSignatureDecoder> getMultiSignature(JSONCryptoHelper.Options options)
+    public ArrayList<JSONSignatureDecoder> getMultiSignature(JSONCryptoHelper.Options options)
     throws IOException {
         return getMultiSignature(JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON, options);
     }
     
-    public Vector<JSONSignatureDecoder> getMultiSignature(String signatureLabel, 
+    public ArrayList<JSONSignatureDecoder> getMultiSignature(String signatureLabel, 
                                                           JSONCryptoHelper.Options options)
     throws IOException {
         return getSignatureArray(signatureLabel, options, false);
@@ -600,12 +600,12 @@ public class JSONObjectReader implements Serializable, Cloneable {
      * @return List with signature objects
      * @throws IOException &nbsp;
      */
-    public Vector<JSONSignatureDecoder> getSignatureChain(JSONCryptoHelper.Options options) 
+    public ArrayList<JSONSignatureDecoder> getSignatureChain(JSONCryptoHelper.Options options) 
     throws IOException {
         return getSignatureChain(JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON, options);
     }
     
-    public Vector<JSONSignatureDecoder> getSignatureChain(String signatureLabel, 
+    public ArrayList<JSONSignatureDecoder> getSignatureChain(String signatureLabel, 
                                                           JSONCryptoHelper.Options options)
     throws IOException {
         return getSignatureArray(signatureLabel, options, true);
@@ -724,12 +724,12 @@ public class JSONObjectReader implements Serializable, Cloneable {
      * @see org.webpki.json.JSONObjectWriter#createEncryptionObject(byte[],DataEncryptionAlgorithms,JSONEncrypter)
      * @see org.webpki.json.JSONCryptoHelper.Options
      */
-    public Vector<JSONDecryptionDecoder> getEncryptionObjects(JSONCryptoHelper.Options options)
+    public ArrayList<JSONDecryptionDecoder> getEncryptionObjects(JSONCryptoHelper.Options options)
     throws IOException {
         options.encryptionMode(true);
         JSONDecryptionDecoder.Holder holder = new JSONDecryptionDecoder.Holder(options, this, true);
         JSONArrayReader recipientObjects = getArray(JSONCryptoHelper.RECIPIENTS_JSON);
-        Vector<JSONDecryptionDecoder> recipients = new Vector<JSONDecryptionDecoder>();
+        ArrayList<JSONDecryptionDecoder> recipients = new ArrayList<JSONDecryptionDecoder>();
         do {
             JSONDecryptionDecoder decoder = new JSONDecryptionDecoder(holder, 
                                                                       recipientObjects.getObject(),

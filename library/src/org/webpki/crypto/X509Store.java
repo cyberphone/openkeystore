@@ -17,10 +17,13 @@
 package org.webpki.crypto;
 
 import java.io.IOException;
+
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.ArrayList;
+
 import java.security.KeyStore;
+
 import java.security.cert.X509Certificate;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
@@ -33,18 +36,8 @@ import org.webpki.asn1.cert.*;
  * Allows search and verification of certificates using certificate chains.
  */
 public class X509Store {
-    private static class EmptyEnumeration implements Enumeration<X509Certificate> {
-        public boolean hasMoreElements() {
-            return false;
-        }
 
-        public X509Certificate nextElement() {
-            throw new java.util.NoSuchElementException("EmptyEnumeration!");
-        }
-    }
-
-
-    private Hashtable<DistinguishedName, Vector<X509Certificate>> store = new Hashtable<DistinguishedName, Vector<X509Certificate>>();
+    private Hashtable<DistinguishedName, ArrayList<X509Certificate>> store = new Hashtable<DistinguishedName, ArrayList<X509Certificate>>();
 
     private void add(X509Certificate certificate) throws IOException, GeneralSecurityException {
         if (certificate == null) {
@@ -53,14 +46,14 @@ public class X509Store {
 
         DistinguishedName subject = DistinguishedName.subjectDN(certificate);
 
-        Vector<X509Certificate> v = store.get(subject);
+        ArrayList<X509Certificate> v = store.get(subject);
 
         if (v == null) {
-            v = new Vector<X509Certificate>();
-            v.addElement(certificate);
+            v = new ArrayList<X509Certificate>();
+            v.add(certificate);
             store.put(subject, v);
         } else {
-            v.addElement(certificate);
+            v.add(certificate);
         }
     }
 
@@ -127,8 +120,8 @@ public class X509Store {
     public boolean hasCertificate(X509Certificate certificate) throws IOException, GeneralSecurityException {
         DistinguishedName subject = DistinguishedName.subjectDN(certificate);
 
-        for (Enumeration<X509Certificate> e = getCertificates(subject); e.hasMoreElements(); ) {
-            if (e.nextElement().equals(certificate)) {
+        for (X509Certificate e : getCertificates(subject)) {
+            if (e.equals(certificate)) {
                 return true;
             }
         }
@@ -139,11 +132,10 @@ public class X509Store {
     /*
      * Returns all certificates matching a given DistinguishedName
      */
-    public Enumeration<X509Certificate> getCertificates(DistinguishedName subject) {
-        Vector<X509Certificate> v = store.get(subject);
+    public ArrayList<X509Certificate> getCertificates(DistinguishedName subject) {
+        ArrayList<X509Certificate> v = store.get(subject);
 
-        return (v == null) ? new EmptyEnumeration() :
-                v.elements();
+        return (v == null) ? new ArrayList<X509Certificate>() : v;
     }
 
     /*
@@ -167,8 +159,8 @@ public class X509Store {
     public X509Certificate getVerifiedIssuer(X509Certificate certificate) throws IOException, GeneralSecurityException {
         DistinguishedName issuer = DistinguishedName.issuerDN(certificate);
 
-        for (Enumeration<X509Certificate> e = getCertificates(issuer); e.hasMoreElements(); ) {
-            X509Certificate issuerCert = e.nextElement();
+        for (X509Certificate e : getCertificates(issuer)) {
+            X509Certificate issuerCert = e;
 
             try {
                 certificate.verify(issuerCert.getPublicKey());

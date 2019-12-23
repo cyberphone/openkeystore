@@ -18,7 +18,7 @@ package org.webpki.wasp;
 
 import java.io.IOException;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.webpki.crypto.VerifierInterface;
 import org.webpki.crypto.CertificateFilter;
@@ -31,7 +31,7 @@ public interface SignatureProfileResponseDecoder {
     boolean match(SignatureProfileEncoder spreenc,
                   DocumentData doc_data,
                   DocumentReferences doc_refs,
-                  Vector<CertificateFilter> cert_filters,
+                  ArrayList<CertificateFilter> cert_filters,
                   String id,
                   byte[] expected_fingerprint) throws IOException;
 

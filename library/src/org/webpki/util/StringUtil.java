@@ -42,7 +42,7 @@ public class StringUtil {
      * @return An array of substrings of s.
      */
     public static String[] splitAtAny(String s, String[] delimiters, boolean includeEmpty) {
-        Vector<String> v = new Vector<String>();
+        ArrayList<String> v = new ArrayList<String>();
         int[] is = new int[delimiters.length];
 
         for (int i = 0; i < delimiters.length; i++) {
@@ -59,7 +59,7 @@ public class StringUtil {
             // substring of the other, has matched at the same index.
             if (i >= start) {
                 if (includeEmpty || i > start) {
-                    v.addElement(s.substring(start, i));
+                    v.add(s.substring(start, i));
                 }
 
                 start = i + delimiters[j].length();
@@ -72,10 +72,8 @@ public class StringUtil {
         while (i < s.length());
 
         //if(includeEmpty || s.length() > 0)
-        //  v.addElement(s);
-        String[] r = new String[v.size()];
-        v.copyInto(r);
-        return r;
+        //  v.add(s);
+        return v.toArray(new String[0]);
     }
 
     /*
@@ -100,19 +98,17 @@ public class StringUtil {
      * @return An array of substrings of s.
      */
     public static String[] splitAt(String s, String delimiter, boolean includeEmpty) {
-        Vector<String> v = new Vector<String>();
+        ArrayList<String> v = new ArrayList<String>();
         int i;
         while ((i = s.indexOf(delimiter)) >= 0) {
             if (includeEmpty || i > 0) {
-                v.addElement(s.substring(0, i));
+                v.add(s.substring(0, i));
             }
             s = s.substring(i + delimiter.length());
         }
         if (includeEmpty || s.length() > 0)
-            v.addElement(s);
-        String[] r = new String[v.size()];
-        v.copyInto(r);
-        return r;
+            v.add(s);
+        return v.toArray(new String[0]);
     }
 
     /*
@@ -352,16 +348,14 @@ public class StringUtil {
     }
 
     public static String[] readFile(File file) throws IOException {
-        Vector<String> v = new Vector<String>();
+        ArrayList<String> v = new ArrayList<String>();
         LineNumberReader r = new LineNumberReader(new FileReader(file));
         String t;
         while ((t = r.readLine()) != null) {
-            v.addElement(t);
+            v.add(t);
         }
         r.close();
-        String[] s = new String[v.size()];
-        v.copyInto(s);
-        return s;
+        return v.toArray(new String[0]);
     }
 
     public static String[] readFile(String filename) throws IOException {

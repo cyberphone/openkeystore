@@ -79,19 +79,19 @@ public abstract class BaseASN1Object implements ASN1Constants {
      * Decode substructure.
      * This should be the only way to decode substructures as it updates encodedLength!!!!
      */
-    Vector<BaseASN1Object> readComponents(DerDecoder decoder) throws IOException {
+    ArrayList<BaseASN1Object> readComponents(DerDecoder decoder) throws IOException {
         if (blob != decoder.source) {
             throw new IllegalArgumentException("Must use the same decoder!!!!");
         }
 
-        Vector<BaseASN1Object> components = new Vector<BaseASN1Object>();
+        ArrayList<BaseASN1Object> components = new ArrayList<BaseASN1Object>();
 
         int endOffset = decoder.endOffset;
 
         BaseASN1Object o;
 
         while ((o = decoder.readNext(endOffset)) != null) {
-            components.addElement(o);
+            components.add(o);
         }
 
         if (encodedLength == -1) {
@@ -147,10 +147,10 @@ public abstract class BaseASN1Object implements ASN1Constants {
     /*
      * Writes a constructed value to the encoder, prepending the head.
      */
-    void encode(Encoder encoder, Vector<BaseASN1Object> components) throws IOException {
+    void encode(Encoder encoder, ArrayList<BaseASN1Object> components) throws IOException {
         encodeHeader(encoder, -1, false);
         for (int i = 0; i < components.size(); i++) {
-            components.elementAt(i).encode(encoder);
+            components.get(i).encode(encoder);
         }
         encoder.write(Encoder.EOC);
     }

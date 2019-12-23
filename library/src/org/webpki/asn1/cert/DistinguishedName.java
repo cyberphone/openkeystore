@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.security.cert.X509Certificate;
 import java.security.GeneralSecurityException;
 
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -34,7 +34,7 @@ import org.webpki.asn1.ParseUtil;
  * X.509 DistinguishedName
  */
 public class DistinguishedName {
-    Vector<RelativeDistinguishedName> components = new Vector<RelativeDistinguishedName>();
+    ArrayList<RelativeDistinguishedName> components = new ArrayList<RelativeDistinguishedName>();
 
     private ASN1Sequence asn1Representation;
 
@@ -46,9 +46,8 @@ public class DistinguishedName {
         if (asn1Representation == null) {
             BaseASN1Object[] t = new BaseASN1Object[components.size()];
 
-            Enumeration<RelativeDistinguishedName> e = components.elements();
             for (int i = 0; i < t.length; i++) {
-                t[i] = e.nextElement().toASN1();
+                t[i] = components.get(i).toASN1();
             }
 
             asn1Representation = new ASN1Sequence(t);
@@ -71,7 +70,7 @@ public class DistinguishedName {
     private void add(RelativeDistinguishedName rdn) {
         // Note: the hash could be more effective (in theory, that is).
         issuerHash += rdn.issuerHash;
-        components.addElement(rdn);
+        components.add(rdn);
     }
 
     /*
@@ -160,8 +159,8 @@ public class DistinguishedName {
             return false;
         }
 
-        for (Enumeration<RelativeDistinguishedName> e = components.elements(); e.hasMoreElements(); ) {
-            if (!dn.hasComponent(e.nextElement())) {
+        for (RelativeDistinguishedName e : components) {
+            if (!dn.hasComponent(e)) {
                 return false;
             }
         }
@@ -179,11 +178,11 @@ public class DistinguishedName {
     public String toString() {
         StringBuilder s = new StringBuilder();
         int i = components.size() - 1;
-        s.append(components.elementAt(i));  // Must have at least one element.
+        s.append(components.get(i));  // Must have at least one element.
 
         for (i--; i >= 0; i--) {
             s.append(", ");
-            components.elementAt(i).toString(s);
+            components.get(i).toString(s);
         }
 
         return s.toString();

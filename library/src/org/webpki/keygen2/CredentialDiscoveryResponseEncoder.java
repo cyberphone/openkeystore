@@ -19,7 +19,7 @@ package org.webpki.keygen2;
 import java.io.IOException;
 
 import java.util.LinkedHashMap;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import java.security.cert.X509Certificate;
 
@@ -48,7 +48,7 @@ public class CredentialDiscoveryResponseEncoder extends JSONEncoder {
 
         String id;
 
-        Vector<MatchingCredential> matchingCredentials = new Vector<MatchingCredential>();
+        ArrayList<MatchingCredential> matchingCredentials = new ArrayList<MatchingCredential>();
 
         LookupResult(String id) {
             this.id = id;
@@ -68,7 +68,7 @@ public class CredentialDiscoveryResponseEncoder extends JSONEncoder {
     }
 
 
-    Vector<LookupResult> lookupResults = new Vector<LookupResult>();
+    ArrayList<LookupResult> lookupResults = new ArrayList<LookupResult>();
 
     LinkedHashMap<String, CredentialDiscoveryRequestDecoder.LookupSpecifier> ref;
 

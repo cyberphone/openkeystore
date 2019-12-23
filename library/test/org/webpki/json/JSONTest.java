@@ -44,7 +44,7 @@ import java.security.spec.X509EncodedKeySpec;
 
 import java.util.GregorianCalendar;
 import java.util.Locale;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import javax.crypto.KeyAgreement;
 
@@ -3563,7 +3563,7 @@ public class JSONTest {
         } catch (Exception e) {
             checkException(e, "Missing \"" + JSONCryptoHelper.KEY_ID_JSON + "\"");
         }
-        Vector<JSONSignatureDecoder> signatures;
+        ArrayList<JSONSignatureDecoder> signatures;
         writer = new JSONObjectWriter()
             .setSignature(new JSONAsymKeySigner(p256.getPrivate(), p256.getPublic(), null)
                .setSignatureAlgorithm(AsymSignatureAlgorithms.ECDSA_SHA512));
@@ -4060,8 +4060,8 @@ public class JSONTest {
         KeyPairGenerator mallet = KeyPairGenerator.getInstance("RSA");
         mallet.initialize(2048);
         KeyPair malletKeys = mallet.generateKeyPair();
-        Vector<JSONDecryptionDecoder.DecryptionKeyHolder> decryptionKeys =
-                new Vector<JSONDecryptionDecoder.DecryptionKeyHolder>();
+        ArrayList<JSONDecryptionDecoder.DecryptionKeyHolder> decryptionKeys =
+                new ArrayList<JSONDecryptionDecoder.DecryptionKeyHolder>();
         decryptionKeys.add(new JSONDecryptionDecoder.DecryptionKeyHolder(alice.getPublic(), 
                                                                          alice.getPrivate(),
                                                                          KeyEncryptionAlgorithms.JOSE_ECDH_ES_ALG_ID,

@@ -18,7 +18,7 @@ package org.webpki.pkcs7;
 
 import java.io.IOException;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import java.security.GeneralSecurityException;
 
@@ -57,12 +57,12 @@ public class PKCS7Signer {
 
     private byte[] sign(byte[] message, boolean detached) throws IOException {
         try {
-            Vector<BaseASN1Object> cert_path = new Vector<BaseASN1Object>();
+            ArrayList<BaseASN1Object> cert_path = new ArrayList<BaseASN1Object>();
             for (X509Certificate c : signer_implem.getCertificatePath()) {
                 cert_path.add(ASN1Util.x509Certificate(c));
             }
 
-            BaseASN1Object signer_cert = cert_path.elementAt(0);
+            BaseASN1Object signer_cert = cert_path.get(0);
 
             int i = ParseUtil.isContext(signer_cert.get(new int[]{0, 0}), 0) ? 1 : 0;
 

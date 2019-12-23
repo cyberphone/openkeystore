@@ -19,7 +19,7 @@ package org.webpki.webutil;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Properties;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import javax.servlet.ServletContextEvent;
 
@@ -55,7 +55,7 @@ public class InitPropertyReader {
 
     public String[] getPropertyStringList(String name) throws IOException {
         String res = getPropertyString(name);
-        Vector<String> list = new Vector<String>();
+        ArrayList<String> list = new ArrayList<String>();
         boolean keepon = true;
         while (keepon) {
             String element;

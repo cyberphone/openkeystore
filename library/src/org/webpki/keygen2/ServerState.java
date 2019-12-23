@@ -34,7 +34,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.CryptoAlgorithms;
@@ -149,7 +149,7 @@ public class ServerState implements Serializable {
         }
     }
 
-    Vector<PostProvisioningTargetKey> postOperations = new Vector<PostProvisioningTargetKey>();
+    ArrayList<PostProvisioningTargetKey> postOperations = new ArrayList<PostProvisioningTargetKey>();
 
     public abstract class ExtensionInterface implements Serializable {
 
@@ -500,7 +500,7 @@ public class ServerState implements Serializable {
                 wr.setString(INPUT_METHOD_JSON, inputMethod.getProtocolName());
             }
             if (!patternRestrictions.isEmpty()) {
-                Vector<String> prs = new Vector<String>();
+                ArrayList<String> prs = new ArrayList<String>();
                 for (PatternRestriction pr : patternRestrictions) {
                     prs.add(pr.getProtocolName());
                 }
@@ -558,7 +558,7 @@ public class ServerState implements Serializable {
         }
 
         public PropertyBag[] getPropertyBags() {
-            Vector<PropertyBag> propertyBags = new Vector<PropertyBag>();
+            ArrayList<PropertyBag> propertyBags = new ArrayList<PropertyBag>();
             for (ExtensionInterface ei : extensions.values()) {
                 if (ei instanceof PropertyBag) {
                     propertyBags.add((PropertyBag) ei);
@@ -1407,7 +1407,7 @@ public class ServerState implements Serializable {
         return serverSessionId;
     }
 
-    Vector<PINPolicy> pinPolicies = new Vector<PINPolicy>();
+    ArrayList<PINPolicy> pinPolicies = new ArrayList<PINPolicy>();
 
     public PINPolicy createPINPolicy(PassphraseFormat format, 
                                      int minLength,
@@ -1429,7 +1429,7 @@ public class ServerState implements Serializable {
         return pinPolicy;
     }
 
-    Vector<PUKPolicy> pukPolicies = new Vector<PUKPolicy>();
+    ArrayList<PUKPolicy> pukPolicies = new ArrayList<PUKPolicy>();
 
     public PUKPolicy createPUKPolicy(byte[] puk, PassphraseFormat format, int retryLimit) throws IOException {
         return new PUKPolicy(encrypt(puk), format, retryLimit);

@@ -24,7 +24,7 @@ import java.security.KeyStore;
 
 import java.security.cert.X509Certificate;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.CertificateUtil;
@@ -117,9 +117,9 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
         return formatCode(asymKey.text);
     }
     
-    static Vector<AsymKey> asymmetricKeys = new Vector<AsymKey>();
+    static ArrayList<AsymKey> asymmetricKeys = new ArrayList<AsymKey>();
 
-    static Vector<SymKey> symmetricKeys = new Vector<SymKey>();
+    static ArrayList<SymKey> symmetricKeys = new ArrayList<SymKey>();
 
     static class CoreKey {
         String keyId;
@@ -237,7 +237,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             if (checker.hasProperty(JSONCryptoHelper.EXCLUDES_JSON)) {
                 options.setPermittedExclusions(checker.getStringArray(JSONCryptoHelper.EXCLUDES_JSON));
             }
-            Vector<JSONSignatureDecoder> signers = new Vector<JSONSignatureDecoder>();
+            ArrayList<JSONSignatureDecoder> signers = new ArrayList<JSONSignatureDecoder>();
             if (checker.hasProperty(JSONCryptoHelper.SIGNERS_JSON)) {
                 JSONArrayReader signerArray = checker.getArray(JSONCryptoHelper.SIGNERS_JSON);
                 do {

@@ -23,7 +23,7 @@ import java.security.PublicKey;
 import java.security.interfaces.RSAPublicKey;
 
 import java.util.GregorianCalendar;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.webpki.crypto.AsymKeySignerInterface;
 import org.webpki.crypto.CertificateFilter;
@@ -148,7 +148,7 @@ public class CredentialDiscoveryRequestEncoder extends ServerEncoder {
     }
 
 
-    Vector<LookupDescriptor> lookupDescriptors = new Vector<LookupDescriptor>();
+    ArrayList<LookupDescriptor> lookupDescriptors = new ArrayList<LookupDescriptor>();
 
     String lookupPrefix = "Lookup.";
 

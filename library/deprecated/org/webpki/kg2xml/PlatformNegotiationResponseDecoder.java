@@ -18,7 +18,7 @@ package org.webpki.kg2xml;
 
 import java.io.IOException;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.webpki.xml.DOMReaderHelper;
 import org.webpki.xml.DOMAttributeReaderHelper;
@@ -27,7 +27,7 @@ import static org.webpki.kg2xml.KeyGen2Constants.*;
 
 public class PlatformNegotiationResponseDecoder extends PlatformNegotiationResponse
   {
-    Vector<ImagePreference> image_preferences = new Vector<ImagePreference> ();
+    ArrayList<ImagePreference> image_preferences = new ArrayList<ImagePreference> ();
 
     BasicCapabilities basic_capabilities = new BasicCapabilities (true);
 

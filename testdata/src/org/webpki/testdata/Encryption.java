@@ -25,7 +25,7 @@ import java.security.cert.X509Certificate;
 
 import java.security.interfaces.ECPublicKey;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.webpki.crypto.CustomCryptoProvider;
 
@@ -356,9 +356,9 @@ public class Encryption {
     static void multipleAsymEnc(String[] keyTypes, 
                                 DataEncryptionAlgorithms dataEncryptionAlgorithm, 
                                 boolean wantKeyId) throws Exception {
-        Vector<JSONDecryptionDecoder.DecryptionKeyHolder> decryptionKeys =
-                new Vector<JSONDecryptionDecoder.DecryptionKeyHolder>();
-        Vector<JSONEncrypter> encrypters = new Vector<JSONEncrypter>();
+        ArrayList<JSONDecryptionDecoder.DecryptionKeyHolder> decryptionKeys =
+                new ArrayList<JSONDecryptionDecoder.DecryptionKeyHolder>();
+        ArrayList<JSONEncrypter> encrypters = new ArrayList<JSONEncrypter>();
         String algList = "";
         for (String keyType : keyTypes) {
             KeyPair keyPair = readJwk(keyType);

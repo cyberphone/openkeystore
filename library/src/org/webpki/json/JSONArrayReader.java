@@ -26,7 +26,7 @@ import java.security.cert.X509Certificate;
 
 import java.util.EnumSet;
 import java.util.GregorianCalendar;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.webpki.crypto.CertificateUtil;
 
@@ -44,11 +44,11 @@ public class JSONArrayReader implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    Vector<JSONValue> array;
+    ArrayList<JSONValue> array;
 
     int index;
 
-    JSONArrayReader(Vector<JSONValue> array) {
+    JSONArrayReader(ArrayList<JSONValue> array) {
         this.array = array;
     }
 
@@ -72,7 +72,7 @@ public class JSONArrayReader implements Serializable {
 
     JSONValue getNextElementCore(JSONTypes expectedType) throws IOException {
         inRangeCheck();
-        JSONValue value = array.elementAt(index++);
+        JSONValue value = array.get(index++);
         value.readFlag = true;
         JSONTypes.compatibilityTest(expectedType, value);
         return value;
@@ -140,12 +140,12 @@ public class JSONArrayReader implements Serializable {
 
     @SuppressWarnings("unchecked")
     public JSONArrayReader getArray() throws IOException {
-        return new JSONArrayReader((Vector<JSONValue>) getNextElement(JSONTypes.ARRAY));
+        return new JSONArrayReader((ArrayList<JSONValue>) getNextElement(JSONTypes.ARRAY));
     }
 
     public JSONTypes getElementType() throws IOException {
         inRangeCheck();
-        return array.elementAt(index).type;
+        return array.get(index).type;
     }
 
     public JSONObjectReader getObject() throws IOException {
@@ -156,8 +156,8 @@ public class JSONArrayReader implements Serializable {
         getNextElement(getElementType());
     }
 
-    public Vector<byte[]> getBinaryArray() throws IOException {
-        Vector<byte[]> blobs = new Vector<byte[]>();
+    public ArrayList<byte[]> getBinaryArray() throws IOException {
+        ArrayList<byte[]> blobs = new ArrayList<byte[]>();
         do {
             blobs.add(getBinary());
         } while (hasMore());
@@ -165,7 +165,7 @@ public class JSONArrayReader implements Serializable {
     }
 
     public X509Certificate[] getCertificatePath() throws IOException {
-        Vector<byte[]> blobs = new Vector<byte[]>();
+        ArrayList<byte[]> blobs = new ArrayList<byte[]>();
         do {
             blobs.add(Base64URL.decode(getString()));
         } while (hasMore());

@@ -26,7 +26,7 @@ public class ASN1Sequence extends Composite {
         super(SEQUENCE, components);
     }
 
-    public ASN1Sequence(Vector<BaseASN1Object> components) {
+    public ASN1Sequence(ArrayList<BaseASN1Object> components) {
         super(SEQUENCE, components);
     }
 

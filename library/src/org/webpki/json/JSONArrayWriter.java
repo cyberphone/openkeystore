@@ -28,7 +28,7 @@ import java.security.cert.X509Certificate;
 
 import java.util.EnumSet;
 import java.util.GregorianCalendar;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.webpki.crypto.CertificateUtil;
 
@@ -47,7 +47,7 @@ public class JSONArrayWriter implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    Vector<JSONValue> array;
+    ArrayList<JSONValue> array;
 
     /**
      * For creating a JSON array.<p>
@@ -58,7 +58,7 @@ public class JSONArrayWriter implements Serializable {
      * @see #setArray(JSONArrayWriter)
      */
     public JSONArrayWriter() {
-        array = new Vector<JSONValue>();
+        array = new ArrayList<JSONValue>();
     }
 
     public JSONArrayWriter(JSONArrayReader reader) {

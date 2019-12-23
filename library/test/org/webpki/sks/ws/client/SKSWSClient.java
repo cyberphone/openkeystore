@@ -31,7 +31,6 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import javax.xml.ws.Holder;
 
@@ -125,7 +124,7 @@ public class SKSWSClient implements SecureKeyStore, WSSpecific {
     }
 
     private X509Certificate[] getCertArrayFromBlobs(List<byte[]> blobs) throws IOException {
-        Vector<X509Certificate> certs = new Vector<X509Certificate>();
+        ArrayList<X509Certificate> certs = new ArrayList<X509Certificate>();
         for (byte[] bcert : blobs) {
             certs.add(CertificateUtil.getCertificateFromBlob(bcert));
         }

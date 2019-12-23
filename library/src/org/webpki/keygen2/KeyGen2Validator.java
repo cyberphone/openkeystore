@@ -24,7 +24,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import java.util.GregorianCalendar;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.webpki.json.JSONArrayReader;
 import org.webpki.json.JSONDecoder;
@@ -146,15 +146,15 @@ abstract class KeyGen2Validator extends JSONDecoder {
         return rd.hasProperty(name) ? rd.getDateTime(name, ISODateTime.UTC_NO_SUBSECONDS) : null;
     }
 
-    static Vector<JSONObjectReader> getObjectArrayConditional(JSONObjectReader rd, String name) throws IOException {
+    static ArrayList<JSONObjectReader> getObjectArrayConditional(JSONObjectReader rd, String name) throws IOException {
         if (rd.hasProperty(name)) {
             return getObjectArray(rd, name);
         }
-        return new Vector<JSONObjectReader>();
+        return new ArrayList<JSONObjectReader>();
     }
 
-    static Vector<JSONObjectReader> getObjectArray(JSONObjectReader rd, String name) throws IOException {
-        Vector<JSONObjectReader> result = new Vector<JSONObjectReader>();
+    static ArrayList<JSONObjectReader> getObjectArray(JSONObjectReader rd, String name) throws IOException {
+        ArrayList<JSONObjectReader> result = new ArrayList<JSONObjectReader>();
         JSONArrayReader arr = rd.getArray(name);
         do {
             result.add(arr.getObject());

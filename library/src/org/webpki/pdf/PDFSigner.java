@@ -19,7 +19,7 @@ package org.webpki.pdf;
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -57,7 +57,7 @@ public class PDFSigner {
         byte[] data;
     }
 
-    private Vector<Attachment> attachments = new Vector<Attachment>();
+    private ArrayList<Attachment> attachments = new ArrayList<Attachment>();
 
 
     public PDFSigner(SignerInterface signer) {

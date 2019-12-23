@@ -18,7 +18,7 @@ package org.webpki.keygen2;
 
 import java.io.IOException;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import java.security.cert.X509Certificate;
 
@@ -185,7 +185,7 @@ public class ProvisioningFinalizationRequestDecoder extends ClientDecoder {
 
     class PropertyBag extends Extension {
 
-        Vector<Property> properties = new Vector<Property>();
+        ArrayList<Property> properties = new ArrayList<Property>();
 
         PropertyBag(JSONObjectReader rd, IssuedCredential cpk) throws IOException {
             super(rd, cpk);
@@ -272,7 +272,7 @@ public class ProvisioningFinalizationRequestDecoder extends ClientDecoder {
 
         boolean trustAnchor;
 
-        Vector<Extension> extensions = new Vector<Extension>();
+        ArrayList<Extension> extensions = new ArrayList<Extension>();
 
         PostOperation postOperation;
 
@@ -383,11 +383,11 @@ public class ProvisioningFinalizationRequestDecoder extends ClientDecoder {
                                  postOp);
     }
 
-    private Vector<IssuedCredential> issuedKeys = new Vector<IssuedCredential>();
+    private ArrayList<IssuedCredential> issuedKeys = new ArrayList<IssuedCredential>();
 
-    private Vector<PostOperation> postUnlockKeys = new Vector<PostOperation>();
+    private ArrayList<PostOperation> postUnlockKeys = new ArrayList<PostOperation>();
 
-    private Vector<PostOperation> postDeleteKeys = new Vector<PostOperation>();
+    private ArrayList<PostOperation> postDeleteKeys = new ArrayList<PostOperation>();
 
     private String clientSessionId;
 

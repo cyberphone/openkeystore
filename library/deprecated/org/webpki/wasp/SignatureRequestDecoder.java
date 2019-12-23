@@ -18,7 +18,7 @@ package org.webpki.wasp;
 
 import java.io.IOException;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.w3c.dom.Element;
 
@@ -42,9 +42,9 @@ import static org.webpki.wasp.WASPConstants.*;
 
 public class SignatureRequestDecoder extends SignatureRequest {
 
-    private Vector<SignatureProfileDecoder> sign_profiles = new Vector<SignatureProfileDecoder>();
+    private ArrayList<SignatureProfileDecoder> sign_profiles = new ArrayList<SignatureProfileDecoder>();
 
-    private Vector<CertificateFilter> cert_filters = new Vector<CertificateFilter>();  // Optional
+    private ArrayList<CertificateFilter> cert_filters = new ArrayList<CertificateFilter>();  // Optional
 
     private DocumentReferences doc_refs;
 

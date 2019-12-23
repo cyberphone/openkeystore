@@ -28,7 +28,7 @@ class JSONValue implements Serializable {
 
     JSONTypes type;    // Number, String, etc.
 
-    Object value;      // Holds either a String, JSONObject or Vector<JSONValue>
+    Object value;      // Holds either a String, JSONObject or ArrayList<JSONValue>
 
     boolean preSet;    // Number serialization optimizer
 

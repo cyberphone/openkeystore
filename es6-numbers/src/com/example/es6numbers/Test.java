@@ -12,7 +12,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.webpki.json.v8dtoa.V8NumberCanonicalizer;
 import org.webpki.json.v8dtoa.DToA;
@@ -139,7 +139,7 @@ public class Test {
         String full;
     }
     
-    static Vector<Pair> testValues = new Vector<Pair>();
+    static ArrayList<Pair> testValues = new ArrayList<Pair>();
 
     static void write(byte[] utf8) throws Exception {
         fos.write(utf8);

@@ -31,14 +31,14 @@ public final class ASN1OctetString extends Binary {
         if (isPrimitive()) {
             value = decoder.content();
         } else {
-            Vector<BaseASN1Object> v = readComponents(decoder);
+            ArrayList<BaseASN1Object> v = readComponents(decoder);
 
             ASN1OctetString os;
 
             int length = 0;
 
             for (int i = 0; i < v.size(); i++) {
-                length += ((ASN1OctetString) v.elementAt(i)).value.length;
+                length += ((ASN1OctetString) v.get(i)).value.length;
             }
 
             value = new byte[length];
@@ -46,7 +46,7 @@ public final class ASN1OctetString extends Binary {
             int offset = 0;
 
             for (int i = 0; i < v.size(); i++) {
-                os = (ASN1OctetString) v.elementAt(i);
+                os = (ASN1OctetString) v.get(i);
                 System.arraycopy(os.value, 0, value, offset, os.value.length);
                 offset += os.value.length;
             }

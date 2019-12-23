@@ -33,7 +33,7 @@ package org.webpki.kg2xml;
  */
 import java.io.IOException;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.webpki.xml.DOMWriterHelper;
 
@@ -43,7 +43,7 @@ public class PlatformNegotiationResponseEncoder extends PlatformNegotiationRespo
   {
     private String prefix;  // Default: no prefix
     
-    Vector<ImagePreference> image_preferences = new Vector<ImagePreference> ();
+    ArrayList<ImagePreference> image_preferences = new ArrayList<ImagePreference> ();
 
 
     public void setPrefix (String prefix) throws IOException

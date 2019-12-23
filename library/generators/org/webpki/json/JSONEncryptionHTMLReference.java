@@ -24,7 +24,7 @@ import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.CustomCryptoProvider;
@@ -137,9 +137,9 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
         String text;
     }
     
-    static Vector<AsymKey> asymmetricKeys = new Vector<AsymKey>();
+    static ArrayList<AsymKey> asymmetricKeys = new ArrayList<AsymKey>();
 
-    static Vector<SymKey> symmetricKeys = new Vector<SymKey>();
+    static ArrayList<SymKey> symmetricKeys = new ArrayList<SymKey>();
 
     static class AsymKey extends CoreKey {
         KeyPair keyPair;
@@ -190,7 +190,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
                     .addExtension(Extension1.class, true)
                     .addExtension(Extension2.class, true));
             }
-            Vector<JSONDecryptionDecoder> recipients = new Vector<JSONDecryptionDecoder>();
+            ArrayList<JSONDecryptionDecoder> recipients = new ArrayList<JSONDecryptionDecoder>();
             if (checker.hasProperty(JSONCryptoHelper.RECIPIENTS_JSON)) {
                 JSONArrayReader recipientArray = checker.getArray(JSONCryptoHelper.RECIPIENTS_JSON);
                 do {

@@ -35,7 +35,7 @@ import java.security.spec.ECPoint;
 import java.util.EnumSet;
 import java.util.GregorianCalendar;
 import java.util.TreeSet;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import java.util.regex.Pattern;
 
@@ -443,7 +443,7 @@ public class JSONObjectWriter implements Serializable {
     }
 
     JSONObjectWriter setStringArray(String name, String[] values, JSONTypes jsonType) throws IOException {
-        Vector<JSONValue> array = new Vector<JSONValue>();
+        ArrayList<JSONValue> array = new ArrayList<JSONValue>();
         for (String value : values) {
             array.add(new JSONValue(jsonType, value));
         }
@@ -458,13 +458,13 @@ public class JSONObjectWriter implements Serializable {
      *    "blobs": ["lNxNvAUEE8t7DSQBft93LVSXxKCiVjhbWWfyg023FCk","LmTlQxXB3LgZrNLmhOfMaCnDizczC_RfQ6Kx8iNwfFA"]
      * </pre>
      * @param name Property
-     * @param values Vector holding arrays of bytes
+     * @param values ArrayList holding arrays of bytes
      * @return Current instance of {@link org.webpki.json.JSONObjectWriter}
      * @throws IOException &nbsp;
      * @see Base64URL#encode(byte[])
      */
-    public JSONObjectWriter setBinaryArray(String name, Vector<byte[]> values) throws IOException {
-        Vector<String> array = new Vector<String>();
+    public JSONObjectWriter setBinaryArray(String name, ArrayList<byte[]> values) throws IOException {
+        ArrayList<String> array = new ArrayList<String>();
         for (byte[] value : values) {
             array.add(Base64URL.encode(value));
         }
@@ -678,7 +678,7 @@ import org.webpki.json.JSONSignatureDecoder;
                                               JSONSigner signer,
                                               boolean chained) throws IOException {       
         JSONObjectReader reader = new JSONObjectReader(root);
-        Vector<JSONObject> oldSignatures = new Vector<JSONObject>();
+        ArrayList<JSONObject> oldSignatures = new ArrayList<JSONObject>();
         String keyWord = chained ? JSONCryptoHelper.CHAIN_JSON : JSONCryptoHelper.SIGNERS_JSON;
         if (reader.hasProperty(signatureLabel)) {
             reader = reader.getObject(signatureLabel);
@@ -709,8 +709,7 @@ import org.webpki.json.JSONSignatureDecoder;
         }
         int q = oldSignatures.size();
         while (--q >= 0) {
-            signatureArray.array.insertElementAt(new JSONValue(JSONTypes.OBJECT,
-                                                               oldSignatures.get(q)), 0);
+            signatureArray.array.add(0, new JSONValue(JSONTypes.OBJECT, oldSignatures.get(q)));
         }
         if (chained) {
             coreSign(signer, signatureArray.setObject(), globalSignatureObject, this);
@@ -892,13 +891,13 @@ import org.webpki.json.JSONSignatureDecoder;
     public static JSONObjectWriter 
             createEncryptionObjects(byte[] unencryptedData,
                                     DataEncryptionAlgorithms dataEncryptionAlgorithm,
-                                    Vector<JSONEncrypter> encrypters)
+                                    ArrayList<JSONEncrypter> encrypters)
     throws IOException, GeneralSecurityException {
         if (encrypters.isEmpty()) {
             throw new IOException("Empty encrypter list");
         }
         JSONEncrypter.Header header = 
-                new JSONEncrypter.Header(dataEncryptionAlgorithm, encrypters.firstElement());
+                new JSONEncrypter.Header(dataEncryptionAlgorithm, encrypters.get(0));
         JSONArrayWriter recipientList = 
                 header.encryptionWriter.setArray(JSONCryptoHelper.RECIPIENTS_JSON);
         for (JSONEncrypter encrypter : encrypters) {
@@ -931,7 +930,7 @@ import org.webpki.json.JSONSignatureDecoder;
     void printOneElement(JSONValue jsonValue) throws IOException {
         switch (jsonValue.type) {
             case ARRAY:
-                printArray((Vector<JSONValue>) jsonValue.value);
+                printArray((ArrayList<JSONValue>) jsonValue.value);
                 break;
 
             case OBJECT:
@@ -978,11 +977,11 @@ import org.webpki.json.JSONSignatureDecoder;
     }
 
     @SuppressWarnings("unchecked")
-    void printArray(Vector<JSONValue> array) throws IOException {
+    void printArray(ArrayList<JSONValue> array) throws IOException {
         buffer.append('[');
         if (!array.isEmpty()) {
             boolean mixed = false;
-            JSONTypes firstType = array.firstElement().type;
+            JSONTypes firstType = array.get(0).type;
             for (JSONValue jsonValue : array) {
                 if (firstType.complex != jsonValue.type.complex ||
                         (firstType.complex && firstType != jsonValue.type))
@@ -1008,7 +1007,7 @@ import org.webpki.json.JSONSignatureDecoder;
                 newIndentSpace();
                 boolean next = false;
                 for (JSONValue value : array) {
-                    Vector<JSONValue> subArray = (Vector<JSONValue>) value.value;
+                    ArrayList<JSONValue> subArray = (ArrayList<JSONValue>) value.value;
                     if (next) {
                         buffer.append(',');
                     } else {
@@ -1024,7 +1023,7 @@ import org.webpki.json.JSONSignatureDecoder;
         buffer.append(']');
     }
 
-    void printArraySimple(Vector<JSONValue> array) throws IOException {
+    void printArraySimple(ArrayList<JSONValue> array) throws IOException {
         int i = 0;
         for (JSONValue value : array) {
             i += ((String) value.value).length();
@@ -1055,7 +1054,7 @@ import org.webpki.json.JSONSignatureDecoder;
         }
     }
 
-    void printArrayObjects(Vector<JSONValue> array) throws IOException {
+    void printArrayObjects(ArrayList<JSONValue> array) throws IOException {
         boolean next = false;
         for (JSONValue value : array) {
             if (next) {
@@ -1205,7 +1204,7 @@ import org.webpki.json.JSONSignatureDecoder;
         htmlMode = outputFormat.html;
         canonicalized = outputFormat.canonicalized;
         if (root.properties.containsKey(null)) {
-            printArray((Vector<JSONValue>) root.properties.get(null).value);
+            printArray((ArrayList<JSONValue>) root.properties.get(null).value);
         } else {
             printObject(root);
         }

@@ -45,7 +45,7 @@ import java.security.spec.RSAKeyGenParameterSpec;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import javax.crypto.KeyAgreement;
 import javax.security.auth.x500.X500Principal;
@@ -410,7 +410,7 @@ public class KeyGen2Test
         KeyCreator kc = new KeyCreator ();
         kc.addPIN (format, null, patterns);
         kc.addKey (AppUsage.AUTHENTICATION);
-        KeyCreationRequestDecoder.UserPINDescriptor upd = kc.parse ().getUserPINDescriptors ().elementAt (0);
+        KeyCreationRequestDecoder.UserPINDescriptor upd = kc.parse ().getUserPINDescriptors ().get (0);
         KeyCreationRequestDecoder.UserPINError pin_test = upd.setPIN (pin, false);
         KeyCreationRequestDecoder.UserPINError pin_set = upd.setPIN (pin, true);
         if ((pin_test == null) ^ (pin_set == null))
@@ -588,7 +588,7 @@ public class KeyGen2Test
             PlatformNegotiationResponseEncoder platform_response = new PlatformNegotiationResponseEncoder (platform_req);
             BasicCapabilities basic_capabilties_response = platform_response.getBasicCapabilities ();
             BasicCapabilities basic_capabilties_request = platform_req.getBasicCapabilities ();
-            Vector<String> matches = new Vector<String> ();
+            ArrayList<String> matches = new ArrayList<String> ();
             for (String want : basic_capabilties_request.getAlgorithms ())
               {
                 for (String have : device_info.getSupportedAlgorithms ())
@@ -1310,7 +1310,7 @@ public class KeyGen2Test
                         gen_private_key = kp.getPrivate ();
                       }
     
-                    Vector<X509Certificate> cert_path = new Vector<X509Certificate> ();
+                    ArrayList<X509Certificate> cert_path = new ArrayList<X509Certificate> ();
                     cert_path.add (new CA ().createCert (cert_spec,
                                                          DistinguishedName.subjectDN ((X509Certificate)DemoKeyStore.getSubCAKeyStore ().getCertificate ("mykey")),
                                                          new BigInteger (String.valueOf (new Date ().getTime ())),

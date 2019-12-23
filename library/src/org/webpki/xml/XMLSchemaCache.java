@@ -24,7 +24,7 @@ import java.io.FileInputStream;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import javax.xml.XMLConstants;
 
@@ -102,7 +102,7 @@ public class XMLSchemaCache {
 
     private Hashtable<String, byte[]> knownURIs;
 
-    private Vector<DOMSource> schema_stack;
+    private ArrayList<DOMSource> schema_stack;
 
     private DocumentBuilder xsd_parser;
 
@@ -131,7 +131,7 @@ public class XMLSchemaCache {
     public XMLSchemaCache() throws IOException {
         classMap = new Hashtable<ElementID, Class<?>>();
         knownURIs = new Hashtable<String, byte[]>();
-        schema_stack = new Vector<DOMSource>();
+        schema_stack = new ArrayList<DOMSource>();
         DocumentBuilderFactory dbf = DOMUtil.createDocumentBuilderFactory();
         dbf.setNamespaceAware(true);
         try {

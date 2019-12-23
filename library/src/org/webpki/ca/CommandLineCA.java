@@ -22,7 +22,7 @@ import java.io.FileOutputStream;
 
 import java.math.BigInteger;
 
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -52,7 +52,7 @@ import org.webpki.crypto.SignatureWrapper;
 
 
 public class CommandLineCA {
-    Vector<CmdLineArgument> list = new Vector<CmdLineArgument>();
+    ArrayList<CmdLineArgument> list = new ArrayList<CmdLineArgument>();
 
     int max_display;
 
@@ -70,7 +70,7 @@ public class CommandLineCA {
         String command;
         String optargument;
         String defaultvalue;
-        Vector<String> argvalue = new Vector<String>();
+        ArrayList<String> argvalue = new ArrayList<String>();
         CmdFrequency frequency;
         boolean found;
 
@@ -112,7 +112,7 @@ public class CommandLineCA {
             if (argvalue.size() != 1) {
                 bad("Internal argument error for command: " + command);
             }
-            return argvalue.elementAt(0).trim();
+            return argvalue.get(0).trim();
         }
 
         AsymSignatureAlgorithms getAlgorithm() throws IOException {
@@ -715,7 +715,7 @@ public class CommandLineCA {
             PrivateKey sign_key = priv_key;  // Assume self-signed
             PublicKey issuer_pub_key = subject_pub_key;
             DistinguishedName issuer = certspec.getSubjectDistinguishedName();
-            Vector<Certificate> cert_path = new Vector<Certificate>();
+            ArrayList<Certificate> cert_path = new ArrayList<Certificate>();
             if (!CMD_self_signed.found) {
                 KeyStore ks = KeyStore.getInstance(CMD_ca_ks_type.getString());
                 ks.load(new FileInputStream(CMD_ca_keystore.getString()), CMD_ca_ks_pass.toCharArray());
@@ -847,12 +847,12 @@ public class CommandLineCA {
             }
 
             ///////////////////////////////////////////////////////////////
-            // And now: Create the certificate...
+            // And now: Create the certificate path...
             ///////////////////////////////////////////////////////////////
             X509Certificate signer_cert = ca.createCert(certspec, issuer, serial, start_date, end_date,
                     certalg, new CertificateSigner(sign_key, issuer_pub_key),
                     subject_pub_key);
-            cert_path.insertElementAt(signer_cert, 0);
+            cert_path.add(0, signer_cert);
 
             ///////////////////////////////////////////////////////////////
             // The final: Write the whole thing out
