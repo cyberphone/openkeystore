@@ -34,6 +34,7 @@ import java.security.spec.ECPoint;
 
 import java.util.EnumSet;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.TreeSet;
 import java.util.ArrayList;
 
@@ -458,12 +459,12 @@ public class JSONObjectWriter implements Serializable {
      *    "blobs": ["lNxNvAUEE8t7DSQBft93LVSXxKCiVjhbWWfyg023FCk","LmTlQxXB3LgZrNLmhOfMaCnDizczC_RfQ6Kx8iNwfFA"]
      * </pre>
      * @param name Property
-     * @param values ArrayList holding arrays of bytes
+     * @param values List holding arrays of bytes
      * @return Current instance of {@link org.webpki.json.JSONObjectWriter}
      * @throws IOException &nbsp;
      * @see Base64URL#encode(byte[])
      */
-    public JSONObjectWriter setBinaryArray(String name, ArrayList<byte[]> values) throws IOException {
+    public JSONObjectWriter setBinaryArray(String name, List<byte[]> values) throws IOException {
         ArrayList<String> array = new ArrayList<String>();
         for (byte[] value : values) {
             array.add(Base64URL.encode(value));
@@ -891,7 +892,7 @@ import org.webpki.json.JSONSignatureDecoder;
     public static JSONObjectWriter 
             createEncryptionObjects(byte[] unencryptedData,
                                     DataEncryptionAlgorithms dataEncryptionAlgorithm,
-                                    ArrayList<JSONEncrypter> encrypters)
+                                    List<JSONEncrypter> encrypters)
     throws IOException, GeneralSecurityException {
         if (encrypters.isEmpty()) {
             throw new IOException("Empty encrypter list");

@@ -542,8 +542,8 @@ public class JSONObjectReader implements Serializable, Cloneable {
     }
     
     ArrayList<JSONSignatureDecoder> getSignatureArray(String signatureLabel, 
-                                                   JSONCryptoHelper.Options options,
-                                                   boolean chained) throws IOException {
+                                                      JSONCryptoHelper.Options options,
+                                                      boolean chained) throws IOException {
         options.encryptionMode(false);
         JSONObjectReader outerSignatureObject = getObject(signatureLabel);
         JSONArrayReader arrayReader = 
@@ -587,7 +587,7 @@ public class JSONObjectReader implements Serializable, Cloneable {
     }
     
     public ArrayList<JSONSignatureDecoder> getMultiSignature(String signatureLabel, 
-                                                          JSONCryptoHelper.Options options)
+                                                             JSONCryptoHelper.Options options)
     throws IOException {
         return getSignatureArray(signatureLabel, options, false);
     }
