@@ -606,7 +606,7 @@ public class JSONObjectReader implements Serializable, Cloneable {
     }
     
     public ArrayList<JSONSignatureDecoder> getSignatureChain(String signatureLabel, 
-                                                          JSONCryptoHelper.Options options)
+                                                             JSONCryptoHelper.Options options)
     throws IOException {
         return getSignatureArray(signatureLabel, options, true);
     }
