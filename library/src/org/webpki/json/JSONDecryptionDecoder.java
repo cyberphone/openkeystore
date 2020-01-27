@@ -32,8 +32,7 @@ import java.util.List;
 ////////////////////////////////////////////////////////////////////////////////////
 // JEF is effectively a "remake" of of JWE.  Why a remake?  Because the           //
 // encryption system (naturally) borrows heavily from JSF including clear text    //
-// header information and using the JCS based normalization scheme for creating   //
-// authenticated data.                                                            //
+// header information and using JCS for creating authenticated data.              //                                                            //
 //                                                                                //
 // The supported algorithms and JWK attributes are though fully JOSE compatible.  //
 ////////////////////////////////////////////////////////////////////////////////////
