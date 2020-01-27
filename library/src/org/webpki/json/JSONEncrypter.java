@@ -92,7 +92,6 @@ public abstract class JSONEncrypter implements Serializable {
                         encrypter.keyEncryptionAlgorithm.isRsa() ?
                             EncryptionCore.rsaEncryptKey(contentEncryptionKey,
                                                          encrypter.keyEncryptionAlgorithm,
-                                                         dataEncryptionAlgorithm,
                                                          encrypter.publicKey)
                                                        :
                             EncryptionCore.senderKeyAgreement(contentEncryptionKey,
