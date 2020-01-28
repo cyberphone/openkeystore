@@ -107,7 +107,7 @@ public abstract class JSONEncrypter implements Serializable {
                                                             AlgorithmPreferences.JOSE));
                 }
                 if (encrypter.keyEncryptionAlgorithm.isKeyWrap()) {
-                    currentRecipient.setBinary(JSONCryptoHelper.CIPHER_TEXT_JSON,
+                    currentRecipient.setBinary(JSONCryptoHelper.ENCRYPTED_KEY_JSON,
                                                asymmetricEncryptionResult.getEncryptedKeyData());
                 }
             }

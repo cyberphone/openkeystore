@@ -1,6 +1,6 @@
 {
   "algorithm": "A128GCM",
-  "encryptedKey": {
+  "keyEncryption": {
     "algorithm": "ECDH-ES+A128KW",
     "ephemeralKey": {
       "kty": "EC",
@@ -8,7 +8,7 @@
       "x": "B0hv9voXJRhFkcL4J8M6g0evdrKjHjj5FSTXfQDbIb4",
       "y": "XYqQOvUxGSbjuJaxUvow_qDS2iOdKMTPuJ54OCFDo0E"
     },
-    "cipherText": "o-zAhqPcqufP19z6G4m41qI_1kVRPZW5"
+    "encryptedKey": "o-zAhqPcqufP19z6G4m41qI_1kVRPZW5"
   },
   "iv": "S3Bt_FPWpNaIH5bc",
   "tag": "QXLRfPjwWFdCoTy-lwAgnw",

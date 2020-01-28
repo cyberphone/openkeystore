@@ -873,7 +873,7 @@ import org.webpki.json.JSONSignatureDecoder;
                 new JSONEncrypter.Header(dataEncryptionAlgorithm, encrypter);
         JSONObjectWriter encryptionObject = header.encryptionWriter;
         if (encrypter.keyEncryptionAlgorithm != null) {
-            encryptionObject = encryptionObject.setObject(JSONCryptoHelper.ENCRYPTED_KEY_JSON);
+            encryptionObject = encryptionObject.setObject(JSONCryptoHelper.KEY_ENCRYPTION_JSON);
         }
         header.createRecipient(encrypter, encryptionObject);
         return header.finalizeEncryption(unencryptedData);

@@ -67,8 +67,8 @@ public class Encryption {
     }
 
     static void cleanInner(JSONObjectReader inner) throws Exception {
-        if (inner.hasProperty(JSONCryptoHelper.CIPHER_TEXT_JSON)) {
-            inner.removeProperty(JSONCryptoHelper.CIPHER_TEXT_JSON);
+        if (inner.hasProperty(JSONCryptoHelper.ENCRYPTED_KEY_JSON)) {
+            inner.removeProperty(JSONCryptoHelper.ENCRYPTED_KEY_JSON);
         }
         if (inner.hasProperty(JSONCryptoHelper.EPHEMERAL_KEY_JSON)) {
             inner.removeProperty(JSONCryptoHelper.EPHEMERAL_KEY_JSON);
@@ -84,8 +84,8 @@ public class Encryption {
             do {
                 cleanInner(recipients.getObject());
             } while (recipients.hasMore());
-        } else if (encryptedData.hasProperty(JSONCryptoHelper.ENCRYPTED_KEY_JSON)) {
-            cleanInner(encryptedData.getObject(JSONCryptoHelper.ENCRYPTED_KEY_JSON));
+        } else if (encryptedData.hasProperty(JSONCryptoHelper.KEY_ENCRYPTION_JSON)) {
+            cleanInner(encryptedData.getObject(JSONCryptoHelper.KEY_ENCRYPTION_JSON));
         } else {
             cleanInner(encryptedData);
         }

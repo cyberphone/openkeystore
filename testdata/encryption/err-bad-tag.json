@@ -1,6 +1,6 @@
 {
   "algorithm": "A256CBC-HS512",
-  "encryptedKey": {
+  "keyEncryption": {
     "algorithm": "ECDH-ES",
     "publicKey": {
       "kty": "EC",

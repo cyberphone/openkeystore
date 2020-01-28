@@ -14,7 +14,7 @@
       "x": "eCLY1TH5uxtB0m3WegvV3tNsXeIczlX3lOEe4dPz-4Y",
       "y": "_XyN4dnpV5bUH9WxOXdPFVQ1695za1kidHxOibN85Lo"
     },
-    "cipherText": "vkDe4nxoy6l5FvTNd99mXRDrUc-dUsT-IyetS0A4aaOcrGcI9aiCW-AYaEM5EUUcgp9ZvPM-2eY3zcJI9K648PJyl-Rxaw-c"
+    "encryptedKey": "vkDe4nxoy6l5FvTNd99mXRDrUc-dUsT-IyetS0A4aaOcrGcI9aiCW-AYaEM5EUUcgp9ZvPM-2eY3zcJI9K648PJyl-Rxaw-c"
   },{
     "algorithm": "ECDH-ES+A256KW",
     "publicKey": {
@@ -29,7 +29,7 @@
       "x": "7rcO6Vp4W_JSrK0foQfY6AuuWPMC3HVok2n4xhwiTLhZJyKH6jSACe5odxqo_z_w",
       "y": "SeuZms2I8XOeTk58SxeswRWxoyzJjv4QVztcYKQGXcCZllr48cNNUmffwiZgl0Ms"
     },
-    "cipherText": "SrJfRAlyioIPDSDKxHCl7WXkWsPFig2AGMN_mvTIUa7R9Z-h624z0SYYNoAFjHVOToafY7jkW-GG1N5m_DmRRY5CLdRvjc-X"
+    "encryptedKey": "SrJfRAlyioIPDSDKxHCl7WXkWsPFig2AGMN_mvTIUa7R9Z-h624z0SYYNoAFjHVOToafY7jkW-GG1N5m_DmRRY5CLdRvjc-X"
   }],
   "iv": "dt9btmk3cNbF_lBE6dKNRA",
   "tag": "MBxpB9NBmgiCwGFqJ6vtI_c3phxtuLehmFqF_pgRsOs",

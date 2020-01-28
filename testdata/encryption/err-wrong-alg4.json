@@ -1,13 +1,13 @@
 {
   "algorithm": "A256GCM",
-  "encryptedKey": {
+  "keyEncryption": {
     "algorithm": "RSA-OAEP-256",
     "publicKey": {
       "kty": "RSA",
       "n": "hFWEXArvaZEpSP5qNX7x4C4Hl28GJQTNvnDwkfqiWs63kXbdyPeS06bz6GnY3tfQ_093nGauWsimqKBmGAGMPtsV83Qxw1OIeO4ujbIIb9pema0qtVqs0MWlHxklZGFkYfAmbuEUFxYDeLDHe0bkkXbSlB7_t8pCSvc8HLgHjEQjYOlFRwjR0D-uLo-xgsCbpmCtYkB5lcT_zFgpRgY4zJNLSv7GZiz2S4Fc5ArGjd34lL47-L8bozuYjqNOv9sqX0Zgll5XaJ1ndvr7UqZu1xQFgm38reoM3IarBP_SkEFbt_v9iak602VO3k28fQhMaocP7JWR2YLT3kZM0-WTFw",
       "e": "AQAB"
     },
-    "cipherText": "SGxo4qySRu9TKUYedCCULQ6uKbvSzzDC0otslZl2muzrFhfeZmTNXBX1lvgnp0p_RBQ8mOnu-0DRcdyLdZpIE_Rp7g4ciN4KFTHUwor3OfoU10D-XgXA8H8BG9GJhbZAdkY7oL_MqdtRBcQpB3btehSRWC-pVYeO2hlF52C6QKMxr4j7Yo1wamzsKmC7VjcHWSgTVAW7YEojI0UWz-6X7yOxEvQoVORJabg7PbcNTq5Dan8AxIX-mGNaOwa2xOW8i353FSa9zsIVnZx5PdOh6FQeGbSxXFbKlGLUvg9Y0PO1cJNgT5YANabSNJvXfT5pRGQ-9CD0X7xw4zQSo0xaoQ",
+    "encryptedKey": "SGxo4qySRu9TKUYedCCULQ6uKbvSzzDC0otslZl2muzrFhfeZmTNXBX1lvgnp0p_RBQ8mOnu-0DRcdyLdZpIE_Rp7g4ciN4KFTHUwor3OfoU10D-XgXA8H8BG9GJhbZAdkY7oL_MqdtRBcQpB3btehSRWC-pVYeO2hlF52C6QKMxr4j7Yo1wamzsKmC7VjcHWSgTVAW7YEojI0UWz-6X7yOxEvQoVORJabg7PbcNTq5Dan8AxIX-mGNaOwa2xOW8i353FSa9zsIVnZx5PdOh6FQeGbSxXFbKlGLUvg9Y0PO1cJNgT5YANabSNJvXfT5pRGQ-9CD0X7xw4zQSo0xaoQ",
     "redundant":7
   },
   "iv": "ztNJfef64tiZPtQr",

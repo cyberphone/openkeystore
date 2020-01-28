@@ -1,11 +1,11 @@
 {
   "algorithm": "A128GCM",
-  "encryptedKey": {
+  "keyEncryption": {
     "algorithm": "RSA-OAEP",
     "keyId": "example.com:r2048",
-    "cipherText": "gGdSQ29bQKmpdrIuQNkBrMyu76ByJdQ2TsamrpA_YZr22CujgP5LpMcAPk4Lj_iADKZILpwJyB8qJN3ndo2mdpFfxKLC1iTJ4KDUT0EaTSA9NeFmfyarOHVYb0_QeTqnydKCZ8nBWtdWgbJ1q9P5Mznz1xJbgdkBz7nhpGQCNTGayg4-EZvxFvajLQmV6D4BiNt1PU2EHaYsfdpo_pTIflK-KJ-tbVPW9xon7Cejzew4xnJOnjqJggY_R1ZImcIqt6Ndxzu1R2I9S9fC2E117suU1GFUcaU5irdj-XFR00DD6UwQs9YVcAFrWun4RPtAkHACiRGDztoYhai8Q5vD8A"
+    "encryptedKey": "dBymKN6faZt1s8Abc2M6IPiRvMqhI085vMPwUm0eQbU3sZswnsTBcPngbEE362WuoEQjsmGXpE_nZ_XUp__X251iyRyTuAm62U-eaea6hn-eswB_RmUht1vlsnvbdnfIDnivi6ZT_B7dnhd0HqV5bKGRVM9ITmQEkFSBzu10w0cdqfh_M99qK1jH8qV63ObStKgMjBdCc1htoXaqNol449rVYJc911O1-J5h2cj1x1kEh4AgvACpSf3jN3znEsZ8i2TUg5pjKwV-6hJ5mcFNTLNq4B14FZTzaHz9RGgPdsw55abbaMQl6cVUEZI1SsgwVTk9vIVMU_kLS1cAhDVO4Q"
   },
-  "iv": "usuqNsx-ha5wDKkf",
-  "tag": "7pewl80M88X1XbZVO8GqiQ",
-  "cipherText": "vprnCldhl8-U_wKSRy5BzUu_iNKyCQ"
+  "iv": "LO-3eomo-AaiApte",
+  "tag": "oVyW7uI7ilzG0rdUXt4x2A",
+  "cipherText": "JUiGExaRNWMUJvLjIOnAnAncV4DdVA"
 }

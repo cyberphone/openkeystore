@@ -1,6 +1,6 @@
 {
   "algorithm": "A128CBC-HS256",
-  "encryptedKey": {
+  "keyEncryption": {
     "publicKey": {
       "kty": "EC",
       "crv": "P-256",
@@ -13,7 +13,7 @@
       "x": "uaskeuHyvExAAianGSVjAAhC8ss7_-kBRptWh5NFKvE",
       "y": "elAbcn77sxMolkiB41uXEapf0qmjcuCIIApEe0M_8wA"
     },
-    "cipherText": "2FxqB86T83jwN5PwMvDHJ2sBkKIOam7sbSbEFoJTXYpwFzRQL-ggSg"
+    "encryptedKey": "2FxqB86T83jwN5PwMvDHJ2sBkKIOam7sbSbEFoJTXYpwFzRQL-ggSg"
   },
   "iv": "0G7npSYoDI8Q7Z9W1uMSqw",
   "tag": "vYoEVfYfpI3jET6HG-o8fQ",

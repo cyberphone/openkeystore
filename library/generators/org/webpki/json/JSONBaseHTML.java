@@ -293,7 +293,7 @@ public class JSONBaseHTML  {
 
         addReferenceEntry(REF_JEF,
             "A. Rundgren, \"JEF - JSON Encryption Format\", Work in progress, " +
-            "<span style=\"white-space: nowrap\">V0.60, Mars&nbsp;2019.</span> " +
+            "<span style=\"white-space: nowrap\">V0.61, January&nbsp;2020.</span> " +
             externalWebReference ("https://cyberphone.github.io/doc/security/jef.html"));
 
         addReferenceEntry(REF_SKS, "A. Rundgren, \"Secure Key Store (SKS) - API and Architecture\", Work in progress, " +

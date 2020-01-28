@@ -706,10 +706,10 @@ public class JSONObjectReader implements Serializable, Cloneable {
         if (hasProperty(JSONCryptoHelper.RECIPIENTS_JSON)) {
             throw new IOException("Please use \"getEncryptionObjects()\" for multiple encryption objects");
         }
-        boolean keyEncryption = hasProperty(JSONCryptoHelper.ENCRYPTED_KEY_JSON);
+        boolean keyEncryption = hasProperty(JSONCryptoHelper.KEY_ENCRYPTION_JSON);
         JSONDecryptionDecoder.Holder holder = new JSONDecryptionDecoder.Holder(options, this, keyEncryption);
         return new JSONDecryptionDecoder(holder, 
-                                         keyEncryption ? getObject(JSONCryptoHelper.ENCRYPTED_KEY_JSON) : this,
+                                         keyEncryption ? getObject(JSONCryptoHelper.KEY_ENCRYPTION_JSON) : this,
                                          true);
     }
 

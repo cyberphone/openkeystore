@@ -1,6 +1,6 @@
 {
   "algorithm": "A256GCM",
-  "encryptedKey": {
+  "keyEncryption": {
     "algorithm": "RSA-OAEP-256",
     "publicKey": {
       "kty": "RSA",

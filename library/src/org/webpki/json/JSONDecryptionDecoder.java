@@ -113,8 +113,6 @@ public class JSONDecryptionDecoder {
 
     private byte[] encryptedKeyData;  // For RSA and ECDH+ only
 
-    private boolean sharedSecretMode;
-
     private Holder holder;
 
     public PublicKey getPublicKey() {
@@ -126,11 +124,11 @@ public class JSONDecryptionDecoder {
     }
 
     public boolean isSharedSecret() {
-        return sharedSecretMode;
+        return !holder.keyEncryption;
     }
 
     public JSONDecryptionDecoder require(boolean publicKeyEncryption) throws IOException {
-        if (publicKeyEncryption == sharedSecretMode) {
+        if (publicKeyEncryption == isSharedSecret()) {
             throw new IOException((publicKeyEncryption ? "Missing" : "Unexpected") + " public key");
         }
         return this;
@@ -181,7 +179,7 @@ public class JSONDecryptionDecoder {
             }
 
             if (keyEncryptionAlgorithm.isKeyWrap()) {
-                encryptedKeyData = encryptionObject.getBinary(JSONCryptoHelper.CIPHER_TEXT_JSON);
+                encryptedKeyData = encryptionObject.getBinary(JSONCryptoHelper.ENCRYPTED_KEY_JSON);
             }
             if (!keyEncryptionAlgorithm.isRsa()) {
                 ephemeralPublicKey =
@@ -189,8 +187,6 @@ public class JSONDecryptionDecoder {
                             .getObject(JSONCryptoHelper.EPHEMERAL_KEY_JSON)
                                 .getCorePublicKey(holder.options.algorithmPreferences);
             }
-        } else {
-            sharedSecretMode = true;
         }
 
         // An encryption object may also hold "extension" data

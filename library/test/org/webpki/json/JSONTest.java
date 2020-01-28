@@ -4189,7 +4189,7 @@ public class JSONTest {
                 checkException(e, "Property \"" + JSONCryptoHelper.ALGORITHM_JSON + "\" is missing");
             }
         }
-        variousEncryptionErrors("err-wrong-alg1.json", "Property \"" + JSONCryptoHelper.CIPHER_TEXT_JSON + "\" is missing");
+        variousEncryptionErrors("err-wrong-alg1.json", "Property \"" + JSONCryptoHelper.ENCRYPTED_KEY_JSON + "\" is missing");
         variousEncryptionErrors("err-wrong-alg2.json", "Property \"" + JSONCryptoHelper.N_JSON + "\" is missing");
         variousEncryptionErrors("err-wrong-alg3.json", "Property \"" + JSONCryptoHelper.EPHEMERAL_KEY_JSON + "\" is missing");
         variousEncryptionErrors("err-wrong-alg4.json", "Property \"redundant\" was never read");

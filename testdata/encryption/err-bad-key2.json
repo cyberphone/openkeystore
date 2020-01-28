@@ -1,6 +1,6 @@
 {
   "algorithm": "A256CBC-HS512",
-  "encryptedKey": {
+  "keyEncryption": {
     "algorithm": "ECDH-ES+A256KW",
     "publicKey": {
       "kty": "EC",
@@ -14,7 +14,7 @@
       "x": "uaskeuHyvExAAianGSVjAAhC8ss7_-kBRptWh5NFKvE",
       "y": "elAbcn77sxMolkiB41uXEapf0qmjcuCIIApEe0M_8wA"
     },
-    "cipherText": "2FxqB86T83jwN5PwMvDHJ2sBkKIOam7sbSbEFoJTXYpwFzRQL-ggSg"
+    "encryptedKey": "2FxqB86T83jwN5PwMvDHJ2sBkKIOam7sbSbEFoJTXYpwFzRQL-ggSg"
   },
   "iv": "3dkb5JtmmXXyUB8tBGifOg",
   "tag": "cSbJ5oF9uQmDuLXiXKZnp6g-Yq9wCRqvOAs1QGcHvpw",

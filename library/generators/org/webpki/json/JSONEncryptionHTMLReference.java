@@ -198,7 +198,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
                 } while (recipientArray.hasMore());
                 recipients = encryptedObject.getEncryptionObjects(options);
             } else {
-                scanObject(checker.getObject(JSONCryptoHelper.ENCRYPTED_KEY_JSON), options);
+                scanObject(checker.getObject(JSONCryptoHelper.KEY_ENCRYPTION_JSON), options);
                 recipients.add(encryptedObject.getEncryptionObject(options));
             }
             for (JSONDecryptionDecoder decoder : recipients) {
@@ -513,6 +513,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
         json.addDocumentHistoryLine("2017-04-25", "0.5", "Added KW and GCM algorithms");
         json.addDocumentHistoryLine("2017-05-15", "0.51", "Added test vectors and missing RSA-OAEP algorithm");
         json.addDocumentHistoryLine("2019-03-15", "0.60", "Rewritten to use the JCS " + json.createReference(JSONBaseHTML.REF_JCS) + " canonicalization scheme");
+        json.addDocumentHistoryLine("2020-01-20", "0.61", "Refactored names");
 
         json.addParagraphObject("Author").append("JEF was developed by Anders Rundgren (<code>anders.rundgren.net@gmail.com</code>) as a part " +
                                                  "of the OpenKeyStore " +
@@ -527,7 +528,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
                         .setType(Types.WEBPKI_DATA_TYPES.STRING)
                     .newColumn()
                     .newColumn()
-        .addString("Content encryption algorithm. Currently the following JWE " +
+        .addString("Content/data encryption algorithm. Currently the following JWE " +
             json.createReference(JSONBaseHTML.REF_JWE) +
             " algorithms are recognized:<ul>")
         .newExtensionRow(new Extender() {
@@ -557,13 +558,13 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
        .newRow()
 
         .newColumn()
-        .addProperty(JSONCryptoHelper.ENCRYPTED_KEY_JSON)
+        .addProperty(JSONCryptoHelper.KEY_ENCRYPTION_JSON)
         .addLink(KEY_ENCRYPTION)
     .newColumn()
         .setType(Types.WEBPKI_DATA_TYPES.OBJECT)
     .newColumn()
     .newColumn()
-        .addString("<i>Optional</i>. Single recipient using an encrypted key." + 
+        .addString("<i>Optional</i>. Single recipient using a key encryption scheme." + 
                    Types.LINE_SEPARATOR +
                    JSONBaseHTML.referToTestVector(JWK_TEST_VECTOR))
        .newRow()
@@ -574,7 +575,9 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
         .setType(Types.WEBPKI_DATA_TYPES.OBJECT)
     .newColumn()
     .newColumn()
-        .addString("<i>Optional</i>. One or more recipients, each having a unique encrypted key." +
+        .addString("<i>Optional</i>. One or more recipients, each using a " +
+                  "key encryption scheme featuring an <code>&quot;" +
+                   JSONCryptoHelper.ENCRYPTED_KEY_JSON + "&quot;</code> element." +
                    Types.LINE_SEPARATOR +
                    JSONBaseHTML.referToTestVector(MULT_TEST_VECTOR) + LINE_SEPARATOR)
         .addString(jweCounterPart("recipients"))
@@ -592,7 +595,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
                   JSONBaseHTML.globalLinkRef(KEY_ENCRYPTION) +
           " objects (or in the top level object " +
           "if there are no <code>&quot;" + JSONCryptoHelper.RECIPIENTS_JSON + 
-          "&quot;</code> or <code>&quot;" + JSONCryptoHelper.ENCRYPTED_KEY_JSON + "&quot;</code> elements)." +
+          "&quot;</code> or <code>&quot;" + JSONCryptoHelper.KEY_ENCRYPTION_JSON + "&quot;</code> elements)." +
           Types.LINE_SEPARATOR +
           "Extension names <b>must not</b> be <i>duplicated</i> or use any of the JEF <i>reserved words</i> " +
           JSONBaseHTML.enumerateAttributes(JSONCryptoHelper.jefReservedWords.toArray(new String[0]), false) + ". " +
@@ -638,7 +641,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
           .addString("Encrypted data." + LINE_SEPARATOR)
           .addString(jweCounterPart("chiphertext"))
           .setNotes("Note that if neither <code>" + JSONCryptoHelper.KEY_ID_JSON +
-                    "</code> nor <code>" + JSONCryptoHelper.ENCRYPTED_KEY_JSON +
+                    "</code> nor <code>" + JSONCryptoHelper.KEY_ENCRYPTION_JSON +
                     "</code> nor <code>" + JSONCryptoHelper.RECIPIENTS_JSON + 
                     "</code> are defined, the (symmetric) content encryption key is assumed to known by the recipient.");
           
@@ -743,23 +746,23 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
           .addString(jweCounterPart("epk"))
     .newRow()
         .newColumn()
-          .addProperty(JSONCryptoHelper.CIPHER_TEXT_JSON)
-          .addSymbolicValue(JSONCryptoHelper.CIPHER_TEXT_JSON)
+          .addProperty(JSONCryptoHelper.ENCRYPTED_KEY_JSON)
+          .addSymbolicValue(JSONCryptoHelper.ENCRYPTED_KEY_JSON)
         .newColumn()
           .setType(Types.WEBPKI_DATA_TYPES.BYTE_ARRAY)
         .newColumn()
         .newColumn()
-          .addString("Encrypted content encryption key." + LINE_SEPARATOR)
+          .addString("Encrypted key." + LINE_SEPARATOR)
           .addString(jweCounterPart("encrypted_key"))
      .newRow(RSA_PROPERTIES)
         .newColumn()
-          .addProperty(JSONCryptoHelper.CIPHER_TEXT_JSON)
-          .addSymbolicValue(JSONCryptoHelper.CIPHER_TEXT_JSON)
+          .addProperty(JSONCryptoHelper.ENCRYPTED_KEY_JSON)
+          .addSymbolicValue(JSONCryptoHelper.ENCRYPTED_KEY_JSON)
         .newColumn()
           .setType(Types.WEBPKI_DATA_TYPES.BYTE_ARRAY)
         .newColumn()
         .newColumn()
-          .addString("Encrypted content encryption key." + LINE_SEPARATOR)
+          .addString("Encrypted key." + LINE_SEPARATOR)
           .addString(jweCounterPart("encrypted_key"))
               .setNotes("Note that if neither <code>" + JSONCryptoHelper.KEY_ID_JSON +
                 "</code> nor <code>" + JSONCryptoHelper.PUBLIC_KEY_JSON + 

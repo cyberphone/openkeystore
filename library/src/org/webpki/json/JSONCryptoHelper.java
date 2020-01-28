@@ -51,9 +51,7 @@ public class JSONCryptoHelper implements Serializable {
 
     public static final String E_JSON                  = "e";              // JWK
 
-    public static final String ENCRYPTED_KEY_JSON      = "encryptedKey";   // JEF specific
-
-    public static final String RECIPIENTS_JSON         = "recipients";     // JEF specific
+    public static final String ENCRYPTED_KEY_JSON      = "encryptedKey";   // JWE/JEF specific
 
     public static final String EPHEMERAL_KEY_JSON      = "ephemeralKey";   // JWK subset
 
@@ -63,6 +61,8 @@ public class JSONCryptoHelper implements Serializable {
 
     public static final String IV_JSON                 = "iv";             // JWE/JEF
 
+    public static final String KEY_ENCRYPTION_JSON     = "keyEncryption";  // JEF
+
     public static final String KEY_ID_JSON             = "keyId";          // JSF/JEF
 
     public static final String KTY_JSON                = "kty";            // JWK
@@ -70,6 +70,8 @@ public class JSONCryptoHelper implements Serializable {
     public static final String N_JSON                  = "n";              // JWK
 
     public static final String PUBLIC_KEY_JSON         = "publicKey";      // Public key holder (subset JWK)
+
+    public static final String RECIPIENTS_JSON         = "recipients";     // JEF specific
 
     public static final String SIGNERS_JSON            = "signers";        // JSF - Multiple signers
 
@@ -92,6 +94,7 @@ public class JSONCryptoHelper implements Serializable {
         jefReservedWords.add(EPHEMERAL_KEY_JSON);
         jefReservedWords.add(EXTENSIONS_JSON);
         jefReservedWords.add(IV_JSON);
+        jefReservedWords.add(KEY_ENCRYPTION_JSON);
         jefReservedWords.add(KEY_ID_JSON);
         jefReservedWords.add(PUBLIC_KEY_JSON);
         jefReservedWords.add(RECIPIENTS_JSON);

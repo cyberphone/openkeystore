@@ -1,16 +1,16 @@
 {
   "algorithm": "A128GCM",
-  "encryptedKey": {
+  "keyEncryption": {
     "algorithm": "ECDH-ES+A128KW",
     "ephemeralKey": {
       "kty": "EC",
       "crv": "P-256",
-      "x": "OsHoqrizMkFTFnd_UbNPmfYfKUjOuCnvqxEl2fT2-QE",
-      "y": "dlTbQed_K09U6gTZjK4weR3dA-GrjRkip3FkEseTCxI"
+      "x": "14-ekMM4KG6TJIRv13cckrzx7995LqTkeNiZLSilO7g",
+      "y": "83vz8wszpWZT-1BoT4DZUVQMCXL8vlmCxV91S5DrYxo"
     },
-    "cipherText": "7xzTIQyuk5sSToZd7y38Jic5UN1i_B5Q"
+    "encryptedKey": "51ud0qsAlfPLDNKyCg65w_9x2P3DKDP0"
   },
-  "iv": "UH4lZNacrCVLXWvv",
-  "tag": "p_X4ABkJIa74qodimlmvfg",
-  "cipherText": "aGUsIJnyF6G7HFK4AW8mC8SnluarNw"
+  "iv": "8mE2QNrYh2qQawlI",
+  "tag": "DXsQH2JteayqyCTmE9HOIA",
+  "cipherText": "4YUj2lSlWr1RRRITr-ewVyWJ0Pnivg"
 }

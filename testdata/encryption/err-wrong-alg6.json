@@ -1,6 +1,6 @@
 {
   "algorithm": "SUPERCRYPTO",
-  "encryptedKey": {
+  "keyEncryption": {
     "algorithm": "ECDH-ES",
     "publicKey": {
       "kty": "EC",
