@@ -238,11 +238,16 @@ public class Encryption {
                        });
     }
 
-    static void coreSymmEnc(int keyBits, String fileSuffix, DataEncryptionAlgorithms dataEncryptionAlgorithm, boolean wantKeyId) throws Exception {
+    static void coreSymmEnc(int keyBits, 
+                            String fileSuffix, 
+                            DataEncryptionAlgorithms dataEncryptionAlgorithm, 
+                            boolean wantKeyId) throws Exception {
         byte[] key = symmetricKeys.getValue(keyBits);
         String keyName = symmetricKeys.getName(keyBits);
         JSONSymKeyEncrypter encrypter = new JSONSymKeyEncrypter(key);
-        JSONCryptoHelper.Options options = new JSONCryptoHelper.Options();
+        JSONCryptoHelper.Options options =
+                new JSONCryptoHelper.Options()
+                    .setPublicKeyOption(JSONCryptoHelper.PUBLIC_KEY_OPTIONS.PLAIN_ENCRYPTION);
         if (wantKeyId) {
             encrypter.setKeyId(keyName);
             options.setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED);

@@ -173,11 +173,39 @@ public class JSONCryptoHelper implements Serializable {
      * KEY_ID_OR_PUBLIC_KEY At least of<br>
      */
     public enum PUBLIC_KEY_OPTIONS {
+        /**
+         * Only valid for encryption = No key encryption
+         */
+        PLAIN_ENCRYPTION      (),
+
+        /**
+         * key encryption but no public key or certificate path
+         */
         FORBIDDEN             (), 
+
+        /**
+         * key encryption with public key
+         */
         REQUIRED              (), 
+
+        /**
+         * key encryption with optional public key
+         */
         OPTIONAL              (), 
+
+        /**
+         * key encryption with at least a public key or a key id
+         */
         KEY_ID_OR_PUBLIC_KEY  (),
+
+        /**
+         * key encryption with a public key or a key id
+         */
         KEY_ID_XOR_PUBLIC_KEY (),
+
+        /**
+         * key encryption with a certificate path
+         */
         CERTIFICATE_PATH      ();
         
         private boolean keyIdTest(String keyId) {

@@ -259,7 +259,9 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
         StringBuilder s = new StringBuilder();
         for (String name : encObjects) {
             JSONObjectReader rd = json.readJson2(name);
-            JSONCryptoHelper.Options options = new JSONCryptoHelper.Options();
+            JSONCryptoHelper.Options options = 
+                    new JSONCryptoHelper.Options()
+                        .setPublicKeyOption(JSONCryptoHelper.PUBLIC_KEY_OPTIONS.PLAIN_ENCRYPTION);
             if (rd.hasProperty(JSONCryptoHelper.KEY_ID_JSON)) {
                 options.setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED);
             }

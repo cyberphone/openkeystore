@@ -3802,9 +3802,25 @@ public class JSONTest {
         String encrec = JSONObjectWriter.createEncryptionObject(json.serializeToBytes(JSONOutputFormats.NORMALIZED),
                                                                 enc,
                                                                 new JSONSymKeyEncrypter(contentEncryptionKey)).toString();
-        assertTrue("Symmetric",
-                JSONParser.parse(JSONParser.parse(encrec).getEncryptionObject(new JSONCryptoHelper.Options())
-                        .getDecryptedData(contentEncryptionKey)).toString().equals(json.toString()));
+        for (JSONCryptoHelper.PUBLIC_KEY_OPTIONS pkOption : JSONCryptoHelper.PUBLIC_KEY_OPTIONS.values()) {
+            JSONCryptoHelper.Options option = new JSONCryptoHelper.Options().setPublicKeyOption(pkOption);
+            switch (pkOption) {
+                case PLAIN_ENCRYPTION:
+                    assertTrue("Symmetric",
+                               JSONParser.parse(JSONParser.parse(encrec)
+                                    .getEncryptionObject(option).getDecryptedData(contentEncryptionKey))
+                                        .toString().equals(json.toString()));
+                    break;
+                default:
+                    try {
+                        JSONParser.parse(JSONParser.parse(encrec)
+                                .getEncryptionObject(option).getDecryptedData(contentEncryptionKey));
+                        fail("enc");
+                    } catch (Exception ex) {
+                        checkException(ex, "Missing key encryption");
+                    }
+            }
+        }
     }
 
     void aesCbcHmac(String k,
