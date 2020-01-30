@@ -1,0 +1,15 @@
+{
+  "now": "2019-02-10T11:23:06Z",
+  "name": "Joe",
+  "id": 2200063,
+  "signature": {
+    "algorithm": "RS256",
+    "keyId": "example.com:r2048",
+    "publicKey": {
+      "kty": "RSA",
+      "n": "hFWEXArvaZEpSP5qNX7x4C4Hl28GJQTNvnDwkfqiWs63kXbdyPeS06bz6GnY3tfQ_093nGauWsimqKBmGAGMPtsV83Qxw1OIeO4ujbIIb9pema0qtVqs0MWlHxklZGFkYfAmbuEUFxYDeLDHe0bkkXbSlB7_t8pCSvc8HLgHjEQjYOlFRwjR0D-uLo-xgsCbpmCtYkB5lcT_zFgpRgY4zJNLSv7GZiz2S4Fc5ArGjd34lL47-L8bozuYjqNOv9sqX0Zgll5XaJ1ndvr7UqZu1xQFgm38reoM3IarBP_SkEFbt_v9iak602VO3k28fQhMaocP7JWR2YLT3kZM0-WTFw",
+      "e": "AQAB"
+    },
+    "value": "MUrTmih25nsXVupnd2FtdFUJ7kJyO3rK3GpuXI6ThDP2dfxQdYAKMfEIAKjk-UlkNdV751iXkJ_Lfbszez2WQtqfS5oNwqvYbpCLJZ9GwDmPByVHKbQHDSdsNT93s8D2ZSxbwFBeA3FKHQnyHEF1KIHbnN5En9MvDLrIxXsRLhRGuSkG0FvV8x6o8DCHujpAj8SG5A8tVra-KB7z3YFbuMcCegrtwE80WAexBy8RbGuooebTCV_EfnwM0YQP5eXJJS23mlAEcdv96ZTOWW8QxpsBy6ofMQA9uMZ79fs1_JFKOsCV2LSbXhxjO3einEtWciUWqrKR4Hn8M9QU1jbxmw"
+  }
+}

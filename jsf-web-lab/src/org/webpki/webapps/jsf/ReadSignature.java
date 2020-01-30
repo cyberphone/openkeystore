@@ -166,8 +166,7 @@ public class ReadSignature {
                     boolean asymAlg = true;
                     for (MACAlgorithms macs : MACAlgorithms.values()) {
                         if (algo.equals(macs.getAlgorithmId(AlgorithmPreferences.JOSE_ACCEPT_PREFER))) {
-                            options.setRequirePublicKeyInfo(false)
-                                   .setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED);
+                            options.setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED);
                             asymAlg = false;
                             break;
                         }
@@ -180,7 +179,9 @@ public class ReadSignature {
                                     (AsymSignatureAlgorithms.getAlgorithmFromId(algo, 
                                                AlgorithmPreferences.JOSE_ACCEPT_PREFER).isRsa() ?
                                             JSFService.clientkey_rsa : JSFService.clientkey_ec).getPublicKey();
-                            options.setRequirePublicKeyInfo(false);
+                            options.setPublicKeyOption(JSONCryptoHelper.PUBLIC_KEY_OPTIONS.FORBIDDEN);
+                        } else if (inner.hasProperty(JSONCryptoHelper.CERTIFICATE_PATH_JSON)) {
+                            options.setPublicKeyOption(JSONCryptoHelper.PUBLIC_KEY_OPTIONS.CERTIFICATE_PATH);
                         }
                     }
                     if (multi) {

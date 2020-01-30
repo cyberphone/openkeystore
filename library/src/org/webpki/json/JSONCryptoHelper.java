@@ -162,10 +162,52 @@ public class JSONCryptoHelper implements Serializable {
     }
 
     /**
-     * Parameter to Options
+     * KeyID parameter to Options
      *
      */
     public enum KEY_ID_OPTIONS {FORBIDDEN, REQUIRED, OPTIONAL};
+
+    /**
+     * Public key parameter to Options
+     * <br>KEY_ID_XOR_PUBLIC_KEY One or the other<br>
+     * KEY_ID_OR_PUBLIC_KEY At least of<br>
+     */
+    public enum PUBLIC_KEY_OPTIONS {
+        FORBIDDEN             (), 
+        REQUIRED              (), 
+        OPTIONAL              (), 
+        KEY_ID_OR_PUBLIC_KEY  (),
+        KEY_ID_XOR_PUBLIC_KEY (),
+        CERTIFICATE_PATH      ();
+        
+        private boolean keyIdTest(String keyId) {
+            return keyId == null && this == KEY_ID_XOR_PUBLIC_KEY;
+        }
+
+        void checkPublicKey(String keyId) throws IOException {
+            if (this == FORBIDDEN || (this != REQUIRED && 
+                                      this != OPTIONAL &&
+                                      this != KEY_ID_OR_PUBLIC_KEY &&
+                                      keyIdTest(keyId))) {
+                throw new IOException("Unexpected \"" + PUBLIC_KEY_JSON + "\"");
+            }
+        }
+
+        void checkCertificatePath() throws IOException {
+            if (this != CERTIFICATE_PATH) {
+                throw new IOException("Unexpected \"" + CERTIFICATE_PATH_JSON + "\"");
+            }
+        }
+
+        void checkMissingKey(String keyId) throws IOException {
+            if (this == REQUIRED || 
+                this == CERTIFICATE_PATH ||
+                (keyId == null && this == KEY_ID_OR_PUBLIC_KEY) ||
+                keyIdTest(keyId)) {
+                throw new IOException("Missing key information");
+            }
+        }
+    };
 
     /**
      * Common JEF/JSF decoding options.
@@ -173,8 +215,8 @@ public class JSONCryptoHelper implements Serializable {
      * The following options are currently recognized:
      * <ul>
      * <li>Algorithm preference.  Default: JOSE</li>
-     * <li>Require public key info in line.  Default: true</li>
-     * <li>keyId option.  Default: FORBIDDEN</li>
+     * <li>Public key option.  Default: OPTIONAL</li>
+     * <li>keyId option.  Default: OPTIONAL</li>
      * <li>Permitted extensions.  Default: none</li>
      * </ul>
      * In addition, the Options class is used for defining external readers for &quot;remoteKey&quot; support.
@@ -183,8 +225,8 @@ public class JSONCryptoHelper implements Serializable {
     public static class Options {
         
         AlgorithmPreferences algorithmPreferences = AlgorithmPreferences.JOSE;
-        boolean requirePublicKeyInfo = true;
-        KEY_ID_OPTIONS keyIdOption = KEY_ID_OPTIONS.FORBIDDEN;
+        PUBLIC_KEY_OPTIONS publicKeyOption = PUBLIC_KEY_OPTIONS.OPTIONAL;
+        KEY_ID_OPTIONS keyIdOption = KEY_ID_OPTIONS.OPTIONAL;
         ExtensionHolder extensionHolder = new ExtensionHolder();
         LinkedHashSet<String> exclusions;
         boolean encryptionMode;
@@ -194,8 +236,8 @@ public class JSONCryptoHelper implements Serializable {
             return this;
         }
 
-        public Options setRequirePublicKeyInfo(boolean flag) {
-            this.requirePublicKeyInfo = flag;
+        public Options setPublicKeyOption(PUBLIC_KEY_OPTIONS publicKeyOption) {
+            this.publicKeyOption = publicKeyOption;
             return this;
         }
 

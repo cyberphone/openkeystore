@@ -174,9 +174,10 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
             options.keyIdOption == JSONCryptoHelper.KEY_ID_OPTIONS.FORBIDDEN) {
             options.setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.OPTIONAL);
         }
-        if (!recipient.hasProperty(JSONCryptoHelper.CERTIFICATE_PATH_JSON) &&
-                   !recipient.hasProperty(JSONCryptoHelper.PUBLIC_KEY_JSON)) {
-            options.setRequirePublicKeyInfo(false);
+        if (recipient.hasProperty(JSONCryptoHelper.CERTIFICATE_PATH_JSON)) {
+            options.setPublicKeyOption(JSONCryptoHelper.PUBLIC_KEY_OPTIONS.CERTIFICATE_PATH);
+        } else if (!recipient.hasProperty(JSONCryptoHelper.PUBLIC_KEY_JSON)) {
+            options.setPublicKeyOption(JSONCryptoHelper.PUBLIC_KEY_OPTIONS.OPTIONAL);
         }
     }
 

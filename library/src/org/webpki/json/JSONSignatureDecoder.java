@@ -78,20 +78,26 @@ public class JSONSignatureDecoder implements Serializable {
         this.options = options;
         algorithmString = innerSignatureObject.getString(JSONCryptoHelper.ALGORITHM_JSON);
         keyId = options.getKeyId(innerSignatureObject);
-        if (options.requirePublicKeyInfo) {
-            getPublicKeyInfo(innerSignatureObject);
-        } else {
-            for (AsymSignatureAlgorithms alg : AsymSignatureAlgorithms.values()) {
-                if (algorithmString.equals(alg.getAlgorithmId(AlgorithmPreferences.JOSE_ACCEPT_PREFER)) ||
-                        algorithmString.equals(alg.getAlgorithmId(AlgorithmPreferences.SKS))) {
-                    algorithm = AsymSignatureAlgorithms.getAlgorithmFromId(algorithmString, 
-                                                                           options.algorithmPreferences);
-                    break;
+
+        for (AsymSignatureAlgorithms alg : AsymSignatureAlgorithms.values()) {
+            if (algorithmString.equals(alg.getAlgorithmId(AlgorithmPreferences.JOSE_ACCEPT_PREFER)) ||
+                    algorithmString.equals(alg.getAlgorithmId(AlgorithmPreferences.SKS))) {
+                algorithm = AsymSignatureAlgorithms.getAlgorithmFromId(algorithmString, 
+                                                                       options.algorithmPreferences);
+                if (innerSignatureObject.hasProperty(JSONCryptoHelper.CERTIFICATE_PATH_JSON)) {
+                    certificatePath = innerSignatureObject.getCertificatePath();
+                    options.publicKeyOption.checkCertificatePath();
+                } else if (innerSignatureObject.hasProperty(JSONCryptoHelper.PUBLIC_KEY_JSON)) {
+                    publicKey = innerSignatureObject.getPublicKey(options.algorithmPreferences);
+                    options.publicKeyOption.checkPublicKey(keyId);
+                } else {
+                    options.publicKeyOption.checkMissingKey(keyId);
                 }
+                break;
             }
-            if (algorithm == null) {
-                algorithm = MACAlgorithms.getAlgorithmFromId(algorithmString, options.algorithmPreferences);
-            }
+        }
+        if (algorithm == null) {
+            algorithm = MACAlgorithms.getAlgorithmFromId(algorithmString, options.algorithmPreferences);
         }
 
         options.getExtensions(innerSignatureObject, outerSignatureObject, extensions);
@@ -155,33 +161,14 @@ public class JSONSignatureDecoder implements Serializable {
             outerSignatureObject.root.properties.put(JSONCryptoHelper.EXCLUDES_JSON, saveExcludeArray);
         }
 
-        // Check for unread (=forbidden) data                                            //
-        innerSignatureObject.checkForUnread();                                              //
+        // Check for unread (=forbidden) data
+        innerSignatureObject.checkForUnread();
 
-        if (options.requirePublicKeyInfo) switch (getSignatureType()) {
-            case X509_CERTIFICATE:
-                asymmetricSignatureVerification(certificatePath[0].getPublicKey());
-                break;
-
-            case ASYMMETRIC_KEY:
-                asymmetricSignatureVerification(publicKey);
-                break;
-
-            default:
-                // Should be a symmetric key then...
-                break;
-        }
-    }
-
-    void getPublicKeyInfo(JSONObjectReader rd) throws IOException {
-        algorithm = AsymSignatureAlgorithms.getAlgorithmFromId(algorithmString, 
-                                                               options.algorithmPreferences);
-        if (rd.hasProperty(JSONCryptoHelper.CERTIFICATE_PATH_JSON)) {
-            certificatePath = rd.getCertificatePath();
-        } else if (rd.hasProperty(JSONCryptoHelper.PUBLIC_KEY_JSON)) {
-            publicKey = rd.getPublicKey(options.algorithmPreferences);
-        } else {
-            throw new IOException("Missing key information");
+        // Signatures with in-lined keys can be verified.  Note: verified <> trusted!
+        if (certificatePath != null) {
+            asymmetricSignatureVerification(certificatePath[0].getPublicKey());
+        } else if (publicKey != null) {
+            asymmetricSignatureVerification(publicKey);
         }
     }
 

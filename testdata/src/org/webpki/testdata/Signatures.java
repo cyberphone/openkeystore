@@ -135,6 +135,7 @@ public class Signatures {
             asymSignOptionalPublicKeyInfo(key, true,  false);
             asymSignOptionalPublicKeyInfo(key, false, false);
             asymSignOptionalPublicKeyInfo(key, false, true);
+            asymSignOptionalPublicKeyInfo(key, true, true);
             certSign(key);
             asymJavaScriptSignature(key);
         }
@@ -307,7 +308,6 @@ public class Signatures {
         }
         byte[] signedData = createSignature(signer);
         JSONCryptoHelper.Options options = new JSONCryptoHelper.Options();
-        options.setRequirePublicKeyInfo(false);
         if (wantKeyId) {
             options.setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED);
         }
@@ -410,7 +410,7 @@ public class Signatures {
             options.setPermittedExtensions(extensionHolder);
         }
         if (wantKeyId) {
-            options.setRequirePublicKeyInfo(false);
+            options.setPublicKeyOption(JSONCryptoHelper.PUBLIC_KEY_OPTIONS.FORBIDDEN);
             options.setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED);
         }
         byte[] signedData = createSignatures(signers, excl, chained);
@@ -464,9 +464,14 @@ public class Signatures {
             signedData = createSignature(signer);
         }
         JSONCryptoHelper.Options options = new JSONCryptoHelper.Options();
-        options.setRequirePublicKeyInfo(wantPublicKey);
+        options.setPublicKeyOption(wantPublicKey ?
+                JSONCryptoHelper.PUBLIC_KEY_OPTIONS.REQUIRED 
+                                                 : 
+                JSONCryptoHelper.PUBLIC_KEY_OPTIONS.FORBIDDEN);
         options.setKeyIdOption(wantKeyId ? 
-                 JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED : JSONCryptoHelper.KEY_ID_OPTIONS.FORBIDDEN);
+                JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED 
+                                         :
+                JSONCryptoHelper.KEY_ID_OPTIONS.FORBIDDEN);
         if (wantExtensions) {
             JSONCryptoHelper.ExtensionHolder eh = new JSONCryptoHelper.ExtensionHolder();
             eh.addExtension(Extension1.class, true);
@@ -487,7 +492,9 @@ public class Signatures {
         return decoder;
      }
 
-    static JSONSignatureDecoder asymSignOptionalPublicKeyInfo(String keyType, boolean wantKeyId, boolean wantPublicKey) throws Exception {
+    static JSONSignatureDecoder asymSignOptionalPublicKeyInfo(String keyType, 
+                                                              boolean wantKeyId, 
+                                                              boolean wantPublicKey) throws Exception {
         return asymSignCore(keyType, wantKeyId, wantPublicKey, false, false);
     }
 
@@ -501,7 +508,9 @@ public class Signatures {
                                                                readCertificatePath(keyType),
                                                                null));
         JSONSignatureDecoder decoder = 
-                JSONParser.parse(signedData).getSignature(new JSONCryptoHelper.Options());
+                JSONParser.parse(signedData).getSignature(
+                        new JSONCryptoHelper.Options()
+                            .setPublicKeyOption(JSONCryptoHelper.PUBLIC_KEY_OPTIONS.CERTIFICATE_PATH));
         decoder.verify(x509Verifier);
         optionalUpdate(baseSignatures + prefix(keyType) + getAlgorithm(decoder) + "@cer.json", signedData, true);
     }

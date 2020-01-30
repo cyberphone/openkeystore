@@ -181,7 +181,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             JSONSignatureDecoder dec = JSONParser.parse(signature).getSignature(
                     new JSONCryptoHelper.Options()
                         .setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED)
-                        .setRequirePublicKeyInfo(false));
+                        .setPublicKeyOption(JSONCryptoHelper.PUBLIC_KEY_OPTIONS.FORBIDDEN));
             for (SymKey symKey : symmetricKeys) {
                 byte[] key = symKey.keyValue;
                 if (key.length == dec.getSignatureValue().length) {
@@ -212,9 +212,10 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             options.keyIdOption == JSONCryptoHelper.KEY_ID_OPTIONS.FORBIDDEN) {
             options.setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.OPTIONAL);
         }
-        if (!coreSignature.hasProperty(JSONCryptoHelper.CERTIFICATE_PATH_JSON) &&
-            !coreSignature.hasProperty(JSONCryptoHelper.PUBLIC_KEY_JSON)) {
-            options.setRequirePublicKeyInfo(false);
+        if (coreSignature.hasProperty(JSONCryptoHelper.CERTIFICATE_PATH_JSON)) {
+            options.setPublicKeyOption(JSONCryptoHelper.PUBLIC_KEY_OPTIONS.CERTIFICATE_PATH);
+        } else if (!coreSignature.hasProperty(JSONCryptoHelper.PUBLIC_KEY_JSON)) {
+            options.setPublicKeyOption(JSONCryptoHelper.PUBLIC_KEY_OPTIONS.OPTIONAL);
         }
     }
     

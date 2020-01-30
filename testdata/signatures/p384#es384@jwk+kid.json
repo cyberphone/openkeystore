@@ -1,0 +1,16 @@
+{
+  "now": "2019-02-10T11:23:06Z",
+  "name": "Joe",
+  "id": 2200063,
+  "signature": {
+    "algorithm": "ES384",
+    "keyId": "example.com:p384",
+    "publicKey": {
+      "kty": "EC",
+      "crv": "P-384",
+      "x": "GLfdsvEwphRzS_twup7UFPVOk7_CKgHZ7dt_fJ2QHPBdJa1c5pfJcRIWTfT0lpg9",
+      "y": "ovA5_QXmFbj9U4pjZ1AX_ZdVyIRZUBWW9cuZda_tupKfWQfmcQHzDmHGHbxl9Xxl"
+    },
+    "value": "KXrHDE2fgG1zb5zLljAP_Jj7hSMsxMnF6rlxjCxUIhFLKbLY4i6xa7D1kHcocP10UkNz_16wrir3tSf1jt89SNsfJ_-gW7TFz__WhqmQkkqsONarYi1CRMgD6-bqGAWF"
+  }
+}

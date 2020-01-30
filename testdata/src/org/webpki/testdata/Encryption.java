@@ -217,7 +217,9 @@ public class Encryption {
         }
         JSONX509Encrypter encrypter = new JSONX509Encrypter(getCertificatePath(keyType),
                                                             keyEncryptionAlgorithm);
-        JSONCryptoHelper.Options options = new JSONCryptoHelper.Options();
+        JSONCryptoHelper.Options options = 
+                new JSONCryptoHelper.Options()
+                    .setPublicKeyOption(JSONCryptoHelper.PUBLIC_KEY_OPTIONS.CERTIFICATE_PATH);
         String fileSuffix = "cer.json";
         byte[] encryptedData =
                JSONObjectWriter.createEncryptionObject(dataToBeEncrypted, 
@@ -308,7 +310,9 @@ public class Encryption {
             encrypter.setExtensions(extensions);
         }
         encrypter.setOutputPublicKeyInfo(wantPublicKey);
-        options.setRequirePublicKeyInfo(wantPublicKey);
+        if (!wantPublicKey) {
+            options.setPublicKeyOption(JSONCryptoHelper.PUBLIC_KEY_OPTIONS.FORBIDDEN);
+        }
         if (wantKeyId) {
             encrypter.setKeyId(keyId);
             options.setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED);
@@ -398,7 +402,7 @@ public class Encryption {
         if (wantKeyId) {
             fileSuffix = "mult-kid.json"; 
             options.setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED);
-            options.setRequirePublicKeyInfo(false);
+            options.setPublicKeyOption(JSONCryptoHelper.PUBLIC_KEY_OPTIONS.FORBIDDEN);
         }
         byte[] encryptedData =
                JSONObjectWriter.createEncryptionObjects(dataToBeEncrypted, 
@@ -421,7 +425,7 @@ public class Encryption {
         options = new JSONCryptoHelper.Options();
         if (wantKeyId) {
             options.setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED);
-            options.setRequirePublicKeyInfo(false);
+            options.setPublicKeyOption(JSONCryptoHelper.PUBLIC_KEY_OPTIONS.FORBIDDEN);
         }
         try {
             JSONObjectReader oldEncryptedData = JSONParser.parse(ArrayUtil.readFile(fileName));

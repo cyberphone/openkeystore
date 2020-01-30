@@ -3296,15 +3296,14 @@ public class JSONTest {
             String signature = readSignature(name).toString();
             JSONSignatureDecoder dec = JSONParser.parse(signature).getSignature(
                     new JSONCryptoHelper.Options()
-                        .setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED)
-                        .setRequirePublicKeyInfo(false));
+                        .setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED));
             int keyBits = dec.getSignatureValue().length * 8;
             byte[] key = symmetricKeys.getValue(keyBits);
             dec.verify(new JSONSymKeyVerifier(key));
             dec = JSONParser.parse(new JSONObjectWriter().setString("Mydata", "cool")
             .setSignature(new JSONSymKeySigner(key, 
                     (MACAlgorithms) dec.getAlgorithm())).toString())
-            .getSignature(new JSONCryptoHelper.Options().setRequirePublicKeyInfo(false));
+            .getSignature(new JSONCryptoHelper.Options());
             dec.verify(new JSONSymKeyVerifier(key));
             try {
                 dec.verify(new JSONSymKeyVerifier(ArrayUtil.add(key, new byte[]{5})));
@@ -3427,11 +3426,12 @@ public class JSONTest {
         }
         try {
             verifySignature(writer, 
-                            new JSONCryptoHelper.Options().setRequirePublicKeyInfo(false), 
+                            new JSONCryptoHelper.Options()
+                                .setPublicKeyOption(JSONCryptoHelper.PUBLIC_KEY_OPTIONS.FORBIDDEN), 
                             p256.getPublic());
             fail("Should not work");
         } catch (Exception e) {
-            checkException(e, "Property \"" + JSONCryptoHelper.PUBLIC_KEY_JSON + "\" was never read");
+            checkException(e, "Unexpected \"" + JSONCryptoHelper.PUBLIC_KEY_JSON + "\"");
         }
         try {
             verifySignature(writer, 
@@ -3520,20 +3520,21 @@ public class JSONTest {
         }
         JSONObjectReader signature = readSignature("p256#es256@kid.json");
         try {
-            signature.getSignature(new JSONCryptoHelper.Options());
+            signature.getSignature(new JSONCryptoHelper.Options()
+                    .setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.FORBIDDEN));
             fail("Must not pass");
         } catch (Exception e) {
             checkException(e, "Use of \"" + JSONCryptoHelper.KEY_ID_JSON + "\" must be set in options");
         }
         JSONSignatureDecoder decoder =
             signature.getSignature(new JSONCryptoHelper.Options()
-                .setRequirePublicKeyInfo(false)
+                .setPublicKeyOption(JSONCryptoHelper.PUBLIC_KEY_OPTIONS.FORBIDDEN)
                 .setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.OPTIONAL));
         assertTrue(keyIdP256.equals(decoder.getKeyId()));
         decoder.verify(new JSONAsymKeyVerifier(p256.getPublic()));
         decoder =
             signature.getSignature(new JSONCryptoHelper.Options()
-                .setRequirePublicKeyInfo(false)
+                .setPublicKeyOption(JSONCryptoHelper.PUBLIC_KEY_OPTIONS.FORBIDDEN)
                 .setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED));
         assertTrue(keyIdP256.equals(decoder.getKeyId()));
         decoder.verify(new JSONAsymKeyVerifier(p256.getPublic()));
@@ -3542,13 +3543,15 @@ public class JSONTest {
             fail("Must not pass");
         } catch (Exception e) {
         }
-        // Imperfect naming here, this file contains NO keyId or publicKey
+        // Implicit key, this file contains NO keyId or publicKey
         signature = readSignature("p521#es512@imp.json");
         decoder =
             signature.getSignature(new JSONCryptoHelper.Options()
-                .setRequirePublicKeyInfo(false)
-                .setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.OPTIONAL));
+                .setPublicKeyOption(JSONCryptoHelper.PUBLIC_KEY_OPTIONS.FORBIDDEN)
+                .setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.FORBIDDEN));
         assertTrue(decoder.getKeyId() == null);
+        decoder.verify(new JSONAsymKeyVerifier(p521.getPublic()));
+        decoder = signature.getSignature(new JSONCryptoHelper.Options());
         decoder.verify(new JSONAsymKeyVerifier(p521.getPublic()));
         try {
             decoder.verify(new JSONAsymKeyVerifier(p256.getPublic()));
@@ -3558,7 +3561,7 @@ public class JSONTest {
         try {
             decoder =
                 signature.getSignature(new JSONCryptoHelper.Options()
-                    .setRequirePublicKeyInfo(false)
+                    .setPublicKeyOption(JSONCryptoHelper.PUBLIC_KEY_OPTIONS.FORBIDDEN)
                     .setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED));
         } catch (Exception e) {
             checkException(e, "Missing \"" + JSONCryptoHelper.KEY_ID_JSON + "\"");
@@ -3595,14 +3598,14 @@ public class JSONTest {
                 .setOutputPublicKeyInfo(false).setKeyId("mykey"));
         try {
             new JSONObjectReader(writer).clone().getMultiSignature(new JSONCryptoHelper.Options()
-                .setRequirePublicKeyInfo(false)
+                .setPublicKeyOption(JSONCryptoHelper.PUBLIC_KEY_OPTIONS.FORBIDDEN)
                 .setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED));
             fail("Must not pass");
         } catch (Exception e) {
             checkException(e, "Missing \"" + JSONCryptoHelper.KEY_ID_JSON + "\"");
         }
         signatures = new JSONObjectReader(writer).getMultiSignature(new JSONCryptoHelper.Options()
-            .setRequirePublicKeyInfo(false)
+            .setPublicKeyOption(JSONCryptoHelper.PUBLIC_KEY_OPTIONS.FORBIDDEN)
             .setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.OPTIONAL));
         assertTrue(signatures.size() == 2);
         signatures.get(0).verify(new JSONAsymKeyVerifier(p256.getPublic()));
@@ -3672,11 +3675,14 @@ public class JSONTest {
                                        "a512#hs512@kid.json"});
 
         signature = readSignature("r2048#rs256@cer.json");
-        JSONParser.parse(signature.toString()).getSignature(new JSONCryptoHelper.Options());
-        JSONParser.parse(signature.toString()).getSignature(new JSONCryptoHelper.Options())
+        JSONParser.parse(signature.toString())
+          .getSignature(new JSONCryptoHelper.Options()
+                  .setPublicKeyOption(JSONCryptoHelper.PUBLIC_KEY_OPTIONS.CERTIFICATE_PATH))
             .verify(rootCa);
         try {
-            JSONParser.parse(signature.toString()).getSignature(new JSONCryptoHelper.Options())
+            JSONParser.parse(signature.toString()).getSignature(
+                    new JSONCryptoHelper.Options()
+                        .setPublicKeyOption(JSONCryptoHelper.PUBLIC_KEY_OPTIONS.CERTIFICATE_PATH))
                 .verify(unknownCa);
             fail("Must not pass");
         } catch (Exception e) {
@@ -3700,6 +3706,23 @@ public class JSONTest {
                     .verify(new JSONAsymKeyVerifier(p256.getPublic()));;
             }
             arrayReader.scanAway();
+        }
+        signature = readSignature("r2048#rs256@jwk+kid.json");
+        for (JSONCryptoHelper.PUBLIC_KEY_OPTIONS pkOption : JSONCryptoHelper.PUBLIC_KEY_OPTIONS.values()) {
+            JSONCryptoHelper.Options options = new JSONCryptoHelper.Options().setPublicKeyOption(pkOption);
+            switch (pkOption) {
+                case FORBIDDEN:
+                case CERTIFICATE_PATH:
+                case KEY_ID_XOR_PUBLIC_KEY:
+                    try {
+                        JSONParser.parse(signature.toString()).getSignature(options);
+                    } catch (Exception e) {
+                        checkException(e, "Unexpected \"" + JSONCryptoHelper.PUBLIC_KEY_JSON + "\"");
+                    }
+                    break;
+                default:
+                    JSONParser.parse(signature.toString()).getSignature(options);
+            }
         }
     }
 
@@ -3870,7 +3893,7 @@ public class JSONTest {
     
     void rsaOaep(String fileName) throws Exception {
         JSONDecryptionDecoder dec = readEncryption(fileName).getEncryptionObject(new JSONCryptoHelper.Options()
-          .setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED).setRequirePublicKeyInfo(false));
+          .setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED).setPublicKeyOption(JSONCryptoHelper.PUBLIC_KEY_OPTIONS.FORBIDDEN));
         KeyPair keyPair = readJwk("r2048");
         assertTrue(ArrayUtil.compare(ArrayUtil.readFile(baseData + "datatobeencrypted.txt"),
                                      dec.getDecryptedData(keyPair.getPrivate())));
@@ -3907,13 +3930,17 @@ public class JSONTest {
         }
     }
     
-    void variousEncryptionErrors(String fileName, String exceptionString) throws Exception {
+    void variousEncryptionErrors(String fileName, 
+                                 String exceptionString,
+                                 JSONCryptoHelper.Options optional) throws Exception {
         JSONObjectReader enc = readEncryption(fileName);
+        JSONCryptoHelper.Options options = optional == null ?
+                             new JSONCryptoHelper.Options() : optional;
         try {
             if (enc.hasProperty(JSONCryptoHelper.RECIPIENTS_JSON)) {
-                enc.getEncryptionObjects(new JSONCryptoHelper.Options());
+                enc.getEncryptionObjects(options);
             } else {
-                enc.getEncryptionObject(new JSONCryptoHelper.Options());
+                enc.getEncryptionObject(options);
             }
             fail("Should'n work: " + fileName);
         } catch (Exception e) {
@@ -4189,15 +4216,16 @@ public class JSONTest {
                 checkException(e, "Property \"" + JSONCryptoHelper.ALGORITHM_JSON + "\" is missing");
             }
         }
-        variousEncryptionErrors("err-wrong-alg1.json", "Property \"" + JSONCryptoHelper.ENCRYPTED_KEY_JSON + "\" is missing");
-        variousEncryptionErrors("err-wrong-alg2.json", "Property \"" + JSONCryptoHelper.N_JSON + "\" is missing");
-        variousEncryptionErrors("err-wrong-alg3.json", "Property \"" + JSONCryptoHelper.EPHEMERAL_KEY_JSON + "\" is missing");
-        variousEncryptionErrors("err-wrong-alg4.json", "Property \"redundant\" was never read");
-        variousEncryptionErrors("err-wrong-alg5.json", "Multiple encryptions only permitted for key wrapping schemes");
-        variousEncryptionErrors("err-wrong-alg6.json", "Unexpected argument to \"" + JSONCryptoHelper.ALGORITHM_JSON + "\": SUPERCRYPTO");
-        variousEncryptionErrors("err-wrong-alg7.json", "Unexpected argument to \"" + JSONCryptoHelper.ALGORITHM_JSON + "\": SUPERCRYPTO");
+        variousEncryptionErrors("err-wrong-alg1.json", "Property \"" + JSONCryptoHelper.ENCRYPTED_KEY_JSON + "\" is missing", null);
+        variousEncryptionErrors("err-wrong-alg2.json", "Property \"" + JSONCryptoHelper.N_JSON + "\" is missing", null);
+        variousEncryptionErrors("err-wrong-alg3.json", "Property \"" + JSONCryptoHelper.EPHEMERAL_KEY_JSON + "\" is missing", null);
+        variousEncryptionErrors("err-wrong-alg4.json", "Property \"redundant\" was never read", null);
+        variousEncryptionErrors("err-wrong-alg5.json", "Multiple encryptions only permitted for key wrapping schemes", null);
+        variousEncryptionErrors("err-wrong-alg6.json", "Unexpected argument to \"" + JSONCryptoHelper.ALGORITHM_JSON + "\": SUPERCRYPTO", null);
+        variousEncryptionErrors("err-wrong-alg7.json", "Unexpected argument to \"" + JSONCryptoHelper.ALGORITHM_JSON + "\": SUPERCRYPTO", null);
 
-        variousEncryptionErrors("err-bad-id.json", "Missing key information");
+        variousEncryptionErrors("err-bad-id.json", "Missing \"" + JSONCryptoHelper.KEY_ID_JSON + "\"", 
+                new JSONCryptoHelper.Options().setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED));
 
         encryptionFieldErrors("err-bad-ciphertext.json",
                               "p256",
