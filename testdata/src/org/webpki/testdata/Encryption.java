@@ -188,6 +188,14 @@ public class Encryption {
                         .setString(new Extension1().getExtensionUri(), "something")
                         .setObject(new Extension2().getExtensionUri(), 
                             new JSONObjectWriter().setBoolean("life-is-great", true)));
+
+        coreAsymEnc("p256", 
+                    "jwk+kid.json",
+                    DataEncryptionAlgorithms.JOSE_A256GCM_ALG_ID,
+                    true,
+                    true,
+                    null,
+                    null);
     }
 
     static X509Certificate[] getCertificatePath(String keyType) throws IOException {

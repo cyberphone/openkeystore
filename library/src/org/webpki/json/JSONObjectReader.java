@@ -530,7 +530,7 @@ public class JSONObjectReader implements Serializable, Cloneable {
 
     public JSONSignatureDecoder getSignature(String signatureLabel, 
                                              JSONCryptoHelper.Options options) throws IOException {
-        options.encryptionMode(false);
+        options.initializeOperation(false);
         JSONObjectReader signatureObject = getObject(signatureLabel);
         if (signatureObject.hasProperty(JSONCryptoHelper.SIGNERS_JSON)) {
             throw new IOException("Use \"getMultiSignature()\" for this object");
@@ -544,7 +544,7 @@ public class JSONObjectReader implements Serializable, Cloneable {
     ArrayList<JSONSignatureDecoder> getSignatureArray(String signatureLabel, 
                                                       JSONCryptoHelper.Options options,
                                                       boolean chained) throws IOException {
-        options.encryptionMode(false);
+        options.initializeOperation(false);
         JSONObjectReader outerSignatureObject = getObject(signatureLabel);
         JSONArrayReader arrayReader = 
                 outerSignatureObject.getArray(chained ?
@@ -702,7 +702,7 @@ public class JSONObjectReader implements Serializable, Cloneable {
      * @see org.webpki.json.JSONCryptoHelper.Options
      */
     public JSONDecryptionDecoder getEncryptionObject(JSONCryptoHelper.Options options) throws IOException {
-        options.encryptionMode(true);
+        options.initializeOperation(true);
         if (hasProperty(JSONCryptoHelper.RECIPIENTS_JSON)) {
             throw new IOException("Please use \"getEncryptionObjects()\" for multiple encryption objects");
         }
@@ -726,7 +726,7 @@ public class JSONObjectReader implements Serializable, Cloneable {
      */
     public ArrayList<JSONDecryptionDecoder> getEncryptionObjects(JSONCryptoHelper.Options options)
     throws IOException {
-        options.encryptionMode(true);
+        options.initializeOperation(true);
         JSONDecryptionDecoder.Holder holder = new JSONDecryptionDecoder.Holder(options, this, true);
         JSONArrayReader recipientObjects = getArray(JSONCryptoHelper.RECIPIENTS_JSON);
         ArrayList<JSONDecryptionDecoder> recipients = new ArrayList<JSONDecryptionDecoder>();

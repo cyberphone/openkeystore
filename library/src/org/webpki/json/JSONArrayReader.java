@@ -173,7 +173,7 @@ public class JSONArrayReader implements Serializable {
     }
 
     public JSONSignatureDecoder getSignature(JSONCryptoHelper.Options options) throws IOException {
-        options.encryptionMode(false);
+        options.initializeOperation(false);
         JSONObject dummy = new JSONObject();
         dummy.properties.put(null, new JSONValue(JSONTypes.ARRAY, array));
         int save = index;

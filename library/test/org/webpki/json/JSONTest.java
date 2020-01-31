@@ -77,7 +77,8 @@ import org.webpki.json.JSONSymKeySigner;
 import org.webpki.json.JSONSymKeyVerifier;
 import org.webpki.json.JSONTypes;
 import org.webpki.json.JSONX509Verifier;
-
+import org.webpki.json.JSONCryptoHelper.KEY_ID_OPTIONS;
+import org.webpki.json.JSONCryptoHelper.PUBLIC_KEY_OPTIONS;
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.Base64URL;
 import org.webpki.util.DebugFormatter;
@@ -3524,7 +3525,7 @@ public class JSONTest {
                     .setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.FORBIDDEN));
             fail("Must not pass");
         } catch (Exception e) {
-            checkException(e, "Use of \"" + JSONCryptoHelper.KEY_ID_JSON + "\" must be set in options");
+            checkException(e, "Unexpected \"" + JSONCryptoHelper.KEY_ID_JSON + "\"");
         }
         JSONSignatureDecoder decoder =
             signature.getSignature(new JSONCryptoHelper.Options()
@@ -3720,6 +3721,14 @@ public class JSONTest {
                         checkException(e, "Unexpected \"" + JSONCryptoHelper.PUBLIC_KEY_JSON + "\"");
                     }
                     break;
+                case PLAIN_ENCRYPTION:
+                    try {
+                        JSONParser.parse(signature.toString()).getSignature(options);
+                    } catch (Exception e) {
+                        checkException(e, "\"" + JSONCryptoHelper.PUBLIC_KEY_OPTIONS.PLAIN_ENCRYPTION + 
+                                          "\" is not applicable to signatures");
+                    }
+                    break;
                 default:
                     JSONParser.parse(signature.toString()).getSignature(options);
             }
@@ -3913,6 +3922,102 @@ public class JSONTest {
         KeyPair keyPair = readJwk("r2048");
         assertTrue(ArrayUtil.compare(ArrayUtil.readFile(baseData + "datatobeencrypted.txt"),
                                      dec.getDecryptedData(keyPair.getPrivate())));
+    }
+    
+    JSONDecryptionDecoder encFailDecrypt(JSONObjectReader enc, JSONCryptoHelper.Options option) throws Exception {
+        KeyPair p256 = readJwk("p256");
+        JSONDecryptionDecoder dec = enc.getEncryptionObject(option);
+        assertTrue(ArrayUtil.compare(ArrayUtil.readFile(baseData + "datatobeencrypted.txt"),
+                dec.getDecryptedData(p256.getPrivate())));
+        return dec;
+    }
+    
+    void encFailOption(JSONObjectReader enc, JSONCryptoHelper.Options option, String failText) throws Exception {
+        try {
+            encFailDecrypt(enc, option);
+            fail("Should fail");
+        } catch (Exception e) {
+            checkException(e, failText);
+        }
+    }
+    
+    void encryptionOptionTest() throws Exception {
+        JSONObjectReader enc = readEncryption("p256#ecdh-es+a256kw@a256gcm@jwk+kid.json");
+        for (JSONCryptoHelper.KEY_ID_OPTIONS kOption : JSONCryptoHelper.KEY_ID_OPTIONS.values()) {
+            for (JSONCryptoHelper.PUBLIC_KEY_OPTIONS pkOption : JSONCryptoHelper.PUBLIC_KEY_OPTIONS.values()) {
+                JSONCryptoHelper.Options option = 
+                        new JSONCryptoHelper.Options()
+                            .setPublicKeyOption(pkOption)
+                            .setKeyIdOption(kOption);
+                if (kOption != JSONCryptoHelper.KEY_ID_OPTIONS.OPTIONAL &&
+                    (pkOption == PUBLIC_KEY_OPTIONS.KEY_ID_OR_PUBLIC_KEY ||
+                     pkOption == PUBLIC_KEY_OPTIONS.KEY_ID_XOR_PUBLIC_KEY)) {
+                    encFailOption(enc, option, "Invalid key id and public key option combination");
+                } else if (pkOption == JSONCryptoHelper.PUBLIC_KEY_OPTIONS.PLAIN_ENCRYPTION) {
+                    encFailOption(enc, option, "Unexpected key encryption");
+                } else if (kOption == JSONCryptoHelper.KEY_ID_OPTIONS.FORBIDDEN) {
+                    encFailOption(enc, option, "Unexpected \"" + JSONCryptoHelper.KEY_ID_JSON + "\"");
+                } else switch (pkOption) {
+                    case FORBIDDEN:
+                    case KEY_ID_XOR_PUBLIC_KEY:
+                    case CERTIFICATE_PATH:
+                        encFailOption(enc, option, "Unexpected \"" + JSONCryptoHelper.PUBLIC_KEY_JSON + "\"");
+                        break;
+                    default:
+                        encFailDecrypt(enc, option);
+                }
+            }
+        }
+        enc = readEncryption("p256#ecdh-es@a256cbc-hs512@jwk.json");
+        for (JSONCryptoHelper.KEY_ID_OPTIONS kOption : JSONCryptoHelper.KEY_ID_OPTIONS.values()) {
+            for (JSONCryptoHelper.PUBLIC_KEY_OPTIONS pkOption : JSONCryptoHelper.PUBLIC_KEY_OPTIONS.values()) {
+                JSONCryptoHelper.Options option = 
+                        new JSONCryptoHelper.Options()
+                            .setPublicKeyOption(pkOption)
+                            .setKeyIdOption(kOption);
+                if (kOption != JSONCryptoHelper.KEY_ID_OPTIONS.OPTIONAL &&
+                    (pkOption == PUBLIC_KEY_OPTIONS.KEY_ID_OR_PUBLIC_KEY ||
+                     pkOption == PUBLIC_KEY_OPTIONS.KEY_ID_XOR_PUBLIC_KEY)) {
+                    encFailOption(enc, option, "Invalid key id and public key option combination");
+                } else if (pkOption == JSONCryptoHelper.PUBLIC_KEY_OPTIONS.PLAIN_ENCRYPTION) {
+                    encFailOption(enc, option, "Unexpected key encryption");
+                } else if (kOption == JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED) {
+                    encFailOption(enc, option, "Missing \"" + JSONCryptoHelper.KEY_ID_JSON + "\"");
+                } else switch (pkOption) {
+                    case CERTIFICATE_PATH: 
+                    case FORBIDDEN: 
+                        encFailOption(enc, option, "Unexpected \"" + JSONCryptoHelper.PUBLIC_KEY_JSON + "\"");
+                        break;
+                    default:
+                        encFailDecrypt(enc, option);
+                }
+            }
+        }
+        enc = readEncryption("p256#ecdh-es+a256kw@a128cbc-hs256@cer.json");
+        for (JSONCryptoHelper.KEY_ID_OPTIONS kOption : JSONCryptoHelper.KEY_ID_OPTIONS.values()) {
+            for (JSONCryptoHelper.PUBLIC_KEY_OPTIONS pkOption : JSONCryptoHelper.PUBLIC_KEY_OPTIONS.values()) {
+                JSONCryptoHelper.Options option = 
+                        new JSONCryptoHelper.Options()
+                            .setPublicKeyOption(pkOption)
+                            .setKeyIdOption(kOption);
+                if (kOption != JSONCryptoHelper.KEY_ID_OPTIONS.OPTIONAL &&
+                    (pkOption == PUBLIC_KEY_OPTIONS.KEY_ID_OR_PUBLIC_KEY ||
+                     pkOption == PUBLIC_KEY_OPTIONS.KEY_ID_XOR_PUBLIC_KEY)) {
+                    encFailOption(enc, option, "Invalid key id and public key option combination");
+                } else if (pkOption == JSONCryptoHelper.PUBLIC_KEY_OPTIONS.PLAIN_ENCRYPTION) {
+                    encFailOption(enc, option, "Unexpected key encryption");
+                } else if (kOption == JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED) {
+                    encFailOption(enc, option, "Missing \"" + JSONCryptoHelper.KEY_ID_JSON + "\"");
+                } else switch (pkOption) {
+                    case CERTIFICATE_PATH: 
+                        encFailDecrypt(enc, option);
+                        break;
+                     default:
+                        encFailOption(enc, option, "Unexpected \"" + JSONCryptoHelper.CERTIFICATE_PATH_JSON + "\"");
+                        break;
+                }
+            }
+        }
     }
 
     void allJefCombinations() throws Exception {
@@ -4269,6 +4374,7 @@ public class JSONTest {
         assertTrue("Bad ECDH", Base64URL.encode(keyAgreement.generateSecret()).equals(ECDH_RESULT_WITHOUT_KDF));
         rsaOaep("r2048#rsa-oaep@a128gcm@kid.json");
         rsaOaep("r2048#rsa-oaep-256@a256gcm@kid.json");
+        encryptionOptionTest();
     }
 
     @Test

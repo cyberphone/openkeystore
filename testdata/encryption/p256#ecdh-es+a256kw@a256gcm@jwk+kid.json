@@ -1,0 +1,23 @@
+{
+  "algorithm": "A256GCM",
+  "keyEncryption": {
+    "algorithm": "ECDH-ES+A256KW",
+    "keyId": "example.com:p256",
+    "publicKey": {
+      "kty": "EC",
+      "crv": "P-256",
+      "x": "censDzcMEkgiePz6DXB7cDuwFemshAFR90UNVQFCg8Q",
+      "y": "xq8rze6ewG0-eVcSF72J77gKiD0IHnzpwHaU7t6nVeY"
+    },
+    "ephemeralKey": {
+      "kty": "EC",
+      "crv": "P-256",
+      "x": "XLgNlryqjZhpvwfe1Dc-7ZrSmPhmujsDWJvhih6F6oM",
+      "y": "CxyDa0h7TInQMxvTRfn46KXNgXqqA1Hd-Z8WE8BD8fs"
+    },
+    "encryptedKey": "UglCdESh80AgmYGSlOe0ejK0C3gl3y7bSmAFuoq-svK6DBZGz24AkA"
+  },
+  "iv": "8nPIREEHtDkjesKl",
+  "tag": "zCyvAbXnaBg209ApO02Uhg",
+  "cipherText": "gKwxmKaeuXYMz096SLKz3PfHZKOxyQ"
+}
