@@ -1,5 +1,6 @@
 {
   "algorithm": "A128GCM",
+  "keyId": "not here please",
   "keyEncryption": {
     "algorithm": "ECDH-ES+A128KW",
     "ephemeralKey": {

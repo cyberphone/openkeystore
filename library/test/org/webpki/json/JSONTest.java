@@ -4052,11 +4052,9 @@ public class JSONTest {
     }
     
     void variousEncryptionErrors(String fileName, 
-                                 String exceptionString,
-                                 JSONCryptoHelper.Options optional) throws Exception {
+                                 String exceptionString) throws Exception {
         JSONObjectReader enc = readEncryption(fileName);
-        JSONCryptoHelper.Options options = optional == null ?
-                             new JSONCryptoHelper.Options() : optional;
+        JSONCryptoHelper.Options options = new JSONCryptoHelper.Options();
         try {
             if (enc.hasProperty(JSONCryptoHelper.RECIPIENTS_JSON)) {
                 enc.getEncryptionObjects(options);
@@ -4337,16 +4335,14 @@ public class JSONTest {
                 checkException(e, "Property \"" + JSONCryptoHelper.ALGORITHM_JSON + "\" is missing");
             }
         }
-        variousEncryptionErrors("err-wrong-alg1.json", "Property \"" + JSONCryptoHelper.ENCRYPTED_KEY_JSON + "\" is missing", null);
-        variousEncryptionErrors("err-wrong-alg2.json", "Property \"" + JSONCryptoHelper.N_JSON + "\" is missing", null);
-        variousEncryptionErrors("err-wrong-alg3.json", "Property \"" + JSONCryptoHelper.EPHEMERAL_KEY_JSON + "\" is missing", null);
-        variousEncryptionErrors("err-wrong-alg4.json", "Property \"redundant\" was never read", null);
-        variousEncryptionErrors("err-wrong-alg5.json", "Multiple encryptions only permitted for key wrapping schemes", null);
-        variousEncryptionErrors("err-wrong-alg6.json", "Unexpected argument to \"" + JSONCryptoHelper.ALGORITHM_JSON + "\": SUPERCRYPTO", null);
-        variousEncryptionErrors("err-wrong-alg7.json", "Unexpected argument to \"" + JSONCryptoHelper.ALGORITHM_JSON + "\": SUPERCRYPTO", null);
-
-        variousEncryptionErrors("err-bad-id.json", "Missing \"" + JSONCryptoHelper.KEY_ID_JSON + "\"", 
-                new JSONCryptoHelper.Options().setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED));
+        variousEncryptionErrors("err-wrong-alg1.json", "Property \"" + JSONCryptoHelper.ENCRYPTED_KEY_JSON + "\" is missing");
+        variousEncryptionErrors("err-wrong-alg2.json", "Property \"" + JSONCryptoHelper.N_JSON + "\" is missing");
+        variousEncryptionErrors("err-wrong-alg3.json", "Property \"" + JSONCryptoHelper.EPHEMERAL_KEY_JSON + "\" is missing");
+        variousEncryptionErrors("err-wrong-alg4.json", "Property \"redundant\" was never read");
+        variousEncryptionErrors("err-wrong-alg5.json", "Multiple encryptions only permitted for key wrapping schemes");
+        variousEncryptionErrors("err-wrong-alg6.json", "Unexpected argument to \"" + JSONCryptoHelper.ALGORITHM_JSON + "\": SUPERCRYPTO");
+        variousEncryptionErrors("err-wrong-alg7.json", "Unexpected argument to \"" + JSONCryptoHelper.ALGORITHM_JSON + "\": SUPERCRYPTO");
+        variousEncryptionErrors("err-bad-id.json", "Property \"" + JSONCryptoHelper.KEY_ID_JSON + "\" was never read");
 
         encryptionFieldErrors("err-bad-ciphertext.json",
                               "p256",
