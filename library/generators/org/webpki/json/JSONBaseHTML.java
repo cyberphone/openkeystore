@@ -54,8 +54,10 @@ public class JSONBaseHTML  {
 
     public static final String REQUIRED_COLUMN         = "Req";
     
-    public static final String REF_JSON                = "RFC7159";
-    
+    public static final String REF_JSON                = "RFC8259";
+
+    public static final String REF_IJSON               = "RFC7493";
+
     public static final String REF_X509                = "RFC5280";
 
     public static final String REF_XMLDSIG             = "XMLDSIG";
@@ -254,7 +256,11 @@ public class JSONBaseHTML  {
 
         addReferenceEntry(REF_JSON,
             "T. Bray, \"The JavaScript Object Notation (JSON) Data Interchange Format\"" +
-            ", RFC&nbsp;7159, March&nbsp;2014.");
+            ", RFC&nbsp;8259, December&nbsp;2017.");
+
+        addReferenceEntry(REF_IJSON,
+            "T. Bray, \"The I-JSON Message Format\"" +
+            ", RFC&nbsp;7493, March&nbsp;2015.");
 
         addReferenceEntry(REF_URI,
             "T. Berners-Lee, R. Fielding, L. Masinter, \"Uniform " +
@@ -283,8 +289,8 @@ public class JSONBaseHTML  {
 
         addReferenceEntry(REF_JCS,
             "A. Rundgren, B. Jordan, S. Erdtman, \"JCS - JSON Canonicalization Scheme\", Work in progress, " +
-            "<span style=\"white-space: nowrap\">September&nbsp;2019.</span> " +
-            externalWebReference ("https://tools.ietf.org/html/draft-rundgren-json-canonicalization-scheme-13"));
+            "<span style=\"white-space: nowrap\">January&nbsp;2020.</span> " +
+            externalWebReference ("https://tools.ietf.org/html/draft-rundgren-json-canonicalization-scheme-17"));
 
         addReferenceEntry(REF_YASMIN,
             "A. Rundgren, \"YASMIN - Yet Another jSon Message notatIoN\", Work in progress, " +

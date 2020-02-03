@@ -417,8 +417,11 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
           .append(" objects, loosely modeled after XML&nbsp;DSig's ")
           .append(json.createReference(JSONBaseHTML.REF_XMLDSIG))
           .append(" &quot;enveloped&quot; signatures. " +
+          "Note that JSF requires that the JSON data to be signed is compatible with the I-JSON ")
+          .append(json.createReference(JSONBaseHTML.REF_IJSON))
+          .append(" profile." +
             Types.LINE_SEPARATOR +
-            "Unlike JSON Web Signature (JWS) ")
+             "Unlike JSON Web Signature (JWS) ")
           .append(json.createReference(JSONBaseHTML.REF_JWS))
           .append(
             " which was designed for signing <i>any</i> kind of data, " +
@@ -497,7 +500,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             "JSF implementors are presumed to be familiar with JWS " +
                         json.createReference(JSONBaseHTML.REF_JWS) + "." + LINE_SEPARATOR +
             "Prerequisite: A JSON object in accordance with ")
-          .append(json.createReference(JSONBaseHTML.REF_JSON))
+          .append(json.createReference(JSONBaseHTML.REF_IJSON))
           .append(
             " containing an <i>arbitrary but unique top level " +
             "property</i> (see " +
@@ -546,6 +549,9 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             ".");
         
         json.addParagraphObject("Signature Creation").append(
+                "Prerequisite: A JSON object in accordance with ")
+        .append(json.createReference(JSONBaseHTML.REF_IJSON))
+        .append("." + LINE_SEPARATOR + 
             "The process to sign a JSON object using JSF is as follows:<ol>" +
             "<li value=\"1\">Create a JSF object with all components defined except for the <code>&quot;" + 
             JSONCryptoHelper.VALUE_JSON + "&quot;</code> property.</li>" +
