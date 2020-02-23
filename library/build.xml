@@ -568,7 +568,7 @@
         flags="s"/>
 
   	<replaceregexp file="${android_dir}/org/webpki/asn1/ASN1ObjectID.java"
-        match="(no\ =\ new\ Hashtable&lt;String,\ String&gt;\(\);)(.+)(\n.+oidToName)"
+        match="(no\ =\ new\ Hashtable&lt;&gt;\(\);)(.+)(\n.+oidToName)"
         replace="\1 \3"
         flags="s"/>
 
