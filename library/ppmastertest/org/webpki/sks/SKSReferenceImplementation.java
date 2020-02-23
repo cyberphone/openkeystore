@@ -159,7 +159,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
 
 //#endif
     static final int MAX_LENGTH_CRYPTO_DATA                = 16384;
-    static final int MAX_LENGTH_EXTENSION_DATA             = 65536;
+    static final int MAX_LENGTH_EXTENSION_DATA             = 250000; // A reasonably big image
 
     static final char[] BASE64_URL = {'A','B','C','D','E','F','G','H',
                                       'I','J','K','L','M','N','O','P',
