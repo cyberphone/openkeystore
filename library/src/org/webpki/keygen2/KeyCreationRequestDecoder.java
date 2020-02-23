@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -549,7 +549,7 @@ public class KeyCreationRequestDecoder extends ClientDecoder {
             ///////////////////////////////////////////////////////////////////////////////////
             // Check that PIN grouping rules are followed
             ///////////////////////////////////////////////////////////////////////////////////
-            ArrayList<KeyObject> keysNeedingPin = new ArrayList<KeyObject>();
+            ArrayList<KeyObject> keysNeedingPin = new ArrayList<>();
             for (KeyObject key : requestObjects) {
                 if (key.pinPolicy == pinPolicy) {
                     switch (pinPolicy.grouping) {
@@ -611,7 +611,7 @@ public class KeyCreationRequestDecoder extends ClientDecoder {
 
 
     public ArrayList<UserPINDescriptor> getUserPINDescriptors() {
-        ArrayList<UserPINDescriptor> userPinPolicies = new ArrayList<UserPINDescriptor>();
+        ArrayList<UserPINDescriptor> userPinPolicies = new ArrayList<>();
         for (KeyObject key : requestObjects) {
             if (key.getPINPolicy() != null && key.getPINPolicy().getUserDefinedFlag()) {
                 UserPINDescriptor pinDescriptor = new UserPINDescriptor(key.pinPolicy, key.appUsage);
@@ -676,7 +676,7 @@ public class KeyCreationRequestDecoder extends ClientDecoder {
     }
 
 
-    private ArrayList<KeyObject> requestObjects = new ArrayList<KeyObject>();
+    private ArrayList<KeyObject> requestObjects = new ArrayList<>();
 
     private boolean deferredIssuance;
 

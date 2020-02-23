@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ public class InvocationRequestDecoder extends ClientDecoder {
 
     enum CAPABILITY {UNDEFINED, URI_FEATURE, VALUES, IMAGE_ATTRIBUTES}
 
-    LinkedHashMap<String, CAPABILITY> queriedCapabilities = new LinkedHashMap<String, CAPABILITY>();
+    LinkedHashMap<String, CAPABILITY> queriedCapabilities = new LinkedHashMap<>();
 
     Action action;
 

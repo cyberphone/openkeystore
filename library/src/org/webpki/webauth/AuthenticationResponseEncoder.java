@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ public class AuthenticationResponseEncoder extends JSONEncoder {
 
     byte[] serverCertificateFingerprint;
 
-    LinkedHashMap<String, LinkedHashSet<String>> clientPlatformFeatures = new LinkedHashMap<String, LinkedHashSet<String>>();
+    LinkedHashMap<String, LinkedHashSet<String>> clientPlatformFeatures = new LinkedHashMap<>();
 
     String id;
 
@@ -74,7 +74,7 @@ public class AuthenticationResponseEncoder extends JSONEncoder {
     public AuthenticationResponseEncoder addClientFeature(String type, String value) {
         LinkedHashSet<String> set = clientPlatformFeatures.get(type);
         if (set == null) {
-            clientPlatformFeatures.put(type, set = new LinkedHashSet<String>());
+            clientPlatformFeatures.put(type, set = new LinkedHashSet<>());
         }
         set.add(value);
         return this;

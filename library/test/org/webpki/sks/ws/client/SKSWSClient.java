@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -124,7 +124,7 @@ public class SKSWSClient implements SecureKeyStore, WSSpecific {
     }
 
     private X509Certificate[] getCertArrayFromBlobs(List<byte[]> blobs) throws IOException {
-        ArrayList<X509Certificate> certs = new ArrayList<X509Certificate>();
+        ArrayList<X509Certificate> certs = new ArrayList<>();
         for (byte[] bcert : blobs) {
             certs.add(CertificateUtil.getCertificateFromBlob(bcert));
         }
@@ -162,18 +162,18 @@ public class SKSWSClient implements SecureKeyStore, WSSpecific {
     @Override
     public WSDeviceInfo getDeviceInfo() throws SKSException {
         try {
-            Holder<Short> api_level = new Holder<Short>();
-            Holder<Byte> device_type = new Holder<Byte>();
-            Holder<String> update_url = new Holder<String>();
-            Holder<String> vendor_name = new Holder<String>();
-            Holder<String> vendor_description = new Holder<String>();
-            Holder<List<byte[]>> certificatePath = new Holder<List<byte[]>>();
-            Holder<List<String>> supported_algorithms = new Holder<List<String>>();
-            Holder<Integer> crypto_data_size = new Holder<Integer>();
-            Holder<Integer> extension_data_size = new Holder<Integer>();
-            Holder<Boolean> device_pin_support = new Holder<Boolean>();
-            Holder<Boolean> biometric_support = new Holder<Boolean>();
-            Holder<String> connection_port = new Holder<String>();
+            Holder<Short> api_level = new Holder<>();
+            Holder<Byte> device_type = new Holder<>();
+            Holder<String> update_url = new Holder<>();
+            Holder<String> vendor_name = new Holder<>();
+            Holder<String> vendor_description = new Holder<>();
+            Holder<List<byte[]>> certificatePath = new Holder<>();
+            Holder<List<String>> supported_algorithms = new Holder<>();
+            Holder<Integer> crypto_data_size = new Holder<>();
+            Holder<Integer> extension_data_size = new Holder<>();
+            Holder<Boolean> device_pin_support = new Holder<>();
+            Holder<Boolean> biometric_support = new Holder<>();
+            Holder<String> connection_port = new Holder<>();
             getSKSWS().getDeviceInfo(deviceId,
                     api_level,
                     device_type,
@@ -219,9 +219,9 @@ public class SKSWSClient implements SecureKeyStore, WSSpecific {
                                                          short sessionKeyLimit,
                                                          byte[] serverCertificate) throws SKSException {
         try {
-            Holder<String> clientSessionId = new Holder<String>();
-            Holder<byte[]> client_ephemeral_key = new Holder<byte[]>();
-            Holder<byte[]> session_attestation = new Holder<byte[]>();
+            Holder<String> clientSessionId = new Holder<>();
+            Holder<byte[]> client_ephemeral_key = new Holder<>();
+            Holder<byte[]> session_attestation = new Holder<>();
             int provisioning_handle = getSKSWS().createProvisioningSession(deviceId,
                     session_key_algorithm,
                     privacy_enabled,
@@ -265,14 +265,14 @@ public class SKSWSClient implements SecureKeyStore, WSSpecific {
     @Override
     public EnumeratedProvisioningSession enumerateProvisioningSessions(int provisioning_handle, boolean provisioning_state) throws SKSException {
         try {
-            Holder<String> session_key_algorithm = new Holder<String>();
-            Holder<Boolean> privacy_enabled = new Holder<Boolean>();
-            Holder<byte[]> keyManagementKey = new Holder<byte[]>();
-            Holder<Integer> clientTime = new Holder<Integer>();
-            Holder<Integer> sessionLifeTime = new Holder<Integer>();
-            Holder<String> serverSessionId = new Holder<String>();
-            Holder<String> clientSessionId = new Holder<String>();
-            Holder<String> issuer_uri = new Holder<String>();
+            Holder<String> session_key_algorithm = new Holder<>();
+            Holder<Boolean> privacy_enabled = new Holder<>();
+            Holder<byte[]> keyManagementKey = new Holder<>();
+            Holder<Integer> clientTime = new Holder<>();
+            Holder<Integer> sessionLifeTime = new Holder<>();
+            Holder<String> serverSessionId = new Holder<>();
+            Holder<String> clientSessionId = new Holder<>();
+            Holder<String> issuer_uri = new Holder<>();
             provisioning_handle = getSKSWS().enumerateProvisioningSessions(deviceId,
                     provisioning_handle,
                     provisioning_state,
@@ -384,9 +384,9 @@ public class SKSWSClient implements SecureKeyStore, WSSpecific {
                                   String[] endorsedAlgorithms,
                                   byte[] mac) throws SKSException {
         try {
-            Holder<byte[]> publicKey = new Holder<byte[]>();
-            Holder<byte[]> key_attestation = new Holder<byte[]>();
-            List<String> lalg = new ArrayList<String>();
+            Holder<byte[]> publicKey = new Holder<>();
+            Holder<byte[]> key_attestation = new Holder<>();
+            List<String> lalg = new ArrayList<>();
             for (String alg : endorsedAlgorithms) {
                 lalg.add(alg);
             }
@@ -437,7 +437,7 @@ public class SKSWSClient implements SecureKeyStore, WSSpecific {
                                    X509Certificate[] certificatePath,
                                    byte[] mac) throws SKSException {
         try {
-            List<byte[]> lcert_path = new ArrayList<byte[]>();
+            List<byte[]> lcert_path = new ArrayList<>();
             for (X509Certificate cert : certificatePath) {
                 lcert_path.add(cert.getEncoded());
             }
@@ -567,7 +567,7 @@ public class SKSWSClient implements SecureKeyStore, WSSpecific {
     @Override
     public EnumeratedKey enumerateKeys(int keyHandle) throws SKSException {
         try {
-            Holder<Integer> provisioning_handle = new Holder<Integer>();
+            Holder<Integer> provisioning_handle = new Holder<>();
             keyHandle = getSKSWS().enumerateKeys(deviceId, keyHandle, provisioning_handle);
             return keyHandle == EnumeratedKey.INIT_ENUMERATION ? null : new EnumeratedKey(keyHandle, provisioning_handle.value);
         } catch (SKSException_Exception e) {
@@ -578,12 +578,12 @@ public class SKSWSClient implements SecureKeyStore, WSSpecific {
     @Override
     public KeyAttributes getKeyAttributes(int keyHandle) throws SKSException {
         try {
-            Holder<Short> symmetric_key_length = new Holder<Short>();
-            Holder<List<byte[]>> certificatePath = new Holder<List<byte[]>>();
-            Holder<Byte> appUsage = new Holder<Byte>();
-            Holder<String> friendlyName = new Holder<String>();
-            Holder<List<String>> endorsedAlgorithms = new Holder<List<String>>();
-            Holder<List<String>> extension_types = new Holder<List<String>>();
+            Holder<Short> symmetric_key_length = new Holder<>();
+            Holder<List<byte[]>> certificatePath = new Holder<>();
+            Holder<Byte> appUsage = new Holder<>();
+            Holder<String> friendlyName = new Holder<>();
+            Holder<List<String>> endorsedAlgorithms = new Holder<>();
+            Holder<List<String>> extension_types = new Holder<>();
             getSKSWS().getKeyAttributes(deviceId,
                     keyHandle,
                     symmetric_key_length,
@@ -608,25 +608,25 @@ public class SKSWSClient implements SecureKeyStore, WSSpecific {
     @Override
     public KeyProtectionInfo getKeyProtectionInfo(int keyHandle) throws SKSException {
         try {
-            Holder<Byte> protectionStatus = new Holder<Byte>();
-            Holder<Byte> puk_format = new Holder<Byte>();
-            Holder<Short> puk_retry_limit = new Holder<Short>();
-            Holder<Short> puk_error_count = new Holder<Short>();
-            Holder<Boolean> userDefined = new Holder<Boolean>();
-            Holder<Boolean> userModifiable = new Holder<Boolean>();
-            Holder<Byte> format = new Holder<Byte>();
-            Holder<Short> retryLimit = new Holder<Short>();
-            Holder<Byte> grouping = new Holder<Byte>();
-            Holder<Byte> patternRestrictions = new Holder<Byte>();
-            Holder<Short> minLength = new Holder<Short>();
-            Holder<Short> maxLength = new Holder<Short>();
-            Holder<Byte> inputMethod = new Holder<Byte>();
-            Holder<Short> pin_error_count = new Holder<Short>();
-            Holder<Boolean> enablePinCaching = new Holder<Boolean>();
-            Holder<Byte> biometricProtection = new Holder<Byte>();
-            Holder<Byte> exportProtection = new Holder<Byte>();
-            Holder<Byte> deleteProtection = new Holder<Byte>();
-            Holder<Byte> key_backup = new Holder<Byte>();
+            Holder<Byte> protectionStatus = new Holder<>();
+            Holder<Byte> puk_format = new Holder<>();
+            Holder<Short> puk_retry_limit = new Holder<>();
+            Holder<Short> puk_error_count = new Holder<>();
+            Holder<Boolean> userDefined = new Holder<>();
+            Holder<Boolean> userModifiable = new Holder<>();
+            Holder<Byte> format = new Holder<>();
+            Holder<Short> retryLimit = new Holder<>();
+            Holder<Byte> grouping = new Holder<>();
+            Holder<Byte> patternRestrictions = new Holder<>();
+            Holder<Short> minLength = new Holder<>();
+            Holder<Short> maxLength = new Holder<>();
+            Holder<Byte> inputMethod = new Holder<>();
+            Holder<Short> pin_error_count = new Holder<>();
+            Holder<Boolean> enablePinCaching = new Holder<>();
+            Holder<Byte> biometricProtection = new Holder<>();
+            Holder<Byte> exportProtection = new Holder<>();
+            Holder<Byte> deleteProtection = new Holder<>();
+            Holder<Byte> key_backup = new Holder<>();
             getSKSWS().getKeyProtectionInfo(deviceId,
                     keyHandle,
                     protectionStatus,
@@ -690,9 +690,9 @@ public class SKSWSClient implements SecureKeyStore, WSSpecific {
     public Extension getExtension(int keyHandle,
                                   String type) throws SKSException {
         try {
-            Holder<Byte> subType = new Holder<Byte>();
-            Holder<String> qualifier = new Holder<String>();
-            Holder<byte[]> extension_data = new Holder<byte[]>();
+            Holder<Byte> subType = new Holder<>();
+            Holder<String> qualifier = new Holder<>();
+            Holder<byte[]> extension_data = new Holder<>();
             getSKSWS().getExtension(deviceId,
                     keyHandle,
                     type,

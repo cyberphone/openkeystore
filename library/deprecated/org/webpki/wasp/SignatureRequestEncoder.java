@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -48,9 +48,9 @@ public class SignatureRequestEncoder extends SignatureRequest {
 
     private String domain_id;
 
-    ArrayList<SignatureProfileEncoder> signature_profiles = new ArrayList<SignatureProfileEncoder>();
+    ArrayList<SignatureProfileEncoder> signature_profiles = new ArrayList<>();
 
-    ArrayList<CertificateFilter> certificateFilters = new ArrayList<CertificateFilter>();
+    ArrayList<CertificateFilter> certificateFilters = new ArrayList<>();
 
     DocumentReferences document_references = new DocumentReferences();
 

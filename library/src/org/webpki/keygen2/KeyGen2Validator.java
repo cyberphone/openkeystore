@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -150,11 +150,11 @@ abstract class KeyGen2Validator extends JSONDecoder {
         if (rd.hasProperty(name)) {
             return getObjectArray(rd, name);
         }
-        return new ArrayList<JSONObjectReader>();
+        return new ArrayList<>();
     }
 
     static ArrayList<JSONObjectReader> getObjectArray(JSONObjectReader rd, String name) throws IOException {
-        ArrayList<JSONObjectReader> result = new ArrayList<JSONObjectReader>();
+        ArrayList<JSONObjectReader> result = new ArrayList<>();
         JSONArrayReader arr = rd.getArray(name);
         do {
             result.add(arr.getObject());

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
  */
 package org.webpki.keygen2;
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ public class InvocationResponseEncoder extends JSONEncoder {
 
     LinkedHashMap<String, InvocationRequestDecoder.CAPABILITY> queriedCapabilities;
 
-    LinkedHashMap<String, String[]> returnedValues = new LinkedHashMap<String, String[]>();
+    LinkedHashMap<String, String[]> returnedValues = new LinkedHashMap<>();
 
     class ImageAttributes {
         String mimeType;
@@ -60,7 +60,7 @@ public class InvocationResponseEncoder extends JSONEncoder {
         int height;
     }
 
-    LinkedHashMap<String, ImageAttributes> image_preferences = new LinkedHashMap<String, ImageAttributes>();
+    LinkedHashMap<String, ImageAttributes> image_preferences = new LinkedHashMap<>();
 
     void addCapability(String typeUri, InvocationRequestDecoder.CAPABILITY capability) throws IOException {
         InvocationRequestDecoder.CAPABILITY current = queriedCapabilities.get(typeUri);

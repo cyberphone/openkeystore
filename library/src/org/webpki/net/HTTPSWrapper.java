@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -144,9 +144,9 @@ public class HTTPSWrapper {
     private String key_store_password;
     private String request_method;
 
-    private LinkedHashMap<String, ArrayList<String>> request_headers = new LinkedHashMap<String, ArrayList<String>>();
+    private LinkedHashMap<String, ArrayList<String>> request_headers = new LinkedHashMap<>();
 
-    private LinkedHashMap<String, ArrayList<String>> response_headers = new LinkedHashMap<String, ArrayList<String>>();
+    private LinkedHashMap<String, ArrayList<String>> response_headers = new LinkedHashMap<>();
 
     private byte[] server_data;
 
@@ -564,7 +564,7 @@ public class HTTPSWrapper {
         for (String key : headers.keySet()) {
             if (key != null) // Protection against a bug in URLConnection
             {
-                ArrayList<String> values = new ArrayList<String>();
+                ArrayList<String> values = new ArrayList<>();
                 for (String value : headers.get(key)) {
                     values.add(value);
                 }
@@ -751,7 +751,7 @@ public class HTTPSWrapper {
                 return;
             }
         }
-        ArrayList<String> v = new ArrayList<String>();
+        ArrayList<String> v = new ArrayList<>();
         v.add(value);
         request_headers.put(name, v);
     }
@@ -931,7 +931,7 @@ public class HTTPSWrapper {
          */
         public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
             try {
-                Set<TrustAnchor> trust = new HashSet<TrustAnchor>();
+                Set<TrustAnchor> trust = new HashSet<>();
                 // All CAs must in an *installed* CA path be valid as trust
                 // anchors
                 Enumeration<String> aliases = trust_store.aliases();
@@ -945,7 +945,7 @@ public class HTTPSWrapper {
                 PKIXParameters param = new PKIXParameters(trust);
                 param.setDate(new Date());
                 param.setRevocationEnabled(enable_revocation_test);
-                List<X509Certificate> certchain = new ArrayList<X509Certificate>();
+                List<X509Certificate> certchain = new ArrayList<>();
                 for (X509Certificate cert : chain) {
                     if (!cert.getSubjectX500Principal().equals(cert.getIssuerX500Principal())) {
                         certchain.add(cert);
@@ -973,7 +973,7 @@ public class HTTPSWrapper {
 
     private static class CommandLine {
 
-        ArrayList<CmdLineArgument> list = new ArrayList<CmdLineArgument>();
+        ArrayList<CmdLineArgument> list = new ArrayList<>();
 
         int max_display;
 
@@ -994,7 +994,7 @@ public class HTTPSWrapper {
             String command;
             String optargument;
             String defaultvalue;
-            ArrayList<String> argvalue = new ArrayList<String>();
+            ArrayList<String> argvalue = new ArrayList<>();
             CmdFrequency frequency;
             boolean found;
 

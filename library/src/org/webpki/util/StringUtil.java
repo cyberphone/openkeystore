@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ public class StringUtil {
      * @return An array of substrings of s.
      */
     public static String[] splitAtAny(String s, String[] delimiters, boolean includeEmpty) {
-        ArrayList<String> v = new ArrayList<String>();
+        ArrayList<String> v = new ArrayList<>();
         int[] is = new int[delimiters.length];
 
         for (int i = 0; i < delimiters.length; i++) {
@@ -98,7 +98,7 @@ public class StringUtil {
      * @return An array of substrings of s.
      */
     public static String[] splitAt(String s, String delimiter, boolean includeEmpty) {
-        ArrayList<String> v = new ArrayList<String>();
+        ArrayList<String> v = new ArrayList<>();
         int i;
         while ((i = s.indexOf(delimiter)) >= 0) {
             if (includeEmpty || i > 0) {
@@ -348,7 +348,7 @@ public class StringUtil {
     }
 
     public static String[] readFile(File file) throws IOException {
-        ArrayList<String> v = new ArrayList<String>();
+        ArrayList<String> v = new ArrayList<>();
         LineNumberReader r = new LineNumberReader(new FileReader(file));
         String t;
         while ((t = r.readLine()) != null) {

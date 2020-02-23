@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -67,15 +67,15 @@ public class ProxyServer {
 
     private static Logger logger = Logger.getLogger(ProxyServer.class.getName());
 
-    private static HashMap<String, ProxyServer> services = new HashMap<String, ProxyServer>();
+    private static HashMap<String, ProxyServer> services = new HashMap<>();
 
-    private ArrayList<RequestDescriptor> response_queue = new ArrayList<RequestDescriptor>();
+    private ArrayList<RequestDescriptor> response_queue = new ArrayList<>();
 
-    private ArrayList<RequestDescriptor> waiting_callers = new ArrayList<RequestDescriptor>();
+    private ArrayList<RequestDescriptor> waiting_callers = new ArrayList<>();
 
-    private ArrayList<ServerUploadHandler> upload_event_subscribers = new ArrayList<ServerUploadHandler>();
+    private ArrayList<ServerUploadHandler> upload_event_subscribers = new ArrayList<>();
 
-    private ArrayList<ProxyRequest> proxies = new ArrayList<ProxyRequest>();
+    private ArrayList<ProxyRequest> proxies = new ArrayList<>();
 
     private long next_caller_id;
 

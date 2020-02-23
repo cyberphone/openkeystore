@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ public class AuthenticationResponseDecoder extends InputValidator {
 
     AsymSignatureAlgorithms signatureAlgorithm;
 
-    LinkedHashMap<String, LinkedHashSet<String>> clientPlatformFeatures = new LinkedHashMap<String, LinkedHashSet<String>>();
+    LinkedHashMap<String, LinkedHashSet<String>> clientPlatformFeatures = new LinkedHashMap<>();
 
 
     public GregorianCalendar getClientTime() {
@@ -103,7 +103,7 @@ public class AuthenticationResponseDecoder extends InputValidator {
             if (set != null) {
                 bad("Duplicated \"" + TYPE_JSON + "\" : " + type);
             }
-            clientPlatformFeatures.put(type, set = new LinkedHashSet<String>());
+            clientPlatformFeatures.put(type, set = new LinkedHashSet<>());
             for (String value : InputValidator.getNonEmptyList(feature, VALUES_JSON)) {
                 set.add(value);
             }

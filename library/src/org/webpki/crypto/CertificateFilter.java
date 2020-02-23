@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ public class CertificateFilter {
 
     static abstract class BaseRuleParser {
 
-        LinkedHashMap<String, Boolean> rules = new LinkedHashMap<String, Boolean>();
+        LinkedHashMap<String, Boolean> rules = new LinkedHashMap<>();
 
         BaseRuleParser(String[] ruleSet) throws IOException {
             if (ruleSet != null) {
@@ -96,7 +96,7 @@ public class CertificateFilter {
             if (rules.isEmpty()) {
                 return null;
             }
-            LinkedHashSet<String> ruleSet = new LinkedHashSet<String>();
+            LinkedHashSet<String> ruleSet = new LinkedHashSet<>();
             for (String rule : rules.keySet()) {
                 ruleSet.add(rules.get(rule) ? rule : DISALLOWED + rule);
             }
@@ -282,7 +282,7 @@ public class CertificateFilter {
     public CertificateFilter setKeyUsageRules(KeyUsageBits[] required, KeyUsageBits[] disallowed) throws IOException {
         nullCheck(required);
         nullCheck(disallowed);
-        ArrayList<String> list = new ArrayList<String>();
+        ArrayList<String> list = new ArrayList<>();
         for (KeyUsageBits kub : required) {
             list.add(kub.getX509Name());
         }

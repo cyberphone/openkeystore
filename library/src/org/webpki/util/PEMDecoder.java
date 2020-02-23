@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -148,7 +148,7 @@ public class PEMDecoder {
         String pemString = new String(pemBlob, "utf-8");
         String header = "-----BEGIN " + itemType + "-----";
         String footer = "-----END "   + itemType + "-----";
-        ArrayList<byte[]> objects = new ArrayList<byte[]>();
+        ArrayList<byte[]> objects = new ArrayList<>();
         int start = 0;
         while (true) {
             start = pemString.indexOf(header, start);

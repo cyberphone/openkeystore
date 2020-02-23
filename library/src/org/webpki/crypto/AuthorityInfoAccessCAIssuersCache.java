@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ public class AuthorityInfoAccessCAIssuersCache implements AuthorityInfoAccessCAI
 
     private static final long serialVersionUID = 1L;
 
-    private Hashtable<String, X509Certificate[]> cache = new Hashtable<String, X509Certificate[]>();
+    private Hashtable<String, X509Certificate[]> cache = new Hashtable<>();
 
     public X509Certificate[] getUpdatedPath(X509Certificate[] inputPath) throws IOException {
         String[] aia_caissuers = CertificateUtil.getAIACAIssuers(inputPath[inputPath.length - 1]);

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -374,7 +374,7 @@ public class Signatures {
         String keyId1 = keyId;
         KeyPair keyPair2 = readJwk(keyType2);
         String keyId2 = keyId;
-        ArrayList<JSONSigner> signers = new ArrayList<JSONSigner>();
+        ArrayList<JSONSigner> signers = new ArrayList<>();
         JSONAsymKeySigner signer = new JSONAsymKeySigner(keyPair1.getPrivate(), keyPair1.getPublic(), null);
         if (exts) {
             setExtensionData(signer, true);

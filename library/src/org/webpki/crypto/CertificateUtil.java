@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -74,7 +74,7 @@ public class CertificateUtil {
     }
 
     public static X509Certificate[] getSortedPathFromPKCS7Bag(byte[] bag) throws IOException {
-        ArrayList<byte[]> certs = new ArrayList<byte[]>();
+        ArrayList<byte[]> certs = new ArrayList<>();
 
         ASN1Sequence outer = ParseUtil.sequence(DerDecoder.decode(bag));
         for (int i = 0; i < outer.size(); i++) {
@@ -99,7 +99,7 @@ public class CertificateUtil {
         if (keyUsage == null) {
             return null;
         }
-        ArrayList<String> keyUsageSet = new ArrayList<String>();
+        ArrayList<String> keyUsageSet = new ArrayList<>();
         int i = 0;
         for (KeyUsageBits kub : KeyUsageBits.values()) {
             if (i < keyUsage.length) {
@@ -177,7 +177,7 @@ public class CertificateUtil {
     }
 
     public static String[] getSubjectEmailAddresses(X509Certificate certificate) throws IOException {
-        HashSet<String> emailAddresses = new HashSet<String>();
+        HashSet<String> emailAddresses = new HashSet<>();
 
         Pattern pattern = Pattern.compile("(^|,)(1\\.2\\.840\\.113549\\.1\\.9\\.1=#)([a-f0-9]+)(,.*|$)");
         Matcher matcher = pattern.matcher(certificate.getSubjectX500Principal().getName());
@@ -201,7 +201,7 @@ public class CertificateUtil {
         if (outer == null) {
             return null;
         }
-        ArrayList<String> uris = new ArrayList<String>();
+        ArrayList<String> uris = new ArrayList<>();
         for (int q = 0; q < outer.size(); q++) {
             ASN1Sequence inner = ParseUtil.sequence(ParseUtil.sequence(outer.get(q)));
             if (inner.size() != 2) {
@@ -335,7 +335,7 @@ public class CertificateUtil {
             System.out.println("\nCheck path for:\n   {certificate-in-der-format}...");
         } else {
             try {
-                ArrayList<byte[]> certPath = new ArrayList<byte[]>();
+                ArrayList<byte[]> certPath = new ArrayList<>();
                 for (String file : args) {
                     certPath.add(ArrayUtil.readFile(file));
                 }
@@ -371,7 +371,7 @@ public class CertificateUtil {
     }
 
     public static X509Certificate[] makeCertificatePath(List<byte[]> certificateBlobs) throws IOException {
-        ArrayList<X509Certificate> certificates = new ArrayList<X509Certificate>();
+        ArrayList<X509Certificate> certificates = new ArrayList<>();
         for (byte[] certificateBlob : certificateBlobs) {
             try {
                 CertificateFactory cf = CertificateFactory.getInstance("X.509");

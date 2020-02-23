@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -315,9 +315,9 @@ public class WSCreator extends XMLObjectWrapper {
 
     CppPackage cpp_client_pck;
 
-    TreeSet<String> jimports = new TreeSet<String>();
+    TreeSet<String> jimports = new TreeSet<>();
 
-    TreeSet<String> dotnet_imports = new TreeSet<String>();
+    TreeSet<String> dotnet_imports = new TreeSet<>();
 
     DOMAttributeReaderHelper attr;
 
@@ -352,7 +352,7 @@ public class WSCreator extends XMLObjectWrapper {
 
     }
 
-    static ArrayList<DataType> types = new ArrayList<DataType>();
+    static ArrayList<DataType> types = new ArrayList<>();
 
     static {
         //                       NULL    WSDL               DESC       C#        Java       Holder
@@ -507,7 +507,7 @@ public class WSCreator extends XMLObjectWrapper {
         }
 
         public Collection<Property> filteredParameters(boolean output) {
-            Collection<Property> props = new ArrayList<Property>();
+            Collection<Property> props = new ArrayList<>();
             if (output && return_prop != null) {
                 props.add(return_prop);
             }
@@ -526,14 +526,14 @@ public class WSCreator extends XMLObjectWrapper {
     }
 
     class EnumerationClass {
-        LinkedHashMap<String, String> entries = new LinkedHashMap<String, String>();
+        LinkedHashMap<String, String> entries = new LinkedHashMap<>();
         DataType type;
         String class_name;
     }
 
     class WSException extends Container {
         Collection<Property> getPropsMinusMessage() {
-            Collection<Property> filtered = new ArrayList<Property>();
+            Collection<Property> filtered = new ArrayList<>();
             boolean next = false;
             for (Property prop : properties) {
                 if (next) {
@@ -602,13 +602,13 @@ public class WSCreator extends XMLObjectWrapper {
         LinkedHashMap<String, Constant> constants;
     }
 
-    LinkedHashMap<String, WSException> exceptions = new LinkedHashMap<String, WSException>();
-    ArrayList<Method> methods = new ArrayList<Method>();
-    LinkedHashMap<String, RewriteRule> dotnet_rewrite_rules = new LinkedHashMap<String, RewriteRule>();
-    LinkedHashMap<String, SuppressRule> dotnet_suppress_rules = new LinkedHashMap<String, SuppressRule>();
-    LinkedHashMap<String, EmbedRule> dotnet_embed_rules = new LinkedHashMap<String, EmbedRule>();
-    LinkedHashMap<String, ReturnClass> return_classes = new LinkedHashMap<String, ReturnClass>();
-    LinkedHashMap<String, EnumerationClass> enumerations = new LinkedHashMap<String, EnumerationClass>();
+    LinkedHashMap<String, WSException> exceptions = new LinkedHashMap<>();
+    ArrayList<Method> methods = new ArrayList<>();
+    LinkedHashMap<String, RewriteRule> dotnet_rewrite_rules = new LinkedHashMap<>();
+    LinkedHashMap<String, SuppressRule> dotnet_suppress_rules = new LinkedHashMap<>();
+    LinkedHashMap<String, EmbedRule> dotnet_embed_rules = new LinkedHashMap<>();
+    LinkedHashMap<String, ReturnClass> return_classes = new LinkedHashMap<>();
+    LinkedHashMap<String, EnumerationClass> enumerations = new LinkedHashMap<>();
     boolean add_main;
     String dot_net_registry_url;
     String dot_net_default_url;
@@ -965,7 +965,7 @@ public class WSCreator extends XMLObjectWrapper {
     }
 
     LinkedHashMap<String, Constant> getConstants(DOMReaderHelper rd) throws IOException {
-        LinkedHashMap<String, Constant> constants = new LinkedHashMap<String, Constant>();
+        LinkedHashMap<String, Constant> constants = new LinkedHashMap<>();
         while (rd.hasNext("Constant")) {
             rd.getNext();
             Constant constant = new Constant();
@@ -994,7 +994,7 @@ public class WSCreator extends XMLObjectWrapper {
             if (!meth.public_method) {
                 continue;
             }
-            List<String> null_types = new ArrayList<String>();
+            List<String> null_types = new ArrayList<>();
             write(dotnetdoc_file, "<tr><td>&nbsp;</td></tr><tr><td style=\"border-width:1px 1px 1px 1px;border-style:solid;border-color:black\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\">" +
                     "<tr><td><code>" + dotnetReserved("public") + "&nbsp;");
             if (meth.return_class == null) {
@@ -1561,7 +1561,7 @@ public class WSCreator extends XMLObjectWrapper {
     }
 
     Collection<Property> getProperties(DOMReaderHelper rd, String property) throws IOException {
-        LinkedHashMap<String, Property> props = new LinkedHashMap<String, Property>();
+        LinkedHashMap<String, Property> props = new LinkedHashMap<>();
         while (rd.hasNext(property)) {
             Property prop = getPropertyConditional(rd, property);
             if (props.put(prop.name, prop) != null) {

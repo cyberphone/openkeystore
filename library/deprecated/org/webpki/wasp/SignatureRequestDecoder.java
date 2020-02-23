@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -42,9 +42,9 @@ import static org.webpki.wasp.WASPConstants.*;
 
 public class SignatureRequestDecoder extends SignatureRequest {
 
-    private ArrayList<SignatureProfileDecoder> sign_profiles = new ArrayList<SignatureProfileDecoder>();
+    private ArrayList<SignatureProfileDecoder> sign_profiles = new ArrayList<>();
 
-    private ArrayList<CertificateFilter> cert_filters = new ArrayList<CertificateFilter>();  // Optional
+    private ArrayList<CertificateFilter> cert_filters = new ArrayList<>();  // Optional
 
     private DocumentReferences doc_refs;
 

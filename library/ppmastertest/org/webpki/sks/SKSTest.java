@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -117,11 +117,11 @@ public class SKSTest {
 
     static boolean standalone_testing;
 
-    static ArrayList<Integer> prov_sessions = new ArrayList<Integer>();
+    static ArrayList<Integer> prov_sessions = new ArrayList<>();
 
     static Device device;
     
-    static HashSet<String> supported_algorithms = new HashSet<String>();
+    static HashSet<String> supported_algorithms = new HashSet<>();
 
     static boolean bc_loaded;
     

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ public class KeyCreationResponseDecoder extends KeyGen2Validator {
 
     private static final long serialVersionUID = 1L;
 
-    LinkedHashMap<String, GeneratedPublicKey> generatedKeys = new LinkedHashMap<String, GeneratedPublicKey>();
+    LinkedHashMap<String, GeneratedPublicKey> generatedKeys = new LinkedHashMap<>();
 
     String clientSessionId;
 

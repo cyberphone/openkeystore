@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ public class KeyStore2JWKConverter {
         System.exit(3);
     }
     
-    static LinkedHashMap<String,String> privateKeyInfo = new LinkedHashMap<String,String>();
+    static LinkedHashMap<String,String> privateKeyInfo = new LinkedHashMap<>();
     
     static boolean privateKeyFlag;
     static boolean publicKeyFlag;
@@ -135,7 +135,7 @@ public class KeyStore2JWKConverter {
                     writeJwk(fis, publicKey, alias);
                 }
                 if (certificateFlag) {
-                    ArrayList<X509Certificate> certPath = new ArrayList<X509Certificate>();
+                    ArrayList<X509Certificate> certPath = new ArrayList<>();
                     for (Certificate cert : ks.getCertificateChain(alias)) {
                         certPath.add((X509Certificate) cert);
                     }

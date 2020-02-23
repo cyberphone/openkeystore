@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ public class Init implements ServletContextListener, ServerUploadHandler {
 
     private static final int HISTORY = 20;
 
-    static ArrayList<SampleUploadObject> uploads = new ArrayList<SampleUploadObject>();
+    static ArrayList<SampleUploadObject> uploads = new ArrayList<>();
 
     @Override
     public void contextInitialized(ServletContextEvent event) {

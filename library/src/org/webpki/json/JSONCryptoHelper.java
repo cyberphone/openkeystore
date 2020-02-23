@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -84,7 +84,7 @@ public class JSONCryptoHelper implements Serializable {
     public static final String Y_JSON                  = "y";              // JWK
     
     
-    static final LinkedHashSet<String> jefReservedWords = new LinkedHashSet<String>();
+    static final LinkedHashSet<String> jefReservedWords = new LinkedHashSet<>();
 
     static {
         jefReservedWords.add(ALGORITHM_JSON);
@@ -101,7 +101,7 @@ public class JSONCryptoHelper implements Serializable {
         jefReservedWords.add(TAG_JSON);
     }
 
-    static final LinkedHashSet<String> jsfReservedWords = new LinkedHashSet<String>();
+    static final LinkedHashSet<String> jsfReservedWords = new LinkedHashSet<>();
 
     static {
         jsfReservedWords.add(ALGORITHM_JSON);
@@ -137,7 +137,7 @@ public class JSONCryptoHelper implements Serializable {
     public static class ExtensionHolder {
         
         LinkedHashMap<String,ExtensionEntry> extensions = 
-                new LinkedHashMap<String,ExtensionEntry>();
+                new LinkedHashMap<>();
 
         public ExtensionHolder addExtension(Class<? extends Extension> extensionClass,
                                             boolean mandatory) throws IOException {
@@ -394,7 +394,7 @@ public class JSONCryptoHelper implements Serializable {
     }
 
     static LinkedHashSet<String> createSet(String[] listOfNames) throws IOException {
-        LinkedHashSet<String> set = new LinkedHashSet<String>();
+        LinkedHashSet<String> set = new LinkedHashSet<>();
         for (String name : listOfNames) {
             if (!set.add(name)) {
                throw new IOException("Duplicate: \"" + name + "\""); 

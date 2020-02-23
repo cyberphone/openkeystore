@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -40,11 +40,11 @@ public class RelativeDistinguishedName {
     /**
      * Mapping from OIDs to RDN component names.
      */
-    private static Hashtable<String, String> oid2Name = new Hashtable<String, String>();
+    private static Hashtable<String, String> oid2Name = new Hashtable<>();
     /**
      * Mapping from RDN component names to OIDs.
      */
-    private static Hashtable<String, String> name2OID = new Hashtable<String, String>();
+    private static Hashtable<String, String> name2OID = new Hashtable<>();
 
     private static void addOIDName(String oid, String name) {
         oid2Name.put(oid, name);
@@ -83,7 +83,7 @@ public class RelativeDistinguishedName {
         return oid2Name.get(oid);
     }
 
-    private Hashtable<String, ASN1String> components = new Hashtable<String, ASN1String>();
+    private Hashtable<String, ASN1String> components = new Hashtable<>();
 
     private ASN1Set asn1Representation;
 

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -453,7 +453,7 @@ public class JSONObjectReader implements Serializable, Cloneable {
     }
 
     String[] getSimpleArray(String name, JSONTypes expectedType) throws IOException {
-        ArrayList<String> array = new ArrayList<String>();
+        ArrayList<String> array = new ArrayList<>();
         @SuppressWarnings("unchecked")
         ArrayList<JSONValue> arrayElements = ((ArrayList<JSONValue>) getProperty(name, JSONTypes.ARRAY).value);
         for (JSONValue value : arrayElements) {
@@ -551,8 +551,8 @@ public class JSONObjectReader implements Serializable, Cloneable {
                         JSONCryptoHelper.CHAIN_JSON : JSONCryptoHelper.SIGNERS_JSON);
         @SuppressWarnings("unchecked")
         ArrayList<JSONValue> save = (ArrayList<JSONValue>) arrayReader.array.clone();
-        ArrayList<JSONSignatureDecoder> signatures = new ArrayList<JSONSignatureDecoder>();
-        ArrayList<JSONObjectReader> signatureObjects = new ArrayList<JSONObjectReader>();
+        ArrayList<JSONSignatureDecoder> signatures = new ArrayList<>();
+        ArrayList<JSONObjectReader> signatureObjects = new ArrayList<>();
         do {
             signatureObjects.add(arrayReader.getObject());
         } while(arrayReader.hasMore());
@@ -729,7 +729,7 @@ public class JSONObjectReader implements Serializable, Cloneable {
         options.initializeOperation(true);
         JSONDecryptionDecoder.Holder holder = new JSONDecryptionDecoder.Holder(options, this, true);
         JSONArrayReader recipientObjects = getArray(JSONCryptoHelper.RECIPIENTS_JSON);
-        ArrayList<JSONDecryptionDecoder> recipients = new ArrayList<JSONDecryptionDecoder>();
+        ArrayList<JSONDecryptionDecoder> recipients = new ArrayList<>();
         do {
             JSONDecryptionDecoder decoder = new JSONDecryptionDecoder(holder, 
                                                                       recipientObjects.getObject(),

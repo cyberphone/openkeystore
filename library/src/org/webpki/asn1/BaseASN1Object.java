@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -84,7 +84,7 @@ public abstract class BaseASN1Object implements ASN1Constants {
             throw new IllegalArgumentException("Must use the same decoder!!!!");
         }
 
-        ArrayList<BaseASN1Object> components = new ArrayList<BaseASN1Object>();
+        ArrayList<BaseASN1Object> components = new ArrayList<>();
 
         int endOffset = decoder.endOffset;
 
@@ -253,7 +253,7 @@ public abstract class BaseASN1Object implements ASN1Constants {
         return s.toString();
     }
 
-    private static Hashtable<Class<?>, Integer> classToTagNumber = new Hashtable<Class<?>, Integer>();
+    private static Hashtable<Class<?>, Integer> classToTagNumber = new Hashtable<>();
 
     static {
         classToTagNumber.put(ASN1Boolean.class, new Integer(BOOLEAN));

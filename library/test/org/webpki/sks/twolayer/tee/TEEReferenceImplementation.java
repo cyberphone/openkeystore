@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -96,16 +96,16 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
             (byte) 0x36, (byte) 0x14, (byte) 0x10, (byte) 0x20, (byte) 0x74, (byte) 0x34, (byte) 0x69, (byte) 0x09};
 
     int nextKeyHandle = 1;
-    LinkedHashMap<Integer, KeyEntry> keys = new LinkedHashMap<Integer, KeyEntry>();
+    LinkedHashMap<Integer, KeyEntry> keys = new LinkedHashMap<>();
 
     int nextProvHandle = 1;
-    LinkedHashMap<Integer, Provisioning> provisionings = new LinkedHashMap<Integer, Provisioning>();
+    LinkedHashMap<Integer, Provisioning> provisionings = new LinkedHashMap<>();
 
     int nextPinHandle = 1;
-    LinkedHashMap<Integer, PINPolicy> pinPolicies = new LinkedHashMap<Integer, PINPolicy>();
+    LinkedHashMap<Integer, PINPolicy> pinPolicies = new LinkedHashMap<>();
 
     int nextPukHandle = 1;
-    LinkedHashMap<Integer, PUKPolicy> pukPolicies = new LinkedHashMap<Integer, PUKPolicy>();
+    LinkedHashMap<Integer, PUKPolicy> pukPolicies = new LinkedHashMap<>();
 
 
     abstract class NameSpace implements Serializable {
@@ -182,7 +182,7 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
         byte key_backup;
 
 
-        LinkedHashMap<String, ExtObject> extensions = new LinkedHashMap<String, ExtObject>();
+        LinkedHashMap<String, ExtObject> extensions = new LinkedHashMap<>();
 
 
         KeyEntry(Provisioning owner, String id) {
@@ -197,7 +197,7 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
 
         @SuppressWarnings("fallthrough")
         ArrayList<KeyEntry> getPINSynchronizedKeys() {
-            ArrayList<KeyEntry> group = new ArrayList<KeyEntry>();
+            ArrayList<KeyEntry> group = new ArrayList<>();
             if (pinPolicy.grouping == PIN_GROUPING_NONE) {
                 group.add(this);
             } else {
@@ -423,10 +423,10 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
         int provisioningHandle;
 
         // The virtual/shared name-space
-        LinkedHashMap<String, Boolean> names = new LinkedHashMap<String, Boolean>();
+        LinkedHashMap<String, Boolean> names = new LinkedHashMap<>();
 
         // Post provisioning management
-        ArrayList<PostProvisioningObject> postProvisioning_objects = new ArrayList<PostProvisioningObject>();
+        ArrayList<PostProvisioningObject> postProvisioning_objects = new ArrayList<>();
 
         boolean privacyEnabled;
         String clientSessionId;
@@ -2326,7 +2326,7 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
             keyEntry.biometricProtection = biometricProtection;
             keyEntry.exportProtection = exportProtection;
             keyEntry.deleteProtection = deleteProtection;
-            LinkedHashSet<String> tempEndorsed = new LinkedHashSet<String>();
+            LinkedHashSet<String> tempEndorsed = new LinkedHashSet<>();
             for (String endorsedAlgorithm : endorsedAlgorithms) {
                 tempEndorsed.add(endorsedAlgorithm);
             }

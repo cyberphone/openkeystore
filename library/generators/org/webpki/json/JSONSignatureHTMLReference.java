@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -117,9 +117,9 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
         return formatCode(asymKey.text);
     }
     
-    static ArrayList<AsymKey> asymmetricKeys = new ArrayList<AsymKey>();
+    static ArrayList<AsymKey> asymmetricKeys = new ArrayList<>();
 
-    static ArrayList<SymKey> symmetricKeys = new ArrayList<SymKey>();
+    static ArrayList<SymKey> symmetricKeys = new ArrayList<>();
 
     static class CoreKey {
         String keyId;
@@ -238,7 +238,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             if (checker.hasProperty(JSONCryptoHelper.EXCLUDES_JSON)) {
                 options.setPermittedExclusions(checker.getStringArray(JSONCryptoHelper.EXCLUDES_JSON));
             }
-            ArrayList<JSONSignatureDecoder> signers = new ArrayList<JSONSignatureDecoder>();
+            ArrayList<JSONSignatureDecoder> signers = new ArrayList<>();
             if (checker.hasProperty(JSONCryptoHelper.SIGNERS_JSON)) {
                 JSONArrayReader signerArray = checker.getArray(JSONCryptoHelper.SIGNERS_JSON);
                 do {

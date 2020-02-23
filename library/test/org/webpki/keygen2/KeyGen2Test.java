@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -501,7 +501,7 @@ public class KeyGen2Test {
             assertTrue("Key containers", invocation_request.getOptionalKeyContainerList() == null ^ key_container_list);
             device_info = sks.getDeviceInfo();
             InvocationResponseEncoder invocation_response = new InvocationResponseEncoder(invocation_request);
-            ArrayList<String> matches = new ArrayList<String>();
+            ArrayList<String> matches = new ArrayList<>();
             for (String want : invocation_request.getQueriedCapabilities()) {
                 if (device_info.getSupportedAlgorithms().contains(want)) {
                     matches.add(want);
@@ -1094,7 +1094,7 @@ public class KeyGen2Test {
                         gen_private_key = kp.getPrivate();
                     }
 
-                    ArrayList<X509Certificate> cert_path = new ArrayList<X509Certificate>();
+                    ArrayList<X509Certificate> cert_path = new ArrayList<>();
                     cert_path.add(new CA().createCert(cert_spec,
                             DistinguishedName.subjectDN((X509Certificate) DemoKeyStore.getSubCAKeyStore().getCertificate("mykey")),
                             new BigInteger(String.valueOf(new GregorianCalendar().getTimeInMillis())),

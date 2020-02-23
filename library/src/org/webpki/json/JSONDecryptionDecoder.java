@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ public class JSONDecryptionDecoder {
             //                                                                               //
             // 1. Make a shallow copy of the encryption object property list                 //
             LinkedHashMap<String, JSONValue> savedProperties =                               //
-                    new LinkedHashMap<String, JSONValue>(encryptionObject.root.properties);  //
+                    new LinkedHashMap<>(encryptionObject.root.properties);                   //
             //                                                                               //
             // 2. Hide these properties from the serializer..                                //
             encryptionObject.root.properties.remove(JSONCryptoHelper.IV_JSON);               //
@@ -98,8 +98,7 @@ public class JSONDecryptionDecoder {
         }
     }
 
-    LinkedHashMap<String,JSONCryptoHelper.Extension> extensions = 
-            new LinkedHashMap<String,JSONCryptoHelper.Extension>();
+    LinkedHashMap<String,JSONCryptoHelper.Extension> extensions = new LinkedHashMap<>();
 
     private PublicKey publicKey;
     

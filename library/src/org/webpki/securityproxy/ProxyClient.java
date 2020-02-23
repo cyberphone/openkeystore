@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -328,9 +328,9 @@ public class ProxyClient {
 
     private InternalIdleObject idle_object;
 
-    private ArrayList<ProxyChannel> channels = new ArrayList<ProxyChannel>();
+    private ArrayList<ProxyChannel> channels = new ArrayList<>();
 
-    private ArrayList<InternalUploadObject> upload_objects = new ArrayList<InternalUploadObject>();
+    private ArrayList<InternalUploadObject> upload_objects = new ArrayList<>();
 
     private void prepareForSSL() {
         if (proxy_url.startsWith("https:") && (proxy_service_truststore != null || proxy_service_keystore != null)) {

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -263,7 +263,7 @@ public class XMLSignatureWrapper extends XMLObjectWrapper implements Serializabl
 
 
     private static X509Certificate[] readSortedX509Data(DOMReaderHelper rd, XMLSignatureWrapper sigwrap) throws IOException {
-        ArrayList<X509Certificate> certificates = new ArrayList<X509Certificate>();
+        ArrayList<X509Certificate> certificates = new ArrayList<>();
         rd.getNext(X509_DATA_ELEM);
         rd.getChild();
 

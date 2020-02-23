@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -53,11 +53,11 @@ public class AuthenticationRequestEncoder extends ServerEncoder {
 
     int expires;
 
-    LinkedHashSet<AsymSignatureAlgorithms> signatureAlgorithms = new LinkedHashSet<AsymSignatureAlgorithms>();
+    LinkedHashSet<AsymSignatureAlgorithms> signatureAlgorithms = new LinkedHashSet<>();
 
-    ArrayList<CertificateFilter> certificateFilters = new ArrayList<CertificateFilter>();
+    ArrayList<CertificateFilter> certificateFilters = new ArrayList<>();
 
-    ArrayList<String> requestedClientFeatures = new ArrayList<String>();
+    ArrayList<String> requestedClientFeatures = new ArrayList<>();
 
     String serverTime;
 

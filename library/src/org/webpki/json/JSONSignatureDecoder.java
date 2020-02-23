@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ public class JSONSignatureDecoder implements Serializable {
     
     JSONCryptoHelper.Options options;
     
-    LinkedHashMap<String,JSONCryptoHelper.Extension> extensions = new LinkedHashMap<String,JSONCryptoHelper.Extension>();
+    LinkedHashMap<String,JSONCryptoHelper.Extension> extensions = new LinkedHashMap<>();
 
     JSONSignatureDecoder(JSONObjectReader signedData,
                          JSONObjectReader innerSignatureObject,
@@ -111,7 +111,7 @@ public class JSONSignatureDecoder implements Serializable {
                                       "\" must be set in options");
             }
         } else {
-            saveExcluded = new LinkedHashMap<String, JSONValue>(signedData.root.properties);
+            saveExcluded = new LinkedHashMap<>(signedData.root.properties);
             LinkedHashSet<String> parsedExcludes = 
                     checkExcluded(outerSignatureObject.getStringArray(JSONCryptoHelper.EXCLUDES_JSON));
             for (String excluded : parsedExcludes.toArray(new String[0])) {
@@ -142,7 +142,7 @@ public class JSONSignatureDecoder implements Serializable {
         //                                                                                  //
         // 1. Make a shallow copy of the signature object                                   //
         LinkedHashMap<String, JSONValue> savedProperties =                                  //
-                new LinkedHashMap<String, JSONValue>(innerSignatureObject.root.properties); //
+                new LinkedHashMap<>(innerSignatureObject.root.properties);                  //
         //                                                                                  //
         // 2. Hide the signature value property for the serializer...                       //
         innerSignatureObject.root.properties.remove(JSONCryptoHelper.VALUE_JSON);           //
@@ -172,7 +172,9 @@ public class JSONSignatureDecoder implements Serializable {
         }
     }
 
-    static BigInteger getCurvePoint(JSONObjectReader rd, String property, KeyAlgorithms ec) throws IOException {
+    static BigInteger getCurvePoint(JSONObjectReader rd, 
+                                    String property,
+                                    KeyAlgorithms ec) throws IOException {
         byte[] fixedBinary = rd.getBinary(property);
         if (fixedBinary.length != (ec.getPublicKeySizeInBits() + 7) / 8) {
             throw new IOException("Public EC key parameter \"" + property + "\" is not normalized");
@@ -180,7 +182,8 @@ public class JSONSignatureDecoder implements Serializable {
         return new BigInteger(1, fixedBinary);
     }
 
-    static BigInteger getCryptoBinary(JSONObjectReader rd, String property) throws IOException {
+    static BigInteger getCryptoBinary(JSONObjectReader rd, 
+                                      String property) throws IOException {
         byte[] cryptoBinary = rd.getBinary(property);
         if (cryptoBinary[0] == 0x00) {
             throw new IOException("RSA key parameter \"" + property + "\" contains leading zeroes");
@@ -204,8 +207,10 @@ public class JSONSignatureDecoder implements Serializable {
                 if (!ec.isECKey()) {
                     throw new IOException("\"" + JSONCryptoHelper.CRV_JSON + "\" is not an EC type");
                 }
-                ECPoint w = new ECPoint(getCurvePoint(rd, JSONCryptoHelper.X_JSON, ec), getCurvePoint(rd, JSONCryptoHelper.Y_JSON, ec));
-                publicKey = KeyFactory.getInstance("EC").generatePublic(new ECPublicKeySpec(w, ec.getECParameterSpec()));
+                ECPoint w = new ECPoint(getCurvePoint(rd, JSONCryptoHelper.X_JSON, ec),
+                                        getCurvePoint(rd, JSONCryptoHelper.Y_JSON, ec));
+                publicKey = KeyFactory.getInstance("EC")
+                        .generatePublic(new ECPublicKeySpec(w, ec.getECParameterSpec()));
             } else {
                 throw new IOException("Unrecognized \"" + JSONCryptoHelper.KTY_JSON + "\": " + type);
             }
@@ -217,7 +222,8 @@ public class JSONSignatureDecoder implements Serializable {
 
     void asymmetricSignatureVerification(PublicKey publicKey) throws IOException {
         if (((AsymSignatureAlgorithms) algorithm).isRsa() != publicKey instanceof RSAPublicKey) {
-            throw new IOException("\"" + algorithmString + "\" doesn't match key type: " + publicKey.getAlgorithm());
+            throw new IOException("\"" + algorithmString + 
+                                  "\" doesn't match key type: " + publicKey.getAlgorithm());
         }
         try {
             if (!new SignatureWrapper((AsymSignatureAlgorithms) algorithm, publicKey)
@@ -244,7 +250,8 @@ public class JSONSignatureDecoder implements Serializable {
 
     void checkRequest(JSONSignatureTypes signatureType) throws IOException {
         if (signatureType != getSignatureType()) {
-            throw new IOException("Request doesn't match received signature: " + getSignatureType().toString());
+            throw new IOException("Request doesn't match received signature: " + 
+                                  getSignatureType().toString());
         }
     }
 
@@ -270,7 +277,8 @@ public class JSONSignatureDecoder implements Serializable {
         if (certificatePath != null) {
             return JSONSignatureTypes.X509_CERTIFICATE;
         }
-        return algorithm instanceof AsymSignatureAlgorithms ? JSONSignatureTypes.ASYMMETRIC_KEY : JSONSignatureTypes.SYMMETRIC_KEY;
+        return algorithm instanceof AsymSignatureAlgorithms ? 
+                          JSONSignatureTypes.ASYMMETRIC_KEY : JSONSignatureTypes.SYMMETRIC_KEY;
     }
 
     public void verify(JSONVerifier verifier) throws IOException {
@@ -278,7 +286,8 @@ public class JSONSignatureDecoder implements Serializable {
         verifier.verify(this);
     }
 
-    static PrivateKey decodePrivateKey(JSONObjectReader rd, PublicKey publicKey) throws IOException {
+    static PrivateKey decodePrivateKey(JSONObjectReader rd,
+                                       PublicKey publicKey) throws IOException {
         try {
             KeyAlgorithms keyAlgorithm = KeyAlgorithms.getKeyAlgorithm(publicKey);
             if (keyAlgorithm.isECKey()) {
@@ -287,14 +296,15 @@ public class JSONSignatureDecoder implements Serializable {
                                                               keyAlgorithm.getECParameterSpec()));
             }
             return KeyFactory.getInstance("RSA")
-                    .generatePrivate(new RSAPrivateCrtKeySpec(((RSAPublicKey) publicKey).getModulus(),
-                                                              ((RSAPublicKey) publicKey).getPublicExponent(),
-                                                              getCryptoBinary(rd, "d"),
-                                                              getCryptoBinary(rd, "p"),
-                                                              getCryptoBinary(rd, "q"),
-                                                              getCryptoBinary(rd, "dp"),
-                                                              getCryptoBinary(rd, "dq"),
-                                                              getCryptoBinary(rd, "qi")));
+                    .generatePrivate(
+                        new RSAPrivateCrtKeySpec(((RSAPublicKey) publicKey).getModulus(),
+                                                 ((RSAPublicKey) publicKey).getPublicExponent(),
+                                                 getCryptoBinary(rd, "d"),
+                                                 getCryptoBinary(rd, "p"),
+                                                 getCryptoBinary(rd, "q"),
+                                                 getCryptoBinary(rd, "dp"),
+                                                 getCryptoBinary(rd, "dq"),
+                                                 getCryptoBinary(rd, "qi")));
         } catch (GeneralSecurityException e) {
             throw new IOException(e);
         }
@@ -302,12 +312,14 @@ public class JSONSignatureDecoder implements Serializable {
 
     static LinkedHashSet<String> checkExcluded(String[] excluded) throws IOException {
         if (excluded.length == 0) {
-            throw new IOException("Empty \"" + JSONCryptoHelper.EXCLUDES_JSON + "\" array not allowed");
+            throw new IOException("Empty \"" + 
+                                  JSONCryptoHelper.EXCLUDES_JSON + "\" array not allowed");
         }
-        LinkedHashSet<String> ex = new LinkedHashSet<String>();
+        LinkedHashSet<String> ex = new LinkedHashSet<>();
         for (String property : excluded) {
             if (!ex.add(property)) {
-                throw new IOException("Duplicate \"" + JSONCryptoHelper.EXCLUDES_JSON + "\" property: " + property);
+                throw new IOException("Duplicate \"" + 
+                                      JSONCryptoHelper.EXCLUDES_JSON + "\" property: " + property);
             }
         }
         return ex;

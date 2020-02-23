@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -61,24 +61,24 @@ public class CertSpec {
 
     Set<ExtendedKeyUsages> extended_key_usage_set = EnumSet.noneOf(ExtendedKeyUsages.class);
 
-    ArrayList<String> cert_policy_oids = new ArrayList<String>();
+    ArrayList<String> cert_policy_oids = new ArrayList<>();
 
-    ArrayList<String[]> aia_locators = new ArrayList<String[]>();
+    ArrayList<String[]> aia_locators = new ArrayList<>();
 
-    ArrayList<String> crl_dist_points = new ArrayList<String>();
+    ArrayList<String> crl_dist_points = new ArrayList<>();
 
     private boolean has_given_key_usage;
 
     private boolean default_key_usage;
 
-    private ArrayList<RelativeDistinguishedName> subject = new ArrayList<RelativeDistinguishedName>();
+    private ArrayList<RelativeDistinguishedName> subject = new ArrayList<>();
 
     /**
      * Components for the <code>subjectAltName</code>.
      * The names used in this list should be the integer constants defined in
      * {@link org.webpki.asn1.cert.SubjectAltNameTypes SubjectAltNameTypes}.
      */
-    ArrayList<NameValue> subjectAltName = new ArrayList<NameValue>();
+    ArrayList<NameValue> subjectAltName = new ArrayList<>();
 
 
     DistinguishedName getSubjectDistinguishedName() {
@@ -154,7 +154,7 @@ public class CertSpec {
 
 
     public void setSubject(String subject) throws IOException {
-        ArrayList<String> dns = new ArrayList<String>();
+        ArrayList<String> dns = new ArrayList<>();
         boolean quote = false;
         StringBuilder s = new StringBuilder();
         int q = 0;

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ public abstract class Composite extends BaseASN1Object {
      */
     Composite(int tagClass, int tagNumber) {
         super(tagClass, tagNumber, false);
-        components = new ArrayList<BaseASN1Object>();
+        components = new ArrayList<>();
     }
 
     /**
@@ -53,7 +53,7 @@ public abstract class Composite extends BaseASN1Object {
      */
     Composite(int tagClass, int tagNumber, BaseASN1Object[] components) {
         this(tagClass, tagNumber);
-        this.components = new ArrayList<BaseASN1Object>();
+        this.components = new ArrayList<>();
         for (int i = 0; i < components.length; i++)
             this.components.add(components[i]);
     }

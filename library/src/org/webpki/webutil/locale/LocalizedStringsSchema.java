@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -44,9 +44,9 @@ public class LocalizedStringsSchema extends XMLObjectWrapper {
         return "LocalizedStrings";
     }
 
-    private ArrayList<String> lsname = new ArrayList<String>();
+    private ArrayList<String> lsname = new ArrayList<>();
 
-    private ArrayList<String> lsvalue = new ArrayList<String>();
+    private ArrayList<String> lsvalue = new ArrayList<>();
 
     private String language;
 

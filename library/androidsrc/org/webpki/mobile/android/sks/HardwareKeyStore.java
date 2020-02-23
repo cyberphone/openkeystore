@@ -145,7 +145,7 @@ public abstract class HardwareKeyStore {
     }
 
     private static void getAlgorithms() throws SKSException {
-        supportedAlgorithms = new HashSet<String>();
+        supportedAlgorithms = new HashSet<>();
         for (String alg : sks.getDeviceInfo().getSupportedAlgorithms()) {
             supportedAlgorithms.add(alg);
         }

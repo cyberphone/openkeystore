@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -171,16 +171,16 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                                       '4','5','6','7','8','9','-','_'};
 
     int nextKeyHandle = 1;
-    LinkedHashMap<Integer, KeyEntry> keys = new LinkedHashMap<Integer, KeyEntry>();
+    LinkedHashMap<Integer, KeyEntry> keys = new LinkedHashMap<>();
 
     int nextProvHandle = 1;
-    LinkedHashMap<Integer, Provisioning> provisionings = new LinkedHashMap<Integer, Provisioning>();
+    LinkedHashMap<Integer, Provisioning> provisionings = new LinkedHashMap<>();
 
     int nextPinHandle = 1;
-    LinkedHashMap<Integer, PINPolicy> pinPolicies = new LinkedHashMap<Integer, PINPolicy>();
+    LinkedHashMap<Integer, PINPolicy> pinPolicies = new LinkedHashMap<>();
 
     int nextPukHandle = 1;
-    LinkedHashMap<Integer, PUKPolicy> pukPolicies = new LinkedHashMap<Integer, PUKPolicy>();
+    LinkedHashMap<Integer, PUKPolicy> pukPolicies = new LinkedHashMap<>();
 
     X509Certificate[] deviceCertificatePath;
 //#if ANDROID
@@ -284,7 +284,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         byte[] symmetricKey;     // Defined by "importSymmetricKey"
 //#if ANDROID
 
-        LinkedHashSet<String> grantedDomains = new LinkedHashSet<String>();
+        LinkedHashSet<String> grantedDomains = new LinkedHashSet<>();
 //#endif
 
         LinkedHashSet<String> endorsedAlgorithms;
@@ -305,7 +305,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         byte keyBackup;
 
 
-        LinkedHashMap<String, ExtObject> extensions = new LinkedHashMap<String, ExtObject>();
+        LinkedHashMap<String, ExtObject> extensions = new LinkedHashMap<>();
 
         KeyEntry(Provisioning owner, String id) {
             super(owner, id);
@@ -330,7 +330,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
 //#endif
         @SuppressWarnings("fallthrough")
         ArrayList<KeyEntry> getPinSynchronizedKeys() {
-            ArrayList<KeyEntry> group = new ArrayList<KeyEntry>();
+            ArrayList<KeyEntry> group = new ArrayList<>();
             if (pinPolicy.grouping == PIN_GROUPING_NONE) {
                 group.add(this);
             } else {
@@ -587,10 +587,10 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         int provisioningHandle;
 
         // The virtual/shared name-space
-        LinkedHashMap<String, Boolean> names = new LinkedHashMap<String, Boolean>();
+        LinkedHashMap<String, Boolean> names = new LinkedHashMap<>();
 
         // Post provisioning management
-        ArrayList<PostProvisioningObject> postProvisioningObjects = new ArrayList<PostProvisioningObject>();
+        ArrayList<PostProvisioningObject> postProvisioningObjects = new ArrayList<>();
 
         boolean privacyEnabled;
         String clientSessionId;
@@ -957,7 +957,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         }
     }
 
-    static LinkedHashMap<String, Algorithm> supportedAlgorithms = new LinkedHashMap<String, Algorithm>();
+    static LinkedHashMap<String, Algorithm> supportedAlgorithms = new LinkedHashMap<>();
 
     static Algorithm addAlgorithm(String uri, String jceName, int mask) {
         Algorithm alg = new Algorithm();
@@ -3303,7 +3303,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             verifier.addString(friendlyName == null ? "" : friendlyName);
             verifier.addString(keyAlgorithm);
             verifier.addArray(keyParameters == null ? ZERO_LENGTH_ARRAY : keyParameters);
-            LinkedHashSet<String> tempEndorsed = new LinkedHashSet<String>();
+            LinkedHashSet<String> tempEndorsed = new LinkedHashSet<>();
             String prevAlg = "\0";
             for (String endorsedAlgorithm : endorsedAlgorithms) {
                 ///////////////////////////////////////////////////////////////////////////////////

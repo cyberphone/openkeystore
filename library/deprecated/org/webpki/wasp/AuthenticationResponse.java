@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ abstract class AuthenticationResponse extends XMLObjectWrapper {
 
     byte[] server_certificate_fingerprint;                     // Optional
 
-    ArrayList<ClientPlatformFeature> client_platform_features = new ArrayList<ClientPlatformFeature>();
+    ArrayList<ClientPlatformFeature> client_platform_features = new ArrayList<>();
 
     public void init() throws IOException {
         addWrapper(XMLSignatureWrapper.class);

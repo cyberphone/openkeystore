@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -185,7 +185,7 @@ public class ProvisioningFinalizationRequestDecoder extends ClientDecoder {
 
     class PropertyBag extends Extension {
 
-        ArrayList<Property> properties = new ArrayList<Property>();
+        ArrayList<Property> properties = new ArrayList<>();
 
         PropertyBag(JSONObjectReader rd, IssuedCredential cpk) throws IOException {
             super(rd, cpk);
@@ -272,7 +272,7 @@ public class ProvisioningFinalizationRequestDecoder extends ClientDecoder {
 
         boolean trustAnchor;
 
-        ArrayList<Extension> extensions = new ArrayList<Extension>();
+        ArrayList<Extension> extensions = new ArrayList<>();
 
         PostOperation postOperation;
 
@@ -383,11 +383,11 @@ public class ProvisioningFinalizationRequestDecoder extends ClientDecoder {
                                  postOp);
     }
 
-    private ArrayList<IssuedCredential> issuedKeys = new ArrayList<IssuedCredential>();
+    private ArrayList<IssuedCredential> issuedKeys = new ArrayList<>();
 
-    private ArrayList<PostOperation> postUnlockKeys = new ArrayList<PostOperation>();
+    private ArrayList<PostOperation> postUnlockKeys = new ArrayList<>();
 
-    private ArrayList<PostOperation> postDeleteKeys = new ArrayList<PostOperation>();
+    private ArrayList<PostOperation> postDeleteKeys = new ArrayList<>();
 
     private String clientSessionId;
 

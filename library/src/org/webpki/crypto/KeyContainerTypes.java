@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ public enum KeyContainerTypes {
 
     static class KeyContainerListParser {
 
-        LinkedHashSet<String> keyContainerTypes = new LinkedHashSet<String>();
+        LinkedHashSet<String> keyContainerTypes = new LinkedHashSet<>();
 
         KeyContainerListParser(String[] listOfGrantedTypes) throws IOException {
             if (listOfGrantedTypes != null) {
@@ -84,7 +84,7 @@ public enum KeyContainerTypes {
         if (listOfGrantedTypes == null) {
             return null;
         }
-        ArrayList<String> list = new ArrayList<String>();
+        ArrayList<String> list = new ArrayList<>();
         for (KeyContainerTypes type : listOfGrantedTypes) {
             list.add(type.getName());
         }
@@ -96,7 +96,7 @@ public enum KeyContainerTypes {
         if (list == null) {
             return null;
         }
-        LinkedHashSet<KeyContainerTypes> set = new LinkedHashSet<KeyContainerTypes>();
+        LinkedHashSet<KeyContainerTypes> set = new LinkedHashSet<>();
         for (String type : list) {
             set.add(getKeyContainerType(type));
         }

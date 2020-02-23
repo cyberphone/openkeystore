@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -126,7 +126,7 @@ public class JSONBaseHTML  {
         boolean referenced;
     }
     
-    LinkedHashMap<String, Reference> references = new LinkedHashMap<String, Reference>();
+    LinkedHashMap<String, Reference> references = new LinkedHashMap<>();
     
     class TOCEntry {
         String link;
@@ -188,7 +188,7 @@ public class JSONBaseHTML  {
         }
     }
 
-    LinkedHashMap<String, TOCEntry> toc = new LinkedHashMap<String, TOCEntry>();
+    LinkedHashMap<String, TOCEntry> toc = new LinkedHashMap<>();
 
     int curr_toc_seq = 0;
 
@@ -597,7 +597,7 @@ public class JSONBaseHTML  {
         @Override
         String getHTML() throws IOException {
             StringBuilder buffer = new StringBuilder("<table class=\"tftable\" style=\"width:600pt\"><tr><th>Reference</th><th>Description</th></tr>");
-            for (String reference : new TreeSet<String>(references.keySet()).toArray (new String[0])) {
+            for (String reference : new TreeSet<>(references.keySet()).toArray (new String[0])) {
                 Reference r = references.get (reference);
                 if (r.referenced) {
                     buffer.append("<tr><td id=\"")
@@ -687,10 +687,10 @@ public class JSONBaseHTML  {
         boolean main_object;
         String notes;
         
-        ArrayList<Row> rows = new ArrayList<Row>();
+        ArrayList<Row> rows = new ArrayList<>();
         
         public class Row {
-            ArrayList<Column> columns = new ArrayList<Column>();
+            ArrayList<Column> columns = new ArrayList<>();
             boolean set_group;
             int depth;
             String property_link;
@@ -1036,7 +1036,7 @@ public class JSONBaseHTML  {
 
     public String getHTML () throws IOException {
         LinkedHashMap<String,TOCEntry> save = toc;
-        toc = new LinkedHashMap<String,TOCEntry>();
+        toc = new LinkedHashMap<>();
         for (String toc_entry : save.keySet()) {
             toc.put(toc_entry, save.get(toc_entry));
             if (toc_entry.equals(protocol_table_header)) {

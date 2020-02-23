@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import org.webpki.asn1.cert.*;
  */
 public class X509Store {
 
-    private Hashtable<DistinguishedName, ArrayList<X509Certificate>> store = new Hashtable<DistinguishedName, ArrayList<X509Certificate>>();
+    private Hashtable<DistinguishedName, ArrayList<X509Certificate>> store = new Hashtable<>();
 
     private void add(X509Certificate certificate) throws IOException, GeneralSecurityException {
         if (certificate == null) {
@@ -49,7 +49,7 @@ public class X509Store {
         ArrayList<X509Certificate> v = store.get(subject);
 
         if (v == null) {
-            v = new ArrayList<X509Certificate>();
+            v = new ArrayList<>();
             v.add(certificate);
             store.put(subject, v);
         } else {
@@ -135,7 +135,7 @@ public class X509Store {
     public ArrayList<X509Certificate> getCertificates(DistinguishedName subject) {
         ArrayList<X509Certificate> v = store.get(subject);
 
-        return (v == null) ? new ArrayList<X509Certificate>() : v;
+        return (v == null) ? new ArrayList<>() : v;
     }
 
     /*

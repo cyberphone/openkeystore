@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ public class PKCS12Import {
         }
         CustomCryptoProvider.forcedLoad(true);
         KeyStore ks = KeyStoreReader.loadKeyStore(argc[0], argc[1]);
-        ArrayList<X509Certificate> cert_path = new ArrayList<X509Certificate>();
+        ArrayList<X509Certificate> cert_path = new ArrayList<>();
         PrivateKey privateKey = null;
         Enumeration<String> aliases = ks.aliases();
         while (aliases.hasMoreElements()) {

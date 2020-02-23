@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ public class SoftHSM implements ServerCryptoInterface {
     ////////////////////////////////////////////////////////////////////////////////////////
     // Private and secret keys would in a HSM implementation be represented as handles
     ////////////////////////////////////////////////////////////////////////////////////////
-    LinkedHashMap<PublicKey, PrivateKey> key_management_keys = new LinkedHashMap<PublicKey, PrivateKey>();
+    LinkedHashMap<PublicKey, PrivateKey> key_management_keys = new LinkedHashMap<>();
 
     private void addKMK(KeyStore km_keystore) throws IOException, GeneralSecurityException {
         key_management_keys.put(km_keystore.getCertificate("mykey").getPublicKey(),

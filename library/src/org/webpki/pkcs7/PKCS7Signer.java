@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ public class PKCS7Signer {
 
     private byte[] sign(byte[] message, boolean detached) throws IOException {
         try {
-            ArrayList<BaseASN1Object> cert_path = new ArrayList<BaseASN1Object>();
+            ArrayList<BaseASN1Object> cert_path = new ArrayList<>();
             for (X509Certificate c : signer_implem.getCertificatePath()) {
                 cert_path.add(ASN1Util.x509Certificate(c));
             }

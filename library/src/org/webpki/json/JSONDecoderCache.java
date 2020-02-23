@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ public class JSONDecoderCache implements Serializable {
 
     boolean checkForUnread = true;
 
-    Hashtable<String, Class<? extends JSONDecoder>> classMap = new Hashtable<String, Class<? extends JSONDecoder>>();
+    Hashtable<String, Class<? extends JSONDecoder>> classMap = new Hashtable<>();
 
     public JSONDecoder parse(JSONObjectReader reader) throws IOException {
         String objectTypeIdentifier = reader.getString(CONTEXT_JSON);

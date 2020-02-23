@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -149,7 +149,7 @@ public class ServerState implements Serializable {
         }
     }
 
-    ArrayList<PostProvisioningTargetKey> postOperations = new ArrayList<PostProvisioningTargetKey>();
+    ArrayList<PostProvisioningTargetKey> postOperations = new ArrayList<>();
 
     public abstract class ExtensionInterface implements Serializable {
 
@@ -316,7 +316,7 @@ public class ServerState implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
-        LinkedHashMap<String, Property> properties = new LinkedHashMap<String, Property>();
+        LinkedHashMap<String, Property> properties = new LinkedHashMap<>();
 
         public PropertyBag addProperty(String name, String value, boolean writable) throws IOException {
             Property property = new Property();
@@ -500,7 +500,7 @@ public class ServerState implements Serializable {
                 wr.setString(INPUT_METHOD_JSON, inputMethod.getProtocolName());
             }
             if (!patternRestrictions.isEmpty()) {
-                ArrayList<String> prs = new ArrayList<String>();
+                ArrayList<String> prs = new ArrayList<>();
                 for (PatternRestriction pr : patternRestrictions) {
                     prs.add(pr.getProtocolName());
                 }
@@ -543,7 +543,7 @@ public class ServerState implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
-        LinkedHashMap<String, ExtensionInterface> extensions = new LinkedHashMap<String, ExtensionInterface>();
+        LinkedHashMap<String, ExtensionInterface> extensions = new LinkedHashMap<>();
 
         PostProvisioningTargetKey cloneOrUpdateOperation;
 
@@ -558,7 +558,7 @@ public class ServerState implements Serializable {
         }
 
         public PropertyBag[] getPropertyBags() {
-            ArrayList<PropertyBag> propertyBags = new ArrayList<PropertyBag>();
+            ArrayList<PropertyBag> propertyBags = new ArrayList<>();
             for (ExtensionInterface ei : extensions.values()) {
                 if (ei instanceof PropertyBag) {
                     propertyBags.add((PropertyBag) ei);
@@ -621,7 +621,7 @@ public class ServerState implements Serializable {
             return this;
         }
 
-        TreeSet<String> endorsedAlgorithms = new TreeSet<String>();
+        TreeSet<String> endorsedAlgorithms = new TreeSet<>();
 
         public Key addEndorsedAlgorithm(String endorsedAlgorithm) throws IOException {
             if (!endorsedAlgorithms.add(endorsedAlgorithm)) {
@@ -950,7 +950,7 @@ public class ServerState implements Serializable {
 
     enum CAPABILITY {UNDEFINED, URI_FEATURE, VALUES, IMAGE_ATTRIBUTES}
 
-    LinkedHashMap<String, CAPABILITY> queriedCapabilities = new LinkedHashMap<String, CAPABILITY>();
+    LinkedHashMap<String, CAPABILITY> queriedCapabilities = new LinkedHashMap<>();
 
     static abstract class CapabilityBase implements Serializable {
 
@@ -1071,7 +1071,7 @@ public class ServerState implements Serializable {
 
     short macSequenceCounter;
 
-    LinkedHashMap<String, Key> requestedKeys = new LinkedHashMap<String, Key>();
+    LinkedHashMap<String, Key> requestedKeys = new LinkedHashMap<>();
 
     String serverSessionId;
 
@@ -1407,7 +1407,7 @@ public class ServerState implements Serializable {
         return serverSessionId;
     }
 
-    ArrayList<PINPolicy> pinPolicies = new ArrayList<PINPolicy>();
+    ArrayList<PINPolicy> pinPolicies = new ArrayList<>();
 
     public PINPolicy createPINPolicy(PassphraseFormat format, 
                                      int minLength,
@@ -1429,7 +1429,7 @@ public class ServerState implements Serializable {
         return pinPolicy;
     }
 
-    ArrayList<PUKPolicy> pukPolicies = new ArrayList<PUKPolicy>();
+    ArrayList<PUKPolicy> pukPolicies = new ArrayList<>();
 
     public PUKPolicy createPUKPolicy(byte[] puk, PassphraseFormat format, int retryLimit) throws IOException {
         return new PUKPolicy(encrypt(puk), format, retryLimit);
@@ -1479,7 +1479,7 @@ public class ServerState implements Serializable {
     }
 
 
-    private LinkedHashMap<String, Object> serviceSpecificObjects = new LinkedHashMap<String, Object>();
+    private LinkedHashMap<String, Object> serviceSpecificObjects = new LinkedHashMap<>();
 
     public void setServiceSpecificObject(String name, Object value) {
         serviceSpecificObjects.put(name, value);

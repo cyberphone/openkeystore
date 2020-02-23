@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ import org.webpki.crypto.SignatureWrapper;
 
 
 public class CommandLineCA {
-    ArrayList<CmdLineArgument> list = new ArrayList<CmdLineArgument>();
+    ArrayList<CmdLineArgument> list = new ArrayList<>();
 
     int max_display;
 
@@ -70,7 +70,7 @@ public class CommandLineCA {
         String command;
         String optargument;
         String defaultvalue;
-        ArrayList<String> argvalue = new ArrayList<String>();
+        ArrayList<String> argvalue = new ArrayList<>();
         CmdFrequency frequency;
         boolean found;
 
@@ -715,7 +715,7 @@ public class CommandLineCA {
             PrivateKey sign_key = priv_key;  // Assume self-signed
             PublicKey issuer_pub_key = subject_pub_key;
             DistinguishedName issuer = certspec.getSubjectDistinguishedName();
-            ArrayList<Certificate> cert_path = new ArrayList<Certificate>();
+            ArrayList<Certificate> cert_path = new ArrayList<>();
             if (!CMD_self_signed.found) {
                 KeyStore ks = KeyStore.getInstance(CMD_ca_ks_type.getString());
                 ks.load(new FileInputStream(CMD_ca_keystore.getString()), CMD_ca_ks_pass.toCharArray());

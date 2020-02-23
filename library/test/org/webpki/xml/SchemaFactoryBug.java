@@ -87,7 +87,7 @@ public class SchemaFactoryBug {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(true);
             DocumentBuilder parser = dbf.newDocumentBuilder();
-            ArrayList<DOMSource> xsds = new ArrayList<DOMSource>();
+            ArrayList<DOMSource> xsds = new ArrayList<>();
             xsds.add(getDOM(parser, xsd1));
             xsds.add(getDOM(parser, xsd2));
             xsds.add(getDOM(parser, xsd3));
@@ -98,7 +98,7 @@ public class SchemaFactoryBug {
             Element element = document.getDocumentElement();
             System.out.println("E=" + element.getLocalName() + " NS=" + element.lookupNamespaceURI(element.getPrefix()));
             schema = null;
-            ArrayList<DOMSource> xsds2 = new ArrayList<DOMSource>();
+            ArrayList<DOMSource> xsds2 = new ArrayList<>();
             xsds2.add(getDOM(parser, xsd1));
             xsds2.add(getDOM(parser, xsd2));
             Schema schema2 = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(xsds2.toArray(new DOMSource[0]));

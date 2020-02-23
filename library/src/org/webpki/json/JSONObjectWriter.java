@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -444,7 +444,7 @@ public class JSONObjectWriter implements Serializable {
     }
 
     JSONObjectWriter setStringArray(String name, String[] values, JSONTypes jsonType) throws IOException {
-        ArrayList<JSONValue> array = new ArrayList<JSONValue>();
+        ArrayList<JSONValue> array = new ArrayList<>();
         for (String value : values) {
             array.add(new JSONValue(jsonType, value));
         }
@@ -465,7 +465,7 @@ public class JSONObjectWriter implements Serializable {
      * @see Base64URL#encode(byte[])
      */
     public JSONObjectWriter setBinaryArray(String name, List<byte[]> values) throws IOException {
-        ArrayList<String> array = new ArrayList<String>();
+        ArrayList<String> array = new ArrayList<>();
         for (byte[] value : values) {
             array.add(Base64URL.encode(value));
         }
@@ -679,7 +679,7 @@ import org.webpki.json.JSONSignatureDecoder;
                                               JSONSigner signer,
                                               boolean chained) throws IOException {       
         JSONObjectReader reader = new JSONObjectReader(root);
-        ArrayList<JSONObject> oldSignatures = new ArrayList<JSONObject>();
+        ArrayList<JSONObject> oldSignatures = new ArrayList<>();
         String keyWord = chained ? JSONCryptoHelper.CHAIN_JSON : JSONCryptoHelper.SIGNERS_JSON;
         if (reader.hasProperty(signatureLabel)) {
             reader = reader.getObject(signatureLabel);
@@ -960,7 +960,7 @@ import org.webpki.json.JSONSignatureDecoder;
         indentLine();
         boolean next = false;
         for (String property : canonicalized ? 
-                new TreeSet<String>(object.properties.keySet()) : object.properties.keySet()) {
+                new TreeSet<>(object.properties.keySet()) : object.properties.keySet()) {
             JSONValue jsonValue = object.properties.get(property);
             if (jsonValue == null) {
                 continue;

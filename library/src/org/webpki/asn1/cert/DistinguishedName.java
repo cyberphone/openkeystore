@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import org.webpki.asn1.ParseUtil;
  * X.509 DistinguishedName
  */
 public class DistinguishedName {
-    ArrayList<RelativeDistinguishedName> components = new ArrayList<RelativeDistinguishedName>();
+    ArrayList<RelativeDistinguishedName> components = new ArrayList<>();
 
     private ASN1Sequence asn1Representation;
 
