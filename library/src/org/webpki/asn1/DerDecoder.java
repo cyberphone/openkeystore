@@ -199,9 +199,11 @@ public class DerDecoder implements ASN1Constants {
             tagNumber = (firstByte & TAG_MASK);
         } else {
             // Multiple-byte tag, last byte will have bit 8 = 0
-            while ((next() & 0x80) != 0) {
-                tagNumber = (tagNumber << 7) + (current() & 0x7F);
-            }
+            int tagByte;
+            do {
+                tagByte = next();
+                tagNumber = (tagNumber << 7) + (tagByte & 0x7F);
+            } while ((tagByte & 0x80) != 0);
         }
 
         length = 0;

@@ -1269,7 +1269,8 @@ public class ServerState implements Serializable {
     }
 
 
-    public void update(ProvisioningInitializationResponseDecoder provisioningInitializationResponse) throws IOException, GeneralSecurityException {
+    public void update(ProvisioningInitializationResponseDecoder provisioningInitializationResponse) 
+    throws IOException, GeneralSecurityException {
         checkState(false, ProtocolPhase.PROVISIONING_INITIALIZATION);
         clientSessionId = provisioningInitializationResponse.clientSessionId;
         deviceCertificatePath = provisioningInitializationResponse.deviceCertificatePath;
@@ -1333,7 +1334,8 @@ public class ServerState implements Serializable {
             if (!kp.id.equals(gpk.id)) {
                 ServerState.bad("Wrong ID order:" + gpk.id + " / " + kp.id);
             }
-            if (kp.keySpecifier.keyAlgorithm != KeyAlgorithms.getKeyAlgorithm(kp.publicKey = gpk.publicKey, kp.keySpecifier.keyParameters != null)) {
+            if (kp.keySpecifier.keyAlgorithm != KeyAlgorithms.getKeyAlgorithm(
+                    kp.publicKey = gpk.publicKey, kp.keySpecifier.keyParameters != null)) {
                 ServerState.bad("Wrong key type returned for key id:" + gpk.id);
             }
             MacGenerator attestation = new MacGenerator();

@@ -627,12 +627,19 @@
   	<copy todir="${android_dir}">
   		<fileset dir="androidsrc" includes="**/*.java"/>
   	</copy>
-    
+    <replaceregexp file="${android_dir}/org/webpki/mobile/android/sks/HardwareKeyStore.java"
+        match="\.setAttestationChallenge.*\)\)"
+        replace="/* REMOVED */"
+        flags=""/>    
   	<javac debug="${debug}" 
   		   srcdir="${android_dir}:androidrefsrc:${android_test_dir}"
   		   destdir="${bin_dir}"
   		   includeAntRuntime="false"
   	       classpath="${ext.jar}/junit-4.12.jar"/>
+
+  	<copy todir="${android_dir}" overwrite="true">
+  		<fileset dir="androidsrc" includes="**/HardwareKeyStore.java"/>
+  	</copy>
 
   	<!-- Create Android java library -->
     <zip destfile="${dist_dir}/${webpki-android}.zip">

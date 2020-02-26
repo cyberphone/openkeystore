@@ -1,4 +1,4 @@
-package android.support.test.runner;
+package androidx.test.ext.junit.runners;
 
 
 import org.junit.runner.Description;

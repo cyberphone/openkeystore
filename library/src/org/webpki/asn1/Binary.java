@@ -98,7 +98,7 @@ public abstract class Binary extends Simple {
     }
 
     void extractableStringData(StringBuilder s, String prefix) {
-        if (decoder.extractfromoctetstrings && (value[0] == 0x30 ||
+        if (decoder.extractfromoctetstrings && value.length > 0 && (value[0] == 0x30 ||
                 (this instanceof ASN1OctetString && (value[0] == 0x03 || value[0] == 0x04)))) {
             try {
                 StringBuilder enc = new StringBuilder();

@@ -31,6 +31,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 
+import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 
 import java.security.interfaces.RSAKey;
@@ -38,6 +39,7 @@ import java.security.interfaces.RSAKey;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.AlgorithmParameterSpec;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 
@@ -82,11 +84,11 @@ public abstract class HardwareKeyStore {
         }
     }
 
-    private static X509Certificate deviceCertificate;
+    private static X509Certificate[] deviceCertificatePath;
     private static PrivateKey deviceKey;
 
     static void getDeviceCredentials(String androidId) {
-        if (deviceCertificate == null) {
+        if (deviceCertificatePath == null) {
             try {
                 if (hardwareBacked.isKeyEntry(DEVICE_KEY_NAME)) {
                     deviceKey = (PrivateKey) hardwareBacked.getKey(DEVICE_KEY_NAME, null);
@@ -104,12 +106,17 @@ public abstract class HardwareKeyStore {
                             .setCertificateNotBefore(new Date(System.currentTimeMillis() - 600000L))
                             .setCertificateSubject(new X500Principal("serialNumber=" +
                                     (androidId == null ? "N/A" : androidId) + ",CN=Android SKS"))
+                            .setAttestationChallenge("webpki.org".getBytes("utf-8"))
                             .build());
                     KeyPair keyPair = kpg.generateKeyPair();
                     deviceKey = keyPair.getPrivate();
                     Log.i(LOG_NAME, "Created a key");
                 }
-                deviceCertificate = (X509Certificate) hardwareBacked.getCertificate(DEVICE_KEY_NAME);
+                ArrayList<X509Certificate> certPath = new ArrayList<>();
+                for (Certificate certificate : hardwareBacked.getCertificateChain(DEVICE_KEY_NAME)) {
+                    certPath.add((X509Certificate)certificate);
+                }
+                deviceCertificatePath = certPath.toArray(new X509Certificate[0]);
             } catch (Exception e) {
                 Log.e(LOG_NAME, e.getMessage());
             }
@@ -139,7 +146,7 @@ public abstract class HardwareKeyStore {
                     Log.e(callerForLog, e2.getMessage());
                 }
             }
-            sks.setDeviceCredentials(new X509Certificate[]{deviceCertificate}, deviceKey);
+            sks.setDeviceCredentials(deviceCertificatePath, deviceKey);
         }
         return sks;
     }
