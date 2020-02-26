@@ -48,6 +48,7 @@ import org.webpki.sks.SKSException;
 import android.content.Context;
 
 import android.provider.Settings;
+
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
 import android.security.keystore.KeyProtection;
@@ -114,6 +115,12 @@ public abstract class HardwareKeyStore {
                 }
                 ArrayList<X509Certificate> certPath = new ArrayList<>();
                 for (Certificate certificate : hardwareBacked.getCertificateChain(DEVICE_KEY_NAME)) {
+                    // Older Androids are severely broken and have "holes" in the certificate chain...
+                    if (!certPath.isEmpty() && !certPath.get(certPath.size() - 1)
+                            .getIssuerDN().toString().equals(
+                                    ((X509Certificate)certificate).getSubjectDN().toString())) {
+                        break;
+                    }
                     certPath.add((X509Certificate)certificate);
                 }
                 deviceCertificatePath = certPath.toArray(new X509Certificate[0]);
