@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+    version="2.4">
+
+    <context-param>
+        <description>Bouncycastle to be loaded before other providers</description>
+        <param-name>bouncycastle_first</param-name>
+        <param-value>@bouncycastle-first@</param-value>
+    </context-param>
+
+    <context-param>
+        <description>Logging flag</description>
+        <param-name>logging</param-name>
+        <param-value>@logging@</param-value>
+    </context-param>
+
+    <listener>
+        <listener-class>org.webpki.webapps.jsf_lab.JSFService</listener-class>
+     </listener>
+
+    <servlet>
+        <servlet-name>HomeServlet</servlet-name>
+        <servlet-class>org.webpki.webapps.jsf_lab.HomeServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>CreateServlet</servlet-name>
+        <servlet-class>org.webpki.webapps.jsf_lab.CreateServlet</servlet-class>
+    </servlet>
+    
+    <servlet>
+        <servlet-name>ValidateServlet</servlet-name>
+        <servlet-class>org.webpki.webapps.jsf_lab.ValidateServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>WebCryptoServlet</servlet-name>
+        <servlet-class>org.webpki.webapps.jsf_lab.WebCryptoServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>NoWebCryptoServlet</servlet-name>
+        <servlet-class>org.webpki.webapps.jsf_lab.NoWebCryptoServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>JavaScriptSignatureServlet</servlet-name>
+        <servlet-class>org.webpki.webapps.jsf_lab.JavaScriptSignatureServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>HomeServlet</servlet-name>
+        <url-pattern>/home</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>CreateServlet</servlet-name>
+        <url-pattern>/create</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ValidateServlet</servlet-name>
+        <url-pattern>/validate</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>WebCryptoServlet</servlet-name>
+        <url-pattern>/webcrypto</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>NoWebCryptoServlet</servlet-name>
+        <url-pattern>/nowebcrypto</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>JavaScriptSignatureServlet</servlet-name>
+        <url-pattern>/jssignature</url-pattern>
+    </servlet-mapping>
+
+    <security-constraint>
+      <web-resource-collection>
+        <web-resource-name>The app</web-resource-name>
+        <url-pattern>/*</url-pattern>
+      </web-resource-collection>
+      <user-data-constraint>
+        <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+      </user-data-constraint>
+    </security-constraint>
+
+</web-app>

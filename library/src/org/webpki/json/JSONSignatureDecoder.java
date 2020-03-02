@@ -138,7 +138,7 @@ public class JSONSignatureDecoder implements Serializable {
         signatureValue = innerSignatureObject.getBinary(JSONCryptoHelper.VALUE_JSON);
 
         //////////////////////////////////////////////////////////////////////////////////////
-        // Begin JSF/JCS core normalization                                                 //
+        // Begin JSF/JCS core data normalization                                            //
         //                                                                                  //
         // 1. Make a shallow copy of the signature object                                   //
         LinkedHashMap<String, JSONValue> savedProperties =                                  //
@@ -147,13 +147,13 @@ public class JSONSignatureDecoder implements Serializable {
         // 2. Hide the signature value property for the serializer...                       //
         innerSignatureObject.root.properties.remove(JSONCryptoHelper.VALUE_JSON);           //
         //                                                                                  //
-        // 3. Serialize ("JSON.stringify()")                                                //
+        // 3. Serialize                                                                     //
         normalizedData = signedData.serializeToBytes(JSONOutputFormats.CANONICALIZED);      //
         //                                                                                  //
         // 4. Restore the signature object                                                  //
         innerSignatureObject.root.properties = savedProperties;                             //
         //                                                                                  //
-        // End JSF/JCS core normalization                                                   //
+        // End JSF/JCS core data normalization                                              //
         //////////////////////////////////////////////////////////////////////////////////////
 
         if (options.exclusions != null) {
