@@ -175,7 +175,7 @@ public class ValidateServlet extends HttpServlet {
 
         HTML.standardPage(response, null, new StringBuilder(
                 "<form name=\"shoot\" method=\"POST\" action=\"validate\">" +
-                "<div class=\"header\">Testing JSON Signatures</div>")
+                "<div class=\"header\">JSON Signature Validation</div>")
             .append(HTML.fancyText(true,
                 JSF_OBJECT,
                 10, 

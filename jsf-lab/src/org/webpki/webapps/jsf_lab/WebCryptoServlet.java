@@ -65,7 +65,7 @@ public class WebCryptoServlet extends HttpServlet {
                 "var pubKey;\n" + 
                 "var privKey;\n" + 
                 "var jsonObject;\n" + 
-                "var publicKeyInJWKFormat; // The bridge between JWS-JCS and WebCrypto\n\n" + 
+                "var publicKeyInJWKFormat; // The bridge between JSF and WebCrypto\n\n" + 
                 "//////////////////////////////////////////////////////////////////////////\n" + 
                 "// Utility methods                                                      //\n" + 
                 "//////////////////////////////////////////////////////////////////////////\n" + 
@@ -234,13 +234,15 @@ public class WebCryptoServlet extends HttpServlet {
                 "      bad('sign.res', 'Object is already signed');\n" + 
                 "      return;\n" + 
                 "    }\n" + 
-                "    var jwsHeader = {};\n" + 
-                "    jwsHeader." + 
-                JOSESupport.ALG_JSON + 
+                "    var jsfSignature = {};\n" + 
+                "    jsonObject." + CreateServlet.DEFAULT_SIG_LBL + " = jsfSignature;\n" +
+                "    jsfSignature." + 
+                JSONCryptoHelper.ALGORITHM_JSON + 
                 " = '" + 
                 AsymSignatureAlgorithms.RSA_SHA256.getAlgorithmId(AlgorithmPreferences.JOSE) + 
                 "';\n" + 
                 "    var publicKeyObject = {};\n" + 
+                "    jsfSignature." + JSONCryptoHelper.PUBLIC_KEY_JSON + " = publicKeyObject;\n" +
                 "    publicKeyObject." + 
                 JSONCryptoHelper.KTY_JSON + 
                 " = '" + 
@@ -260,21 +262,18 @@ public class WebCryptoServlet extends HttpServlet {
                 "    bad('sign.res', 'JSON error: ' + err.toString());\n" + 
                 "    return;\n" + 
                 "  }\n" + 
-                "  var jwsHeaderB64 = convertToBase64URL(convertToUTF8(JSON.stringify(jwsHeader)));\n" + 
-                "  var payloadB64 = convertToBase64URL(convertToUTF8(canonicalize(jsonObject)));\n" + 
                 "  crypto.subtle.sign({name: 'RSASSA-PKCS1-v1_5'}, privKey,\n" + 
-                "                     convertToUTF8(jwsHeaderB64 + '.' + payloadB64" +
-                        ")).then(function(signature) {\n" + 
+                "                     convertToUTF8(canonicalize(jsonObject))).then(function(signature) {\n" + 
                 "    console.log('Sign with RSASSA-PKCS1-v1_5 - SHA-256: PASS');\n" + 
                 "    document.getElementById('" + 
                    ValidateServlet.JSF_VALIDATION_KEY + 
                 "').value = JSON.stringify(publicKeyObject);\n" +
-                "    jsonObject." + 
-                CreateServlet.DEFAULT_SIG_LBL + 
-                " = jwsHeaderB64 + '..' + convertToBase64URL(new Uint8Array(signature));\n" + 
+                "    jsfSignature." + 
+                JSONCryptoHelper.VALUE_JSON + 
+                " = convertToBase64URL(new Uint8Array(signature));\n" + 
                 "    document.getElementById('" + ValidateServlet.JSF_OBJECT +
                 "').value = JSON.stringify(jsonObject);\n" +
-                "    document.getElementById('sign.res').innerHTML = fancyJSONBox('Signed data in JWS-JCS format', jsonObject) + '" + 
+                "    document.getElementById('sign.res').innerHTML = fancyJSONBox('Signed data in JSF format', jsonObject) + '" + 
                 "<div style=\"display:flex;justify-content:center\">" +
                 "<div class=\"stdbtn\" onclick=\"verifySignatureOnServer()\">" +
                 "Validate Signature (on the server)" +
