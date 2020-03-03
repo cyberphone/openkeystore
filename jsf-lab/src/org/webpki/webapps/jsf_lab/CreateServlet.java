@@ -63,6 +63,8 @@ public class CreateServlet extends HttpServlet {
 
     static final String PRM_CERT_PATH    = "cert";
 
+    static final String PRM_KEY_ID       = "kid";
+
     static final String PRM_ALGORITHM    = "alg";
     static final String PRM_SIG_LABEL    = "siglbl";
 
@@ -154,7 +156,7 @@ public class CreateServlet extends HttpServlet {
             .append(
                 "<div style=\"display:inline-block;padding:0 10pt 0 5pt\">Algorithm</div>" +
                 "<div class=\"defbtn\" onclick=\"restoreDefaults()\">Restore&nbsp;defaults</div></div>")
-            .append(checkBox(FLG_JWK_INLINE, "Automagically insert public key (JWK)", false, "jwkFlagChange(this.checked)"))
+            .append(checkBox(FLG_JWK_INLINE, "Include public key (JWK)", false, "jwkFlagChange(this.checked)"))
             .append(checkBox(FLG_CERT_PATH, "Include provided certificate path", false, "certFlagChange(this.checked)"))
             .append(checkBox(FLG_JAVASCRIPT, "Serialize as JavaScript (but do not verify)", false, null))
             .append(
@@ -163,6 +165,11 @@ public class CreateServlet extends HttpServlet {
                 "style=\"padding:0 3pt;width:7em;font-family:monospace\" " +
                 "maxlength=\"100\" value=\"" + DEFAULT_SIG_LBL + "\">" +
                 "<div style=\"display:inline-block\">&nbsp;Signature label</div></div>" +
+                "<div style=\"margin-top:0.3em;display:flex;align-items:center\">" +
+                "<input type=\"text\" name=\"" + PRM_KEY_ID + "\" id=\"" + PRM_KEY_ID + "\" " +
+                "style=\"padding:0 3pt;width:7em;font-family:monospace\" " +
+                "maxlength=\"100\" value=\"\">" +
+                "<div style=\"display:inline-block\">&nbsp;Optional key Id</div></div>" +
                 "</div>" +
                 "</div>" +
                 "<div style=\"display:flex;justify-content:center\">" +
@@ -256,6 +263,7 @@ public class CreateServlet extends HttpServlet {
             "  document.getElementById('" + FLG_JAVASCRIPT + "').checked = false;\n" +
             "  document.getElementById('" + FLG_JWK_INLINE + "').checked = false;\n" +
             "  document.getElementById('" + PRM_SIG_LABEL + "').value = '" + DEFAULT_SIG_LBL + "';\n" +
+            "  document.getElementById('" + PRM_KEY_ID + "').value = '';\n" +
             "  setUserData(true);\n" +
             "}\n" +
             "function algChange(alg) {\n" +
@@ -322,6 +330,7 @@ public class CreateServlet extends HttpServlet {
             boolean keyInlining = request.getParameter(FLG_JWK_INLINE) != null;
             boolean certOption = request.getParameter(FLG_CERT_PATH) != null;
             String algorithmString = getParameter(request, PRM_ALGORITHM);
+            String optionalKeyId = getParameter(request, PRM_KEY_ID);
 
             // Get the signature key
             JSONSigner signer;
@@ -364,6 +373,9 @@ public class CreateServlet extends HttpServlet {
             }
 
             JSONObjectWriter writer = new JSONObjectWriter(reader);
+            if (!optionalKeyId.isEmpty()) {
+                signer.setKeyId(optionalKeyId);
+            }
             String signedJsonObject = writer.setSignature(signatureLabel, signer)
                     .serializeToString(JSONOutputFormats.NORMALIZED);
 

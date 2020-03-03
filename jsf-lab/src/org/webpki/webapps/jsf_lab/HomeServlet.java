@@ -35,8 +35,8 @@ public class HomeServlet extends HttpServlet {
             "<div class=\"header\">JSON Signature Format (JSF)</div>" +
             "<div style=\"padding-top:15pt\">This site permits testing and debugging systems utilizing a " +
             "scheme for clear text JSON signatures tentatively targeted for " +
-            "IETF standardization.  For detailed technical information and " +
-            "open source code, click on the JSF logotype.</div>" +
+            "IETF standardization.  For detailed technical information " +
+            "click on the JSF logotype.</div>" +
             "<div style=\"display:flex;justify-content:center\"><table>" +
             "<tr><td><div class=\"multibtn\" " +
             "onclick=\"document.location.href='create'\" " +

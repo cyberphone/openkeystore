@@ -77,13 +77,13 @@ public class HTML {
         }
         html.append("</head><body>" +
             "<div style=\"display:flex;flex-wrap:wrap-reverse;justify-content:space-between\">" +
-            "<img src=\"images/thelab.svg\" " +
+            "<img src=\"thelab.svg\" " +
             "style=\"cursor:pointer;height:25pt;padding-bottom:10pt;margin-right:30pt\"" +
             " onclick=\"document.location.href='home'\" title=\"Home of the lab...\"/>" +
             "<div style=\"display:flex;padding-bottom:10pt\">" +
-            "<a href=\"https://github.com/cyberphone/jws-jcs\" target=\"_blank\"><img src=\"images/jws-jcs.svg\" " +
-            "style=\"height:20pt\" " +
-            "title=\"Specifications, source code, etc.\"/></a>" +
+            "<a href=\"https://cyberphone.github.io/doc/security/jsf.html\" target=\"_blank\"><img src=\"jsf.svg\" " +
+            "style=\"height:22pt\" " +
+            "title=\"JSF Specification\"/></a>" +
             "</div>" +
             "</div>")
          .append(box).append("</body></html>");

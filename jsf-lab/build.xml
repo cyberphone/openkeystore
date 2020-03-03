@@ -84,6 +84,10 @@
          <include name="webpki.org-webutil*.jar"/>
       </lib>
       <fileset dir="web"/>
+      <fileset dir="${openkeystore.dir}/resources/images">
+        <include name="jsf.svg"/>
+        <include name="thelab.svg"/>
+      </fileset>
       <zipfileset dir="${openkeystore.dir}/testdata/keys" prefix="${class_war_path}">
         <include name="a*.hex"/>
         <exclude name="*128*"/>
