@@ -105,6 +105,7 @@ import org.webpki.keygen2.ProvisioningInitializationResponseEncoder;
 import org.webpki.keygen2.ServerState;
 
 import org.webpki.sks.AppUsage;
+import org.webpki.sks.BiometricProtection;
 import org.webpki.sks.DeleteProtection;
 import org.webpki.sks.DeviceInfo;
 import org.webpki.sks.EnumeratedKey;
@@ -201,6 +202,8 @@ public class KeyGen2Test {
     boolean brain_pool;
 
     boolean get_client_attributes;
+    
+    boolean biometric_support;
 
     boolean ask_for_4096;
 
@@ -227,13 +230,15 @@ public class KeyGen2Test {
     static final byte[] PREDEF_SERVER_PIN = {'3', '1', '2', '5', '8', '9'};
 
     static final byte[] BAD_PIN = {0x03, 0x33, 0x03, 0x04};
+    
+    static final boolean BIOMETRIC_NONE = false;
 
     static final String INVOCATION_URL = "http://issuer.example.com/invocation";
 
     static X509Certificate server_certificate;
 
     static boolean bcLoaded;
-
+    
     int round;
 
     @BeforeClass
@@ -515,6 +520,11 @@ public class KeyGen2Test {
                     invocation_response.addSupportedFeature(KeyGen2URIs.CLIENT_ATTRIBUTES.DEVICE_PIN_SUPPORT);
                 }
             }
+            if (invocation_request.getQueriedCapabilities().contains(KeyGen2URIs.CLIENT_ATTRIBUTES.BIOMETRIC_SUPPORT)) {
+                if (device_info.getBiometricSupport()) {
+                    invocation_response.addSupportedFeature(KeyGen2URIs.CLIENT_ATTRIBUTES.BIOMETRIC_SUPPORT);
+                }
+            }
             if (invocation_request.getQueriedCapabilities().contains(KeyGen2URIs.CLIENT_ATTRIBUTES.IMEI_NUMBER)) {
                 invocation_response.addClientValues(KeyGen2URIs.CLIENT_ATTRIBUTES.IMEI_NUMBER,
                         new String[]{"490154203237518"});
@@ -667,9 +677,7 @@ public class KeyGen2Test {
             ProvisioningFinalizationRequestDecoder prov_final_request =
                     (ProvisioningFinalizationRequestDecoder) client_json_cache.parse(json_data);
             /* 
-               Note: we could have used the saved provisioning_handle but that would not
-               work for certifications that are delayed.  The following code is working
-               for fully interactive and delayed scenarios by using SKS as state-holder
+               The following code is working fully interactive by using SKS as state-holder
             */
             EnumeratedProvisioningSession eps = new EnumeratedProvisioningSession();
             while (true) {
@@ -781,11 +789,11 @@ public class KeyGen2Test {
 
         }
 
-        void getProvSess(JSONDecoder xml_object) throws IOException, GeneralSecurityException {
+        void getProvSess(JSONDecoder json_object) throws IOException, GeneralSecurityException {
             ////////////////////////////////////////////////////////////////////////////////////
             // Begin by creating the "SessionKey" that holds the key to just about everything
             ////////////////////////////////////////////////////////////////////////////////////
-            ProvisioningInitializationResponseDecoder prov_init_response = (ProvisioningInitializationResponseDecoder) xml_object;
+            ProvisioningInitializationResponseDecoder prov_init_response = (ProvisioningInitializationResponseDecoder) json_object;
 
             ////////////////////////////////////////////////////////////////////////////////////
             // Update the container state.  This is where the action is
@@ -836,6 +844,9 @@ public class KeyGen2Test {
             if (devicePinProtection) {
                 serverState.addFeatureQuery(KeyGen2URIs.CLIENT_ATTRIBUTES.DEVICE_PIN_SUPPORT);
             }
+            if (biometric_support) {
+                serverState.addFeatureQuery(KeyGen2URIs.CLIENT_ATTRIBUTES.BIOMETRIC_SUPPORT);
+            }
             if (image_prefs) {
                 serverState.addImageAttributesQuery(KeyGen2URIs.LOGOTYPES.CARD)
                         .addImageAttributesQuery(KeyGen2URIs.LOGOTYPES.LIST);
@@ -873,6 +884,12 @@ public class KeyGen2Test {
                 if (!serverState.isFeatureSupported(KeyGen2URIs.CLIENT_ATTRIBUTES.DEVICE_PIN_SUPPORT)) {
                     aborted = "No device PIN support";
                     return null;
+                }
+            }
+            if (biometric_support) {
+                biometric_support = false;
+                if (serverState.isFeatureSupported(KeyGen2URIs.CLIENT_ATTRIBUTES.BIOMETRIC_SUPPORT)) {
+                    biometric_support = true;
                 }
             }
 
@@ -924,11 +941,11 @@ public class KeyGen2Test {
         // Create a key creation request for the client
         ///////////////////////////////////////////////////////////////////////////////////
         byte[] keyCreRequest(byte[] json_data) throws IOException, GeneralSecurityException {
-            JSONDecoder xml_object = ServerState.parseReceivedMessage(json_data);
-            if (xml_object instanceof ProvisioningInitializationResponseDecoder) {
-                getProvSess(xml_object);
+            JSONDecoder json_object = ServerState.parseReceivedMessage(json_data);
+            if (json_object instanceof ProvisioningInitializationResponseDecoder) {
+                getProvSess(json_object);
             } else {
-                CredentialDiscoveryResponseDecoder cdrd = (CredentialDiscoveryResponseDecoder) xml_object;
+                CredentialDiscoveryResponseDecoder cdrd = (CredentialDiscoveryResponseDecoder) json_object;
                 serverState.update(cdrd);
                 CredentialDiscoveryResponseDecoder.LookupResult[] lres = cdrd.getLookupResults();
 // TODO verify
@@ -1013,6 +1030,9 @@ public class KeyGen2Test {
             }
             if (enablePinCaching) {
                 kp.setEnablePINCaching(true);
+            }
+            if (biometric_support) {
+                kp.setBiometricProtection(BiometricProtection.ALTERNATIVE);
             }
             if (serverSeed) {
                 byte[] seed = new byte[32];
@@ -1178,7 +1198,7 @@ public class KeyGen2Test {
     class Doer {
         Server server;
         Client client;
-        JSONDecoderCache xmlschemas = new JSONDecoderCache();
+        JSONDecoderCache jsonCache = new JSONDecoderCache();
         int pass;
 
         private void write(byte[] data) throws Exception {
@@ -1213,7 +1233,7 @@ public class KeyGen2Test {
             if (json_data == null) {
                 return new byte[0];
             }
-            JSONDecoder xo = xmlschemas.parse(json_data);
+            JSONDecoder xo = jsonCache.parse(json_data);
             writeString("&nbsp;<br><table><tr><td bgcolor=\"#F0F0F0\" style=\"border:solid;border-width:1px;padding:4px\">&nbsp;Pass #" +
                     (++pass) +
                     ":&nbsp;" +
@@ -1232,16 +1252,16 @@ public class KeyGen2Test {
 
 
         Doer() throws Exception {
-            xmlschemas.addToCache(InvocationRequestDecoder.class);
-            xmlschemas.addToCache(InvocationResponseDecoder.class);
-            xmlschemas.addToCache(ProvisioningInitializationRequestDecoder.class);
-            xmlschemas.addToCache(ProvisioningInitializationResponseDecoder.class);
-            xmlschemas.addToCache(CredentialDiscoveryRequestDecoder.class);
-            xmlschemas.addToCache(CredentialDiscoveryResponseDecoder.class);
-            xmlschemas.addToCache(KeyCreationRequestDecoder.class);
-            xmlschemas.addToCache(KeyCreationResponseDecoder.class);
-            xmlschemas.addToCache(ProvisioningFinalizationRequestDecoder.class);
-            xmlschemas.addToCache(ProvisioningFinalizationResponseDecoder.class);
+            jsonCache.addToCache(InvocationRequestDecoder.class);
+            jsonCache.addToCache(InvocationResponseDecoder.class);
+            jsonCache.addToCache(ProvisioningInitializationRequestDecoder.class);
+            jsonCache.addToCache(ProvisioningInitializationResponseDecoder.class);
+            jsonCache.addToCache(CredentialDiscoveryRequestDecoder.class);
+            jsonCache.addToCache(CredentialDiscoveryResponseDecoder.class);
+            jsonCache.addToCache(KeyCreationRequestDecoder.class);
+            jsonCache.addToCache(KeyCreationResponseDecoder.class);
+            jsonCache.addToCache(ProvisioningFinalizationRequestDecoder.class);
+            jsonCache.addToCache(ProvisioningFinalizationResponseDecoder.class);
         }
 
         void perform() throws Exception {
@@ -1266,6 +1286,7 @@ public class KeyGen2Test {
             writeOption("PropertyBag", propertyBag);
             writeOption("Symmetric Key", symmetricKey);
             writeOption("Encryption Key", encryption_key);
+            writeOption("BiometricProtection", biometric_support);
             writeOption("Encrypted Extension", encryptedExtension);
             writeOption("Standard Extension", standard_extension);
             writeOption("Delete Protection", deleteProtection != null);
@@ -1373,11 +1394,27 @@ public class KeyGen2Test {
     }
 
     @Test
-    public void ServerCertificate() throws Exception {
+    public void BiometricSupport() throws Exception {
         Doer doer = new Doer();
         pin_protection = true;
+        biometric_support = true;
         ecc_key = true;
         doer.perform();
+        int keyHandle = doer.getFirstKey();
+        sks.signHashedData(keyHandle,
+                AsymSignatureAlgorithms.ECDSA_SHA256.getAlgorithmId(AlgorithmPreferences.SKS),
+                null,
+                BIOMETRIC_NONE,
+                USER_DEFINED_PIN,
+                HashAlgorithms.SHA256.digest(TEST_STRING));
+        if (sks.getKeyProtectionInfo(keyHandle).getBiometricProtection() != BiometricProtection.NONE) {
+            sks.signHashedData(keyHandle,
+                    AsymSignatureAlgorithms.ECDSA_SHA256.getAlgorithmId(AlgorithmPreferences.SKS),
+                    null,
+                    true,
+                    null,
+                    HashAlgorithms.SHA256.digest(TEST_STRING));
+        }
     }
 
     @Test
@@ -1472,6 +1509,7 @@ public class KeyGen2Test {
         assertTrue("HMAC error", ArrayUtil.compare(sks.performHmac(keyHandle,
                 MACAlgorithms.HMAC_SHA1.getAlgorithmId(AlgorithmPreferences.SKS),
                 null,
+                BIOMETRIC_NONE,
                 USER_DEFINED_PIN, TEST_STRING),
                 MACAlgorithms.HMAC_SHA1.digest(OTP_SEED, TEST_STRING)));
     }
@@ -1489,12 +1527,14 @@ public class KeyGen2Test {
                 SymEncryptionAlgorithms.AES256_CBC.getAlgorithmId(AlgorithmPreferences.SKS),
                 true,
                 iv,
+                BIOMETRIC_NONE,
                 USER_DEFINED_PIN,
                 TEST_STRING);
         assertTrue("Encrypt/decrypt error", ArrayUtil.compare(sks.symmetricKeyEncrypt(keyHandle,
                 SymEncryptionAlgorithms.AES256_CBC.getAlgorithmId(AlgorithmPreferences.SKS),
                 false,
                 iv,
+                BIOMETRIC_NONE,
                 USER_DEFINED_PIN,
                 enc),
                 TEST_STRING));
@@ -1542,6 +1582,7 @@ public class KeyGen2Test {
                 byte[] result = sks.signHashedData(ek.getKeyHandle(),
                         AsymSignatureAlgorithms.RSA_SHA256.getAlgorithmId(AlgorithmPreferences.SKS),
                         null,
+                        BIOMETRIC_NONE,
                         USER_DEFINED_PIN,
                         HashAlgorithms.SHA256.digest(TEST_STRING));
                 assertTrue("Bad signature",
@@ -1570,6 +1611,7 @@ public class KeyGen2Test {
         byte[] result = sks.signHashedData(keyHandle,
                 AsymSignatureAlgorithms.RSA_SHA256.getAlgorithmId(AlgorithmPreferences.SKS),
                 null,
+                BIOMETRIC_NONE,
                 USER_DEFINED_PIN,
                 HashAlgorithms.SHA256.digest(TEST_STRING));
         assertTrue("Bad signature",
@@ -1597,6 +1639,7 @@ public class KeyGen2Test {
         byte[] result = sks.signHashedData(keyHandle,
                 AsymSignatureAlgorithms.RSA_SHA256.getAlgorithmId(AlgorithmPreferences.SKS),
                 null,
+                BIOMETRIC_NONE,
                 USER_DEFINED_PIN,
                 HashAlgorithms.SHA256.digest(TEST_STRING));
         assertTrue("Bad signature",
@@ -1634,6 +1677,7 @@ public class KeyGen2Test {
         byte[] result = sks.signHashedData(keyHandle,
                 AsymSignatureAlgorithms.RSA_SHA256.getAlgorithmId(AlgorithmPreferences.SKS),
                 null,
+                BIOMETRIC_NONE,
                 USER_DEFINED_PIN,
                 HashAlgorithms.SHA256.digest(TEST_STRING));
         SignatureWrapper sign = new SignatureWrapper(AsymSignatureAlgorithms.RSA_SHA256, doer.server.gen_private_key);
@@ -1685,6 +1729,7 @@ public class KeyGen2Test {
         byte[] z = sks.keyAgreement(keyHandle,
                 SecureKeyStore.ALGORITHM_ECDH_RAW,
                 null,
+                BIOMETRIC_NONE,
                 USER_DEFINED_PIN,
                 (ECPublicKey) kp.getPublic());
         KeyAgreement key_agreement = KeyAgreement.getInstance("ECDH");
@@ -1707,6 +1752,7 @@ public class KeyGen2Test {
                 sks.signHashedData(keyHandle,
                         AsymSignatureAlgorithms.ECDSA_SHA256.getAlgorithmId(AlgorithmPreferences.SKS),
                         null,
+                        BIOMETRIC_NONE,
                         BAD_PIN,
                         HashAlgorithms.SHA256.digest(TEST_STRING));
                 fail("Bad PIN should not work");
@@ -1738,6 +1784,7 @@ public class KeyGen2Test {
                 sks.signHashedData(keyHandle,
                         AsymSignatureAlgorithms.ECDSA_SHA256.getAlgorithmId(AlgorithmPreferences.SKS),
                         null,
+                        BIOMETRIC_NONE,
                         BAD_PIN,
                         HashAlgorithms.SHA256.digest(TEST_STRING));
                 fail("Bad PIN should not work");

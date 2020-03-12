@@ -27,8 +27,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 
-import org.webpki.jose.JOSESupport;
-
 import org.webpki.json.JSONCryptoHelper;
 
 public class WebCryptoServlet extends HttpServlet {

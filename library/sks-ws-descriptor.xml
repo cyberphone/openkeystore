@@ -8,13 +8,13 @@
             xmlns="http://xmlns.webpki.org/wscreator.1.00">
 
    <LicenseHeader><![CDATA[
-  Copyright 2006-2014 WebPKI.org (http://webpki.org).
+  Copyright 2006-2020 WebPKI.org (http://webpki.org).
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
-      http://www.apache.org/licenses/LICENSE-2.0
+      https://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
   distributed under the License is distributed on an "AS IS" BASIS,
@@ -1364,6 +1364,7 @@
      <Parameter Name="algorithm"                 Type="string" XMLName="Algorithm"/>
      <Parameter Name="parameters"                Type="binary" XMLName="Parameters"    Null="true"/>
      <Parameter Name="trusted_gui_authorization" Type="bool"   XMLName="TrustedGUIAuthorization" SuppressRule="TGA"/>
+     <Parameter Name="biometric_auth"            Type="bool"   XMLName="BiometricAuth"/>
      <Parameter Name="authorization"             Type="binary" XMLName="Authorization" Null="true"/>
      <Parameter Name="data"                      Type="binary" XMLName="Data"/>
      <Code><![CDATA[
@@ -1377,6 +1378,7 @@
             return getDevice (device_id).signHashedData (key_handle,
                                                          algorithm,
                                                          parameters,
+                                                         biometric_auth,
                                                          authorization,
                                                          data);
           }
@@ -1398,6 +1400,7 @@
      <Parameter Name="algorithm"                 Type="string" XMLName="Algorithm"/>
      <Parameter Name="parameters"                Type="binary" XMLName="Parameters"    Null="true"/>
      <Parameter Name="trusted_gui_authorization" Type="bool"   XMLName="TrustedGUIAuthorization" SuppressRule="TGA"/>
+     <Parameter Name="biometric_auth"            Type="bool"   XMLName="BiometricAuth"/>
      <Parameter Name="authorization"             Type="binary" XMLName="Authorization" Null="true"/>
      <Parameter Name="data"                      Type="binary" XMLName="Data"/>
      <Code><![CDATA[
@@ -1411,6 +1414,7 @@
             return getDevice (device_id).asymmetricKeyDecrypt (key_handle, 
                                                                algorithm,
                                                                parameters,
+                                                               biometric_auth,
                                                                authorization, 
                                                                data);
           }
@@ -1432,6 +1436,7 @@
      <Parameter Name="algorithm"                 Type="string" XMLName="Algorithm"/>
      <Parameter Name="parameters"                Type="binary" XMLName="Parameters"    Null="true"/>
      <Parameter Name="trusted_gui_authorization" Type="bool"   XMLName="TrustedGUIAuthorization" SuppressRule="TGA"/>
+     <Parameter Name="biometric_auth"            Type="bool"   XMLName="BiometricAuth"/>
      <Parameter Name="authorization"             Type="binary" XMLName="Authorization" Null="true"/>
      <Parameter Name="public_key"                Type="binary" XMLName="PublicKey"               RewriteRule="In.PublicKey"/>
      <Code><![CDATA[
@@ -1445,6 +1450,7 @@
             return getDevice (device_id).keyAgreement (key_handle, 
                                                        algorithm, 
                                                        parameters, 
+                                                       biometric_auth,
                                                        authorization, 
                                                        getECPublicKey (public_key));
           }
@@ -1466,6 +1472,7 @@
      <Parameter Name="algorithm"                 Type="string" XMLName="Algorithm"/>
      <Parameter Name="parameters"                Type="binary" XMLName="Parameters"    Null="true"/>
      <Parameter Name="trusted_gui_authorization" Type="bool"   XMLName="TrustedGUIAuthorization" SuppressRule="TGA"/>
+     <Parameter Name="biometric_auth"            Type="bool"   XMLName="BiometricAuth"/>
      <Parameter Name="authorization"             Type="binary" XMLName="Authorization" Null="true"/>
      <Parameter Name="data"                      Type="binary" XMLName="Data"/>
      <Code><![CDATA[
@@ -1479,6 +1486,7 @@
             return getDevice (device_id).performHmac (key_handle, 
                                                       algorithm,
                                                       parameters,
+                                                      biometric_auth,
                                                       authorization,
                                                       data);
           }
@@ -1501,6 +1509,7 @@
      <Parameter Name="mode"                      Type="bool"   XMLName="Mode"/>
      <Parameter Name="parameters"                Type="binary" XMLName="Parameters"    Null="true"/>
      <Parameter Name="trusted_gui_authorization" Type="bool"   XMLName="TrustedGUIAuthorization" SuppressRule="TGA"/>
+     <Parameter Name="biometric_auth"            Type="bool"   XMLName="BiometricAuth"/>
      <Parameter Name="authorization"             Type="binary" XMLName="Authorization" Null="true"/>
      <Parameter Name="data"                      Type="binary" XMLName="Data"/>
      <Code><![CDATA[
@@ -1515,6 +1524,7 @@
                                                               algorithm,
                                                               mode,
                                                               parameters,
+                                                              biometric_auth,
                                                               authorization,
                                                               data);
           }

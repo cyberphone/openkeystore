@@ -164,6 +164,7 @@ public class SKSWSNativeClient implements SecureKeyStore, WSSpecific {
     native public byte[] signHashedData(int keyHandle,
                                         String algorithm,
                                         byte[] parameters,
+                                        boolean biometricAuth,
                                         byte[] authorization,
                                         byte[] data) throws SKSException;
 
@@ -171,6 +172,7 @@ public class SKSWSNativeClient implements SecureKeyStore, WSSpecific {
     native public byte[] performHmac(int keyHandle,
                                      String algorithm,
                                      byte[] parameters,
+                                     boolean biometricAuth,
                                      byte[] authorization,
                                      byte[] data) throws SKSException;
 
@@ -179,6 +181,7 @@ public class SKSWSNativeClient implements SecureKeyStore, WSSpecific {
                                              String algorithm,
                                              boolean mode,
                                              byte[] parameters,
+                                             boolean biometricAuth,
                                              byte[] authorization,
                                              byte[] data) throws SKSException;
 
@@ -186,6 +189,7 @@ public class SKSWSNativeClient implements SecureKeyStore, WSSpecific {
     native public byte[] asymmetricKeyDecrypt(int keyHandle,
                                               String algorithm,
                                               byte[] parameters,
+                                              boolean biometricAuth,
                                               byte[] authorization,
                                               byte[] data) throws SKSException;
 
@@ -193,6 +197,7 @@ public class SKSWSNativeClient implements SecureKeyStore, WSSpecific {
     native public byte[] keyAgreement(int keyHandle,
                                       String algorithm,
                                       byte[] parameters,
+                                      boolean biometricAuth,
                                       byte[] authorization,
                                       ECPublicKey publicKey) throws SKSException;
 

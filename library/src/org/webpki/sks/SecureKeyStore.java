@@ -326,19 +326,17 @@ public interface SecureKeyStore {
     // "User" API
     ///////////////////////////////////////////////////////////////////////////////////
 
-    KeyAttributes getKeyAttributes(int keyHandle);
-
-    EnumeratedKey enumerateKeys(int keyHandle);
-
     byte[] signHashedData(int keyHandle,
                           String algorithm,
                           byte[] parameters,    // Must be null if not applicable
+                          boolean biometricAuth,
                           byte[] authorization, // Must be null if not applicable
                           byte[] data);
 
     byte[] performHmac(int keyHandle,
                        String algorithm,
                        byte[] parameters,    // Must be null if not applicable
+                       boolean biometricAuth,
                        byte[] authorization, // Must be null if not applicable
                        byte[] data);
 
@@ -346,28 +344,34 @@ public interface SecureKeyStore {
                                String algorithm,
                                boolean mode,
                                byte[] parameters,    // Must be null if not applicable
+                               boolean biometricAuth,
                                byte[] authorization, // Must be null if not applicable
                                byte[] data);
 
     byte[] asymmetricKeyDecrypt(int keyHandle,
                                 String algorithm,
                                 byte[] parameters,    // Must be null if not applicable
+                                boolean biometricAuth,
                                 byte[] authorization, // Must be null if not applicable
                                 byte[] data);
 
     byte[] keyAgreement(int keyHandle,
                         String algorithm,
                         byte[] parameters,    // Must be null if not applicable
+                        boolean biometricAuth,
                         byte[] authorization, // Must be null if not applicable
                         ECPublicKey publicKey);
-
-    void deleteKey(int keyHandle,
-                   byte[] authorization /* Must be null if not applicable */);
-
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Miscellaneous
     ///////////////////////////////////////////////////////////////////////////////////
+
+    KeyAttributes getKeyAttributes(int keyHandle);
+
+    EnumeratedKey enumerateKeys(int keyHandle);
+
+    void deleteKey(int keyHandle,
+                   byte[] authorization /* Must be null if not applicable */);
 
     DeviceInfo getDeviceInfo();
 

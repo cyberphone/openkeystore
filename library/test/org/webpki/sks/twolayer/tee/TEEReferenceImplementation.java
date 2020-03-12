@@ -235,7 +235,7 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
             }
         }
 
-        void verifyPIN(byte[] pin) {
+        void verifyPin(byte[] pin) {
             ///////////////////////////////////////////////////////////////////////////////////
             // If there is no PIN policy there is nothing to verify...
             ///////////////////////////////////////////////////////////////////////////////////
@@ -273,7 +273,29 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
             }
         }
 
-        void verifyPUK(byte[] puk) {
+        void authorize(boolean biometricAuth, byte[] pin) {
+            if (biometricAuth) {
+                if (biometricProtection == BIOMETRIC_PROTECTION_NONE) {
+                    abort("Biometric option invalid for key #" + keyHandle);
+                }
+                if (biometricProtection == BIOMETRIC_PROTECTION_EXCLUSIVE || 
+                    biometricProtection == BIOMETRIC_PROTECTION_ALTERNATIVE) {
+                    if (pin != null) {
+                        abort("Biometric + pin option invalid for key #" + keyHandle);
+                    }
+                } else {
+                    verifyPin(pin);
+                }
+            } else {
+                if (biometricProtection == BIOMETRIC_PROTECTION_COMBINED ||
+                    biometricProtection == BIOMETRIC_PROTECTION_EXCLUSIVE) {
+                    abort("Missing biometric for key #" + keyHandle);
+                }
+                verifyPin(pin);
+            }
+        }
+
+        void verifyPuk(byte[] puk) {
             ///////////////////////////////////////////////////////////////////////////////////
             // Check that this key really has a PUK...
             ///////////////////////////////////////////////////////////////////////////////////
@@ -318,11 +340,11 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
         void authorizeExportOrDeleteOperation(byte policy, byte[] authorization) {
             switch (policy) {
                 case EXPORT_DELETE_PROTECTION_PIN:
-                    verifyPIN(authorization);
+                    verifyPin(authorization);
                     return;
 
                 case EXPORT_DELETE_PROTECTION_PUK:
-                    verifyPUK(authorization);
+                    verifyPuk(authorization);
                     return;
 
                 case EXPORT_DELETE_PROTECTION_NOT_ALLOWED:
@@ -945,7 +967,7 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
         ///////////////////////////////////////////////////////////////////////////////////
         // Verify PUK
         ///////////////////////////////////////////////////////////////////////////////////
-        keyEntry.verifyPUK(authorization);
+        keyEntry.verifyPuk(authorization);
 
         ///////////////////////////////////////////////////////////////////////////////////
         // Success!  Reset PIN error counter(s)
@@ -971,7 +993,7 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
         ///////////////////////////////////////////////////////////////////////////////////
         // Verify old PIN
         ///////////////////////////////////////////////////////////////////////////////////
-        keyEntry.verifyPIN(authorization);
+        keyEntry.verifyPin(authorization);
 
         ///////////////////////////////////////////////////////////////////////////////////
         // Test new PIN
@@ -1002,7 +1024,7 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
         ///////////////////////////////////////////////////////////////////////////////////
         // Verify PUK
         ///////////////////////////////////////////////////////////////////////////////////
-        keyEntry.verifyPUK(authorization);
+        keyEntry.verifyPuk(authorization);
 
         ///////////////////////////////////////////////////////////////////////////////////
         // Test new PIN
@@ -1158,6 +1180,7 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
     public synchronized byte[] asymmetricKeyDecrypt(int keyHandle,
                                                     String algorithm,
                                                     byte[] parameters,
+                                                    boolean biometricAuth,
                                                     byte[] authorization,
                                                     byte[] data) {
         try {
@@ -1167,9 +1190,9 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
         KeyEntry keyEntry = getStdKey(keyHandle);
 
         ///////////////////////////////////////////////////////////////////////////////////
-        // Verify PIN (in any)
+        // Authorize
         ///////////////////////////////////////////////////////////////////////////////////
-        keyEntry.verifyPIN(authorization);
+        keyEntry.authorize(biometricAuth, authorization);
 
         ///////////////////////////////////////////////////////////////////////////////////
         // Endorsed algorithm compliance is enforced at the TEE level
@@ -1201,6 +1224,7 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
     public synchronized byte[] signHashedData(int keyHandle,
                                               String algorithm,
                                               byte[] parameters,
+                                              boolean biometricAuth,
                                               byte[] authorization,
                                               byte[] data) {
         try {
@@ -1210,9 +1234,9 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
             KeyEntry keyEntry = getStdKey(keyHandle);
     
             ///////////////////////////////////////////////////////////////////////////////////
-            // Verify PIN (in any)
+            // Authorize
             ///////////////////////////////////////////////////////////////////////////////////
-            keyEntry.verifyPIN(authorization);
+            keyEntry.authorize(biometricAuth, authorization);
     
             ///////////////////////////////////////////////////////////////////////////////////
             // Enforce the data limit
@@ -1249,6 +1273,7 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
     public synchronized byte[] keyAgreement(int keyHandle,
                                             String algorithm,
                                             byte[] parameters,
+                                            boolean biometricAuth,
                                             byte[] authorization,
                                             ECPublicKey publicKey) {
         try {
@@ -1258,9 +1283,9 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
             KeyEntry keyEntry = getStdKey(keyHandle);
     
             ///////////////////////////////////////////////////////////////////////////////////
-            // Verify PIN (in any)
+            // Authorize
             ///////////////////////////////////////////////////////////////////////////////////
-            keyEntry.verifyPIN(authorization);
+            keyEntry.authorize(biometricAuth, authorization);
     
             ///////////////////////////////////////////////////////////////////////////////////
             // Endorsed algorithm compliance is enforced at the TEE level
@@ -1293,6 +1318,7 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
                                                    String algorithm,
                                                    boolean mode,
                                                    byte[] parameters,
+                                                   boolean biometricAuth,
                                                    byte[] authorization,
                                                    byte[] data) {
         try {
@@ -1302,9 +1328,9 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
             KeyEntry keyEntry = getStdKey(keyHandle);
     
             ///////////////////////////////////////////////////////////////////////////////////
-            // Verify PIN (in any)
+            // Authorize
             ///////////////////////////////////////////////////////////////////////////////////
-            keyEntry.verifyPIN(authorization);
+            keyEntry.authorize(biometricAuth, authorization);
     
             ///////////////////////////////////////////////////////////////////////////////////
             // Enforce the data limit
@@ -1342,6 +1368,7 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
     public synchronized byte[] performHmac(int keyHandle,
                                            String algorithm,
                                            byte[] parameters,
+                                           boolean biometricAuth,
                                            byte[] authorization,
                                            byte[] data) {
         try {
@@ -1351,9 +1378,9 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
             KeyEntry keyEntry = getStdKey(keyHandle);
     
             ///////////////////////////////////////////////////////////////////////////////////
-            // Verify PIN (in any)
+            // Authorize
             ///////////////////////////////////////////////////////////////////////////////////
-            keyEntry.verifyPIN(authorization);
+            keyEntry.authorize(biometricAuth, authorization);
     
             ///////////////////////////////////////////////////////////////////////////////////
             // Enforce the data limit
@@ -2264,7 +2291,7 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
             }
             if (biometricProtection != BIOMETRIC_PROTECTION_NONE &&
                     ((biometricProtection != BIOMETRIC_PROTECTION_EXCLUSIVE) ^ pinProtection)) {
-                abort("Invalid \"BiometricProtection\" and PIN combination");
+                abort("Invalid \"" + VAR_BIOMETRIC_PROTECTION + "\" and PIN combination");
             }
             if (pinPolicy == null || pinPolicy.pukPolicy == null) {
                 verifyExportDeleteProtection(deleteProtection, EXPORT_DELETE_PROTECTION_PUK, provisioning);

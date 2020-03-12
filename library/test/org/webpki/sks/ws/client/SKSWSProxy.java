@@ -1,11 +1,11 @@
 /*
- *  Copyright 2006-2014 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -583,6 +583,8 @@ public interface SKSWSProxy
                                   byte[] parameters,
                                   @WebParam(name="TrustedGUIAuthorization", targetNamespace="https://webpki.github.io/sks/v1.00")
                                   boolean trusted_gui_authorization,
+                                  @WebParam(name="BiometricAuth", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                  boolean biometric_auth,
                                   @WebParam(name="Authorization", targetNamespace="https://webpki.github.io/sks/v1.00")
                                   byte[] authorization,
                                   @WebParam(name="Data", targetNamespace="https://webpki.github.io/sks/v1.00")
@@ -603,6 +605,8 @@ public interface SKSWSProxy
                                         byte[] parameters,
                                         @WebParam(name="TrustedGUIAuthorization", targetNamespace="https://webpki.github.io/sks/v1.00")
                                         boolean trusted_gui_authorization,
+                                        @WebParam(name="BiometricAuth", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                        boolean biometric_auth,
                                         @WebParam(name="Authorization", targetNamespace="https://webpki.github.io/sks/v1.00")
                                         byte[] authorization,
                                         @WebParam(name="Data", targetNamespace="https://webpki.github.io/sks/v1.00")
@@ -623,6 +627,8 @@ public interface SKSWSProxy
                                 byte[] parameters,
                                 @WebParam(name="TrustedGUIAuthorization", targetNamespace="https://webpki.github.io/sks/v1.00")
                                 boolean trusted_gui_authorization,
+                                @WebParam(name="BiometricAuth", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                boolean biometric_auth,
                                 @WebParam(name="Authorization", targetNamespace="https://webpki.github.io/sks/v1.00")
                                 byte[] authorization,
                                 @WebParam(name="PublicKey", targetNamespace="https://webpki.github.io/sks/v1.00")
@@ -643,6 +649,8 @@ public interface SKSWSProxy
                                byte[] parameters,
                                @WebParam(name="TrustedGUIAuthorization", targetNamespace="https://webpki.github.io/sks/v1.00")
                                boolean trusted_gui_authorization,
+                               @WebParam(name="BiometricAuth", targetNamespace="https://webpki.github.io/sks/v1.00")
+                               boolean biometric_auth,
                                @WebParam(name="Authorization", targetNamespace="https://webpki.github.io/sks/v1.00")
                                byte[] authorization,
                                @WebParam(name="Data", targetNamespace="https://webpki.github.io/sks/v1.00")
@@ -665,6 +673,8 @@ public interface SKSWSProxy
                                        byte[] parameters,
                                        @WebParam(name="TrustedGUIAuthorization", targetNamespace="https://webpki.github.io/sks/v1.00")
                                        boolean trusted_gui_authorization,
+                                       @WebParam(name="BiometricAuth", targetNamespace="https://webpki.github.io/sks/v1.00")
+                                       boolean biometric_auth,
                                        @WebParam(name="Authorization", targetNamespace="https://webpki.github.io/sks/v1.00")
                                        byte[] authorization,
                                        @WebParam(name="Data", targetNamespace="https://webpki.github.io/sks/v1.00")

@@ -42,6 +42,8 @@ public interface KeyGen2URIs {
         String OS_VERSION                  = "https://webpki.github.io/keygen2/clientattr#os-version";
 
         String DEVICE_PIN_SUPPORT          = "https://webpki.github.io/keygen2/clientattr#device-pin-support";
+
+        String BIOMETRIC_SUPPORT           = "https://webpki.github.io/keygen2/clientattr#biometric-support";
     }
 
 }

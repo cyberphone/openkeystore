@@ -205,36 +205,59 @@ public class GenKey {
         prov_sess.sks.changePin(keyHandle, getConditionalAuthorization(old_pin), getConditionalAuthorization(new_pin));
     }
 
-    public byte[] signData(AsymSignatureAlgorithms alg_id, String pin, byte[] data) throws IOException {
+    public byte[] signData(AsymSignatureAlgorithms alg_id,
+                           KeyAuthorization keyAuthorization,
+                           byte[] data) throws IOException {
         return prov_sess.sks.signHashedData(keyHandle,
                 alg_id.getAlgorithmId(AlgorithmPreferences.SKS),
                 null,
-                getConditionalAuthorization(pin),
+                keyAuthorization.biometricAuth,
+                getConditionalAuthorization(keyAuthorization.pin),
                 alg_id.getDigestAlgorithm() == null ? data : alg_id.getDigestAlgorithm().digest(data));
     }
 
-    public byte[] asymmetricKeyDecrypt(AsymEncryptionAlgorithms alg_id, String pin, byte[] data) throws IOException {
-        return prov_sess.sks.asymmetricKeyDecrypt(keyHandle,
-                alg_id.getAlgorithmId(AlgorithmPreferences.SKS),
-                null,
-                getConditionalAuthorization(pin),
-                data);
+    public byte[] asymmetricKeyDecrypt(AsymEncryptionAlgorithms alg_id, 
+                                       KeyAuthorization keyAuthorization,
+                                       byte[] data) throws IOException {
+        return asymmetricKeyDecrypt(alg_id,
+                                    null,
+                                    keyAuthorization,
+                                    data);
     }
 
-    public byte[] symmetricKeyEncrypt(SymEncryptionAlgorithms alg_id, boolean mode, byte[] parameters, String pin, byte[] data) throws IOException {
+    public byte[] asymmetricKeyDecrypt(AsymEncryptionAlgorithms alg_id,
+                                       byte[] parameters,
+                                       KeyAuthorization keyAuthorization,
+                                       byte[] data) throws IOException {
+        return prov_sess.sks.asymmetricKeyDecrypt(keyHandle,
+                                                  alg_id.getAlgorithmId(AlgorithmPreferences.SKS),
+                                                  parameters,
+                                                  keyAuthorization.biometricAuth,
+                                                  getConditionalAuthorization(keyAuthorization.pin),
+                                                  data);
+    }
+    public byte[] symmetricKeyEncrypt(SymEncryptionAlgorithms alg_id, 
+                                      boolean mode, 
+                                      byte[] parameters, 
+                                      KeyAuthorization keyAuthorization,
+                                      byte[] data) throws IOException {
         return prov_sess.sks.symmetricKeyEncrypt(keyHandle,
                 alg_id.getAlgorithmId(AlgorithmPreferences.SKS),
                 mode,
                 parameters,
-                getConditionalAuthorization(pin),
+                keyAuthorization.biometricAuth,
+                getConditionalAuthorization(keyAuthorization.pin),
                 data);
     }
 
-    public byte[] performHMAC(MACAlgorithms alg_id, String pin, byte[] data) throws IOException {
+    public byte[] performHMAC(MACAlgorithms alg_id, 
+                              KeyAuthorization keyAuthorization,
+                              byte[] data) throws IOException {
         return prov_sess.sks.performHmac(keyHandle,
                 alg_id.getAlgorithmId(AlgorithmPreferences.SKS),
                 null,
-                getConditionalAuthorization(pin),
+                keyAuthorization.biometricAuth,
+                getConditionalAuthorization(keyAuthorization.pin),
                 data);
     }
 

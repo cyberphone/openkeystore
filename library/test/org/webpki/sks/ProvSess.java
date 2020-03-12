@@ -646,34 +646,36 @@ public class ProvSess {
     }
 
     public GenKey createKey(String id,
-                            KeyAlgorithms key_algorithm,
-                            String pin_value,
-                            PINPol pinPolicy,
-                            AppUsage keyUsage) throws SKSException, IOException, GeneralSecurityException {
-        return createKey(id, key_algorithm, pin_value, pinPolicy, keyUsage, null);
+                            KeyAlgorithms keyAlgorithm,
+                            KeyProtectionSpec keyProtectionSpec,
+                            AppUsage appUsage) throws SKSException, IOException, GeneralSecurityException {
+        return createKey(id, 
+                         keyAlgorithm, 
+                         keyProtectionSpec,
+                         appUsage, 
+                         null);
     }
 
     public GenKey createKey(String id,
-                            KeyAlgorithms key_algorithm,
-                            String pin_value,
-                            PINPol pinPolicy,
+                            KeyAlgorithms keyAlgorithm,
+                            KeyProtectionSpec keyProtectionSpec,
                             AppUsage appUsage,
-                            String[] endorsed_algorithms) throws SKSException, IOException, GeneralSecurityException {
+                            String[] endorsedAlgorithms) throws SKSException, IOException, GeneralSecurityException {
         byte[] serverSeed = new byte[32];
         new SecureRandom().nextBytes(serverSeed);
         return createKey(id,
                 SecureKeyStore.ALGORITHM_KEY_ATTEST_1,
                 serverSeed,
-                pinPolicy,
-                pin_value,
-                BiometricProtection.NONE /* biometricProtection */,
+                keyProtectionSpec.pinPolicy,
+                keyProtectionSpec.pin,
+                keyProtectionSpec.biometricProtection /* biometricProtection */,
                 ExportProtection.NON_EXPORTABLE /* export_policy */,
                 DeleteProtection.NONE /* delete_policy */,
                 false /* enablePinCaching */,
                 appUsage,
                 "" /* friendlyName */,
-                new KeySpecifier(key_algorithm),
-                endorsed_algorithms);
+                new KeySpecifier(keyAlgorithm),
+                endorsedAlgorithms);
     }
 
 

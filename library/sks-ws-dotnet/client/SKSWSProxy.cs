@@ -1,11 +1,11 @@
 /*
- *  Copyright 2006-2014 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -2292,10 +2292,14 @@ namespace org.webpki.sks.ws.client
         internal bool _trusted_gui_authorization;
 
         [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=5)]
+        [System.Xml.Serialization.XmlElementAttribute(ElementName="BiometricAuth", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
+        internal bool _biometric_auth;
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=6)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Authorization", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _authorization;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=6)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=7)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Data", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _data;
 
@@ -2304,6 +2308,7 @@ namespace org.webpki.sks.ws.client
                                       string Algorithm,
                                       byte[] Parameters,
                                       bool TrustedGUIAuthorization,
+                                      bool BiometricAuth,
                                       byte[] Authorization,
                                       byte[] Data)
         {
@@ -2312,6 +2317,7 @@ namespace org.webpki.sks.ws.client
             _algorithm = Algorithm;
             _parameters = Parameters;
             _trusted_gui_authorization = TrustedGUIAuthorization;
+            _biometric_auth = BiometricAuth;
             _authorization = Authorization;
             _data = Data;
         }
@@ -2353,10 +2359,14 @@ namespace org.webpki.sks.ws.client
         internal bool _trusted_gui_authorization;
 
         [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=5)]
+        [System.Xml.Serialization.XmlElementAttribute(ElementName="BiometricAuth", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
+        internal bool _biometric_auth;
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=6)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Authorization", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _authorization;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=6)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=7)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Data", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _data;
 
@@ -2365,6 +2375,7 @@ namespace org.webpki.sks.ws.client
                                             string Algorithm,
                                             byte[] Parameters,
                                             bool TrustedGUIAuthorization,
+                                            bool BiometricAuth,
                                             byte[] Authorization,
                                             byte[] Data)
         {
@@ -2373,6 +2384,7 @@ namespace org.webpki.sks.ws.client
             _algorithm = Algorithm;
             _parameters = Parameters;
             _trusted_gui_authorization = TrustedGUIAuthorization;
+            _biometric_auth = BiometricAuth;
             _authorization = Authorization;
             _data = Data;
         }
@@ -2414,10 +2426,14 @@ namespace org.webpki.sks.ws.client
         internal bool _trusted_gui_authorization;
 
         [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=5)]
+        [System.Xml.Serialization.XmlElementAttribute(ElementName="BiometricAuth", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
+        internal bool _biometric_auth;
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=6)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Authorization", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _authorization;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=6)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=7)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="PublicKey", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _public_key;
 
@@ -2426,6 +2442,7 @@ namespace org.webpki.sks.ws.client
                                     string Algorithm,
                                     byte[] Parameters,
                                     bool TrustedGUIAuthorization,
+                                    bool BiometricAuth,
                                     byte[] Authorization,
                                     byte[] PublicKey)
         {
@@ -2434,6 +2451,7 @@ namespace org.webpki.sks.ws.client
             _algorithm = Algorithm;
             _parameters = Parameters;
             _trusted_gui_authorization = TrustedGUIAuthorization;
+            _biometric_auth = BiometricAuth;
             _authorization = Authorization;
             _public_key = PublicKey;
         }
@@ -2475,10 +2493,14 @@ namespace org.webpki.sks.ws.client
         internal bool _trusted_gui_authorization;
 
         [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=5)]
+        [System.Xml.Serialization.XmlElementAttribute(ElementName="BiometricAuth", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
+        internal bool _biometric_auth;
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=6)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Authorization", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _authorization;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=6)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=7)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Data", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _data;
 
@@ -2487,6 +2509,7 @@ namespace org.webpki.sks.ws.client
                                    string Algorithm,
                                    byte[] Parameters,
                                    bool TrustedGUIAuthorization,
+                                   bool BiometricAuth,
                                    byte[] Authorization,
                                    byte[] Data)
         {
@@ -2495,6 +2518,7 @@ namespace org.webpki.sks.ws.client
             _algorithm = Algorithm;
             _parameters = Parameters;
             _trusted_gui_authorization = TrustedGUIAuthorization;
+            _biometric_auth = BiometricAuth;
             _authorization = Authorization;
             _data = Data;
         }
@@ -2540,10 +2564,14 @@ namespace org.webpki.sks.ws.client
         internal bool _trusted_gui_authorization;
 
         [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=6)]
+        [System.Xml.Serialization.XmlElementAttribute(ElementName="BiometricAuth", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
+        internal bool _biometric_auth;
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=7)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Authorization", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _authorization;
 
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=7)]
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="https://webpki.github.io/sks/v1.00", Order=8)]
         [System.Xml.Serialization.XmlElementAttribute(ElementName="Data", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         internal byte[] _data;
 
@@ -2553,6 +2581,7 @@ namespace org.webpki.sks.ws.client
                                            bool Mode,
                                            byte[] Parameters,
                                            bool TrustedGUIAuthorization,
+                                           bool BiometricAuth,
                                            byte[] Authorization,
                                            byte[] Data)
         {
@@ -2562,6 +2591,7 @@ namespace org.webpki.sks.ws.client
             _mode = Mode;
             _parameters = Parameters;
             _trusted_gui_authorization = TrustedGUIAuthorization;
+            _biometric_auth = BiometricAuth;
             _authorization = Authorization;
             _data = Data;
         }
@@ -3225,6 +3255,7 @@ namespace org.webpki.sks.ws.client
         public byte[] signHashedData(int KeyHandle,
                                      string Algorithm,
                                      byte[] Parameters,
+                                     bool BiometricAuth,
                                      byte[] Authorization,
                                      byte[] Data)
         {
@@ -3239,6 +3270,7 @@ namespace org.webpki.sks.ws.client
                                                                                   Algorithm,
                                                                                   Parameters,
                                                                                   tga,
+                                                                                  BiometricAuth,
                                                                                   Authorization,
                                                                                   Data))._result;
                 }
@@ -3256,6 +3288,7 @@ namespace org.webpki.sks.ws.client
         public byte[] asymmetricKeyDecrypt(int KeyHandle,
                                            string Algorithm,
                                            byte[] Parameters,
+                                           bool BiometricAuth,
                                            byte[] Authorization,
                                            byte[] Data)
         {
@@ -3270,6 +3303,7 @@ namespace org.webpki.sks.ws.client
                                                                                               Algorithm,
                                                                                               Parameters,
                                                                                               tga,
+                                                                                              BiometricAuth,
                                                                                               Authorization,
                                                                                               Data))._result;
                 }
@@ -3287,6 +3321,7 @@ namespace org.webpki.sks.ws.client
         public byte[] keyAgreement(int KeyHandle,
                                    string Algorithm,
                                    byte[] Parameters,
+                                   bool BiometricAuth,
                                    byte[] Authorization,
                                    PublicKey PublicKey)
         {
@@ -3301,6 +3336,7 @@ namespace org.webpki.sks.ws.client
                                                                               Algorithm,
                                                                               Parameters,
                                                                               tga,
+                                                                              BiometricAuth,
                                                                               Authorization,
                                                                               Conversions.EncodeX509PublicKey(PublicKey)))._result;
                 }
@@ -3318,6 +3354,7 @@ namespace org.webpki.sks.ws.client
         public byte[] performHmac(int KeyHandle,
                                   string Algorithm,
                                   byte[] Parameters,
+                                  bool BiometricAuth,
                                   byte[] Authorization,
                                   byte[] Data)
         {
@@ -3332,6 +3369,7 @@ namespace org.webpki.sks.ws.client
                                                                             Algorithm,
                                                                             Parameters,
                                                                             tga,
+                                                                            BiometricAuth,
                                                                             Authorization,
                                                                             Data))._result;
                 }
@@ -3350,6 +3388,7 @@ namespace org.webpki.sks.ws.client
                                           string Algorithm,
                                           bool Mode,
                                           byte[] Parameters,
+                                          bool BiometricAuth,
                                           byte[] Authorization,
                                           byte[] Data)
         {
@@ -3365,6 +3404,7 @@ namespace org.webpki.sks.ws.client
                                                                                             Mode,
                                                                                             Parameters,
                                                                                             tga,
+                                                                                            BiometricAuth,
                                                                                             Authorization,
                                                                                             Data))._result;
                 }

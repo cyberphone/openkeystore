@@ -791,6 +791,7 @@ public class SKSWSClient implements SecureKeyStore, WSSpecific {
     public byte[] signHashedData(int keyHandle,
                                  String algorithm,
                                  byte[] parameters,
+                                 boolean biometricAuth,
                                  byte[] authorization,
                                  byte[] data) throws SKSException {
         boolean tga = false;
@@ -803,6 +804,7 @@ public class SKSWSClient implements SecureKeyStore, WSSpecific {
                         algorithm,
                         parameters,
                         tga,
+                        biometricAuth,
                         auth.value,
                         data);
             } catch (SKSException_Exception e) {
@@ -818,6 +820,7 @@ public class SKSWSClient implements SecureKeyStore, WSSpecific {
     public byte[] asymmetricKeyDecrypt(int keyHandle,
                                        String algorithm,
                                        byte[] parameters,
+                                       boolean biometricAuth,
                                        byte[] authorization,
                                        byte[] data) throws SKSException {
         boolean tga = false;
@@ -830,6 +833,7 @@ public class SKSWSClient implements SecureKeyStore, WSSpecific {
                         algorithm,
                         parameters,
                         tga,
+                        biometricAuth,
                         auth.value,
                         data);
             } catch (SKSException_Exception e) {
@@ -845,6 +849,7 @@ public class SKSWSClient implements SecureKeyStore, WSSpecific {
     public byte[] keyAgreement(int keyHandle,
                                String algorithm,
                                byte[] parameters,
+                               boolean biometricAuth,
                                byte[] authorization,
                                ECPublicKey publicKey) throws SKSException {
         boolean tga = false;
@@ -857,6 +862,7 @@ public class SKSWSClient implements SecureKeyStore, WSSpecific {
                         algorithm,
                         parameters,
                         tga,
+                        biometricAuth,
                         auth.value,
                         publicKey.getEncoded());
             } catch (SKSException_Exception e) {
@@ -872,6 +878,7 @@ public class SKSWSClient implements SecureKeyStore, WSSpecific {
     public byte[] performHmac(int keyHandle,
                               String algorithm,
                               byte[] parameters,
+                              boolean biometricAuth,
                               byte[] authorization,
                               byte[] data) throws SKSException {
         boolean tga = false;
@@ -884,6 +891,7 @@ public class SKSWSClient implements SecureKeyStore, WSSpecific {
                         algorithm,
                         parameters,
                         tga,
+                        biometricAuth,
                         auth.value,
                         data);
             } catch (SKSException_Exception e) {
@@ -900,6 +908,7 @@ public class SKSWSClient implements SecureKeyStore, WSSpecific {
                                       String algorithm,
                                       boolean mode,
                                       byte[] parameters,
+                                      boolean biometricAuth,
                                       byte[] authorization,
                                       byte[] data) throws SKSException {
         boolean tga = false;
@@ -913,6 +922,7 @@ public class SKSWSClient implements SecureKeyStore, WSSpecific {
                         mode,
                         parameters,
                         tga,
+                        biometricAuth,
                         auth.value,
                         data);
             } catch (SKSException_Exception e) {
