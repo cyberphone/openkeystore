@@ -2586,7 +2586,7 @@ public class SKSTest {
             }
         }
     }
-
+    
     @Test
     public void test60() throws Exception {
         String good_pin = "1563";
@@ -2773,7 +2773,7 @@ public class SKSTest {
             fail("Bad server key");
         } catch (SKSException e) {
             ProvSess.override_server_ephemeral_key_algorithm = null;
-            checkException(e, "Unsupported EC key algorithm for: \"" + SecureKeyStore.VAR_SERVER_EPHEMERAL_KEY + "\"");
+            checkException(e, "Unsupported EC key algorithm for: \"" + SecureKeyStore.VAR_SERVER_EPHEMERAL_KEY + "\""); 
         }
     }
 

@@ -2600,6 +2600,7 @@ public class SKSTest {
         sess2.closeSession();
     }
 
+//#if !ANDROID
     @Test
     public void test59() throws Exception {
         if (tga != null) for (InputMethod inputMethod : InputMethod.values()) {
@@ -2629,7 +2630,8 @@ public class SKSTest {
             }
         }
     }
-
+//#endif
+    
     @Test
     public void test60() throws Exception {
         String good_pin = "1563";
@@ -2816,7 +2818,11 @@ public class SKSTest {
             fail("Bad server key");
         } catch (SKSException e) {
             ProvSess.override_server_ephemeral_key_algorithm = null;
-            checkException(e, "Unsupported EC key algorithm for: \"" + SecureKeyStore.VAR_SERVER_EPHEMERAL_KEY + "\"");
+//#if ANDROID   
+            // The current android test suite runs only on the client creating another error message    
+//#else 
+            checkException(e, "Unsupported EC key algorithm for: \"" + SecureKeyStore.VAR_SERVER_EPHEMERAL_KEY + "\""); 
+//#endif
         }
     }
 
