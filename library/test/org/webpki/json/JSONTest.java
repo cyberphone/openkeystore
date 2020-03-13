@@ -77,8 +77,8 @@ import org.webpki.json.JSONSymKeySigner;
 import org.webpki.json.JSONSymKeyVerifier;
 import org.webpki.json.JSONTypes;
 import org.webpki.json.JSONX509Verifier;
-import org.webpki.json.JSONCryptoHelper.KEY_ID_OPTIONS;
 import org.webpki.json.JSONCryptoHelper.PUBLIC_KEY_OPTIONS;
+
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.Base64URL;
 import org.webpki.util.DebugFormatter;

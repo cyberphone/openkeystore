@@ -515,14 +515,14 @@ public class KeyGen2Test {
             for (String algorithm : matches) {
                 invocation_response.addSupportedFeature(algorithm);
             }
-            if (invocation_request.getQueriedCapabilities().contains(KeyGen2URIs.CLIENT_ATTRIBUTES.DEVICE_PIN_SUPPORT)) {
+            if (invocation_request.getQueriedCapabilities().contains(KeyGen2URIs.CLIENT_FEATURES.DEVICE_PIN_SUPPORT)) {
                 if (device_info.getDevicePinSupport()) {
-                    invocation_response.addSupportedFeature(KeyGen2URIs.CLIENT_ATTRIBUTES.DEVICE_PIN_SUPPORT);
+                    invocation_response.addSupportedFeature(KeyGen2URIs.CLIENT_FEATURES.DEVICE_PIN_SUPPORT);
                 }
             }
-            if (invocation_request.getQueriedCapabilities().contains(KeyGen2URIs.CLIENT_ATTRIBUTES.BIOMETRIC_SUPPORT)) {
+            if (invocation_request.getQueriedCapabilities().contains(KeyGen2URIs.CLIENT_FEATURES.BIOMETRIC_SUPPORT)) {
                 if (device_info.getBiometricSupport()) {
-                    invocation_response.addSupportedFeature(KeyGen2URIs.CLIENT_ATTRIBUTES.BIOMETRIC_SUPPORT);
+                    invocation_response.addSupportedFeature(KeyGen2URIs.CLIENT_FEATURES.BIOMETRIC_SUPPORT);
                 }
             }
             if (invocation_request.getQueriedCapabilities().contains(KeyGen2URIs.CLIENT_ATTRIBUTES.IMEI_NUMBER)) {
@@ -842,10 +842,10 @@ public class KeyGen2Test {
                 serverState.addFeatureQuery(KeyAlgorithms.RSA2048_EXP.getAlgorithmId(AlgorithmPreferences.SKS));
             }
             if (devicePinProtection) {
-                serverState.addFeatureQuery(KeyGen2URIs.CLIENT_ATTRIBUTES.DEVICE_PIN_SUPPORT);
+                serverState.addFeatureQuery(KeyGen2URIs.CLIENT_FEATURES.DEVICE_PIN_SUPPORT);
             }
             if (biometric_support) {
-                serverState.addFeatureQuery(KeyGen2URIs.CLIENT_ATTRIBUTES.BIOMETRIC_SUPPORT);
+                serverState.addFeatureQuery(KeyGen2URIs.CLIENT_FEATURES.BIOMETRIC_SUPPORT);
             }
             if (image_prefs) {
                 serverState.addImageAttributesQuery(KeyGen2URIs.LOGOTYPES.CARD)
@@ -881,14 +881,14 @@ public class KeyGen2Test {
                 }
             }
             if (devicePinProtection) {
-                if (!serverState.isFeatureSupported(KeyGen2URIs.CLIENT_ATTRIBUTES.DEVICE_PIN_SUPPORT)) {
+                if (!serverState.isFeatureSupported(KeyGen2URIs.CLIENT_FEATURES.DEVICE_PIN_SUPPORT)) {
                     aborted = "No device PIN support";
                     return null;
                 }
             }
             if (biometric_support) {
                 biometric_support = false;
-                if (serverState.isFeatureSupported(KeyGen2URIs.CLIENT_ATTRIBUTES.BIOMETRIC_SUPPORT)) {
+                if (serverState.isFeatureSupported(KeyGen2URIs.CLIENT_FEATURES.BIOMETRIC_SUPPORT)) {
                     biometric_support = true;
                 }
             }

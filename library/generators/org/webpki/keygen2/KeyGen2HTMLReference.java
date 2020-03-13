@@ -461,7 +461,8 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
         getListAttribute(s, KeyGen2URIs.CLIENT_ATTRIBUTES.MAC_ADDRESS);
         getListAttribute(s, KeyGen2URIs.CLIENT_ATTRIBUTES.OS_VENDOR);
         getListAttribute(s, KeyGen2URIs.CLIENT_ATTRIBUTES.OS_VERSION);
-        getListAttribute(s, KeyGen2URIs.CLIENT_ATTRIBUTES.DEVICE_PIN_SUPPORT);
+        getListAttribute(s, KeyGen2URIs.CLIENT_FEATURES.DEVICE_PIN_SUPPORT);
+        getListAttribute(s, KeyGen2URIs.CLIENT_FEATURES.BIOMETRIC_SUPPORT);
         return s.toString();
     }
     
@@ -665,6 +666,8 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
         json.addDocumentHistoryLine("2017-05-26", "0.80", "Removed unessesary bloat from the protocol");
         json.addDocumentHistoryLine("2019-08-01", "0.85", "Updated to reflect the 1.05 verson of " +
                                         json.createReference(JSONBaseHTML.REF_SKS));
+        json.addDocumentHistoryLine("2020-03-13", "0.86", "Updated to reflect the 1.06 verson of " +
+                json.createReference(JSONBaseHTML.REF_SKS));
 
         json.addParagraphObject("Author").append("KeyGen2 was primarily developed by Anders Rundgren (<code>anders.rundgren.net@gmail.com</code>) as a part " +
                                      "of the OpenKeyStore project " +
@@ -744,9 +747,7 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
                           "Device-specific data like IMEI numbers <b>must not</b> be requested in the ") 
               .addPropertyLink(PRIVACY_ENABLED_JSON, KeyGen2Messages.INVOCATION_REQUEST.getName())
               .addString(" mode." + LINE_SEPARATOR +
-                          "For quering ")
-              .addPropertyLink(VALUES_JSON, singularis(CLIENT_CAPABILITIES_JSON))
-              .addString(" the following client attribute URIs are pre-defined:<ul>" + clientAttributes () +
+                          "The following client attribute URIs are pre-defined:<ul>" + clientAttributes () +
                           "</ul>");
   
         preAmble(KeyGen2Messages.INVOCATION_RESPONSE.getName())
@@ -1777,7 +1778,7 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
                           "unless these are integral parts of the actual logotype image. " + 
                           "Logotypes should render nicely on light backgrounds. " +
                           "Shadows should be avoided since the icon viewer itself may add such. " +
-                          "Support for PNG files is <i>mandatory</i>.");
+                          "Support for PNG and SVG files is <i>mandatory</i>.");
 
         json.addSubItemTable(IMAGE_ATTRIBUTES_JSON)
           .newRow()

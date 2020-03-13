@@ -29,6 +29,7 @@ public interface KeyGen2URIs {
         String APPLICATION                 = "https://webpki.github.io/keygen2/logotype#application";
     }
 
+    // Values
     public interface CLIENT_ATTRIBUTES {
 
         String IMEI_NUMBER                 = "https://webpki.github.io/keygen2/clientattr#imei-number";
@@ -40,10 +41,13 @@ public interface KeyGen2URIs {
         String OS_VENDOR                   = "https://webpki.github.io/keygen2/clientattr#os-vendor";
 
         String OS_VERSION                  = "https://webpki.github.io/keygen2/clientattr#os-version";
-
-        String DEVICE_PIN_SUPPORT          = "https://webpki.github.io/keygen2/clientattr#device-pin-support";
-
-        String BIOMETRIC_SUPPORT           = "https://webpki.github.io/keygen2/clientattr#biometric-support";
     }
 
+    // True/False
+    public interface CLIENT_FEATURES {
+
+        String DEVICE_PIN_SUPPORT          = "https://webpki.github.io/keygen2/feature#device-pin-support";
+
+        String BIOMETRIC_SUPPORT           = "https://webpki.github.io/keygen2/feature#biometric-support";
+    }
 }
