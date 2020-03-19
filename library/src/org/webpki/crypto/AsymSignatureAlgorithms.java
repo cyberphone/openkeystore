@@ -118,7 +118,8 @@ public enum AsymSignatureAlgorithms implements SignatureAlgorithms {
 
 
     public static AsymSignatureAlgorithms getAlgorithmFromId(String algorithmId,
-                                                             AlgorithmPreferences algorithmPreferences) throws IOException {
+                                                             AlgorithmPreferences algorithmPreferences)
+    throws IOException {
         for (AsymSignatureAlgorithms alg : AsymSignatureAlgorithms.values()) {
             if (algorithmId.equals(alg.sksName)) {
                 if (algorithmPreferences == AlgorithmPreferences.JOSE) {

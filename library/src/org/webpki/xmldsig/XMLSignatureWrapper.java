@@ -328,7 +328,8 @@ public class XMLSignatureWrapper extends XMLObjectWrapper implements Serializabl
         rd.getParent();
         rd.getParent();
         rd.getNext(DIGEST_METHOD_ELEM);
-        ref.digestAlg = HashAlgorithms.getAlgorithmFromId(aHelper.getString(ALGORITHM_ATTR));
+        ref.digestAlg = HashAlgorithms.getAlgorithmFromId(aHelper.getString(ALGORITHM_ATTR),
+                                                          AlgorithmPreferences.SKS);
         rd.getChild();
         if (rd.hasNext()) throw new IOException("No \"DigestMethod\" elements allowed");
         rd.getParent();
@@ -432,7 +433,7 @@ public class XMLSignatureWrapper extends XMLObjectWrapper implements Serializabl
     }
 
 
-    private Text createOneReference(DOMWriterHelper wr, String id, boolean add_enveloped_transform) {
+    private Text createOneReference(DOMWriterHelper wr, String id, boolean add_enveloped_transform) throws IOException {
         wr.addChildElement(REFERENCE_ELEM);
         wr.setStringAttribute(URI_ATTR, "#" + id);
         wr.addChildElement(TRANSFORMS_ELEM);
@@ -444,7 +445,7 @@ public class XMLSignatureWrapper extends XMLObjectWrapper implements Serializabl
         wr.setStringAttribute(ALGORITHM_ATTR, transform_algorithm.getURI());
         wr.getParent();
         wr.addEmptyElement(DIGEST_METHOD_ELEM);
-        wr.setStringAttribute(ALGORITHM_ATTR, digest_algorithm.getAlgorithmId());
+        wr.setStringAttribute(ALGORITHM_ATTR, digest_algorithm.getAlgorithmId(AlgorithmPreferences.SKS));
         Text result = wr.addString(DIGEST_VALUE_ELEM, DUMMY_DIGEST);
         wr.getParent();
         return result;

@@ -17,5 +17,5 @@
 package org.webpki.crypto;
 
 public interface SignatureAlgorithms extends CryptoAlgorithms {
-    public HashAlgorithms getDigestAlgorithm();
+    HashAlgorithms getDigestAlgorithm();
 }

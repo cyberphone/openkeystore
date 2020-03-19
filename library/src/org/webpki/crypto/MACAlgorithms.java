@@ -97,7 +97,8 @@ public enum MACAlgorithms implements SignatureAlgorithms {
 
 
     public static MACAlgorithms getAlgorithmFromId(String algorithmId,
-                                                   AlgorithmPreferences algorithmPreferences) throws IOException {
+                                                   AlgorithmPreferences algorithmPreferences) 
+    throws IOException {
         for (MACAlgorithms alg : values()) {
             if (algorithmId.equals(alg.sksName)) {
                 if (algorithmPreferences == AlgorithmPreferences.JOSE) {

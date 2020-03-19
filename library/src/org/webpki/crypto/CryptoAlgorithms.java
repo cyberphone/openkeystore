@@ -23,16 +23,20 @@ import java.io.IOException;
  */
 public interface CryptoAlgorithms {
 
-    public boolean isMandatorySksAlgorithm();
+    boolean isMandatorySksAlgorithm();
 
-    public String getAlgorithmId(AlgorithmPreferences algorithmPreferences) throws IOException;
+    String getAlgorithmId(AlgorithmPreferences algorithmPreferences) throws IOException;
 
-    public String getOid();
+    default String getJoseAlgorithmId() throws IOException {
+        return getAlgorithmId(AlgorithmPreferences.JOSE);
+    }
 
-    public String getJceName();
+    String getOid();
 
-    public boolean isSymmetric();
+    String getJceName();
+
+    boolean isSymmetric();
     
-    public boolean isDeprecated();
+    boolean isDeprecated();
 
 }

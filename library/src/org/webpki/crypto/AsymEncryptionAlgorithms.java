@@ -84,7 +84,8 @@ public enum AsymEncryptionAlgorithms implements EncryptionAlgorithms {
 
 
     public static AsymEncryptionAlgorithms getAlgorithmFromId(String algorithmId,
-                                                              AlgorithmPreferences algorithmPreferences) throws IOException {
+                                                              AlgorithmPreferences algorithmPreferences) 
+    throws IOException {
         for (AsymEncryptionAlgorithms alg : values()) {
             if (algorithmId.equals(alg.sksName)) {
                 if (algorithmPreferences == AlgorithmPreferences.JOSE) {
