@@ -170,8 +170,7 @@ public class JSONCryptoHelper implements Serializable {
 
     /**
      * Public key parameter to Options
-     * <br>KEY_ID_XOR_PUBLIC_KEY One or the other<br>
-     * KEY_ID_OR_PUBLIC_KEY At least of<br>
+     * 
      */
     public enum PUBLIC_KEY_OPTIONS {
         /**
@@ -180,22 +179,22 @@ public class JSONCryptoHelper implements Serializable {
         PLAIN_ENCRYPTION      (),
 
         /**
-         * key encryption but no public key or certificate path
+         * Key encryption but no public key or certificate path
          */
         FORBIDDEN             (), 
 
         /**
-         * key encryption with public key
+         * Key encryption with public key
          */
         REQUIRED              (), 
 
         /**
-         * key encryption with optional public key
+         * Key encryption with optional public key
          */
         OPTIONAL              (), 
 
         /**
-         * key encryption with at least a public key or a key id
+         * Key encryption with at least a public key or a key id
          */
         KEY_ID_OR_PUBLIC_KEY  (),
 
@@ -205,7 +204,7 @@ public class JSONCryptoHelper implements Serializable {
         KEY_ID_XOR_PUBLIC_KEY (),
 
         /**
-         * key encryption with a certificate path
+         * Key encryption with a certificate path
          */
         CERTIFICATE_PATH      ();
         
@@ -248,7 +247,6 @@ public class JSONCryptoHelper implements Serializable {
      * <li>keyId option.  Default: OPTIONAL</li>
      * <li>Permitted extensions.  Default: none</li>
      * </ul>
-     * In addition, the Options class is used for defining external readers for &quot;remoteKey&quot; support.
      *
      */
     public static class Options {

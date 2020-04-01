@@ -22,10 +22,25 @@ package org.webpki.json;
  */
 public enum JSONOutputFormats {
 
+    /**
+     * As a string without whitespace where all items have a normalized form
+     */
     NORMALIZED        (false, false, false, false),
+    /**
+     * Same as NORMALIZED but with properties sorted according to JCS
+     */
     CANONICALIZED     (false, false, false, true),
+    /**
+     * Pretty-printed with JavaScript syntax
+     */
     PRETTY_JS_NATIVE  (true,  true,  false, false),
+    /**
+     * Pretty-printed
+     */
     PRETTY_PRINT      (true,  false, false, false),
+    /**
+     * Pretty-printed with HTML format
+     */
     PRETTY_HTML       (true,  false, true,  false);
 
     boolean pretty;
@@ -38,16 +53,5 @@ public enum JSONOutputFormats {
         this.javascript = javascript;
         this.html = html;
         this.canonicalized = canonicalized;
-    }
-
-    public static String getOptions() {
-        StringBuilder options = new StringBuilder();
-        for (JSONOutputFormats format : JSONOutputFormats.values()) {
-            if (options.length() > 0) {
-                options.append('|');
-            }
-            options.append(format.toString());
-        }
-        return options.toString();
     }
 }
