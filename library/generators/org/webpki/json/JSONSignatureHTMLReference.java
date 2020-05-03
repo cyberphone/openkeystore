@@ -577,16 +577,16 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             "<i>independently of each other</i> add a signature to a JSON object. " + 
             "See the " + "<a href=\"#" + JSONBaseHTML.makeLink(FILE_MULT_SIGN) + "\">Multi Signature Sample</a>." +
             LINE_SEPARATOR +
-            "The normalization procedure is essentially the same as for simple " +
+            "The canonicalization procedure is essentially the same as for simple " +
             "signatures but <b>must</b> also take the following in account:<ul>" +
             "<li>The <code>'['</code> and <code>']'</code> characters <b>must</b> " +
-            "be <i>included</i> in the normalized data for each " +
+            "be <i>included</i> in the canonicalized data for each " +
             JSONBaseHTML.globalLinkRef(SIGNATURE_CORE_OBJECT) +
             " object.</li>" +
-            "<li style=\"padding-top:4pt\">Each signature requires its own normalization process. During this " +
+            "<li style=\"padding-top:4pt\">Each signature requires its own canonicalization process. During this " +
             "process the other signature objects <b>must</b> (temporarily) be removed.</li>" +
             "<li style=\"padding-top:4pt\">The <code>','</code> characters separating signature objects <b>must</b> " +
-            "be <i>excluded</i> from the normalized data.</li>" +
+            "be <i>excluded</i> from the canonicalized data.</li>" +
             "</ul>" +
             "See also " + JSONBaseHTML.globalLinkRef(COUNTER_SIGNATURES) + 
             ".");
@@ -595,14 +595,18 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             "object does not only sign the data but the preceding signature objects as well. " + 
             "See the " + "<a href=\"#" + JSONBaseHTML.makeLink(FILE_CHAIN_SIGN) + "\">Signature Chain Sample</a>." +
             LINE_SEPARATOR +
-            "The normalization procedure is essentially the same as for simple " +
+            "The canonicalization procedure is essentially the same as for simple " +
             "signatures but <b>must</b> also take the following in account:<ul>" +
             "<li>The <code>'['</code> and <code>']'</code> characters <b>must</b> " +
-            "be <i>included</i> in the normalized data for each " +
+            "be <i>included</i> in the canonicalized data for each " +
             JSONBaseHTML.globalLinkRef(SIGNATURE_CORE_OBJECT) +
             " object.</li>" +
-            "<li style=\"padding-top:4pt\">Each signature requires its own normalization process. During signature validation, " +
-            "array wise higher order signature objects <b>must</b> (temporarily) be removed.</li>" +
+            "<li style=\"padding-top:4pt\">Each signature requires its own canonicalization process. During signature validation, " +
+            "array wise higher order signature objects <b>must</b> (temporarily) be removed " +
+            "including leading and trailing <code>','</code> characters.</li>" +
+            "<li style=\"padding-top:4pt\">The <code>','</code> characters separating signature objects " +
+            "of array wise lower order than the one to add or validate <b>must</b> " +
+            "be <i>included</i> in the canonicalized data.</li>" +
              "</ul>" +
             "See also " + JSONBaseHTML.globalLinkRef(COUNTER_SIGNATURES) + 
             ".");
@@ -827,7 +831,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
         json.addDocumentHistoryLine("2014-01-21", "0.51", "Added clarification to public key parameter representation");
         json.addDocumentHistoryLine("2014-01-26", "0.52", "Added note regarding the (now obsoleted) <code>signerCertificate</code> option");
         json.addDocumentHistoryLine("2014-04-15", "0.53", "Embedded (the now obsoleted) <code>bigint</code> in JS <i>string</i>");
-        json.addDocumentHistoryLine("2014-09-17", "0.54", "Changed canonicalization to normalization");
+        json.addDocumentHistoryLine("2014-09-17", "0.54", "Changed (now obsoleted) canonicalization to normalization");
         json.addDocumentHistoryLine("2014-09-23", "0.55", "Aligned EC parameter representation with JWS " + json.createReference(JSONBaseHTML.REF_JWS));
         json.addDocumentHistoryLine("2014-12-08", "0.56", "Removed " + json.createReference(JSONBaseHTML.REF_XMLDSIG) + " bloat and added support for JWA " + json.createReference(JSONBaseHTML.REF_JWS) + " algorithm identifiers");
         json.addDocumentHistoryLine("2014-12-19", "0.57", "Added an interoperability section");
