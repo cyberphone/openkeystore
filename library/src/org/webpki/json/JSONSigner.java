@@ -88,8 +88,9 @@ public abstract class JSONSigner extends JSONCryptoHelper.ExtensionsEncoder impl
     }
 
     /**
-     * Set optional &quot;kid&quot; for this signature.
-     * @param keyId The identifier
+     * Set optional &quot;keyId&quot; for this signature.
+     * Note: default <code>null</code>.
+     * @param keyId The identifier. If null no KeyId is generated
      * @return this
      */
     public JSONSigner setKeyId(String keyId) {
