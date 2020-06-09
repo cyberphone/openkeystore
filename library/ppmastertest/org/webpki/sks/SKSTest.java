@@ -134,7 +134,7 @@ public class SKSTest {
         DeviceInfo dev = device.device_info;
         reference_implementation = true;
 //#else
-        standalone_testing = new Boolean(System.getProperty("sks.standalone"));
+        standalone_testing = Boolean.valueOf(System.getProperty("sks.standalone"));
         // Start deprecating Bouncycastle since Android will remove most of it anyway
         if (!System.clearProperty("bcprovider").isEmpty()) {
             bc_loaded = CustomCryptoProvider.conditionalLoad(true);
@@ -144,7 +144,7 @@ public class SKSTest {
         DeviceInfo dev = device.device_info;
         reference_implementation = dev.getVendorName().contains(SKSReferenceImplementation.SKS_VENDOR_NAME)
                 ||
-                new Boolean(System.getProperty("sks.referenceimplementation"));
+                Boolean.valueOf(System.getProperty("sks.referenceimplementation"));
         if (reference_implementation) {
             System.out.println("Reference Implementation");
         }
@@ -1261,7 +1261,7 @@ public class SKSTest {
     public void test15() throws Exception {
         for (int i = 0; i < 2; i++) {
             boolean updatable = i == 0;
-            ProvSess sess = new ProvSess(device, updatable ? new Integer(0) : null);
+            ProvSess sess = new ProvSess(device, updatable ? Integer.valueOf(0) : null);
             GenKey key1 = sess.createKey("Key.1",
                     KeyAlgorithms.NIST_P_256,
                     new KeyProtectionSpec(),

@@ -177,6 +177,6 @@ public class DeviceID {
             System.out.println("\n" + DeviceID.class.getName() + " certificate-in-der-format long_version_expressed_as_true_or_false\n");
             System.exit(3);
         }
-        System.out.println("Device ID=" + getDeviceId(ArrayUtil.readFile(args[0]), new Boolean(args[1])));
+        System.out.println("Device ID=" + getDeviceId(ArrayUtil.readFile(args[0]), Boolean.valueOf(args[1])));
     }
 }

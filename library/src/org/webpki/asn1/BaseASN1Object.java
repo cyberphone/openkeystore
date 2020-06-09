@@ -256,32 +256,32 @@ public abstract class BaseASN1Object implements ASN1Constants {
     private static Hashtable<Class<?>, Integer> classToTagNumber = new Hashtable<>();
 
     static {
-        classToTagNumber.put(ASN1Boolean.class, new Integer(BOOLEAN));
-        classToTagNumber.put(ASN1Integer.class, new Integer(INTEGER));
-        classToTagNumber.put(ASN1BitString.class, new Integer(BITSTRING));
-        classToTagNumber.put(ASN1OctetString.class, new Integer(OCTETSTRING));
-        classToTagNumber.put(ASN1Null.class, new Integer(NULL));
-        classToTagNumber.put(ASN1ObjectID.class, new Integer(OID));
-        //classToTagNumber.put(ASN1ObjDescriptor.class, new Integer(OBJDESCRIPTOR));
-        //classToTagNumber.put(ASN1External.class, new Integer(EXTERNAL));
-        //classToTagNumber.put(ASN1Real.class, new Integer(REAL));
-        classToTagNumber.put(ASN1Enumerated.class, new Integer(ENUMERATED));
-        //classToTagNumber.put(ASN1Embedded_PDV.class, new Integer(EMBEDDED_PDV));
-        classToTagNumber.put(ASN1UTF8String.class, new Integer(UTF8STRING));
-        classToTagNumber.put(ASN1Sequence.class, new Integer(SEQUENCE));
-        classToTagNumber.put(ASN1Set.class, new Integer(SET));
-        classToTagNumber.put(ASN1NumericString.class, new Integer(NUMERICSTRING));
-        classToTagNumber.put(ASN1PrintableString.class, new Integer(PRINTABLESTRING));
-        classToTagNumber.put(ASN1T61String.class, new Integer(T61STRING));
-        //classToTagNumber.put(ASN1VideotexString.class, new Integer(VIDEOTEXSTRING));
-        classToTagNumber.put(ASN1IA5String.class, new Integer(IA5STRING));
-        classToTagNumber.put(ASN1UTCTime.class, new Integer(UTCTIME));
-        classToTagNumber.put(ASN1GeneralizedTime.class, new Integer(GENERALIZEDTIME));
-        classToTagNumber.put(ASN1GraphicString.class, new Integer(GRAPHICSTRING));
-        classToTagNumber.put(ASN1VisibleString.class, new Integer(VISIBLESTRING));
-        classToTagNumber.put(ASN1GeneralString.class, new Integer(GENERALSTRING));
-        //classToTagNumber.put(ASN1UniversalString.class, new Integer(UNIVERSALSTRING));
-        classToTagNumber.put(ASN1BMPString.class, new Integer(BMPSTRING));
+        classToTagNumber.put(ASN1Boolean.class, Integer.valueOf(BOOLEAN));
+        classToTagNumber.put(ASN1Integer.class, Integer.valueOf(INTEGER));
+        classToTagNumber.put(ASN1BitString.class, Integer.valueOf(BITSTRING));
+        classToTagNumber.put(ASN1OctetString.class, Integer.valueOf(OCTETSTRING));
+        classToTagNumber.put(ASN1Null.class, Integer.valueOf(NULL));
+        classToTagNumber.put(ASN1ObjectID.class, Integer.valueOf(OID));
+        //classToTagNumber.put(ASN1ObjDescriptor.class, Integer.valueOf(OBJDESCRIPTOR));
+        //classToTagNumber.put(ASN1External.class, Integer.valueOf(EXTERNAL));
+        //classToTagNumber.put(ASN1Real.class, Integer.valueOf(REAL));
+        classToTagNumber.put(ASN1Enumerated.class, Integer.valueOf(ENUMERATED));
+        //classToTagNumber.put(ASN1Embedded_PDV.class, Integer.valueOf(EMBEDDED_PDV));
+        classToTagNumber.put(ASN1UTF8String.class, Integer.valueOf(UTF8STRING));
+        classToTagNumber.put(ASN1Sequence.class, Integer.valueOf(SEQUENCE));
+        classToTagNumber.put(ASN1Set.class, Integer.valueOf(SET));
+        classToTagNumber.put(ASN1NumericString.class, Integer.valueOf(NUMERICSTRING));
+        classToTagNumber.put(ASN1PrintableString.class, Integer.valueOf(PRINTABLESTRING));
+        classToTagNumber.put(ASN1T61String.class, Integer.valueOf(T61STRING));
+        //classToTagNumber.put(ASN1VideotexString.class, Integer.valueOf(VIDEOTEXSTRING));
+        classToTagNumber.put(ASN1IA5String.class, Integer.valueOf(IA5STRING));
+        classToTagNumber.put(ASN1UTCTime.class, Integer.valueOf(UTCTIME));
+        classToTagNumber.put(ASN1GeneralizedTime.class, Integer.valueOf(GENERALIZEDTIME));
+        classToTagNumber.put(ASN1GraphicString.class, Integer.valueOf(GRAPHICSTRING));
+        classToTagNumber.put(ASN1VisibleString.class, Integer.valueOf(VISIBLESTRING));
+        classToTagNumber.put(ASN1GeneralString.class, Integer.valueOf(GENERALSTRING));
+        //classToTagNumber.put(ASN1UniversalString.class, Integer.valueOf(UNIVERSALSTRING));
+        classToTagNumber.put(ASN1BMPString.class, Integer.valueOf(BMPSTRING));
     }
 
     public int tagNumber() {

@@ -49,7 +49,7 @@ public final class ASN1Boolean extends Simple {
     }
 
     public Object objValue() {
-        return new Boolean(value);
+        return Boolean.valueOf(value);
     }
 
     void toString(StringBuilder s, String prefix) {

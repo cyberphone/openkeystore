@@ -100,7 +100,7 @@ public class SKSWSImplementation
             CustomCryptoProvider.forcedLoad (true);
             tga = (TrustedGUIAuthorization) Class.forName (System.getProperty ("sks.auth.gui")).newInstance ();
             String implementations = System.getProperty ("sks.implementation");
-            debug = new Boolean (System.getProperty ("sks.debug"));
+            debug = Boolean.valueOf (System.getProperty ("sks.debug"));
             while (implementations != null)
               {
                 String impl = implementations;

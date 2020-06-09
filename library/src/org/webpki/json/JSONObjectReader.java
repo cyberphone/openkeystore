@@ -225,7 +225,7 @@ public class JSONObjectReader implements Serializable, Cloneable {
      * @see JSONObjectWriter#setBoolean(String, boolean)
      */
     public boolean getBoolean(String name) throws IOException {
-        return new Boolean(getString(name, JSONTypes.BOOLEAN));
+        return Boolean.valueOf(getString(name, JSONTypes.BOOLEAN));
     }
 
     /**

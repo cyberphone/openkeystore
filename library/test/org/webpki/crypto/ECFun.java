@@ -27,7 +27,7 @@ public class ECFun {
                 if (argv.length != 1) {
                     System.exit(3);
                 }
-                ecdsa_der = new Boolean(argv[0]);
+                ecdsa_der = Boolean.valueOf(argv[0]);
                 for (KeyAlgorithms ka : KeyAlgorithms.values()) {
                     if (ka.isECKey() || ka == KeyAlgorithms.RSA1024) {
                         if (ka.getPublicKeySizeInBits() < 256) {

@@ -73,7 +73,7 @@ public class PKCS12Import {
             inputMethod = InputMethod.valueOf(argc[4]);
             grouping = Grouping.valueOf(argc[5]);
             appUsage = AppUsage.valueOf(argc[6]);
-            pin_caching = new Boolean(argc[7]);
+            pin_caching = Boolean.valueOf(argc[7]);
         }
         CustomCryptoProvider.forcedLoad(true);
         KeyStore ks = KeyStoreReader.loadKeyStore(argc[0], argc[1]);

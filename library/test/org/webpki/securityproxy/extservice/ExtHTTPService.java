@@ -36,9 +36,9 @@ public class ExtHTTPService extends HttpServlet {
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        Init.proxy_server.processCall(new SampleRequestObject(new Double(request.getParameter("X")),
-                        new Double(request.getParameter("Y")),
-                        new Long(request.getParameter("WAIT"))),
+        Init.proxy_server.processCall(new SampleRequestObject(Double.valueOf(request.getParameter("X")),
+                        Double.valueOf(request.getParameter("Y")),
+                        Long.valueOf(request.getParameter("WAIT"))),
                 response);
     }
 }

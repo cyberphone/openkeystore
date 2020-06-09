@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import java.math.BigInteger;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.EnumSet;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
@@ -407,7 +408,7 @@ public class DOMWriterHelper {
      * Add a text element to the current element.
      * <p>The text content of the new element will be <i>value</i> divided by 10000 and rounded/extended to
      * the desired number of decimals. The rounding used is
-     * {@link BigDecimal#ROUND_HALF_UP BigDecimal.ROUND_HALF_UP}, i.e. the standard method of rounding.
+     * {@link RoundingMode#HALF_UP RoundingMode.HALF_UP}, i.e. the standard method of rounding.
      * <p>This datatype corresponds to <a href="http://www.microsoft.com/sql">MS SQL Server</a>'s
      * <code>money</code> (and <code>smallmoney</code>) datatypes.
      *
@@ -418,7 +419,7 @@ public class DOMWriterHelper {
      */
     public void addMoney(String name, long value, int numberOfDecimals) {
         addObject(name, new BigDecimal(Long.toString(value)).movePointLeft(4).setScale(numberOfDecimals,
-                BigDecimal.ROUND_HALF_UP));
+                RoundingMode.HALF_UP));
     }
 
     /**
@@ -592,7 +593,7 @@ public class DOMWriterHelper {
     /**
      * Set an attribute of the current element to a long divided by 10000 and rounded/extended to
      * the desired number of decimals. The rounding used is
-     * {@link BigDecimal#ROUND_HALF_UP BigDecimal.ROUND_HALF_UP}, i.e. the standard method of rounding.
+     * {@link RoundingMode#HALF_UP RoundingMode.HALF_UP}, i.e. the standard method of rounding.
      * <p>This datatype corresponds to <a href="http://www.microsoft.com/sql">MS SQL Server</a>'s
      * <code>money</code> (and <code>smallmoney</code>) datatypes.
      *
@@ -603,7 +604,7 @@ public class DOMWriterHelper {
      */
     public void setMoneyAttribute(String name, long value, int numberOfDecimals) {
         setObjectAttribute(name, new BigDecimal(Long.toString(value)).movePointLeft(4).setScale(numberOfDecimals,
-                BigDecimal.ROUND_HALF_UP));
+                RoundingMode.HALF_UP));
     }
 
     /**

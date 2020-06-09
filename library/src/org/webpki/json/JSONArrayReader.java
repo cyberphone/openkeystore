@@ -127,7 +127,7 @@ public class JSONArrayReader implements Serializable {
     }
 
     public boolean getBoolean() throws IOException {
-        return new Boolean((String) getNextElement(JSONTypes.BOOLEAN));
+        return Boolean.valueOf((String) getNextElement(JSONTypes.BOOLEAN));
     }
 
     public boolean getIfNULL() throws IOException {

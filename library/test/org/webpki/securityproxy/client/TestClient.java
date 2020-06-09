@@ -47,7 +47,7 @@ public class TestClient {
                 max = Integer.parseInt(argc[1]);
                 wait = Long.parseLong(argc[2]);
                 server_wait = Integer.parseInt(argc[3]);
-                debug = new Boolean(argc[4]);
+                debug = Boolean.valueOf(argc[4]);
             }
             int count = 0;
             while (count++ < max) {

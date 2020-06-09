@@ -34,7 +34,7 @@ public class DecoderTest {
             for (JSONOutputFormats of : JSONOutputFormats.values()) {
                 if (of.toString().equals(argc[3])) {
                     JSONDecoderCache parser = new JSONDecoderCache();
-                    parser.setCheckForUnreadProperties(new Boolean(argc[2]));
+                    parser.setCheckForUnreadProperties(Boolean.valueOf(argc[2]));
                     parser.addToCache(argc[0]);
                     JSONDecoder doc = parser.parse(ArrayUtil.readFile(argc[1]));
                     System.out.print(new String(doc.getWriter().serializeToBytes(of), "UTF-8"));

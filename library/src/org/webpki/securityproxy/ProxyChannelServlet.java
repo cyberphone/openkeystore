@@ -117,7 +117,7 @@ public class ProxyChannelServlet extends HttpServlet {
         }
         String port = config.getInitParameter(ProxyServer.PROXY_SERVER_PORT_PROPERTY);
         if (port != null) {
-            server_port = new Integer(port);
+            server_port = Integer.valueOf(port);
         }
         name_of_service = config.getInitParameter(ProxyServer.PROXY_SERVICE_PROPERTY);
         if (name_of_service == null) {

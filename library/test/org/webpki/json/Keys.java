@@ -147,9 +147,9 @@ public class Keys {
             ec_curves = ecs.toArray(new KeyAlgorithms[0]);
             cache.addToCache(Reader.class);
             for (int i = 0; i < ROUNDS; i++) {
-                Run(true, new Boolean(argc[0]), AlgorithmPreferences.SKS);
-                Run(false, new Boolean(argc[0]), AlgorithmPreferences.SKS);
-                Run(false, new Boolean(argc[0]), AlgorithmPreferences.JOSE_ACCEPT_PREFER);
+                Run(true, Boolean.valueOf(argc[0]), AlgorithmPreferences.SKS);
+                Run(false, Boolean.valueOf(argc[0]), AlgorithmPreferences.SKS);
+                Run(false, Boolean.valueOf(argc[0]), AlgorithmPreferences.JOSE_ACCEPT_PREFER);
                 ec_index++;
             }
         } catch (Exception e) {

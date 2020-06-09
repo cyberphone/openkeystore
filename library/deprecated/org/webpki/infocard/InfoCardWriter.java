@@ -359,7 +359,7 @@ public class InfoCardWriter
 
     public InfoCardWriter setRequireAppliesTo (boolean optional)
       {
-        require_applies_to = new Boolean (optional);
+        require_applies_to = Boolean.valueOf (optional);
         return this;
       }
 

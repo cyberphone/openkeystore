@@ -2748,8 +2748,8 @@ public class JSONTest {
         assertTrue(simpleObjectType2("40000000000000000.45").getMoney("name").equals(new BigDecimal("40000000000000000.45")));
         assertTrue(simpleArrayType2("0.0").getMoney().equals(new BigDecimal("0.0")));
         assertTrue(simpleObjectType2("0.0").getMoney("name").equals(new BigDecimal("0.0")));
-        assertTrue(simpleArrayType("40000000000000000").getDouble() == new Double("40000000000000000"));
-        assertTrue(simpleObjectType("40000000000000000").getDouble("name") == new Double("40000000000000000"));
+        assertTrue(simpleArrayType("40000000000000000").getDouble() == Double.valueOf("40000000000000000"));
+        assertTrue(simpleObjectType("40000000000000000").getDouble("name") == Double.valueOf("40000000000000000"));
         assertTrue(simpleArrayType("400000000000.45").getDouble() == 400000000000.45);
         assertTrue(simpleObjectType("400000000000.45").getDouble("name") == 400000000000.45);
         assertTrue(simpleArrayType("404500000000").getDouble() == 40.45e10);
