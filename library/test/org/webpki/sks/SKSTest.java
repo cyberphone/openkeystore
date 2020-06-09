@@ -83,8 +83,6 @@ import org.webpki.sks.SecureKeyStore;
 
 
 
-import org.webpki.sks.ws.TrustedGUIAuthorization;
-import org.webpki.sks.ws.WSSpecific;
 
 import org.webpki.util.ArrayUtil;
 
@@ -94,8 +92,6 @@ public class SKSTest {
     static final byte[] TEST_STRING = new byte[]{'S', 'u', 'c', 'c', 'e', 's', 's', ' ', 'o', 'r', ' ', 'n', 'o', 't', '?'};
 
     static SecureKeyStore sks;
-
-    static TrustedGUIAuthorization tga;
 
     static boolean reference_implementation;
 
@@ -121,14 +117,6 @@ public class SKSTest {
             bc_loaded = CustomCryptoProvider.conditionalLoad(true);
         }
         sks = (SecureKeyStore) Class.forName(System.getProperty("sks.implementation")).newInstance();
-        if (sks instanceof WSSpecific) {
-            tga = (TrustedGUIAuthorization) Class.forName(System.getProperty("sks.auth.gui")).newInstance();
-            ((WSSpecific) sks).setTrustedGUIAuthorizationProvider(tga);
-            String deviceId = System.getProperty("sks.device");
-            if (deviceId != null && deviceId.length() != 0) {
-                ((WSSpecific) sks).setDeviceID(deviceId);
-            }
-        }
         device = new Device(sks);
         DeviceInfo dev = device.device_info;
         reference_implementation = dev.getVendorName().contains(SKSReferenceImplementation.SKS_VENDOR_NAME)
@@ -140,7 +128,6 @@ public class SKSTest {
         System.out.println("Description: " + dev.getVendorDescription());
         System.out.println("Vendor: " + dev.getVendorName());
         System.out.println("API Level: " + dev.getApiLevel());
-        System.out.println("Trusted GUI: " + (tga == null ? "N/A" : tga.getImplementation()));
         System.out.println("Testing mode: " + (standalone_testing ? "StandAlone" : "MultiThreaded"));
         EnumeratedProvisioningSession eps = new EnumeratedProvisioningSession();
         while ((eps = sks.enumerateProvisioningSessions(eps.getProvisioningHandle(), true)) != null) {
@@ -179,9 +166,6 @@ public class SKSTest {
 
     @Before
     public void setup() throws Exception {
-        if (sks instanceof WSSpecific) {
-            ((WSSpecific) sks).logEvent("Testing:" + _name.getMethodName());
-        }
     }
 
     @After
@@ -2557,35 +2541,6 @@ public class SKSTest {
         sess2.closeSession();
     }
 
-    @Test
-    public void test59() throws Exception {
-        if (tga != null) for (InputMethod inputMethod : InputMethod.values()) {
-            String good_pin = DummyTrustedGUIAuthorization.GOOD_TRUSTED_GUI_PIN;
-            ProvSess sess = new ProvSess(device);
-            sess.setInputMethod(inputMethod);
-            PINPol pinPolicy = sess.createPINPolicy("PIN",
-                    PassphraseFormat.NUMERIC,
-                    EnumSet.noneOf(PatternRestriction.class),
-                    Grouping.SHARED,
-                    4 /* minLength */,
-                    8 /* maxLength */,
-                    (short) 3 /* retryLimit*/,
-                    null /* pukPolicy */);
-            GenKey key = sess.createKey("Key.1",
-                    KeyAlgorithms.NIST_P_256,
-                    new KeyProtectionSpec(good_pin, pinPolicy),
-                    AppUsage.AUTHENTICATION).setCertificate(cn());
-            sess.closeSession();
-            key.signData(AsymSignatureAlgorithms.ECDSA_SHA256, 
-                         new KeyAuthorization(inputMethod == InputMethod.TRUSTED_GUI ? null : good_pin), 
-                         TEST_STRING);
-            if (inputMethod == InputMethod.ANY) {
-                key.signData(AsymSignatureAlgorithms.ECDSA_SHA256, 
-                             new KeyAuthorization(),
-                             TEST_STRING);
-            }
-        }
-    }
     
     @Test
     public void test60() throws Exception {

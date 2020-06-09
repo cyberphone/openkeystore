@@ -2,10 +2,7 @@
 
   <!-- set global properties for this build -->
   <property name="sks.implementation" value="org.webpki.sks.SKSReferenceImplementation"/>
-  <property name="sks.auth.gui" value="org.webpki.sks.DummyTrustedGUIAuthorization"/>
-  <property name="sks.ws.client" value="org.webpki.sks.ws.client.SKSWSClient"/>
   <property name="sks.debug" value="true"/>
-  <property name="sks.device" value=""/>
   <property name="src_dir" value="src"/>
   <property name="src_generators" value="generators"/>
   <property name="src_test" value="test"/>
@@ -18,7 +15,6 @@
   <property name="testout.dir" location="testout"/>
   <property name="dist_dir"  value="dist"/>
   <property name="bin_dir" value="bin"/>
-  <property name="wsdl_dir"  value="wsdl"/>
   <property name="spts_dir"  value="securityproxy-test"/>
   <property name="ext.jar"  value="../resources/third-party-jars"/>
   <property name="testdata_dir" location="../testdata"/>
@@ -26,16 +22,11 @@
   <property name="android-json" value="webpki.android.json"/>
   <property name="webpki-libext" value="webpki.org-libext-1.00.jar"/>
   <property name="webpki-webutil" value="webpki.org-webutil-1.00.jar"/>
-  <property name="webpki-sksws" value="webpki.org-sksws-1.00.jar"/>
   <property name="webpki-securityproxy" value="webpki.org-securityproxy-1.00.jar"/>
-  <property name="ws.def" location="sks-ws-descriptor.xml"/>
   <property name="debug"  value="on"/>
   <property name="javadoccss" location="stylesheet.css"/>
   <property name="bcprovider" value=""/>
   <property environment="env"/>
-
-  <!-- If you want non-local SKS WS access you must bind to non-local IP --> 
-  <property name="sksws.url" value="http://localhost:9982/securekeystore"/>
 
   <property name="javaversion" value="${ant.java.version}"/>
   <condition property="tested.version" else="false">
@@ -52,36 +43,6 @@
 ***************************************************************&#10;&#10;"/>
   </target>
 
-  <!-- check dependecies that should force WS recreation -->
-  <target name="_ws-check">
-    <condition property="wsgen.required">
-      <not>
-	    <and>
-	      <available file="${src_test}/org/webpki/sks/ws/server/SKSWSImplementation.java"/>
-	      <uptodate srcfile="${ws.def}" targetfile="${src_test}/org/webpki/sks/ws/server/SKSWSImplementation.java"/>
-	      <available file="${src_test}/org/webpki/sks/ws/client/SKSWS.java"/>
-	      <uptodate srcfile="${ws.def}" targetfile="${src_test}/org/webpki/sks/ws/client/SKSWS.java"/>
-	      <available file="${src_test}/org/webpki/sks/ws/client/SKSWSProxy.java"/>
-	      <uptodate srcfile="${ws.def}" targetfile="${src_test}/org/webpki/sks/ws/client/SKSWSProxy.java"/>
-	      <available file="${src_test}/org/webpki/sks/ws/client/SKSExceptionBean.java"/>
-	      <uptodate srcfile="${ws.def}" targetfile="${src_test}/org/webpki/sks/ws/client/SKSExceptionBean.java"/>
-	      <available file="${src_test}/org/webpki/sks/ws/client/SKSException_Exception.java"/>
-	      <uptodate srcfile="${ws.def}" targetfile="${src_test}/org/webpki/sks/ws/client/SKSException_Exception.java"/>
-	      <available file="${dot_net_dir}/client/SKSWSProxy.cs"/>
-		  <uptodate srcfile="${ws.def}" targetfile="${dot_net_dir}/client/SKSWSProxy.cs"/>
-	      <available file="${cpp_dir}/src/SKSWSProxy.cpp"/>
-		  <uptodate srcfile="${ws.def}" targetfile="${cpp_dir}/src/SKSWSProxy.cpp"/>
-	      <available file="${cpp_dir}/src/SKSWSProxy.h"/>
-		  <uptodate srcfile="${ws.def}" targetfile="${cpp_dir}/src/SKSWSProxy.h"/>
-	      <available file="${wsdl_dir}/SKSWS.wsdl"/>
-	      <uptodate srcfile="${ws.def}" targetfile="${wsdl_dir}/SKSWS.wsdl"/>
-	      <uptodate srcfile="${src_dir}/org/webpki/tools/WSCreator.java" targetfile="${wsdl_dir}/SKSWS.wsdl"/>
-	      <uptodate srcfile="${src_dir}/org/webpki/tools/wscreator.xsd" targetfile="${wsdl_dir}/SKSWS.wsdl"/>
-	    </and>
-      </not>
-    </condition>
-  </target>
-
   <path id="compile.classpath">
 	 <fileset dir="${ext.jar}">
 	   <include name="*.jar"/>
@@ -95,7 +56,6 @@
   <path id="junit.classpath">
     <fileset dir="${dist_dir}">
 	   <include name="${webpki-libext}"/>
-	   <include name="${webpki-sksws}"/>
     </fileset>
 	 <fileset dir="${ext.jar}">
         <include name="*.jar"/>
@@ -105,81 +65,6 @@
 
   <target name="help">
     <echo message="Targets: help dist doc testkeygen2 testsks testjson pkcs12import sks-service."/>
-  </target>
-	
-  <!-- .NET assumes that NAnt is installed, together with Windows SDK 7.1 and .NET 4 -->
-  <target name="_build_sks_ws_for_dotnet" if="dotnet.tools.available">
-  	
-  	<condition property="quiet.nant.build" value="-quiet" else="-D:justignore=5">
-      <not>
-        <isset property="nant.verbose"/>
-      </not>
-  	</condition>
-  	<condition property="rebuild.nant.build" value="false" else="true">
-      <not>
-        <isset property="nant.verbose"/>
-      </not>
-  	</condition>
-    <exec executable="nant.exe"
-  	      failonerror="true">
-        <arg value="build"/>
-        <arg value="-nologo"/>
-        <arg value="${quiet.nant.build}"/>
-    	<arg value="-D:rebuild=${rebuild.nant.build}"/>
-        <arg value="-buildfile:${dot_net_dir}/nant.build"/>
-    </exec>
-  	<echo message=".NET SKS WS assembly built"/>
-  </target>
-
-  <target name="_ws-gen">
-  	<echo message="Updating '${cmd}'"/>
-  	<java fork="yes"
-  		  classname="org.webpki.tools.WSCreator"
-		  failonerror="true">
-  		<classpath>
-            <pathelement path="${temp_dir}"/>
-  			 <fileset dir="${ext.jar}">
-  		        <include name="*.jar"/>
-  			 </fileset>
-  		</classpath>
-  	    <arg value="${cmd}"/>
-  		<arg value="${ws.def}"/>
-  		<arg value="${out}"/>
-  	</java>
-  </target>
-	
-  <target name="wsgen" depends="_ws-check" if="wsgen.required">
-  	<echo message="SKS WS needed updates"/>
-    <fixcrlf srcdir="."
-       tab="remove"
-       tablength="4"
-       eol="lf"
-       eof="remove"
-       includes="sks-ws-descriptor.xml"/>
-    <antcall target="_ws-gen">
-      <param name="cmd" value="wsdl"/>
-      <param name="out" value="wsdl/SKSWS.wsdl"/>
-    </antcall>
-    <antcall target="_ws-gen">
-      <param name="cmd" value="jclient"/>
-      <param name="out" value="${src_test}"/>
-     </antcall>
-    <antcall target="_ws-gen">
-      <param name="cmd" value="jserver"/>
-      <param name="out" value="${src_test}"/>
-    </antcall>
-    <antcall target="_ws-gen">
-      <param name="cmd" value="dotnetclient"/>
-      <param name="out" value="${dot_net_dir}/client"/>
-    </antcall>
-    <antcall target="_ws-gen">
-      <param name="cmd" value="cppclient"/>
-      <param name="out" value="${cpp_dir}/src"/>
-    </antcall>
-    <antcall target="_ws-gen">
-      <param name="cmd" value="dotnetdoc"/>
-      <param name="out" value="${dot_net_dir}/doc/index.html"/>
-    </antcall>
   </target>
 	
   <target name="compile">
@@ -217,49 +102,17 @@
       </fileset>
     </copy>
 
-    <!-- Compile non-ws java code from ${src_dir} into ${temp_dir} -->
+    <!-- Compile java code from ${src_dir} into ${temp_dir} -->
     <javac debug="${debug}"
     	   srcdir="${src_dir}:${src_test}"
     	   destdir="${temp_dir}" 
            target="${javaversion}"
            source="${javaversion}"
     	   classpathref="compile.classpath"
-    	   includeAntRuntime="false" excludes="**/sks/ws/**/*">
+    	   includeAntRuntime="false">
        <compilerarg value="-Xlint:all,-rawtypes,-path"/>
     </javac>
   	
-  	<!-- Now we can optionally update SKS WS code -->
-  	<antcall target="wsgen"/>
-
-  	<!-- Make a copy that we can patch... -->
-    <copy todir="${temp_dir}" preservelastmodified="true">
-      <fileset dir="${test_dir}">
-        <include name="org/webpki/sks/ws/**/*.java"/>
-      </fileset>
-    </copy>
-
-  	<!-- Compile sks-ws java code from ${temp_dir} into ${temp_dir} -->
-    <javac debug="${debug}"
-    	   srcdir="${temp_dir}"
-    	   destdir="${temp_dir}" 
-    	   classpathref="compile.classpath"
-    	   includeAntRuntime="false">
-        <compilerarg value="-Xlint:all,-path"/>
-        <compilerarg value="-XDignore.symbol.file"/>
-    </javac>
-
-  	<!-- Build .NET package if applicable -->
-  	<condition property="dotnet.tools.available">
-  	   <and>
- 	   	 <os family="windows"/>
-  	   	<available file="nant.exe" type="file">
-           <filepath>
-  	         <pathelement path="${env.Path}"/>
-  	       </filepath>
-  	     </available>
-  	   </and>
-  	 </condition>
-  	<antcall target="_build_sks_ws_for_dotnet"/>
   </target>
 
   <target name="_setdoc_dir" unless="github.doc.present">
@@ -287,12 +140,6 @@
     <copy todir="${temp_dir}">
       <fileset dir="${src_dir}"/>
   	</copy>
-  	
-  	<!-- Remove reference to SUN class  -->
-    <replace dir="${temp_dir}" value="">
-       <include name="org/webpki/sks/**/*.java"/>
-       <replacetoken><![CDATA[@com.sun.xml.ws.developer.SchemaValidation]]></replacetoken>
-     </replace>
 
   	<!-- Make documentation -->
     <javadoc destdir="${doc_dir}"
@@ -309,13 +156,10 @@
              windowtitle="WebPKI.org Support">
       <packageset dir="${temp_dir}">
         <include name="org/**"/>
-        <exclude name="org/**/v8dtoa/**"/>
         <exclude name="org/**/c14n/**"/>
         <exclude name="org/**/webutil/locale/**"/>
         <exclude name="org/**/webutil/certview/**"/>
         <exclude name="org/**/webutil/xmlview/**"/>
-        <exclude name="org/**/sks/ws/**"/>
-        <exclude name="org/**/sks/twolayer/**"/>
       </packageset>
       <link offline="false" href="https://docs.oracle.com/javase/8/docs/api/" packagelistLoc="${env.JAVA_HOME}\jsedocs\api"/>
       <link offline="false" href="https://docs.oracle.com/javaee/7/api/" packagelistLoc="${env.JAVA_HOME}\jeedocs"/>
@@ -372,7 +216,6 @@
     <jar jarfile="${dist_dir}/${webpki-libext}">
       <fileset dir="${temp_dir}">
         <exclude name="org/webpki/webutil/**"/>
-        <exclude name="org/webpki/sks/ws/**"/>
         <exclude name="org/webpki/securityproxy/**"/>
       </fileset>
     </jar>
@@ -381,14 +224,6 @@
       <fileset dir="${temp_dir}">
         <include name="org/webpki/webutil/**"/>
       </fileset>
-    </jar>
-
-  	<jar jarfile="${dist_dir}/${webpki-sksws}">
-      <fileset dir="${temp_dir}">
-        <include name="org/webpki/sks/ws/**"/>
-        <exclude name="org/webpki/sks/ws/**/*.java"/>
-      </fileset>
-      <metainf dir="${wsdl_dir}"/>
     </jar>
 
   	<jar jarfile="${dist_dir}/${webpki-securityproxy}">
@@ -496,10 +331,7 @@
 
     <copy todir="${android_dir}/org/webpki" preservelastmodified="true">
       <fileset dir="${src_dir}/org/webpki">
-        <exclude name="**/infocard/**"/>
         <exclude name="**/tools/**"/>
-        <exclude name="**/kg2xml/**"/>
-        <exclude name="**/wasp/**"/>
         <exclude name="**/xml/**"/>
         <exclude name="**/crypto/**"/>
         <exclude name="**/jose/**"/>
@@ -507,11 +339,8 @@
         <exclude name="**/xmldsig/**"/>
         <exclude name="**/xmlenc/**"/>
         <exclude name="**/pdf/**"/>
-        <exclude name="**/sks/ws/**"/>
-        <exclude name="**/sks/twolayer/**"/>
         <exclude name="**/securityproxy/**"/>
         <exclude name="**/ca/**"/>
-        <exclude name="**/pkcs7/**"/>
         <exclude name="**/webutil/**"/>
         <exclude name="**/keygen2/*RequestEncoder.java"/>
         <exclude name="**/keygen2/*ResponseDecoder.java"/>
@@ -612,7 +441,6 @@
    	       <exclude name="Random.java"/>
    	       <exclude name="*.jks"/>
    	       <exclude name="**/twolayer/**"/>
-  	       <exclude name="**/ws/**"/>
   		</fileset>
   	</copy>
   	<copy todir="${android_test_dir}">
@@ -720,12 +548,9 @@
       <test name="${test.class}" unless="method"/>
       <test name="${test.class}" methods="${method}" if="method"/><!-- ANT 1.8.2 and up -->
     	<sysproperty key="sks.implementation" value="${sks.implementation}"/>
-    	<sysproperty key="sks.device" value="${sks.device}"/>
-    	<sysproperty key="sks.auth.gui" value="${sks.auth.gui}"/>
     	<sysproperty key="testout.dir" value="${testout.dir}"/>
     	<sysproperty key="sks.standalone" value="${sks.standalone}"/>
       	<sysproperty key="sks.referenceimplementation" value="${sks.referenceimplementation}"/>
-    	<sysproperty key="org.webpki.sks.ws.client.url" value="${sksws.url}"/>
        	<sysproperty key="bcprovider" value="${bcprovider}"/>
     	<sysproperty key="json.keys" value="${testdata_dir}/keys"/>
     	<sysproperty key="json.data" value="${testdata_dir}/data"/>
@@ -794,76 +619,5 @@
      </java>
   </target>
   
-  <!-- A web service that accepts SKS WS calls from applications and in turn
-       calls the designated SKS implementation -->
-  <target name="sks-service">
-  	<echo message="SKS WS - Bind Address: ${sksws.url}"/>
-  	<java fork="yes"
-  		  classname="org.webpki.sks.ws.server.SKSWSImplementation"
-		  failonerror="true">
-  		<classpath>
-  		    <fileset dir="${dist_dir}">
-   			   <include name="${webpki-libext}"/>
-   			   <include name="${webpki-sksws}"/>
-  			 </fileset>
-  			 <fileset dir="${ext.jar}">
-  		        <include name="*.jar"/>
-  			 </fileset>
-  		</classpath>
-    	<jvmarg value="-Dsks.implementation=${sks.implementation}"/>
-    	<jvmarg value="-Dsks.auth.gui=${sks.auth.gui}"/>
-    	<jvmarg value="-Dsks.debug=${sks.debug}"/>
-    	<jvmarg value="-Dcom.sun.xml.ws.fault.SOAPFaultBuilder.disableCaptureStackTrace=false"/>
-  	    <arg value="${sksws.url}"/>
-  	</java>
-  </target>
-
-  <target name="pkcs12import">
-  	<property name="format" value="NUMERIC"/>
-  	<property name="inputmethod" value="TRUSTED_GUI"/>
-  	<property name="grouping" value="NONE"/>
-  	<property name="appusage" value="UNIVERSAL"/>
-  	<property name="pincaching" value="false"/>
-    <fail message="-&#10;Missing one or more of mandatory:&#10;
- -Dfile=&#10;
- -Dpassword=&#10;&#10;
-optional:&#10;
- -Dpin=          [default: none]&#10;&#10;
-applicable if pin has been set:&#10;
- -Dformat=  [default: ${format}]&#10;
- -Dinputmethod=  [default: ${inputmethod}]&#10;
- -Dgrouping=  [default: ${grouping}]&#10;
- -Dappusage=  [default: ${appusage}]&#10;
- -Dpincaching=  [default: ${pincaching}]">
-       <condition>
-         <not>
-         	<and>
-            <isset property="file"/>
-            <isset property="password"/>
-           </and>
-         </not>
-       </condition>
-     </fail>
-  	<condition property="pinandparams" value=" ${pin} ${format} ${inputmethod} ${grouping} ${appusage} ${pincaching}" else="">
-      <isset property="pin"/>
-    </condition>
-  	<java fork="yes"
-  		  classname="org.webpki.sks.test.PKCS12Import"
-		  failonerror="true"
-		  dir="${user.dir}">
-  		<classpath>
-  		    <fileset dir="${dist_dir}">
-    			   <include name="${webpki-libext}"/>
-  			 </fileset>
-  			 <fileset dir="${ext.jar}">
-  		        <include name="*.jar"/>
-  			 </fileset>
-  		</classpath>
-    	<jvmarg value="-Dsks.client=${sks.ws.client}"/>
-    	<jvmarg value="-Dorg.webpki.sks.ws.client.url=${sksws.url}"/>
-  	    <arg line="${file} ${password}${pinandparams}"/>
-  	</java>
-  </target>
-
 </project>
 

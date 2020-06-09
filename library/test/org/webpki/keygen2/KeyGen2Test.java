@@ -123,8 +123,6 @@ import org.webpki.sks.ProvisioningSession;
 import org.webpki.sks.SKSException;
 import org.webpki.sks.SecureKeyStore;
 
-import org.webpki.sks.ws.WSSpecific;
-
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.HTMLHeader;
 import org.webpki.util.ImageData;
@@ -256,14 +254,7 @@ public class KeyGen2Test {
             fos.write(("<b>SKS Description: " + dev.getVendorDescription() +
                     "<br>SKS Vendor: " + dev.getVendorName() +
                     "<br>SKS API Level: " + (dev.getApiLevel() / 100) + '.' + (dev.getApiLevel() % 100) +
-                    "<br>SKS Interface: " + (sks instanceof WSSpecific ? "WebService" : "Direct") +
                     "<br>&nbsp<br></b>").getBytes("UTF-8"));
-        }
-        if (sks instanceof WSSpecific) {
-            String deviceId = System.getProperty("sks.device");
-            if (deviceId != null && deviceId.length() != 0) {
-                ((WSSpecific) sks).setDeviceID(deviceId);
-            }
         }
     }
 
@@ -277,9 +268,6 @@ public class KeyGen2Test {
 
     @Before
     public void setup() throws Exception {
-        if (sks instanceof WSSpecific) {
-            ((WSSpecific) sks).logEvent("Testing:" + _name.getMethodName());
-        }
     }
 
     @After

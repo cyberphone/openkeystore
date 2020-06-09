@@ -93,9 +93,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.junit.runner.RunWith;
 
 import org.webpki.mobile.android.sks.HardwareKeyStore;
-//#else
-import org.webpki.sks.ws.TrustedGUIAuthorization;
-import org.webpki.sks.ws.WSSpecific;
 //#endif
 
 import org.webpki.util.ArrayUtil;
@@ -109,10 +106,6 @@ public class SKSTest {
     static final byte[] TEST_STRING = new byte[]{'S', 'u', 'c', 'c', 'e', 's', 's', ' ', 'o', 'r', ' ', 'n', 'o', 't', '?'};
 
     static SecureKeyStore sks;
-
-//#if !ANDROID
-    static TrustedGUIAuthorization tga;
-//#endif
 
     static boolean reference_implementation;
 
@@ -147,14 +140,6 @@ public class SKSTest {
             bc_loaded = CustomCryptoProvider.conditionalLoad(true);
         }
         sks = (SecureKeyStore) Class.forName(System.getProperty("sks.implementation")).newInstance();
-        if (sks instanceof WSSpecific) {
-            tga = (TrustedGUIAuthorization) Class.forName(System.getProperty("sks.auth.gui")).newInstance();
-            ((WSSpecific) sks).setTrustedGUIAuthorizationProvider(tga);
-            String deviceId = System.getProperty("sks.device");
-            if (deviceId != null && deviceId.length() != 0) {
-                ((WSSpecific) sks).setDeviceID(deviceId);
-            }
-        }
         device = new Device(sks);
         DeviceInfo dev = device.device_info;
         reference_implementation = dev.getVendorName().contains(SKSReferenceImplementation.SKS_VENDOR_NAME)
@@ -166,7 +151,6 @@ public class SKSTest {
         System.out.println("Description: " + dev.getVendorDescription());
         System.out.println("Vendor: " + dev.getVendorName());
         System.out.println("API Level: " + dev.getApiLevel());
-        System.out.println("Trusted GUI: " + (tga == null ? "N/A" : tga.getImplementation()));
         System.out.println("Testing mode: " + (standalone_testing ? "StandAlone" : "MultiThreaded"));
 //#endif
         EnumeratedProvisioningSession eps = new EnumeratedProvisioningSession();
@@ -211,11 +195,6 @@ public class SKSTest {
 
     @Before
     public void setup() throws Exception {
-//#if !ANDROID
-        if (sks instanceof WSSpecific) {
-            ((WSSpecific) sks).logEvent("Testing:" + _name.getMethodName());
-        }
-//#endif
     }
 
     @After
@@ -2600,7 +2579,7 @@ public class SKSTest {
         sess2.closeSession();
     }
 
-//#if !ANDROID
+//#if A_TEST_WAITING_FOR_A_FIX
     @Test
     public void test59() throws Exception {
         if (tga != null) for (InputMethod inputMethod : InputMethod.values()) {
