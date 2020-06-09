@@ -16,6 +16,8 @@
  */
 package org.webpki.json;
 
+import java.lang.reflect.InvocationTargetException;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -1455,9 +1457,10 @@ public class JSONBaseHTML  {
     public String addInvocationText(String protocolName, Class<? extends JSONDecoder> invocationClass)
         throws IOException {
         try {
-            invocationClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new IOException(e);
+            invocationClass.getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | InvocationTargetException | 
+                 NoSuchMethodException | IllegalAccessException e) {
+            throw new IOException (e);
         }
         return
           "Since the interface between the Web and native applications is not (yet) standardized, the " +

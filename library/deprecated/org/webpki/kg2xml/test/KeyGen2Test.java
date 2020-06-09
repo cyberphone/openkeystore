@@ -266,7 +266,7 @@ public class KeyGen2Test
           }
         CustomCryptoProvider.forcedLoad ();
         server_certificate = (X509Certificate) CertificateFactory.getInstance ("X.509").generateCertificate (KeyGen2Test.class.getResourceAsStream ("server-certificate.der"));
-        sks = (SecureKeyStore) Class.forName (System.getProperty ("sks.implementation")).newInstance ();
+        sks = (SecureKeyStore) Class.forName (System.getProperty ("sks.implementation")).getDeclaredConstructor().newInstance ();
         if (fos != null)
           {
             DeviceInfo dev = sks.getDeviceInfo ();

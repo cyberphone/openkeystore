@@ -30,16 +30,16 @@
 
   <property name="javaversion" value="${ant.java.version}"/>
   <condition property="tested.version" else="false">
-    <equals arg1="1.8" arg2="${javaversion}"/>
+    <equals arg1="11" arg2="${javaversion}"/>
   </condition>
 
   <!-- Register the jpp ant task -->
   <taskdef resource="jpp.xml" classpath="../resources/third-party-jars/jpp-1.0.3.jar" />
 	
-  <target name="_jdk8" unless="${tested.version}">
+  <target name="_jdk11" unless="${tested.version}">
   	<echo message="&#10;
 ***************************************************************&#10;
-  	WARNING - This package has only been tested with Java 8!&#10;
+  	WARNING - This package has only been tested with Java 11!&#10;
 ***************************************************************&#10;&#10;"/>
   </target>
 
@@ -64,11 +64,11 @@
   </path>
 
   <target name="help">
-    <echo message="Targets: help dist doc testkeygen2 testsks testjson pkcs12import sks-service."/>
+    <echo message="Targets: help dist doc testkeygen2 testsks testjson"/>
   </target>
 	
   <target name="compile">
-  	<antcall target="_jdk8"/>
+  	<antcall target="_jdk11"/>
   	
     <fixcrlf srcdir="."
        tab="remove"

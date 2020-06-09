@@ -16,6 +16,8 @@
  */
 package org.webpki.securityproxy;
 
+import java.lang.reflect.InvocationTargetException;
+
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
 
@@ -302,14 +304,13 @@ public class ProxyServer {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, message);
         } else {
             try {
-                ProxyServerErrorFactory server_error = error_container.newInstance();
+                ProxyServerErrorFactory server_error = error_container.getDeclaredConstructor().newInstance();
                 server_error.setMessage(message);
                 response.setContentType(server_error.getMimeType());
                 response.getOutputStream().write(server_error.getContent());
-            } catch (InstantiationException e) {
-                throw new IOException(e);
-            } catch (IllegalAccessException e) {
-                throw new IOException(e);
+            } catch (InstantiationException | InvocationTargetException | 
+                     NoSuchMethodException | IllegalAccessException e) {
+                throw new IOException (e);
             }
         }
     }

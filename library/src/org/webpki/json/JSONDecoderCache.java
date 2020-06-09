@@ -16,6 +16,8 @@
  */
 package org.webpki.json;
 
+import java.lang.reflect.InvocationTargetException;
+
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -67,15 +69,16 @@ public class JSONDecoderCache implements Serializable {
             throw new IOException("Unknown JSONDecoder type: " + objectTypeIdentifier);
         }
         try {
-            JSONDecoder decoder = decoderClass.newInstance();
+            JSONDecoder decoder = decoderClass.getDeclaredConstructor().newInstance();
             decoder.root = reader.root;
             decoder.readJSONData(reader);
             if (checkForUnread) {
                 reader.checkForUnread();
             }
             return decoder;
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new IOException(e);
+        } catch (InstantiationException | InvocationTargetException | 
+                 NoSuchMethodException | IllegalAccessException e) {
+            throw new IOException (e);
         }
     }
 
@@ -85,7 +88,7 @@ public class JSONDecoderCache implements Serializable {
 
     public void addToCache(Class<? extends JSONDecoder> jsonDecoder) throws IOException {
         try {
-            JSONDecoder decoder = jsonDecoder.newInstance();
+            JSONDecoder decoder = jsonDecoder.getDeclaredConstructor().newInstance();
             String objectTypeIdentifier = decoder.getContext();
             if (decoder.getQualifier() != null) {
                 objectTypeIdentifier += CONTEXT_QUALIFIER_DIVIDER + decoder.getQualifier();
@@ -93,9 +96,11 @@ public class JSONDecoderCache implements Serializable {
             if (classMap.put(objectTypeIdentifier, decoder.getClass()) != null) {
                 throw new IOException("JSON document type already defined: " + objectTypeIdentifier);
             }
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new IOException("Class " + jsonDecoder.getName() + " is not a valid JSONDecoder", e);
+        } catch (InstantiationException | InvocationTargetException | 
+                 NoSuchMethodException | IllegalAccessException e) {
+            throw new IOException (e);
         }
+
     }
 
     public void addToCache(String jsonDecoderPath) throws IOException {

@@ -34,7 +34,7 @@ public class CustomCryptoProvider {
     private static boolean loadBouncyCastle(boolean insertFirst, boolean require) {
         boolean loaded = false;
         try {
-            Provider bc = (Provider) Class.forName("org.bouncycastle.jce.provider.BouncyCastleProvider").newInstance();
+            Provider bc = (Provider) Class.forName("org.bouncycastle.jce.provider.BouncyCastleProvider").getDeclaredConstructor().newInstance();
             if (Security.getProvider(bc.getName()) == null) {
                 try {
                     if (insertFirst) {

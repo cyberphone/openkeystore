@@ -98,7 +98,7 @@ public class SKSWSImplementation
         try
           {
             CustomCryptoProvider.forcedLoad (true);
-            tga = (TrustedGUIAuthorization) Class.forName (System.getProperty ("sks.auth.gui")).newInstance ();
+            tga = (TrustedGUIAuthorization) Class.forName (System.getProperty ("sks.auth.gui")).getDeclaredConstructor().newInstance ();
             String implementations = System.getProperty ("sks.implementation");
             debug = Boolean.valueOf (System.getProperty ("sks.debug"));
             while (implementations != null)
@@ -114,7 +114,7 @@ public class SKSWSImplementation
                   {
                     implementations = null;
                   }
-                SecureKeyStore sks = (SecureKeyStore) Class.forName (impl).newInstance ();
+                SecureKeyStore sks = (SecureKeyStore) Class.forName (impl).getDeclaredConstructor().newInstance ();
                 if (default_device == null)
                   {
                     default_device = sks;

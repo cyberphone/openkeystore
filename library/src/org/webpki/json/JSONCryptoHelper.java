@@ -16,6 +16,8 @@
  */
 package org.webpki.json;
 
+import java.lang.reflect.InvocationTargetException;
+
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -142,17 +144,16 @@ public class JSONCryptoHelper implements Serializable {
         public ExtensionHolder addExtension(Class<? extends Extension> extensionClass,
                                             boolean mandatory) throws IOException {
             try {
-                Extension extension = extensionClass.newInstance();
+                Extension extension = extensionClass.getDeclaredConstructor().newInstance();
                 ExtensionEntry extensionEntry = new ExtensionEntry();
                 extensionEntry.extensionClass = extensionClass;
                 extensionEntry.mandatory = mandatory;
                 if ((extensions.put(extension.getExtensionUri(), extensionEntry)) != null) {
                     throw new IOException("Duplicate extension: " + extension.getExtensionUri());
                 }
-            } catch (InstantiationException e) {
-                throw new IOException(e);
-            } catch (IllegalAccessException e) {
-                throw new IOException(e);
+            } catch (InstantiationException | InvocationTargetException | 
+                     NoSuchMethodException | IllegalAccessException e) {
+                throw new IOException (e);
             }
             return this;
         }
@@ -347,12 +348,11 @@ public class JSONCryptoHelper implements Serializable {
                     if (innerObject.hasProperty(name)) {
                         try {
                             JSONCryptoHelper.Extension extension = 
-                                    extensionEntry.extensionClass.newInstance();
+                                    extensionEntry.extensionClass.getDeclaredConstructor().newInstance();
                             extension.decode(innerObject);
                             extensions.put(name, extension);
-                        } catch (InstantiationException e) {
-                            throw new IOException (e);
-                        } catch (IllegalAccessException e) {
+                        } catch (InstantiationException | InvocationTargetException | 
+                                 NoSuchMethodException | IllegalAccessException e) {
                             throw new IOException (e);
                         }
                     }

@@ -96,7 +96,7 @@ public class Canonicalizer {
             Class implementingClass = getImplementingClass(algorithmURI);
 
             this.canonicalizerSpi =
-                    (CanonicalizerSpi) implementingClass.newInstance();
+                    (CanonicalizerSpi) implementingClass.getDeclaredConstructor().newInstance();
             this.canonicalizerSpi.reset = true;
         } catch (Exception e) {
             Object exArgs[] = {algorithmURI};

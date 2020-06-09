@@ -131,7 +131,7 @@ public class KeyExperiments {
     public static void main(String[] argv) throws Exception {
         try {
             Class<?> clazz = Class.forName("org.bouncycastle.jce.provider.BouncyCastleProvider");
-            Security.insertProviderAt((Provider) clazz.newInstance(), 1);
+            Security.insertProviderAt((Provider) clazz.getDeclaredConstructor().newInstance(), 1);
         } catch (Exception e) {
             System.out.println("BC not found");
         }

@@ -18,9 +18,6 @@ package org.webpki.webauth;
 
 import java.io.IOException;
 
-import java.security.Provider;
-import java.security.Security;
-
 import org.webpki.util.ArrayUtil;
 
 import org.webpki.crypto.DemoKeyStore;
@@ -30,10 +27,6 @@ import org.webpki.crypto.AsymSignatureAlgorithms;
 
 import org.webpki.json.JSONDecoderCache;
 import org.webpki.json.JSONOutputFormats;
-
-import org.webpki.webauth.AuthenticationRequestDecoder;
-import org.webpki.webauth.AuthenticationRequestEncoder;
-import org.webpki.webauth.AuthenticationResponseDecoder;
 
 public class AreqEnc {
     static StringBuilder info_string;
@@ -54,27 +47,6 @@ public class AreqEnc {
         info_string.append("= ").append(info).append(" =\n");
         printHeader();
         System.out.println(info_string.toString());
-    }
-
-    static void installOptionalBCProvider() {
-        @SuppressWarnings("rawtypes")
-        Class bc = null;
-        try {
-            bc = Class.forName("org.bouncycastle.jce.provider.BouncyCastleProvider");
-        } catch (ClassNotFoundException e) {
-            printInfo("BouncyCastle provider not in path - Using the platform provider");
-            return;
-        }
-        try {
-            Security.insertProviderAt((Provider) bc.newInstance(), 1);
-            printInfo("Installed BouncyCastle as first provider");
-        } catch (Exception e) {
-            printInfo("Failed to install BouncyCastle!");
-        }
-    }
-
-    static {
-        installOptionalBCProvider();
     }
 
     private static void show() {

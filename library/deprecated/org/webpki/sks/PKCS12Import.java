@@ -108,7 +108,7 @@ public class PKCS12Import {
                     :
                     new String[]{AsymSignatureAlgorithms.ECDSA_SHA256.getAlgorithmId(AlgorithmPreferences.SKS)};
         }
-        SecureKeyStore sks = (SecureKeyStore) Class.forName(System.getProperty("sks.client")).newInstance();
+        SecureKeyStore sks = (SecureKeyStore) Class.forName(System.getProperty("sks.client")).getDeclaredConstructor().newInstance();
         EnumeratedKey ek = new EnumeratedKey();
         GenKey oldKey = null;
         while ((ek = sks.enumerateKeys(ek.getKeyHandle())) != null) {

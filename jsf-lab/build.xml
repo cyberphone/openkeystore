@@ -18,8 +18,19 @@
   <property name="webpki.lib.dir" location="${openkeystore.dir}/library/dist"/>
   <property name="third.party.lib.dir" location="${openkeystore.dir}/resources/third-party-jars"/>
   
-  <property name="javaversion" value="1.8"/>
-  <property name="debug" value="on"/>
+  <property name="javaversion" value="${ant.java.version}"/>
+  <condition property="tested.version" else="false">
+    <equals arg1="11" arg2="${javaversion}"/>
+  </condition>
+
+  <target name="_jdk11" unless="${tested.version}">
+    <echo message="&#10;
+***************************************************************&#10;
+    WARNING - This package has only been tested with Java 11!&#10;
+***************************************************************&#10;&#10;"/>
+  </target>
+    
+    <property name="debug" value="on"/>
 
   <property environment="env"/>
   <property name="catalina.home" value="${env.CATALINA_HOME}"/>
@@ -43,6 +54,7 @@
   </target>
 
   <target name="build">
+    <antcall target="_jdk11"/>
     <mkdir dir="${dist.dir}"/>
     <delete dir="${temp.dir}"/>
     <mkdir dir="${temp.dir}"/>

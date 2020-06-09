@@ -139,7 +139,7 @@ public class SKSTest {
         if (!System.clearProperty("bcprovider").isEmpty()) {
             bc_loaded = CustomCryptoProvider.conditionalLoad(true);
         }
-        sks = (SecureKeyStore) Class.forName(System.getProperty("sks.implementation")).newInstance();
+        sks = (SecureKeyStore) Class.forName(System.getProperty("sks.implementation")).getDeclaredConstructor().newInstance();
         device = new Device(sks);
         DeviceInfo dev = device.device_info;
         reference_implementation = dev.getVendorName().contains(SKSReferenceImplementation.SKS_VENDOR_NAME)

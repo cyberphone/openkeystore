@@ -1484,7 +1484,7 @@ public class HTTPSWrapper {
                 initiateProviderKeyStore(CMD_provider_arg.found ?
                         (Provider) Class.forName(CMD_addprovider.getString()).getConstructor(String.class).newInstance(CMD_provider_arg.getString())
                         :
-                        (Provider) Class.forName(CMD_addprovider.getString()).newInstance());
+                        (Provider) Class.forName(CMD_addprovider.getString()).getDeclaredConstructor().newInstance());
             }
 
             if (CMD_truststore.found) {

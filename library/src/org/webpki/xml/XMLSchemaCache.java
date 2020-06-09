@@ -16,6 +16,8 @@
  */
 package org.webpki.xml;
 
+import java.lang.reflect.InvocationTargetException;
+
 import java.io.InputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -197,17 +199,16 @@ public class XMLSchemaCache {
             if (wrapperClass == null) {
                 throw new RuntimeException("Unknown element type: " + namespace + ", " + element);
             }
-            XMLObjectWrapper r = (XMLObjectWrapper) wrapperClass.newInstance();
+            XMLObjectWrapper r = (XMLObjectWrapper) wrapperClass.getDeclaredConstructor().newInstance();
             r.createRootObject(e.getOwnerDocument(), e);
             r.schemaCache = this;
             DOMReaderHelper drh = new DOMReaderHelper(e);
             drh.getNext(r.element());
             r.fromXML(drh);
             return r;
-        } catch (InstantiationException ie) {
-            throw new RuntimeException("Unexpected InstantiationException.");
-        } catch (IllegalAccessException iae) {
-            throw new RuntimeException("Unexpected IllegalAccessException.");
+        } catch (InstantiationException | InvocationTargetException | 
+                 NoSuchMethodException | IllegalAccessException ex) {
+            throw new IOException (ex);
         }
     }
 
@@ -261,13 +262,10 @@ public class XMLSchemaCache {
      */
     public void addWrapper(Class<? extends XMLObjectWrapper> wrapperClass) throws IOException {
         try {
-            addWrapper(wrapperClass.newInstance());
-        } catch (InstantiationException ie) {
-            throw new IllegalArgumentException("Class " + wrapperClass.getName() +
-                    " is not a valid xml wrapper (InstantiationException instantiating).");
-        } catch (IllegalAccessException iae) {
-            throw new IllegalArgumentException("Class " + wrapperClass.getName() +
-                    " is not a valid xml wrapper (IllegalAccessException instantiating).");
+            addWrapper(wrapperClass.getDeclaredConstructor().newInstance());
+        } catch (InstantiationException | InvocationTargetException | 
+                 NoSuchMethodException | IllegalAccessException e) {
+            throw new IOException (e);
         }
     }
 

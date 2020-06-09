@@ -25,10 +25,6 @@ import java.security.KeyStore;
 
 import org.webpki.util.ArrayUtil;
 
-import org.webpki.webauth.AuthenticationRequestDecoder;
-import org.webpki.webauth.AuthenticationResponseDecoder;
-import org.webpki.webauth.AuthenticationResponseEncoder;
-
 import org.webpki.crypto.CertificateInfo;
 import org.webpki.crypto.DemoKeyStore;
 import org.webpki.crypto.KeyStoreSigner;

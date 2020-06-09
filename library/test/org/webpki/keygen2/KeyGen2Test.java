@@ -77,33 +77,6 @@ import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.SymEncryptionAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
 
-import org.webpki.keygen2.Action;
-import org.webpki.keygen2.KeyGen2Constants;
-import org.webpki.keygen2.KeyGen2Messages;
-import org.webpki.keygen2.KeySpecifier;
-import org.webpki.keygen2.ProvisioningFinalizationRequestDecoder;
-import org.webpki.keygen2.ProvisioningFinalizationRequestEncoder;
-import org.webpki.keygen2.ProvisioningFinalizationResponseDecoder;
-import org.webpki.keygen2.ProvisioningFinalizationResponseEncoder;
-import org.webpki.keygen2.CredentialDiscoveryRequestDecoder;
-import org.webpki.keygen2.CredentialDiscoveryRequestEncoder;
-import org.webpki.keygen2.CredentialDiscoveryResponseDecoder;
-import org.webpki.keygen2.CredentialDiscoveryResponseEncoder;
-import org.webpki.keygen2.KeyGen2URIs;
-import org.webpki.keygen2.KeyCreationResponseDecoder;
-import org.webpki.keygen2.KeyCreationResponseEncoder;
-import org.webpki.keygen2.KeyCreationRequestDecoder;
-import org.webpki.keygen2.KeyCreationRequestEncoder;
-import org.webpki.keygen2.InvocationRequestDecoder;
-import org.webpki.keygen2.InvocationRequestEncoder;
-import org.webpki.keygen2.InvocationResponseDecoder;
-import org.webpki.keygen2.InvocationResponseEncoder;
-import org.webpki.keygen2.ProvisioningInitializationRequestDecoder;
-import org.webpki.keygen2.ProvisioningInitializationRequestEncoder;
-import org.webpki.keygen2.ProvisioningInitializationResponseDecoder;
-import org.webpki.keygen2.ProvisioningInitializationResponseEncoder;
-import org.webpki.keygen2.ServerState;
-
 import org.webpki.sks.AppUsage;
 import org.webpki.sks.BiometricProtection;
 import org.webpki.sks.DeleteProtection;
@@ -248,7 +221,7 @@ public class KeyGen2Test {
         }
         bcLoaded = CustomCryptoProvider.conditionalLoad(true);
         server_certificate = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(KeyGen2Test.class.getResourceAsStream("server-certificate.der"));
-        sks = (SecureKeyStore) Class.forName(System.getProperty("sks.implementation")).newInstance();
+        sks = (SecureKeyStore) Class.forName(System.getProperty("sks.implementation")).getDeclaredConstructor().newInstance();
         if (fos != null) {
             DeviceInfo dev = sks.getDeviceInfo();
             fos.write(("<b>SKS Description: " + dev.getVendorDescription() +
