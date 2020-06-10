@@ -30,27 +30,22 @@
 ***************************************************************&#10;&#10;"/>
   </target>
     
-    <property name="debug" value="on"/>
+  <property name="debug" value="on"/>
 
   <property environment="env"/>
-  <property name="catalina.home" value="${env.CATALINA_HOME}"/>
+  <condition property="catalina.home" value="${env.CATALINA_HOME}">
+    <isset property="env.CATALINA_HOME"/>
+  </condition>
 
   <target name="help">
-      <echo message="build tomcat zip-distribution"/>
+    <echo message="build tomcat"/>
   </target>
 
-  <target name="_init" unless="app_path">
-    <!-- Set up where application should reside --> 
-    <condition property="tomcat_app_root_set">
-      <isset property="env.CATALINA_HOME"/>
-    </condition>
-    <fail message="CATALINA_HOME must be set to environment!" unless="tomcat_app_root_set"/>
-
-  </target>
 
   <target name="tomcat">
+    <fail message="CATALINA_HOME must be set to environment!" unless="catalina.home"/>
     <antcall target="build"/>
-    <copy file="${dist.dir}/${application}" todir="${env.CATALINA_HOME}/webapps" overwrite="true" preservelastmodified="true"/>
+    <copy file="${dist.dir}/${application}" todir="${catalina.home}/webapps" overwrite="true" preservelastmodified="true"/>
   </target>
 
   <target name="build">
@@ -114,32 +109,4 @@
     </war>
   </target>
   
-  <target name="_unzipit" if="uu">
-    <delete dir="${dd}/${appcorename}"/>
-    <unzip src="${dd}/${appcorename}.zip" dest="${dd}"/>
-  </target>
-
-  <target name="zip-distribution">
-    <fail unless="dd" message="-&#10;
-***************************************************************&#10;
- You must define a distribution directory using the -D option:&#10;
- ant zip-distribution -Ddd=the_path_to_the_directory.&#10;
- Optionally you can specify -Duu=0 which deletes ${appcorename}&#10;
- and replaces the directory with the unzipped content&#10;
-***************************************************************&#10;"/>
-    <echo message="Producing ${appcorename} .zip and .zip.SHA1 files..."/> 
-    <delete file="${dd}/${appcorename}.zip" failonerror="false"/>
-    <zip destfile="${dd}/${appcorename}.zip">
-      <zipfileset dir="." prefix="${appcorename}">
-        <exclude name="/**/.*"/>
-        <exclude name="/.tmp/**"/>
-        <exclude name="**/.settings/**"/>
-        <exclude name="**/bin/**"/>
-        <exclude name="dist/**"/>
-      </zipfileset>
-    </zip>
-    <checksum file="${dd}/${appcorename}.zip" fileext=".SHA1" algorithm="sha1" forceOverwrite="yes"/>
-    <antcall target="_unzipit"/>
-  </target>
-   
 </project>
