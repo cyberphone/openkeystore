@@ -27,7 +27,6 @@ import javax.servlet.ServletContextListener;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
-import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.MACAlgorithms;
 import org.webpki.crypto.SignatureAlgorithms;
 
@@ -126,9 +125,6 @@ public class JSFService extends InitPropertyReader implements ServletContextList
             /////////////////////////////////////////////////////////////////////////////////////////////
             // Keys
             /////////////////////////////////////////////////////////////////////////////////////////////
-            CustomCryptoProvider
-                    .forcedLoad(getPropertyBoolean("bouncycastle_first"));
-            
             keyDeclarations = 
                     new KeyDeclaration(KeyDeclaration.PRIVATE_KEYS, "privatekey.pem")
                           .addKey(AsymSignatureAlgorithms.ECDSA_SHA256, "p256")

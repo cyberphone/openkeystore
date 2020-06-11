@@ -5,12 +5,6 @@
     version="2.4">
 
     <context-param>
-        <description>Bouncycastle to be loaded before other providers</description>
-        <param-name>bouncycastle_first</param-name>
-        <param-value>@bouncycastle-first@</param-value>
-    </context-param>
-
-    <context-param>
         <description>Logging flag</description>
         <param-name>logging</param-name>
         <param-value>@logging@</param-value>

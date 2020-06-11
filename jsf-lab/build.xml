@@ -9,13 +9,13 @@
   <property name="class_war_path" value="WEB-INF/classes/org/webpki/webapps/jsf_lab"/>
 
   <property name="logging" value="false"/>
-  <property name="bouncycastle.first" value="true"/>
   
   <property name="appcorename" value="jsf-lab"/>
   <property name="application" value="${appcorename}.war"/>
   
   <property name="keypassword" value="foo123"/>
   <property name="webpki.lib.dir" location="${openkeystore.dir}/library/dist"/>
+  <property name="zip.webpki.lib.dir" location="${webpki.lib.dir}"/>
   <property name="third.party.lib.dir" location="${openkeystore.dir}/resources/third-party-jars"/>
   
   <property name="javaversion" value="${ant.java.version}"/>
@@ -61,8 +61,6 @@
        includes="**/*.java, **/*.css, **/*.svg, **/*.xml"/>
     <copy file="web.xml" todir="${temp.dir}"/>
     <javac debug="${debug}"
-           source="${javaversion}"
-           target="${javaversion}"
            srcdir="${src.dir}"
            destdir="${temp.dir}"
            includeAntRuntime="false">
@@ -70,23 +68,19 @@
               <fileset dir="${webpki.lib.dir}">
                 <include name="*.jar"/>
              </fileset>
-             <fileset dir="${third.party.lib.dir}">
-                <include name="*.jar"/>
-              </fileset>
+            <fileset dir="${third.party.lib.dir}">
+               <include name="*.jar"/>
+             </fileset>
         </classpath>
     </javac>
     <replace file="${temp.dir}/web.xml">
-      <replacefilter token="@bouncycastle-first@" value="${bouncycastle.first}"/>
       <replacefilter token="@logging@" value="${logging}"/>
     </replace>
     <war destfile="${dist.dir}/${application}" webxml="${temp.dir}/web.xml">
       <classes dir="${temp.dir}">
          <exclude name="web.xml"/>
       </classes>
-      <lib dir="${third.party.lib.dir}">
-         <include name="bcprov-*.jar"/>
-      </lib>
-      <lib dir="${webpki.lib.dir}">
+      <lib dir="${zip.webpki.lib.dir}">
          <include name="webpki.org-libext*.jar"/>
          <include name="webpki.org-webutil*.jar"/>
       </lib>
