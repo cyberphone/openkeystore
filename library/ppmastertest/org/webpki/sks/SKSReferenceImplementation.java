@@ -72,6 +72,7 @@ import javax.crypto.spec.OAEPParameterSpec;
 import javax.crypto.spec.PSource;
 import javax.crypto.spec.SecretKeySpec;
 
+//#if ANDROID
 import org.webpki.sks.DeviceInfo;
 import org.webpki.sks.EnumeratedKey;
 import org.webpki.sks.EnumeratedProvisioningSession;
@@ -82,6 +83,7 @@ import org.webpki.sks.KeyProtectionInfo;
 import org.webpki.sks.ProvisioningSession;
 import org.webpki.sks.SKSException;
 import org.webpki.sks.SecureKeyStore;
+//#endif
 
 //#if ANDROID
 /*

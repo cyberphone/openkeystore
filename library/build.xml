@@ -340,6 +340,7 @@
         <exclude name="**/xmldsig/**"/>
         <exclude name="**/xmlenc/**"/>
         <exclude name="**/pdf/**"/>
+        <exclude name="**/pkcs7/**"/>
         <exclude name="**/securityproxy/**"/>
         <exclude name="**/ca/**"/>
         <exclude name="**/webutil/**"/>
