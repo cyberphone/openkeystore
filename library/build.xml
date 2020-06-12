@@ -122,14 +122,12 @@
   </target>
 
   <target name="doc">
-    <fail message="JAVA_HOME must be set to environment!" unless="env.JAVA_HOME"/>
-
-  	<available file="../../../github.repositories/doc/openkeystore/javaapi" type="dir" property="github.doc.present"/>
+   	<available file="../../../github.repositories/doc/openkeystore/javaapi" type="dir" property="github.doc.present"/>
   	<condition property="doc_root" value="../../" else="">
       <isset property="github.doc.present"/>
   	</condition>
-    <property name="public_doc_dir"  location="${doc_root}doc/security"/>
-    <property name="doc_dir"  location="${doc_root}doc/openkeystore/javaapi"/>
+    <property name="public_doc_dir" location="${doc_root}doc/security"/>
+    <property name="doc_dir" location="${doc_root}doc/openkeystore/javaapi"/>
   	<antcall target="_setdoc_dir"/>
   	
   	<!-- Create temp directory -->
@@ -161,11 +159,14 @@
         <exclude name="org/**/webutil/certview/**"/>
         <exclude name="org/**/webutil/xmlview/**"/>
       </packageset>
-      <link offline="false" href="https://docs.oracle.com/javase/8/docs/api/" packagelistLoc="${env.JAVA_HOME}\jsedocs\api"/>
-      <link offline="false" href="https://docs.oracle.com/javaee/7/api/" packagelistLoc="${env.JAVA_HOME}\jeedocs"/>
+      <link offline="false" href="https://docs.oracle.com/en/java/javase/11/docs/api/"/>
+      <link offline="false" href="https://javaee.github.io/javaee-spec/javadocs/"/>
       <doctitle><![CDATA[<h1>WebPKI.org Support</h1>]]></doctitle>
-      <bottom><![CDATA[<i>2005-2018 WebPKI.org.</i>]]></bottom>
+      <bottom><![CDATA[<i>2005-2020 WebPKI.org.</i>]]></bottom>
     </javadoc>
+    <delete dir="${doc_dir}">
+      <include name="*.zip"/>
+    </delete>
   	<replaceregexp
         match="&lt;\!\-\-\ Generated\ by\ javadoc.+\-\-&gt;"
         replace=""

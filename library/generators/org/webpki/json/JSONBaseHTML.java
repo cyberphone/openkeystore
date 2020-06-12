@@ -296,7 +296,7 @@ public class JSONBaseHTML  {
 
         addReferenceEntry(REF_YASMIN,
             "A. Rundgren, \"YASMIN - Yet Another jSon Message notatIoN\", Work in progress, " +
-            "<span style=\"white-space: nowrap\">V0.6, April&nbsp;2017.</span> " +
+            "<span style=\"white-space: nowrap\">V0.61, February&nbsp;2020.</span> " +
             externalWebReference ("https://cyberphone.github.io/doc/web/yasmin.html"));
 
         addReferenceEntry(REF_JEF,
