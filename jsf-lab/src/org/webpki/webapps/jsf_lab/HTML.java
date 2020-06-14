@@ -32,7 +32,7 @@ public class HTML {
     static final String HTML_INIT = "<!DOCTYPE html>" +
         "<html lang=\"en\"><head><link rel=\"icon\" href=\"webpkiorg.png\" sizes=\"192x192\">" + 
         "<meta name=\"viewport\" content=\"initial-scale=1.0\"/>" + 
-        "<title>JWS/JCS Signature Lab</title>" + 
+        "<title>JSON Signature Format (JSF)</title>" + 
         "<link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\">";
 
     static String encode(String val) {

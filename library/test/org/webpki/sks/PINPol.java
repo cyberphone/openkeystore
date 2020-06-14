@@ -16,8 +16,6 @@
  */
 package org.webpki.sks;
 
-import org.webpki.sks.PassphraseFormat;
-
 public class PINPol {
     String id;
     boolean userDefined;

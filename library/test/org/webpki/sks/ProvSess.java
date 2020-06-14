@@ -58,20 +58,6 @@ import org.webpki.crypto.SignatureWrapper;
 
 import org.webpki.json.JSONParser;
 
-import org.webpki.sks.AppUsage;
-import org.webpki.sks.BiometricProtection;
-import org.webpki.sks.DeleteProtection;
-import org.webpki.sks.EnumeratedProvisioningSession;
-import org.webpki.sks.ExportProtection;
-import org.webpki.sks.InputMethod;
-import org.webpki.sks.KeyData;
-import org.webpki.sks.Grouping;
-import org.webpki.sks.PassphraseFormat;
-import org.webpki.sks.PatternRestriction;
-import org.webpki.sks.ProvisioningSession;
-import org.webpki.sks.SKSException;
-import org.webpki.sks.SecureKeyStore;
-
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.DebugFormatter;
 

@@ -16,10 +16,6 @@
  */
 package org.webpki.sks;
 
-import org.webpki.sks.DeviceInfo;
-import org.webpki.sks.SKSException;
-import org.webpki.sks.SecureKeyStore;
-
 public class Device {
     DeviceInfo device_info;
 

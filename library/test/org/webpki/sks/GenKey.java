@@ -42,11 +42,6 @@ import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
 import org.webpki.crypto.SymEncryptionAlgorithms;
 
-import org.webpki.sks.EnumeratedKey;
-import org.webpki.sks.KeyProtectionInfo;
-import org.webpki.sks.SKSException;
-import org.webpki.sks.SecureKeyStore;
-
 import org.webpki.sks.ProvSess.MacGenerator;
 
 import org.webpki.util.ArrayUtil;
