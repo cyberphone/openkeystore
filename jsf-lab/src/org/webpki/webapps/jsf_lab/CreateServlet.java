@@ -359,16 +359,20 @@ public class CreateServlet extends HttpServlet {
                                 "\n-----END PUBLIC KEY-----";
 
                 // Create asymmetric key signer 
+                AsymSignatureAlgorithms asymSignatureAlgorithm =
+                        AsymSignatureAlgorithms.getAlgorithmFromId(algorithmString,
+                                                                   AlgorithmPreferences.JOSE);
                 if (certOption) {
                     signer = new JSONX509Signer(
                             keyPair.getPrivate(),
                             PEMDecoder.getCertificatePath(getBinaryParameter(request, PRM_CERT_PATH)),
-                            null);
+                            null).setSignatureAlgorithm(asymSignatureAlgorithm);
                 } else {
                     signer = new JSONAsymKeySigner(
                             keyPair.getPrivate(),
                             keyPair.getPublic(),
-                            null).setOutputPublicKeyInfo(keyInlining);
+                            null).setSignatureAlgorithm(asymSignatureAlgorithm)
+                                 .setOutputPublicKeyInfo(keyInlining);
                 }
             }
 
