@@ -14,8 +14,10 @@
   <property name="application" value="${appcorename}.war"/>
   
   <property name="keypassword" value="foo123"/>
-  <property name="webpki.lib.dir" location="${openkeystore.dir}/library/dist"/>
-  <property name="zip.webpki.lib.dir" location="${webpki.lib.dir}"/>
+  <property name="webpki.lib.dir" value="${openkeystore.dir}/library/dist"/>
+  <condition property="zip.webpki.lib.dir" value="${webpki.lib.dir}" else="empty.lib">
+    <isset property="include.webpki.in.war"/>
+  </condition>
   <property name="third.party.lib.dir" location="${openkeystore.dir}/resources/third-party-jars"/>
   
   <property name="javaversion" value="${ant.java.version}"/>
