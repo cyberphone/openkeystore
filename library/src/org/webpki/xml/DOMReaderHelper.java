@@ -41,7 +41,7 @@ import org.webpki.util.ISODateTime;
  * <code>get<i>Datatype</i>()</code> or <code>get<i>Datatype</i>Conditional()</code>,
  * i.e. after the value is read.
  * <p>{@link #getChild() getChild} and the {@link #getAttributeHelper DOMAttributeReaderHelper}
- * will act on the <a name="last"><code><b>&quot;last visited element&quot;</b></code></a>, hereby defined to mean the
+ * will act on the <code><b>&quot;last visited element&quot;</b></code>, hereby defined to mean the
  * element that the cursor pointed at before the last <code>getNext()</code>,
  * <code>get<i>Datatype</i>()</code> or <code>get<i>Datatype</i>Conditional()</code> call, if any.
  * This allows code like

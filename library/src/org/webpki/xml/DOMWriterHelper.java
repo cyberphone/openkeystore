@@ -39,7 +39,7 @@ import org.webpki.util.ISODateTime;
 /**
  * Utility class making creation of DOM documents easier in simple cases.
  * <p>The DOMWriterHelper holds a cursor, the
- * <a name="current"><code><b>&quot;current element&quot;</b></code></a>,
+ * <code><b>&quot;current element&quot;</b></code>,
  * pointing at the last element created, to simplify building substructures
  * and adding attributes.
  * <p>Note that all <code>addXXXX</code> methods, and {@link #getParent() getParent},

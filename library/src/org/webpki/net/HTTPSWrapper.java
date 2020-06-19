@@ -683,7 +683,7 @@ public class HTTPSWrapper {
      * <p>
      * This method affects all proceeding requests. <br><br>
      *
-     * @param host Host name or IP address of proxy. <tt>null</tt> removes any previous setting.
+     * @param host Host name or IP address of proxy. <code>null</code> removes any previous setting.
      * @param port Port number for proxy connection.
      * @throws IOException If something unexpected happens...
      */
@@ -697,7 +697,7 @@ public class HTTPSWrapper {
      * <p>
      * This method affects all proceeding requests. <br><br>
      *
-     * @param host Host name or IP address of proxy. <tt>null</tt> removes any previous setting.
+     * @param host Host name or IP address of proxy. <code>null</code> removes any previous setting.
      * @param port Port number for proxy connection.
      * @throws IOException If something unexpected happens...
      */

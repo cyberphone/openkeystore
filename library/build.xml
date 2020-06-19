@@ -223,7 +223,7 @@
   	<!-- Windows... -->
     <fixcrlf srcdir="${doc_dir}"
        eol="lf"
-       includes="**/*.html, **/*.js, **/*.css"/>
+       includes="**/*.html, **/*.js, **/*.css, element-list"/>
   	<!-- HTML Doc task for KeyGen2 -->
     <antcall target="_java2html">
        <param name="doc.class" value="org.webpki.keygen2.KeyGen2HTMLReference"/>
