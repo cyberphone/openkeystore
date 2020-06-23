@@ -181,6 +181,7 @@
   	</copy>
 
   	<!-- Make documentation -->
+	<!--  -Xdoclint:none: https://github.com/AdoptOpenJDK/openjdk-support/issues/131 -->
     <javadoc destdir="${doc_dir}"
     	     overview="${temp_dir}/overview.html"
     	     stylesheetfile="${javadoccss}"
@@ -188,7 +189,7 @@
              version="true"
              Package="false"
              Use="false"
-    	     additionalparam="--allow-script-in-comments"
+    	     additionalparam="--allow-script-in-comments -Xdoclint:none"
              nodeprecated="true"
              nodeprecatedlist="true"
              classpathref="compile.classpath"
