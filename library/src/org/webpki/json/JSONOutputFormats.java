@@ -17,29 +17,31 @@
 package org.webpki.json;
 
 /**
- * JSON output types.
- * It is used by {@link JSONObjectWriter}.
+ * JSON output formats.
+ * JSON tokens are always formatted according to JCS (RFC 8785).
+ * Original property order is always maintained, unless otherwise noted.  
+ * This enumeration is used by {@link JSONObjectWriter}.
  */
 public enum JSONOutputFormats {
 
     /**
-     * As a string without whitespace where all items have a normalized form
+     * As a string without whitespace.
      */
     NORMALIZED        (false, false, false, false),
     /**
-     * Same as NORMALIZED but with properties sorted according to JCS
+     * Fully JCS (RFC 8785) compatible formatting.  That is, properties are sorted as well.
      */
     CANONICALIZED     (false, false, false, true),
     /**
-     * Pretty-printed with JavaScript syntax
+     * Pretty-printed with JavaScript syntax.
      */
     PRETTY_JS_NATIVE  (true,  true,  false, false),
     /**
-     * Pretty-printed
+     * Pretty-printed.
      */
     PRETTY_PRINT      (true,  false, false, false),
     /**
-     * Pretty-printed with HTML format
+     * Pretty-printed with HTML format.
      */
     PRETTY_HTML       (true,  false, true,  false);
 

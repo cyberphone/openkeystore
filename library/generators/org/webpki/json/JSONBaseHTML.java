@@ -70,7 +70,7 @@ public class JSONBaseHTML  {
     
     public static final String REF_V8                  = "V8";
     
-    public static final String REF_JCS                 = "JCS";
+    public static final String REF_JCS                 = "RFC8785";
 
     public static final String REF_JSF                 = "JSF";
 
@@ -290,9 +290,8 @@ public class JSONBaseHTML  {
             externalWebReference ("https://cyberphone.github.io/doc/security/jsf.html"));
 
         addReferenceEntry(REF_JCS,
-            "A. Rundgren, B. Jordan, S. Erdtman, \"JCS - JSON Canonicalization Scheme\", Work in progress, " +
-            "<span style=\"white-space: nowrap\">January&nbsp;2020.</span> " +
-            externalWebReference ("https://tools.ietf.org/html/draft-rundgren-json-canonicalization-scheme-17"));
+            "A. Rundgren, B. Jordan, S. Erdtman, \"JCS - JSON Canonicalization Scheme\", RFC&nbsp;8785, " +
+            "June&nbsp;2020.");
 
         addReferenceEntry(REF_YASMIN,
             "A. Rundgren, \"YASMIN - Yet Another jSon Message notatIoN\", Work in progress, " +
