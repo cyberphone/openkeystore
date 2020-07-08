@@ -515,7 +515,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
         json.addDocumentHistoryLine("2017-04-19", "0.4", "Changed public keys to use JWK " + json.createReference(JSONBaseHTML.REF_JWK) + " format");
         json.addDocumentHistoryLine("2017-04-25", "0.5", "Added KW and GCM algorithms");
         json.addDocumentHistoryLine("2017-05-15", "0.51", "Added test vectors and missing RSA-OAEP algorithm");
-        json.addDocumentHistoryLine("2019-03-15", "0.60", "Rewritten to use the JCS " + json.createReference(JSONBaseHTML.REF_JCS) + " canonicalization scheme");
+        json.addDocumentHistoryLine("2019-03-15", "0.60", "Rewritten to use the JSON Canonicalization Scheme " + json.createReference(JSONBaseHTML.REF_JCS));
         json.addDocumentHistoryLine("2020-01-20", "0.61", "Refactored names");
 
         json.addParagraphObject("Author").append("JEF was developed by Anders Rundgren (<code>anders.rundgren.net@gmail.com</code>) as a part " +

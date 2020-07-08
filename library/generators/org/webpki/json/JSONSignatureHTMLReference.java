@@ -839,7 +839,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
         json.addDocumentHistoryLine("2016-01-11", "0.59", "Added ECMAScript compatibility mode");
         json.addDocumentHistoryLine("2017-04-19", "0.60", "Changed public keys to use JWK " + json.createReference(JSONBaseHTML.REF_JWK) + " format");
         json.addDocumentHistoryLine("2017-05-18", "0.70", "Added multiple signatures and test vectors");
-        json.addDocumentHistoryLine("2019-03-05", "0.80", "Rewritten to use the JCS " + json.createReference(JSONBaseHTML.REF_JCS) + " canonicalization scheme");
+        json.addDocumentHistoryLine("2019-03-05", "0.80", "Rewritten to use the JSON Canonicalization Scheme " + json.createReference(JSONBaseHTML.REF_JCS));
         json.addDocumentHistoryLine("2019-10-12", "0.81", "Added signature chains (<code>" + JSONCryptoHelper.CHAIN_JSON + "</code>)");
 
         json.addParagraphObject("Author").append("JSF was developed by Anders Rundgren (<code>anders.rundgren.net@gmail.com</code>) as a part " +
