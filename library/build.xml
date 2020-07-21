@@ -68,7 +68,7 @@
   </condition>
 
   <target name="help">
-    <echo message="Targets: help build tomcat doc testkeygen2 testsks testjson android-json android-saturn"/>
+    <echo message="Targets: help build tomcat doc testkeygen2 testsks testjson testkeyalgs android-json android-saturn"/>
   </target>
 	
   <target name="build">
@@ -382,7 +382,7 @@
         <include name="**/crypto/SignatureWrapper.java"/>
         <include name="**/crypto/CryptoRandom.java"/>
       </fileset>
-      </copy>
+    </copy>
 
     <replaceregexp file="${android_dir}/org/webpki/crypto/KeyStoreReader.java"
         match="(\/\/\ JKS\ magic\ number\ \+\ version\ \(2\).*)(byte\[\]\ jks\ \=\ \{)(\(byte\)0xfe,\ \(byte\)0xed,\ \(byte\)0xfe,\ \(byte\)0xed,\ 0,\ 0,\ 0,\ 2)(\}\;)"
@@ -440,6 +440,11 @@
    	       <exclude name="Random.java"/>
    	       <exclude name="*.jks"/>
    	       <exclude name="**/twolayer/**"/>
+  		</fileset>
+  	</copy>
+  	<copy todir="${android_test_dir}/org/webpki/crypto">
+  		<fileset dir="${test_dir}/org/webpki/crypto">
+  	       <include name="KeyAlgorithmTest.java"/>
   		</fileset>
   	</copy>
   	<copy todir="${android_test_dir}">
@@ -509,6 +514,13 @@
   <target name="testsks">
     <antcall target="_test">
        <param name="test.class" value="org.webpki.sks.SKSTest"/>
+     </antcall>
+  </target>
+
+  <!-- JUnit test of KeyAlgorithms -->
+  <target name="testkeyalgs">
+    <antcall target="_test">
+       <param name="test.class" value="org.webpki.crypto.KeyAlgorithmTest"/>
      </antcall>
   </target>
 

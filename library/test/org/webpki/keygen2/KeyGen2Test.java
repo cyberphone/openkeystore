@@ -170,7 +170,7 @@ public class KeyGen2Test {
 
     boolean update_kmk;
 
-    boolean brain_pool;
+    boolean p521;
 
     boolean get_client_attributes;
     
@@ -781,8 +781,8 @@ public class KeyGen2Test {
             if (privacy_enabled) {
                 serverState.setPrivacyEnabled(true);
             }
-            if (brain_pool) {
-                serverState.setEphemeralKeyAlgorithm(KeyAlgorithms.BRAINPOOL_P_256);
+            if (p521) {
+                serverState.setEphemeralKeyAlgorithm(KeyAlgorithms.NIST_P_521);
             }
             if (languages) {
                 serverState.setPreferredLanguages(new String[]{"en", "de", "fr"});
@@ -1262,7 +1262,7 @@ public class KeyGen2Test {
             writeOption("Update KMK", update_kmk);
             writeOption("Multiple Keys", two_keys);
             writeOption("Custom Key Name", custom_key_name);
-            writeOption("Brainpool EC", brain_pool);
+            writeOption("Brainpool EC", p521);
             writeOption("TrustAnchor option", set_trust_anchor);
             server = new Server();
             client = new Client();
@@ -1324,11 +1324,9 @@ public class KeyGen2Test {
     }
 
     @Test
-    public void BrainpoolOption() throws Exception {
-        if (bcLoaded) {
-            brain_pool = true;
-            new Doer().perform();
-        }
+    public void P521Option() throws Exception {
+        p521 = true;
+        new Doer().perform();
     }
 
     @Test

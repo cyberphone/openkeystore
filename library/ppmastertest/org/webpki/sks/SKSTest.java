@@ -63,9 +63,6 @@ import org.webpki.crypto.MACAlgorithms;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
 import org.webpki.crypto.SymEncryptionAlgorithms;
-//#if !ANDROID
-import org.webpki.crypto.CustomCryptoProvider;
-//#endif
 
 import org.webpki.sks.AppUsage;
 import org.webpki.sks.BiometricProtection;
@@ -117,8 +114,6 @@ public class SKSTest {
     
     static HashSet<String> supported_algorithms = new HashSet<>();
 
-    static boolean bc_loaded;
-    
     static KeyAlgorithms preferred_rsa_algorithm;
     
     static byte[] serverCertificate = {1,2,3};
@@ -135,10 +130,6 @@ public class SKSTest {
         reference_implementation = true;
 //#else
         standalone_testing = Boolean.valueOf(System.getProperty("sks.standalone"));
-        // Start deprecating Bouncycastle since Android will remove most of it anyway
-        if (!System.clearProperty("bcprovider").isEmpty()) {
-            bc_loaded = CustomCryptoProvider.conditionalLoad(true);
-        }
         sks = (SecureKeyStore) Class.forName(System.getProperty("sks.implementation")).getDeclaredConstructor().newInstance();
         device = new Device(sks);
         DeviceInfo dev = device.device_info;
@@ -955,14 +946,27 @@ public class SKSTest {
 
     @Test
     public void test1() throws Exception {
-        new ProvSess(device).closeSession();
-        try {
-            ProvSess.override_server_ephemeral_key_algorithm = KeyAlgorithms.BRAINPOOL_P_256;
-            new ProvSess(device).closeSession();
-        } catch (Exception e) {
-            assertFalse("BC", bc_loaded);
+        for (KeyAlgorithms sessionKeyAlgortihm : KeyAlgorithms.values()) {
+            if (sessionKeyAlgortihm.isRSAKey()) {
+                continue;
+            }
+            String sessionKeyAlgortihmId = sessionKeyAlgortihm.getAlgorithmId(AlgorithmPreferences.SKS);
+            boolean successExpected = sessionKeyAlgortihm.isMandatorySksAlgorithm() || 
+                    device.device_info.supportedAlgorithms.contains(sessionKeyAlgortihmId);
+            ProvSess sess;
+            try {
+                sess = new ProvSess(device, sessionKeyAlgortihm);
+                assertTrue("Create fail:" + sessionKeyAlgortihmId, successExpected);
+                try {
+                    sess.closeSession();
+                } catch (Exception close) {
+                    fail("Close fail:" + sessionKeyAlgortihmId);
+                }
+            } catch (SKSException e) {
+                assertFalse("Exception:" + sessionKeyAlgortihmId, successExpected);
+                checkException(e, "Unsupported EC key algorithm for: \"" + SecureKeyStore.VAR_SERVER_EPHEMERAL_KEY + "\""); 
+            }
         }
-        ProvSess.override_server_ephemeral_key_algorithm = null;
     }
 
     @Test
@@ -1053,9 +1057,6 @@ public class SKSTest {
         int i = 1;
         for (KeyAlgorithms key_algorithm : KeyAlgorithms.values()) {
             boolean doit = false;
-            if (!bc_loaded && key_algorithm == KeyAlgorithms.BRAINPOOL_P_256) {
-                continue;
-            }
             if (key_algorithm.isMandatorySksAlgorithm()) {
                 doit = true;
             } else {
@@ -2789,20 +2790,104 @@ public class SKSTest {
         }
     }
 
+    void singleBiometricTest(BiometricProtection biometricProtection,
+                             boolean optionalPin, 
+                             boolean biometricAuth, 
+                             String resultError)
+            throws Exception {
+        ProvSess sess = new ProvSess(device);
+        PINPol pinPolicy = null;
+        String pin = null;
+        if (optionalPin) {
+            pin = "1234";
+            pinPolicy = sess.createPINPolicy("PIN",
+                                             PassphraseFormat.NUMERIC,
+                                             4 /* minLength */, 8 /* maxLength */,
+                                             (short) 3 /* retryLimit */, null /* pukPolicy */);
+
+        }
+        GenKey key = null;
+        try {
+            key = sess.createKey("Key.1",
+                                 KeyAlgorithms.NIST_P_256,
+                                 new KeyProtectionSpec(biometricProtection, pin, pinPolicy),
+                                 AppUsage.AUTHENTICATION,
+     new String[] { AsymSignatureAlgorithms.ECDSA_SHA256.getAlgorithmId(AlgorithmPreferences.SKS) })
+                    .setCertificate(cn());
+            sess.closeSession();
+        } catch (SKSException e) {
+            checkException(e,
+                    "Invalid \"biometricProtection\" and PIN combination");
+            if (biometricProtection == BiometricProtection.EXCLUSIVE
+                    ^ optionalPin) {
+                fail("Strange " + biometricProtection + " " + optionalPin + " "
+                        + biometricAuth + " " + resultError);
+            }
+            assertTrue("Null " + biometricProtection + " " + optionalPin + " "
+                    + biometricAuth, resultError == null);
+            return;
+        }
+        try {
+            key.signData(AsymSignatureAlgorithms.ECDSA_SHA256,
+                         new KeyAuthorization(biometricAuth, pin), TEST_STRING);
+            if (resultError != null) {
+                fail("Should not accept " + biometricProtection + " "
+                        + optionalPin + " " + biometricAuth + " "
+                        + resultError);
+            }
+        } catch (SKSException e) {
+            if (resultError == null) {
+                fail("Should not have thrown " + biometricProtection + " "
+                        + optionalPin + " " + biometricAuth + " "
+                        + resultError);
+            }
+            // System.out.println(biometricProtection + " " + optionalPin + " "
+            // + biometricAuth + "\n" + resultError + "\n" + e.getMessage());
+            checkException(e, resultError);
+        }
+        if (optionalPin) {
+            try {
+                key.signData(AsymSignatureAlgorithms.ECDSA_SHA256,
+                            new KeyAuthorization(biometricAuth, "124244"), TEST_STRING);
+                fail("Should not accept " + biometricProtection + " "
+                        + optionalPin + " " + biometricAuth + " "
+                        + resultError);
+            } catch (SKSException e) {
+                checkException(e, resultError == null
+                                ? "\"authorization\" error for key #"
+                                : resultError);
+            }
+        }
+    }
+
+    void biometricTest(BiometricProtection biometricProtection, 
+                       String res1,
+                       String res2, 
+                       String res3, 
+                       String res4) throws Exception {
+        singleBiometricTest(biometricProtection, false, false, res1);
+        singleBiometricTest(biometricProtection, true, false, res2);
+        singleBiometricTest(biometricProtection, false, true, res3);
+        singleBiometricTest(biometricProtection, true, true, res4);
+    }
+
     @Test
     public void test67() throws Exception {
-        ProvSess.override_server_ephemeral_key_algorithm = KeyAlgorithms.NIST_B_233;
-        try {
-            new ProvSess(device);
-            fail("Bad server key");
-        } catch (SKSException e) {
-            ProvSess.override_server_ephemeral_key_algorithm = null;
-//#if ANDROID   
-            // The current android test suite runs only on the client creating another error message    
-//#else 
-            checkException(e, "Unsupported EC key algorithm for: \"" + SecureKeyStore.VAR_SERVER_EPHEMERAL_KEY + "\""); 
-//#endif
-        }
+        biometricTest(BiometricProtection.EXCLUSIVE,
+                      "Missing biometric for key #", 
+                      null,
+                      null,
+                      null);
+        biometricTest(BiometricProtection.ALTERNATIVE,
+                      null,
+                      null,
+                      null,
+                      "Biometric + pin option invalid for key #");
+        biometricTest(BiometricProtection.COMBINED, 
+                      null, 
+                      "Missing biometric for key #",
+                      null,
+                      null);
     }
 
     @Test
@@ -3211,95 +3296,5 @@ public class SKSTest {
             assertTrue("Flag not endorsed", e.getMessage().contains("384"));
         }
     }
-    
-    void singleBiometricTest(BiometricProtection biometricProtection, 
-                             boolean optionalPin,
-                             boolean biometricAuth,
-                             String resultError) throws Exception {
-        ProvSess sess = new ProvSess(device);
-        PINPol pinPolicy = null;
-        String pin = null;
-        if (optionalPin) {
-            pin = "1234";
-            pinPolicy = sess.createPINPolicy("PIN",
-                    PassphraseFormat.NUMERIC,
-                    4 /* minLength */,
-                    8 /* maxLength */,
-                    (short) 3 /* retryLimit*/,
-                    null /* pukPolicy */);
-            
-        }
-        GenKey key = null;
-        try {
-            key = sess.createKey("Key.1",
-                    KeyAlgorithms.NIST_P_256,
-                    new KeyProtectionSpec(biometricProtection, pin, pinPolicy),
-                    AppUsage.AUTHENTICATION,
-                    new String[]{AsymSignatureAlgorithms.ECDSA_SHA256
-                            .getAlgorithmId(AlgorithmPreferences.SKS)})
-                                .setCertificate(cn());
-            sess.closeSession();
-        } catch (SKSException e) {
-            checkException(e, "Invalid \"biometricProtection\" and PIN combination");
-            if (biometricProtection == BiometricProtection.EXCLUSIVE ^ optionalPin) {
-                fail("Strange " + biometricProtection + " " + optionalPin + " " + biometricAuth + " " + resultError);
-            }
-            assertTrue("Null " + biometricProtection + " " + optionalPin + " " + biometricAuth, resultError == null);
-            return;
-        }
-        try {
-            key.signData(AsymSignatureAlgorithms.ECDSA_SHA256, 
-                         new KeyAuthorization(biometricAuth, pin), 
-                         TEST_STRING);
-            if (resultError != null) {
-                fail("Should not accept " + biometricProtection + " " + optionalPin + " " + biometricAuth + " " + resultError);
-            }
-        } catch (SKSException e) {
-            if (resultError == null) {
-                fail("Should not have thrown " + biometricProtection + " " + optionalPin + " " + biometricAuth + " " + resultError);
-            }
-//            System.out.println(biometricProtection + " " + optionalPin + " " + biometricAuth + "\n" + resultError + "\n" + e.getMessage());
-            checkException(e, resultError);
-        }
-        if (optionalPin) {
-            try {
-                key.signData(AsymSignatureAlgorithms.ECDSA_SHA256, 
-                             new KeyAuthorization(biometricAuth, "124244"), 
-                             TEST_STRING);
-                fail("Should not accept " + biometricProtection + " " + optionalPin + " " + biometricAuth + " " + resultError);
-            } catch (SKSException e) {
-                checkException(e, resultError == null ? "\"authorization\" error for key #" : resultError);
-            }
-        }
-    }
-    
-    void biometricTest(BiometricProtection biometricProtection, 
-                       String res1, 
-                       String res2, 
-                       String res3, 
-                       String res4) throws Exception {
-        singleBiometricTest(biometricProtection, false, false, res1);
-        singleBiometricTest(biometricProtection, true,  false, res2);
-        singleBiometricTest(biometricProtection, false, true,  res3);
-        singleBiometricTest(biometricProtection, true,  true,  res4);
-    }
 
-    @Test
-    public void test85() throws Exception {
-        biometricTest(BiometricProtection.EXCLUSIVE,
-                      "Missing biometric for key #", 
-                      null,
-                      null,
-                      null);
-        biometricTest(BiometricProtection.ALTERNATIVE,
-                      null,
-                      null,
-                      null,
-                      "Biometric + pin option invalid for key #");
-        biometricTest(BiometricProtection.COMBINED, 
-                      null, 
-                      "Missing biometric for key #",
-                      null,
-                      null);
-    }
 }

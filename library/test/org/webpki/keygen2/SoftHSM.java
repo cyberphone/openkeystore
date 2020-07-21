@@ -46,8 +46,6 @@ import org.webpki.crypto.MACAlgorithms;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
 
-import org.webpki.keygen2.ServerCryptoInterface;
-
 import org.webpki.sks.SecureKeyStore;
 
 import org.webpki.util.ArrayUtil;
@@ -74,7 +72,7 @@ public class SoftHSM implements ServerCryptoInterface {
     ECPrivateKey server_ec_private_key;
 
     byte[] session_key;
-
+    
     @Override
     public ECPublicKey generateEphemeralKey(KeyAlgorithms ec_key_algorithm) throws IOException {
         try {
