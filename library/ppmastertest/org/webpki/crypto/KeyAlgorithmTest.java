@@ -43,6 +43,13 @@ import static org.junit.Assert.*;
 
 import org.webpki.util.ArrayUtil;
 
+//#if ANDROID
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import org.junit.runner.RunWith;
+
+@RunWith(AndroidJUnit4.class)
+//#endif
 public class KeyAlgorithmTest {
 
     @BeforeClass
@@ -118,6 +125,11 @@ public class KeyAlgorithmTest {
                         new ECPoint(new BigInteger(x),
                                     new BigInteger(y)),
                         keyAlgorithm.getECParameterSpec()));
+//#if ANDROID
+        if (!keyAlgorithm.isMandatorySksAlgorithm()) {
+            return;
+        }
+//#endif
         ECPublicKey decodedPublicKey = (ECPublicKey) KeyFactory.getInstance("EC")
                 .generatePublic(new X509EncodedKeySpec(x509PublicKey));
         assertTrue("alg", KeyAlgorithms.getKeyAlgorithm(decodedPublicKey) == keyAlgorithm);

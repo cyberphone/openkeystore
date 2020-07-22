@@ -430,6 +430,7 @@
     </replace>  
   	<move file="${android_dir}/org/webpki/sks/SKSReferenceImplementation.java" tofile="${android_dir}/org/webpki/mobile/android/sks/AndroidSKSImplementation.java"/>
  	<move file="${android_dir}/org/webpki/sks/SKSTest.java" todir="${android_test_dir}/org/webpki/sks"/>
+ 	<move file="${android_dir}/org/webpki/crypto/KeyAlgorithmTest.java" todir="${android_test_dir}/org/webpki/crypto"/>
   	<copy todir="${android_test_dir}/org/webpki/sks">
   		<fileset dir="${test_dir}/org/webpki/sks">
   	       <exclude name="SKSReferenceImplementation.java"/>
@@ -440,11 +441,6 @@
    	       <exclude name="Random.java"/>
    	       <exclude name="*.jks"/>
    	       <exclude name="**/twolayer/**"/>
-  		</fileset>
-  	</copy>
-  	<copy todir="${android_test_dir}/org/webpki/crypto">
-  		<fileset dir="${test_dir}/org/webpki/crypto">
-  	       <include name="KeyAlgorithmTest.java"/>
   		</fileset>
   	</copy>
   	<copy todir="${android_test_dir}">

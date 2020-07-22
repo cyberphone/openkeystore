@@ -64,24 +64,6 @@ import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
 import org.webpki.crypto.SymEncryptionAlgorithms;
 
-import org.webpki.sks.AppUsage;
-import org.webpki.sks.BiometricProtection;
-import org.webpki.sks.DeleteProtection;
-import org.webpki.sks.DeviceInfo;
-import org.webpki.sks.EnumeratedProvisioningSession;
-import org.webpki.sks.ExportProtection;
-import org.webpki.sks.Extension;
-import org.webpki.sks.Grouping;
-import org.webpki.sks.InputMethod;
-import org.webpki.sks.KeyProtectionInfo;
-import org.webpki.sks.PassphraseFormat;
-import org.webpki.sks.PatternRestriction;
-import org.webpki.sks.Property;
-import org.webpki.sks.SKSException;
-import org.webpki.sks.SecureKeyStore;
-
-
-
 
 import org.webpki.util.ArrayUtil;
 
@@ -653,9 +635,9 @@ public class SKSTest {
         }
     }
 
-    void badKeySpec(String key_algorithm, byte[] keyParameters, String expected_message) throws Exception {
+    void badKeySpec(String keyAlgorithm, byte[] keyParameters, String expected_message) throws Exception {
         ProvSess sess = new ProvSess(device);
-        sess.setKeyAlgorithm(key_algorithm);
+        sess.setKeyAlgorithm(keyAlgorithm);
         sess.setKeyParameters(keyParameters);
         try {
             sess.createKey("Key.1",
@@ -910,24 +892,24 @@ public class SKSTest {
 
     @Test
     public void test1() throws Exception {
-        for (KeyAlgorithms sessionKeyAlgortihm : KeyAlgorithms.values()) {
-            if (sessionKeyAlgortihm.isRSAKey()) {
+        for (KeyAlgorithms sessionKeyAlgorithm : KeyAlgorithms.values()) {
+            if (sessionKeyAlgorithm.isRSAKey() || sessionKeyAlgorithm.getECParameterSpec() == null) {
                 continue;
             }
-            String sessionKeyAlgortihmId = sessionKeyAlgortihm.getAlgorithmId(AlgorithmPreferences.SKS);
-            boolean successExpected = sessionKeyAlgortihm.isMandatorySksAlgorithm() || 
-                    device.device_info.supportedAlgorithms.contains(sessionKeyAlgortihmId);
+            String sessionKeyAlgorithmId = sessionKeyAlgorithm.getAlgorithmId(AlgorithmPreferences.SKS);
+            boolean successExpected = sessionKeyAlgorithm.isMandatorySksAlgorithm() || 
+                    device.device_info.supportedAlgorithms.contains(sessionKeyAlgorithmId);
             ProvSess sess;
             try {
-                sess = new ProvSess(device, sessionKeyAlgortihm);
-                assertTrue("Create fail:" + sessionKeyAlgortihmId, successExpected);
+                sess = new ProvSess(device, sessionKeyAlgorithm);
+                assertTrue("Create fail:" + sessionKeyAlgorithmId, successExpected);
                 try {
                     sess.closeSession();
                 } catch (Exception close) {
-                    fail("Close fail:" + sessionKeyAlgortihmId);
+                    fail("Close fail:" + sessionKeyAlgorithmId);
                 }
             } catch (SKSException e) {
-                assertFalse("Exception:" + sessionKeyAlgortihmId, successExpected);
+                assertFalse("Exception:" + sessionKeyAlgorithmId, successExpected);
                 checkException(e, "Unsupported EC key algorithm for: \"" + SecureKeyStore.VAR_SERVER_EPHEMERAL_KEY + "\""); 
             }
         }
@@ -1019,25 +1001,20 @@ public class SKSTest {
     public void test6() throws Exception {
         ProvSess sess = new ProvSess(device);
         int i = 1;
-        for (KeyAlgorithms key_algorithm : KeyAlgorithms.values()) {
+        for (KeyAlgorithms keyAlgorithm : KeyAlgorithms.values()) {
             boolean doit = false;
-            if (key_algorithm.isMandatorySksAlgorithm()) {
+            if (keyAlgorithm.isMandatorySksAlgorithm() ||
+                device.device_info.getSupportedAlgorithms().contains(
+                    keyAlgorithm.getAlgorithmId(AlgorithmPreferences.SKS))) {
                 doit = true;
-            } else {
-                for (String algorithm : device.device_info.getSupportedAlgorithms()) {
-                    if (key_algorithm.getAlgorithmId(AlgorithmPreferences.SKS).equals(algorithm)) {
-                        doit = true;
-                        break;
-                    }
-                }
             }
             if (doit) {
-                sess.setKeyParameters((key_algorithm.isRSAKey() && key_algorithm.hasParameters()) ?
+                sess.setKeyParameters((keyAlgorithm.isRSAKey() && keyAlgorithm.hasParameters()) ?
                         new byte[]{0, 0, 0, 3} : null);
                 sess.createKey("Key." + i++,
-                            key_algorithm,
-                            new KeyProtectionSpec(),
-                            AppUsage.AUTHENTICATION).setCertificate(cn());
+                               keyAlgorithm,
+                               new KeyProtectionSpec(),
+                               AppUsage.AUTHENTICATION).setCertificate(cn());
             }
         }
         sess.closeSession();

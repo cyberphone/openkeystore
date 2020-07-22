@@ -484,11 +484,11 @@ public class ProvSess {
         serverSessionId = serv_sess == null ? "S-" + Long.toHexString(new GregorianCalendar().getTimeInMillis()) + Long.toHexString(new SecureRandom().nextLong()) : serv_sess;
         String sess_key_alg = override_session_key_algorithm == null ? session_key_algorithm : override_session_key_algorithm;
         clientTime = new GregorianCalendar();
-        String sessionKeyAlgortihmId = sessionKeyAlgortihm.getAlgorithmId(AlgorithmPreferences.SKS);
-        if (sessionKeyAlgortihm.isMandatorySksAlgorithm() ||  device.device_info.supportedAlgorithms.contains(sessionKeyAlgortihmId)) {
+        String sessionKeyAlgorithmId = sessionKeyAlgortihm.getAlgorithmId(AlgorithmPreferences.SKS);
+        if (sessionKeyAlgortihm.isMandatorySksAlgorithm() ||  device.device_info.supportedAlgorithms.contains(sessionKeyAlgorithmId)) {
             server_ephemeral_key = server_sess_key.generateEphemeralKey(sessionKeyAlgortihm);
         } else if ((server_ephemeral_key = nonSKSTypes.get(sessionKeyAlgortihm)) == null) {
-            throw new IOException("Bug:" + sessionKeyAlgortihmId);
+            throw new IOException("Bug:" + sessionKeyAlgorithmId);
         }
         ProvisioningSession sess =
                 device.sks.createProvisioningSession(sess_key_alg,
