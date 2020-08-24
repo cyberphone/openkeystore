@@ -17,15 +17,16 @@
 package org.webpki.pdf;
 
 import java.io.IOException;
+
 import java.util.TimeZone;
+
 import java.text.SimpleDateFormat;
 
 import org.webpki.util.ArrayUtil;
+
 import org.webpki.crypto.CertificateInfo;
 import org.webpki.crypto.DemoKeyStore;
 import org.webpki.crypto.KeyStoreVerifier;
-import org.webpki.pdf.PDFVerifier;
-
 
 public class Verify {
 

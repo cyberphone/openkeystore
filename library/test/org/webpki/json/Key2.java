@@ -32,13 +32,6 @@ import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.CustomCryptoProvider;
 
-import org.webpki.json.JSONDecoderCache;
-import org.webpki.json.JSONOutputFormats;
-import org.webpki.json.JSONEncoder;
-import org.webpki.json.JSONDecoder;
-import org.webpki.json.JSONObjectReader;
-import org.webpki.json.JSONObjectWriter;
-
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.DebugFormatter;
 

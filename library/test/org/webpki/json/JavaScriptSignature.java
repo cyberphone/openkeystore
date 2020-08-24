@@ -29,10 +29,6 @@ import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
 
-import org.webpki.json.JSONAsymKeySigner;
-import org.webpki.json.JSONObjectWriter;
-import org.webpki.json.JSONOutputFormats;
-
 /**
  * Demo code for JDOC
  */

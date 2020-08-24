@@ -20,8 +20,8 @@ import org.webpki.crypto.CertificateInfo;
 import org.webpki.crypto.DemoKeyStore;
 import org.webpki.crypto.VerifierInterface;
 import org.webpki.crypto.KeyStoreVerifier;
+
 import org.webpki.util.ArrayUtil;
-import org.webpki.pkcs7.PKCS7Verifier;
 
 public class Verify {
     public static void main(String[] args) throws Exception {

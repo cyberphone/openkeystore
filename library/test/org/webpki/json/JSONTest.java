@@ -60,23 +60,6 @@ import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyStoreVerifier;
 import org.webpki.crypto.MACAlgorithms;
 
-import org.webpki.json.JSONArrayReader;
-import org.webpki.json.JSONArrayWriter;
-import org.webpki.json.JSONAsymKeySigner;
-import org.webpki.json.JSONAsymKeyVerifier;
-import org.webpki.json.JSONDecoderCache;
-import org.webpki.json.JSONDecryptionDecoder;
-import org.webpki.json.JSONEncoder;
-import org.webpki.json.JSONDecoder;
-import org.webpki.json.JSONOutputFormats;
-import org.webpki.json.JSONObjectReader;
-import org.webpki.json.JSONObjectWriter;
-import org.webpki.json.JSONParser;
-import org.webpki.json.JSONSignatureDecoder;
-import org.webpki.json.JSONSymKeySigner;
-import org.webpki.json.JSONSymKeyVerifier;
-import org.webpki.json.JSONTypes;
-import org.webpki.json.JSONX509Verifier;
 import org.webpki.json.JSONCryptoHelper.PUBLIC_KEY_OPTIONS;
 
 import org.webpki.util.ArrayUtil;

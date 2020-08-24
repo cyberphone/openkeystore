@@ -18,12 +18,12 @@ package org.webpki.webauth;
 
 import org.webpki.util.StringUtil;
 import org.webpki.util.ArrayUtil;
+
 import org.webpki.crypto.DemoKeyStore;
 import org.webpki.crypto.KeyStoreVerifier;
 import org.webpki.crypto.CertificateFilter;
-import org.webpki.json.JSONDecoderCache;
-import org.webpki.webauth.AuthenticationRequestDecoder;
 
+import org.webpki.json.JSONDecoderCache;
 
 public class AreqDec {
 

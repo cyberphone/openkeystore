@@ -18,9 +18,6 @@ package org.webpki.json;
 
 import java.io.IOException;
 
-import org.webpki.json.JSONCryptoHelper;
-import org.webpki.json.JSONObjectReader;
-
 public class Extension1 extends JSONCryptoHelper.Extension {
     
     String value;

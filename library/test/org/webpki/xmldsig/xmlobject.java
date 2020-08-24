@@ -39,15 +39,6 @@ import org.webpki.crypto.AsymKeySignerInterface;
 import org.webpki.crypto.SymKeySignerInterface;
 import org.webpki.crypto.SymKeyVerifierInterface;
 import org.webpki.crypto.SignatureWrapper;
-import org.webpki.xmldsig.XMLEnvelopedInput;
-import org.webpki.xmldsig.XMLSignatureWrapper;
-import org.webpki.xmldsig.XMLSigner;
-import org.webpki.xmldsig.XMLSymKeySigner;
-import org.webpki.xmldsig.XMLSymKeyVerifier;
-import org.webpki.xmldsig.XMLVerifier;
-import org.webpki.xmldsig.XMLAsymKeySigner;
-import org.webpki.xmldsig.XMLAsymKeyVerifier;
-
 
 public class xmlobject extends XMLObjectWrapper implements XMLEnvelopedInput {
     static byte[] symkey;

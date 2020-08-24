@@ -22,8 +22,6 @@ import java.io.IOException;
 import org.webpki.util.ArrayUtil;
 import org.webpki.crypto.DemoKeyStore;
 import org.webpki.crypto.KeyStoreSigner;
-import org.webpki.pdf.PDFSigner;
-
 
 public class Sign {
 

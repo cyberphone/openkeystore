@@ -18,10 +18,6 @@ package org.webpki.json;
 
 import java.io.IOException;
 
-import org.webpki.json.JSONDecoder;
-import org.webpki.json.JSONDecoderCache;
-import org.webpki.json.JSONOutputFormats;
-
 import org.webpki.util.ArrayUtil;
 
 public class DecoderTest {

@@ -28,9 +28,6 @@ import org.webpki.xml.XMLSchemaCache;
 import org.webpki.xml.XMLObjectWrapper;
 
 import org.webpki.crypto.KeyStoreSigner;
-import org.webpki.xmldsig.XMLSignatureWrapper;
-import org.webpki.xmldsig.XMLSigner;
-import org.webpki.xmldsig.XMLEnvelopedInput;
 
 public class CreateES {
     private static final int OUTFILE = 0;

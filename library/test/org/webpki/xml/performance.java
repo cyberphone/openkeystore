@@ -22,8 +22,6 @@ import java.text.SimpleDateFormat;
 
 import org.webpki.util.ArrayUtil;
 
-import org.webpki.xml.XMLSchemaCache;
-
 public class performance {
     static void timeout(String message) {
         System.out.println(message + ": " + new SimpleDateFormat("HH:mm:ss").format(new Date()));

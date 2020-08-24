@@ -16,7 +16,6 @@
  */
 package org.webpki.json;
 
-import java.io.IOException;
 import java.util.Random;
 
 public class ES6Numbers {

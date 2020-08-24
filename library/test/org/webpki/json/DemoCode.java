@@ -33,13 +33,6 @@ import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.SignatureWrapper;
 
-import org.webpki.json.JSONAsymKeySigner;
-import org.webpki.json.JSONAsymKeyVerifier;
-import org.webpki.json.JSONObjectReader;
-import org.webpki.json.JSONObjectWriter;
-import org.webpki.json.JSONParser;
-import org.webpki.json.JSONSignatureDecoder;
-
 /**
  * Demo code for JDOC
  */

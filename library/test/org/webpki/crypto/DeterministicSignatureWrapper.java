@@ -39,10 +39,6 @@ import org.webpki.json.JSONParser;
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.DebugFormatter;
 
-import org.webpki.crypto.AsymSignatureAlgorithms;
-import org.webpki.crypto.CustomCryptoProvider;
-import org.webpki.crypto.SignatureWrapper;
-
 /**
  * Wrapper over java.security.Signature
  */
