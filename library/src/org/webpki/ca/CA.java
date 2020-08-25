@@ -43,6 +43,7 @@ import org.webpki.asn1.ASN1Sequence;
 import org.webpki.asn1.SimpleContextSpecific;
 import org.webpki.asn1.CompositeContextSpecific;
 import org.webpki.asn1.DerDecoder;
+
 import org.webpki.asn1.cert.DistinguishedName;
 import org.webpki.asn1.cert.SubjectAltNameTypes;
 
@@ -75,7 +76,7 @@ Certificate            ::=   SIGNED { SEQUENCE {
 
 public class CA {
 
-    private static final byte[] reverse_bits = new byte[] {
+    private static final byte[] reverseBits = new byte[] {
         (byte) 0x00, (byte) 0x80, (byte) 0x40, (byte) 0xC0, (byte) 0x20, (byte) 0xA0, (byte) 0x60, (byte) 0xE0,
         (byte) 0x10, (byte) 0x90, (byte) 0x50, (byte) 0xD0, (byte) 0x30, (byte) 0xB0, (byte) 0x70, (byte) 0xF0,
         (byte) 0x08, (byte) 0x88, (byte) 0x48, (byte) 0xC8, (byte) 0x28, (byte) 0xA8, (byte) 0x68, (byte) 0xE8,
@@ -137,8 +138,8 @@ public class CA {
     }
 
 
-    private ASN1OctetString createKeyID(PublicKey pub_key) throws IOException {
-        return new ASN1OctetString(HashAlgorithms.SHA1.digest(pub_key.getEncoded()));
+    private ASN1OctetString createKeyID(PublicKey publicKey) throws IOException {
+        return new ASN1OctetString(HashAlgorithms.SHA1.digest(publicKey.getEncoded()));
     }
 
     private ASN1Time getASN1Time(Date date) throws IOException {
@@ -151,54 +152,61 @@ public class CA {
     }
 
 
-    public X509Certificate createCert(CertSpec cert_spec,
-                                      DistinguishedName issuer_name,
+    public X509Certificate createCert(CertSpec certSpec,
+                                      DistinguishedName issuerName,
                                       BigInteger serialNumber,
-                                      Date start_date, Date end_date,
-                                      AsymSignatureAlgorithms certalg,
+                                      Date startDate, Date endDate,
+                                      AsymSignatureAlgorithms certAlg,
                                       AsymKeySignerInterface signer,
-                                      PublicKey subject_public_key) throws IOException {
+                                      PublicKey subjectPublicKey) throws IOException {
         Extensions extensions = new Extensions();
 
         BaseASN1Object version = new CompositeContextSpecific(0, new ASN1Integer(2));
 
-        DistinguishedName subject_name = cert_spec.getSubjectDistinguishedName();
+        DistinguishedName subjectName = certSpec.getSubjectDistinguishedName();
 
-        BaseASN1Object validity = new ASN1Sequence(new BaseASN1Object[]{getASN1Time(start_date),
-                getASN1Time(end_date)});
+        BaseASN1Object validity = new ASN1Sequence(new BaseASN1Object[]{getASN1Time(startDate),
+                getASN1Time(endDate)});
 
-        BaseASN1Object signatureAlgorithm =
-                new ASN1Sequence(new BaseASN1Object[]{new ASN1ObjectID(certalg.getOid()),
-                        new ASN1Null()});
+        BaseASN1Object signatureAlgorithm = 
+                new ASN1Sequence(certAlg.isRsa() ?
+                        new BaseASN1Object[]{new ASN1ObjectID(certAlg.getOid()),
+                                             new ASN1Null()}  // Relic from the RSA hey-days...
+                                                 : 
+                        new BaseASN1Object[]{new ASN1ObjectID(certAlg.getOid())});
 
-        BaseASN1Object subjectPublicKeyInfo = DerDecoder.decode(subject_public_key.getEncoded());
+        BaseASN1Object subjectPublicKeyInfo = DerDecoder.decode(subjectPublicKey.getEncoded());
 
         //////////////////////////////////////////////////////
         // Basic Constraints - EE
         //////////////////////////////////////////////////////
-        if (cert_spec.end_entity) {
-            extensions.add(CertificateExtensions.BASIC_CONSTRAINTS, false, new ASN1Sequence(new BaseASN1Object[]{}));
+        if (certSpec.endEntity) {
+            extensions.add(CertificateExtensions.BASIC_CONSTRAINTS, 
+                           false, 
+                           new ASN1Sequence(new BaseASN1Object[]{}));
         }
 
         //////////////////////////////////////////////////////
         // Basic Constraints - CA
         //////////////////////////////////////////////////////
-        if (cert_spec.ca_cert) {
-            extensions.add(CertificateExtensions.BASIC_CONSTRAINTS, true, new ASN1Sequence(new ASN1Boolean(true)));
+        if (certSpec.caCert) {
+            extensions.add(CertificateExtensions.BASIC_CONSTRAINTS, 
+                           true, 
+                           new ASN1Sequence(new ASN1Boolean(true)));
         }
 
         //////////////////////////////////////////////////////
         // Key Usage
         //////////////////////////////////////////////////////
-        if (!cert_spec.key_usage_set.isEmpty()) {
+        if (!certSpec.keyUsageSet.isEmpty()) {
             int i = 0;
-            for (KeyUsageBits kubit : cert_spec.key_usage_set) {
+            for (KeyUsageBits kubit : certSpec.keyUsageSet) {
                 i |= 1 << kubit.ordinal();
             }
             byte[] keyUsage = new byte[i > 255 ? 2 : 1];
-            keyUsage[0] = reverse_bits[i & 255];
+            keyUsage[0] = reverseBits[i & 255];
             if (i > 255) {
-                keyUsage[1] = reverse_bits[i >> 8];
+                keyUsage[1] = reverseBits[i >> 8];
             }
             extensions.add(CertificateExtensions.KEY_USAGE, true, new ASN1BitString(keyUsage));
         }
@@ -206,37 +214,43 @@ public class CA {
         //////////////////////////////////////////////////////
         // Extended Key Usage
         //////////////////////////////////////////////////////
-        if (!cert_spec.extended_key_usage_set.isEmpty()) {
+        if (!certSpec.extendedKeyUsageSet.isEmpty()) {
             int i = 0;
-            BaseASN1Object[] ekus = new BaseASN1Object[cert_spec.extended_key_usage_set.size()];
-            for (ExtendedKeyUsages eku : cert_spec.extended_key_usage_set.toArray(new ExtendedKeyUsages[0])) {
+            BaseASN1Object[] ekus = new BaseASN1Object[certSpec.extendedKeyUsageSet.size()];
+            for (ExtendedKeyUsages eku : 
+                        certSpec.extendedKeyUsageSet.toArray(new ExtendedKeyUsages[0])) {
                 ekus[i++] = new ASN1ObjectID(eku.getOID());
             }
-            extensions.add(CertificateExtensions.EXTENDED_KEY_USAGE, false, new ASN1Sequence(ekus));
+            extensions.add(CertificateExtensions.EXTENDED_KEY_USAGE, 
+                           false, 
+                           new ASN1Sequence(ekus));
         }
 
         //////////////////////////////////////////////////////
         // Subject Key Identifier
         //////////////////////////////////////////////////////
-        if (cert_spec.ski_extension) {
-            extensions.add(CertificateExtensions.SUBJECT_KEY_IDENTIFIER, createKeyID(subject_public_key));
+        if (certSpec.skiExtension) {
+            extensions.add(CertificateExtensions.SUBJECT_KEY_IDENTIFIER, 
+                           createKeyID(subjectPublicKey));
         }
 
         //////////////////////////////////////////////////////
         // Authority Key Identifier
         //////////////////////////////////////////////////////
-        if (cert_spec.aki_extension) {
-            extensions.add(CertificateExtensions.AUTHORITY_KEY_IDENTIFIER, new ASN1Sequence(new SimpleContextSpecific(0,
-                    createKeyID(signer.getPublicKey()))));
+        if (certSpec.akiExtension) {
+            extensions.add(CertificateExtensions.AUTHORITY_KEY_IDENTIFIER, 
+                           new ASN1Sequence(
+                                   new SimpleContextSpecific(0,
+                                                             createKeyID(signer.getPublicKey()))));
         }
 
         //////////////////////////////////////////////////////
         // Subject Alt Name
         //////////////////////////////////////////////////////
-        if (!cert_spec.subjectAltName.isEmpty()) {
+        if (!certSpec.subjectAltName.isEmpty()) {
             int i = 0;
-            BaseASN1Object[] san = new BaseASN1Object[cert_spec.subjectAltName.size()];
-            for (CertSpec.NameValue nameValue : cert_spec.subjectAltName) {
+            BaseASN1Object[] san = new BaseASN1Object[certSpec.subjectAltName.size()];
+            for (CertSpec.NameValue nameValue : certSpec.subjectAltName) {
 
                 int type = nameValue.name;
 
@@ -245,13 +259,15 @@ public class CA {
                         type == SubjectAltNameTypes.DNS_NAME ||
                         type == SubjectAltNameTypes.UNIFORM_RESOURCE_IDENTIFIER) {
                     if (!(nameValue.value instanceof ASN1IA5String)) {
-                        throw new IOException("Wrong argument type to SubjectAltNames of type " + type);
+                        throw new IOException(
+                                "Wrong argument type to SubjectAltNames of type " + type);
                     }
                 }
                 // Or IP addresses.
                 else if (type == SubjectAltNameTypes.IP_ADDRESS) {
                     if (!(nameValue.value instanceof ASN1OctetString)) {
-                        throw new IOException("Wrong argument type to SubjectAltNames of type IP address");
+                        throw new IOException(
+                                "Wrong argument type to SubjectAltNames of type IP address");
                     }
                 } else {
                     throw new IOException("SubjectAltNames of type " + type + " are not handled.");
@@ -264,44 +280,47 @@ public class CA {
         //////////////////////////////////////////////////////
         // Certificate Policies
         //////////////////////////////////////////////////////
-        if (!cert_spec.cert_policy_oids.isEmpty()) {
+        if (!certSpec.certPolicyOids.isEmpty()) {
             int i = 0;
-            BaseASN1Object[] policies = new BaseASN1Object[cert_spec.cert_policy_oids.size()];
-            for (String oid : cert_spec.cert_policy_oids) {
+            BaseASN1Object[] policies = new BaseASN1Object[certSpec.certPolicyOids.size()];
+            for (String oid : certSpec.certPolicyOids) {
                 policies[i++] = new ASN1Sequence(new ASN1ObjectID(oid));
             }
-            extensions.add(CertificateExtensions.CERTIFICATE_POLICIES, new ASN1Sequence(policies));
+            extensions.add(CertificateExtensions.CERTIFICATE_POLICIES, 
+                           new ASN1Sequence(policies));
         }
 
         //////////////////////////////////////////////////////
         // Authority Info Access
         //////////////////////////////////////////////////////
-        if (!cert_spec.aia_locators.isEmpty()) {
+        if (!certSpec.aiaLocators.isEmpty()) {
             int i = 0;
-            BaseASN1Object[] locators = new BaseASN1Object[cert_spec.aia_locators.size()];
-            for (String[] loc_info : cert_spec.aia_locators) {
+            BaseASN1Object[] locators = new BaseASN1Object[certSpec.aiaLocators.size()];
+            for (String[] loc_info : certSpec.aiaLocators) {
                 locators[i++] = new ASN1Sequence(
                         new BaseASN1Object[]{new ASN1ObjectID(loc_info[0]),
                                 new SimpleContextSpecific(6, new ASN1IA5String(loc_info[1]))}
                 );
             }
-            extensions.add(CertificateExtensions.AUTHORITY_INFO_ACCESS, new ASN1Sequence(locators));
+            extensions.add(CertificateExtensions.AUTHORITY_INFO_ACCESS, 
+                           new ASN1Sequence(locators));
         }
 
         //////////////////////////////////////////////////////
         // CRL Distribution Points
         //////////////////////////////////////////////////////
-        if (!cert_spec.crl_dist_points.isEmpty()) {
+        if (!certSpec.crlDistPoints.isEmpty()) {
             int i = 0;
-            BaseASN1Object[] cdps = new BaseASN1Object[cert_spec.crl_dist_points.size()];
-            for (String uri : cert_spec.crl_dist_points) {
+            BaseASN1Object[] cdps = new BaseASN1Object[certSpec.crlDistPoints.size()];
+            for (String uri : certSpec.crlDistPoints) {
                 cdps[i++] = new ASN1Sequence(
                         new CompositeContextSpecific(0,
                                 new CompositeContextSpecific(0,
                                         new SimpleContextSpecific(6, new ASN1IA5String(uri))))
                 );
             }
-            extensions.add(CertificateExtensions.CRL_DISTRIBUTION_POINTS, new ASN1Sequence(cdps));
+            extensions.add(CertificateExtensions.CRL_DISTRIBUTION_POINTS, 
+                           new ASN1Sequence(cdps));
         }
 
         //////////////////////////////////////////////////////
@@ -311,9 +330,9 @@ public class CA {
         inner[0] = version;
         inner[1] = new ASN1Integer(serialNumber);
         inner[2] = signatureAlgorithm;
-        inner[3] = issuer_name.toASN1();
+        inner[3] = issuerName.toASN1();
         inner[4] = validity;
-        inner[5] = subject_name.toASN1();
+        inner[5] = subjectName.toASN1();
         inner[6] = subjectPublicKeyInfo;
         if (!extensions.isEmpty()) {
             inner[7] = new CompositeContextSpecific(3, extensions.getExtensionData());
@@ -321,10 +340,13 @@ public class CA {
 
         BaseASN1Object tbsCertificate = new ASN1Sequence(inner);
 
-        BaseASN1Object signature = new ASN1BitString(signer.signData(tbsCertificate.encode(), certalg));
+        BaseASN1Object signature = 
+                new ASN1BitString(signer.signData(tbsCertificate.encode(), certAlg));
 
-        byte[] certificate = new ASN1Sequence(new BaseASN1Object[]{tbsCertificate, signatureAlgorithm, signature}).encode();
-
+        byte[] certificate = new ASN1Sequence(new BaseASN1Object[]{tbsCertificate,
+                                                                   signatureAlgorithm, 
+                                                                   signature}).encode();
+        
         return CertificateUtil.getCertificateFromBlob(certificate);
     }
 

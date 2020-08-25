@@ -49,27 +49,27 @@ public class CertSpec {
         }
     }
 
-    boolean end_entity;
+    boolean endEntity;
 
-    boolean ca_cert;
+    boolean caCert;
 
-    boolean ski_extension;
+    boolean skiExtension;
 
-    boolean aki_extension;
+    boolean akiExtension;
 
-    Set<KeyUsageBits> key_usage_set = EnumSet.noneOf(KeyUsageBits.class);
+    Set<KeyUsageBits> keyUsageSet = EnumSet.noneOf(KeyUsageBits.class);
 
-    Set<ExtendedKeyUsages> extended_key_usage_set = EnumSet.noneOf(ExtendedKeyUsages.class);
+    Set<ExtendedKeyUsages> extendedKeyUsageSet = EnumSet.noneOf(ExtendedKeyUsages.class);
 
-    ArrayList<String> cert_policy_oids = new ArrayList<>();
+    ArrayList<String> certPolicyOids = new ArrayList<>();
 
-    ArrayList<String[]> aia_locators = new ArrayList<>();
+    ArrayList<String[]> aiaLocators = new ArrayList<>();
 
-    ArrayList<String> crl_dist_points = new ArrayList<>();
+    ArrayList<String> crlDistPoints = new ArrayList<>();
 
-    private boolean has_given_key_usage;
+    private boolean hasGivenKeyUsage;
 
-    private boolean default_key_usage;
+    private boolean defaultKeyUsage;
 
     private ArrayList<RelativeDistinguishedName> subject = new ArrayList<>();
 
@@ -87,35 +87,35 @@ public class CertSpec {
 
 
     private void setDefaultKeyUsage(KeyUsageBits[] kubits) {
-        if (has_given_key_usage) {
+        if (hasGivenKeyUsage) {
             return;
         }
         for (KeyUsageBits kubit : kubits) {
             setKeyUsageBit(kubit);
         }
-        default_key_usage = true;
+        defaultKeyUsage = true;
     }
 
 
     public void setKeyUsageBit(KeyUsageBits kubit) {
-        if (default_key_usage) {
-            default_key_usage = false;
-            key_usage_set = EnumSet.noneOf(KeyUsageBits.class);
+        if (defaultKeyUsage) {
+            defaultKeyUsage = false;
+            keyUsageSet = EnumSet.noneOf(KeyUsageBits.class);
         }
-        key_usage_set.add(kubit);
-        has_given_key_usage = true;
+        keyUsageSet.add(kubit);
+        hasGivenKeyUsage = true;
     }
 
 
     public void setExtendedKeyUsage(ExtendedKeyUsages eku) {
-        extended_key_usage_set.add(eku);
+        extendedKeyUsageSet.add(eku);
     }
 
 
     public void setEndEntityConstraint() {
-        ski_extension = true;
-        aki_extension = true;
-        end_entity = true;
+        skiExtension = true;
+        akiExtension = true;
+        endEntity = true;
         setDefaultKeyUsage(new KeyUsageBits[]{KeyUsageBits.DIGITAL_SIGNATURE,
                 KeyUsageBits.NON_REPUDIATION,
                 KeyUsageBits.KEY_AGREEMENT,
@@ -125,21 +125,21 @@ public class CertSpec {
 
 
     public void setCACertificateConstraint() {
-        ski_extension = true;
-        aki_extension = true;
-        ca_cert = true;
+        skiExtension = true;
+        akiExtension = true;
+        caCert = true;
         setDefaultKeyUsage(new KeyUsageBits[]{KeyUsageBits.KEY_CERT_SIGN,
                 KeyUsageBits.CRL_SIGN});
     }
 
 
     public void setSubjectKeyIdentifier() {
-        ski_extension = true;
+        skiExtension = true;
     }
 
 
     public void setAuthorityKeyIdentifier() {
-        aki_extension = true;
+        akiExtension = true;
     }
 
 
@@ -241,22 +241,22 @@ public class CertSpec {
 
 
     public void addCertificatePolicyOID(String oid) {
-        cert_policy_oids.add(oid);
+        certPolicyOids.add(oid);
     }
 
 
     public void addOCSPResponderURI(String uri) {
-        aia_locators.add(new String[]{CertificateUtil.AIA_OCSP_RESPONDER, uri});
+        aiaLocators.add(new String[]{CertificateUtil.AIA_OCSP_RESPONDER, uri});
     }
 
 
     public void addCAIssuersURI(String uri) {
-        aia_locators.add(new String[]{CertificateUtil.AIA_CA_ISSUERS, uri});
+        aiaLocators.add(new String[]{CertificateUtil.AIA_CA_ISSUERS, uri});
     }
 
 
     public void addCRLDistributionPointURI(String uri) {
-        crl_dist_points.add(uri);
+        crlDistPoints.add(uri);
     }
 
 }

@@ -65,7 +65,7 @@ public class CommandLineCA {
 
     class CmdLineArgument {
         CmdLineArgumentGroup group;
-        CmdLineArgumentGroup mutually_exclusive_group;
+        CmdLineArgumentGroup mutuallyExclusiveGroup;
         String helptext;
         String command;
         String optargument;
@@ -212,18 +212,18 @@ public class CommandLineCA {
 
 
     class CertificateSigner implements AsymKeySignerInterface {
-        PrivateKey sign_key;
+        PrivateKey signKey;
         PublicKey publicKey;
 
-        CertificateSigner(PrivateKey sign_key, PublicKey publicKey) {
-            this.sign_key = sign_key;
+        CertificateSigner(PrivateKey signKey, PublicKey publicKey) {
+            this.signKey = signKey;
             this.publicKey = publicKey;
         }
 
 
         public byte[] signData(byte[] data, AsymSignatureAlgorithms certalg) throws IOException {
             try {
-                return new SignatureWrapper(certalg, sign_key)
+                return new SignatureWrapper(certalg, signKey)
                         .setEcdsaSignatureEncoding(true)
                         .update(data)
                         .sign();
@@ -245,8 +245,8 @@ public class CommandLineCA {
             if (cla1.group == group1) {
                 for (CmdLineArgument cla2 : list) {
                     if (cla2.group == group2) {
-                        cla1.mutually_exclusive_group = group2;
-                        cla2.mutually_exclusive_group = group1;
+                        cla1.mutuallyExclusiveGroup = group2;
+                        cla2.mutuallyExclusiveGroup = group1;
                     }
                 }
             }
@@ -258,7 +258,7 @@ public class CommandLineCA {
             if (cla1.found) {
                 // Now check for mutual exclusion....
                 for (CmdLineArgument cla2 : list) {
-                    if (cla1.group == cla2.mutually_exclusive_group && cla2.found) {
+                    if (cla1.group == cla2.mutuallyExclusiveGroup && cla2.found) {
                         bad("Command '-" + cla1.command + "' cannot be combined with '-" + cla2.command + "'");
                     }
                 }
@@ -266,7 +266,7 @@ public class CommandLineCA {
                 String other = "";
                 boolean bad = true;
                 for (CmdLineArgument cla2 : list) {
-                    if (cla1.group == cla2.mutually_exclusive_group) {
+                    if (cla1.group == cla2.mutuallyExclusiveGroup) {
                         if (cla2.found) {
                             bad = false;
                             break;
@@ -288,7 +288,7 @@ public class CommandLineCA {
             } else if (cla1.frequency == CmdFrequency.OPTIONAL && cla1.defaultvalue != null) {
                 boolean do_it = true;
                 for (CmdLineArgument cla2 : list) {
-                    if (cla1.group == cla2.mutually_exclusive_group) {
+                    if (cla1.group == cla2.mutuallyExclusiveGroup) {
                         if (cla2.found) {
                             do_it = false;
                             break;
@@ -434,7 +434,7 @@ public class CommandLineCA {
         }
         StringBuilder s = new StringBuilder(", and default KeyUsage [");
         boolean comma = false;
-        for (KeyUsageBits kubit : cert_spec.key_usage_set) {
+        for (KeyUsageBits kubit : cert_spec.keyUsageSet) {
             if (comma) {
                 s.append(", ");
             }
