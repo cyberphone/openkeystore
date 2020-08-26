@@ -2,7 +2,7 @@
   "kid": "example.com:p384",
   "kty": "EC",
   "crv": "P-384",
-  "x": "GLfdsvEwphRzS_twup7UFPVOk7_CKgHZ7dt_fJ2QHPBdJa1c5pfJcRIWTfT0lpg9",
-  "y": "ovA5_QXmFbj9U4pjZ1AX_ZdVyIRZUBWW9cuZda_tupKfWQfmcQHzDmHGHbxl9Xxl",
-  "d": "Qsgq80kMs40sAn1gB7gLxAk1se37Kmh9AG18wWZ3SqgcPPRq1wwidNTi866Gt4_0"
+  "x": "xEocJM0Mr7uq6esZNhmce0e15_yJfRfuwGSmaPi4M4cqp8G7vwQ0QVwKeYuwnjlF",
+  "y": "-f8VKOyFtHXvtgaLWwGjRdIx-FB4IddB7yope59oFLYgypxT2w4Va6TMYqJaFlAK",
+  "d": "iAXg2YeN6lvgo1f1RY9VPLW7YGb8_qqAGyI5TKuQ9IIR5pExB7m2g4pu__J0BTTk"
 }

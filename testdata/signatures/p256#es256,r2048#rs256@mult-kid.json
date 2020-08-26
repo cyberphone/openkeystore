@@ -6,11 +6,11 @@
     "signers": [{
       "algorithm": "ES256",
       "keyId": "example.com:p256",
-      "value": "ALSKXRtZnMIH-75sSwMeIa2mG16lpl-arLaEyhdGFUxKODiBMHzZBdTbyYEOfgPWjdt3FoQs3QayLV_AE7Iysg"
+      "value": "_wLB8ThVA1Sk1okrD4pt2FbYSA7SMyDhu_IPQHC0svqdvKBTYvKh6EgGwUEQz8rt7k2o8hvAshhneN825vYiUg"
     },{
       "algorithm": "RS256",
       "keyId": "example.com:r2048",
-      "value": "WQp3IgeJ_82o8Sg8nX6l6UrIVdA3XEmEpJNeKCqGXodW3Vgb-TKm60p6YmBxoOvaEX-O6yC1WNqGzECBHlLc6xUbwGZNGBA14gEwye-VAo7LIol83vvBCBjRBEOJhQjqwb-JsU0zXRFXpbN87QLCFDu_OSWUALL1eEbTFn5oocqODs3phbIPaZN-VYwLcBbjC4GVSfjdls0GChJ5MwQcclwlJsOhYpZoiuFgzmgGO-wgKrmQwaVnHybYG2Zt8UxmVSPtnPB0BdwV_dJaflI25f0hFvONyJ6z-i14PpYiOwYMWd0galeIjuSOVWLKhSW747YWR8A6YRFxqMe_JATm4A"
+      "value": "K6mNI37itawW3Fx4gVLaywCy_mJz_gcRhr0t6toygpBG6GHD3eh_Jj8DarQaZzMjk20AH-m1X_yRGSD-QRfzH9H2g-ypDPOL_HrzkvBTOME4Ja7j48c5tQ5gxDgbQEdq4dEkZEnQkJrarAlx0OaGX_mMaFDFuhLgpUEcoyzv5xN4VcDHbtMcLMGgvLQzy-Z501x_D2IBPuyQzL7ozaU5HXiND_7T9NCX4j2pIrgitQuLL1zc9H7QAwiLgWaLz7sMPPF03nDkiYTtOc9h8N0kLFh0wgNfGN2WiuBuUEWwFQ_RC1A3gFTwhe5B6PZypQ7OUow633lWF38ZRJ296etFhA"
     }]
   }
 }

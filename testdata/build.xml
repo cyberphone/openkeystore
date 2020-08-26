@@ -148,9 +148,6 @@
     <antcall target="_createcert">
        <param name="cmd" value="-out/keyalias mykey -selfsigned -entity/ca -subject &quot;CN=Trust Network Root CA1, C=US&quot; -validity/start 2015-07-10T10:00:00 -validity/end 2030-07-10T09:59:59 -out/storetype PKCS12 -out/keystore rootca.p12 -out/storepass foo123 -out/keypass foo123 -keysize 4096 -sigalg RSA_SHA512 -serial 1"/>
     </antcall>
-    <antcall target="_createjwk">
-       <param name="cmd" value="rootca.p12 foo123 rootca.x5c certificate"/>
-    </antcall>
     <antcall target="_createpem">
        <param name="cmd" value="rootca.p12 foo123 rootca.pem certificate"/>
     </antcall>
@@ -177,9 +174,6 @@
     </antcall>
     <antcall target="_createcert">
        <param name="cmd" value="-out/keyalias mykey -selfsigned -entity/ca -subject &quot;CN=Unknown Root, C=US&quot; -validity/start 2015-07-10T10:00:00 -validity/end 2030-07-10T09:59:59 -out/storetype PKCS12 -out/keystore unknownca.p12 -out/storepass foo123 -out/keypass foo123 -keysize 4096 -sigalg RSA_SHA512 -serial 1"/>
-    </antcall>
-    <antcall target="_createjwk">
-       <param name="cmd" value="unknownca.p12 foo123 unknownca.x5c certificate"/>
     </antcall>
     <antcall target="_createpem">
        <param name="cmd" value="unknownca.p12 foo123 unknownca.pem certificate"/>

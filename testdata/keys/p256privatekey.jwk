@@ -2,7 +2,7 @@
   "kid": "example.com:p256",
   "kty": "EC",
   "crv": "P-256",
-  "x": "censDzcMEkgiePz6DXB7cDuwFemshAFR90UNVQFCg8Q",
-  "y": "xq8rze6ewG0-eVcSF72J77gKiD0IHnzpwHaU7t6nVeY",
-  "d": "nEsftLbi5u9pI8B0-drEjIuJzQgZie3yeqUR3BwWDl4"
+  "x": "7RfyAJjFaBFDlkxX8OHkAdvpXAbA0lNM2p4HbIW4VR4",
+  "y": "lJnjniT9DCb4d6kZZ6DgyxZVPbUOtg08_7wuvMttGeU",
+  "d": "Jw7K2yi5du9w8t9rblF0U_rTR3YJdY7gJLcp4v3dUGk"
 }

@@ -10,12 +10,12 @@
       "https://example.com/extension": {
         "life-is-great": true
       },
-      "value": "T-7QWCI4GDMutdCOi4MDca_6Jpq2YLasrfOduvYgt8YlqVlY9gYrNfotLN3JjQbCrW6ShIrhErUY0sJ9VGBseg"
+      "value": "aMk-Y5IiA35PbM8UtmiDieiDPEBFwbZQNOqwOpQMTVWk-BE3zXm7d6nAQHiAPBHoFfh1vMS8El9UlosOGWlIyA"
     },{
       "algorithm": "RS256",
       "keyId": "example.com:r2048",
       "otherExt": "Other Data",
-      "value": "fEy3hW0MXzpK9kC_gjPtpVBXBdBkuVVoY8DMugjMTJBw2t5iABpH_oNKmp3LQl-zB0LcSpINh0bRgv2sErgPFHEH0fcg1omJ8N7jee4yPkA4-r9qW_vWOKAOQOArcUnoGYtQTcOMlaNz5B-qbn-aX0faxm3zGOrizWVdQTG7fJe8dQW4M3JdGy01zlA37fpX9ucKvM2nKkSZtAjFRtKA504UEbww3wLcQlbocZPpVpYoaiN_Oi6X7zpIhxvTbYR1bhh9D9uuXaaYSIG5VjokpVo0vTvhrMg4rT29QRq70RyH45cA_ydwr18gwHLvXU0-4lSkB_d1F7f7rjwRnMlwAw"
+      "value": "cx-drKJdZm6_5RucFw5oQdWlxXLmn6U3-ioC0ObFmTwJ7svWklTXiFOpw6x-p7bysI2cF5vfQ7zzRvuXkC90W2pznZ9Go-ZZ33PbfecBjj-bD2xoZYxZgmPl0QQyXRROYzLfAHAu4yhfo_1tCjqa1MUdxI0pI17Tf31MLLEtlZjcm7Cf1ej6-FK-XmwJmCcxprHsyQzUSVf4XilNgqJPfp76d06_f-2xTl6VgwLZXs57J0EftsHGd2h5l-e_wIeQYlIkI5JO2Mxw0FwhNAMPNb8AD2QGnS7X36ftLshsMYEIfYlUWze5mpeOqt3ZZQ4Nhv1hEXzFf4OGVeUB-5BiPg"
     }],
     "extensions": ["otherExt", "https://example.com/extension"]
   }

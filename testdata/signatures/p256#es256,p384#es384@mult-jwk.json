@@ -8,19 +8,19 @@
       "publicKey": {
         "kty": "EC",
         "crv": "P-256",
-        "x": "censDzcMEkgiePz6DXB7cDuwFemshAFR90UNVQFCg8Q",
-        "y": "xq8rze6ewG0-eVcSF72J77gKiD0IHnzpwHaU7t6nVeY"
+        "x": "7RfyAJjFaBFDlkxX8OHkAdvpXAbA0lNM2p4HbIW4VR4",
+        "y": "lJnjniT9DCb4d6kZZ6DgyxZVPbUOtg08_7wuvMttGeU"
       },
-      "value": "YKCzkzU9a13IRsbesaKfjTrVOyVoWTANXDbjsBpoLhoBEpcdt6vCMSkeaUmJsaARupVBsAG66IvYw1U7E4FoIg"
+      "value": "cXLVOE8vQJfHJfES5elb3NZcBaNWpQ2C-Fjn2h7F5dq4KXDYFv3JPV9rpSOOCpQ0Wg6jjoEZGf2LH8FA4wmOaQ"
     },{
       "algorithm": "ES384",
       "publicKey": {
         "kty": "EC",
         "crv": "P-384",
-        "x": "GLfdsvEwphRzS_twup7UFPVOk7_CKgHZ7dt_fJ2QHPBdJa1c5pfJcRIWTfT0lpg9",
-        "y": "ovA5_QXmFbj9U4pjZ1AX_ZdVyIRZUBWW9cuZda_tupKfWQfmcQHzDmHGHbxl9Xxl"
+        "x": "xEocJM0Mr7uq6esZNhmce0e15_yJfRfuwGSmaPi4M4cqp8G7vwQ0QVwKeYuwnjlF",
+        "y": "-f8VKOyFtHXvtgaLWwGjRdIx-FB4IddB7yope59oFLYgypxT2w4Va6TMYqJaFlAK"
       },
-      "value": "tJghBi4ALZUWeO_76P4xvMxvo2zUQhHzCqR2-giWdNXCZG_x8mA39GFuj2TJQTTA7SFqoSovHi8b2jzuCRFB9uL374gBJ_wf30iq2grkoIg7q8aaCVxCDm0JAKUxEuWf"
+      "value": "ZEL9Pc5sNXkZsFabMDIrPkqQSlbQd9LB07z4cW5QltsuvTePQLtwU0hnSPB2aeQFl1dQap_T7kT6bcnO-ZRnKa1y6pVE8qIE9yu9FbZZMzz24hbpqb869j8PLhCUi53h"
     }]
   }
 }

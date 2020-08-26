@@ -538,7 +538,7 @@ public class CommandLineCA {
     CmdLineArgument CMD_out_ks_type = create(CmdLineArgumentGroup.GENERAL,
             "out/storetype", "type",
             "Set target keystore type",
-            "JKS");
+            "PKCS12");
 
     CmdLineArgument CMD_out_update = create(CmdLineArgumentGroup.GENERAL,
             "out/update", null,

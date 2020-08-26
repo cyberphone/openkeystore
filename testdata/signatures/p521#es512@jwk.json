@@ -7,9 +7,9 @@
     "publicKey": {
       "kty": "EC",
       "crv": "P-521",
-      "x": "AT9Hw32aVQCGd5csltC1dqhSB4fFt-mEWO-QxZqrr9Yrwn69_q7n1YOYrHSWjk_qMkCGk6qQ4f9ZRYIJPGqjfxC9",
-      "y": "AeVHV1elHFzR_P5Lzb22hMyhAzcGSTT1sdwVmFkJGBYt55RKXGNO1H9De2v_p5S-kkK8BZVh3JGzixMyT0Eo_ckS"
+      "x": "AFmk6Cpqn-MA2aZSrfWFY0FbnYS_ILdYwasDAgLUOozQpCf65HbL-jlHQFaVjk3VD_9N7pJaMNvS5TumGNkJXU3W",
+      "y": "Aeuf-fCSl2lTQw9obQH32w3obrzi8lX0OqszZDnq951IkJyoqaUTnxuY-lnHZdF4HKoiCDtODc-Dz1TkdvAg0A5u"
     },
-    "value": "AJ659xkbRdTlQQQpcV0dSbZ9DvtpIPTP2l00Xsrbp3PrXPzmJtGzDTnL4hz813SzLgq7ZJZ5ZR7fGvMQ6E_XO-2MAPrGAe5Kny4M2IPbeYuSTRXNvGhshNmhrSveTSqcAOZ3NLd-7KL55KKvF81eAkSxyRF1uyiPy2qK9bozrpz3oWem"
+    "value": "AVFsFDISNGbACHiaIegQG1xVp_W6lKQhjKTkuntTGJxYewEnp0CrTJG5exZjo3UHhVmoEciI9f0cdRLh2UXgueOjAUSvSDvzlUzdhDn4BNJrDGw-34ZtAXRIeJsb98vUFwR3ozTNgB8AHtJXPB169b-w0EL4e74kKVPCmlSxeNoBJxYs"
   }
 }

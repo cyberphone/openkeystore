@@ -2,7 +2,7 @@
   "kid": "example.com:p521",
   "kty": "EC",
   "crv": "P-521",
-  "x": "AT9Hw32aVQCGd5csltC1dqhSB4fFt-mEWO-QxZqrr9Yrwn69_q7n1YOYrHSWjk_qMkCGk6qQ4f9ZRYIJPGqjfxC9",
-  "y": "AeVHV1elHFzR_P5Lzb22hMyhAzcGSTT1sdwVmFkJGBYt55RKXGNO1H9De2v_p5S-kkK8BZVh3JGzixMyT0Eo_ckS",
-  "d": "AYSlWWbGUougMnE2r7pRkiHZfXBgUzaVTuWfE0X7PDYodsVXVzRiz4KMgfs5Xowwk2roUsbJV7wdyZ83qMrQM1Fv"
+  "x": "AFmk6Cpqn-MA2aZSrfWFY0FbnYS_ILdYwasDAgLUOozQpCf65HbL-jlHQFaVjk3VD_9N7pJaMNvS5TumGNkJXU3W",
+  "y": "Aeuf-fCSl2lTQw9obQH32w3obrzi8lX0OqszZDnq951IkJyoqaUTnxuY-lnHZdF4HKoiCDtODc-Dz1TkdvAg0A5u",
+  "d": "AZ4-pYBp3JYTlaXko25-nscklkZCujSP8Rjv_D5NheD2BETEAkuYqnx-DWJ3rJWO5Rzs6gYanvTNl5HXN-xzIASn"
 }

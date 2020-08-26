@@ -117,10 +117,10 @@ public class CertSpec {
         akiExtension = true;
         endEntity = true;
         setDefaultKeyUsage(new KeyUsageBits[]{KeyUsageBits.DIGITAL_SIGNATURE,
-                KeyUsageBits.NON_REPUDIATION,
-                KeyUsageBits.KEY_AGREEMENT,
-                KeyUsageBits.DATA_ENCIPHERMENT,
-                KeyUsageBits.KEY_ENCIPHERMENT});
+                                              KeyUsageBits.NON_REPUDIATION,
+                                              KeyUsageBits.KEY_AGREEMENT,
+                                              KeyUsageBits.DATA_ENCIPHERMENT,
+                                              KeyUsageBits.KEY_ENCIPHERMENT});
     }
 
 
@@ -129,7 +129,7 @@ public class CertSpec {
         akiExtension = true;
         caCert = true;
         setDefaultKeyUsage(new KeyUsageBits[]{KeyUsageBits.KEY_CERT_SIGN,
-                KeyUsageBits.CRL_SIGN});
+                                              KeyUsageBits.CRL_SIGN});
     }
 
 
@@ -236,7 +236,9 @@ public class CertSpec {
 
 
     public void addIPAddress(String ip_address) throws IOException {
-        addSubjectAltNameElement(SubjectAltNameTypes.IP_ADDRESS, new ASN1OctetString(InetAddress.getByName(ip_address).getAddress()));
+        addSubjectAltNameElement(
+                SubjectAltNameTypes.IP_ADDRESS, 
+                new ASN1OctetString(InetAddress.getByName(ip_address).getAddress()));
     }
 
 

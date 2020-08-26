@@ -5,6 +5,6 @@
     "algorithm": "ES256",
     "keyId": "example.com:p256",
     "excludes": ["myUnsignedData"],
-    "value": "k4BpzeItKuse4y5zqwIrsBhI4I_yKzA1lcEP4xW16JC5BkPvSIjbjIGo73mJE_6tYV9rZrgArOlCYX2Q0rw2dw"
+    "value": "0iJdbuq3DzPAN6vb9I0z7Fu4gRevk5-v0ZdcI-CJXoSuClMC-cwIuSI5mZUgkX9qARzJsbNxiRVQx4lx4E9t8Q"
   }
 }

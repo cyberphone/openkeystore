@@ -5,23 +5,23 @@
     "publicKey": {
       "kty": "EC",
       "crv": "P-256",
-      "x": "censDzcMEkgiePz6DXB7cDuwFemshAFR90UNVQFCg8Q",
-      "y": "xq8rze6ewG0-eVcSF72J77gKiD0IHnzpwHaU7t6nVeY"
+      "x": "7RfyAJjFaBFDlkxX8OHkAdvpXAbA0lNM2p4HbIW4VR4",
+      "y": "lJnjniT9DCb4d6kZZ6DgyxZVPbUOtg08_7wuvMttGeU"
     },
     "ephemeralKey": {
       "kty": "EC",
       "crv": "P-256",
-      "x": "BPvCByOHPRl-opXnUJBVrrVDTjSaUvvQ4ACcMS9Jnt0",
-      "y": "FxRK5NJkCTl3bI813uu9GJiFbN5PeAbeGMAqVlRYYpQ"
+      "x": "ccy-5gKnSFcQ3DIwAN_3x44qnxDeuGEvpaD-YuGI2nw",
+      "y": "0b0ijLCla4ZAHbweG-oJuS2ZgkarHlsnhyvwym92-w8"
     },
-    "encryptedKey": "SaMiUiniCUqxSY5QkZi7RijW6Ar7p2j_ZcJKsle6-RTEEqo7C4GDjA",
+    "encryptedKey": "syuGzXloP9kMD-w99uR-6l8QxUio9BGYV8xnjAOcrhc41eBW54349w",
     "otherExt": "something",
     "https://example.com/extension": {
       "life-is-great": true
     }
   },
   "extensions": ["otherExt", "https://example.com/extension"],
-  "iv": "2QudjRj1_PRITH5d",
-  "tag": "6aLCv6EzTqnDHNa1l-R5oA",
-  "cipherText": "X3SeTybscqhWspQ86KbPBY8CBBxAyQ"
+  "iv": "aFm9lZ2UYm2rizV3",
+  "tag": "qXXT6lqjjkhiQUvJfJfeOw",
+  "cipherText": "Jwjr1g8ZJUa2TT3EasfEYyQwroT-fw"
 }

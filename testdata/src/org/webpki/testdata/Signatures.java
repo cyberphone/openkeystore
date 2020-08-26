@@ -423,12 +423,25 @@ public class Signatures {
         if (signatures.size() != 2) {
             throw new Exception("Wrong array signature");
         }
-        optionalUpdate(baseSignatures + prefix(keyType1) + getAlgorithm(signatures.get(0)) + ","
-                                      + prefix(keyType2) + getAlgorithm(signatures.get(1))
-                                      + (chained ? "@chai" : "@mult") 
-                                      + fileExt + (wantKeyId ? "-kid.json" : "-jwk.json"),
-                       signedData,
-                       true);
+        String fileName = baseSignatures + prefix(keyType1) + getAlgorithm(signatures.get(0)) + ","
+                + prefix(keyType2) + getAlgorithm(signatures.get(1))
+                + (chained ? "@chai" : "@mult") 
+                + fileExt + (wantKeyId ? "-kid.json" : "-jwk.json");
+        boolean cleanFlag = true;
+        if (wantKeyId) {
+            try {
+                JSONObjectReader oldSignatures = JSONParser.parse(ArrayUtil.readFile(fileName));
+                signatures = chained ?
+                        oldSignatures.getSignatureChain(options) 
+                                                                  : 
+                        oldSignatures.getMultiSignature(options);
+                signatures.get(0).verify(new JSONAsymKeyVerifier(keyPair1.getPublic()));
+                signatures.get(1).verify(new JSONAsymKeyVerifier(keyPair2.getPublic()));
+            } catch (Exception e) {
+                cleanFlag = false;
+            }
+        }
+        optionalUpdate(fileName, signedData,  cleanFlag);
      }
     
     static String keyIndicator(boolean wantKeyId, boolean wantPublicKey) {
@@ -487,8 +500,19 @@ public class Signatures {
         }
         JSONSignatureDecoder decoder = 
             JSONParser.parse(signedData).getSignature(signatureLabel, options);
-        optionalUpdate(baseSignatures + prefix(keyType) + getAlgorithm(decoder) + '@' +  
-                addedFeature + keyIndicator(wantKeyId, wantPublicKey), signedData, true);
+        String fileName = baseSignatures + prefix(keyType) + getAlgorithm(decoder) + '@' +  
+                addedFeature + keyIndicator(wantKeyId, wantPublicKey);
+        boolean cleanFlag = true;
+        if (!wantPublicKey) {
+            try {
+                JSONParser.parse(ArrayUtil.readFile(fileName))
+                    .getSignature(signatureLabel, 
+                                  options).verify(new JSONAsymKeyVerifier(keyPair.getPublic()));
+            } catch (Exception e) {
+                cleanFlag = false;
+            }
+        }
+        optionalUpdate(fileName, signedData, cleanFlag);
         return decoder;
      }
 

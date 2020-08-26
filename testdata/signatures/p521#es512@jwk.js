@@ -6,9 +6,9 @@
     publicKey: {
       kty: "EC",
       crv: "P-521",
-      x: "AT9Hw32aVQCGd5csltC1dqhSB4fFt-mEWO-QxZqrr9Yrwn69_q7n1YOYrHSWjk_qMkCGk6qQ4f9ZRYIJPGqjfxC9",
-      y: "AeVHV1elHFzR_P5Lzb22hMyhAzcGSTT1sdwVmFkJGBYt55RKXGNO1H9De2v_p5S-kkK8BZVh3JGzixMyT0Eo_ckS"
+      x: "AFmk6Cpqn-MA2aZSrfWFY0FbnYS_ILdYwasDAgLUOozQpCf65HbL-jlHQFaVjk3VD_9N7pJaMNvS5TumGNkJXU3W",
+      y: "Aeuf-fCSl2lTQw9obQH32w3obrzi8lX0OqszZDnq951IkJyoqaUTnxuY-lnHZdF4HKoiCDtODc-Dz1TkdvAg0A5u"
     },
-    value: "APKiDSJKxel-bov2OZofYdTfZeg3cFLed280LEi6TqLssvJogtka_dfjSEn_U65kcDtWl3k7OU0T2foB76eqWu9yAPMCZYUVfSsi6P8_adMWA2Mop-7ufjMtjOm01Ku9wlDxch0nqSTzc0hPRdwOpc7JTTohl9g2DUwfqGLreQA_tBlW"
+    value: "ALpw0PlHmK5LPcEzwBqabljkieKWOeU2D_v1tFb4TctcRfM_vjHu55zdViqb6E3W6luzT2oXnWPkBZB58UJZDiz_ANWIHP7xkwxWIr1PUSMS1Ip_KKr48nckWjYawTaIuYS5hU8uHkzOu8MR-d-382rSNJuqK2zecQPuyHsgB_VDCRpa"
   }
 }

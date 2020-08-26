@@ -1,18 +1,13 @@
-[
-  90000,
-  {
-    "success-is-inevitable": true,
-    "pi-approximation": 3.14159265359
+[90000,{
+  "success-is-inevitable": true,
+  "pi-approximation": 3.14159265359
+},"The quick brown fox...",{
+  "algorithm": "ES256",
+  "publicKey": {
+    "kty": "EC",
+    "crv": "P-256",
+    "x": "7RfyAJjFaBFDlkxX8OHkAdvpXAbA0lNM2p4HbIW4VR4",
+    "y": "lJnjniT9DCb4d6kZZ6DgyxZVPbUOtg08_7wuvMttGeU"
   },
-  "The quick brown fox...",
-  {
-    "algorithm": "ES256",
-    "publicKey": {
-      "kty": "EC",
-      "crv": "P-256",
-      "x": "censDzcMEkgiePz6DXB7cDuwFemshAFR90UNVQFCg8Q",
-      "y": "xq8rze6ewG0-eVcSF72J77gKiD0IHnzpwHaU7t6nVeY"
-    },
-    "value": "P5BSThPyn5OeGdsCyE-dxKhgj9kTNR5P2xSSbN-lIviylbOk2I2NEF5goPSJuT8qmQuDgEvguJQ-uKx644bW2A"
-  }
-]
+  "value": "w_WzusYKOxdeOdpisX_kP42uVUfKyJG3HTAru4Lf1J4QzT3oapqsR5oqPSu1MIULfP-whq1Z8bBHRVJ5mrP8Bg"
+}]
