@@ -6,9 +6,9 @@
     publicKey: {
       kty: "EC",
       crv: "P-256",
-      x: "7RfyAJjFaBFDlkxX8OHkAdvpXAbA0lNM2p4HbIW4VR4",
-      y: "lJnjniT9DCb4d6kZZ6DgyxZVPbUOtg08_7wuvMttGeU"
+      x: "6BKxpty8cI-exDzCkh-goU6dXq3MbcY0cd1LaAxiNrU",
+      y: "mCbcvUzm44j3Lt2b5BPyQloQ91tf2D2V-gzeUxWaUdg"
     },
-    value: "60g7fLLL-84jFL8xAe1YxAF0g4qBPIMz5bxLiWbZ9sxl8aR1QcCLqmT3NIuw18SXkE_o0ljNvGt9XMSxIJBREA"
+    value: "2Pwi7afWDaVN2bJIvOSNbEOucAwJQ1sgFQ_GKxk-VoQeHqmZWrJUmr8uW_uspQ5WhqqXeEO3vcMACzQuJBMVKQ"
   }
 }

@@ -7,14 +7,14 @@
     "publicKey": {
       "kty": "EC",
       "crv": "P-256",
-      "x": "7RfyAJjFaBFDlkxX8OHkAdvpXAbA0lNM2p4HbIW4VR4",
-      "y": "lJnjniT9DCb4d6kZZ6DgyxZVPbUOtg08_7wuvMttGeU"
+      "x": "6BKxpty8cI-exDzCkh-goU6dXq3MbcY0cd1LaAxiNrU",
+      "y": "mCbcvUzm44j3Lt2b5BPyQloQ91tf2D2V-gzeUxWaUdg"
     },
     "extensions": ["otherExt", "https://example.com/extension"],
     "otherExt": "Cool Stuff",
     "https://example.com/extension": {
       "life-is-great": true
     },
-    "value": "fCZEgKK_LboeoaDNuqxvNR1oO12hJZWqdPWF_jZFMk5c01uaFm4BEhbcfyxJZ8zdh83j_n4vYrTDJmBNN5VDww"
+    "value": "jFlU5VEGcq7ezESeKX_JR79rrppnE4uxmnPTLeYth6atfJker7oDon1R3yKLEeGS1vVntVpuGjxNSdLqIrLd0A"
   }
 }

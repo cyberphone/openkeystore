@@ -8,9 +8,9 @@
     "publicKey": {
       "kty": "EC",
       "crv": "P-521",
-      "x": "AFmk6Cpqn-MA2aZSrfWFY0FbnYS_ILdYwasDAgLUOozQpCf65HbL-jlHQFaVjk3VD_9N7pJaMNvS5TumGNkJXU3W",
-      "y": "Aeuf-fCSl2lTQw9obQH32w3obrzi8lX0OqszZDnq951IkJyoqaUTnxuY-lnHZdF4HKoiCDtODc-Dz1TkdvAg0A5u"
+      "x": "AVb-eD8V1UAzN8GWoUypQ_8xSABA4PwUZ1O_fanjLvbwpuyoniN98ljWt3y93TCrDAqe1089tLCfpJhre8M5frBs",
+      "y": "ABORvO-p61zLrGCtgqqqFcQJX_ljnoJ7iDd1IIKZSyksI8aElmtJFCRVSgCyU_P7mSmilqVVaBWhE9fqRHcQ2u_c"
     },
-    "value": "ACkNSalv8lr2JU3qCzX6Oj9FO-sK6Ufcn42bA_V71S3WgTkgmKgcYHWJdNCHZhAwlaCYGoh06nVs2qTPx9YNl2cQAeNoTM3fQni5QiqLwaGj1SeZV1E_liGeVefhwLfgLWxRVeu9Go_dPxQdoYjZFbvTOYoJ23mbglqBJhTV5AfEWyom"
+    "value": "AHin1zwiLs0ImzqVeUMMW75D0fkoEH6MobYe9ClqCQnIKaF9hzVuMudfHpawe6-isxs6QgNPdCjeJzjxIhyCXzhyAH9dmOZ8JbXhFAw9z4OVHWk-t3zeIbE9CcUmZbRkiT62X1b0CHiE3cMDC54VtiuT5IbRsjlVtxXsKa6s3rmG2Snd"
   }
 }

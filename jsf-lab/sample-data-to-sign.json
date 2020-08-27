@@ -2,9 +2,4 @@
   "description": "Signed JSON object using JSF",
   "string": "\u20ac$\u000F\u000aA'\u0042\u0022\u005c\\\"\/",
   "numbers": [333333333.33333329, 1E30, 4.50, 2e-3, 0.000000000000000000000000001],
-  "literals": [null, true, false],
-  "signature": {
-    "algorithm": "ES256",
-    "value": "n5pwiaH5lhI1KtU9ScN4uA3gcVnKurIq3owKHEdh_LpJrEVH8K_fRGOnY5RWX9lLQzHzvdyaRBqC0qbPbH0qCA"
-  }
-}
+  "literals": [null, true, false]}

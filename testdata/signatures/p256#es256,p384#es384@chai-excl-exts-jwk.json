@@ -7,24 +7,24 @@
       "publicKey": {
         "kty": "EC",
         "crv": "P-256",
-        "x": "7RfyAJjFaBFDlkxX8OHkAdvpXAbA0lNM2p4HbIW4VR4",
-        "y": "lJnjniT9DCb4d6kZZ6DgyxZVPbUOtg08_7wuvMttGeU"
+        "x": "6BKxpty8cI-exDzCkh-goU6dXq3MbcY0cd1LaAxiNrU",
+        "y": "mCbcvUzm44j3Lt2b5BPyQloQ91tf2D2V-gzeUxWaUdg"
       },
       "otherExt": "Cool Stuff",
       "https://example.com/extension": {
         "life-is-great": true
       },
-      "value": "gPX_N97nBnZA5MqEBF1_xP6-q8f_jHwzAQShc0rLpo_jKa91phayBHfF6znGyd0yrGqGls3GM2YP1FwsTCb31w"
+      "value": "K-CxTM6njC1RY6no9Qz_Fmj4zFNfyOb4_9YOESIl5LhFA4Hf8bTcmWjmgkzcRAGlPcawK7uFGD8l9LzaZC0KWA"
     },{
       "algorithm": "ES384",
       "publicKey": {
         "kty": "EC",
         "crv": "P-384",
-        "x": "xEocJM0Mr7uq6esZNhmce0e15_yJfRfuwGSmaPi4M4cqp8G7vwQ0QVwKeYuwnjlF",
-        "y": "-f8VKOyFtHXvtgaLWwGjRdIx-FB4IddB7yope59oFLYgypxT2w4Va6TMYqJaFlAK"
+        "x": "o4lIdIXzdJro4jU9g-2q-__i5WcutpJaWwOeSgKL8x6nxKWOPD5rH-POQhJ79l6t",
+        "y": "MLnyLIGdTO2feJkCW3rWWKG3elhi1Zmbp068Ejb_1LuI-2cNQsRUqb16TfK588_N"
       },
       "otherExt": "Other Data",
-      "value": "_55e2Dja1NjFbIAM6Q1DxyMaU4m2WxVGEABcmOOBkCCb5lbLwRUMpK9erATfKntSLu0ZtFIV4zYLfb5ASiDkifgsehnr-EEJNjN_VkttJhi9YbNjgCAEPjfo3p3L9EYr"
+      "value": "YrpcW7QYqI9N4Qfoft5mK6BLxdWuQ9gYlT9h46r9SMyA5rYQUnXWiI1d9yv6gwDW-w-RqvmbWlsos7jQYLROOwvks8EGCmT5OSpVJxz9TZRq6hlHxCETJW-RnQ9YkrIY"
     }],
     "extensions": ["otherExt", "https://example.com/extension"],
     "excludes": ["myUnsignedData"]

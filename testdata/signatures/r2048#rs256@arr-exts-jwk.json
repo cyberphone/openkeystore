@@ -5,7 +5,7 @@
   "algorithm": "RS256",
   "publicKey": {
     "kty": "RSA",
-    "n": "1ieJIhSKFTUskh60001axMTS7P4gy0lEnYV9YALojEtq5sCeP0UEYGpRDj-O1mMM2MkW5zjd0obt__-uY_JlE3Bk4GIJaPp-DQBy5lXA_Xr2HG60hQaaw-GkGRZPxqeU9-PouMV_8NBU_v19u2GHjgvslO5_IJ8kAkhn2I39EYqU3EsTWKZgO8G0Sgp8pAdm8ZS-m3nSDoCDZnn4wpomF5PQkyEivT85vCZFjsmVDUqkN-5HJ0geiTxukMO0KxnS97OMep4gLTPwUCYDNr-iPYCOfhTuUjlggwxFnlYnAQ2bdpB9VT-YcDm27izERyY3dCkCogWh6Rd_1G8Z2OceTw",
+    "n": "ptKZyFPStvmOlb0WihOBhlHUr6wFDHC-tW7hJAudfTQ5mHZQpB8PoMz07udZA-dG8dhUIPkmXlp1TgREeYTHdhxhuf0y_GhbpZv5JPYHx3watO-HWO2qYkjRMEcrWhPMdaVkS_Xe_liaMcow4jYoWaFm8VobeYsyVD2bWWdyl4joTEETm1Z47RnnfR15kVhVudVrDzEFmM4nXV_6dmIg184RJE4httwBFxR8qZCQCwTiJmsoyJxfUR0Gs4ePKc5sB0NTkmFZc5klQSitd67RJn2ldhbqE7EpDl4XlIt-UyLJm1guCBltia8Agke7dXuhpB7hQ6LJwY4EjzthkJ8IPw",
     "e": "AQAB"
   },
   "extensions": ["otherExt", "https://example.com/extension"],
@@ -13,5 +13,5 @@
   "https://example.com/extension": {
     "life-is-great": true
   },
-  "value": "RGy73IaNjYdkZZ9xxNMxwE9jvQYiu64gI1hOI7p3yG0wAA5i5Ho7CuYbY30mMag_JPacEMIMe6wHOrU0LzVFWQ7UkjeDm3ZfGMoYcSca6T_kdqi3wR3m0hT-Zxovc0eIFcuyFSfHLjYMTd0-5Dwgdugj2AZ86VdW8mxY8G9fQx5Ok1oQPa3LwBdicsih1RwDiLz1od0T_gsBGVMxgMbFxImXOLuOD1YF-WOcxEfx2rRU4lq51-bVM8bK6ZioIHdHLTEsqyHz4ja7sw3kni_jQMp9vahQo_yqYx3938t7Z1GCwQZi8HLQGpsk3THJuOrqeLqcwyvOMhqSxYVWpWyLQg"
+  "value": "a8PVUDTDYezcpK9iHnntkkfE5uu65vw_SAeF-hRZaiv22-JAqz-fYJkA-9r0IcTHE_n2_-CQa_KY5CEyx65YRsY9JBD7s30uy4W3wgEfTQOfmtiII4b59kI69b_Hr9gxFuvEZlVjWq-WBZmP8DBaOeZLZWSXmyjDVfBWVDjAhUHtzqhBSJ0KybU14alt7tsVaZT3v0Gnvy3oDKTUb735d9weC-_jveowMDguSR2Brzn1SUGnA4UGr6K5pEKEdna2bEyPvHdbXSWX7l4fdTl5G6yOZmOPOk73JqwRK8j2RfcTno_maYGbyo7dngI7nh0EiIk91JnDDAuCU3H6vE2Ifw"
 }]

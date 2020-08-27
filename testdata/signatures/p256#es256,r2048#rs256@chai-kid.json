@@ -6,11 +6,11 @@
     "chain": [{
       "algorithm": "ES256",
       "keyId": "example.com:p256",
-      "value": "oUqfARdRkil9z31xewkZkvu-jihs82ebALQfNZqabFuduU0zXYh6f7TkqYOTddL4D20pHP5BS3EIaFDckkZKgA"
+      "value": "7FltvS4-9QnJC1WaK_i-KGB-RdJYfOs0YSDHEFRCFKU5zlSPPJQbrQHfLS93fE0HEmeO5pF0Av0G8k3zqDI9Jg"
     },{
       "algorithm": "RS256",
       "keyId": "example.com:r2048",
-      "value": "hJwuEt9puffBxW3QqA3mkIZkJQdVakaOxsOkUmfuCq0qbtTnWfZljAxtHv12pv43TJU4XnW9ANxLBOkJEoxP7sURk7wXdn1uHI1tEXAb9w9asy3Igu2PmsvtJh_hqXQdq8LfxO5FE4r-5FIBr6XifY16A6DjT9SFp6JDWiQjcY-QNFnkb90gS-OeELEs9y-1XCHw4Z5Vw2PSF-X-VK3UKdPuYUsGSnLQHeaK2XV3-AtKd_uhm3pP3bV6UPT4N9OLKjVPwU06GaYxVXFjxb4GQDoQVsSdp4ojIorLnU2bCy20_wgYHGeZgMVJJguTXI-_ZU_m68jnDYER1KXrwL_qRg"
+      "value": "N5wLV7woCZkIzteuAzXxjmdgLi08iItdvRj21sDtLZCF6BqUAc2F9cWThrOWMgaXXWkPGONB7jG42l7qw-bEatoqT_B7sJRh3irSZRKg3H0EobE92Vx5iIb67gAcb5of0zmiWwIuwrBR5yXhJYT7iZB087QMtEJT77bzo0Wo0Bh7Dnmlx2mAPqcpEyMBL6OHMcJ0zcO_7BDnvXRb8r-4Ef7Bbhj7CJsowpX5xx0bKUKOFtc-4jqiodv96pV4letZ7aC3nd1lrHx3xMXj0zAOeoOY782cqFooUi8rrltZd6zSEfuIwWtALd1dq_YVCtPKGlEnoEgwRa9cEAiucaXwAg"
     }]
   }
 }

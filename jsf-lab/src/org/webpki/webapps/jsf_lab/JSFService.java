@@ -19,6 +19,8 @@ package org.webpki.webapps.jsf_lab;
 import java.io.IOException;
 import java.io.InputStream;
 
+import java.security.KeyPair;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,7 +32,13 @@ import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.MACAlgorithms;
 import org.webpki.crypto.SignatureAlgorithms;
 
+import org.webpki.json.JSONAsymKeySigner;
+import org.webpki.json.JSONObjectWriter;
+import org.webpki.json.JSONOutputFormats;
+import org.webpki.json.JSONParser;
+
 import org.webpki.util.ArrayUtil;
+import org.webpki.util.PEMDecoder;
 
 import org.webpki.webutil.InitPropertyReader;
 
@@ -40,7 +48,7 @@ public class JSFService extends InitPropertyReader implements ServletContextList
 
     static String sampleSignature;
     
-    static String sampleKey;
+    static String samplePublicKey;
     
     static String keyDeclarations;
     
@@ -96,16 +104,16 @@ public class JSFService extends InitPropertyReader implements ServletContextList
         }
     }
 
-    InputStream getResource(String name) throws IOException {
+    byte[] getEmbeddedResource(String name) throws IOException {
         InputStream is = this.getClass().getResourceAsStream(name);
         if (is == null) {
             throw new IOException("Resource fail for: " + name);
         }
-        return is;
+        return ArrayUtil.getByteArrayFromInputStream(is);
     }
     
     String getEmbeddedResourceString(String name) throws IOException {
-        return new String(ArrayUtil.getByteArrayFromInputStream(getResource(name)), "utf-8");
+        return new String(getEmbeddedResource(name), "utf-8");
     }
 
     @Override
@@ -116,12 +124,6 @@ public class JSFService extends InitPropertyReader implements ServletContextList
     public void contextInitialized(ServletContextEvent event) {
         initProperties(event);
         try {
-            /////////////////////////////////////////////////////////////////////////////////////////////
-            // Sample signature for verification
-            /////////////////////////////////////////////////////////////////////////////////////////////
-            sampleSignature = getEmbeddedResourceString("sample-signature.json");
-            sampleKey = getEmbeddedResourceString("p256publickey.pem").trim();
-
             /////////////////////////////////////////////////////////////////////////////////////////////
             // Keys
             /////////////////////////////////////////////////////////////////////////////////////////////
@@ -144,6 +146,22 @@ public class JSFService extends InitPropertyReader implements ServletContextList
                           .addKey(MACAlgorithms.HMAC_SHA256,            "a256")
                           .addKey(MACAlgorithms.HMAC_SHA384,            "a384")
                           .addKey(MACAlgorithms.HMAC_SHA512,            "a512").toString();
+
+            /////////////////////////////////////////////////////////////////////////////////////////////
+            // Sample signature for verification
+            /////////////////////////////////////////////////////////////////////////////////////////////
+            String sampleDataToSign = getEmbeddedResourceString("sample-data-to-sign.json");
+            KeyPair sampleKey = PEMDecoder.getKeyPair(getEmbeddedResource("p256privatekey.pem"));
+            String signedData =  new JSONObjectWriter(JSONParser.parse(sampleDataToSign))
+                .setSignature(
+                    new JSONAsymKeySigner(sampleKey.getPrivate(), 
+                                          sampleKey.getPublic(), 
+                                          null).setOutputPublicKeyInfo(false))
+                        .serializeToString(JSONOutputFormats.PRETTY_PRINT);
+            sampleSignature = sampleDataToSign.substring(0, sampleDataToSign.lastIndexOf('}')) +
+                              "," +
+                              signedData.substring(signedData.indexOf("\n  \"signature"));
+            samplePublicKey = getEmbeddedResourceString("p256publickey.pem").trim();
 
             /////////////////////////////////////////////////////////////////////////////////////////////
             // Logging?

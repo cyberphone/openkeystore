@@ -6,11 +6,11 @@
     "signers": [{
       "algorithm": "ES256",
       "keyId": "example.com:p256",
-      "value": "g6OJT35uDBBYNv73SlrGHRKSXBIQ2oyhydO-7ULIRgWvB8dGQ4eExbyL6VtaNPpfLP_7Vrhkw2yvDjiL1GtPjQ"
+      "value": "D7nBkMoQrR2iiq4AbhDHWxYtTxUqBl7LuOXh7dT2ffD0rqFBKJHfiXYyyjESJZTPguHvcBpZz1nmzqam6uDGbA"
     },{
       "algorithm": "ES256",
       "keyId": "example.com:p256-2",
-      "value": "XmGiX5HIP9qqwNYUo4S-8nJSnJLDOHC1wbdQn4T0fNmjHvV1m-YtCRgRwgC2HVO_M6ygu8SEIqXXqnRCbv6p-A"
+      "value": "rBn-ucQjQ9I_Q5u7ZxZDRAY7TUI8e9hIONQ-63o3AUOj_gncGI5YnkMY3tZF4pLY3Y-chVmjQL98lzn1I2CCfw"
     }]
   }
 }

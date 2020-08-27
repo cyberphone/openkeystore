@@ -101,7 +101,7 @@
         <exclude name="*-key.pem"/>
         <exclude name="*-2*"/>
       </zipfileset>
-      <zipfileset file="sample-signature.json" prefix="${class_war_path}"/>
+      <zipfileset file="sample-data-to-sign.json" prefix="${class_war_path}"/>
     </war>
   </target>
   

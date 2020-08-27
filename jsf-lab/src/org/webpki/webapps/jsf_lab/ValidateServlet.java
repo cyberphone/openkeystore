@@ -184,7 +184,7 @@ public class ValidateServlet extends HttpServlet {
             .append(HTML.fancyText(true,
                 JSF_VALIDATION_KEY,
                 4, 
-                HTML.encode(JSFService.sampleKey),
+                HTML.encode(JSFService.samplePublicKey),
 "Validation key (secret key in hexadecimal or public key in PEM or &quot;plain&quot; JWK format)"))
             .append(HTML.fancyText(true,
                 JSF_SIGN_LABL,

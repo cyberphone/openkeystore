@@ -6,9 +6,9 @@
     publicKey: {
       kty: "EC",
       crv: "P-384",
-      x: "xEocJM0Mr7uq6esZNhmce0e15_yJfRfuwGSmaPi4M4cqp8G7vwQ0QVwKeYuwnjlF",
-      y: "-f8VKOyFtHXvtgaLWwGjRdIx-FB4IddB7yope59oFLYgypxT2w4Va6TMYqJaFlAK"
+      x: "o4lIdIXzdJro4jU9g-2q-__i5WcutpJaWwOeSgKL8x6nxKWOPD5rH-POQhJ79l6t",
+      y: "MLnyLIGdTO2feJkCW3rWWKG3elhi1Zmbp068Ejb_1LuI-2cNQsRUqb16TfK588_N"
     },
-    value: "tVZTApTIrd-1_3l7ZUkZqEZfXVoAtvzrt6ZzkiM_DdDOFeK27VjZjQwlWVQcRwUmOay8vxkrV-M6EvNlJuHZ81BEUY5LkOfCx1f2cAnooRX7Jc-c4ZrvRzOGmWeA6NR-"
+    value: "AVD9jbDf-wbv9ZIxpubW_mjDK7tqaf49d7_nbvxKvR0laXH-rmBF1rcFBG8B-jmFgIxj7ZIY9XPaugjZhNMn33PqOb89IevQPxzYb7n_eHoDbaTSYXzvEcPBh13eQQ4W"
   }
 }

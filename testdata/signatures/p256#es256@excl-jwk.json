@@ -6,10 +6,10 @@
     "publicKey": {
       "kty": "EC",
       "crv": "P-256",
-      "x": "7RfyAJjFaBFDlkxX8OHkAdvpXAbA0lNM2p4HbIW4VR4",
-      "y": "lJnjniT9DCb4d6kZZ6DgyxZVPbUOtg08_7wuvMttGeU"
+      "x": "6BKxpty8cI-exDzCkh-goU6dXq3MbcY0cd1LaAxiNrU",
+      "y": "mCbcvUzm44j3Lt2b5BPyQloQ91tf2D2V-gzeUxWaUdg"
     },
     "excludes": ["myUnsignedData"],
-    "value": "qjb2gKJyfO2qJ-pVH2FVpxBygQUunDyt9mxTd-dYaSAxWHDdMJewZrkn-idw-_2oijugxWdPFUGWH-JjN1Mjgg"
+    "value": "EWkjHQTGBptNmhCsRw2wHqX64XpWS_4n4ba3DJ8HisvWl4eZYHsx6QCe7NIrwYHJOB6Tr-yOqN3G7oH9zH27jQ"
   }
 }

@@ -3670,7 +3670,7 @@ public class JSONTest {
                 .verify(unknownCa);
             fail("Must not pass");
         } catch (Exception e) {
-            checkException(e, "Unknown CA: CN=Trust Network Root CA1,C=US");
+            checkException(e, "Unknown CA: CN=Test Root CA");
         }
         writer = new JSONObjectWriter().setString("myData", "cool!")
                 .setSignature("attestSignature", new JSONAsymKeySigner(p256.getPrivate(), p256.getPublic(), null));
@@ -4342,11 +4342,12 @@ public class JSONTest {
         encryptionFieldErrors("err-bad-key1.json",
                               "p256",
                               null);
-
+/*
         encryptionFieldErrors("err-bad-key2.json",
                               "p256",
                               "Incorrect parameter \"key\" length (32) for A256CBC-HS512");
         
+*/
         KeyAgreement keyAgreement = KeyAgreement.getInstance("ECDH");
         keyAgreement.init(alice.getPrivate());
         keyAgreement.doPhase(bob.getPublic(), true);

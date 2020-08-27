@@ -7,19 +7,19 @@
       "publicKey": {
         "kty": "EC",
         "crv": "P-256",
-        "x": "7RfyAJjFaBFDlkxX8OHkAdvpXAbA0lNM2p4HbIW4VR4",
-        "y": "lJnjniT9DCb4d6kZZ6DgyxZVPbUOtg08_7wuvMttGeU"
+        "x": "6BKxpty8cI-exDzCkh-goU6dXq3MbcY0cd1LaAxiNrU",
+        "y": "mCbcvUzm44j3Lt2b5BPyQloQ91tf2D2V-gzeUxWaUdg"
       },
-      "value": "0zpVGb877WE8AVVFaaofPTcXDUgVgrR_T5rP3fTDwCJJ0kfYMcBSPpcNAcm78D5cAt-UPpsC1G9CKcfFYJnXIw"
+      "value": "3SeOe-j0Q_6mBGevBF9PGuxbHxSMOvu0prInjWcFoBEfhBAG3G8kv9YQvsYO0tqtWt1j_lgJ1d2UFwknAim3GA"
     },{
       "algorithm": "ES384",
       "publicKey": {
         "kty": "EC",
         "crv": "P-384",
-        "x": "xEocJM0Mr7uq6esZNhmce0e15_yJfRfuwGSmaPi4M4cqp8G7vwQ0QVwKeYuwnjlF",
-        "y": "-f8VKOyFtHXvtgaLWwGjRdIx-FB4IddB7yope59oFLYgypxT2w4Va6TMYqJaFlAK"
+        "x": "o4lIdIXzdJro4jU9g-2q-__i5WcutpJaWwOeSgKL8x6nxKWOPD5rH-POQhJ79l6t",
+        "y": "MLnyLIGdTO2feJkCW3rWWKG3elhi1Zmbp068Ejb_1LuI-2cNQsRUqb16TfK588_N"
       },
-      "value": "VZo5igT1a5rCMa9skK_AqmBSICQrzBZ_nqssBuybHlKV9ixUoRjKmSJsD7R6GqMQPcrs-UycpP5thd4PxCodJkTo69lnDaQgsHWPXPRRlN6QLSbHaVvG6-ZUgE2eKQD8"
+      "value": "25V2ch0KaeHUrQPByBxR-D0ZYM5nlu6NTV2EVaZYnCbNoOZEhjXVnBKmRUdJn_8N76uLmsZ35k-mdppu3kmAmwztgkHmytQT28qkX3wIeKWc8wy9wMbxaYGMfxZaC_vs"
     }],
     "excludes": ["myUnsignedData"]
   }

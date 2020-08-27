@@ -8,24 +8,24 @@
       "publicKey": {
         "kty": "EC",
         "crv": "P-256",
-        "x": "7RfyAJjFaBFDlkxX8OHkAdvpXAbA0lNM2p4HbIW4VR4",
-        "y": "lJnjniT9DCb4d6kZZ6DgyxZVPbUOtg08_7wuvMttGeU"
+        "x": "6BKxpty8cI-exDzCkh-goU6dXq3MbcY0cd1LaAxiNrU",
+        "y": "mCbcvUzm44j3Lt2b5BPyQloQ91tf2D2V-gzeUxWaUdg"
       },
       "otherExt": "Cool Stuff",
       "https://example.com/extension": {
         "life-is-great": true
       },
-      "value": "jlGocyoQCQbgWaTj1ZdhTN0hPgoXiNmmSO7CPqiehlsg6POd41w7FQQoW3P4e2uWBsiGGARFQ9l2eqE2d5uddQ"
+      "value": "xY67L9ThiYutKxovxkPPJmXFc2n0mk1pL-NCmdIA6MFp0L2RbbOP6PNBwQcQ-uNP1HjtvjR4aem_zZ4PUlySiQ"
     },{
       "algorithm": "ES384",
       "publicKey": {
         "kty": "EC",
         "crv": "P-384",
-        "x": "xEocJM0Mr7uq6esZNhmce0e15_yJfRfuwGSmaPi4M4cqp8G7vwQ0QVwKeYuwnjlF",
-        "y": "-f8VKOyFtHXvtgaLWwGjRdIx-FB4IddB7yope59oFLYgypxT2w4Va6TMYqJaFlAK"
+        "x": "o4lIdIXzdJro4jU9g-2q-__i5WcutpJaWwOeSgKL8x6nxKWOPD5rH-POQhJ79l6t",
+        "y": "MLnyLIGdTO2feJkCW3rWWKG3elhi1Zmbp068Ejb_1LuI-2cNQsRUqb16TfK588_N"
       },
       "otherExt": "Other Data",
-      "value": "IBmZCIDX3eEDnthbVEcrmVDHAiAmPeI7ESuEu9Rjuy5KyX0kN-6qzhNe_3myAuHRP0Y7lxzI6tQbD83_QLg5pYaYxmHcTLIN7sTJ6NCCWOUiF3VmNeIJJx5_ko8ZdrTg"
+      "value": "_iCs-DeBFOYe5gQ-jTlwD0jcg5mwo73gh8LNKs6q0Xyf-OrmkxbepJu_8JuslhNWtz1bVeRI0vIjUHxr2KRHutz3nePJmzGYy93ZWT3Ye0AEWzaeyUM5znhfC3BTy6E3"
     }],
     "extensions": ["otherExt", "https://example.com/extension"]
   }

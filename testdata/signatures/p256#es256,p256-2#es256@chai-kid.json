@@ -6,11 +6,11 @@
     "chain": [{
       "algorithm": "ES256",
       "keyId": "example.com:p256",
-      "value": "2ysonxwnvsZ4mwwpd4my0DpcvlP-mnGmDv8uroej5Bp8ZYIAdlWXctSKROSPTItczotY5DMQxyOJPm0u01t1_w"
+      "value": "KZIkvs_P_a1hvh3RZh-TsJYhkaWpkbLfvTNiHOjjZxihrgcwuSG5a-EUZ-BG_KYEnw4ORwmlmEAVrAso9IcZKQ"
     },{
       "algorithm": "ES256",
       "keyId": "example.com:p256-2",
-      "value": "jE-Y6GiQIf7fAlQzKwzgKvTJytxkETjF8quDtqgDOq_VZ4jFE22WLjVtTebYCxIQ00KqosMprzyyq28UStoq0g"
+      "value": "TeEqsFJKCC37Zl4omEm8nY-S7aevlAaStq3b-Fq4vTfZJEZp507KrcUehrxuSrw1jL-h9poJX3eQkyabO-2Olw"
     }]
   }
 }

@@ -5,11 +5,11 @@
     "chain": [{
       "algorithm": "ES256",
       "keyId": "example.com:p256",
-      "value": "lHBaq7e3LSswvobw7hPdvE1DJx7KzxCx4nDxOArXb9w1QehddcoM-Mid9Eh8QP46d66Ntna4lQaGGv65jUL82Q"
+      "value": "kuJToc4j6FLgX9rx4-l8bnicwXh3TTJW9Lc6zIsFH-Ms3Pxvn5VYrDGGzy77MFDWHJP68ozXtWSR4LZLmquXpA"
     },{
       "algorithm": "RS256",
       "keyId": "example.com:r2048",
-      "value": "a7n6-JGwG0Pj-dfL5gBPg2ru8GAxPJXeeLKO_YVWWKrZ-lbSsNWcSmdo796o74Y2XHS__SB_7t7dzd81PutK0g3L40MyNM5AmDLHkMVibOLMPfN9T0nH8sQlTYSdR_RBoKGl7qXyflWuWLm0dy7O_mrr2o7uosf7E9D-V5ONxirlmvyEpZx-iz1vMbJusqpao2OqxRS6CbW8pGH8J3bL06clUnNTFoiq_6yo--AURGw933STBKNVf49dzqPP5wUnc7dKHZ6njV5xMZOPItEJwSjakfQJpdQ75FKP2K7LEyZ69I9AlcIBbwt9g21Bc_9znEFidAdKnynGNDIBmgA9Yg"
+      "value": "b_K5iDp12p0lpEpJZ4wqSL58cnd6X_7K0_pQuJfP7xvEGmAP_io_f5ec1j6rBzSYMnCSZZp6pADqZlnJtJGWDKVRcTDfVz8nKA8zcc4m3WmGTG9csJyexwom4fq1Ww9KmOV4Ujzcg2jzBdCuELr-Mep6IPu2sGa_nkSCSTPACGkCn9Ry1csmhg-e3Kx7fraXe0gnc7O_jEdpicHDFGHruZtVZ1yskBXyYU4X4V4Q26TOPALhs33VBhtNK0jTQEuQBu0uW7y0yCwleXF3zd88Nt59kkG9nvw5zHQHKgiAT7GxXo9sElcFQiygw4A1Mjoby4OY2qKWLze6QA2C9oVIsg"
     }],
     "excludes": ["myUnsignedData"]
   }
