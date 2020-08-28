@@ -80,7 +80,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
     static String enumerateJoseEcCurves() throws IOException  {
         StringBuilder buffer = new StringBuilder("<ul>");
         for (KeyAlgorithms algorithm : KeyAlgorithms.values()) {
-            if (algorithm.isECKey()) {
+            if (algorithm.isEcdsa()) {
                 String joseName = algorithm.getAlgorithmId(AlgorithmPreferences.JOSE_ACCEPT_PREFER);
                 if (!joseName.contains (":")) {
                     buffer.append("<li><code>")

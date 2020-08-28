@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import org.webpki.crypto.AlgorithmPreferences;
+import org.webpki.crypto.CryptoUtil;
 import org.webpki.crypto.KeyAlgorithms;
 
 import org.webpki.util.ArrayUtil;
@@ -782,19 +783,25 @@ import org.webpki.json.JSONSignatureDecoder;
     throws IOException {
         JSONObjectWriter corePublicKey = new JSONObjectWriter();
         KeyAlgorithms keyAlg = KeyAlgorithms.getKeyAlgorithm(publicKey);
-        if (keyAlg.isRSAKey()) {
+        if (keyAlg.isRsa()) {
             corePublicKey.setString(JSONCryptoHelper.KTY_JSON, JSONCryptoHelper.RSA_PUBLIC_KEY);
             RSAPublicKey rsaPublicKey = (RSAPublicKey) publicKey;
             corePublicKey.setCryptoBinary(rsaPublicKey.getModulus(), JSONCryptoHelper.N_JSON);
             corePublicKey.setCryptoBinary(rsaPublicKey.getPublicExponent(), 
                                           JSONCryptoHelper.E_JSON);
-        } else {
+        } else if (keyAlg.isEcdsa()) {
             corePublicKey.setString(JSONCryptoHelper.KTY_JSON, JSONCryptoHelper.EC_PUBLIC_KEY);
             corePublicKey.setString(JSONCryptoHelper.CRV_JSON, 
                                     keyAlg.getAlgorithmId(algorithmPreferences));
             ECPoint ecPoint = ((ECPublicKey) publicKey).getW();
             corePublicKey.setCurvePoint(ecPoint.getAffineX(), JSONCryptoHelper.X_JSON, keyAlg);
             corePublicKey.setCurvePoint(ecPoint.getAffineY(), JSONCryptoHelper.Y_JSON, keyAlg);
+        } else {
+            corePublicKey.setString(JSONCryptoHelper.KTY_JSON, JSONCryptoHelper.OKP_PUBLIC_KEY);
+            corePublicKey.setString(JSONCryptoHelper.CRV_JSON, 
+                                    keyAlg.getAlgorithmId(algorithmPreferences));
+            corePublicKey.setBinary(JSONCryptoHelper.X_JSON,
+                                    CryptoUtil.rawOkpKey(publicKey, keyAlg));
         }
         return corePublicKey;
     }

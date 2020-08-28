@@ -46,7 +46,7 @@ public class KeySpecifier implements Serializable
               {
                 throw new IOException ("Algorithm '" + key_algorithm.toString () + "' does not use a \"Parameters\"");
               }
-            if (key_algorithm.isRSAKey ())
+            if (key_algorithm.isRsa ())
               {
                 parameters = optional_parameter; 
               }

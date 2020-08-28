@@ -2641,7 +2641,7 @@ public class JSONTest {
         JSONObjectReader rd = JSONParser.parse(jwk);
         KeyAlgorithms ec = KeyAlgorithms.getKeyAlgorithmFromId(rd.getString(JSONCryptoHelper.CRV_JSON),
                 AlgorithmPreferences.JOSE);
-        if (!ec.isECKey()) {
+        if (!ec.isEcdsa()) {
             throw new IOException("\"" + JSONCryptoHelper.CRV_JSON + "\" is not an EC type");
         }
         ECPoint w = new ECPoint(getCurvePoint(rd, "x", ec), getCurvePoint(rd, "y", ec));

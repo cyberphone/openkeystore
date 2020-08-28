@@ -50,6 +50,8 @@ import org.webpki.crypto.KeyUsageBits;
 import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.SignatureWrapper;
 
+import org.webpki.util.ArrayUtil;
+
 
 public class CommandLineCA {
     ArrayList<CmdLineArgument> list = new ArrayList<>();
@@ -119,7 +121,7 @@ public class CommandLineCA {
             return AsymSignatureAlgorithms.valueOf(getString());
         }
 
-        KeyAlgorithms getECCDomain() throws IOException {
+        KeyAlgorithms getKeyAlgorithm() throws IOException {
             return KeyAlgorithms.valueOf(getString());
         }
 
@@ -371,7 +373,7 @@ public class CommandLineCA {
         StringBuilder s = new StringBuilder();
         boolean comma = false;
         for (KeyAlgorithms curve : KeyAlgorithms.values()) {
-            if (curve.isECKey()) {
+            if (!curve.isRsa()) {
                 if (comma) {
                     s.append(", ");
                 }
@@ -670,23 +672,25 @@ public class CommandLineCA {
             cla.argvalue.add(opt);
         }
         checkConsistency();
-    }
 
+        // Time to execute!
 
-    void certify(String sun_pkcs12) throws IOException {
         try {
             CA ca = new CA();
             CertSpec certspec = new CertSpec();
-
-            // Time to execute!
 
             ///////////////////////////////////////////////////////////////
             // Create the target certificate key-pair
             ///////////////////////////////////////////////////////////////
             KeyPairGenerator kpg = null;
             if (CMD_ecc_curve.found) {
-                kpg = KeyPairGenerator.getInstance("EC");
-                kpg.initialize(new ECGenParameterSpec(CMD_ecc_curve.getECCDomain().getJceName()));
+                KeyAlgorithms keyAlgorithm = CMD_ecc_curve.getKeyAlgorithm();
+                if (keyAlgorithm.isEcdsa()) {
+                    kpg = KeyPairGenerator.getInstance("EC");
+                    kpg.initialize(new ECGenParameterSpec(keyAlgorithm.getJceName()));
+                } else {
+                    kpg = KeyPairGenerator.getInstance(keyAlgorithm.getJceName(), "BC");
+                }
             } else {
                 kpg = KeyPairGenerator.getInstance("RSA");
                 if (CMD_exponent.found) {
@@ -699,6 +703,10 @@ public class CommandLineCA {
             PrivateKey priv_key = key_pair.getPrivate();
             PublicKey subject_pub_key = key_pair.getPublic();
 
+String json = new org.webpki.json.JSONObjectWriter().setPublicKey(subject_pub_key).toString();
+System.out.println(json);
+PublicKey futt = org.webpki.json.JSONParser.parse(json).getPublicKey();
+System.out.println("EQ=" + futt.equals(subject_pub_key));
             ///////////////////////////////////////////////////////////////
             // Get signature algorithm
             ///////////////////////////////////////////////////////////////
@@ -849,16 +857,21 @@ public class CommandLineCA {
             ///////////////////////////////////////////////////////////////
             // And now: Create the certificate path...
             ///////////////////////////////////////////////////////////////
-            X509Certificate signer_cert = ca.createCert(certspec, issuer, serial, start_date, end_date,
-                    certalg, new CertificateSigner(sign_key, issuer_pub_key),
-                    subject_pub_key);
+            X509Certificate signer_cert =
+                    ca.createCert(certspec, 
+                                  issuer, 
+                                  serial, 
+                                  start_date, 
+                                  end_date,
+                                  certalg, 
+                                  new CertificateSigner(sign_key, issuer_pub_key),
+                                  subject_pub_key);
             cert_path.add(0, signer_cert);
 
             ///////////////////////////////////////////////////////////////
             // The final: Write the whole thing out
             ///////////////////////////////////////////////////////////////
-            KeyStore ks = CMD_out_ks_type.getString().equalsIgnoreCase("jks") ?
-                    KeyStore.getInstance(CMD_out_ks_type.getString()) : KeyStore.getInstance(CMD_out_ks_type.getString(), sun_pkcs12);
+            KeyStore ks = KeyStore.getInstance(CMD_out_ks_type.getString());
             if (CMD_out_update.found) {
                 ks.load(new FileInputStream(CMD_out_keystore.getString()), CMD_out_ks_pass.toCharArray());
             } else {
@@ -878,13 +891,11 @@ public class CommandLineCA {
 
     public static void main(String argv[]) {
         try {
-            String sun_pkcs12 = KeyStore.getInstance("PKCS12").getProvider().getName();
-            CustomCryptoProvider.forcedLoad(true);
-            CommandLineCA clca = new CommandLineCA();
-            clca.decodeCommandLine(argv);
-            clca.certify(sun_pkcs12);
-        } catch (Exception ioe) {
-            System.out.println("\n" + ioe.getMessage());
+            // This revision will use BC for OKP keys and JDK for the rest
+            CustomCryptoProvider.forcedLoad(false);
+            new CommandLineCA().decodeCommandLine(argv);
+        } catch (Exception e) {
+            System.out.println("\n" + e.getMessage());
         }
     }
 }

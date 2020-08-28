@@ -475,7 +475,7 @@ public class XMLSignatureWrapper extends XMLObjectWrapper implements Serializabl
 
     public static void writePublicKey(DOMWriterHelper wr, PublicKey publicKey) throws IOException {
         KeyAlgorithms key_alg = KeyAlgorithms.getKeyAlgorithm(publicKey);
-        if (key_alg.isRSAKey()) {
+        if (key_alg.isRsa()) {
             String old = wr.pushPrefix(XML_DSIG_NS_PREFIX);
             if (old == null || !old.equals(XML_DSIG_NS_PREFIX)) {
                 wr.addChildElementNS(XML_DSIG_NS, RSA_KEY_VALUE_ELEM);

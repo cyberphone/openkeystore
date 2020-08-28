@@ -497,7 +497,7 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
                  "<table class=\"tftable\" style=\"margin-top:10pt\">" +
                 "<tr><th>SKS Name</th><th>JWA Name</th></tr>");
         for (KeyAlgorithms keyAlgorithm : KeyAlgorithms.values()) {
-            if (keyAlgorithm.isECKey()) {
+            if (keyAlgorithm.isEcdsa()) {
                 buffer.append("<tr><td><code>")
                       .append(keyAlgorithm.getAlgorithmId(AlgorithmPreferences.SKS))
                       .append("</code></td><td style=\"text-align:center\"><code>")

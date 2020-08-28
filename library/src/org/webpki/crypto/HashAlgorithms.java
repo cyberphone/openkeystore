@@ -47,12 +47,10 @@ public enum HashAlgorithms implements CryptoAlgorithms {
         this.jceName = jceName;
     }
 
-
     @Override
     public String getJceName() {
         return jceName;
     }
-
 
     public byte[] digest(byte[] data) throws IOException {
         try {
@@ -62,7 +60,6 @@ public enum HashAlgorithms implements CryptoAlgorithms {
         }
     }
 
-
     public static HashAlgorithms getAlgorithmFromOid(String oid) throws IOException {
         for (HashAlgorithms alg : values()) {
             if (oid.equals(alg.oid)) {
@@ -71,7 +68,6 @@ public enum HashAlgorithms implements CryptoAlgorithms {
         }
         throw new IOException("Unknown algorithm: " + oid);
     }
-
 
     public static HashAlgorithms getAlgorithmFromId(String algorithmId,
                                                     AlgorithmPreferences algorithmPreferences)
@@ -95,12 +91,10 @@ public enum HashAlgorithms implements CryptoAlgorithms {
         throw new IOException("Unknown algorithm: " + algorithmId);
     }
     
-
     @Override
     public boolean isMandatorySksAlgorithm() {
         return false;
     }
-
 
     @Override
     public String getAlgorithmId(AlgorithmPreferences algorithmPreferences) throws IOException {
@@ -113,18 +107,15 @@ public enum HashAlgorithms implements CryptoAlgorithms {
         return algorithmPreferences == AlgorithmPreferences.SKS ? sksName : joseName;
     }
 
-
     @Override
     public String getOid() {
         return oid;
     }
 
-
     @Override
     public boolean isSymmetric() {
          return true;
     }
-
 
     @Override
     public boolean isDeprecated() {

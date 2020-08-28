@@ -109,7 +109,7 @@ public class KeyStore2JWKConverter {
                 PublicKey publicKey = ks.getCertificateChain(alias)[0].getPublicKey();
                 if (privateKeyFlag) {
                     KeyAlgorithms keyAlgorithm = KeyAlgorithms.getKeyAlgorithm(publicKey);
-                    if (keyAlgorithm.isECKey()) {
+                    if (keyAlgorithm.isEcdsa()) {
                        BigInteger d = ((ECPrivateKey)ks.getKey(alias, argv[1].toCharArray())).getS();
                        byte[] curvePoint = d.toByteArray();
                        if (curvePoint.length > (keyAlgorithm.getPublicKeySizeInBits() + 7) / 8) {

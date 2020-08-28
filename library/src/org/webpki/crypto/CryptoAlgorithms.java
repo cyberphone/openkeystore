@@ -38,5 +38,16 @@ public interface CryptoAlgorithms {
     boolean isSymmetric();
     
     boolean isDeprecated();
-
+    
+    default boolean isRsa() {
+        return false;
+    }
+    
+    default boolean isEcdsa() {  // Used for ECDH as well
+        return false;
+    }
+    
+    default boolean isOkp() {
+        return false;
+    }
 }

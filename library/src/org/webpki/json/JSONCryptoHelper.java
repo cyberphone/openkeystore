@@ -36,6 +36,8 @@ public class JSONCryptoHelper implements Serializable {
     private JSONCryptoHelper() {}
 
     // Arguments
+    public static final String OKP_PUBLIC_KEY          = "OKP";
+
     public static final String EC_PUBLIC_KEY           = "EC";
 
     public static final String RSA_PUBLIC_KEY          = "RSA";

@@ -114,7 +114,7 @@ public class Key2 {
         try {
             CustomCryptoProvider.conditionalLoad(true);
             for (KeyAlgorithms ka : KeyAlgorithms.values()) {
-                if (ka.isECKey()) {
+                if (ka.isEcdsa()) {
                     AlgorithmParameterSpec alg_par_spec = new ECGenParameterSpec(ka.getJceName());
                     KeyPairGenerator kpg = KeyPairGenerator.getInstance("EC");
                     kpg.initialize(alg_par_spec, new SecureRandom());

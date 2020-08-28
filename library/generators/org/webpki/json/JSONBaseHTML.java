@@ -1175,7 +1175,7 @@ public class JSONBaseHTML  {
             if (algorithm.isDeprecated()) {
                 continue;
             }
-            if (filter && algorithm instanceof KeyAlgorithms && !((KeyAlgorithms)algorithm).isECKey()) {
+            if (filter && algorithm instanceof KeyAlgorithms && !((KeyAlgorithms)algorithm).isEcdsa()) {
                 continue;
             }
             if (symmetric ^ algorithm.isSymmetric()) {

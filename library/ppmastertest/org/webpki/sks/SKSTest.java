@@ -137,7 +137,7 @@ public class SKSTest {
             supported_algorithms.add(alg);
         }
         for (KeyAlgorithms ka : KeyAlgorithms.values()) {
-            if (!ka.isRSAKey() || ka.hasParameters() || !ka.isMandatorySksAlgorithm()) continue;
+            if (!ka.isRsa() || ka.hasParameters() || !ka.isMandatorySksAlgorithm()) continue;
             if (supported_algorithms.contains(ka.getAlgorithmId(AlgorithmPreferences.SKS))) {
                 preferred_rsa_algorithm = ka;
                 break;
@@ -929,7 +929,7 @@ public class SKSTest {
     @Test
     public void test1() throws Exception {
         for (KeyAlgorithms sessionKeyAlgorithm : KeyAlgorithms.values()) {
-            if (sessionKeyAlgorithm.isRSAKey() || sessionKeyAlgorithm.getECParameterSpec() == null) {
+            if (sessionKeyAlgorithm.isRsa() || sessionKeyAlgorithm.getECParameterSpec() == null) {
                 continue;
             }
             String sessionKeyAlgorithmId = sessionKeyAlgorithm.getAlgorithmId(AlgorithmPreferences.SKS);
@@ -1045,7 +1045,7 @@ public class SKSTest {
                 doit = true;
             }
             if (doit) {
-                sess.setKeyParameters((keyAlgorithm.isRSAKey() && keyAlgorithm.hasParameters()) ?
+                sess.setKeyParameters((keyAlgorithm.isRsa() && keyAlgorithm.hasParameters()) ?
                         new byte[]{0, 0, 0, 3} : null);
                 sess.createKey("Key." + i++,
                                keyAlgorithm,
@@ -2702,7 +2702,7 @@ public class SKSTest {
     @Test
     public void test64() throws Exception {
         for (KeyAlgorithms ka : KeyAlgorithms.values()) {
-            if (!ka.isRSAKey()) continue;
+            if (!ka.isRsa()) continue;
             if (ka.hasParameters()) continue;
             if (!supported_algorithms.contains(ka.getAlgorithmId(AlgorithmPreferences.SKS))) continue;
             String good_pin = "1563";
@@ -2874,7 +2874,7 @@ public class SKSTest {
         badKeySpec("http://badcrypto/snakeoil-1", null, "Unsupported \"" + SecureKeyStore.VAR_KEY_ALGORITHM + "\": http://badcrypto/snakeoil-1");
         KeyAlgorithms rsa_var_exp = null;
         for (KeyAlgorithms ka : KeyAlgorithms.values()) {
-            if (ka.isRSAKey() && ka.hasParameters() && 
+            if (ka.isRsa() && ka.hasParameters() && 
                     supported_algorithms.contains(ka.getAlgorithmId(AlgorithmPreferences.SKS)) &&
                     ka.getPublicKeySizeInBits() == preferred_rsa_algorithm.getPublicKeySizeInBits()) {
                 rsa_var_exp = ka;

@@ -43,7 +43,7 @@ public class KeySpecifier implements Serializable {
             if (!keyAlgorithm.hasParameters()) {
                 throw new IOException("Algorithm '" + keyAlgorithm.toString() + "' does not use \"" + KeyGen2Constants.KEY_PARAMETERS_JSON + "\"");
             }
-            if (keyAlgorithm.isRSAKey()) {
+            if (keyAlgorithm.isRsa()) {
                 keyParameters = optionalParameter;
             } else {
                 throw new IOException("Algorithm '" + keyAlgorithm.toString() + "' not implemented");

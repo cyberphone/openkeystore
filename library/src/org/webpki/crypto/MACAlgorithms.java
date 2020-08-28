@@ -50,30 +50,25 @@ public enum MACAlgorithms implements SignatureAlgorithms {
         this.sksMandatory = sksMandatory;
     }
 
-
     @Override
     public boolean isSymmetric() {
         return true;
     }
-
 
     @Override
     public boolean isMandatorySksAlgorithm() {
         return sksMandatory;
     }
 
-
     @Override
     public String getJceName() {
         return jceName;
     }
 
-
     @Override
     public String getOid() {
         return null;
     }
-
 
     public byte[] digest(byte[] key, byte[] data) throws IOException {
         try {
@@ -85,7 +80,6 @@ public enum MACAlgorithms implements SignatureAlgorithms {
         }
     }
 
-
     public static boolean testAlgorithmUri(String sksName) {
         for (MACAlgorithms alg : MACAlgorithms.values()) {
             if (sksName.equals(alg.sksName)) {
@@ -94,7 +88,6 @@ public enum MACAlgorithms implements SignatureAlgorithms {
         }
         return false;
     }
-
 
     public static MACAlgorithms getAlgorithmFromId(String algorithmId,
                                                    AlgorithmPreferences algorithmPreferences) 
@@ -116,7 +109,6 @@ public enum MACAlgorithms implements SignatureAlgorithms {
         throw new IOException("Unknown MAC algorithm: " + algorithmId);
     }
 
-
     @Override
     public String getAlgorithmId(AlgorithmPreferences algorithmPreferences) throws IOException {
         if (joseName == null) {
@@ -128,12 +120,10 @@ public enum MACAlgorithms implements SignatureAlgorithms {
         return algorithmPreferences == AlgorithmPreferences.SKS ? sksName : joseName;
     }
 
-
     @Override
     public boolean isDeprecated() {
         return this == HMAC_SHA1;
     }
-
 
     @Override
     public HashAlgorithms getDigestAlgorithm() {

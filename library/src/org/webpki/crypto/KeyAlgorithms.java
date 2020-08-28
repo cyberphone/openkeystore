@@ -22,7 +22,9 @@ import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 
+import java.security.interfaces.ECKey;
 import java.security.interfaces.ECPublicKey;
+import java.security.interfaces.RSAKey;
 import java.security.interfaces.RSAPublicKey;
 
 import java.security.spec.ECParameterSpec;
@@ -36,7 +38,8 @@ import java.security.spec.X509EncodedKeySpec;
 
 public enum KeyAlgorithms implements CryptoAlgorithms {
 
-    RSA1024    ("https://webpki.github.io/sks/algorithm#rsa1024", null,
+    RSA1024    ("https://webpki.github.io/sks/algorithm#rsa1024", 
+                null,
                 "RSA",
                 1024,
                 AsymSignatureAlgorithms.RSA_SHA256,
@@ -46,7 +49,8 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                 null,
                 null),
     
-    RSA2048    ("https://webpki.github.io/sks/algorithm#rsa2048", null,
+    RSA2048    ("https://webpki.github.io/sks/algorithm#rsa2048", 
+                null,
                 "RSA",
                 2048,
                 AsymSignatureAlgorithms.RSA_SHA256,
@@ -56,7 +60,8 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                 null,
                 null),
     
-    RSA3072    ("https://webpki.github.io/sks/algorithm#rsa3072", null,
+    RSA3072    ("https://webpki.github.io/sks/algorithm#rsa3072", 
+                null,
                 "RSA",
                 3072,
                 AsymSignatureAlgorithms.RSA_SHA512,
@@ -66,7 +71,8 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                 null,
                 null),
     
-    RSA4096    ("https://webpki.github.io/sks/algorithm#rsa4096", null,
+    RSA4096    ("https://webpki.github.io/sks/algorithm#rsa4096", 
+                null,
                 "RSA",
                 4096,
                 AsymSignatureAlgorithms.RSA_SHA512,
@@ -76,7 +82,8 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                 null,
                 null),
     
-    RSA1024_EXP ("https://webpki.github.io/sks/algorithm#rsa1024.exp", null,
+    RSA1024_EXP ("https://webpki.github.io/sks/algorithm#rsa1024.exp",
+                null,
                 "RSA",
                 1024,
                 AsymSignatureAlgorithms.RSA_SHA256,
@@ -86,7 +93,8 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                 null,
                 null),
     
-    RSA2048_EXP ("https://webpki.github.io/sks/algorithm#rsa2048.exp", null,
+    RSA2048_EXP ("https://webpki.github.io/sks/algorithm#rsa2048.exp", 
+                null,
                 "RSA",
                 2048,
                 AsymSignatureAlgorithms.RSA_SHA256,
@@ -96,7 +104,8 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                 null,
                 null),
     
-    RSA3072_EXP ("https://webpki.github.io/sks/algorithm#rsa3072.exp", null,
+    RSA3072_EXP ("https://webpki.github.io/sks/algorithm#rsa3072.exp", 
+                null,
                 "RSA",
                 3072,
                 AsymSignatureAlgorithms.RSA_SHA512,
@@ -106,7 +115,8 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                 null,
                 null),
     
-    RSA4096_EXP ("https://webpki.github.io/sks/algorithm#rsa4096.exp", null,
+    RSA4096_EXP ("https://webpki.github.io/sks/algorithm#rsa4096.exp",
+                null,
                 "RSA",
                 4096,
                 AsymSignatureAlgorithms.RSA_SHA512,
@@ -116,7 +126,8 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                 null,
                 null),
     
-    NIST_P_256 ("https://webpki.github.io/sks/algorithm#ec.nist.p256", "P-256",
+    NIST_P_256 ("https://webpki.github.io/sks/algorithm#ec.nist.p256",
+                "P-256",
                 "secp256r1",
                 256,
                 AsymSignatureAlgorithms.ECDSA_SHA256,
@@ -138,7 +149,8 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                     (byte)0xCA, (byte)0x5F, (byte)0xB5, (byte)0x09, (byte)0x6E, (byte)0x95, (byte)0xCF, (byte)0x78,
                     (byte)0x7C, (byte)0x0D, (byte)0xB2}),
     
-    NIST_P_384 ("https://webpki.github.io/sks/algorithm#ec.nist.p384", "P-384",
+    NIST_P_384 ("https://webpki.github.io/sks/algorithm#ec.nist.p384",
+                "P-384",
                 "secp384r1",
                 384,
                 AsymSignatureAlgorithms.ECDSA_SHA384,
@@ -163,7 +175,8 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                     (byte)0x82, (byte)0xBD, (byte)0x65, (byte)0x83, (byte)0xB6, (byte)0x84, (byte)0x77, (byte)0xE8,
                     (byte)0x1F, (byte)0xB8, (byte)0xD7, (byte)0x3D, (byte)0x79, (byte)0x88, (byte)0x2E, (byte)0x98}),
     
-    NIST_P_521  ("https://webpki.github.io/sks/algorithm#ec.nist.p521", "P-521",
+    NIST_P_521  ("https://webpki.github.io/sks/algorithm#ec.nist.p521",
+                "P-521",
                 "secp521r1",
                 521,
                 AsymSignatureAlgorithms.ECDSA_SHA512,
@@ -193,7 +206,8 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                     (byte)0x22, (byte)0xA8, (byte)0x87, (byte)0x64, (byte)0xD0, (byte)0x36, (byte)0xAF, (byte)0xD3,
                     (byte)0x69, (byte)0xAC, (byte)0xCA, (byte)0xCB, (byte)0x1A, (byte)0x96}),
                     
-    SECG_K_256 ("https://webpki.github.io/sks/algorithm#ec.secg.p256k1", null,
+    SECG_K_256 ("https://webpki.github.io/sks/algorithm#ec.secg.p256k1", 
+                null,
                 "secp256k1",
                 256,
                 AsymSignatureAlgorithms.ECDSA_SHA256,
@@ -215,7 +229,8 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                     (byte)0x5B, (byte)0xC1, (byte)0x32, (byte)0x44, (byte)0xA6, (byte)0x32, (byte)0x06, (byte)0xA9}),                       
     
     BRAINPOOL_P_256 (
-                "https://webpki.github.io/sks/algorithm#ec.brainpool.p256r1", null,
+                "https://webpki.github.io/sks/algorithm#ec.brainpool.p256r1",
+                null,
                 "brainpoolP256r1",
                 256,
                 AsymSignatureAlgorithms.ECDSA_SHA256,
@@ -235,7 +250,51 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                     (byte)0x1D, (byte)0x07, (byte)0x61, (byte)0xB0, (byte)0xC3, (byte)0x01, (byte)0xE8, (byte)0xCB,
                     (byte)0x52, (byte)0xF5, (byte)0x03, (byte)0xC1, (byte)0x0C, (byte)0x3F, (byte)0xF0, (byte)0x97,
                     (byte)0xCD, (byte)0xC9, (byte)0x45, (byte)0xF3, (byte)0x21, (byte)0xC5, (byte)0xCF, (byte)0x41,
-                    (byte)0x17, (byte)0xF3, (byte)0x3A, (byte)0xB4});
+                    (byte)0x17, (byte)0xF3, (byte)0x3A, (byte)0xB4}),
+
+    ED25519    ("https://webpki.github.io/sks/algorithm#ed25519", 
+                "Ed25519",
+                "Ed25519",
+                256,
+                AsymSignatureAlgorithms.ED25519,
+                false,
+                false,
+                false,
+                null,
+                null),
+
+    ED448      ("https://webpki.github.io/sks/algorithm#ed448", 
+                "Ed448",
+                "Ed448",
+                448,
+                AsymSignatureAlgorithms.ED448,
+                false,
+                false,
+                false,
+                null,
+                null),
+
+    X25519     ("https://webpki.github.io/sks/algorithm#x25519",
+                "X25519",
+                "X25519",
+                256,
+                null,
+                false,
+                false,
+                false,
+                null,
+                null),
+
+    X448       ("https://webpki.github.io/sks/algorithm#x448",
+                "X448",
+                "X448",
+                448,
+                null,
+                false,
+                false,
+                false,
+                null,
+                null);
 
     private final String sksName;                    // As expressed in SKS
     private final String joseName;                   // As expressed in JOSE.  Only applicable EC curves
@@ -247,6 +306,8 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
     private final boolean deprecated;                // Oracle thinks so for certain EC curves
     private final String ecDomainOid;                // EC domain as expressed in ASN.1 messages, null for RSA
     private final ECParameterSpec ecParmSpec;        // EC for creating a BC/JDK compatible method
+    private final boolean rsa;                       // RSA algorithm
+    private final boolean ecdsa;                     // EC/ECDSA algorithm
 
     public static final String XML_DSIG_CURVE_PREFIX = "urn:oid:";
 
@@ -284,6 +345,8 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
             }
         }
         this.ecParmSpec = tempEcParmSpec;
+        this.rsa = jceName.equals("RSA");
+        this.ecdsa = tempEcParmSpec != null;
     }
 
 
@@ -292,63 +355,59 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
         return false;
     }
 
-
     @Override
     public boolean isMandatorySksAlgorithm() {
         return sksMandatory;
     }
-
 
     @Override
     public String getJceName() {
         return jceName;
     }
 
-
     @Override
     public String getOid() {
         return null;
     }
 
-
     public String getECDomainOID() {
         return ecDomainOid;
     }
 
-
-    public boolean isECKey() {
-        return ecDomainOid != null;
+    @Override
+    public boolean isEcdsa() {
+        return ecdsa;
     }
 
-
-    public boolean isRSAKey() {
-        return ecDomainOid == null;
+    @Override
+    public boolean isRsa() {
+        return rsa;
     }
 
+    @Override
+    public boolean isOkp() {
+        return !(ecdsa || rsa);
+    }
 
     public int getPublicKeySizeInBits() {
         return lengthInBits;
     }
 
-
     public AsymSignatureAlgorithms getRecommendedSignatureAlgorithm() {
         return prefAlg;
     }
-
 
     public boolean hasParameters() {
         return hasParameters;
     }
 
-
     public ECParameterSpec getECParameterSpec() {
         return ecParmSpec;
     }
 
-
     public static KeyAlgorithms getECKeyAlgorithm(ECParameterSpec actual) throws IOException {
         for (KeyAlgorithms alg : values()) {
-            if (alg.isECKey()) {
+            if (alg.isEcdsa()) {
                 ECParameterSpec ref = alg.ecParmSpec;
                 if (ref.getCofactor() == actual.getCofactor() &&
                     ref.getOrder().equals(actual.getOrder()) &&
@@ -361,40 +420,52 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
         throw new IOException("Unknown EC type: " + actual.toString());
     }
 
-
     public static KeyAlgorithms getKeyAlgorithm(PublicKey publicKey, Boolean keyParameters) throws IOException {
-        if (publicKey instanceof ECPublicKey) {
+        if (publicKey instanceof ECKey) {
             return getECKeyAlgorithm(((ECPublicKey) publicKey).getParams());
         }
-        byte[] modblob = ((RSAPublicKey) publicKey).getModulus().toByteArray();
-        int lengthInBits = (modblob[0] == 0 ? modblob.length - 1 : modblob.length) * 8;
+        if (publicKey instanceof RSAKey) {
+            byte[] modblob = ((RSAPublicKey) publicKey).getModulus().toByteArray();
+            int lengthInBits = (modblob[0] == 0 ? modblob.length - 1 : modblob.length) * 8;
+            for (KeyAlgorithms alg : values()) {
+                if (alg.ecDomainOid == null && lengthInBits == alg.lengthInBits &&
+                        (keyParameters == null || alg.hasParameters == keyParameters)) {
+                    return alg;
+                }
+            }
+            throw new IOException("Unsupported RSA key size: " + lengthInBits);
+        }
+        String algorithm = publicKey.getAlgorithm();
         for (KeyAlgorithms alg : values()) {
-            if (alg.ecDomainOid == null && lengthInBits == alg.lengthInBits &&
-                    (keyParameters == null || alg.hasParameters == keyParameters)) {
+            if (alg.jceName.equals(algorithm)) {
                 return alg;
             }
         }
-        throw new IOException("Unsupported RSA key size: " + lengthInBits);
+        throw new IOException("Unsupported algoritm: " + algorithm);
     }
 
     // Public keys read from specific security providers are not comparable to 
     // public keys created directly from crypto parameters and thus don't compare :-(
     // This method normalizes the former.
-    public static PublicKey normalizePublicKey(PublicKey publicKey) throws GeneralSecurityException {
-        if (publicKey instanceof ECPublicKey) {
+    public static PublicKey normalizePublicKey(PublicKey publicKey) throws GeneralSecurityException, IOException {
+        if (publicKey instanceof ECKey) {
             return KeyFactory.getInstance("EC")
                     .generatePublic(new ECPublicKeySpec(((ECPublicKey)publicKey).getW(),
                                                         ((ECPublicKey)publicKey).getParams()));
         }
-        return KeyFactory.getInstance("RSA").generatePublic(
-                new RSAPublicKeySpec(((RSAPublicKey)publicKey).getModulus(),
-                                     ((RSAPublicKey)publicKey).getPublicExponent()));
+        if (publicKey instanceof RSAKey) {
+            return KeyFactory.getInstance("RSA").generatePublic(
+                    new RSAPublicKeySpec(((RSAPublicKey)publicKey).getModulus(),
+                                         ((RSAPublicKey)publicKey).getPublicExponent()));
+        }
+        KeyAlgorithms keyAlgorithm = getKeyAlgorithm(publicKey);
+        return CryptoUtil.publicOkpKey(CryptoUtil.rawOkpKey(publicKey, keyAlgorithm),
+                                       keyAlgorithm);
     }
 
     public static KeyAlgorithms getKeyAlgorithm(PublicKey publicKey) throws IOException {
         return getKeyAlgorithm(publicKey, null);
     }
-
 
     public static KeyAlgorithms getKeyAlgorithmFromId(String algorithmId, 
                                                       AlgorithmPreferences algorithmPreferences) throws IOException {
@@ -415,7 +486,6 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
         throw new IOException("Unknown algorithm: " + algorithmId);
     }
 
-
     @Override
     public String getAlgorithmId(AlgorithmPreferences algorithmPreferences) throws IOException {
         if (joseName == null) {
@@ -426,7 +496,6 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
         }
         return algorithmPreferences == AlgorithmPreferences.SKS ? sksName : joseName;
     }
-
 
     @Override
     public boolean isDeprecated() {

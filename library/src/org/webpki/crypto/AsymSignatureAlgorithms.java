@@ -21,31 +21,37 @@ import java.io.IOException;
 public enum AsymSignatureAlgorithms implements SignatureAlgorithms {
 
     RSA_NONE     ("https://webpki.github.io/sks/algorithm#rsa.pkcs1.none", null,
-                  null,                    "NONEwithRSA",     null,                  true,  true),
+                  null,                    "NONEwithRSA",     null,                  true),
       
     RSA_SHA1     ("http://www.w3.org/2000/09/xmldsig#rsa-sha1",           null,              
-                  "1.2.840.113549.1.1.5",  "SHA1withRSA",     HashAlgorithms.SHA1,   false, true),
+                  "1.2.840.113549.1.1.5",  "SHA1withRSA",     HashAlgorithms.SHA1,   false),
       
     RSA_SHA256   ("http://www.w3.org/2001/04/xmldsig-more#rsa-sha256",    "RS256",      
-                  "1.2.840.113549.1.1.11", "SHA256withRSA",   HashAlgorithms.SHA256, true,  true),
+                  "1.2.840.113549.1.1.11", "SHA256withRSA",   HashAlgorithms.SHA256, true),
       
     RSA_SHA384   ("http://www.w3.org/2001/04/xmldsig-more#rsa-sha384",    "RS384",     
-                  "1.2.840.113549.1.1.12", "SHA384withRSA",   HashAlgorithms.SHA384, true,  true),
+                  "1.2.840.113549.1.1.12", "SHA384withRSA",   HashAlgorithms.SHA384, true),
       
     RSA_SHA512   ("http://www.w3.org/2001/04/xmldsig-more#rsa-sha512",    "RS512",   
-                  "1.2.840.113549.1.1.13", "SHA512withRSA",   HashAlgorithms.SHA512, true,  true),
+                  "1.2.840.113549.1.1.13", "SHA512withRSA",   HashAlgorithms.SHA512, true),
       
     ECDSA_NONE   ("https://webpki.github.io/sks/algorithm#ecdsa.none",     null,
-                  null,                    "NONEwithECDSA",   null,                  true,  false),
+                  null,                    "NONEwithECDSA",   null,                  true),
       
     ECDSA_SHA256 ("http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256",  "ES256",  
-                  "1.2.840.10045.4.3.2",   "SHA256withECDSA", HashAlgorithms.SHA256, true,  false),
+                  "1.2.840.10045.4.3.2",   "SHA256withECDSA", HashAlgorithms.SHA256, true),
       
     ECDSA_SHA384 ("http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha384",  "ES384",   
-                  "1.2.840.10045.4.3.3",   "SHA384withECDSA", HashAlgorithms.SHA384, true,  false),
+                  "1.2.840.10045.4.3.3",   "SHA384withECDSA", HashAlgorithms.SHA384, true),
       
     ECDSA_SHA512 ("http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha512",  "ES512",   
-                  "1.2.840.10045.4.3.4",   "SHA512withECDSA", HashAlgorithms.SHA512, true,  false);
+                  "1.2.840.10045.4.3.4",   "SHA512withECDSA", HashAlgorithms.SHA512, true),
+
+    ED25519      ("https://webpki.github.io/sks/algorithm#ed25519",       "Ed25519",   
+                  "1.3.101.112",           "Ed25519",         null /*"pure" */,      false),
+
+    ED448        ("https://webpki.github.io/sks/algorithm#ed448",         "Ed448",   
+                  "1.3.101.113",           "Ed448",           null /*"pure" */,      false);
 
     private final String sksName;   // As expressed in SKS
     private final String joseName;  // Alternative JOSE name
@@ -54,58 +60,63 @@ public enum AsymSignatureAlgorithms implements SignatureAlgorithms {
     private final HashAlgorithms digestAlg;
     private boolean sksMandatory;   // If required in SKS
     private boolean rsa;            // RSA algorithm
+    private boolean ecdsa;          // ECDSA algorithm
 
     private AsymSignatureAlgorithms(String sksName,
                                     String joseName,
                                     String oid,
                                     String jceName,
                                     HashAlgorithms digestAlg,
-                                    boolean sksMandatory,
-                                    boolean rsa) {
+                                    boolean sksMandatory) {
         this.sksName = sksName;
         this.joseName = joseName;
         this.oid = oid;
         this.jceName = jceName;
         this.digestAlg = digestAlg;
         this.sksMandatory = sksMandatory;
-        this.rsa = rsa;
+        this.rsa = jceName.endsWith("withRSA");
+        this.ecdsa = jceName.endsWith("withECDSA");
     }
-
 
     @Override
     public boolean isSymmetric() {
         return false;
     }
 
-
     @Override
     public boolean isMandatorySksAlgorithm() {
         return sksMandatory;
     }
-
 
     @Override
     public String getJceName() {
         return jceName;
     }
 
-
     @Override
     public String getOid() {
         return oid;
     }
-
 
     @Override
     public HashAlgorithms getDigestAlgorithm() {
         return digestAlg;
     }
 
-
+    @Override
     public boolean isRsa() {
         return rsa;
     }
 
+    @Override
+    public boolean isOkp() {
+        return !(ecdsa || rsa);
+    }
+
+    @Override
+    public boolean isEcdsa() {
+        return ecdsa;
+    }
 
     public static boolean testAlgorithmUri(String sksName) {
         for (AsymSignatureAlgorithms alg : values()) {
@@ -115,7 +126,6 @@ public enum AsymSignatureAlgorithms implements SignatureAlgorithms {
         }
         return false;
     }
-
 
     public static AsymSignatureAlgorithms getAlgorithmFromId(String algorithmId,
                                                              AlgorithmPreferences algorithmPreferences)
@@ -137,7 +147,6 @@ public enum AsymSignatureAlgorithms implements SignatureAlgorithms {
         throw new IOException("Unknown signature algorithm: " + algorithmId);
     }
 
-
     @Override
     public String getAlgorithmId(AlgorithmPreferences algorithmPreferences) throws IOException {
         if (joseName == null) {
@@ -153,7 +162,6 @@ public enum AsymSignatureAlgorithms implements SignatureAlgorithms {
         }
         return algorithmPreferences == AlgorithmPreferences.SKS ? sksName : joseName;
     }
-
 
     @Override
     public boolean isDeprecated() {

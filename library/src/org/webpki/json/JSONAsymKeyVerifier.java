@@ -38,8 +38,10 @@ public class JSONAsymKeyVerifier extends JSONVerifier {
      *
      * @param expectedPublicKey Expected public key
      * @throws GeneralSecurityException &nbsp;
+     * @throws IOException &nbsp;
      */
-    public JSONAsymKeyVerifier(PublicKey expectedPublicKey) throws GeneralSecurityException {
+    public JSONAsymKeyVerifier(PublicKey expectedPublicKey) 
+    throws GeneralSecurityException, IOException {
         super(JSONSignatureTypes.ASYMMETRIC_KEY);
         this.expectedPublicKey = KeyAlgorithms.normalizePublicKey(expectedPublicKey);
     }

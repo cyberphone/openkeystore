@@ -18,7 +18,6 @@ package org.webpki.crypto;
 
 import java.io.IOException;
 
-
 public enum AsymEncryptionAlgorithms implements EncryptionAlgorithms {
 
     RSA_ES_PKCS_1_5        ("https://webpki.github.io/sks/algorithm#rsa.es.pkcs1_5",
@@ -48,30 +47,30 @@ public enum AsymEncryptionAlgorithms implements EncryptionAlgorithms {
         this.jceName = jceName;
     }
 
-
     @Override
     public boolean isSymmetric() {
         return false;
     }
-
 
     @Override
     public boolean isMandatorySksAlgorithm() {
         return this != RSA_OAEP_SHA1_MGF1P;
     }
 
-
     @Override
     public String getJceName() {
         return jceName;
     }
 
+    @Override
+    public boolean isRsa() {
+        return true;
+    }
 
     @Override
     public String getOid() {
         return oid;
     }
-
 
     public static AsymEncryptionAlgorithms getAlgorithmFromOid(String oid) throws IOException {
         for (AsymEncryptionAlgorithms alg : values()) {
@@ -81,7 +80,6 @@ public enum AsymEncryptionAlgorithms implements EncryptionAlgorithms {
         }
         throw new IOException("Unknown algorithm: " + oid);
     }
-
 
     public static AsymEncryptionAlgorithms getAlgorithmFromId(String algorithmId,
                                                               AlgorithmPreferences algorithmPreferences) 
@@ -114,7 +112,6 @@ public enum AsymEncryptionAlgorithms implements EncryptionAlgorithms {
         }
         return algorithmPreferences == AlgorithmPreferences.SKS ? sksName : joseName;
     }
-
 
     @Override
     public boolean isDeprecated() {

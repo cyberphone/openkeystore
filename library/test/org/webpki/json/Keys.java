@@ -136,7 +136,7 @@ public class Keys {
         try {
             ArrayList<KeyAlgorithms> ecs = new ArrayList<>();
             for (KeyAlgorithms ka : KeyAlgorithms.values()) {
-                if (ka.isECKey()) {
+                if (ka.isEcdsa()) {
                     ecs.add(ka);
                 }
             }

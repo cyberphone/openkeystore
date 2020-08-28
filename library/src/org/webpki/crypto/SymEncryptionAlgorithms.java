@@ -71,50 +71,41 @@ public enum SymEncryptionAlgorithms implements EncryptionAlgorithms {
         this.needsPadding = needsPadding;
     }
 
-
     @Override
     public boolean isSymmetric() {
         return true;
     }
-
 
     @Override
     public boolean isMandatorySksAlgorithm() {
         return sksMandatory;
     }
 
-
     @Override
     public String getJceName() {
         return jceName;
     }
-
 
     @Override
     public String getOid() {
         return null;
     }
 
-
     public int getKeyLength() {
         return keyLength;
     }
-
 
     public boolean needsIv() {
         return ivMode;
     }
 
-
     public boolean internalIv() {
         return internalIv;
     }
 
-
     public boolean needsPadding() {
         return needsPadding;
     }
-
 
     public static SymEncryptionAlgorithms getAlgorithmFromId(String algorithmId) throws IOException {
         for (SymEncryptionAlgorithms alg : values()) {
@@ -125,7 +116,6 @@ public enum SymEncryptionAlgorithms implements EncryptionAlgorithms {
         throw new IOException("Unknown algorithm: " + algorithmId);
     }
 
-
     @Override
     public String getAlgorithmId(AlgorithmPreferences algorithmPreferences) throws IOException {
         if (algorithmPreferences == AlgorithmPreferences.JOSE) {
@@ -133,7 +123,6 @@ public enum SymEncryptionAlgorithms implements EncryptionAlgorithms {
         }
         return sksName;
     }
-
 
     @Override
     public boolean isDeprecated() {

@@ -42,6 +42,7 @@ import java.util.LinkedHashSet;
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.SignatureAlgorithms;
 import org.webpki.crypto.AsymSignatureAlgorithms;
+import org.webpki.crypto.CryptoUtil;
 import org.webpki.crypto.MACAlgorithms;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
@@ -201,16 +202,27 @@ public class JSONSignatureDecoder implements Serializable {
                         new RSAPublicKeySpec(getCryptoBinary(rd, JSONCryptoHelper.N_JSON),
                                              getCryptoBinary(rd, JSONCryptoHelper.E_JSON)));
             } else if (type.equals(JSONCryptoHelper.EC_PUBLIC_KEY)) {
-                KeyAlgorithms ec = 
+                KeyAlgorithms keyAlgorithm = 
                         KeyAlgorithms.getKeyAlgorithmFromId(rd.getString(JSONCryptoHelper.CRV_JSON),
                                                             algorithmPreferences);
-                if (!ec.isECKey()) {
-                    throw new IOException("\"" + JSONCryptoHelper.CRV_JSON + "\" is not an EC type");
+                if (!keyAlgorithm.isEcdsa()) {
+                    throw new IOException("\"" + JSONCryptoHelper.CRV_JSON + 
+                                          "\" is not an EC type");
                 }
-                ECPoint w = new ECPoint(getCurvePoint(rd, JSONCryptoHelper.X_JSON, ec),
-                                        getCurvePoint(rd, JSONCryptoHelper.Y_JSON, ec));
+                ECPoint w = new ECPoint(getCurvePoint(rd, JSONCryptoHelper.X_JSON, keyAlgorithm),
+                                        getCurvePoint(rd, JSONCryptoHelper.Y_JSON, keyAlgorithm));
                 publicKey = KeyFactory.getInstance("EC")
-                        .generatePublic(new ECPublicKeySpec(w, ec.getECParameterSpec()));
+                        .generatePublic(new ECPublicKeySpec(w, keyAlgorithm.getECParameterSpec()));
+            } else if (type.equals(JSONCryptoHelper.OKP_PUBLIC_KEY)) {
+                KeyAlgorithms keyAlgorithm = 
+                        KeyAlgorithms.getKeyAlgorithmFromId(rd.getString(JSONCryptoHelper.CRV_JSON),
+                                                            algorithmPreferences);
+                if (!keyAlgorithm.isOkp()) {
+                    throw new IOException("\"" + JSONCryptoHelper.CRV_JSON + 
+                                          "\" is not a valid OKP type");
+                }
+                publicKey = CryptoUtil.publicOkpKey(rd.getBinary(JSONCryptoHelper.X_JSON), 
+                                                    keyAlgorithm);
             } else {
                 throw new IOException("Unrecognized \"" + JSONCryptoHelper.KTY_JSON + "\": " + type);
             }
@@ -290,7 +302,7 @@ public class JSONSignatureDecoder implements Serializable {
                                        PublicKey publicKey) throws IOException {
         try {
             KeyAlgorithms keyAlgorithm = KeyAlgorithms.getKeyAlgorithm(publicKey);
-            if (keyAlgorithm.isECKey()) {
+            if (keyAlgorithm.isEcdsa()) {
                 return KeyFactory.getInstance("EC")
                         .generatePrivate(new ECPrivateKeySpec(getCurvePoint(rd, "d", keyAlgorithm),
                                                               keyAlgorithm.getECParameterSpec()));
