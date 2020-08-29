@@ -28,8 +28,9 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 
 import java.security.cert.X509Certificate;
-
+import java.security.interfaces.ECKey;
 import java.security.interfaces.ECPrivateKey;
+import java.security.interfaces.RSAKey;
 import java.security.interfaces.RSAPrivateCrtKey;
 
 import java.security.spec.ECPoint;
@@ -47,6 +48,7 @@ import org.webpki.asn1.DerDecoder;
 import org.webpki.asn1.ParseUtil;
 
 import org.webpki.crypto.CertificateUtil;
+import org.webpki.crypto.CryptoUtil;
 import org.webpki.crypto.KeyAlgorithms;
 
 /**
@@ -57,7 +59,7 @@ public class PEMDecoder {
     }  // No instantiation please
 
  
-    public static PublicKey ecPublicKeyFromPKCS8(byte[] pkcs8) throws IOException, GeneralSecurityException {
+    static PublicKey ecPublicKeyFromPKCS8(byte[] pkcs8) throws IOException, GeneralSecurityException {
         ASN1Sequence seq = ParseUtil.sequence(DerDecoder.decode(pkcs8), 3);
         String oid = ParseUtil.oid(ParseUtil.sequence(seq.get(1), 2).get(1)).oid();
         seq = ParseUtil.sequence(DerDecoder.decode(ParseUtil.octet(seq.get(2))));
@@ -77,6 +79,16 @@ public class PEMDecoder {
             }
         }
         throw new IOException("Failed creating EC public key from private key");
+    }
+    
+    static PublicKey okpPublicKeyFromPKCS8(byte[] pkcs8) throws IOException, GeneralSecurityException {
+        ASN1Sequence seq = ParseUtil.sequence(DerDecoder.decode(pkcs8));
+        KeyAlgorithms keyAlgorithm = 
+                getOkpKeyAlgorithm(ParseUtil.oid(ParseUtil.sequence(seq.get(1)).get(0)).oid());
+        byte[] content = ParseUtil.simpleContext(seq.get(seq.size() - 1), 1).encodeContent();
+        byte[] publicKey = new byte[content.length - 1];
+        System.arraycopy(content, 1, publicKey, 0, publicKey.length);
+        return CryptoUtil.raw2PublicOkpKey(publicKey, keyAlgorithm);
     }
     
     private static byte[] getPrivateKeyBlob(byte[] pemBlob) throws IOException {
@@ -99,18 +111,33 @@ public class PEMDecoder {
     public static KeyPair getKeyPair(byte[] pemBlob) throws IOException, GeneralSecurityException {
         byte[] pkcs8 = getPrivateKeyBlob(pemBlob);
         PrivateKey privateKey =  getPrivateKeyFromPKCS8(pkcs8);
-        if (privateKey instanceof ECPrivateKey) {
+        if (privateKey instanceof ECKey) {
             return new KeyPair(ecPublicKeyFromPKCS8(pkcs8), privateKey);
         }
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        RSAPrivateCrtKey privk = (RSAPrivateCrtKey)privateKey;
-        return new KeyPair(keyFactory.generatePublic(
-            new RSAPublicKeySpec(privk.getModulus(), privk.getPublicExponent())), privateKey);
+        if (privateKey instanceof RSAKey) {
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            RSAPrivateCrtKey privk = (RSAPrivateCrtKey)privateKey;
+            return new KeyPair(keyFactory.generatePublic(
+                new RSAPublicKeySpec(privk.getModulus(), privk.getPublicExponent())), privateKey);
+        }
+        return new KeyPair(okpPublicKeyFromPKCS8(pkcs8), privateKey);
+    }
+    
+    static KeyAlgorithms getOkpKeyAlgorithm(String oid) throws IOException {
+        for (KeyAlgorithms keyAlgorithm : KeyAlgorithms.values()) {
+            if (oid.equals(keyAlgorithm.getECDomainOID())) {
+                return keyAlgorithm;
+            }
+        }
+        throw new IOException("Did not find OID: " + oid);
     }
 
     private static KeyFactory getKeyFactory(BaseASN1Object object) throws IOException, GeneralSecurityException {
-        return KeyFactory.getInstance(ParseUtil.oid(ParseUtil.sequence(object).get(0))
-                .oid().equals("1.2.840.113549.1.1.1") ? "RSA" : "EC");
+        String oid = ParseUtil.oid(ParseUtil.sequence(object).get(0)).oid();
+        if (oid.startsWith("1.3.101.11")) {
+            return KeyFactory.getInstance(getOkpKeyAlgorithm(oid).getJceName(), "BC");
+        }
+        return KeyFactory.getInstance(oid.equals("1.2.840.113549.1.1.1") ? "RSA" : "EC");
     }
 
     public static PrivateKey getPrivateKey(byte[] pemBlob) throws IOException, GeneralSecurityException {

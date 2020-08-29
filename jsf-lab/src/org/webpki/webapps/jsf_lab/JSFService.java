@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import java.security.KeyPair;
+import java.security.Provider;
+import java.security.Security;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -123,12 +125,26 @@ public class JSFService extends InitPropertyReader implements ServletContextList
     @Override
     public void contextInitialized(ServletContextEvent event) {
         initProperties(event);
+        Provider bc = (Provider) new org.bouncycastle.jce.provider.BouncyCastleProvider();
+        if (Security.getProvider(bc.getName()) == null) {
+            try {
+                Security.addProvider(bc);
+                logger.info("BouncyCastle successfully added to the list of providers");
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, "BouncyCastle didn't load");
+                throw new RuntimeException(e);
+            }
+        } else {
+            logger.info("BouncyCastle was already loaded");
+        }
         try {
             /////////////////////////////////////////////////////////////////////////////////////////////
             // Keys
             /////////////////////////////////////////////////////////////////////////////////////////////
             keyDeclarations = 
                     new KeyDeclaration(KeyDeclaration.PRIVATE_KEYS, "privatekey.pem")
+                          .addKey(AsymSignatureAlgorithms.ED25519,      "ed25519")
+                          .addKey(AsymSignatureAlgorithms.ED448,        "ed448")
                           .addKey(AsymSignatureAlgorithms.ECDSA_SHA256, "p256")
                           .addKey(AsymSignatureAlgorithms.ECDSA_SHA384, "p384")
                           .addKey(AsymSignatureAlgorithms.ECDSA_SHA512, "p521")
@@ -136,6 +152,8 @@ public class JSFService extends InitPropertyReader implements ServletContextList
                           .addKey(AsymSignatureAlgorithms.RSA_SHA384,   null)
                           .addKey(AsymSignatureAlgorithms.RSA_SHA512,   null).toString() +
                     new KeyDeclaration(KeyDeclaration.CERTIFICATES, "certpath.pem")
+                          .addKey(AsymSignatureAlgorithms.ED25519,      "ed25519")
+                          .addKey(AsymSignatureAlgorithms.ED448,        "ed448")
                           .addKey(AsymSignatureAlgorithms.ECDSA_SHA256, "p256")
                           .addKey(AsymSignatureAlgorithms.ECDSA_SHA384, "p384")
                           .addKey(AsymSignatureAlgorithms.ECDSA_SHA512, "p521")

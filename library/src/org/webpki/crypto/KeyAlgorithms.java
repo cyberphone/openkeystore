@@ -251,7 +251,22 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                     (byte)0x52, (byte)0xF5, (byte)0x03, (byte)0xC1, (byte)0x0C, (byte)0x3F, (byte)0xF0, (byte)0x97,
                     (byte)0xCD, (byte)0xC9, (byte)0x45, (byte)0xF3, (byte)0x21, (byte)0xC5, (byte)0xCF, (byte)0x41,
                     (byte)0x17, (byte)0xF3, (byte)0x3A, (byte)0xB4}),
+/*
+ * Comment = Edwards ECDH
+Description = X25519 (1 3 101 110)
 
+OID = 06 03 2b 65 6f
+Comment = Edwards ECDH
+Description = X448 (1 3 101 111)
+
+OID = 06 03 2b 65 70
+Comment = Edwards signature
+Description = Ed25519 (1 3 101 112)
+
+OID = 06 03 2b 65 71
+Comment = Edwards signature
+Description = Ed448 (1 3 101 113)
+ */
     ED25519    ("https://webpki.github.io/sks/algorithm#ed25519", 
                 "Ed25519",
                 "Ed25519",
@@ -260,7 +275,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                 false,
                 false,
                 false,
-                null,
+                "1.3.101.112",
                 null),
 
     ED448      ("https://webpki.github.io/sks/algorithm#ed448", 
@@ -271,7 +286,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                 false,
                 false,
                 false,
-                null,
+                "1.3.101.113",
                 null),
 
     X25519     ("https://webpki.github.io/sks/algorithm#x25519",
@@ -282,7 +297,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                 false,
                 false,
                 false,
-                null,
+                "1.3.101.110",
                 null),
 
     X448       ("https://webpki.github.io/sks/algorithm#x448",
@@ -293,7 +308,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                 false,
                 false,
                 false,
-                null,
+                "1.3.101.111",
                 null);
 
     private final String sksName;                    // As expressed in SKS
@@ -459,8 +474,8 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                                          ((RSAPublicKey)publicKey).getPublicExponent()));
         }
         KeyAlgorithms keyAlgorithm = getKeyAlgorithm(publicKey);
-        return CryptoUtil.publicOkpKey(CryptoUtil.rawOkpKey(publicKey, keyAlgorithm),
-                                       keyAlgorithm);
+        return CryptoUtil.raw2PublicOkpKey(CryptoUtil.public2RawOkpKey(publicKey, keyAlgorithm),
+                                           keyAlgorithm);
     }
 
     public static KeyAlgorithms getKeyAlgorithm(PublicKey publicKey) throws IOException {

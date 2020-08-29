@@ -20,11 +20,15 @@ import java.io.IOException;
 
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
+import java.security.PrivateKey;
 import java.security.PublicKey;
 
 import java.security.spec.X509EncodedKeySpec;
 
 import java.util.LinkedHashMap;
+
+import org.webpki.asn1.DerDecoder;
+import org.webpki.asn1.ParseUtil;
 
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.DebugFormatter;
@@ -41,17 +45,17 @@ public class CryptoUtil {
             new LinkedHashMap<>();
 
     static {
-        okpKeyLength.put(KeyAlgorithms.ED25519, 32 + 12);
-        okpKeyLength.put(KeyAlgorithms.ED448,   57 + 12);
-        okpKeyLength.put(KeyAlgorithms.X25519,  32 + 12);
-        okpKeyLength.put(KeyAlgorithms.X448,    55 + 12);
+        okpKeyLength.put(KeyAlgorithms.ED25519, 32);
+        okpKeyLength.put(KeyAlgorithms.ED448,   57);
+        okpKeyLength.put(KeyAlgorithms.X25519,  32);
+        okpKeyLength.put(KeyAlgorithms.X448,    56);
     }
 
-    public static byte[] rawOkpKey(PublicKey publicKey,
-                                   KeyAlgorithms keyAlgorithm) throws IOException {
+    public static byte[] public2RawOkpKey(PublicKey publicKey,
+                                          KeyAlgorithms keyAlgorithm) throws IOException {
         byte[] encoded = publicKey.getEncoded();
-        if (okpKeyLength.get(keyAlgorithm) != encoded.length) {
-            throw new IOException("Wrong key length for: " + keyAlgorithm.toString());
+        if (okpKeyLength.get(keyAlgorithm) != encoded.length - 12) {
+            throw new IOException("Wrong public key length for: " + keyAlgorithm.toString());
         }
         byte[] rawKey = new byte[encoded.length - 12];
         System.arraycopy(encoded, 12, rawKey, 0, rawKey.length);
@@ -75,12 +79,25 @@ public class CryptoUtil {
         }
     }
 
-    public static PublicKey publicOkpKey(byte[] x, 
-                                         KeyAlgorithms keyAlgorithm) 
+    public static PublicKey raw2PublicOkpKey(byte[] x, 
+                                             KeyAlgorithms keyAlgorithm) 
     throws GeneralSecurityException {
         return KeyFactory.getInstance(keyAlgorithm.getJceName(), "BC")
                 .generatePublic(
                         new X509EncodedKeySpec(
                                 ArrayUtil.add(okpPrefix.get(keyAlgorithm), x)));
+    }
+
+    public static byte[] private2RawOkpKey(PrivateKey privateKey, 
+                                           KeyAlgorithms keyAlgorithm) throws IOException {
+        byte[] rawKey = ParseUtil.octet(
+                DerDecoder.decode(
+                        ParseUtil.octet(
+                                ParseUtil.sequence(
+                                        DerDecoder.decode(privateKey.getEncoded())).get(2))));
+        if (okpKeyLength.get(keyAlgorithm) != rawKey.length) {
+            throw new IOException("Wrong private key length for: " + keyAlgorithm.toString());
+        }
+        return rawKey;
     }
 }

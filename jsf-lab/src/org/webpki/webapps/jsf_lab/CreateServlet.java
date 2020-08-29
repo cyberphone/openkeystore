@@ -146,6 +146,8 @@ public class CreateServlet extends HttpServlet {
                  .add(MACAlgorithms.HMAC_SHA256)
                  .add(MACAlgorithms.HMAC_SHA384)
                  .add(MACAlgorithms.HMAC_SHA512)
+                 .add(AsymSignatureAlgorithms.ED25519)
+                 .add(AsymSignatureAlgorithms.ED448)
                  .add(AsymSignatureAlgorithms.ECDSA_SHA256)
                  .add(AsymSignatureAlgorithms.ECDSA_SHA384)
                  .add(AsymSignatureAlgorithms.ECDSA_SHA512)

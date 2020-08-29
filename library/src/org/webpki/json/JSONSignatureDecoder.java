@@ -221,8 +221,8 @@ public class JSONSignatureDecoder implements Serializable {
                     throw new IOException("\"" + JSONCryptoHelper.CRV_JSON + 
                                           "\" is not a valid OKP type");
                 }
-                publicKey = CryptoUtil.publicOkpKey(rd.getBinary(JSONCryptoHelper.X_JSON), 
-                                                    keyAlgorithm);
+                publicKey = CryptoUtil.raw2PublicOkpKey(rd.getBinary(JSONCryptoHelper.X_JSON), 
+                                                        keyAlgorithm);
             } else {
                 throw new IOException("Unrecognized \"" + JSONCryptoHelper.KTY_JSON + "\": " + type);
             }

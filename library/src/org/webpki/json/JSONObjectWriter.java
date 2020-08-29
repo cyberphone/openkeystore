@@ -801,7 +801,7 @@ import org.webpki.json.JSONSignatureDecoder;
             corePublicKey.setString(JSONCryptoHelper.CRV_JSON, 
                                     keyAlg.getAlgorithmId(algorithmPreferences));
             corePublicKey.setBinary(JSONCryptoHelper.X_JSON,
-                                    CryptoUtil.rawOkpKey(publicKey, keyAlg));
+                                    CryptoUtil.public2RawOkpKey(publicKey, keyAlg));
         }
         return corePublicKey;
     }

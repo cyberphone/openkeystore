@@ -50,9 +50,6 @@ import org.webpki.crypto.KeyUsageBits;
 import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.SignatureWrapper;
 
-import org.webpki.util.ArrayUtil;
-
-
 public class CommandLineCA {
     ArrayList<CmdLineArgument> list = new ArrayList<>();
 
@@ -703,10 +700,6 @@ public class CommandLineCA {
             PrivateKey priv_key = key_pair.getPrivate();
             PublicKey subject_pub_key = key_pair.getPublic();
 
-String json = new org.webpki.json.JSONObjectWriter().setPublicKey(subject_pub_key).toString();
-System.out.println(json);
-PublicKey futt = org.webpki.json.JSONParser.parse(json).getPublicKey();
-System.out.println("EQ=" + futt.equals(subject_pub_key));
             ///////////////////////////////////////////////////////////////
             // Get signature algorithm
             ///////////////////////////////////////////////////////////////

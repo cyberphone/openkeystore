@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.ArrayList;
 
 import java.security.KeyStore;
+import java.security.PrivateKey;
 import java.security.PublicKey;
 
 import java.security.cert.Certificate;
@@ -35,6 +36,7 @@ import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.RSAPrivateCrtKey;
 
 import org.webpki.crypto.AlgorithmPreferences;
+import org.webpki.crypto.CryptoUtil;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyStoreReader;
 import org.webpki.crypto.CustomCryptoProvider;
@@ -109,8 +111,17 @@ public class KeyStore2JWKConverter {
                 PublicKey publicKey = ks.getCertificateChain(alias)[0].getPublicKey();
                 if (privateKeyFlag) {
                     KeyAlgorithms keyAlgorithm = KeyAlgorithms.getKeyAlgorithm(publicKey);
-                    if (keyAlgorithm.isEcdsa()) {
-                       BigInteger d = ((ECPrivateKey)ks.getKey(alias, argv[1].toCharArray())).getS();
+                    PrivateKey privateKey = (PrivateKey)ks.getKey(alias, argv[1].toCharArray());
+                    if (keyAlgorithm.isRsa()) {
+                        RSAPrivateCrtKey rsaPrivateKey = (RSAPrivateCrtKey)privateKey;
+                        setCryptoBinary("d", rsaPrivateKey.getPrivateExponent());
+                        setCryptoBinary("p", rsaPrivateKey.getPrimeP());
+                        setCryptoBinary("q", rsaPrivateKey.getPrimeQ());
+                        setCryptoBinary("dp", rsaPrivateKey.getPrimeExponentP());
+                        setCryptoBinary("dq", rsaPrivateKey.getPrimeExponentQ());
+                        setCryptoBinary("qi", rsaPrivateKey.getCrtCoefficient());
+                    } else if (keyAlgorithm.isEcdsa()) {
+                       BigInteger d = ((ECPrivateKey)privateKey).getS();
                        byte[] curvePoint = d.toByteArray();
                        if (curvePoint.length > (keyAlgorithm.getPublicKeySizeInBits() + 7) / 8) {
                            if (curvePoint[0] != 0) {
@@ -124,13 +135,7 @@ public class KeyStore2JWKConverter {
                            addPrivateKeyElement("d", curvePoint);
                        }
                     } else {
-                        RSAPrivateCrtKey rsaPrivateKey = ((RSAPrivateCrtKey)ks.getKey(alias, argv[1].toCharArray()));
-                        setCryptoBinary("d", rsaPrivateKey.getPrivateExponent());
-                        setCryptoBinary("p", rsaPrivateKey.getPrimeP());
-                        setCryptoBinary("q", rsaPrivateKey.getPrimeQ());
-                        setCryptoBinary("dp", rsaPrivateKey.getPrimeExponentP());
-                        setCryptoBinary("dq", rsaPrivateKey.getPrimeExponentQ());
-                        setCryptoBinary("qi", rsaPrivateKey.getCrtCoefficient());
+                        addPrivateKeyElement("d", CryptoUtil.private2RawOkpKey(privateKey, keyAlgorithm));
                     }
                     writeJwk(fis, publicKey, alias);
                 }

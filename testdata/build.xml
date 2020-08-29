@@ -212,6 +212,26 @@
        <param name="algorithm" value="-ecccurve NIST_P_521"/>
     </antcall>
 
+    <antcall target="_createtestcert">
+       <param name="keyprefix" value="ed25519"/>
+       <param name="algorithm" value="-ecccurve ED25519"/>
+    </antcall>
+
+    <antcall target="_createtestcert">
+       <param name="keyprefix" value="ed448"/>
+       <param name="algorithm" value="-ecccurve ED448"/>
+    </antcall>
+
+    <antcall target="_createtestcert">
+       <param name="keyprefix" value="x25519"/>
+       <param name="algorithm" value="-ecccurve X25519"/>
+    </antcall>
+
+    <antcall target="_createtestcert">
+       <param name="keyprefix" value="x448"/>
+       <param name="algorithm" value="-ecccurve X448"/>
+    </antcall>
+
    </target>
 
 </project>

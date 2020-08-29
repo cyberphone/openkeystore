@@ -1,0 +1,7 @@
+{
+  "kid": "example.com:x448",
+  "kty": "OKP",
+  "crv": "X448",
+  "x": "Nm2U_QCgZFMPGI-NjqjTtA8tk1hw8PvYUXChKyM-cJ0tSlivU9uoxkUYrt87KzMukVkfSlrimW0",
+  "d": "8AKsGXExIQSgaPxmm3ATFJgtpRlvDBwQs3gM9ew2xPWIAfTCZoiuMo6or6W4N-ziLU1KZSytdvs"
+}

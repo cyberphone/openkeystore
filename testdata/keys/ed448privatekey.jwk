@@ -1,0 +1,7 @@
+{
+  "kid": "example.com:ed448",
+  "kty": "OKP",
+  "crv": "Ed448",
+  "x": "IUkRrGrNQFnHA-pIcgwzTxyL4BlWyHqC6LkZbgyHMsM14mC2NfpW9QV_Ao7mkQXIZM2OCgCimEQA",
+  "d": "EzABSeOFsw-6ydqO3YW4ZPONZqEOQ-0DARQ1U-v_jOCyXPI6FkGS1x1a5CAVY2HNTcfNYGKBriKC"
+}
