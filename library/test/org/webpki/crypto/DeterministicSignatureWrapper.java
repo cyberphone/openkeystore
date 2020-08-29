@@ -91,10 +91,8 @@ public class DeterministicSignatureWrapper {
     boolean rsaFlag;
     ECParameterSpec ecParameters;
 
-    private DeterministicSignatureWrapper(AsymSignatureAlgorithms algorithm, String provider, Key key) throws GeneralSecurityException, IOException {
-        instance = provider == null ? Signature.getInstance(algorithm.getJceName())
-                                                    : 
-                                      Signature.getInstance(algorithm.getJceName(), provider);
+    private DeterministicSignatureWrapper(Key key, AsymSignatureAlgorithms algorithm) throws GeneralSecurityException, IOException {
+        instance = Signature.getInstance(algorithm.getJceName(), "BC");
         rsaFlag = key instanceof RSAKey;
         if (!rsaFlag) {
             ecParameters = ((ECKey) key).getParams();
@@ -102,29 +100,17 @@ public class DeterministicSignatureWrapper {
     }
 
     public DeterministicSignatureWrapper(AsymSignatureAlgorithms algorithm, 
-                            PublicKey publicKey,
-                            String provider) throws GeneralSecurityException, IOException {
-        this(algorithm, provider, publicKey);
+                                         PublicKey publicKey) throws GeneralSecurityException, IOException {
+        this(publicKey, algorithm);
         instance.initVerify(publicKey);
     }
 
     public DeterministicSignatureWrapper(AsymSignatureAlgorithms algorithm,
-                            PublicKey publicKey) throws GeneralSecurityException, IOException {
-        this(algorithm, publicKey, null);
-    }
-
-    public DeterministicSignatureWrapper(AsymSignatureAlgorithms algorithm,
-                            PrivateKey privateKey,
-                            String provider) throws GeneralSecurityException, IOException {
-        this(algorithm, provider, privateKey);
+                                         PrivateKey privateKey) throws GeneralSecurityException, IOException {
+        this(privateKey, algorithm);
         FixedSecureRandom random = new FixedSecureRandom();
         random.setBytes(DebugFormatter.getByteArrayFromHex(FIX_RANDOM));
         instance.initSign(privateKey, random);
-    }
-
-    public DeterministicSignatureWrapper(AsymSignatureAlgorithms algorithm,
-                            PrivateKey privateKey) throws GeneralSecurityException, IOException {
-        this(algorithm, privateKey, null);
     }
 
     public DeterministicSignatureWrapper setECDSASignatureEncoding(boolean derEncoded) {
@@ -178,15 +164,5 @@ public class DeterministicSignatureWrapper {
             throw new IOException("Didn't verify");
         }
     }
-    
-    public static void main(String[] argc) {
-        try {
-            CustomCryptoProvider.forcedLoad(true);
-            rfc4754();
-            System.out.println("Success!");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
-    }
+ 
 }

@@ -53,13 +53,14 @@ import org.junit.Test;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.CertificateUtil;
+import org.webpki.crypto.CryptoUtil;
 import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.DeterministicSignatureWrapper;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyStoreVerifier;
 import org.webpki.crypto.MACAlgorithms;
-
+import org.webpki.crypto.SignatureWrapper;
 import org.webpki.json.JSONCryptoHelper.PUBLIC_KEY_OPTIONS;
 
 import org.webpki.util.ArrayUtil;
@@ -2289,7 +2290,7 @@ public class JSONTest {
     public static void openFile() throws Exception {
         // Start deprecating Bouncycastle since Android will remove most of it anyway
         if (!System.clearProperty("bcprovider").isEmpty()) {
-            bcLoaded = CustomCryptoProvider.conditionalLoad(true);
+            bcLoaded = CustomCryptoProvider.conditionalLoad(false);
         }
         Locale.setDefault(Locale.FRANCE);  // Should create HUGE problems :-)
         baseKey = System.clearProperty("json.keys") + File.separator;
@@ -3380,6 +3381,46 @@ public class JSONTest {
             data = reader.getString(URI);
         }
     }
+    
+    void keyPairSignature(KeyPair keyPair) throws IOException, GeneralSecurityException {
+        String json = new JSONObjectWriter().setString("hi", "there")
+            .setSignature(new JSONAsymKeySigner(keyPair.getPrivate(), 
+                                                keyPair.getPublic(), 
+                                                null).setOutputPublicKeyInfo(false)).toString();
+        JSONParser.parse(json).getSignature(
+                new JSONCryptoHelper.Options()
+                    .setPublicKeyOption(
+                            JSONCryptoHelper.PUBLIC_KEY_OPTIONS.FORBIDDEN))
+                                .verify(new JSONAsymKeyVerifier(keyPair.getPublic()));
+    }
+    
+    void rfc8032(KeyAlgorithms keyAlgorithm,
+                 String secretKeyInHex,
+                 String publicKeyInHex,
+                 String messageInHex,
+                 String signatureInHex) {
+        try {
+            PrivateKey privateKey = 
+                    CryptoUtil.raw2PrivateOkpKey(DebugFormatter.getByteArrayFromHex(secretKeyInHex), 
+                                                 keyAlgorithm);
+            PublicKey publicKey = 
+                    CryptoUtil.raw2PublicOkpKey(DebugFormatter.getByteArrayFromHex(publicKeyInHex), 
+                                                keyAlgorithm);
+            byte[] message = DebugFormatter.getByteArrayFromHex(messageInHex);
+            byte[] expectedSignature = DebugFormatter.getByteArrayFromHex(signatureInHex);
+            byte[] signature = 
+                    new SignatureWrapper(keyAlgorithm.getRecommendedSignatureAlgorithm(),
+                                         privateKey)
+                        .update(message)
+                        .sign();
+            assertTrue("Sig val", ArrayUtil.compare(expectedSignature, signature));
+            new SignatureWrapper(keyAlgorithm.getRecommendedSignatureAlgorithm(), publicKey)
+                .update(message)
+                .verify(signature);
+        } catch (Exception e) {
+            assertFalse("verify", bcLoaded);
+        }
+    }
 
     @Test
     public void Signatures() throws Exception {
@@ -3394,6 +3435,48 @@ public class JSONTest {
         String keyIdP256 = keyId;
         KeyPair p521 = readJwk("p521");
         KeyPair r2048 = readJwk("r2048");
+        keyPairSignature(p256);
+        keyPairSignature(readJwk("p384"));
+        keyPairSignature(p521);
+        keyPairSignature(r2048);
+
+        try {
+            keyPairSignature(readJwk("ed25519"));
+            keyPairSignature(readJwk("ed448"));
+        } catch (Exception e) {
+            assertFalse(bcLoaded);
+        }
+        
+        rfc8032(KeyAlgorithms.ED25519,
+                "c5aa8df43f9f837bedb7442f31dcb7b1"
+                + "66d38535076f094b85ce3a2e0b4458f7",
+                "fc51cd8e6218a1a38da47ed00230f058"
+                + "0816ed13ba3303ac5deb911548908025",
+                "af82",
+                "6291d657deec24024827e69c3abe01a3"
+                + "0ce548a284743a445e3680d7db5ac3ac"
+                + "18ff9b538d16f290ae67f760984dc659"
+                + "4a7c15e9716ed28dc027beceea1ec40a");
+        
+        rfc8032(KeyAlgorithms.ED448,
+                "cd23d24f714274e744343237b93290f5"
+                + "11f6425f98e64459ff203e8985083ffd"
+                + "f60500553abc0e05cd02184bdb89c4cc"
+                + "d67e187951267eb328",
+                "dcea9e78f35a1bf3499a831b10b86c90"
+                + "aac01cd84b67a0109b55a36e9328b1e3"
+                + "65fce161d71ce7131a543ea4cb5f7e9f"
+                + "1d8b00696447001400",
+                "0c3e544074ec63b0265e0c",
+                "1f0a8888ce25e8d458a21130879b840a"
+                + "9089d999aaba039eaf3e3afa090a09d3"
+                + "89dba82c4ff2ae8ac5cdfb7c55e94d5d"
+                + "961a29fe0109941e00b8dbdeea6d3b05"
+                + "1068df7254c0cdc129cbe62db2dc957d"
+                + "bb47b51fd3f213fb8698f064774250a5"
+                + "028961c9bf8ffd973fe5d5c206492b14"
+                + "0e00");
+
         JSONObjectWriter writer = new JSONObjectWriter()
             .setString("myData", "cool")
             .setSignature(new JSONAsymKeySigner(p256.getPrivate(), p256.getPublic(), null));
