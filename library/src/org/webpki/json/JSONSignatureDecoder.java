@@ -307,16 +307,20 @@ public class JSONSignatureDecoder implements Serializable {
                         .generatePrivate(new ECPrivateKeySpec(getCurvePoint(rd, "d", keyAlgorithm),
                                                               keyAlgorithm.getECParameterSpec()));
             }
-            return KeyFactory.getInstance("RSA")
-                    .generatePrivate(
-                        new RSAPrivateCrtKeySpec(((RSAPublicKey) publicKey).getModulus(),
-                                                 ((RSAPublicKey) publicKey).getPublicExponent(),
-                                                 getCryptoBinary(rd, "d"),
-                                                 getCryptoBinary(rd, "p"),
-                                                 getCryptoBinary(rd, "q"),
-                                                 getCryptoBinary(rd, "dp"),
-                                                 getCryptoBinary(rd, "dq"),
-                                                 getCryptoBinary(rd, "qi")));
+            if (keyAlgorithm.isRsa()) {
+                return KeyFactory.getInstance("RSA")
+                        .generatePrivate(
+                            new RSAPrivateCrtKeySpec(((RSAPublicKey) publicKey).getModulus(),
+                                                     ((RSAPublicKey) publicKey).getPublicExponent(),
+                                                     getCryptoBinary(rd, "d"),
+                                                     getCryptoBinary(rd, "p"),
+                                                     getCryptoBinary(rd, "q"),
+                                                     getCryptoBinary(rd, "dp"),
+                                                     getCryptoBinary(rd, "dq"),
+                                                     getCryptoBinary(rd, "qi")));
+            }
+            return CryptoUtil.raw2PrivateOkpKey(rd.getBinary("d"), 
+                                                KeyAlgorithms.getKeyAlgorithm(publicKey));
         } catch (GeneralSecurityException e) {
             throw new IOException(e);
         }

@@ -46,7 +46,7 @@ import org.webpki.asn1.ASN1Sequence;
 import org.webpki.asn1.BaseASN1Object;
 import org.webpki.asn1.DerDecoder;
 import org.webpki.asn1.ParseUtil;
-
+import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.CertificateUtil;
 import org.webpki.crypto.CryptoUtil;
 import org.webpki.crypto.KeyAlgorithms;
@@ -100,12 +100,20 @@ public class PEMDecoder {
         PrivateKey privateKey = getKeyFactory(ParseUtil.sequence(DerDecoder.decode(pkcs8)).get(1))
                 .generatePrivate(new PKCS8EncodedKeySpec(pkcs8));
         // This is for getting the identical representation to JWK decoding
-        if (privateKey instanceof ECPrivateKey) {
+        if (privateKey instanceof ECKey) {
             return KeyFactory.getInstance("EC")
                     .generatePrivate(new ECPrivateKeySpec(((ECPrivateKey)privateKey).getS(),
                                                           ((ECPrivateKey)privateKey).getParams()));
         }
-        return privateKey;
+        if (privateKey instanceof RSAKey) {
+            return privateKey;
+        }
+        KeyAlgorithms keyAlgorithm = 
+                KeyAlgorithms.getKeyAlgorithmFromId(privateKey.getAlgorithm(),
+                                                    AlgorithmPreferences.JOSE);
+        return CryptoUtil.raw2PrivateOkpKey(CryptoUtil.private2RawOkpKey(privateKey, 
+                                                                         keyAlgorithm), 
+                                            keyAlgorithm);
     }
 
     public static KeyPair getKeyPair(byte[] pemBlob) throws IOException, GeneralSecurityException {

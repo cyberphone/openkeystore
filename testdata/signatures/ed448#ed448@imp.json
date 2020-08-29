@@ -1,0 +1,9 @@
+{
+  "now": "2019-02-10T11:23:06Z",
+  "name": "Joe",
+  "id": 2200063,
+  "signature": {
+    "algorithm": "Ed448",
+    "value": "SUjAWwmGUVzFkjUBs4FPCgrikPWyivcqLIlzADGgT8m4LwAvmLDSTdn8URgML5egnUDqLzBHeGqA_H_t6z-ziw6EkgSdj88Uf_q2psWsQdltfe4EXuGjCgK5VTGgO1leN952xO9gjJD2KvofANdKsRsA"
+  }
+}

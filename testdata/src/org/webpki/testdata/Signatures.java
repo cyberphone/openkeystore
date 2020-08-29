@@ -96,7 +96,7 @@ public class Signatures {
             throw new Exception("Wrong number of arguments");
         }
         if (!System.clearProperty("bcprovider").isEmpty()) {
-            CustomCryptoProvider.forcedLoad(true);
+            CustomCryptoProvider.forcedLoad(false);
         }
         baseKey = args[0] + File.separator;
         baseData = args[1] + File.separator;
@@ -109,7 +109,7 @@ public class Signatures {
             CertificateUtil.getCertificateFromBlob(ArrayUtil.readFile(baseKey + "rootca.cer")));
         x509Verifier = new JSONX509Verifier(new KeyStoreVerifier(keyStore));
 
-        for (String key : new String[]{"p256", "p384", "p521", "r2048"}) {
+        for (String key : new String[]{"p256", "p384", "p521", "r2048", "ed25519", "ed448"}) {
             // Check the PEM reader
             KeyPair keyPairPem = 
                     new KeyPair(PEMDecoder.getPublicKey(ArrayUtil.readFile(baseKey + key + "publickey.pem")),
@@ -147,16 +147,17 @@ public class Signatures {
         }
         
         for (boolean chained : new boolean[]{false,true}) {
-            arraySign("p256", "r2048",  false, false, false, null, chained);
-            arraySign("p256", "p384",   false, false, false, null, chained);
-            arraySign("p256", "p256-2", false, false, false, AsymSignatureAlgorithms.ECDSA_SHA256, chained);
-            arraySign("p256", "p256-2", false, false, true,  AsymSignatureAlgorithms.ECDSA_SHA256, chained);
-            arraySign("p256", "p384",   false, true,  false, null, chained);
-            arraySign("p256", "r2048",  false, true,  true,  null, chained);
-            arraySign("p256", "r2048",  false, false, true,  null, chained);
-            arraySign("p256", "r2048",  true,  false, true,  null, chained);
-            arraySign("p256", "p384",   true,  false, false, null, chained);
-            arraySign("p256", "p384",   true,  true,  false, null, chained);
+            arraySign("p256", "ed25519", false, false, false, null, chained);
+            arraySign("p256", "r2048",   false, false, false, null, chained);
+            arraySign("p256", "p384",    false, false, false, null, chained);
+            arraySign("p256", "p256-2",  false, false, false, AsymSignatureAlgorithms.ECDSA_SHA256, chained);
+            arraySign("p256", "p256-2",  false, false, true,  AsymSignatureAlgorithms.ECDSA_SHA256, chained);
+            arraySign("p256", "p384",    false, true,  false, null, chained);
+            arraySign("p256", "r2048",   false, true,  true,  null, chained);
+            arraySign("p256", "r2048",   false, false, true,  null, chained);
+            arraySign("p256", "r2048",   true,  false, true,  null, chained);
+            arraySign("p256", "p384",    true,  false, false, null, chained);
+            arraySign("p256", "p384",    true,  true,  false, null, chained);
         }
 
         asymSignCore("p256", false, true,  true,  false); 
@@ -423,7 +424,8 @@ public class Signatures {
         if (signatures.size() != 2) {
             throw new Exception("Wrong array signature");
         }
-        String fileName = baseSignatures + prefix(keyType1) + getAlgorithm(signatures.get(0)) + ","
+        String fileName = baseSignatures 
+                + prefix(keyType1) + getAlgorithm(signatures.get(0)) + ","
                 + prefix(keyType2) + getAlgorithm(signatures.get(1))
                 + (chained ? "@chai" : "@mult") 
                 + fileExt + (wantKeyId ? "-kid.json" : "-jwk.json");

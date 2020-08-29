@@ -1,0 +1,10 @@
+{
+  "now": "2019-02-10T11:23:06Z",
+  "name": "Joe",
+  "id": 2200063,
+  "signature": {
+    "algorithm": "Ed25519",
+    "keyId": "example.com:ed25519",
+    "value": "Z5GCvK_W6s1aiEVHlLlqlc2Q-Hq07lOkSIjKVdhjwBHnATwevYfZ8GbooHjjbN8Eb0JN-E4zT40dbGi6TnjPCA"
+  }
+}

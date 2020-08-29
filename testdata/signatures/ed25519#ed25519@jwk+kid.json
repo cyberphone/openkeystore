@@ -1,0 +1,15 @@
+{
+  "now": "2019-02-10T11:23:06Z",
+  "name": "Joe",
+  "id": 2200063,
+  "signature": {
+    "algorithm": "Ed25519",
+    "keyId": "example.com:ed25519",
+    "publicKey": {
+      "kty": "OKP",
+      "crv": "Ed25519",
+      "x": "_kms9bkrbpI1lPLoM2j2gKySS-k89TOuyvgC43dX-Mk"
+    },
+    "value": "-MjRj8SdH13FonjqsSEjTcoMa90GFN3knvpO1zJ9_F-mKb-AevON5Ka1LTax5UVGbO1KZEORyL9etmSjGcffBw"
+  }
+}

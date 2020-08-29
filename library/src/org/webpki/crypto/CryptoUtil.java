@@ -22,11 +22,16 @@ import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 import java.util.LinkedHashMap;
 
+import org.webpki.asn1.ASN1Integer;
+import org.webpki.asn1.ASN1ObjectID;
+import org.webpki.asn1.ASN1OctetString;
+import org.webpki.asn1.ASN1Sequence;
+import org.webpki.asn1.BaseASN1Object;
 import org.webpki.asn1.DerDecoder;
 import org.webpki.asn1.ParseUtil;
 
@@ -99,5 +104,17 @@ public class CryptoUtil {
             throw new IOException("Wrong private key length for: " + keyAlgorithm.toString());
         }
         return rawKey;
+    }
+
+    public static PrivateKey raw2PrivateOkpKey(byte[] d,
+                                               KeyAlgorithms keyAlgorithm)
+    throws IOException, GeneralSecurityException {
+        KeyFactory keyFactory = KeyFactory.getInstance(keyAlgorithm.getJceName(), "BC");
+        byte[] pkcs8 = new ASN1Sequence(new BaseASN1Object[] {
+            new ASN1Integer(0),
+            new ASN1Sequence(new ASN1ObjectID(keyAlgorithm.getECDomainOID())),
+            new ASN1OctetString(new ASN1OctetString(d).encode())
+        }).encode();
+        return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(pkcs8));
     }
 }

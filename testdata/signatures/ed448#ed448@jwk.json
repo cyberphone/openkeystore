@@ -1,0 +1,14 @@
+{
+  "now": "2019-02-10T11:23:06Z",
+  "name": "Joe",
+  "id": 2200063,
+  "signature": {
+    "algorithm": "Ed448",
+    "publicKey": {
+      "kty": "OKP",
+      "crv": "Ed448",
+      "x": "IUkRrGrNQFnHA-pIcgwzTxyL4BlWyHqC6LkZbgyHMsM14mC2NfpW9QV_Ao7mkQXIZM2OCgCimEQA"
+    },
+    "value": "7etBe_-_lSMU1OXH38PRmT3MHvnf0IQcvX2GX-l16Ax7_-V7l0TDH31-ioXo0B8PV75PspWEm3-AVHmKpIUAbb8FU1k7KJcCc1m0HQOvbiDlIh3j_G10wrv5edpjDWBQ8Xjek94vGpKM7kA9Y--EkS4A"
+  }
+}
