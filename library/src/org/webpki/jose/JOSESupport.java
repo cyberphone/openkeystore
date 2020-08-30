@@ -46,6 +46,8 @@ public class JOSESupport {
     public static final String JWK_JSON = "jwk";
     public static final String X5C_JSON = "x5c";
     
+    public static final String EdDSA    = "EdDSA";
+    
     public interface CoreSignatureValidator {
  
         public void validate(byte[] signedData,
@@ -101,8 +103,8 @@ public class JOSESupport {
     public static void setPublicKey(JSONObjectWriter joseObject,
                                     PublicKey publicKey) throws IOException {
         joseObject.setObject(JWK_JSON, 
-                            JSONObjectWriter.createCorePublicKey(publicKey,
-                                                                 AlgorithmPreferences.JOSE));
+                             JSONObjectWriter.createCorePublicKey(publicKey,
+                                                                  AlgorithmPreferences.JOSE));
     }
 
     public static PublicKey getPublicKey(JSONObjectReader joseObject) throws IOException {
@@ -117,43 +119,40 @@ public class JOSESupport {
         joseObject.setString(KID_JSON, keyId);
     }
 
-    public static SignatureAlgorithms getSignatureAlgorithm(String algorithmId) throws IOException {
-        if (algorithmId.startsWith("HS")) {
-            return MACAlgorithms.getAlgorithmFromId(algorithmId, AlgorithmPreferences.JOSE);
-        }
-        return AsymSignatureAlgorithms.getAlgorithmFromId(algorithmId, AlgorithmPreferences.JOSE);
-    }
-
-    public static SignatureAlgorithms getSignatureAlgorithm(JSONObjectReader joseObject) throws IOException {
-        return getSignatureAlgorithm(joseObject.getString(ALG_JSON));
-    }
-
     public static JSONObjectWriter setSignatureAlgorithm(JSONObjectWriter joseObject, 
-                                                         SignatureAlgorithms algorithm) throws IOException {
-        return joseObject.setString(ALG_JSON, algorithm.getAlgorithmId(AlgorithmPreferences.JOSE));
+                                                         SignatureAlgorithms signatureAlgorithm) 
+    throws IOException {
+        return joseObject.setString(ALG_JSON, 
+                                    signatureAlgorithm.isOkp() ? 
+             EdDSA : signatureAlgorithm.getAlgorithmId(AlgorithmPreferences.JOSE));
     }
 
     public static void validateJwsSignature(String jwsProtectedHeaderB64U,
-                                            byte[] JWS_Payload,
-                                            byte[] JWS_Signature,
+                                            byte[] jwsPayload,
+                                            String jwsSignatureB64U,
                                             CoreSignatureValidator signatureValidator) 
     throws IOException, GeneralSecurityException {
         signatureValidator.validate((jwsProtectedHeaderB64U + 
-                                     "." + Base64URL.encode(JWS_Payload)).getBytes("utf-8"),
-                                    JWS_Signature);
+                                     "." + Base64URL.encode(jwsPayload)).getBytes("utf-8"),
+                                    Base64URL.decode(jwsSignatureB64U));
     }
 
-    public static String createJwsSignature(JSONObjectWriter JWS_Protected_Header,
-                                            byte[] JWS_Payload,
+    public static String createJwsSignature(JSONObjectWriter jwsProtectedHeader,
+                                            byte[] jwsPayload,
                                             CoreKeyHolder coreKeyHolder,
+                                            SignatureAlgorithms signatureAlgorithm,
                                             boolean detached)
     throws IOException, GeneralSecurityException {
+        if (jwsProtectedHeader == null) {
+            jwsProtectedHeader = new JSONObjectWriter();
+        }
+        if (!new JSONObjectReader(jwsProtectedHeader).hasProperty(ALG_JSON)) {
+            setSignatureAlgorithm(jwsProtectedHeader, signatureAlgorithm);
+        }
         String jwsHeaderB64U = 
-                Base64URL.encode(JWS_Protected_Header.serializeToBytes(JSONOutputFormats.NORMALIZED));
-        String jwsPayloadB64U = Base64URL.encode(JWS_Payload);
+                Base64URL.encode(jwsProtectedHeader.serializeToBytes(JSONOutputFormats.NORMALIZED));
+        String jwsPayloadB64U = Base64URL.encode(jwsPayload);
         byte[] dataToBeSigned = (jwsHeaderB64U + "." + jwsPayloadB64U).getBytes("utf-8");
-        SignatureAlgorithms signatureAlgorithm = 
-                getSignatureAlgorithm(new JSONObjectReader(JWS_Protected_Header));
         byte[] signature;
         if (coreKeyHolder.isSymmetric()) {
             signature = ((MACAlgorithms)signatureAlgorithm).digest(coreKeyHolder.getSecretKey(), 
@@ -162,6 +161,10 @@ public class JOSESupport {
             signature = new SignatureWrapper((AsymSignatureAlgorithms)signatureAlgorithm,
                                              coreKeyHolder.getPrivateKey()).update(dataToBeSigned).sign();
         }
-        return jwsHeaderB64U + "." + (detached ? "" : jwsPayloadB64U) + "." + Base64URL.encode(signature);
+        return jwsHeaderB64U + 
+                "." +
+                (detached ? "" : jwsPayloadB64U) + 
+                "." + 
+                Base64URL.encode(signature);
     }
 }

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2018-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -48,18 +48,24 @@ public class JavaScriptSignatureServlet extends HttpServlet {
                     .serializeToString(JSONOutputFormats.PRETTY_JS_NATIVE))
                         .replace("\n", "<br>")
                         .replace("  ", "&nbsp;&nbsp;&nbsp;&nbsp;");
-            HTML.standardPage(response,
-                              null, 
-                              new StringBuilder("<div class=\"header\">Signatures in JavaScript Notation</div>")
-                                  .append(HTML.fancyBox("verify",
-                                                        htmlSafe,
-                                                        "JavaScript compatible object featuring an embedded JWS signature element"))
-                                  .append("<div style=\"padding-top:20pt\">Note that the signature above is not verified.  The only difference between " +
-                                          "the JavaScript notation and &quot;true&quot; JSON is the removal of the (usually redundant) quote characters " +
-                                          "around property names.  Names that interfere with JavaScript naming " +
-                                          "conventions for variables like '5' or 'my.prop' will though be quoted.</div>" +
-                                          "<div style=\"padding-top:5pt\">Since the JavaScript <code>JSON.stringify()</code> " +
-                                          "method restores the \"true\" JSON format, the two notations are fully interoperable.</div>"));
+            HTML.standardPage(
+                response,
+                null, 
+                new StringBuilder("<div class='header'>Signatures in JavaScript Notation</div>")
+                    .append(HTML.fancyBox("verify",
+                                          htmlSafe,
+                                          "Signed JavaScript object"))
+                    .append("<div style='padding-top:20pt'>Note that the signature above is " +
+                            "not verified.  The only difference between " +
+                            "the JavaScript notation and &quot;true&quot; JSON is the removal " +
+                            "of the (usually redundant) quote characters around " +
+                            "property names.  Names that interfere with JavaScript naming " +
+                            "conventions for variables like '5' or 'my.prop' will though " +
+                            "be quoted.</div>" +
+                            "<div style='padding-top:5pt'>Since the JavaScript " +
+                            "<code>JSON.stringify()</code> " +
+                            "method restores the 'true' JSON format, the two notations " +
+                            "are fully interoperable.</div>"));
         } catch (IOException e) {
             HTML.errorPage(response, e);
         }

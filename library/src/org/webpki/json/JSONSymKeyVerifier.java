@@ -67,7 +67,7 @@ public class JSONSymKeyVerifier extends JSONVerifier {
     void verify(JSONSignatureDecoder signatureDecoder) throws IOException {
         if (!verifier.verifyData(signatureDecoder.normalizedData,
                                  signatureDecoder.signatureValue,
-                                 (MACAlgorithms) signatureDecoder.algorithm,
+                                 (MACAlgorithms) signatureDecoder.signatureAlgorithm,
                                  signatureDecoder.keyId)) {
             throw new IOException("Bad signature for key: " + signatureDecoder.keyId);
         }

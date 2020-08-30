@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2018 WebPKI.org (http://webpki.org).
+ *  Copyright 2018-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -32,29 +32,29 @@ public class HomeServlet extends HttpServlet {
             throws IOException, ServletException {
 
         HTML.standardPage(response, null, new StringBuilder(
-            "<div class=\"header\">JSON Signature Format (JSF)</div>" +
-            "<div style=\"padding-top:15pt\">This site permits testing and debugging systems utilizing a " +
+            "<div class='header'>JSON Signature Format (JSF)</div>" +
+            "<div style='padding-top:15pt'>This site permits testing and debugging systems utilizing a " +
             "scheme for clear text JSON signatures tentatively targeted for " +
             "IETF standardization.  For detailed technical information " +
             "click on the JSF logotype.</div>" +
-            "<div style=\"display:flex;justify-content:center\"><table>" +
-            "<tr><td><div class=\"multibtn\" " +
+            "<div style='display:flex;justify-content:center'><table>" +
+            "<tr><td><div class='multibtn' " +
             "onclick=\"document.location.href='create'\" " +
-            "title=\"Create JSF signatures\">" +
+            "title='Create JSF signatures'>" +
             "Create JSF Signatures" +
             "</div></td></tr>" +
-            "<tr><td><div class=\"multibtn\" " +
+            "<tr><td><div class='multibtn' " +
             "onclick=\"document.location.href='validate'\" " +
-            "title=\"Validate JSF signatures\">" +
+            "title='Validate JSF signatures'>" +
             "Validate JSF Signatures" +
             "</div></td></tr>" +
-            "<tr><td><div class=\"multibtn\" " +
+            "<tr><td><div class='multibtn' " +
             "onclick=\"document.location.href='webcrypto'\" " +
-            "title=\"&quot;Experimental&quot; - WebCrypto\">" +
+            "title='&quot;Experimental&quot; - WebCrypto'>" +
             "&quot;Experimental&quot; - WebCrypto" +
             "</div></td></tr>" +
             "</table></div>" +
-            "<div class=\"sitefooter\">Privacy/security notice: No user provided data is " +
+            "<div class='sitefooter'>Privacy/security notice: No user provided data is " +
             "ever stored or logged on the server; it only processes the data and returns the " +
             "result.</div>"));
     }

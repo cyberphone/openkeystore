@@ -138,7 +138,7 @@ public class ValidateServlet extends HttpServlet {
                     }
             }
             StringBuilder html = new StringBuilder(
-                    "<div class=\"header\"> Signature Successfully Validated</div>")
+                    "<div class='header'> Signature Successfully Validated</div>")
                 .append(HTML.fancyBox("signed", prettySignature, "Signed JSON object"))           
                 .append(HTML.fancyBox("vkey",
                                       jwkValidationKey ? 
@@ -164,7 +164,7 @@ public class ValidateServlet extends HttpServlet {
             }
 
             // Finally, print it out
-            HTML.standardPage(response, null, html.append("<div style=\"padding:10pt\"></div>"));
+            HTML.standardPage(response, null, html.append("<div style='padding:10pt'></div>"));
         } catch (Exception e) {
             HTML.errorPage(response, e);
         }
@@ -174,8 +174,8 @@ public class ValidateServlet extends HttpServlet {
             throws IOException, ServletException {
 
         HTML.standardPage(response, null, new StringBuilder(
-                "<form name=\"shoot\" method=\"POST\" action=\"validate\">" +
-                "<div class=\"header\">JSON Signature Validation</div>")
+                "<form name='shoot' method='POST' action='validate'>" +
+                "<div class='header'>JSON Signature Validation</div>")
             .append(HTML.fancyText(true,
                 JSF_OBJECT,
                 10, 
@@ -192,8 +192,8 @@ public class ValidateServlet extends HttpServlet {
                 HTML.encode(CreateServlet.DEFAULT_SIG_LBL),
                 "Anticipated signature label"))
             .append(
-                "<div style=\"display:flex;justify-content:center\">" +
-                "<div class=\"stdbtn\" onclick=\"document.forms.shoot.submit()\">" +
+                "<div style='display:flex;justify-content:center'>" +
+                "<div class='stdbtn' onclick=\"document.forms.shoot.submit()\">" +
                 "Validate JSON Signature" +
                 "</div>" +
                 "</div>" +

@@ -30,10 +30,10 @@ public class HTML {
     static Logger logger = Logger.getLogger(HTML.class.getName());
 
     static final String HTML_INIT = "<!DOCTYPE html>" +
-        "<html lang=\"en\"><head><link rel=\"icon\" href=\"webpkiorg.png\" sizes=\"192x192\">" + 
-        "<meta name=\"viewport\" content=\"initial-scale=1.0\"/>" + 
+        "<html lang='en'><head><link rel='icon' href='webpkiorg.png' sizes='192x192'>" + 
+        "<meta name='viewport' content='initial-scale=1.0'/>" + 
         "<title>JSON Signature Format (JSF)</title>" + 
-        "<link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\">";
+        "<link rel='stylesheet' type='text/css' href='style.css'>";
 
     static String encode(String val) {
         if (val != null) {
@@ -76,14 +76,14 @@ public class HTML {
                     .append("</script>");
         }
         html.append("</head><body>" +
-            "<div style=\"display:flex;flex-wrap:wrap-reverse;justify-content:space-between\">" +
-            "<div><img src=\"thelab.svg\" " +
-            "style=\"cursor:pointer;height:25pt;padding-bottom:10pt;margin-right:30pt\"" +
-            " onclick=\"document.location.href='home'\" title=\"Home of the lab...\"/></div>" +
-            "<div style=\"display:flex;padding-bottom:10pt\">" +
-            "<a href=\"https://cyberphone.github.io/doc/security/jsf.html\" target=\"_blank\"><img src=\"jsf.svg\" " +
-            "style=\"height:22pt\" " +
-            "title=\"JSF Specification\"/></a>" +
+            "<div style='display:flex;flex-wrap:wrap-reverse;justify-content:space-between'>" +
+            "<div><img src='thelab.svg' " +
+            "style='cursor:pointer;height:25pt;padding-bottom:10pt;margin-right:30pt'" +
+            " onclick=\"document.location.href='home'\" title='Home of the lab...'/></div>" +
+            "<div style='display:flex;padding-bottom:10pt'>" +
+            "<a href='https://cyberphone.github.io/doc/security/jsf.html' target='_blank'><img src='jsf.svg' " +
+            "style='height:22pt' " +
+            "title='JSF Specification'/></a>" +
             "</div>" +
             "</div>")
          .append(box).append("</body></html>");
@@ -111,17 +111,17 @@ public class HTML {
     }
     
     public static String boxHeader(String id, String text, boolean visible) {
-        return new StringBuilder("<div id=\"")
+        return new StringBuilder("<div id='")
             .append(id)
-            .append("\" style=\"padding-top:10pt")
+            .append("' style='padding-top:10pt")
             .append(visible ? "" : ";display:none")
-            .append("\">" +
-               "<div style=\"padding-bottom:3pt\">" + text + ":</div>").toString();
+            .append("'>" +
+               "<div style='padding-bottom:3pt'>" + text + ":</div>").toString();
     }
 
     public static String fancyBox(String id, String content, String header) {
         return boxHeader(id, header, true) +
-            "<div class=\"staticbox\">" + content + "</div></div>";
+            "<div class='staticbox'>" + content + "</div></div>";
     }
 
     public static String fancyText(boolean visible,
@@ -131,8 +131,8 @@ public class HTML {
                                    String header) {
         return boxHeader(id, header, visible) +
             "<textarea" +
-            " rows=\"" + rows + "\" maxlength=\"100000\"" +
-            " class=\"textbox\" name=\"" + id + "\">" + 
+            " rows='" + rows + "' maxlength='100000'" +
+            " class='textbox' name='" + id + "'>" + 
             content +
             "</textarea></div>";
     }
@@ -185,7 +185,7 @@ public class HTML {
         standardPage(response,
                      null,
                      new StringBuilder(
-            "<div class=\"header\" style=\"color:red\">Something went wrong...</div>" +
+            "<div class='header' style='color:red'>Something went wrong...</div>" +
             "<div><pre>")
         .append(encode(error.toString()))
         .append("</pre></div>"));

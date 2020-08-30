@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 
-import java.security.interfaces.ECPublicKey;
+import java.security.interfaces.ECKey;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
@@ -40,13 +40,18 @@ public class JOSEAsymSignatureValidator implements JOSESupport.CoreSignatureVali
     @Override
     public void validate(byte[] signedData,
                          byte[] JWS_Signature) throws IOException, GeneralSecurityException {
-        if (!new SignatureWrapper(algorithm, publicKey).update(signedData).verify(JWS_Signature)) {
-            throw new GeneralSecurityException("Signature did not validate for key: " + publicKey.toString());
+        if (!new SignatureWrapper(algorithm, publicKey)
+                .update(signedData)
+                .verify(JWS_Signature)) {
+            throw new GeneralSecurityException("Signature did not validate for key: " + 
+                                               publicKey.toString());
         }
-        if (publicKey instanceof ECPublicKey && 
-            KeyAlgorithms.getKeyAlgorithm(publicKey).getRecommendedSignatureAlgorithm() != algorithm) {
-                throw new GeneralSecurityException("EC key and algorithm does not match the JWS spec");
+        if (publicKey instanceof ECKey) {
+            if (KeyAlgorithms.getKeyAlgorithm(publicKey)
+                    .getRecommendedSignatureAlgorithm() != algorithm) {
+                throw new GeneralSecurityException(
+                        "EC key and algorithm does not match the JWS spec");
+            }
         }    
     }
-
 }

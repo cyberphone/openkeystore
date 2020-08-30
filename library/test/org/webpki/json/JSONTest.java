@@ -61,6 +61,11 @@ import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyStoreVerifier;
 import org.webpki.crypto.MACAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
+
+import org.webpki.jose.JOSEAsymKeyHolder;
+import org.webpki.jose.JOSEAsymSignatureValidator;
+import org.webpki.jose.JOSESupport;
+
 import org.webpki.json.JSONCryptoHelper.PUBLIC_KEY_OPTIONS;
 
 import org.webpki.util.ArrayUtil;
@@ -3422,6 +3427,31 @@ public class JSONTest {
         }
     }
 
+    void rfc8037Signature(AsymSignatureAlgorithms signatureAlgorithm,
+                          String jwk,
+                          String messageString,
+                          String expectedJwsString) {
+        try {
+            byte[] payload = messageString.getBytes("utf-8");
+            KeyPair keyPair = JSONParser.parse(jwk).getKeyPair();
+            String jwsString = 
+                    JOSESupport.createJwsSignature(null, // Default minimalist header
+                                                   payload, 
+                                                   new JOSEAsymKeyHolder(keyPair.getPrivate()),
+                                                   signatureAlgorithm,
+                                                   false);
+            assertTrue("Sign", jwsString.contentEquals(expectedJwsString));
+
+            JOSESupport.validateJwsSignature(jwsString.substring(0, jwsString.indexOf('.')),
+                                             payload,
+                                             jwsString.substring(jwsString.lastIndexOf('.') + 1),
+                                             new JOSEAsymSignatureValidator(keyPair.getPublic(),
+                                                                            signatureAlgorithm));
+        } catch (Exception e) {
+            assertFalse("8037", bcLoaded);
+        }
+    }
+
     @Test
     public void Signatures() throws Exception {
         if (bcLoaded) {
@@ -3476,6 +3506,16 @@ public class JSONTest {
                 + "bb47b51fd3f213fb8698f064774250a5"
                 + "028961c9bf8ffd973fe5d5c206492b14"
                 + "0e00");
+        
+        rfc8037Signature(AsymSignatureAlgorithms.ED25519,
+                         "{\"kty\":\"OKP\",\"crv\":\"Ed25519\"," 
+                         + "\"d\":\"nWGxne_9WmC6hEr0kuwsxERJxWl7MmkZcDusAxyuf2A\"," 
+                         + "\"x\":\"11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo\"}",
+                         "Example of Ed25519 signing",
+                         "eyJhbGciOiJFZERTQSJ9.RXhhbXBsZSBvZiBFZDI1NTE5IHNpZ25pbmc.hgyY0il_MGCj"
+                         + "P0JzlnLWG1PPOt7-09PGcvMg3AIbQR6dWbhijcNR4ki4iylGjg5BhVsPt9g7sVvpAr_Mu"
+                         + "M0KAg");
+        
 
         JSONObjectWriter writer = new JSONObjectWriter()
             .setString("myData", "cool")
