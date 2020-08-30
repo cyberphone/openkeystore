@@ -25,10 +25,13 @@ import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
+
 import java.security.cert.X509Certificate;
+
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
-import java.security.interfaces.RSAPublicKey;
+import java.security.interfaces.RSAKey;
+
 import java.security.spec.ECGenParameterSpec;
 
 import java.util.LinkedHashMap;
@@ -120,8 +123,8 @@ public class SoftHSM implements ServerCryptoInterface {
                 PublicKey device_public_key = device_certificate.getPublicKey();
 
                 // Verify that attestation was signed by the device key
-                if (!new SignatureWrapper(device_public_key instanceof RSAPublicKey ?
-                                              AsymSignatureAlgorithms.RSA_SHA256 : AsymSignatureAlgorithms.ECDSA_SHA256,
+                if (!new SignatureWrapper(device_public_key instanceof RSAKey ?
+                                           AsymSignatureAlgorithms.RSA_SHA256 : AsymSignatureAlgorithms.ECDSA_SHA256,
                                           device_public_key)
                         .update(attestation_arguments)
                         .verify(session_attestation)) {
@@ -168,7 +171,7 @@ public class SoftHSM implements ServerCryptoInterface {
     @Override
     public byte[] generateKeyManagementAuthorization(PublicKey key_management__key, byte[] data) throws IOException {
         try {
-            return new SignatureWrapper(key_management__key instanceof RSAPublicKey ?
+            return new SignatureWrapper(key_management__key instanceof RSAKey ?
                                            AsymSignatureAlgorithms.RSA_SHA256 : AsymSignatureAlgorithms.ECDSA_SHA256,
                                         key_management_keys.get(key_management__key))
                 .update(data)

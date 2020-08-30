@@ -25,8 +25,8 @@ import java.security.GeneralSecurityException;
 
 import java.security.cert.X509Certificate;
 
-import java.security.interfaces.RSAPublicKey;
 import java.security.interfaces.ECPublicKey;
+import java.security.interfaces.RSAKey;
 
 import org.webpki.util.DebugFormatter;
 import org.webpki.asn1.DerDecoder;
@@ -326,7 +326,7 @@ public class CertificateInfo {
 
 
     public byte[] getPublicKeyData() throws IOException {
-        if (certificate.getPublicKey() instanceof RSAPublicKey) {
+        if (certificate.getPublicKey() instanceof RSAKey) {
             return DerDecoder.decode(
                     ((ASN1BitString) (
                             (ASN1Sequence) DerDecoder.decode(

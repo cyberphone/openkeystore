@@ -20,7 +20,7 @@ import java.io.IOException;
 
 import java.security.PublicKey;
 
-import java.security.interfaces.RSAPublicKey;
+import java.security.interfaces.RSAKey;
 
 import java.util.GregorianCalendar;
 import java.util.ArrayList;
@@ -131,7 +131,7 @@ public class CredentialDiscoveryRequestEncoder extends ServerEncoder {
                 }
             }
             JSONAsymKeySigner signer = new JSONAsymKeySigner(this);
-            signer.setSignatureAlgorithm(keyManagementKey instanceof RSAPublicKey ?
+            signer.setSignatureAlgorithm(keyManagementKey instanceof RSAKey ?
                     AsymSignatureAlgorithms.RSA_SHA256 : AsymSignatureAlgorithms.ECDSA_SHA256);
             wr.setSignature(signer);
         }

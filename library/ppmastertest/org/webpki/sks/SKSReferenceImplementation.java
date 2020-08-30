@@ -531,7 +531,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         }
 
         boolean isRsa() {
-            return publicKey instanceof RSAPublicKey;
+            return publicKey instanceof RSAKey;
         }
 
         boolean isSymmetric() {
@@ -717,7 +717,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         boolean verifyKeyManagementKeyAuthorization(byte[] kmkKdf,
                                                     byte[] argument,
                                                     byte[] authorization) throws GeneralSecurityException {
-            return new SignatureWrapper(keyManagementKey instanceof RSAPublicKey ?
+            return new SignatureWrapper(keyManagementKey instanceof RSAKey ?
                                            "SHA256WithRSA" : "SHA256WithECDSA",
                                         keyManagementKey)
                 .update(kmkKdf)
@@ -846,7 +846,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         public SignatureWrapper(String algorithm, PublicKey publicKey) throws GeneralSecurityException {
             instance = Signature.getInstance(algorithm);
             instance.initVerify(publicKey);
-            rsaFlag = publicKey instanceof RSAPublicKey;
+            rsaFlag = publicKey instanceof RSAKey;
             if (!rsaFlag) {
                 extendTo = getEcPointLength((ECKey) publicKey);
             }
@@ -2829,7 +2829,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         // Check optional key management key compatibility
         ///////////////////////////////////////////////////////////////////////////////////
         if (keyManagementKey != null) {
-            if (keyManagementKey instanceof RSAPublicKey) {
+            if (keyManagementKey instanceof RSAKey) {
                 checkRsaKeyCompatibility((RSAPublicKey) keyManagementKey,
                                          "\"" + VAR_KEY_MANAGEMENT_KEY + "\"");
             } else {
@@ -3189,7 +3189,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             ///////////////////////////////////////////////////////////////////////////////////
             // Check key material for SKS compliance
             ///////////////////////////////////////////////////////////////////////////////////
-            if (keyEntry.publicKey instanceof RSAPublicKey) {
+            if (keyEntry.publicKey instanceof RSAKey) {
                 checkRsaKeyCompatibility((RSAPublicKey) keyEntry.publicKey, keyEntry.id);
             } else {
                 checkEcKeyCompatibility((ECPublicKey) keyEntry.publicKey, keyEntry.id);

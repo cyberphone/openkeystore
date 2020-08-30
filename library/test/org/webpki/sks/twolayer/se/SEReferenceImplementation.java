@@ -116,7 +116,7 @@ public class SEReferenceImplementation {
         public SignatureWrapper(String algorithm, PublicKey publicKey) throws GeneralSecurityException {
             instance = Signature.getInstance(algorithm);
             instance.initVerify(publicKey);
-            rsaFlag = publicKey instanceof RSAPublicKey;
+            rsaFlag = publicKey instanceof RSAKey;
             if (!rsaFlag) {
                 extendTo = getEcPointLength((ECKey) publicKey);
             }
@@ -125,7 +125,7 @@ public class SEReferenceImplementation {
         public SignatureWrapper(String algorithm, PrivateKey privateKey) throws GeneralSecurityException {
             instance = Signature.getInstance(algorithm);
             instance.initSign(privateKey);
-            rsaFlag = privateKey instanceof RSAPrivateKey;
+            rsaFlag = privateKey instanceof RSAKey;
             if (!rsaFlag) {
                 extendTo = getEcPointLength((ECKey) privateKey);
             }
@@ -885,7 +885,7 @@ public class SEReferenceImplementation {
     }
 
     static void coreCompatibilityCheck(PublicKey publicKey, boolean rsaFlag, String id){
-        if (rsaFlag ^ publicKey instanceof RSAPublicKey) {
+        if (rsaFlag ^ publicKey instanceof RSAKey) {
             abort("RSA/EC mixup between public and private keys for: " + id);
         }
     }
@@ -966,8 +966,8 @@ public class SEReferenceImplementation {
         SignatureWrapper signer;
 
         AttestationSignatureGenerator() throws IOException, GeneralSecurityException {
-            signer = new SignatureWrapper(attestationKey instanceof RSAPrivateKey ? 
-                                                                  "SHA256withRSA" : "SHA256withECDSA",
+            signer = new SignatureWrapper(attestationKey instanceof RSAKey ? 
+                                                           "SHA256withRSA" : "SHA256withECDSA",
                                           attestationKey);
         }
 
@@ -1051,8 +1051,8 @@ public class SEReferenceImplementation {
                                                        byte[] kmkKdf,
                                                        byte[] argument,
                                                        byte[] authorization) throws GeneralSecurityException {
-        return new SignatureWrapper(keyManagementKey instanceof RSAPublicKey ? 
-                                                             "SHA256WithRSA" : "SHA256WithECDSA",
+        return new SignatureWrapper(keyManagementKey instanceof RSAKey ? 
+                                                       "SHA256WithRSA" : "SHA256WithECDSA",
                                     keyManagementKey)
             .update(kmkKdf)
             .update(argument)
@@ -1749,7 +1749,7 @@ public class SEReferenceImplementation {
             // Check optional key management key compatibility
             ///////////////////////////////////////////////////////////////////////////////////
             if (keyManagementKey != null) {
-                if (keyManagementKey instanceof RSAPublicKey) {
+                if (keyManagementKey instanceof RSAKey) {
                     checkRsaKeyCompatibility((RSAPublicKey) keyManagementKey,
                                              "\"" + SecureKeyStore.VAR_KEY_MANAGEMENT_KEY + "\"");
                 } else {
@@ -2152,7 +2152,7 @@ public class SEReferenceImplementation {
             // Check key material for SKS compliance
             ///////////////////////////////////////////////////////////////////////////////////
             PublicKey certPublicKey = certificatePath[0].getPublicKey();
-            if (certPublicKey instanceof RSAPublicKey) {
+            if (certPublicKey instanceof RSAKey) {
                 checkRsaKeyCompatibility((RSAPublicKey) certPublicKey, id);
             } else {
                 checkEcKeyCompatibility((ECPublicKey) certPublicKey, id);

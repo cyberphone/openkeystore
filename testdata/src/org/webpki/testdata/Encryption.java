@@ -23,7 +23,7 @@ import java.security.KeyPair;
 
 import java.security.cert.X509Certificate;
 
-import java.security.interfaces.ECPublicKey;
+import java.security.interfaces.ECKey;
 
 import java.util.ArrayList;
 
@@ -206,7 +206,7 @@ public class Encryption {
                         DataEncryptionAlgorithms dataEncryptionAlgorithm) throws Exception {
         KeyPair keyPair = readJwk(keyType);
         KeyEncryptionAlgorithms keyEncryptionAlgorithm = KeyEncryptionAlgorithms.JOSE_RSA_OAEP_256_ALG_ID;
-        if (keyPair.getPublic() instanceof ECPublicKey) {
+        if (keyPair.getPublic() instanceof ECKey) {
             switch (dataEncryptionAlgorithm.getKeyLength()) {
             case 16: 
                 keyEncryptionAlgorithm = KeyEncryptionAlgorithms.JOSE_ECDH_ES_A128KW_ALG_ID;
@@ -298,7 +298,7 @@ public class Encryption {
                             JSONObjectWriter extensions) throws Exception {
         KeyPair keyPair = readJwk(keyType);
         KeyEncryptionAlgorithms keyEncryptionAlgorithm = KeyEncryptionAlgorithms.JOSE_RSA_OAEP_256_ALG_ID;
-        if (keyPair.getPublic() instanceof ECPublicKey) {
+        if (keyPair.getPublic() instanceof ECKey) {
             switch (dataEncryptionAlgorithm.getKeyLength()) {
             case 16: 
                 keyEncryptionAlgorithm = KeyEncryptionAlgorithms.JOSE_ECDH_ES_A128KW_ALG_ID;
@@ -379,7 +379,7 @@ public class Encryption {
         for (String keyType : keyTypes) {
             KeyPair keyPair = readJwk(keyType);
             KeyEncryptionAlgorithms keyEncryptionAlgorithm = KeyEncryptionAlgorithms.JOSE_RSA_OAEP_256_ALG_ID;
-            if (keyPair.getPublic() instanceof ECPublicKey) {
+            if (keyPair.getPublic() instanceof ECKey) {
                 switch (dataEncryptionAlgorithm.getKeyLength()) {
                 case 16: 
                     keyEncryptionAlgorithm = KeyEncryptionAlgorithms.JOSE_ECDH_ES_A128KW_ALG_ID;

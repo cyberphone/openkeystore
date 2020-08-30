@@ -21,8 +21,10 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.PublicKey;
+
 import java.security.cert.X509Certificate;
-import java.security.interfaces.RSAPublicKey;
+
+import java.security.interfaces.RSAKey;
 
 import java.util.ArrayList;
 
@@ -234,7 +236,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
                 if (validationKey == null) {
                     for (AsymKey localKey : asymmetricKeys) {
                         if (decoder.getKeyEncryptionAlgorithm().isRsa() ==
-                            (localKey.keyPair.getPublic() instanceof RSAPublicKey)) {
+                            (localKey.keyPair.getPublic() instanceof RSAKey)) {
                             validationKey = localKey;
                             break;
                         }

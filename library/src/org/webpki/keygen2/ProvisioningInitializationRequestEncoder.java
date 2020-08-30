@@ -22,7 +22,7 @@ import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 
 import java.security.interfaces.ECPublicKey;
-import java.security.interfaces.RSAPublicKey;
+import java.security.interfaces.RSAKey;
 
 import java.util.ArrayList;
 
@@ -77,8 +77,8 @@ public class ProvisioningInitializationRequestEncoder extends ServerEncoder {
             kmk.authorization = externalAuthorization;
             try {
                 SignatureWrapper kmkVerify =
-                    new SignatureWrapper(keyManagementKey instanceof RSAPublicKey ?
-                                               AsymSignatureAlgorithms.RSA_SHA256 : AsymSignatureAlgorithms.ECDSA_SHA256,
+                    new SignatureWrapper(keyManagementKey instanceof RSAKey ?
+                                         AsymSignatureAlgorithms.RSA_SHA256 : AsymSignatureAlgorithms.ECDSA_SHA256,
                                          keyManagementKey);
                 kmkVerify.update(SecureKeyStore.KMK_ROLL_OVER_AUTHORIZATION);
                 kmkVerify.update(this.keyManagementKey.getEncoded());

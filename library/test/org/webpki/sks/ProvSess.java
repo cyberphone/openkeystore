@@ -33,6 +33,7 @@ import java.security.cert.X509Certificate;
 
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
+import java.security.interfaces.RSAKey;
 import java.security.interfaces.RSAPublicKey;
 
 import java.security.spec.ECGenParameterSpec;
@@ -278,7 +279,7 @@ public class ProvSess {
                     }
                 } else {
                     PublicKey device_public_key = device_certificate.getPublicKey();
-                    AsymSignatureAlgorithms signatureAlgorithm = device_public_key instanceof RSAPublicKey ?
+                    AsymSignatureAlgorithms signatureAlgorithm = device_public_key instanceof RSAKey ?
                             AsymSignatureAlgorithms.RSA_SHA256 : AsymSignatureAlgorithms.ECDSA_SHA256;
 
                     // Verify that the session key signature was signed by the device key
@@ -324,7 +325,7 @@ public class ProvSess {
 
         public byte[] generateKeyManagementAuthorization(PublicKey keyManagementKey, byte[] data) throws IOException {
             try {
-                SignatureWrapper km_sign = new SignatureWrapper(keyManagementKey instanceof RSAPublicKey ?
+                SignatureWrapper km_sign = new SignatureWrapper(keyManagementKey instanceof RSAKey ?
                         AsymSignatureAlgorithms.RSA_SHA256 : AsymSignatureAlgorithms.ECDSA_SHA256,
                         key_management_keys.get(keyManagementKey));
                 km_sign.update(data);
@@ -813,7 +814,7 @@ public class ProvSess {
         if (!return_alg.equals(key_algorithm)) {
             bad("Bad return algorithm: " + return_alg);
         }
-        if (key.publicKey instanceof RSAPublicKey && !((RSAPublicKey) key.publicKey).getPublicExponent().equals(exponent)) {
+        if (key.publicKey instanceof RSAKey && !((RSAPublicKey) key.publicKey).getPublicExponent().equals(exponent)) {
             bad("Wrong exponent RSA returned");
         }
         key.prov_sess = this;
