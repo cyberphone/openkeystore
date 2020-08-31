@@ -21,7 +21,7 @@
   </path>
 
   <target name="help">
-    <echo message="Targets: help createcerts signatures encryption normalization"/>
+    <echo message="Targets: help createcerts signatures encryption normalization keyserilization"/>
   </target>
 	
   <target name="_compile">
@@ -59,6 +59,22 @@
     </java>
   </target>
 
+  <target name="keyserialization" depends="_compile">
+  	<!-- Run target -->
+    <java fork="yes"
+          classname="org.webpki.testdata.KeySerialization"
+    	  dir="${temp.dir}"
+          failonerror="true">
+    	<classpath>
+            <pathelement path="${temp.dir}"/>
+       	    <path refid="lib.classpath"/>
+    	</classpath>
+        <arg value="${keyBase}"/>
+       	<sysproperty key="bcprovider" value="${bcprovider}"/>
+        <jvmarg value="-Dfile.encoding=UTF8"/>
+    </java>
+  </target>
+	
   <target name="encryption" depends="_compile">
   	<!-- Run target -->
   	<mkdir dir="${encryptionBase}"/>
