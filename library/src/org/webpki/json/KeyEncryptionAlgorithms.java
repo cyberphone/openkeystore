@@ -23,22 +23,20 @@ import java.io.IOException;
  */
 public enum KeyEncryptionAlgorithms {
 
-    JOSE_ECDH_ES_ALG_ID        ("ECDH-ES",        "ECDH",                                  false, false, -1),
-    JOSE_ECDH_ES_A128KW_ALG_ID ("ECDH-ES+A128KW", "ECDH",                                  false, true,  16),
-    JOSE_ECDH_ES_A192KW_ALG_ID ("ECDH-ES+A192KW", "ECDH",                                  false, true,  24),
-    JOSE_ECDH_ES_A256KW_ALG_ID ("ECDH-ES+A256KW", "ECDH",                                  false, true,  32),
-    JOSE_RSA_OAEP_ALG_ID       ("RSA-OAEP",       "RSA/ECB/OAEPWithSHA-1AndMGF1Padding",   true,  true,  -1),
-    JOSE_RSA_OAEP_256_ALG_ID   ("RSA-OAEP-256",   "RSA/ECB/OAEPWithSHA-256AndMGF1Padding", true,  true,  -1);
+    JOSE_ECDH_ES_ALG_ID        ("ECDH-ES",        false, false, -1),
+    JOSE_ECDH_ES_A128KW_ALG_ID ("ECDH-ES+A128KW", false, true,  16),
+    JOSE_ECDH_ES_A192KW_ALG_ID ("ECDH-ES+A192KW", false, true,  24),
+    JOSE_ECDH_ES_A256KW_ALG_ID ("ECDH-ES+A256KW", false, true,  32),
+    JOSE_RSA_OAEP_ALG_ID       ("RSA-OAEP",       true,  true,  -1),
+    JOSE_RSA_OAEP_256_ALG_ID   ("RSA-OAEP-256",   true,  true,  -1);
 
     String joseName;
-    String jceName;
     boolean rsa;
     boolean keyWrap;
     int keyEncryptionKeyLength;
 
-    KeyEncryptionAlgorithms(String joseName, String jceName, boolean rsa, boolean keyWrap, int keyEncryptionKeyLength) {
+    KeyEncryptionAlgorithms(String joseName, boolean rsa, boolean keyWrap, int keyEncryptionKeyLength) {
         this.joseName = joseName;
-        this.jceName = jceName;
         this.rsa = rsa;
         this.keyWrap = keyWrap;
         this.keyEncryptionKeyLength = keyEncryptionKeyLength;

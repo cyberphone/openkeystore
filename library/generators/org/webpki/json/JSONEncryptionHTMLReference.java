@@ -669,18 +669,14 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
                     for (KeyEncryptionAlgorithms kea : KeyEncryptionAlgorithms.values()) {
                         column.addString(new StringBuilder("<li>")
                                                .append(JSONBaseHTML.codeVer(kea.toString(), 16)).toString());
-                        if (kea.jceName == null) {
-                            column.addString("Direct mode" + Types.LINE_SEPARATOR);
-                        } else {
-                            column.addString("See: ");
-                            String link = ECDH_PROPERTIES;
-                            if (kea.isRsa()) {
-                                link = RSA_PROPERTIES;
-                            } else if (kea.isKeyWrap()) {
-                                link = ECDH_KW_PROPERTIES;
-                            }
-                            column.addLink(link);
+                        column.addString("See: ");
+                        String link = ECDH_PROPERTIES;
+                        if (kea.isRsa()) {
+                            link = RSA_PROPERTIES;
+                        } else if (kea.isKeyWrap()) {
+                            link = ECDH_KW_PROPERTIES;
                         }
+                        column.addLink(link);
                         column.addString("</li>");
                     }
                     return column;

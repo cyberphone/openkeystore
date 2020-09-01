@@ -435,12 +435,17 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
             }
             throw new IOException("Unsupported RSA key size: " + lengthInBits);
         }
+//#if !ANDROID
+//#if BC
         String algorithm = publicKey.getAlgorithm();
+//#else
+//#endif        
         for (KeyAlgorithms alg : values()) {
             if (alg.jceName.equals(algorithm)) {
                 return alg;
             }
         }
+//#endif
         throw new IOException("Unsupported algoritm: " + algorithm);
     }
 
@@ -458,9 +463,13 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                     new RSAPublicKeySpec(((RSAPublicKey)publicKey).getModulus(),
                                          ((RSAPublicKey)publicKey).getPublicExponent()));
         }
+//#if ANDROID
+        throw new IOExcepion("OKP is not (yet) available in Android");
+//#else
         KeyAlgorithms keyAlgorithm = getKeyAlgorithm(publicKey);
         return CryptoUtil.raw2PublicOkpKey(CryptoUtil.public2RawOkpKey(publicKey, keyAlgorithm),
                                            keyAlgorithm);
+//#endif
     }
 
     public static KeyAlgorithms getKeyAlgorithm(PublicKey publicKey) throws IOException {

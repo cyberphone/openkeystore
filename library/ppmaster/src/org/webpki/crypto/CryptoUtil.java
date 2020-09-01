@@ -84,7 +84,11 @@ public class CryptoUtil {
 
     public static PublicKey raw2PublicOkpKey(byte[] x, KeyAlgorithms keyAlgorithm) 
     throws GeneralSecurityException {
+//#if BC
         return KeyFactory.getInstance(keyAlgorithm.getJceName(), "BC")
+//#else
+        return KeyFactory.getInstance(keyAlgorithm.getJceName())
+//#endif
                 .generatePublic(
                         new X509EncodedKeySpec(
                                 ArrayUtil.add(okpPrefix.get(keyAlgorithm), x)));
@@ -105,7 +109,11 @@ public class CryptoUtil {
 
     public static PrivateKey raw2PrivateOkpKey(byte[] d, KeyAlgorithms keyAlgorithm)
     throws IOException, GeneralSecurityException {
+//#if BC
         KeyFactory keyFactory = KeyFactory.getInstance(keyAlgorithm.getJceName(), "BC");
+//#else
+        KeyFactory keyFactory = KeyFactory.getInstance(keyAlgorithm.getJceName());
+//#endif
         byte[] pkcs8 = new ASN1Sequence(new BaseASN1Object[] {
             new ASN1Integer(0),
             new ASN1Sequence(new ASN1ObjectID(keyAlgorithm.getECDomainOID())),

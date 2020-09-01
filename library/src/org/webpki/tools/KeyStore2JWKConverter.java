@@ -101,7 +101,7 @@ public class KeyStore2JWKConverter {
                 fail();
             }
         }
-        CustomCryptoProvider.forcedLoad(true);
+        CustomCryptoProvider.conditionalLoad(true);
         KeyStore ks = KeyStoreReader.loadKeyStore(argv[0], argv[1]);
         fis = new FileOutputStream(argv[2]);
         Enumeration<String> aliases = ks.aliases();

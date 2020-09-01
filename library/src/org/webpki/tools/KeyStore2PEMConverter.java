@@ -58,7 +58,7 @@ public class KeyStore2PEMConverter {
                 fail();
             }
         }
-        CustomCryptoProvider.forcedLoad(true);
+        CustomCryptoProvider.conditionalLoad(true);
         KeyStore ks = KeyStoreReader.loadKeyStore(argv[0], argv[1]);
         FileOutputStream fis = new FileOutputStream(argv[2]);
         Enumeration<String> aliases = ks.aliases();

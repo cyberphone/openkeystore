@@ -84,8 +84,8 @@
        eof="remove"
        includes="**/*.java, **/*.xsd"/>
  
-    <jpp destdir="${test_dir}" verbose="true">
-        <fileset dir="ppmastertest" includes="**/*.java" />
+    <jpp destdir="." verbose="true" force="true">
+        <fileset dir="ppmaster" includes="**/*.java" />
     </jpp>
     <replace file="${test_dir}/org/webpki/sks/SKSReferenceImplementation.java">
       <replacefilter token="MACRO_GET_PRIVATEKEY" value="privateKey"/>
@@ -422,7 +422,7 @@
    	
   	<property name="ANDROID" value="true"/>
     <jpp destdir="${android_dir}" verbose="true">
-        <fileset dir="ppmastertest" includes="**/*.java" />
+        <fileset dir="ppmaster" includes="**/*.java" />
     </jpp>
     <replace file="${android_dir}/org/webpki/sks/SKSReferenceImplementation.java">
       <replacefilter token="MACRO_GET_PRIVATEKEY" value="getPrivateKey()"/>
