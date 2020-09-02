@@ -24,9 +24,10 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Key;
 
-import org.bouncycastle.jcajce.interfaces.EdDSAKey;
-import org.bouncycastle.jcajce.interfaces.XDHKey;
+import java.security.interfaces.XECKey;
+import java.security.interfaces.EdECKey;
 
+import java.security.spec.NamedParameterSpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
@@ -46,9 +47,6 @@ import org.webpki.util.DebugFormatter;
 /**
  * Support methods for "OKP" (RFC 8037)
  * 
- * Source configured for the BouncyCastle provider.
- * Note that JDK and BouncyCastle are incompatible with respect to "OKP" keys
- * and that this module only forces BouncyCastle for OKP keys.
  */
 public class CryptoUtil {
     
@@ -92,7 +90,7 @@ public class CryptoUtil {
 
     public static PublicKey raw2PublicOkpKey(byte[] x, KeyAlgorithms keyAlgorithm) 
     throws GeneralSecurityException {
-        return KeyFactory.getInstance(keyAlgorithm.getJceName(), "BC")
+        return KeyFactory.getInstance(keyAlgorithm.getJceName())
                 .generatePublic(
                         new X509EncodedKeySpec(
                                 ArrayUtil.add(okpPrefix.get(keyAlgorithm), x)));
@@ -113,7 +111,7 @@ public class CryptoUtil {
 
     public static PrivateKey raw2PrivateOkpKey(byte[] d, KeyAlgorithms keyAlgorithm)
     throws IOException, GeneralSecurityException {
-        KeyFactory keyFactory = KeyFactory.getInstance(keyAlgorithm.getJceName(), "BC");
+        KeyFactory keyFactory = KeyFactory.getInstance(keyAlgorithm.getJceName());
         byte[] pkcs8 = new ASN1Sequence(new BaseASN1Object[] {
             new ASN1Integer(0),
             new ASN1Sequence(new ASN1ObjectID(keyAlgorithm.getECDomainOID())),
@@ -123,13 +121,15 @@ public class CryptoUtil {
     }
 
     public static KeyAlgorithms getOkpKeyAlgorithm(Key key)  throws IOException {
-        if (key instanceof EdDSAKey) {
-            return KeyAlgorithms.getKeyAlgorithmFromId(((EdDSAKey)key).getAlgorithm(),
-                                                       AlgorithmPreferences.JOSE);
+        if (key instanceof XECKey) {
+            return KeyAlgorithms.getKeyAlgorithmFromId(
+                    ((NamedParameterSpec)((XECKey)key).getParams()).getName(),
+                    AlgorithmPreferences.JOSE);
         }
-        if (key instanceof XDHKey) {
-            return KeyAlgorithms.getKeyAlgorithmFromId(((XDHKey)key).getAlgorithm(),
-                                                       AlgorithmPreferences.JOSE);
+        if (key instanceof EdECKey) {
+            return KeyAlgorithms.getKeyAlgorithmFromId(
+                    ((EdECKey)key).getParams().getName(),
+                    AlgorithmPreferences.JOSE);
         }
         throw new IOException("Unknown key type: " + key.getClass().getName());
     }

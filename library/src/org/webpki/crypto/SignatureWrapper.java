@@ -32,7 +32,6 @@ import java.security.spec.ECParameterSpec;
 /**
  * Wrapper over java.security.Signature
  *
- * Source configured for the BouncyCastle provider. 
  */
 public class SignatureWrapper {
 
@@ -138,14 +137,10 @@ public class SignatureWrapper {
     ECParameterSpec ecParameters;
 
     private SignatureWrapper(AsymSignatureAlgorithms algorithm, String provider, Key key) throws GeneralSecurityException, IOException {
-        if (provider == null) {
-            instance = algorithm.isOkp() ?
-                    Signature.getInstance(algorithm.getJceName(), "BC")
-                                             : 
-                    Signature.getInstance(algorithm.getJceName());
-        } else {
-            instance = Signature.getInstance(algorithm.getJceName(), provider);
-        }
+        instance = provider == null ? 
+                Signature.getInstance(algorithm.getJceName())
+                                    :
+                Signature.getInstance(algorithm.getJceName(), provider);
         unmodifiedSignature = !algorithm.isEcdsa();
         if (!unmodifiedSignature) {
             ecParameters = ((ECKey) key).getParams();

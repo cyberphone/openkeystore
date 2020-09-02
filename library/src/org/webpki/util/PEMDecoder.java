@@ -55,7 +55,6 @@ import org.webpki.crypto.KeyAlgorithms;
 /**
  * Functions for decoding PEM files.
  * 
- * Source configured for the BouncyCastle provider. 
  */
 public class PEMDecoder {
     private PEMDecoder() {
@@ -144,7 +143,7 @@ public class PEMDecoder {
     private static KeyFactory getKeyFactory(BaseASN1Object object) throws IOException, GeneralSecurityException {
         String oid = ParseUtil.oid(ParseUtil.sequence(object).get(0)).oid();
         if (oid.startsWith("1.3.101.11")) {
-            return KeyFactory.getInstance(getOkpKeyAlgorithm(oid).getJceName(), "BC");
+            return KeyFactory.getInstance(getOkpKeyAlgorithm(oid).getJceName());
         }
         return KeyFactory.getInstance(oid.equals("1.2.840.113549.1.1.1") ? "RSA" : "EC");
     }
