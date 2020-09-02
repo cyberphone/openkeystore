@@ -28,10 +28,18 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 
-import java.security.interfaces.ECPublicKey;
+import java.security.interfaces.ECKey;
 
+import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.MGF1ParameterSpec;
+//#if !ANDROID
+//#if BC
+import org.bouncycastle.jcajce.spec.XDHParameterSpec;
+//#else
+import java.security.spec.NamedParameterSpec;
+//#endif
+//#endif
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyAgreement;
@@ -44,16 +52,28 @@ import javax.crypto.spec.PSource;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.webpki.crypto.CryptoRandom;
+import org.webpki.crypto.CryptoUtil;
 import org.webpki.crypto.KeyAlgorithms;
 
 import org.webpki.util.ArrayUtil;
 
 /**
  * Core JEF (JSON Encryption Format) class.
- * Implements a subset of the RFC7516 (JWE) algorithms
+#if ANDROID
+ * Implements a subset of the RFC 7516 (JWE) algorithms.
+#else
+ * Implements a subset of the RFC 7516 (JWE) algorithms
+ * as well as the ECDH algorithms specified by RFC 8037.
+#endif
  * 
+#if ANDROID
+ * Source configured for Android. 
+#else
 #if BC
- * Source configured for the BouncyCastle provider. 
+ * Source configured for the BouncyCastle provider.
+#else
+ * Source configured for the default provider.
+#endif
 #endif
  */
 class EncryptionCore {
@@ -86,11 +106,11 @@ class EncryptionCore {
 
         private byte[] dataEncryptionKey;
         private byte[] encryptedKeyData;
-        private ECPublicKey ephemeralKey;
+        private PublicKey ephemeralKey;
 
         AsymmetricEncryptionResult(byte[] dataEncryptionKey,
                                    byte[] encryptedKeyData,
-                                   ECPublicKey ephemeralKey) {
+                                   PublicKey ephemeralKey) {
             this.dataEncryptionKey = dataEncryptionKey;
             this.encryptedKeyData = encryptedKeyData;
             this.ephemeralKey = ephemeralKey;
@@ -104,7 +124,7 @@ class EncryptionCore {
             return encryptedKeyData;
         }
 
-        ECPublicKey getEphemeralKey() {
+        PublicKey getEphemeralKey() {
             return ephemeralKey;
         }
     }
@@ -383,15 +403,23 @@ class EncryptionCore {
 
     private static byte[] coreKeyAgreement(KeyEncryptionAlgorithms keyEncryptionAlgorithm,
                                            DataEncryptionAlgorithms dataEncryptionAlgorithm,
-                                           ECPublicKey receivedPublicKey,
+                                           PublicKey receivedPublicKey,
                                            PrivateKey privateKey)
     throws GeneralSecurityException, IOException {
         // Begin by calculating Z (do the DH)
-        String jceName = "ECDH";
+//#if ANDROID
+        KeyAgreement keyAgreement = KeyAgreement.getInstance("ECDH");
+//#else
+        String jceName = privateKey instanceof ECKey ? "ECDH" : "XDH";
         KeyAgreement keyAgreement = ecProviderName == null ?
-                KeyAgreement.getInstance(jceName)
-                                                           :
+//#if BC
+                KeyAgreement.getInstance(jceName, "BC") 
+//#else
+                KeyAgreement.getInstance(jceName) 
+//#endif
+                                   : 
                 KeyAgreement.getInstance(jceName, ecProviderName);
+//#endif
         keyAgreement.init(privateKey);
         keyAgreement.doPhase(receivedPublicKey, true);
         byte[] Z = keyAgreement.generateSecret();
@@ -446,7 +474,7 @@ class EncryptionCore {
      */
     public static byte[] receiverKeyAgreement(KeyEncryptionAlgorithms keyEncryptionAlgorithm,
                                               DataEncryptionAlgorithms dataEncryptionAlgorithm,
-                                              ECPublicKey receivedPublicKey,
+                                              PublicKey receivedPublicKey,
                                               PrivateKey privateKey,
                                               byte[] encryptedKeyData)
     throws GeneralSecurityException, IOException {
@@ -484,17 +512,43 @@ class EncryptionCore {
                                DataEncryptionAlgorithms dataEncryptionAlgorithm,
                                PublicKey staticKey) 
     throws IOException, GeneralSecurityException {
-        KeyPairGenerator generator = ecProviderName == null ?
-                             KeyPairGenerator.getInstance("EC") 
-                                                            : 
-                             KeyPairGenerator.getInstance("EC", ecProviderName);
-        ECGenParameterSpec eccgen = 
+//#if ANDROID
+        AlgorithmParameterSpec paramSpec = 
                 new ECGenParameterSpec(KeyAlgorithms.getKeyAlgorithm(staticKey).getJceName());
-        generator.initialize(eccgen, new SecureRandom());
+        KeyPairGenerator generator = KeyPairGenerator.getInstance("EC") 
+//#else
+        AlgorithmParameterSpec paramSpec; 
+        KeyPairGenerator generator;
+        if (staticKey instanceof ECKey) {
+            paramSpec = new ECGenParameterSpec(
+                    KeyAlgorithms.getKeyAlgorithm(staticKey).getJceName());
+            generator = ecProviderName == null ?
+                    KeyPairGenerator.getInstance("EC") 
+                                              : 
+                    KeyPairGenerator.getInstance("EC", ecProviderName);
+        } else {
+//#if BC
+            paramSpec = new XDHParameterSpec(
+                    CryptoUtil.getOkpKeyAlgorithm(staticKey).getJceName());
+//#else
+            paramSpec = new NamedParameterSpec(
+                    CryptoUtil.getOkpKeyAlgorithm(staticKey).getJceName());
+//#endif
+            generator = ecProviderName == null ?
+//#if BC
+                    KeyPairGenerator.getInstance("XDH", "BC") 
+ //#else
+                    KeyPairGenerator.getInstance("XDH") 
+ //#endif                   
+                                              : 
+                    KeyPairGenerator.getInstance("XDH", ecProviderName);
+        }
+//#endif
+        generator.initialize(paramSpec, new SecureRandom());
         KeyPair keyPair = generator.generateKeyPair();
         byte[] derivedKey = coreKeyAgreement(keyEncryptionAlgorithm,
                                              dataEncryptionAlgorithm,
-                                             (ECPublicKey) staticKey,
+                                             staticKey,
                                              keyPair.getPrivate());
         byte[] encryptedKeyData = null;
         if (keyEncryptionAlgorithm.keyWrap) {
@@ -505,6 +559,6 @@ class EncryptionCore {
         }
         return new AsymmetricEncryptionResult(derivedKey, 
                                               encryptedKeyData,
-                                              (ECPublicKey) keyPair.getPublic());
+                                              keyPair.getPublic());
     }
 }

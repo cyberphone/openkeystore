@@ -56,7 +56,9 @@ import org.webpki.crypto.KeyAlgorithms;
  * Functions for decoding PEM files.
  * 
 #if BC
- * Source configured for the BouncyCastle provider. 
+ * Source configured for the BouncyCastle provider.
+#else 
+* Source configured for the default provider.
 #endif
  */
 public class PEMDecoder {

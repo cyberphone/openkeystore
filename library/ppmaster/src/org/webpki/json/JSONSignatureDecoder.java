@@ -51,8 +51,10 @@ import org.webpki.crypto.SignatureWrapper;
 /**
  * Decoder for JSF signatures.
  * 
- #if ANDROID
- * Source configured for Android. 
+#if ANDROID
+ * Source configured for Android.
+#else
+ * Source cofigured for JDK
 #endif
  */
 public class JSONSignatureDecoder implements Serializable {

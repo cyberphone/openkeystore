@@ -32,8 +32,14 @@ import java.security.spec.ECParameterSpec;
 /**
  * Wrapper over java.security.Signature
  *
+#if ANDROID
+ * Source configured for Android. 
+#else
 #if BC
- * Source configured for the BouncyCastle provider. 
+ * Source configured for the BouncyCastle provider.
+#else 
+ * Source configured for the default provider.
+#endif
 #endif
  */
 public class SignatureWrapper {
