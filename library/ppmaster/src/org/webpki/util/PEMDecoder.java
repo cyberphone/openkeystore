@@ -28,6 +28,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 
 import java.security.cert.X509Certificate;
+
 import java.security.interfaces.ECKey;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.RSAKey;
@@ -47,13 +48,16 @@ import org.webpki.asn1.BaseASN1Object;
 import org.webpki.asn1.DerDecoder;
 import org.webpki.asn1.ParseUtil;
 
-import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.CertificateUtil;
 import org.webpki.crypto.CryptoUtil;
 import org.webpki.crypto.KeyAlgorithms;
 
 /**
- * Functions for decoding PEM files
+ * Functions for decoding PEM files.
+ * 
+#if BC
+ * Source configured for the BouncyCastle provider. 
+#endif
  */
 public class PEMDecoder {
     private PEMDecoder() {
@@ -109,9 +113,7 @@ public class PEMDecoder {
         if (privateKey instanceof RSAKey) {
             return privateKey;
         }
-        KeyAlgorithms keyAlgorithm = 
-                KeyAlgorithms.getKeyAlgorithmFromId(privateKey.getAlgorithm(),
-                                                    AlgorithmPreferences.JOSE);
+        KeyAlgorithms keyAlgorithm = CryptoUtil.getOkpKeyAlgorithm(privateKey);
         return CryptoUtil.raw2PrivateOkpKey(CryptoUtil.private2RawOkpKey(privateKey, 
                                                                          keyAlgorithm), 
                                             keyAlgorithm);

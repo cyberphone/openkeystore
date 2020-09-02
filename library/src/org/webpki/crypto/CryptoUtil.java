@@ -22,6 +22,10 @@ import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.Key;
+
+import org.bouncycastle.jcajce.interfaces.EdDSAKey;
+import org.bouncycastle.jcajce.interfaces.XDHKey;
 
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -41,6 +45,10 @@ import org.webpki.util.DebugFormatter;
 
 /**
  * Support methods for "OKP" (RFC 8037)
+ * 
+ * Source configured for the BouncyCastle provider.
+ * Note that JDK and BouncyCastle are incompatible with respect to "OKP" keys
+ * and that this module only forces BouncyCastle for OKP keys.
  */
 public class CryptoUtil {
     
@@ -112,5 +120,17 @@ public class CryptoUtil {
             new ASN1OctetString(new ASN1OctetString(d).encode())
         }).encode();
         return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(pkcs8));
+    }
+
+    public static KeyAlgorithms getOkpKeyAlgorithm(Key key)  throws IOException {
+        if (key instanceof EdDSAKey) {
+            return KeyAlgorithms.getKeyAlgorithmFromId(((EdDSAKey)key).getAlgorithm(),
+                                                       AlgorithmPreferences.JOSE);
+        }
+        if (key instanceof XDHKey) {
+            return KeyAlgorithms.getKeyAlgorithmFromId(((XDHKey)key).getAlgorithm(),
+                                                       AlgorithmPreferences.JOSE);
+        }
+        throw new IOException("Unknown key type: " + key.getClass().getName());
     }
 }

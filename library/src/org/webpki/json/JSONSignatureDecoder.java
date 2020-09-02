@@ -50,6 +50,7 @@ import org.webpki.crypto.SignatureWrapper;
 
 /**
  * Decoder for JSF signatures.
+ * 
  */
 public class JSONSignatureDecoder implements Serializable {
 

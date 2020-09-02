@@ -22,7 +22,19 @@ import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.Key;
 
+//#if BC
+import org.bouncycastle.jcajce.interfaces.EdDSAKey;
+import org.bouncycastle.jcajce.interfaces.XDHKey;
+//#else
+import java.security.interfaces.XECKey;
+import java.security.interfaces.EdECKey;
+//#endif
+
+//#if !BC
+import java.security.spec.NamedParameterSpec;
+//#endif
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
@@ -41,6 +53,12 @@ import org.webpki.util.DebugFormatter;
 
 /**
  * Support methods for "OKP" (RFC 8037)
+ * 
+#if BC
+ * Source configured for the BouncyCastle provider.
+ * Note that JDK and BouncyCastle are incompatible with respect to "OKP" keys
+ * and that this module only forces BouncyCastle for OKP keys.
+#endif
  */
 public class CryptoUtil {
     
@@ -120,5 +138,30 @@ public class CryptoUtil {
             new ASN1OctetString(new ASN1OctetString(d).encode())
         }).encode();
         return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(pkcs8));
+    }
+
+    public static KeyAlgorithms getOkpKeyAlgorithm(Key key)  throws IOException {
+//#if BC
+        if (key instanceof EdDSAKey) {
+            return KeyAlgorithms.getKeyAlgorithmFromId(((EdDSAKey)key).getAlgorithm(),
+                                                       AlgorithmPreferences.JOSE);
+        }
+        if (key instanceof XDHKey) {
+            return KeyAlgorithms.getKeyAlgorithmFromId(((XDHKey)key).getAlgorithm(),
+                                                       AlgorithmPreferences.JOSE);
+        }
+//#else
+        if (key instanceof XECKey) {
+            return KeyAlgorithms.getKeyAlgorithmFromId(
+                    ((NamedParameterSpec)((XECKey)key).getParams()).getName(),
+                    AlgorithmPreferences.JOSE);
+        }
+        if (key instanceof EdECKey) {
+            return KeyAlgorithms.getKeyAlgorithmFromId(
+                    ((EdECKey)key).getParams().getName(),
+                    AlgorithmPreferences.JOSE);
+        }
+//#endif
+        throw new IOException("Unknown key type: " + key.getClass().getName());
     }
 }

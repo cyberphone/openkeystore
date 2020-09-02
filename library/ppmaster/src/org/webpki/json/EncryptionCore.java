@@ -51,8 +51,11 @@ import org.webpki.util.ArrayUtil;
 /**
  * Core JEF (JSON Encryption Format) class.
  * Implements a subset of the RFC7516 (JWE) algorithms
+ * 
+#if BC
+ * Source configured for the BouncyCastle provider. 
+#endif
  */
-
 class EncryptionCore {
 
     /**

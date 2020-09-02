@@ -35,7 +35,6 @@ import java.security.spec.X509EncodedKeySpec;
 /**
  * Asymmetric key algorithms
  */
-
 public enum KeyAlgorithms implements CryptoAlgorithms {
 
     RSA1024    ("https://webpki.github.io/sks/algorithm#rsa1024", 
@@ -435,13 +434,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
             }
             throw new IOException("Unsupported RSA key size: " + lengthInBits);
         }
-        String algorithm = publicKey.getAlgorithm();
-        for (KeyAlgorithms alg : values()) {
-            if (alg.jceName.equals(algorithm)) {
-                return alg;
-            }
-        }
-        throw new IOException("Unsupported algoritm: " + algorithm);
+        return CryptoUtil.getOkpKeyAlgorithm(publicKey);
     }
 
     // Public keys read from specific security providers are not comparable to 
@@ -458,7 +451,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                     new RSAPublicKeySpec(((RSAPublicKey)publicKey).getModulus(),
                                          ((RSAPublicKey)publicKey).getPublicExponent()));
         }
-        KeyAlgorithms keyAlgorithm = getKeyAlgorithm(publicKey);
+        KeyAlgorithms keyAlgorithm = CryptoUtil.getOkpKeyAlgorithm(publicKey);
         return CryptoUtil.raw2PublicOkpKey(CryptoUtil.public2RawOkpKey(publicKey, keyAlgorithm),
                                            keyAlgorithm);
     }

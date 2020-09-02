@@ -27,10 +27,12 @@ import java.security.cert.X509Certificate;
 import java.security.cert.CertificateFactory;
 
 import java.security.GeneralSecurityException;
+//#if BC
 import java.security.PublicKey;
 
 import java.security.interfaces.ECKey;
 import java.security.interfaces.RSAKey;
+//#endif
 
 // ANDROID_START
 
@@ -54,7 +56,9 @@ import org.webpki.asn1.cert.SubjectAltNameTypes;
 /**
  * X509 related operations.
  * 
+#if BC
  * Source configured for the BouncyCastle provider. 
+#endif
  */
 
 
@@ -78,6 +82,7 @@ public class CertificateUtil {
     public static X509Certificate getCertificateFromBlob(byte[] encoded) throws IOException {
         try {
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
+//#if BC
             X509Certificate certificate =
                     (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(encoded));
             PublicKey publicKey = certificate.getPublicKey();
@@ -85,6 +90,7 @@ public class CertificateUtil {
                 return certificate;
             }
             cf = CertificateFactory.getInstance("X.509", "BC");
+//#endif
             return (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(encoded));
         } catch (GeneralSecurityException e) {
             throw new IOException(e);
