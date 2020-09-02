@@ -24,8 +24,6 @@ import java.security.PublicKey;
 
 import java.security.cert.X509Certificate;
 
-import java.security.interfaces.ECPublicKey;
-
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -105,7 +103,7 @@ public class JSONDecryptionDecoder {
     
     private X509Certificate[] certificatePath;
 
-    private ECPublicKey ephemeralPublicKey;  // For ECHD only
+    private PublicKey ephemeralPublicKey;  // For ECHD only
 
     private String keyId;
 
@@ -188,7 +186,7 @@ public class JSONDecryptionDecoder {
 
             if (!keyEncryptionAlgorithm.isRsa()) {
                 ephemeralPublicKey =
-                        (ECPublicKey) encryptionObject
+                        encryptionObject
                             .getObject(JSONCryptoHelper.EPHEMERAL_KEY_JSON)
                                 .getCorePublicKey(holder.options.algorithmPreferences);
             }

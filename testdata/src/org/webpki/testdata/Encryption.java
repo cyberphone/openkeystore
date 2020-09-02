@@ -24,6 +24,7 @@ import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 
 import java.security.interfaces.ECKey;
+import java.security.interfaces.RSAKey;
 
 import java.util.ArrayList;
 
@@ -138,6 +139,7 @@ public class Encryption {
         asymEnc("p521", DataEncryptionAlgorithms.JOSE_A128GCM_ALG_ID);
         asymEnc("p521", DataEncryptionAlgorithms.JOSE_A128CBC_HS256_ALG_ID);
         asymEnc("r2048", DataEncryptionAlgorithms.JOSE_A256GCM_ALG_ID);
+        asymEnc("x25519", DataEncryptionAlgorithms.JOSE_A256GCM_ALG_ID);
 
         asymEncNoPublicKeyInfo("p256", DataEncryptionAlgorithms.JOSE_A128CBC_HS256_ALG_ID, true);
         asymEncNoPublicKeyInfo("p256", DataEncryptionAlgorithms.JOSE_A128GCM_ALG_ID, true);
@@ -298,7 +300,7 @@ public class Encryption {
                             JSONObjectWriter extensions) throws Exception {
         KeyPair keyPair = readJwk(keyType);
         KeyEncryptionAlgorithms keyEncryptionAlgorithm = KeyEncryptionAlgorithms.JOSE_RSA_OAEP_256_ALG_ID;
-        if (keyPair.getPublic() instanceof ECKey) {
+        if (!(keyPair.getPublic() instanceof RSAKey)) {
             switch (dataEncryptionAlgorithm.getKeyLength()) {
             case 16: 
                 keyEncryptionAlgorithm = KeyEncryptionAlgorithms.JOSE_ECDH_ES_A128KW_ALG_ID;

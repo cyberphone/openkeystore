@@ -1,0 +1,20 @@
+{
+  "algorithm": "A256GCM",
+  "keyEncryption": {
+    "algorithm": "ECDH-ES+A256KW",
+    "publicKey": {
+      "kty": "OKP",
+      "crv": "X25519",
+      "x": "o16U773QQYaQB4eegNCldg6huoIZLsOQIYkFWvbZ5lA"
+    },
+    "ephemeralKey": {
+      "kty": "OKP",
+      "crv": "X25519",
+      "x": "cngrOo_p079Mct9vow8RLPby5GczqcmFgfGQO8BjuUo"
+    },
+    "encryptedKey": "ClkyQ6DZ_dtYOZ0wDtFIb0kKKHORTaY0Soq56vIjnFnLRMf99gSGtA"
+  },
+  "iv": "ie5qgjoNjPGEdsY5",
+  "tag": "Tt4jenE8pYlTkpORHKS4eg",
+  "cipherText": "gQsovzlCPzrzTu8yWJEfAy2Y0rCYrw"
+}
