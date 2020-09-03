@@ -32,6 +32,7 @@ import java.security.spec.ECParameterSpec;
 /**
  * Wrapper over java.security.Signature
  *
+ * Source configured for the default provider.
  */
 public class SignatureWrapper {
 

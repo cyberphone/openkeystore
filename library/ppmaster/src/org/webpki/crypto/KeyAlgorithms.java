@@ -34,6 +34,12 @@ import java.security.spec.X509EncodedKeySpec;
 
 /**
  * Asymmetric key algorithms
+ * 
+#if ANDROID
+ * Source configured for Android.
+#else
+ * Source configured for the default provider.
+#endif
  */
 public enum KeyAlgorithms implements CryptoAlgorithms {
 

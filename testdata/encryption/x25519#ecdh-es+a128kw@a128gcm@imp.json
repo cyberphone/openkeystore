@@ -1,0 +1,15 @@
+{
+  "algorithm": "A128GCM",
+  "keyEncryption": {
+    "algorithm": "ECDH-ES+A128KW",
+    "ephemeralKey": {
+      "kty": "OKP",
+      "crv": "X25519",
+      "x": "eQERVoNnU7iZKdkq8AOPVLUWm083TcLTMFiJafSVOE0"
+    },
+    "encryptedKey": "Vwo0bj1XDx5MjNgLQeo9eWMl-7RUD_I9"
+  },
+  "iv": "HGNKxV6kmgYoHLrq",
+  "tag": "J-IVTx_ZIqmQDS12G-yZsA",
+  "cipherText": "neYq6E_dEq-oGR2HtOrphP0wbsa81A"
+}

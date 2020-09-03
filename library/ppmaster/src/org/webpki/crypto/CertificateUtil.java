@@ -57,7 +57,9 @@ import org.webpki.asn1.cert.SubjectAltNameTypes;
  * X509 related operations.
  * 
 #if BC
- * Source configured for the BouncyCastle provider. 
+ * Source configured for the BouncyCastle provider.
+#else
+ * Source configured for the default provider.
 #endif
  */
 

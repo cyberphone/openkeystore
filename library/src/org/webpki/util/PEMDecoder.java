@@ -55,6 +55,7 @@ import org.webpki.crypto.KeyAlgorithms;
 /**
  * Functions for decoding PEM files.
  * 
+ * Source configured for the default provider.
  */
 public class PEMDecoder {
     private PEMDecoder() {

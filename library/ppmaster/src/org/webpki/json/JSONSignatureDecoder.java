@@ -54,7 +54,7 @@ import org.webpki.crypto.SignatureWrapper;
 #if ANDROID
  * Source configured for Android.
 #else
- * Source cofigured for JDK
+ * Source configured for the default provider.
 #endif
  */
 public class JSONSignatureDecoder implements Serializable {

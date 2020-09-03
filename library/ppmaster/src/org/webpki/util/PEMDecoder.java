@@ -58,7 +58,7 @@ import org.webpki.crypto.KeyAlgorithms;
 #if BC
  * Source configured for the BouncyCastle provider.
 #else 
-* Source configured for the default provider.
+ * Source configured for the default provider.
 #endif
  */
 public class PEMDecoder {

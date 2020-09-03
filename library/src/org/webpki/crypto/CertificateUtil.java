@@ -50,6 +50,7 @@ import org.webpki.asn1.cert.SubjectAltNameTypes;
 /**
  * X509 related operations.
  * 
+ * Source configured for the default provider.
  */
 
 

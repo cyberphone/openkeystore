@@ -34,6 +34,8 @@ import java.security.spec.X509EncodedKeySpec;
 
 /**
  * Asymmetric key algorithms
+ * 
+ * Source configured for the default provider.
  */
 public enum KeyAlgorithms implements CryptoAlgorithms {
 

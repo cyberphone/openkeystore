@@ -140,6 +140,7 @@ public class Encryption {
         asymEnc("p521", DataEncryptionAlgorithms.JOSE_A128CBC_HS256_ALG_ID);
         asymEnc("r2048", DataEncryptionAlgorithms.JOSE_A256GCM_ALG_ID);
         asymEnc("x25519", DataEncryptionAlgorithms.JOSE_A256GCM_ALG_ID);
+        asymEnc("x448", DataEncryptionAlgorithms.JOSE_A256CBC_HS512_ALG_ID);
 
         asymEncNoPublicKeyInfo("p256", DataEncryptionAlgorithms.JOSE_A128CBC_HS256_ALG_ID, true);
         asymEncNoPublicKeyInfo("p256", DataEncryptionAlgorithms.JOSE_A128GCM_ALG_ID, true);
@@ -147,9 +148,12 @@ public class Encryption {
         asymEncNoPublicKeyInfo("r2048", DataEncryptionAlgorithms.JOSE_A128GCM_ALG_ID, true);
         asymEncNoPublicKeyInfo("p256", DataEncryptionAlgorithms.JOSE_A128GCM_ALG_ID, false);
         asymEncNoPublicKeyInfo("r2048", DataEncryptionAlgorithms.JOSE_A256GCM_ALG_ID, false);
+        asymEncNoPublicKeyInfo("x25519", DataEncryptionAlgorithms.JOSE_A128GCM_ALG_ID, false);
+        asymEncNoPublicKeyInfo("x448", DataEncryptionAlgorithms.JOSE_A256GCM_ALG_ID, true);
         
         certEnc("p256", DataEncryptionAlgorithms.JOSE_A128CBC_HS256_ALG_ID);
         certEnc("r2048", DataEncryptionAlgorithms.JOSE_A256GCM_ALG_ID);
+        certEnc("x25519", DataEncryptionAlgorithms.JOSE_A256GCM_ALG_ID);
         
         multipleAsymEnc(new String[]{"p256", "p384"}, 
                          DataEncryptionAlgorithms.JOSE_A128CBC_HS256_ALG_ID, 
@@ -170,6 +174,10 @@ public class Encryption {
         multipleAsymEnc(new String[]{"p256", "p256-2"}, 
                         DataEncryptionAlgorithms.JOSE_A128CBC_HS256_ALG_ID, 
                         true);
+
+        multipleAsymEnc(new String[]{"p521", "x448"}, 
+                        DataEncryptionAlgorithms.JOSE_A256CBC_HS512_ALG_ID, 
+                        false);
 
         symmEnc(256, DataEncryptionAlgorithms.JOSE_A128CBC_HS256_ALG_ID);
         symmEnc(512, DataEncryptionAlgorithms.JOSE_A256CBC_HS512_ALG_ID);
@@ -208,7 +216,7 @@ public class Encryption {
                         DataEncryptionAlgorithms dataEncryptionAlgorithm) throws Exception {
         KeyPair keyPair = readJwk(keyType);
         KeyEncryptionAlgorithms keyEncryptionAlgorithm = KeyEncryptionAlgorithms.JOSE_RSA_OAEP_256_ALG_ID;
-        if (keyPair.getPublic() instanceof ECKey) {
+        if (!(keyPair.getPublic() instanceof RSAKey)) {
             switch (dataEncryptionAlgorithm.getKeyLength()) {
             case 16: 
                 keyEncryptionAlgorithm = KeyEncryptionAlgorithms.JOSE_ECDH_ES_A128KW_ALG_ID;
@@ -381,7 +389,7 @@ public class Encryption {
         for (String keyType : keyTypes) {
             KeyPair keyPair = readJwk(keyType);
             KeyEncryptionAlgorithms keyEncryptionAlgorithm = KeyEncryptionAlgorithms.JOSE_RSA_OAEP_256_ALG_ID;
-            if (keyPair.getPublic() instanceof ECKey) {
+            if (!(keyPair.getPublic() instanceof RSAKey)) {
                 switch (dataEncryptionAlgorithm.getKeyLength()) {
                 case 16: 
                     keyEncryptionAlgorithm = KeyEncryptionAlgorithms.JOSE_ECDH_ES_A128KW_ALG_ID;
