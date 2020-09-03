@@ -62,7 +62,8 @@ public class PEMDecoder {
     }  // No instantiation please
 
  
-    static PublicKey ecPublicKeyFromPKCS8(byte[] pkcs8) throws IOException, GeneralSecurityException {
+    static PublicKey ecPublicKeyFromPKCS8(byte[] pkcs8) throws IOException, 
+                                                               GeneralSecurityException {
         ASN1Sequence seq = ParseUtil.sequence(DerDecoder.decode(pkcs8), 3);
         String oid = ParseUtil.oid(ParseUtil.sequence(seq.get(1), 2).get(1)).oid();
         seq = ParseUtil.sequence(DerDecoder.decode(ParseUtil.octet(seq.get(2))));
@@ -77,14 +78,16 @@ public class PEMDecoder {
             if (oid.equals(ka.getECDomainOID())) {
                 if (oid.equals(ka.getECDomainOID())) {
                     ECPoint w = new ECPoint(x, y);
-                    return KeyFactory.getInstance("EC").generatePublic(new ECPublicKeySpec(w, ka.getECParameterSpec()));
+                    return KeyFactory.getInstance("EC").generatePublic(
+                            new ECPublicKeySpec(w, ka.getECParameterSpec()));
                 }
             }
         }
         throw new IOException("Failed creating EC public key from private key");
     }
     
-    static PublicKey okpPublicKeyFromPKCS8(byte[] pkcs8) throws IOException, GeneralSecurityException {
+    static PublicKey okpPublicKeyFromPKCS8(byte[] pkcs8) throws IOException,
+                                                                GeneralSecurityException {
         ASN1Sequence seq = ParseUtil.sequence(DerDecoder.decode(pkcs8));
         KeyAlgorithms keyAlgorithm = 
                 getOkpKeyAlgorithm(ParseUtil.oid(ParseUtil.sequence(seq.get(1)).get(0)).oid());
@@ -141,7 +144,8 @@ public class PEMDecoder {
         throw new IOException("Did not find OID: " + oid);
     }
 
-    private static KeyFactory getKeyFactory(BaseASN1Object object) throws IOException, GeneralSecurityException {
+    private static KeyFactory getKeyFactory(BaseASN1Object object) 
+    throws IOException, GeneralSecurityException {
         String oid = ParseUtil.oid(ParseUtil.sequence(object).get(0)).oid();
         if (oid.startsWith("1.3.101.11")) {
             return KeyFactory.getInstance(getOkpKeyAlgorithm(oid).getJceName());
@@ -149,11 +153,13 @@ public class PEMDecoder {
         return KeyFactory.getInstance(oid.equals("1.2.840.113549.1.1.1") ? "RSA" : "EC");
     }
 
-    public static PrivateKey getPrivateKey(byte[] pemBlob) throws IOException, GeneralSecurityException {
+    public static PrivateKey getPrivateKey(byte[] pemBlob) throws IOException, 
+                                                                  GeneralSecurityException {
         return getPrivateKeyFromPKCS8(getPrivateKeyBlob(pemBlob)); 
     }
     
-    public static PublicKey getPublicKey(byte[] pemBlob) throws GeneralSecurityException, IOException {
+    public static PublicKey getPublicKey(byte[] pemBlob) throws IOException, 
+                                                                GeneralSecurityException {
         byte[] publicKeyBlob = decodePemObject(pemBlob, "PUBLIC KEY");
         return getKeyFactory(ParseUtil.sequence(DerDecoder.decode(publicKeyBlob)).get(0))
                 .generatePublic(new X509EncodedKeySpec(publicKeyBlob)); 
@@ -180,7 +186,8 @@ public class PEMDecoder {
         return certPath[certPath.length - 1];
     }
 
-    private static ArrayList<byte[]> decodePemObjects(byte[]pemBlob, String itemType) throws IOException {
+    private static ArrayList<byte[]> decodePemObjects(byte[]pemBlob, 
+                                                      String itemType) throws IOException {
         String pemString = new String(pemBlob, "utf-8");
         String header = "-----BEGIN " + itemType + "-----";
         String footer = "-----END "   + itemType + "-----";
