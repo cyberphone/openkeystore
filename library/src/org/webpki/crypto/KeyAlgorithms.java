@@ -34,8 +34,6 @@ import java.security.spec.X509EncodedKeySpec;
 
 /**
  * Asymmetric key algorithms
- * 
- * Source configured for the default provider.
  */
 public enum KeyAlgorithms implements CryptoAlgorithms {
 
@@ -436,7 +434,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
             }
             throw new IOException("Unsupported RSA key size: " + lengthInBits);
         }
-        return CryptoUtil.getOkpKeyAlgorithm(publicKey);
+        return OkpSupport.getOkpKeyAlgorithm(publicKey);
     }
 
     // Public keys read from specific security providers are not comparable to 
@@ -453,8 +451,8 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                     new RSAPublicKeySpec(((RSAPublicKey)publicKey).getModulus(),
                                          ((RSAPublicKey)publicKey).getPublicExponent()));
         }
-        KeyAlgorithms keyAlgorithm = CryptoUtil.getOkpKeyAlgorithm(publicKey);
-        return CryptoUtil.raw2PublicOkpKey(CryptoUtil.public2RawOkpKey(publicKey, keyAlgorithm),
+        KeyAlgorithms keyAlgorithm = OkpSupport.getOkpKeyAlgorithm(publicKey);
+        return OkpSupport.raw2PublicOkpKey(OkpSupport.public2RawOkpKey(publicKey, keyAlgorithm),
                                            keyAlgorithm);
     }
 

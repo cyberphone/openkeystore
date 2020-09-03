@@ -49,7 +49,7 @@ import org.webpki.asn1.DerDecoder;
 import org.webpki.asn1.ParseUtil;
 
 import org.webpki.crypto.CertificateUtil;
-import org.webpki.crypto.CryptoUtil;
+import org.webpki.crypto.OkpSupport;
 import org.webpki.crypto.KeyAlgorithms;
 
 /**
@@ -98,7 +98,7 @@ public class PEMDecoder {
         byte[] content = ParseUtil.simpleContext(seq.get(seq.size() - 1), 1).encodeContent();
         byte[] publicKey = new byte[content.length - 1];
         System.arraycopy(content, 1, publicKey, 0, publicKey.length);
-        return CryptoUtil.raw2PublicOkpKey(publicKey, keyAlgorithm);
+        return OkpSupport.raw2PublicOkpKey(publicKey, keyAlgorithm);
     }
     
     private static byte[] getPrivateKeyBlob(byte[] pemBlob) throws IOException {
@@ -118,8 +118,8 @@ public class PEMDecoder {
         if (privateKey instanceof RSAKey) {
             return privateKey;
         }
-        KeyAlgorithms keyAlgorithm = CryptoUtil.getOkpKeyAlgorithm(privateKey);
-        return CryptoUtil.raw2PrivateOkpKey(CryptoUtil.private2RawOkpKey(privateKey, 
+        KeyAlgorithms keyAlgorithm = OkpSupport.getOkpKeyAlgorithm(privateKey);
+        return OkpSupport.raw2PrivateOkpKey(OkpSupport.private2RawOkpKey(privateKey, 
                                                                          keyAlgorithm), 
                                             keyAlgorithm);
     }

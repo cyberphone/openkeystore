@@ -55,7 +55,9 @@ import javax.crypto.spec.PSource;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.webpki.crypto.CryptoRandom;
-import org.webpki.crypto.CryptoUtil;
+//#if !ANDROID
+import org.webpki.crypto.OkpSupport;
+//#endif
 import org.webpki.crypto.KeyAlgorithms;
 
 import org.webpki.util.ArrayUtil;
@@ -529,7 +531,7 @@ class EncryptionCore {
 //#if ANDROID
         AlgorithmParameterSpec paramSpec = 
                 new ECGenParameterSpec(KeyAlgorithms.getKeyAlgorithm(staticKey).getJceName());
-        KeyPairGenerator generator = KeyPairGenerator.getInstance("EC") 
+        KeyPairGenerator generator = KeyPairGenerator.getInstance("EC");
 //#else
         AlgorithmParameterSpec paramSpec; 
         KeyPairGenerator generator;
@@ -543,10 +545,10 @@ class EncryptionCore {
         } else {
 //#if BC
             paramSpec = new XDHParameterSpec(
-                    CryptoUtil.getOkpKeyAlgorithm(staticKey).getJceName());
+                    OkpSupport.getOkpKeyAlgorithm(staticKey).getJceName());
 //#else
             paramSpec = new NamedParameterSpec(
-                    CryptoUtil.getOkpKeyAlgorithm(staticKey).getJceName());
+                    OkpSupport.getOkpKeyAlgorithm(staticKey).getJceName());
 //#endif
             generator = ecProviderName == null ?
 //#if BC

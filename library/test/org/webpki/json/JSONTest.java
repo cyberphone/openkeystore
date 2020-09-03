@@ -53,7 +53,7 @@ import org.junit.Test;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.CertificateUtil;
-import org.webpki.crypto.CryptoUtil;
+import org.webpki.crypto.OkpSupport;
 import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.DeterministicSignatureWrapper;
@@ -3406,10 +3406,10 @@ public class JSONTest {
                  String signatureInHex) {
         try {
             PrivateKey privateKey = 
-                    CryptoUtil.raw2PrivateOkpKey(DebugFormatter.getByteArrayFromHex(secretKeyInHex), 
+                    OkpSupport.raw2PrivateOkpKey(DebugFormatter.getByteArrayFromHex(secretKeyInHex), 
                                                  keyAlgorithm);
             PublicKey publicKey = 
-                    CryptoUtil.raw2PublicOkpKey(DebugFormatter.getByteArrayFromHex(publicKeyInHex), 
+                    OkpSupport.raw2PublicOkpKey(DebugFormatter.getByteArrayFromHex(publicKeyInHex), 
                                                 keyAlgorithm);
             byte[] message = DebugFormatter.getByteArrayFromHex(messageInHex);
             byte[] expectedSignature = DebugFormatter.getByteArrayFromHex(signatureInHex);

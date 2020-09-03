@@ -36,7 +36,7 @@ import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.RSAPrivateCrtKey;
 
 import org.webpki.crypto.AlgorithmPreferences;
-import org.webpki.crypto.CryptoUtil;
+import org.webpki.crypto.OkpSupport;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyStoreReader;
 import org.webpki.crypto.CustomCryptoProvider;
@@ -135,7 +135,7 @@ public class KeyStore2JWKConverter {
                            addPrivateKeyElement("d", curvePoint);
                        }
                     } else {
-                        addPrivateKeyElement("d", CryptoUtil.private2RawOkpKey(privateKey, keyAlgorithm));
+                        addPrivateKeyElement("d", OkpSupport.private2RawOkpKey(privateKey, keyAlgorithm));
                     }
                     writeJwk(fis, publicKey, alias);
                 }

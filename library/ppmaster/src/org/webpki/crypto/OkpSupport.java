@@ -23,6 +23,31 @@ import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Key;
+//#if ANDROID
+
+public class OkpSupport {
+    public static byte[] public2RawOkpKey(PublicKey publicKey, KeyAlgorithms keyAlgorithm)
+    throws IOException {
+        throw new IOException("Feature not yet available in Android");
+    }
+    public static PublicKey raw2PublicOkpKey(byte[] x, KeyAlgorithms keyAlgorithm) 
+    throws IOException {
+        throw new IOException("Feature not yet available in Android");
+    }
+
+    public static byte[] private2RawOkpKey(PrivateKey privateKey, KeyAlgorithms keyAlgorithm) 
+    throws IOException {
+        throw new IOException("Feature not yet available in Android");
+    }
+    public static PrivateKey raw2PrivateOkpKey(byte[] d, KeyAlgorithms keyAlgorithm)
+    throws IOException {
+        throw new IOException("Feature not yet available in Android");
+    }
+    public static KeyAlgorithms getOkpKeyAlgorithm(Key key)  throws IOException {
+        throw new IOException("Feature not yet available in Android");
+    }
+}
+//#else
 
 //#if BC
 import org.bouncycastle.jcajce.interfaces.EdDSAKey;
@@ -62,9 +87,9 @@ import org.webpki.util.DebugFormatter;
  * Source configured for the [currently] buggy JDK 15 provider.
 #endif
  */
-public class CryptoUtil {
+public class OkpSupport {
     
-    private CryptoUtil() {}
+    private OkpSupport() {}
     
     static final HashMap<KeyAlgorithms,Integer> okpKeyLength = new HashMap<>();
 
@@ -176,3 +201,4 @@ public class CryptoUtil {
         throw new IOException("Unknown key type: " + key.getClass().getName());
     }
 }
+//#endif

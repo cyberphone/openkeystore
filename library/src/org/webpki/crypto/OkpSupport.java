@@ -49,9 +49,9 @@ import org.webpki.util.DebugFormatter;
  * 
  * Source configured for the [currently] buggy JDK 15 provider.
  */
-public class CryptoUtil {
+public class OkpSupport {
     
-    private CryptoUtil() {}
+    private OkpSupport() {}
     
     static final HashMap<KeyAlgorithms,Integer> okpKeyLength = new HashMap<>();
 

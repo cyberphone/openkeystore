@@ -43,15 +43,13 @@ import java.util.LinkedHashSet;
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.SignatureAlgorithms;
 import org.webpki.crypto.AsymSignatureAlgorithms;
-import org.webpki.crypto.CryptoUtil;
+import org.webpki.crypto.OkpSupport;
 import org.webpki.crypto.MACAlgorithms;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
 
 /**
  * Decoder for JSF signatures.
- * 
- * Source configured for the default provider.
  */
 public class JSONSignatureDecoder implements Serializable {
 
@@ -224,7 +222,7 @@ public class JSONSignatureDecoder implements Serializable {
                     throw new IOException("\"" + JSONCryptoHelper.CRV_JSON + 
                                           "\" is not a valid OKP type");
                 }
-                publicKey = CryptoUtil.raw2PublicOkpKey(rd.getBinary(JSONCryptoHelper.X_JSON), 
+                publicKey = OkpSupport.raw2PublicOkpKey(rd.getBinary(JSONCryptoHelper.X_JSON), 
                                                         keyAlgorithm);
             } else {
                 throw new IOException("Unrecognized \"" + JSONCryptoHelper.KTY_JSON + "\": " + type);
@@ -322,7 +320,7 @@ public class JSONSignatureDecoder implements Serializable {
                                                      getCryptoBinary(rd, "dq"),
                                                      getCryptoBinary(rd, "qi")));
             }
-            return CryptoUtil.raw2PrivateOkpKey(rd.getBinary("d"), 
+            return OkpSupport.raw2PrivateOkpKey(rd.getBinary("d"), 
                                                 KeyAlgorithms.getKeyAlgorithm(publicKey));
         } catch (GeneralSecurityException e) {
             throw new IOException(e);

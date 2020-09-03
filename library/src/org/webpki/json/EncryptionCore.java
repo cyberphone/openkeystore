@@ -46,7 +46,7 @@ import javax.crypto.spec.PSource;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.webpki.crypto.CryptoRandom;
-import org.webpki.crypto.CryptoUtil;
+import org.webpki.crypto.OkpSupport;
 import org.webpki.crypto.KeyAlgorithms;
 
 import org.webpki.util.ArrayUtil;
@@ -497,7 +497,7 @@ class EncryptionCore {
                     KeyPairGenerator.getInstance("EC", ecProviderName);
         } else {
             paramSpec = new NamedParameterSpec(
-                    CryptoUtil.getOkpKeyAlgorithm(staticKey).getJceName());
+                    OkpSupport.getOkpKeyAlgorithm(staticKey).getJceName());
             generator = ecProviderName == null ?
                     KeyPairGenerator.getInstance("XDH") 
                                               : 

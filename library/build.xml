@@ -257,15 +257,6 @@
         replace="Value"
         flags="g"/>
   	
-    <replace file="${android_dir}/org/webpki/json/EncryptionCore.java">
-      <replacefilter token="import java.security.spec.MGF1ParameterSpec;&#10;" value=""/>
-      <replacefilter token="import javax.crypto.spec.OAEPParameterSpec;&#10;" value=""/>
-      <replacefilter token="import javax.crypto.spec.PSource;&#10;" value=""/>
-    </replace>  
-
-  	<replaceregexp file="${android_dir}/org/webpki/json/EncryptionCore.java"
-        match="(\n)(.*\n.*\n.*PSpecified.*\n.*\n\ \ \ \ )(.*\n)(.*\n)"
-        replace="\1\3"/>
 
   </target>
 
@@ -286,25 +277,26 @@
         <include name="**/crypto/SignerInterface.java"/>
         <include name="**/crypto/AsymKeySignerInterface.java"/>
         <include name="**/crypto/SymKeySignerInterface.java"/>
-        <include name="**/crypto/CertificateUtil.java"/>
         <include name="**/crypto/CryptoAlgorithms.java"/>
-        <include name="**/crypto/KeyAlgorithms.java"/>
+        <include name="**/crypto/OkpSupport.java"/>
         <include name="**/crypto/MACAlgorithms.java"/>
+        <include name="**/crypto/KeyAlgorithms.java"/>
         <include name="**/crypto/HashAlgorithms.java"/>
         <include name="**/crypto/SignatureAlgorithms.java"/>
         <include name="**/crypto/AlgorithmPreferences.java"/>
         <include name="**/crypto/AsymSignatureAlgorithms.java"/>
         <include name="**/crypto/SymSignatureAlgorithms.java"/>
-        <include name="**/crypto/SignatureWrapper.java"/>
         <include name="**/crypto/CryptoRandom.java"/>
         <include name="**/json/*.java"/>
       </fileset>
     </copy>
-
-    <replaceregexp file="${android_dir}/org/webpki/crypto/CertificateUtil.java"
-        match="\/\/ ANDROID_START.+?\/\/ ANDROID_END"
-        replace=""
-        flags="gs"/>
+  	<property name="ANDROID" value="true"/>
+  	<property name="ANDROID_PURE" value="true"/>
+    <jpp destdir="${android_dir}" verbose="true" force="true">
+        <fileset dir="ppmaster/src" includes="**/*.java">
+        	<exclude name="**/PEMDecoder.java"/>
+        </fileset>
+    </jpp>
 
   	<antcall target="_clean_android"/>
   	

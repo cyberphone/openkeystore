@@ -41,7 +41,7 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import org.webpki.crypto.AlgorithmPreferences;
-import org.webpki.crypto.CryptoUtil;
+import org.webpki.crypto.OkpSupport;
 import org.webpki.crypto.KeyAlgorithms;
 
 import org.webpki.util.ArrayUtil;
@@ -801,7 +801,7 @@ import org.webpki.json.JSONSignatureDecoder;
             corePublicKey.setString(JSONCryptoHelper.CRV_JSON, 
                                     keyAlg.getAlgorithmId(algorithmPreferences));
             corePublicKey.setBinary(JSONCryptoHelper.X_JSON,
-                                    CryptoUtil.public2RawOkpKey(publicKey, keyAlg));
+                                    OkpSupport.public2RawOkpKey(publicKey, keyAlg));
         }
         return corePublicKey;
     }
