@@ -102,7 +102,7 @@ public class Jdk15XdhSerializationBug {
         checkKey(kf.generatePublic(
                     new XECPublicKeySpec(new NamedParameterSpec(keyAlgorithm),
                                          new BigInteger(rawKeyInHex, 16))),"Constructed key");
-        }
+    }
 
     static void pemPublicKeyTest(String pemPublicKey) throws Exception {
         KeyFactory kf = KeyFactory.getInstance("XDH");
