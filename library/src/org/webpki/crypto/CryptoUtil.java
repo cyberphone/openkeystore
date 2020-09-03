@@ -47,6 +47,7 @@ import org.webpki.util.DebugFormatter;
 /**
  * Support methods for "OKP" (RFC 8037)
  * 
+ * Source configured for the [currently] buggy JDK 15 provider.
  */
 public class CryptoUtil {
     

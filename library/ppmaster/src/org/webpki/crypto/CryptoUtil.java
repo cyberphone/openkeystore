@@ -58,6 +58,8 @@ import org.webpki.util.DebugFormatter;
  * Source configured for the BouncyCastle provider.
  * Note that JDK and BouncyCastle are incompatible with respect to "OKP" keys
  * and that this module only forces BouncyCastle for OKP keys.
+#else
+ * Source configured for the [currently] buggy JDK 15 provider.
 #endif
  */
 public class CryptoUtil {
