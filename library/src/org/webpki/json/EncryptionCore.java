@@ -132,7 +132,7 @@ class EncryptionCore {
     // RSA OAEP
     static final String JOSE_RSA_OAEP_JCENAME     = "RSA/ECB/OAEPWithSHA-1AndMGF1Padding";
     static final String JOSE_RSA_OAEP_256_JCENAME = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
-    
+
     private static String aesProviderName;
 
     /**

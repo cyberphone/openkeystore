@@ -32,9 +32,10 @@ import java.security.interfaces.ECKey;
 
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.ECGenParameterSpec;
-import java.security.spec.MGF1ParameterSpec;
 //#if !ANDROID
+import java.security.spec.MGF1ParameterSpec;
 //#if BC
+
 import org.bouncycastle.jcajce.spec.XDHParameterSpec;
 //#else
 import java.security.spec.NamedParameterSpec;
@@ -47,8 +48,10 @@ import javax.crypto.Mac;
 
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
+//#if !ANDROID
 import javax.crypto.spec.OAEPParameterSpec;
 import javax.crypto.spec.PSource;
+//#endif
 import javax.crypto.spec.SecretKeySpec;
 
 import org.webpki.crypto.CryptoRandom;
@@ -150,7 +153,8 @@ class EncryptionCore {
     // RSA OAEP
     static final String JOSE_RSA_OAEP_JCENAME     = "RSA/ECB/OAEPWithSHA-1AndMGF1Padding";
     static final String JOSE_RSA_OAEP_256_JCENAME = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
-    
+//#if !ANDROID
+
     private static String aesProviderName;
 
     /**
@@ -180,12 +184,17 @@ class EncryptionCore {
     public static void setRsaProvider(String providerName) {
         rsaProviderName = providerName;
     }
+//#endif
 
     private static Cipher getAesCipher(String algorithm) throws GeneralSecurityException {
+//#if ANDROID
+        return Cipher.getInstance(algorithm);
+//#else
         return aesProviderName == null ? 
             Cipher.getInstance(algorithm) 
                                        : 
             Cipher.getInstance(algorithm, aesProviderName);
+//#endif
     }
 
     private static byte[] getTag(byte[] key,
@@ -344,6 +353,10 @@ class EncryptionCore {
         }
         String jceName = keyEncryptionAlgorithm == KeyEncryptionAlgorithms.JOSE_RSA_OAEP_ALG_ID ?
                 JOSE_RSA_OAEP_JCENAME : JOSE_RSA_OAEP_256_JCENAME;
+//#if ANDROID
+        Cipher cipher = Cipher.getInstance(jceName);
+        cipher.init(mode, key);
+//#else
         Cipher cipher = rsaProviderName == null ? 
                 Cipher.getInstance(jceName)
                                                 : 
@@ -354,6 +367,7 @@ class EncryptionCore {
         } else {
             cipher.init(mode, key);
         }
+//#endif
         return cipher.doFinal(data);
     }
 

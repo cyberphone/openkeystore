@@ -422,7 +422,10 @@
    	
   	<property name="ANDROID" value="true"/>
     <jpp destdir="${android_dir}" verbose="true">
-        <fileset dir="ppmaster" includes="**/*.java" />
+        <fileset dir="ppmaster" includes="**/*.java">
+        	<exclude name="**/PEMDecoder.java"/>
+        	<exclude name="**/CryptoUtil.java"/>
+        </fileset>
     </jpp>
     <replace file="${android_dir}/org/webpki/sks/SKSReferenceImplementation.java">
       <replacefilter token="MACRO_GET_PRIVATEKEY" value="getPrivateKey()"/>
