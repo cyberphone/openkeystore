@@ -376,11 +376,6 @@
       </fileset>
     </copy>
 
-    <replaceregexp file="${android_dir}/org/webpki/crypto/KeyStoreReader.java"
-        match="(\/\/\ JKS\ magic\ number\ \+\ version\ \(2\).*)(byte\[\]\ jks\ \=\ \{)(\(byte\)0xfe,\ \(byte\)0xed,\ \(byte\)0xfe,\ \(byte\)0xed,\ 0,\ 0,\ 0,\ 2)(\}\;)"
-        replace="\20, 0, 0, 1, 0, 0, 0, 20\4 // BKS: (int)VERSION + (int)SALT_LENGTH"
-        flags="s"/>
-
   	<!-- No need for decorated OIDs in Android -->
     <replaceregexp file="${android_dir}/org/webpki/asn1/ASN1ObjectID.java"
         match="(public\ static\ void\ tryReadOIDNames.+\{)(.+)(\n.+Hashtable)"
@@ -401,23 +396,14 @@
         </fileset>
     </replaceregexp>
     
-    <replaceregexp
-        match="&quot;JKS&quot;"
-        replace="&quot;BKS&quot;"
-        flags="g">
-        <fileset dir="${android_dir}/org/webpki/">
-          <include name="**/*.java"/>
-        </fileset>
-    </replaceregexp>
-
   	<antcall target="_clean_android"/>
    	
   	<property name="ANDROID" value="true"/>
-    <jpp destdir="${android_dir}" verbose="true">
-        <fileset dir="ppmaster" includes="**/*.java">
+    <jpp destdir="${android_dir}" verbose="true" force="true">
+        <fileset dir="ppmaster/src" includes="**/*.java">
         	<exclude name="**/PEMDecoder.java"/>
-        	<exclude name="**/CryptoUtil.java"/>
         </fileset>
+        <fileset dir="ppmaster/test" includes="**/*.java"/>
     </jpp>
     <replace file="${android_dir}/org/webpki/sks/SKSReferenceImplementation.java">
       <replacefilter token="MACRO_GET_PRIVATEKEY" value="getPrivateKey()"/>
