@@ -86,9 +86,6 @@
          <include name="webpki.org-libext*.jar"/>
          <include name="webpki.org-webutil*.jar"/>
       </lib>
-      <lib dir="${openkeystore.dir}/resources/third-party-jars">
-        <include name="bc*.jar"/>
-      </lib>
       <fileset dir="web"/>
       <fileset dir="${openkeystore.dir}/resources/images">
         <include name="jsf.svg"/>

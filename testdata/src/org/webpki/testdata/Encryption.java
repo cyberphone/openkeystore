@@ -23,7 +23,6 @@ import java.security.KeyPair;
 
 import java.security.cert.X509Certificate;
 
-import java.security.interfaces.ECKey;
 import java.security.interfaces.RSAKey;
 
 import java.util.ArrayList;

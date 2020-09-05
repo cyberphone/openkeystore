@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import java.security.KeyPair;
-import java.security.Provider;
-import java.security.Security;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,6 +29,7 @@ import javax.servlet.ServletContextListener;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
+import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.MACAlgorithms;
 import org.webpki.crypto.SignatureAlgorithms;
 
@@ -125,18 +124,7 @@ public class JSFService extends InitPropertyReader implements ServletContextList
     @Override
     public void contextInitialized(ServletContextEvent event) {
         initProperties(event);
-        Provider bc = (Provider) new org.bouncycastle.jce.provider.BouncyCastleProvider();
-        if (Security.getProvider(bc.getName()) == null) {
-            try {
-                Security.addProvider(bc);
-                logger.info("BouncyCastle successfully added to the list of providers");
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, "BouncyCastle didn't load");
-                throw new RuntimeException(e);
-            }
-        } else {
-            logger.info("BouncyCastle was already loaded");
-        }
+        CustomCryptoProvider.forcedLoad(false);
         try {
             /////////////////////////////////////////////////////////////////////////////////////////////
             // Keys
