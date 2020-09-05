@@ -33,10 +33,10 @@ public class JOSEHmacValidator implements JOSESupport.CoreSignatureValidator {
     }
 
     @Override
-    public void validate(byte[] signedData, byte[] JWS_Signature) throws IOException {
+    public void validate(byte[] signedData, byte[] jwsSignature) throws IOException {
         if (!ArrayUtil.compare(algorithm.digest(hmacKey, 
                                                 signedData),
-                               JWS_Signature)) {
+                               jwsSignature)) {
             throw new IOException("HMAC signature validation error");
         }
     }

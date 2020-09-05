@@ -39,10 +39,10 @@ public class JOSEAsymSignatureValidator implements JOSESupport.CoreSignatureVali
 
     @Override
     public void validate(byte[] signedData,
-                         byte[] JWS_Signature) throws IOException, GeneralSecurityException {
+                         byte[] jwsSignature) throws IOException, GeneralSecurityException {
         if (!new SignatureWrapper(algorithm, publicKey)
                 .update(signedData)
-                .verify(JWS_Signature)) {
+                .verify(jwsSignature)) {
             throw new GeneralSecurityException("Signature did not validate for key: " + 
                                                publicKey.toString());
         }
