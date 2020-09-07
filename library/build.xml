@@ -332,6 +332,7 @@
         <exclude name="**/pkcs7/**"/>
         <exclude name="**/securityproxy/**"/>
         <exclude name="**/ca/**"/>
+        <exclude name="**/net/**"/>
         <exclude name="**/webutil/**"/>
         <exclude name="**/keygen2/*RequestEncoder.java"/>
         <exclude name="**/keygen2/*ResponseDecoder.java"/>
@@ -373,6 +374,7 @@
         <include name="**/crypto/SymSignatureAlgorithms.java"/>
         <include name="**/crypto/SignatureWrapper.java"/>
         <include name="**/crypto/CryptoRandom.java"/>
+        <include name="**/net/HTTPSWrapper.java"/>
       </fileset>
     </copy>
 
