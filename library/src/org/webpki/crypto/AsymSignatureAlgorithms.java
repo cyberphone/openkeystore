@@ -23,34 +23,34 @@ public enum AsymSignatureAlgorithms implements SignatureAlgorithms {
     RSA_NONE     ("https://webpki.github.io/sks/algorithm#rsa.pkcs1.none", null,
                   null,                    "NONEwithRSA",     null,                  true),
       
-    RSA_SHA1     ("http://www.w3.org/2000/09/xmldsig#rsa-sha1",           null,              
+    RSA_SHA1     ("http://www.w3.org/2000/09/xmldsig#rsa-sha1",            null,              
                   "1.2.840.113549.1.1.5",  "SHA1withRSA",     HashAlgorithms.SHA1,   false),
       
-    RSA_SHA256   ("http://www.w3.org/2001/04/xmldsig-more#rsa-sha256",    "RS256",      
+    RSA_SHA256   ("http://www.w3.org/2001/04/xmldsig-more#rsa-sha256",     "RS256",      
                   "1.2.840.113549.1.1.11", "SHA256withRSA",   HashAlgorithms.SHA256, true),
       
-    RSA_SHA384   ("http://www.w3.org/2001/04/xmldsig-more#rsa-sha384",    "RS384",     
+    RSA_SHA384   ("http://www.w3.org/2001/04/xmldsig-more#rsa-sha384",     "RS384",     
                   "1.2.840.113549.1.1.12", "SHA384withRSA",   HashAlgorithms.SHA384, true),
       
-    RSA_SHA512   ("http://www.w3.org/2001/04/xmldsig-more#rsa-sha512",    "RS512",   
+    RSA_SHA512   ("http://www.w3.org/2001/04/xmldsig-more#rsa-sha512",     "RS512",   
                   "1.2.840.113549.1.1.13", "SHA512withRSA",   HashAlgorithms.SHA512, true),
       
     ECDSA_NONE   ("https://webpki.github.io/sks/algorithm#ecdsa.none",     null,
                   null,                    "NONEwithECDSA",   null,                  true),
       
-    ECDSA_SHA256 ("http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256",  "ES256",  
+    ECDSA_SHA256 ("http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256",   "ES256",  
                   "1.2.840.10045.4.3.2",   "SHA256withECDSA", HashAlgorithms.SHA256, true),
       
-    ECDSA_SHA384 ("http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha384",  "ES384",   
+    ECDSA_SHA384 ("http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha384",   "ES384",   
                   "1.2.840.10045.4.3.3",   "SHA384withECDSA", HashAlgorithms.SHA384, true),
       
-    ECDSA_SHA512 ("http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha512",  "ES512",   
+    ECDSA_SHA512 ("http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha512",   "ES512",   
                   "1.2.840.10045.4.3.4",   "SHA512withECDSA", HashAlgorithms.SHA512, true),
 
-    ED25519      ("https://webpki.github.io/sks/algorithm#ed25519",       "Ed25519",   
+    ED25519      ("https://webpki.github.io/sks/algorithm#ed25519",        "Ed25519",   
                   "1.3.101.112",           "Ed25519",         null /*"pure" */,      false),
 
-    ED448        ("https://webpki.github.io/sks/algorithm#ed448",         "Ed448",   
+    ED448        ("https://webpki.github.io/sks/algorithm#ed448",          "Ed448",   
                   "1.3.101.113",           "Ed448",           null /*"pure" */,      false);
 
     private final String sksName;   // As expressed in SKS
