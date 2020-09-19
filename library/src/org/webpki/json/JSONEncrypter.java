@@ -61,13 +61,17 @@ public abstract class JSONEncrypter implements Serializable {
         
         LinkedHashSet<String> foundExtensions = new LinkedHashSet<>();
         
-        Header(DataEncryptionAlgorithms dataEncryptionAlgorithm, JSONEncrypter encrypter) throws IOException {
+        Header(DataEncryptionAlgorithms dataEncryptionAlgorithm, JSONEncrypter encrypter) 
+                throws IOException {
             this.dataEncryptionAlgorithm = dataEncryptionAlgorithm;
             contentEncryptionKey = encrypter.contentEncryptionKey;
             encryptionWriter = new JSONObjectWriter();
-            encryptionWriter.setString(JSONCryptoHelper.ALGORITHM_JSON, dataEncryptionAlgorithm.joseName);
-            if (encrypter.keyEncryptionAlgorithm != null && encrypter.keyEncryptionAlgorithm.keyWrap) {
-                contentEncryptionKey = CryptoRandom.generateRandom(dataEncryptionAlgorithm.keyLength);
+            encryptionWriter.setString(JSONCryptoHelper.ALGORITHM_JSON, 
+                                       dataEncryptionAlgorithm.joseName);
+            if (encrypter.keyEncryptionAlgorithm != null && 
+                    encrypter.keyEncryptionAlgorithm.keyWrap) {
+                contentEncryptionKey = 
+                        CryptoRandom.generateRandom(dataEncryptionAlgorithm.keyLength);
             }
         }
 
@@ -103,8 +107,9 @@ public abstract class JSONEncrypter implements Serializable {
                     currentRecipient
                         .setObject(JSONCryptoHelper.EPHEMERAL_KEY_JSON,
                                    JSONObjectWriter
-                                       .createCorePublicKey(asymmetricEncryptionResult.getEphemeralKey(),
-                                                            AlgorithmPreferences.JOSE));
+                                       .createCorePublicKey(
+                                               asymmetricEncryptionResult.getEphemeralKey(),
+                                               AlgorithmPreferences.JOSE));
                 }
                 if (encrypter.keyEncryptionAlgorithm.isKeyWrap()) {
                     currentRecipient.setBinary(JSONCryptoHelper.ENCRYPTED_KEY_JSON,
@@ -115,12 +120,14 @@ public abstract class JSONEncrypter implements Serializable {
             if (encrypter.extensions != null) {
                 for (String property : encrypter.extensions.getProperties()) {
                     foundExtensions.add(property);
-                    currentRecipient.setProperty(property, encrypter.extensions.getProperty(property));
+                    currentRecipient.setProperty(property, 
+                                                 encrypter.extensions.getProperty(property));
                 }
             }
         }
 
-        JSONObjectWriter finalizeEncryption(byte[] unencryptedData) throws IOException, GeneralSecurityException {
+        JSONObjectWriter finalizeEncryption(byte[] unencryptedData) 
+        throws IOException, GeneralSecurityException {
             if (!foundExtensions.isEmpty()) {
                 encryptionWriter.setStringArray(JSONCryptoHelper.EXTENSIONS_JSON,
                                                 foundExtensions.toArray(new String[0]));
@@ -128,13 +135,16 @@ public abstract class JSONEncrypter implements Serializable {
             byte[] iv = EncryptionCore.createIv(dataEncryptionAlgorithm);
             EncryptionCore.SymmetricEncryptionResult symmetricEncryptionResult =
                 EncryptionCore.dataEncryption(dataEncryptionAlgorithm,
-                                                 contentEncryptionKey,
-                                                 iv,
-                                                 unencryptedData,
-                                                 encryptionWriter.serializeToBytes(JSONOutputFormats.CANONICALIZED));
+                                              contentEncryptionKey,
+                                              iv,
+                                              unencryptedData,
+                                              encryptionWriter.serializeToBytes(
+                                                      JSONOutputFormats.CANONICALIZED));
             encryptionWriter.setBinary(JSONCryptoHelper.IV_JSON, iv);
-            encryptionWriter.setBinary(JSONCryptoHelper.TAG_JSON, symmetricEncryptionResult.getTag());
-            encryptionWriter.setBinary(JSONCryptoHelper.CIPHER_TEXT_JSON, symmetricEncryptionResult.getCipherText());
+            encryptionWriter.setBinary(JSONCryptoHelper.TAG_JSON,
+                                       symmetricEncryptionResult.getTag());
+            encryptionWriter.setBinary(JSONCryptoHelper.CIPHER_TEXT_JSON,
+                                       symmetricEncryptionResult.getCipherText());
             return encryptionWriter;
         }
     }
