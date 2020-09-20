@@ -28,7 +28,9 @@ import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.MACAlgorithms;
 import org.webpki.crypto.SignatureAlgorithms;
 
+import org.webpki.json.JSONArrayWriter;
 import org.webpki.json.JSONObjectReader;
+import org.webpki.json.JSONOutputFormats;
 import org.webpki.json.JSONParser;
 
 import org.webpki.util.Base64URL;
@@ -90,19 +92,35 @@ public class JwsDecoder {
         
         // We don't bother about any other header data than possible public key
         // elements modulo JKU and X5U
+        
+        // Decode possible JWK
         if (jwsProtectedHeader.hasProperty(JOSESupport.JWK_JSON)) {
-            optionalPublicKey = JOSESupport.getPublicKey(jwsProtectedHeader);
+            optionalPublicKey = 
+                    jwsProtectedHeader.getObject(JOSESupport.JWK_JSON)
+                        .getCorePublicKey(AlgorithmPreferences.JOSE);
         }
+
+        // Decode possible X5C?
         if (jwsProtectedHeader.hasProperty(JOSESupport.X5C_JSON)) {
             if (optionalPublicKey != null) {
                 throw new GeneralSecurityException("Both X5C and JWK?");
             }
-            optionalCertificatePath = JOSESupport.getCertificatePath(jwsProtectedHeader);
+            JSONArrayWriter path = new JSONArrayWriter();
+            for (String certB64 : jwsProtectedHeader.getStringArray(JOSESupport.X5C_JSON)) {
+                path.setString(certB64.replace("=","")
+                                      .replace('/', '_')
+                                      .replace('+', '-'));
+            }
+            optionalCertificatePath = 
+                    JSONParser.parse(path.serializeToString(JSONOutputFormats.NORMALIZED))
+                        .getJSONArrayReader().getCertificatePath();
             optionalPublicKey = optionalCertificatePath[0].getPublicKey();
         }
         if (signatureAlgorithm.isSymmetric() && optionalPublicKey != null) {
             throw new GeneralSecurityException("Mix of symmetric and asymmetric elements?");
         }
+        
+        // Decode possible KID
         optionalKeyId = jwsProtectedHeader.getStringConditional(JOSESupport.KID_JSON);
     }
 

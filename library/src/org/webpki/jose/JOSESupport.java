@@ -31,10 +31,8 @@ import org.webpki.crypto.SignatureAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
 
 import org.webpki.json.JSONArrayWriter;
-import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONObjectWriter;
 import org.webpki.json.JSONOutputFormats;
-import org.webpki.json.JSONParser;
 
 import org.webpki.util.Base64;
 import org.webpki.util.Base64URL;
@@ -53,86 +51,50 @@ public class JOSESupport {
         CoreSignatureValidator() {};
  
         abstract void validate(byte[] signedData,
-                      JwsDecoder jwsDecoder) throws IOException, GeneralSecurityException;
+                               JwsDecoder jwsDecoder) throws IOException, GeneralSecurityException;
 
     }
 
     public abstract static class CoreKeyHolder {
+        
+        PublicKey optionalPublicKey;
+        
+        X509Certificate[] optionalCertificatePath;
+        
+        String optionalKeyId;
+        
+        SignatureAlgorithms signatureAlgorithm;
+        
+        private CoreKeyHolder(SignatureAlgorithms signatureAlgorithm) {
+            this.signatureAlgorithm = signatureAlgorithm;
+        }
 
         byte[] secretKey;
 
-        protected CoreKeyHolder(byte[] secretKey) {
+        protected CoreKeyHolder(byte[] secretKey, SignatureAlgorithms signatureAlgorithm) {
+            this(signatureAlgorithm);
             this.secretKey = secretKey;
         }
 
         PrivateKey privateKey;
 
-        protected CoreKeyHolder(PrivateKey privateKey) {
+        protected CoreKeyHolder(PrivateKey privateKey, SignatureAlgorithms signatureAlgorithm) {
+            this(signatureAlgorithm);
             this.privateKey = privateKey;
         }
 
-        abstract boolean isSymmetric();
-
-        byte[] getSecretKey() {
-            return secretKey;
-        }
-
-        PrivateKey getPrivateKey() {
-            return privateKey;
+        public CoreKeyHolder setKeyId(String keyId) {
+            this.optionalKeyId = keyId;
+            return this;
         }
     }
     
-    public static X509Certificate[] getCertificatePath(JSONObjectReader joseObject) throws IOException {
-        JSONArrayWriter path = new JSONArrayWriter();
-        for (String certB64 : joseObject.getStringArray(X5C_JSON)) {
-            path.setString(certB64.replace("=","")
-                                  .replace('/', '_')
-                                  .replace('+', '-'));
-        }
-        return JSONParser.parse(path.serializeToString(JSONOutputFormats.NORMALIZED))
-            .getJSONArrayReader().getCertificatePath();
-    }
-
-    public static void setCertificatePath(JSONObjectWriter joseObject,
-                                          X509Certificate[] certificatePath)
-    throws IOException, GeneralSecurityException {
-        JSONArrayWriter certPath = joseObject.setArray(X5C_JSON);
-        for (X509Certificate cert : certificatePath) {
-            certPath.setString(new Base64(false).getBase64StringFromBinary(cert.getEncoded()));
-        }
-    }
-
-    public static void setPublicKey(JSONObjectWriter joseObject,
-                                    PublicKey publicKey) throws IOException {
-        joseObject.setObject(JWK_JSON, 
-                             JSONObjectWriter.createCorePublicKey(publicKey,
-                                                                  AlgorithmPreferences.JOSE));
-    }
-
-    public static PublicKey getPublicKey(JSONObjectReader joseObject) throws IOException {
-        return joseObject.getObject(JWK_JSON).getCorePublicKey(AlgorithmPreferences.JOSE);
-    }
-    
-    public static String getKeyId(JSONObjectReader joseObject) throws IOException {
-        return joseObject.getString(KID_JSON);
-    }
-
-    public static void setKeyId(JSONObjectWriter joseObject, String keyId) throws IOException {
-        joseObject.setString(KID_JSON, keyId);
-    }
-
-    public static JSONObjectWriter setSignatureAlgorithm(JSONObjectWriter joseObject, 
-                                                         SignatureAlgorithms signatureAlgorithm) 
-    throws IOException {
-        return joseObject.setString(ALG_JSON, 
-                                    signatureAlgorithm.isOkp() ? 
-             EdDSA : signatureAlgorithm.getAlgorithmId(AlgorithmPreferences.JOSE));
-    }
-
     public static void validateJwsSignature(JwsDecoder jwsDecoder,
                                             byte[] optionalJwsPayload,
                                             CoreSignatureValidator signatureValidator) 
     throws IOException, GeneralSecurityException {
+
+        // Dealing with detached and in-line
         String jwsPayloadB64U;
         if (jwsDecoder.optionalJwsPayloadB64U == null) {
             if (optionalJwsPayload == null) {
@@ -145,40 +107,65 @@ public class JOSESupport {
             }
             jwsPayloadB64U = jwsDecoder.optionalJwsPayloadB64U;
         }
+        
+        // Delegate validation
         signatureValidator.validate((jwsDecoder.jwsProtectedHeaderB64U + 
                                      "." + 
                                      jwsPayloadB64U).getBytes("utf-8"),
                                     jwsDecoder);
     }
 
-    public static String createJwsSignature(JSONObjectWriter jwsProtectedHeader,
+    public static String createJwsSignature(JwsEncoder jwsEncoder,
                                             byte[] jwsPayload,
-                                            CoreKeyHolder coreKeyHolder,
-                                            SignatureAlgorithms signatureAlgorithm,
                                             boolean detached)
     throws IOException, GeneralSecurityException {
-        if (jwsProtectedHeader == null) {
-            jwsProtectedHeader = new JSONObjectWriter();
+
+        // Encode possible JWK
+        if (jwsEncoder.coreKeyHolder.optionalPublicKey != null) {
+            jwsEncoder.jwsProtectedHeader.setObject(JWK_JSON, 
+                                                    JSONObjectWriter.createCorePublicKey(
+                                                        jwsEncoder.coreKeyHolder.optionalPublicKey,
+                                                        AlgorithmPreferences.JOSE));
         }
-        if (!new JSONObjectReader(jwsProtectedHeader).hasProperty(ALG_JSON)) {
-            setSignatureAlgorithm(jwsProtectedHeader, signatureAlgorithm);
+
+        // Encode possible X5C
+        if (jwsEncoder.coreKeyHolder.optionalCertificatePath != null) {
+            JSONArrayWriter certPath = jwsEncoder.jwsProtectedHeader.setArray(X5C_JSON);
+            for (X509Certificate cert : jwsEncoder.coreKeyHolder.optionalCertificatePath) {
+                certPath.setString(new Base64(false).getBase64StringFromBinary(cert.getEncoded()));
+            }
         }
-        String jwsHeaderB64U = 
-                Base64URL.encode(jwsProtectedHeader.serializeToBytes(JSONOutputFormats.NORMALIZED));
+
+        // Encode possible KID
+        if (jwsEncoder.coreKeyHolder.optionalKeyId != null) {
+            jwsEncoder.jwsProtectedHeader.setString(KID_JSON, 
+                                                    jwsEncoder.coreKeyHolder.optionalKeyId);
+        }
+        
+        // Create data to be signed
+        String jwsProtectedHeaderB64U = Base64URL.encode(
+                jwsEncoder.jwsProtectedHeader.serializeToBytes(JSONOutputFormats.NORMALIZED));
         String jwsPayloadB64U = Base64URL.encode(jwsPayload);
-        byte[] dataToBeSigned = (jwsHeaderB64U + "." + jwsPayloadB64U).getBytes("utf-8");
+        byte[] dataToBeSigned = (jwsProtectedHeaderB64U + "." + jwsPayloadB64U).getBytes("utf-8");
+        
+        // Sign data
         byte[] signature;
-        if (coreKeyHolder.isSymmetric()) {
-            signature = ((MACAlgorithms)signatureAlgorithm).digest(coreKeyHolder.getSecretKey(), 
-                                                                   dataToBeSigned);
+        if (jwsEncoder.coreKeyHolder.signatureAlgorithm.isSymmetric()) {
+            signature = ((MACAlgorithms)jwsEncoder.coreKeyHolder.signatureAlgorithm)
+                            .digest(jwsEncoder.coreKeyHolder.secretKey, dataToBeSigned);
         } else {
-            signature = new SignatureWrapper((AsymSignatureAlgorithms)signatureAlgorithm,
-                                             coreKeyHolder.getPrivateKey()).update(dataToBeSigned).sign();
+            signature = new SignatureWrapper(
+                    (AsymSignatureAlgorithms)jwsEncoder.coreKeyHolder.signatureAlgorithm,
+                    jwsEncoder.coreKeyHolder.privateKey)
+                        .update(dataToBeSigned)
+                        .sign();
         }
-        return jwsHeaderB64U + 
+        
+        // Return JWS string
+        return jwsProtectedHeaderB64U +
                 "." +
-                (detached ? "" : jwsPayloadB64U) + 
-                "." + 
+                (detached ? "" : jwsPayloadB64U) +
+                "." +
                 Base64URL.encode(signature);
     }
 }

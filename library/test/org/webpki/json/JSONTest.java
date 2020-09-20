@@ -66,7 +66,7 @@ import org.webpki.jose.AsymKeyHolder;
 import org.webpki.jose.AsymSignatureValidator;
 import org.webpki.jose.JOSESupport;
 import org.webpki.jose.JwsDecoder;
-
+import org.webpki.jose.JwsEncoder;
 import org.webpki.json.JSONCryptoHelper.PUBLIC_KEY_OPTIONS;
 
 import org.webpki.util.ArrayUtil;
@@ -3436,11 +3436,11 @@ public class JSONTest {
             byte[] payload = messageString.getBytes("utf-8");
             KeyPair keyPair = JSONParser.parse(jwk).getKeyPair();
             String jwsString = 
-                    JOSESupport.createJwsSignature(null, // Default minimalist header
-                                                   payload, 
-                                                   new AsymKeyHolder(keyPair.getPrivate()),
-                                                   signatureAlgorithm,
-                                                   false);
+                    JOSESupport.createJwsSignature(
+                            new JwsEncoder(new AsymKeyHolder(keyPair.getPrivate(),
+                                                             signatureAlgorithm)),
+                            payload, 
+                            false);
             assertTrue("Sign", jwsString.contentEquals(expectedJwsString));
 
             JOSESupport.validateJwsSignature(new JwsDecoder(jwsString),

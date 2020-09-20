@@ -16,15 +16,12 @@
  */
 package org.webpki.jose;
 
+import org.webpki.crypto.MACAlgorithms;
+
 public class SymKeyHolder extends JOSESupport.CoreKeyHolder {
     
-    public SymKeyHolder(byte[] secretKey) {
-        super(secretKey);
-    }
-
-    @Override
-    public boolean isSymmetric() {
-        return true;
+    public SymKeyHolder(byte[] secretKey, MACAlgorithms macAlgorithms) {
+        super(secretKey, macAlgorithms);
     }
 
 }

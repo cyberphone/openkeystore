@@ -17,18 +17,26 @@
 package org.webpki.jose;
 
 import java.security.PrivateKey;
+import java.security.PublicKey;
+
+import java.security.cert.X509Certificate;
+
+import org.webpki.crypto.AsymSignatureAlgorithms;
 
 public class AsymKeyHolder extends JOSESupport.CoreKeyHolder {
     
-    PrivateKey privateKey;
-     
-    public AsymKeyHolder(PrivateKey privateKey) {
-         super(privateKey);
+    public AsymKeyHolder(PrivateKey privateKey, AsymSignatureAlgorithms signatureAlgorithm) {
+         super(privateKey, signatureAlgorithm);
+    }
+    
+    public AsymKeyHolder setPublicKey(PublicKey publicKey) {
+        this.optionalPublicKey = publicKey;
+        return this;
     }
 
-    @Override
-    public boolean isSymmetric() {
-        return false;
+    public AsymKeyHolder setCertificatePath(X509Certificate[] certificatePath) {
+        this.optionalCertificatePath = certificatePath;
+        return this;
     }
 
 }
