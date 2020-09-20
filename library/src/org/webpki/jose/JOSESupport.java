@@ -48,10 +48,12 @@ public class JOSESupport {
     
     public static final String EdDSA    = "EdDSA";
     
-    public interface CoreSignatureValidator {
+    public static abstract class CoreSignatureValidator {
+        
+        CoreSignatureValidator() {};
  
-        public void validate(byte[] signedData,
-                             byte[] jwsSignature) throws IOException, GeneralSecurityException;
+        abstract void validate(byte[] signedData,
+                      JwsDecoder jwsDecoder) throws IOException, GeneralSecurityException;
 
     }
 
@@ -127,14 +129,26 @@ public class JOSESupport {
              EdDSA : signatureAlgorithm.getAlgorithmId(AlgorithmPreferences.JOSE));
     }
 
-    public static void validateJwsSignature(String jwsProtectedHeaderB64U,
-                                            byte[] jwsPayload,
-                                            String jwsSignatureB64U,
+    public static void validateJwsSignature(JwsDecoder jwsDecoder,
+                                            byte[] optionalJwsPayload,
                                             CoreSignatureValidator signatureValidator) 
     throws IOException, GeneralSecurityException {
-        signatureValidator.validate((jwsProtectedHeaderB64U + 
-                                     "." + Base64URL.encode(jwsPayload)).getBytes("utf-8"),
-                                    Base64URL.decode(jwsSignatureB64U));
+        String jwsPayloadB64U;
+        if (jwsDecoder.optionalJwsPayloadB64U == null) {
+            if (optionalJwsPayload == null) {
+                throw new IOException("Detached payload missing");
+            }
+            jwsPayloadB64U = Base64URL.encode(optionalJwsPayload);
+        } else {
+            if (optionalJwsPayload != null) {
+                throw new IOException("Multiple payloads");
+            }
+            jwsPayloadB64U = jwsDecoder.optionalJwsPayloadB64U;
+        }
+        signatureValidator.validate((jwsDecoder.jwsProtectedHeaderB64U + 
+                                     "." + 
+                                     jwsPayloadB64U).getBytes("utf-8"),
+                                    jwsDecoder);
     }
 
     public static String createJwsSignature(JSONObjectWriter jwsProtectedHeader,

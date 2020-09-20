@@ -16,9 +16,9 @@
  */
 package org.webpki.jose;
 
-public class JOSESymKeyHolder extends JOSESupport.CoreKeyHolder {
+public class SymKeyHolder extends JOSESupport.CoreKeyHolder {
     
-    public JOSESymKeyHolder(byte[] secretKey) {
+    public SymKeyHolder(byte[] secretKey) {
         super(secretKey);
     }
 

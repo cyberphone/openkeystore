@@ -18,11 +18,11 @@ package org.webpki.jose;
 
 import java.security.PrivateKey;
 
-public class JOSEAsymKeyHolder extends JOSESupport.CoreKeyHolder {
+public class AsymKeyHolder extends JOSESupport.CoreKeyHolder {
     
     PrivateKey privateKey;
      
-    public JOSEAsymKeyHolder(PrivateKey privateKey) {
+    public AsymKeyHolder(PrivateKey privateKey) {
          super(privateKey);
     }
 

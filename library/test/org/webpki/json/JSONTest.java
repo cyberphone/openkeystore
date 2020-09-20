@@ -62,9 +62,10 @@ import org.webpki.crypto.KeyStoreVerifier;
 import org.webpki.crypto.MACAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
 
-import org.webpki.jose.JOSEAsymKeyHolder;
-import org.webpki.jose.JOSEAsymSignatureValidator;
+import org.webpki.jose.AsymKeyHolder;
+import org.webpki.jose.AsymSignatureValidator;
 import org.webpki.jose.JOSESupport;
+import org.webpki.jose.JwsDecoder;
 
 import org.webpki.json.JSONCryptoHelper.PUBLIC_KEY_OPTIONS;
 
@@ -3437,16 +3438,14 @@ public class JSONTest {
             String jwsString = 
                     JOSESupport.createJwsSignature(null, // Default minimalist header
                                                    payload, 
-                                                   new JOSEAsymKeyHolder(keyPair.getPrivate()),
+                                                   new AsymKeyHolder(keyPair.getPrivate()),
                                                    signatureAlgorithm,
                                                    false);
             assertTrue("Sign", jwsString.contentEquals(expectedJwsString));
 
-            JOSESupport.validateJwsSignature(jwsString.substring(0, jwsString.indexOf('.')),
+            JOSESupport.validateJwsSignature(new JwsDecoder(jwsString),
                                              payload,
-                                             jwsString.substring(jwsString.lastIndexOf('.') + 1),
-                                             new JOSEAsymSignatureValidator(keyPair.getPublic(),
-                                                                            signatureAlgorithm));
+                                             new AsymSignatureValidator(keyPair.getPublic()));
         } catch (Exception e) {
             assertFalse("8037", bcLoaded);
         }

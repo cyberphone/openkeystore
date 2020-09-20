@@ -22,21 +22,20 @@ import org.webpki.crypto.MACAlgorithms;
 
 import org.webpki.util.ArrayUtil;
 
-public class JOSEHmacValidator implements JOSESupport.CoreSignatureValidator {
+public class HmacValidator extends JOSESupport.CoreSignatureValidator {
     
     byte[] hmacKey;
-    MACAlgorithms algorithm;
     
-    public JOSEHmacValidator(byte[] hmacKey, MACAlgorithms algorithm) {
+    public HmacValidator(byte[] hmacKey) {
         this.hmacKey = hmacKey;
-        this.algorithm = algorithm;
     }
 
     @Override
-    public void validate(byte[] signedData, byte[] jwsSignature) throws IOException {
-        if (!ArrayUtil.compare(algorithm.digest(hmacKey, 
-                                                signedData),
-                               jwsSignature)) {
+    void validate(byte[] signedData, JwsDecoder jwsDecoder) throws IOException {
+        if (!ArrayUtil.compare(
+               ((MACAlgorithms)jwsDecoder.signatureAlgorithm).digest(hmacKey, 
+                                                                     signedData),
+                                                                     jwsDecoder.signature)) {
             throw new IOException("HMAC signature validation error");
         }
     }

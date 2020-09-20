@@ -27,31 +27,31 @@ import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
 import org.webpki.crypto.KeyAlgorithms;
 
-public class JOSEAsymSignatureValidator implements JOSESupport.CoreSignatureValidator {
+public class AsymSignatureValidator extends JOSESupport.CoreSignatureValidator {
     
     PublicKey publicKey;
-    AsymSignatureAlgorithms algorithm;
     
-    public JOSEAsymSignatureValidator(PublicKey publicKey, AsymSignatureAlgorithms algorithm) {
+    public AsymSignatureValidator(PublicKey publicKey) {
         this.publicKey = publicKey;
-        this.algorithm = algorithm;
     }
 
     @Override
-    public void validate(byte[] signedData,
-                         byte[] jwsSignature) throws IOException, GeneralSecurityException {
-        if (!new SignatureWrapper(algorithm, publicKey)
-                .update(signedData)
-                .verify(jwsSignature)) {
-            throw new GeneralSecurityException("Signature did not validate for key: " + 
-                                               publicKey.toString());
-        }
+    void validate(byte[] signedData,
+                  JwsDecoder jwsDecoder) throws IOException, GeneralSecurityException {
+        AsymSignatureAlgorithms algorithm = 
+                (AsymSignatureAlgorithms) jwsDecoder.signatureAlgorithm;
         if (publicKey instanceof ECKey) {
             if (KeyAlgorithms.getKeyAlgorithm(publicKey)
                     .getRecommendedSignatureAlgorithm() != algorithm) {
                 throw new GeneralSecurityException(
                         "EC key and algorithm does not match the JWS spec");
             }
-        }    
+        }  
+        if (!new SignatureWrapper(algorithm, publicKey)
+                .update(signedData)
+                .verify(jwsDecoder.signature)) {
+            throw new GeneralSecurityException("Signature did not validate for key: " + 
+                                               publicKey.toString());
+        }
     }
 }
