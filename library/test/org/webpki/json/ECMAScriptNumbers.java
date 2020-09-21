@@ -18,7 +18,7 @@ package org.webpki.json;
 
 import java.util.Random;
 
-public class ES6Numbers {
+public class ECMAScriptNumbers {
     
     public static String javaStr;
     public static String ryuStr;
@@ -61,7 +61,7 @@ public class ES6Numbers {
     
     public static void main(String[] argc) {
         if (argc.length != 1) {
-            System.out.println("ES6Numbers number-of-turns");
+            System.out.println("ECMAScriptNumbers number-of-turns");
             System.exit(0);
         }
         double d = 0;

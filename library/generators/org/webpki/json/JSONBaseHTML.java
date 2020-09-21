@@ -66,7 +66,7 @@ public class JSONBaseHTML  {
     
     public static final String REF_XMLENC              = "XMLENC";
     
-    public static final String REF_ES6                 = "ES6";
+    public static final String REF_ES                  = "ES";
     
     public static final String REF_V8                  = "V8";
     
@@ -321,7 +321,7 @@ public class JSONBaseHTML  {
             "April&nbsp;2012. <br>" +
             externalWebReference ("https://www.w3.org/TR/2012/CR-WebIDL-20120419/"));
 
-        addReferenceEntry(REF_ES6, "A. Wirfs-Brock, " +
+        addReferenceEntry(REF_ES, "A. Wirfs-Brock, " +
             "\"ECMAScript 2015 Language Specification\", ECMA-262, " +
             "June&nbsp;2015. <br>" +
             externalWebReference ("https://www.ecma-international.org/ecma-262/6.0/ECMA-262.pdf"));

@@ -819,7 +819,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
        "Douglas&nbsp;Crockford, Arne&nbsp;Riiber, Brian&nbsp;Campbell, Sergey&nbsp;Beryozkin, and others."
        + LINE_SEPARATOR +
        "Special thanks go to James&nbsp;Manger who pointed out the ECMAScript ")
-       .append(json.createReference(JSONBaseHTML.REF_ES6))
+       .append(json.createReference(JSONBaseHTML.REF_ES))
        .append(" number serialization scheme as well as reviewing a related Internet draft." + LINE_SEPARATOR +
         "An early prototype was funded by <i>PrimeKey Solutions AB</i> and the <i>Swedish Innovation Board (VINNOVA)</i>.");
         

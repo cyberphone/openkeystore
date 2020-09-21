@@ -50,7 +50,7 @@ public class WebCryptoServlet extends HttpServlet {
                 "</form>" +
                 "<div class=\"header\">WebCrypto / JWS-JCS Demo</div>" +
                 "<div style=\"display:flex;justify-content:center;padding-top:15pt\"><div>" +
-                "This demo only relies on ES6 and WebCrypto features and " +
+                "This demo only relies on ECMAScript and WebCrypto features and " +
                 "does not refer to any external libraries either.</div></div>" +
                 "<div style=\"display:flex;justify-content:center\">" +
                 "<div class=\"stdbtn\" onclick=\"createKey()\">" +
@@ -201,7 +201,7 @@ public class WebCryptoServlet extends HttpServlet {
                 "                buffer += ',';\n" +
                 "                    }\n" +
                 "                    next = true;\n" +
-                "                    // Properties are just strings - Use ES6\n" +
+                "                    // Properties are just strings - Use ECMAScript\n" +
                 "                    buffer += JSON.stringify(property);\n" +
                 "                    buffer += ':';\n" +
                 "                    // Recursive call\n" +
@@ -210,7 +210,7 @@ public class WebCryptoServlet extends HttpServlet {
                 "                buffer += '}';\n" +
                 "            }\n" +
                 "        } else {\n" +
-                "            // Primitive data type - Use ES6\n" +
+                "            // Primitive data type - Use ECMAScript\n" +
                 "            buffer += JSON.stringify(object);\n" +
                 "        }\n" +
                 "    }\n" +

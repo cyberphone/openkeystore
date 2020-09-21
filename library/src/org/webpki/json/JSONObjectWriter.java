@@ -49,7 +49,8 @@ import org.webpki.util.Base64URL;
 import org.webpki.util.ISODateTime;
 
 /**
- * Creates JSON objects and performs serialization according to JCS and ES6.
+ * Creates JSON objects and performs serialization
+ * using a variety of formats.
  * <p>
  * Also provides built-in support for encoding
  * <a href="https://cyberphone.github.io/doc/security/jsf.html" 

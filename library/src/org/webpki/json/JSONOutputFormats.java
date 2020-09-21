@@ -25,11 +25,11 @@ package org.webpki.json;
 public enum JSONOutputFormats {
 
     /**
-     * As a string without whitespace.
+     * As a string without whitespace compatible with ECMAScript's <code>JSON.stringify()</code>.
      */
     NORMALIZED        (false, false, false, false),
     /**
-     * Fully JCS (RFC 8785) compatible formatting.  That is, properties are sorted as well.
+     * JCS (RFC 8785) compatible formatting.  That is, properties are sorted as well.
      */
     CANONICALIZED     (false, false, false, true),
     /**

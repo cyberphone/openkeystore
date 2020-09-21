@@ -167,7 +167,7 @@ public class JSONParser {
                 String serializedNumber = NumberToJSON.serializeNumber(number);
                 if (!serializedNumber.equals(token)) {
                     throw new IOException("In the \"strict\" mode JSON Numbers must be fully normalized " +
-                                          "according to ES6+.  As a consequence " + token + 
+                                          "according to ECMAScript.  As a consequence " + token + 
                                           " must be expressed as " + serializedNumber);
                 }
                 JSONValue strictNum = new JSONValue(type, token);

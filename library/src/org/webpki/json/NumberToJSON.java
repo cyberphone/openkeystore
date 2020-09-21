@@ -1,7 +1,7 @@
 /*
  *  Copyright 2018 Ulf Adams.
  *  
- *  Modifications for ES6/JCS by Anders Rundgren
+ *  Modifications for ECMAScript / RFC 8785 by Anders Rundgren
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import java.math.BigInteger;
 
 /**
  * An implementation of Ryu for serializing IEEE-754 double precision values for
- * JSON as specified by ES6
+ * JSON as specified by ECMAScript
  */
 public final class NumberToJSON {
     private static boolean DEBUG = false;
@@ -102,7 +102,7 @@ public final class NumberToJSON {
     }
 
     /**
-     * Formats a number according to ES6.
+     * Formats a number according to ECMAScript.
      * <p>
      * This code is emulating 7.1.12.1 of the EcmaScript V6 specification.
      * </p>
@@ -252,7 +252,7 @@ public final class NumberToJSON {
         // Step 4: Find the shortest decimal representation in the interval of
         // legal representations.
         //
-        // We do some extra work here in order to follow ES6 semantics. In
+        // We do some extra work here in order to follow ECMAScript semantics. In
         // particular, that requires printing in scientific format if and only
         // if the exponent is between -6 and 21, and it requires suppressing .0
         //
@@ -262,7 +262,7 @@ public final class NumberToJSON {
         final int vplength = decimalLength(dp);
         int exp = e10 + vplength - 1;
 
-        // ES6/JCS semantics requires using scientific notation if and only if
+        // ECMAScript/JCS semantics requires using scientific notation if and only if
         // outside this range.
         boolean scientificNotation = !((exp >= -6) && (exp < 21));
 
@@ -320,7 +320,7 @@ public final class NumberToJSON {
         }
 
         // Step 5: Print the decimal representation.
-        // We follow ES6/JCS semantics here.
+        // We follow ECMAScript/JCS semantics here.
         char[] result = new char[25]; // becbf647612f3696 required changing to 25
         int index = 0;
         if (sign) {
@@ -359,7 +359,7 @@ public final class NumberToJSON {
             result[index++] = (char) ('0' + exp % 10);
             return new String(result, 0, index);
         } else {
-            // Otherwise follow the ES6 spec.
+            // Otherwise follow the ECMAScript spec.
             if (exp < 0) {
                 // Decimal dot is before any of the digits.
                 result[index++] = '0';

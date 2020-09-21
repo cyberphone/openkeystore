@@ -127,7 +127,7 @@ public class JSONTest {
         "yourself. But you cannot trust us to let you face trouble " +
         "alone, and go off without a word. We are your friends, Frodo.";
 
-    static final String[] ES6_NUMBERS = {
+    static final String[] ECMAScript_NUMBERS = {
             "-3.3333333333333335E21", "-3.3333333333333335e+21",
             "-3.333333333333333E20", "-333333333333333300000",
             "-3.3333333333333336E19", "-33333333333333336000",
@@ -2391,7 +2391,7 @@ public class JSONTest {
     enum PARSER_ERR {
         MISS_ARG("Missing argument"),
         ARRAY_LIMIT("Trying to read past of array limit: "),
-        EXPECTED("In the \"strict\" mode JSON Numbers must be fully normalized according to ES6+."),
+        EXPECTED("In the \"strict\" mode JSON Numbers must be fully normalized according to ECMAScript."),
         COMMA("Expected ',' but got 'e'"),
         SYNTAX("Unrecognized or malformed JSON token");
 
@@ -2606,9 +2606,9 @@ public class JSONTest {
 
     void es6NumberTest() throws Exception {
         int i = 0;
-        while (i < ES6_NUMBERS.length) {
-            String original = ES6_NUMBERS[i++];
-            String expected = ES6_NUMBERS[i++];
+        while (i < ECMAScript_NUMBERS.length) {
+            String original = ECMAScript_NUMBERS[i++];
+            String expected = ECMAScript_NUMBERS[i++];
             String result = new String(new JSONObjectWriter()
                     .setDouble("v", Double.valueOf(original))
                     .serializeToBytes(JSONOutputFormats.NORMALIZED), "UTF-8");
