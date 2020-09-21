@@ -3444,7 +3444,7 @@ public class JSONTest {
             assertTrue("Sign", jwsString.contentEquals(expectedJwsString));
 
             JOSESupport.validateJwsSignature(new JwsDecoder(jwsString),
-                                             payload,
+                                             null,
                                              new AsymSignatureValidator(keyPair.getPublic()));
         } catch (Exception e) {
             assertFalse("8037", bcLoaded);
