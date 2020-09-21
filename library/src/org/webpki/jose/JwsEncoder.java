@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2019 WebPKI.org (http://webpki.org).
+ *  Copyright 2018-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,12 +23,20 @@ import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONObjectWriter;
 
+/**
+ * Core JWS encoder
+ */
 public class JwsEncoder {
     
     JSONObjectWriter jwsProtectedHeader;
     
     JOSESupport.CoreKeyHolder coreKeyHolder;
 
+    /**
+     * JWS signature encoder
+     * @param coreKeyHolder Holds JWS signature key and algorithm
+     * @throws IOException
+     */
     public JwsEncoder(JOSESupport.CoreKeyHolder coreKeyHolder) throws IOException {
         jwsProtectedHeader = new JSONObjectWriter()
             .setString(JOSESupport.ALG_JSON, 
@@ -39,6 +47,11 @@ public class JwsEncoder {
         this.coreKeyHolder = coreKeyHolder;
     }
 
+    /**
+     * Add header elements
+     * @param items
+     * @throws IOException
+     */
     public void addHeaderItems(JSONObjectReader items) throws IOException {
         for (String key : items.getProperties()) {
             jwsProtectedHeader.copyElement(key, key, items);

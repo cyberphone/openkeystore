@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2019 WebPKI.org (http://webpki.org).
+ *  Copyright 2018-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -37,7 +37,12 @@ import org.webpki.json.JSONOutputFormats;
 import org.webpki.util.Base64;
 import org.webpki.util.Base64URL;
 
+/**
+ * Core JWS support class
+ */
 public class JOSESupport {
+    
+    JOSESupport() {}
     
     public static final String ALG_JSON = "alg";
     public static final String KID_JSON = "kid";
@@ -45,7 +50,10 @@ public class JOSESupport {
     public static final String X5C_JSON = "x5c";
     
     public static final String EdDSA    = "EdDSA";
-    
+
+    /**
+     * Super class of validators
+     */
     public static abstract class CoreSignatureValidator {
         
         CoreSignatureValidator() {};
@@ -55,6 +63,11 @@ public class JOSESupport {
 
     }
 
+    /**
+     * Super class of signature key holders
+     * @author Anders
+     *
+     */
     public abstract static class CoreKeyHolder {
         
         PublicKey optionalPublicKey;
@@ -71,24 +84,37 @@ public class JOSESupport {
 
         byte[] secretKey;
 
-        protected CoreKeyHolder(byte[] secretKey, SignatureAlgorithms signatureAlgorithm) {
+        CoreKeyHolder(byte[] secretKey, SignatureAlgorithms signatureAlgorithm) {
             this(signatureAlgorithm);
             this.secretKey = secretKey;
         }
 
         PrivateKey privateKey;
 
-        protected CoreKeyHolder(PrivateKey privateKey, SignatureAlgorithms signatureAlgorithm) {
+        CoreKeyHolder(PrivateKey privateKey, SignatureAlgorithms signatureAlgorithm) {
             this(signatureAlgorithm);
             this.privateKey = privateKey;
         }
 
+        /**
+         * Adds "kid" to the JWS header
+         * @param keyId Actual value
+         * @return
+         */
         public CoreKeyHolder setKeyId(String keyId) {
             this.optionalKeyId = keyId;
             return this;
         }
     }
     
+    /**
+     * Validate compact JWS signature
+     * @param jwsDecoder Decoded header and string
+     * @param optionalJwsPayload Must be supplied for detached mode, null otherwise
+     * @param signatureValidator Key + algorithm
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
     public static void validateJwsSignature(JwsDecoder jwsDecoder,
                                             byte[] optionalJwsPayload,
                                             CoreSignatureValidator signatureValidator) 
@@ -115,6 +141,15 @@ public class JOSESupport {
                                     jwsDecoder);
     }
 
+    /**
+     * Create compact JWS signature
+     * @param jwsEncoder Header element data and signature key
+     * @param jwsPayload Binary payload
+     * @param detached True if payload is not to be supplied in the string
+     * @return JWS compact (string)
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
     public static String createJwsSignature(JwsEncoder jwsEncoder,
                                             byte[] jwsPayload,
                                             boolean detached)

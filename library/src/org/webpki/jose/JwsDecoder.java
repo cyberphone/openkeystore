@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2019 WebPKI.org (http://webpki.org).
+ *  Copyright 2018-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -35,6 +35,9 @@ import org.webpki.json.JSONParser;
 
 import org.webpki.util.Base64URL;
 
+/**
+ * Core JWS decoder
+ */
 public class JwsDecoder {
     
     String jwsProtectedHeaderB64U;
@@ -53,6 +56,12 @@ public class JwsDecoder {
     
     String optionalKeyId;
     
+    /**
+     * JWS signature decoder
+     * @param jwsString The actual JWS string.  If there is no payload detached mode is assumed
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
     public JwsDecoder(String jwsString) throws IOException, GeneralSecurityException {
 
         // Extract the JWS elements
@@ -124,22 +133,37 @@ public class JwsDecoder {
         optionalKeyId = jwsProtectedHeader.getStringConditional(JOSESupport.KID_JSON);
     }
 
+    /**
+     * Get protected header
+     */
     public JSONObjectReader getJwsProtectedHeader() {
         return jwsProtectedHeader;
     }
 
+    /**
+     * Get signature algorithm
+     */
     public SignatureAlgorithms getSignatureAlgorithm() {
         return signatureAlgorithm;
     }
 
+    /**
+     * Get optional "jwk"
+     */
     public PublicKey getOptionalPublicKey() {
         return optionalPublicKey;
     }
 
+    /**
+     * Get optional "x5c"
+     */
     public X509Certificate[] getOptionalCertificatePath() {
         return optionalCertificatePath;
     }
 
+    /**
+     * Get optional "kid"
+     */
     public String getOptionalKeyId() {
         return optionalKeyId;
     }

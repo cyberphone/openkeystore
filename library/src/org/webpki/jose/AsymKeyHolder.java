@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2019 WebPKI.org (http://webpki.org).
+ *  Copyright 2018-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,17 +23,33 @@ import java.security.cert.X509Certificate;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
 
+/**
+ * Holder of JWS signature key and algorithm
+ */
 public class AsymKeyHolder extends JOSESupport.CoreKeyHolder {
     
+    /**
+     * Create holder
+     * @param privateKey
+     * @param signatureAlgorithm
+     */
     public AsymKeyHolder(PrivateKey privateKey, AsymSignatureAlgorithms signatureAlgorithm) {
          super(privateKey, signatureAlgorithm);
     }
     
+    /**
+     * Adds "jwk" to the JWS header
+     * @param publicKey
+     */
     public AsymKeyHolder setPublicKey(PublicKey publicKey) {
         this.optionalPublicKey = publicKey;
         return this;
     }
 
+    /**
+     * Adds "x5c" to the JWS header
+     * @param certificatePath
+     */
     public AsymKeyHolder setCertificatePath(X509Certificate[] certificatePath) {
         this.optionalCertificatePath = certificatePath;
         return this;

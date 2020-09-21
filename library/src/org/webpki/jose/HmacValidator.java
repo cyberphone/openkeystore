@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2019 WebPKI.org (http://webpki.org).
+ *  Copyright 2018-2020 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,18 +22,25 @@ import org.webpki.crypto.MACAlgorithms;
 
 import org.webpki.util.ArrayUtil;
 
+/**
+ * Validator for HMAC signatures
+ */
 public class HmacValidator extends JOSESupport.CoreSignatureValidator {
     
-    byte[] hmacKey;
+    byte[] secretKey;
     
-    public HmacValidator(byte[] hmacKey) {
-        this.hmacKey = hmacKey;
+    /**
+     * JWS HMAC signature validator
+     * @param secretKey
+     */
+    public HmacValidator(byte[] secretKey) {
+        this.secretKey = secretKey;
     }
 
     @Override
     void validate(byte[] signedData, JwsDecoder jwsDecoder) throws IOException {
         if (!ArrayUtil.compare(
-               ((MACAlgorithms)jwsDecoder.signatureAlgorithm).digest(hmacKey, 
+               ((MACAlgorithms)jwsDecoder.signatureAlgorithm).digest(secretKey, 
                                                                      signedData),
                                                                      jwsDecoder.signature)) {
             throw new IOException("HMAC signature validation error");
