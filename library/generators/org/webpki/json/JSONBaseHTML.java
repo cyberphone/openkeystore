@@ -321,10 +321,10 @@ public class JSONBaseHTML  {
             "April&nbsp;2012. <br>" +
             externalWebReference ("https://www.w3.org/TR/2012/CR-WebIDL-20120419/"));
 
-        addReferenceEntry(REF_ES, "A. Wirfs-Brock, " +
-            "\"ECMAScript 2015 Language Specification\", ECMA-262, " +
-            "June&nbsp;2015. <br>" +
-            externalWebReference ("https://www.ecma-international.org/ecma-262/6.0/ECMA-262.pdf"));
+        addReferenceEntry(REF_ES, "B. Terlson, B. Farias, J. Harband, " +
+            "\"ECMAScript 2019 Language Specification\", ECMA-262, " +
+            "June&nbsp;2019. <br>" +
+            externalWebReference ("http://ecma-international.org/ecma-262/10.0/"));
 
         addReferenceEntry(REF_V8,
             "\"Chrome V8\", Google Chrome JavaScript Engine, " +
