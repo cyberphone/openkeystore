@@ -19,6 +19,7 @@ package org.webpki.crypto;
 import java.io.IOException;
 
 import java.security.GeneralSecurityException;
+import java.security.Key;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 
@@ -419,12 +420,12 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
         throw new IOException("Unknown EC type: " + actual.toString());
     }
 
-    public static KeyAlgorithms getKeyAlgorithm(PublicKey publicKey, Boolean keyParameters) throws IOException {
-        if (publicKey instanceof ECKey) {
-            return getECKeyAlgorithm(((ECPublicKey) publicKey).getParams());
+    public static KeyAlgorithms getKeyAlgorithm(Key key, Boolean keyParameters) throws IOException {
+        if (key instanceof ECKey) {
+            return getECKeyAlgorithm(((ECKey) key).getParams());
         }
-        if (publicKey instanceof RSAKey) {
-            byte[] modblob = ((RSAPublicKey) publicKey).getModulus().toByteArray();
+        if (key instanceof RSAKey) {
+            byte[] modblob = ((RSAKey) key).getModulus().toByteArray();
             int lengthInBits = (modblob[0] == 0 ? modblob.length - 1 : modblob.length) * 8;
             for (KeyAlgorithms alg : values()) {
                 if (alg.ecDomainOid == null && lengthInBits == alg.lengthInBits &&
@@ -434,7 +435,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
             }
             throw new IOException("Unsupported RSA key size: " + lengthInBits);
         }
-        return OkpSupport.getOkpKeyAlgorithm(publicKey);
+        return OkpSupport.getOkpKeyAlgorithm(key);
     }
 
     // Public keys read from specific security providers are not comparable to 
@@ -456,8 +457,8 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                                            keyAlgorithm);
     }
 
-    public static KeyAlgorithms getKeyAlgorithm(PublicKey publicKey) throws IOException {
-        return getKeyAlgorithm(publicKey, null);
+    public static KeyAlgorithms getKeyAlgorithm(Key key) throws IOException {
+        return getKeyAlgorithm(key, null);
     }
 
     public static KeyAlgorithms getKeyAlgorithmFromId(String algorithmId, 

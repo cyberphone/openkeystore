@@ -56,7 +56,8 @@ public class SignatureWrapper {
     }
 
     public static byte[] decodeDEREncodedECDSASignature(byte[] derCodedSignature,
-                                                        ECParameterSpec ecParameters) throws IOException {
+                                                        ECParameterSpec ecParameters)
+            throws IOException {
         int extendTo = getExtendTo(ecParameters);
         int index = 2;
         int length;
@@ -145,7 +146,20 @@ public class SignatureWrapper {
     boolean unmodifiedSignature;
     ECParameterSpec ecParameters;
 
-    private SignatureWrapper(AsymSignatureAlgorithms algorithm, String provider, Key key) throws GeneralSecurityException, IOException {
+    private SignatureWrapper(AsymSignatureAlgorithms algorithm, String provider, Key key) 
+            throws GeneralSecurityException, IOException {
+        KeyAlgorithms keyAlgorithm = KeyAlgorithms.getKeyAlgorithm(key);
+        if (keyAlgorithm.isEcdsa() != algorithm.isEcdsa() ||
+            keyAlgorithm.isRsa() != algorithm.isRsa() ||
+            keyAlgorithm.isOkp() != algorithm.isOkp() ||
+            keyAlgorithm.getRecommendedSignatureAlgorithm() == null) {
+            throw new IllegalArgumentException(
+                    "Supplied key (" +
+                    keyAlgorithm.toString() +
+                    ") is incompatible with specified algorithm (" +
+                    algorithm.toString() +
+                    ")");
+        }
 //#if BC
         if (provider == null) {
             instance = algorithm.isOkp() ?
@@ -212,11 +226,13 @@ public class SignatureWrapper {
 
     public boolean verify(byte[] signature) throws GeneralSecurityException, IOException {
         return instance.verify(ecdsaDerEncoded || unmodifiedSignature ?
-                signature : SignatureWrapper.encodeDEREncodedECDSASignature(signature, ecParameters));
+                signature : SignatureWrapper.encodeDEREncodedECDSASignature(signature, 
+                                                                            ecParameters));
     }
 
     public byte[] sign() throws GeneralSecurityException, IOException {
         return ecdsaDerEncoded || unmodifiedSignature ?
-                instance.sign() : SignatureWrapper.decodeDEREncodedECDSASignature(instance.sign(), ecParameters);
+                instance.sign() : SignatureWrapper.decodeDEREncodedECDSASignature(instance.sign(),
+                                                                                  ecParameters);
     }
 }
