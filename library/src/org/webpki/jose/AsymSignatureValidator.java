@@ -21,11 +21,8 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 
-import java.security.interfaces.ECKey;
-
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
-import org.webpki.crypto.KeyAlgorithms;
 
 /**
  * JWS asymmetric key signature validator
@@ -53,12 +50,6 @@ public class AsymSignatureValidator extends JOSESupport.CoreSignatureValidator {
             throw new GeneralSecurityException("Signature did not validate for key: " + 
                                                publicKey.toString());
         }
-        if (publicKey instanceof ECKey) {
-            if (KeyAlgorithms.getKeyAlgorithm(publicKey)
-                    .getRecommendedSignatureAlgorithm() != algorithm) {
-                throw new GeneralSecurityException(
-                        "EC key and algorithm does not match the JWS spec");
-            }
-        } 
-     }
+        JOSESupport.checkEcJwsCompliance(publicKey, algorithm);
+    }
 }

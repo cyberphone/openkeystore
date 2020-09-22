@@ -19,13 +19,17 @@ package org.webpki.jose;
 import java.io.IOException;
 
 import java.security.GeneralSecurityException;
+import java.security.Key;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
 import java.security.cert.X509Certificate;
 
+import java.security.interfaces.ECKey;
+
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
+import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.MACAlgorithms;
 import org.webpki.crypto.SignatureAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
@@ -190,11 +194,14 @@ public class JOSESupport {
             signature = ((MACAlgorithms)jwsEncoder.coreKeyHolder.signatureAlgorithm)
                             .digest(jwsEncoder.coreKeyHolder.secretKey, dataToBeSigned);
         } else {
-            signature = new SignatureWrapper(
-                    (AsymSignatureAlgorithms)jwsEncoder.coreKeyHolder.signatureAlgorithm,
-                    jwsEncoder.coreKeyHolder.privateKey)
+            AsymSignatureAlgorithms algorithm = 
+                    (AsymSignatureAlgorithms)jwsEncoder.coreKeyHolder.signatureAlgorithm;
+            signature = new SignatureWrapper(algorithm,
+                                             jwsEncoder.coreKeyHolder.privateKey)
                         .update(dataToBeSigned)
                         .sign();
+            checkEcJwsCompliance(jwsEncoder.coreKeyHolder.privateKey, 
+                                 algorithm);
         }
         
         // Return JWS string
@@ -203,5 +210,16 @@ public class JOSESupport {
                 (detached ? "" : jwsPayloadB64U) +
                 "." +
                 Base64URL.encode(signature);
+    }
+
+    static void checkEcJwsCompliance(Key key, AsymSignatureAlgorithms asymSignatureAlgorithm)
+            throws GeneralSecurityException, IOException {
+        if (key instanceof ECKey) {
+            if (KeyAlgorithms.getKeyAlgorithm(key)
+                    .getRecommendedSignatureAlgorithm() != asymSignatureAlgorithm) {
+                throw new GeneralSecurityException(
+                        "EC key and algorithm does not match the JWS spec");
+            }
+        } 
     }
 }
