@@ -30,21 +30,21 @@ public class JwsEncoder {
     
     JSONObjectWriter jwsProtectedHeader;
     
-    JOSESupport.CoreKeyHolder coreKeyHolder;
+    JOSESupport.KeyHolder keyHolder;
 
     /**
      * JWS signature encoder
-     * @param coreKeyHolder Holds JWS signature key and algorithm
+     * @param keyHolder Holds JWS signature key and algorithm
      * @throws IOException
      */
-    public JwsEncoder(JOSESupport.CoreKeyHolder coreKeyHolder) throws IOException {
+    public JwsEncoder(JOSESupport.KeyHolder keyHolder) throws IOException {
         jwsProtectedHeader = new JSONObjectWriter()
             .setString(JOSESupport.ALG_JSON, 
-                       coreKeyHolder.signatureAlgorithm.isOkp() ? 
+                       keyHolder.signatureAlgorithm.isOkp() ? 
                     JOSESupport.EdDSA 
                                                                 : 
-                    coreKeyHolder.signatureAlgorithm.getAlgorithmId(AlgorithmPreferences.JOSE));
-        this.coreKeyHolder = coreKeyHolder;
+                    keyHolder.signatureAlgorithm.getAlgorithmId(AlgorithmPreferences.JOSE));
+        this.keyHolder = keyHolder;
     }
 
     /**

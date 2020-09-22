@@ -36,8 +36,6 @@ import org.webpki.xml.XMLSchemaCache;
 
 /**
  * From an XML description file create Web Services artifacts.
- *
- * @author Anders Rundgren
  */
 public class WSCreator extends XMLObjectWrapper {
     static final String JCLIENT = "jclient";

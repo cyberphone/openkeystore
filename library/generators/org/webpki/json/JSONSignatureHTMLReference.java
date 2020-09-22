@@ -41,8 +41,6 @@ import org.webpki.util.PEMDecoder;
 
 /**
  * Create an HTML description of the JSON Signature Format (JSF).
- * 
- * @author Anders Rundgren
  */
 public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
     

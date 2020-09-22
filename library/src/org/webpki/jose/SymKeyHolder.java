@@ -21,7 +21,7 @@ import org.webpki.crypto.MACAlgorithms;
 /**
  * Holder of JWS HMAC key and algorithm
  */
-public class SymKeyHolder extends JOSESupport.CoreKeyHolder {
+public class SymKeyHolder extends JOSESupport.KeyHolder {
     
     /**
      * Create holder

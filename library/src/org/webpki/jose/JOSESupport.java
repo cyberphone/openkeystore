@@ -58,9 +58,9 @@ public class JOSESupport {
     /**
      * Super class of validators
      */
-    public static abstract class CoreSignatureValidator {
+    public static abstract class SignatureValidator {
         
-        CoreSignatureValidator() {};
+        SignatureValidator() {};
  
         abstract void validate(byte[] signedData,
                                JwsDecoder jwsDecoder) throws IOException, GeneralSecurityException;
@@ -69,10 +69,8 @@ public class JOSESupport {
 
     /**
      * Super class of signature key holders
-     * @author Anders
-     *
      */
-    public abstract static class CoreKeyHolder {
+    public abstract static class KeyHolder {
         
         PublicKey optionalPublicKey;
         
@@ -82,20 +80,20 @@ public class JOSESupport {
         
         SignatureAlgorithms signatureAlgorithm;
         
-        private CoreKeyHolder(SignatureAlgorithms signatureAlgorithm) {
+        private KeyHolder(SignatureAlgorithms signatureAlgorithm) {
             this.signatureAlgorithm = signatureAlgorithm;
         }
 
         byte[] secretKey;
 
-        CoreKeyHolder(byte[] secretKey, SignatureAlgorithms signatureAlgorithm) {
+        KeyHolder(byte[] secretKey, SignatureAlgorithms signatureAlgorithm) {
             this(signatureAlgorithm);
             this.secretKey = secretKey;
         }
 
         PrivateKey privateKey;
 
-        CoreKeyHolder(PrivateKey privateKey, SignatureAlgorithms signatureAlgorithm) {
+        KeyHolder(PrivateKey privateKey, SignatureAlgorithms signatureAlgorithm) {
             this(signatureAlgorithm);
             this.privateKey = privateKey;
         }
@@ -105,7 +103,7 @@ public class JOSESupport {
          * @param keyId Actual value
          * @return
          */
-        public CoreKeyHolder setKeyId(String keyId) {
+        public KeyHolder setKeyId(String keyId) {
             this.optionalKeyId = keyId;
             return this;
         }
@@ -121,7 +119,7 @@ public class JOSESupport {
      */
     public static void validateJwsSignature(JwsDecoder jwsDecoder,
                                             byte[] optionalJwsPayload,
-                                            CoreSignatureValidator signatureValidator) 
+                                            SignatureValidator signatureValidator) 
     throws IOException, GeneralSecurityException {
 
         // Dealing with detached and in-line
@@ -161,25 +159,25 @@ public class JOSESupport {
     throws IOException, GeneralSecurityException {
 
         // Encode possible JWK
-        if (jwsEncoder.coreKeyHolder.optionalPublicKey != null) {
+        if (jwsEncoder.keyHolder.optionalPublicKey != null) {
             jwsEncoder.jwsProtectedHeader.setObject(JWK_JSON, 
                                                     JSONObjectWriter.createCorePublicKey(
-                                                        jwsEncoder.coreKeyHolder.optionalPublicKey,
+                                                        jwsEncoder.keyHolder.optionalPublicKey,
                                                         AlgorithmPreferences.JOSE));
         }
 
         // Encode possible X5C
-        if (jwsEncoder.coreKeyHolder.optionalCertificatePath != null) {
+        if (jwsEncoder.keyHolder.optionalCertificatePath != null) {
             JSONArrayWriter certPath = jwsEncoder.jwsProtectedHeader.setArray(X5C_JSON);
-            for (X509Certificate cert : jwsEncoder.coreKeyHolder.optionalCertificatePath) {
+            for (X509Certificate cert : jwsEncoder.keyHolder.optionalCertificatePath) {
                 certPath.setString(new Base64(false).getBase64StringFromBinary(cert.getEncoded()));
             }
         }
 
         // Encode possible KID
-        if (jwsEncoder.coreKeyHolder.optionalKeyId != null) {
+        if (jwsEncoder.keyHolder.optionalKeyId != null) {
             jwsEncoder.jwsProtectedHeader.setString(KID_JSON, 
-                                                    jwsEncoder.coreKeyHolder.optionalKeyId);
+                                                    jwsEncoder.keyHolder.optionalKeyId);
         }
         
         // Create data to be signed
@@ -190,17 +188,17 @@ public class JOSESupport {
         
         // Sign data
         byte[] signature;
-        if (jwsEncoder.coreKeyHolder.signatureAlgorithm.isSymmetric()) {
-            signature = ((MACAlgorithms)jwsEncoder.coreKeyHolder.signatureAlgorithm)
-                            .digest(jwsEncoder.coreKeyHolder.secretKey, dataToBeSigned);
+        if (jwsEncoder.keyHolder.signatureAlgorithm.isSymmetric()) {
+            signature = ((MACAlgorithms)jwsEncoder.keyHolder.signatureAlgorithm)
+                            .digest(jwsEncoder.keyHolder.secretKey, dataToBeSigned);
         } else {
             AsymSignatureAlgorithms algorithm = 
-                    (AsymSignatureAlgorithms)jwsEncoder.coreKeyHolder.signatureAlgorithm;
+                    (AsymSignatureAlgorithms)jwsEncoder.keyHolder.signatureAlgorithm;
             signature = new SignatureWrapper(algorithm,
-                                             jwsEncoder.coreKeyHolder.privateKey)
+                                             jwsEncoder.keyHolder.privateKey)
                         .update(dataToBeSigned)
                         .sign();
-            checkEcJwsCompliance(jwsEncoder.coreKeyHolder.privateKey, algorithm);
+            checkEcJwsCompliance(jwsEncoder.keyHolder.privateKey, algorithm);
         }
         
         // Return JWS string

@@ -36,8 +36,6 @@ import org.webpki.util.ArrayUtil;
 
 /**
  * Supports HTML descriptions of JSON protocols.
- * 
- * @author Anders Rundgren
  */
 public class JSONBaseHTML  {
     public static final String MANDATORY               = "M";

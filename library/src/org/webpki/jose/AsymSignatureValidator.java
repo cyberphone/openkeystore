@@ -27,7 +27,7 @@ import org.webpki.crypto.SignatureWrapper;
 /**
  * JWS asymmetric key signature validator
  */
-public class AsymSignatureValidator extends JOSESupport.CoreSignatureValidator {
+public class AsymSignatureValidator extends JOSESupport.SignatureValidator {
     
     PublicKey publicKey;
     

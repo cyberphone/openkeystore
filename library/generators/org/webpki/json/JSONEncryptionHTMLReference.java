@@ -43,8 +43,6 @@ import org.webpki.util.PEMDecoder;
 
 /**
  * Create an HTML description of JEF (JSON Encryption Format).
- * 
- * @author Anders Rundgren
  */
 public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
     

@@ -26,7 +26,7 @@ import org.webpki.crypto.AsymSignatureAlgorithms;
 /**
  * Holder of JWS signature key and algorithm
  */
-public class AsymKeyHolder extends JOSESupport.CoreKeyHolder {
+public class AsymKeyHolder extends JOSESupport.KeyHolder {
     
     /**
      * Create holder

@@ -25,7 +25,7 @@ import org.webpki.util.ArrayUtil;
 /**
  * Validator for HMAC signatures
  */
-public class HmacValidator extends JOSESupport.CoreSignatureValidator {
+public class HmacValidator extends JOSESupport.SignatureValidator {
     
     byte[] secretKey;
     

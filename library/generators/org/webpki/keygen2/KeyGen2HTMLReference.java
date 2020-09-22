@@ -42,8 +42,6 @@ import org.webpki.sks.SecureKeyStore;
 
 /**
  * Create an HTML description of the KeyGen2 protocol.
- * 
- * @author Anders Rundgren
  */
 public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
 
