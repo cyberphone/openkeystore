@@ -18,7 +18,6 @@ package org.webpki.crypto;
 
 import java.io.IOException;
 
-import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import java.security.GeneralSecurityException;
@@ -29,16 +28,14 @@ import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAKey;
 
 import org.webpki.util.DebugFormatter;
+import org.webpki.util.ISODateTime;
+
 import org.webpki.asn1.DerDecoder;
 import org.webpki.asn1.ParseUtil;
 import org.webpki.asn1.ASN1BitString;
 import org.webpki.asn1.ASN1Sequence;
 
 public class CertificateInfo {
-
-    private static final String months[] = {"JAN", "FEB", "MAR", "APR",
-                                            "MAY", "JUN", "JUL", "AUG",
-                                            "SEP", "OCT", "NOV", "DEC"};
 
     private String issuerDn;
 
@@ -80,8 +77,7 @@ public class CertificateInfo {
     }
 
     private static String toDate(GregorianCalendar dateTime) {
-        return (dateTime.get(Calendar.DAY_OF_MONTH) < 10 ? "0" : "") + dateTime.get(Calendar.DAY_OF_MONTH) +
-                "-" + months[dateTime.get(Calendar.MONTH)] + "-" + String.valueOf(dateTime.get(Calendar.YEAR));
+        return ISODateTime.formatDateTime(dateTime, ISODateTime.UTC_NO_SUBSECONDS);
     }
 
 
@@ -202,7 +198,7 @@ public class CertificateInfo {
      */
     public byte[] getCertificateHash() {
         try {
-            return CertificateUtil.getCertificateSHA1(certificate);
+            return CertificateUtil.getCertificateSHA256(certificate);
         } catch (IOException ioe) {
             return null;
         }
@@ -346,7 +342,7 @@ public class CertificateInfo {
                toDate(notValidBefore) + " To " +
                toDate(notValidAfter) + (isValid() ? "" : " ***EXPIRED***") +
                (trusted ? "" : " ***UNKNOWN CA***") +
-               "\n  SHA1 hash: " + (hash == null ? "BAD" : DebugFormatter.getHexString(hash));
+               "\n  SHA256 hash: " + (hash == null ? "BAD" : DebugFormatter.getHexString(hash));
     }
 
 
