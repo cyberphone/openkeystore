@@ -47,18 +47,18 @@ public class AsymSignatureValidator extends JOSESupport.CoreSignatureValidator {
                   JwsDecoder jwsDecoder) throws IOException, GeneralSecurityException {
         AsymSignatureAlgorithms algorithm = 
                 (AsymSignatureAlgorithms) jwsDecoder.signatureAlgorithm;
-        if (publicKey instanceof ECKey) {
-            if (KeyAlgorithms.getKeyAlgorithm(publicKey)
-                    .getRecommendedSignatureAlgorithm() != algorithm) {
-                throw new GeneralSecurityException(
-                        "EC key and algorithm does not match the JWS spec");
-            }
-        }  
         if (!new SignatureWrapper(algorithm, publicKey)
                 .update(signedData)
                 .verify(jwsDecoder.signature)) {
             throw new GeneralSecurityException("Signature did not validate for key: " + 
                                                publicKey.toString());
         }
-    }
+        if (publicKey instanceof ECKey) {
+            if (KeyAlgorithms.getKeyAlgorithm(publicKey)
+                    .getRecommendedSignatureAlgorithm() != algorithm) {
+                throw new GeneralSecurityException(
+                        "EC key and algorithm does not match the JWS spec");
+            }
+        } 
+     }
 }

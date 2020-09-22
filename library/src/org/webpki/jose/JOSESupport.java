@@ -124,12 +124,13 @@ public class JOSESupport {
         String jwsPayloadB64U;
         if (jwsDecoder.optionalJwsPayloadB64U == null) {
             if (optionalJwsPayload == null) {
-                throw new IOException("Detached payload missing");
+                throw new IllegalArgumentException("Detached payload missing");
             }
             jwsPayloadB64U = Base64URL.encode(optionalJwsPayload);
         } else {
             if (optionalJwsPayload != null) {
-                throw new IOException("Multiple payloads");
+                throw new IllegalArgumentException(
+                        "Both external and JWS-supplied payload? Set argument to \"null\".");
             }
             jwsPayloadB64U = jwsDecoder.optionalJwsPayloadB64U;
         }
