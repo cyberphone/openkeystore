@@ -134,7 +134,7 @@ public class JOSESupport {
         } else {
             if (optionalJwsPayload != null) {
                 throw new IllegalArgumentException(
-                        "Both external and JWS-supplied payload? Set argument to \"null\".");
+                        "Both external and JWS-supplied payload? Set argument to \"null\"");
             }
             jwsPayloadB64U = jwsDecoder.optionalJwsPayloadB64U;
         }
@@ -200,8 +200,7 @@ public class JOSESupport {
                                              jwsEncoder.coreKeyHolder.privateKey)
                         .update(dataToBeSigned)
                         .sign();
-            checkEcJwsCompliance(jwsEncoder.coreKeyHolder.privateKey, 
-                                 algorithm);
+            checkEcJwsCompliance(jwsEncoder.coreKeyHolder.privateKey, algorithm);
         }
         
         // Return JWS string
@@ -212,11 +211,11 @@ public class JOSESupport {
                 Base64URL.encode(signature);
     }
 
-    static void checkEcJwsCompliance(Key key, AsymSignatureAlgorithms asymSignatureAlgorithm)
+    static void checkEcJwsCompliance(Key key, AsymSignatureAlgorithms algorithm)
             throws GeneralSecurityException, IOException {
         if (key instanceof ECKey) {
             if (KeyAlgorithms.getKeyAlgorithm(key)
-                    .getRecommendedSignatureAlgorithm() != asymSignatureAlgorithm) {
+                    .getRecommendedSignatureAlgorithm() != algorithm) {
                 throw new GeneralSecurityException(
                         "EC key and algorithm does not match the JWS spec");
             }
