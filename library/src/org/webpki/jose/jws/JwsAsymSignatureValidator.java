@@ -42,6 +42,11 @@ public class JwsAsymSignatureValidator extends JwsValidator {
     @Override
     void validate(byte[] signedData,
                   JwsDecoder jwsDecoder) throws IOException, GeneralSecurityException {
+        if (jwsDecoder.optionalPublicKey != null && 
+            !jwsDecoder.optionalPublicKey.equals(publicKey)) {
+                throw new GeneralSecurityException(
+                        "Supplied validation key differs from the JWK in the JWS header");
+        }
         AsymSignatureAlgorithms algorithm = 
                 (AsymSignatureAlgorithms) jwsDecoder.signatureAlgorithm;
         if (!new SignatureWrapper(algorithm, publicKey, provider)
