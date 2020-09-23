@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package org.webpki.jose;
+package org.webpki.jose.jws;
 
 import java.io.IOException;
 
@@ -27,7 +27,7 @@ import org.webpki.crypto.SignatureWrapper;
 /**
  * JWS asymmetric key signature validator
  */
-public class AsymSignatureValidator extends JOSESupport.SignatureValidator {
+public class JwsAsymSignatureValidator extends JwsValidator {
     
     PublicKey publicKey;
     
@@ -35,7 +35,7 @@ public class AsymSignatureValidator extends JOSESupport.SignatureValidator {
      * Create validator
      * @param publicKey
      */
-    public AsymSignatureValidator(PublicKey publicKey) {
+    public JwsAsymSignatureValidator(PublicKey publicKey) {
         this.publicKey = publicKey;
     }
 
@@ -44,12 +44,12 @@ public class AsymSignatureValidator extends JOSESupport.SignatureValidator {
                   JwsDecoder jwsDecoder) throws IOException, GeneralSecurityException {
         AsymSignatureAlgorithms algorithm = 
                 (AsymSignatureAlgorithms) jwsDecoder.signatureAlgorithm;
-        if (!new SignatureWrapper(algorithm, publicKey)
+        if (!new SignatureWrapper(algorithm, publicKey, provider)
                 .update(signedData)
                 .verify(jwsDecoder.signature)) {
             throw new GeneralSecurityException("Signature did not validate for key: " + 
                                                publicKey.toString());
         }
-        JOSESupport.checkEcJwsCompliance(publicKey, algorithm);
+        JwsSigner.checkEcJwsCompliance(publicKey, algorithm);
     }
 }

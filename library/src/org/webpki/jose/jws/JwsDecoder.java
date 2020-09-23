@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package org.webpki.jose;
+package org.webpki.jose.jws;
 
 import java.io.IOException;
 
@@ -27,6 +27,8 @@ import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.MACAlgorithms;
 import org.webpki.crypto.SignatureAlgorithms;
+
+import static org.webpki.jose.JoseKeyWords.*;
 
 import org.webpki.json.JSONArrayWriter;
 import org.webpki.json.JSONObjectReader;
@@ -80,13 +82,13 @@ public class JwsDecoder {
         // Begin decoding the JWS header
         jwsProtectedHeaderB64U = jwsString.substring(0, endOfHeader);
         jwsProtectedHeader = JSONParser.parse(Base64URL.decode(jwsProtectedHeaderB64U));
-        String algorithmParam = jwsProtectedHeader.getString(JOSESupport.ALG_JSON);
+        String algorithmParam = jwsProtectedHeader.getString(ALG_JSON);
         
         // Get the binary signature
         signature = Base64URL.decode(jwsString.substring(startOfSignature + 1));
 
         // This is pretty ugly, two different conventions in the same standard!
-        if (algorithmParam.equals(JOSESupport.EdDSA)) {
+        if (algorithmParam.equals(EdDSA)) {
             signatureAlgorithm = signature.length == 64 ? 
                         AsymSignatureAlgorithms.ED25519 : AsymSignatureAlgorithms.ED448;
         } else if (algorithmParam.startsWith("HS")) {
@@ -103,19 +105,19 @@ public class JwsDecoder {
         // elements modulo JKU and X5U
         
         // Decode possible JWK
-        if (jwsProtectedHeader.hasProperty(JOSESupport.JWK_JSON)) {
+        if (jwsProtectedHeader.hasProperty(JWK_JSON)) {
             optionalPublicKey = 
-                    jwsProtectedHeader.getObject(JOSESupport.JWK_JSON)
+                    jwsProtectedHeader.getObject(JWK_JSON)
                         .getCorePublicKey(AlgorithmPreferences.JOSE);
         }
 
         // Decode possible X5C?
-        if (jwsProtectedHeader.hasProperty(JOSESupport.X5C_JSON)) {
+        if (jwsProtectedHeader.hasProperty(X5C_JSON)) {
             if (optionalPublicKey != null) {
                 throw new GeneralSecurityException("Both X5C and JWK?");
             }
             JSONArrayWriter path = new JSONArrayWriter();
-            for (String certB64 : jwsProtectedHeader.getStringArray(JOSESupport.X5C_JSON)) {
+            for (String certB64 : jwsProtectedHeader.getStringArray(X5C_JSON)) {
                 path.setString(certB64.replace("=","")
                                       .replace('/', '_')
                                       .replace('+', '-'));
@@ -130,7 +132,7 @@ public class JwsDecoder {
         }
         
         // Decode possible KID
-        optionalKeyId = jwsProtectedHeader.getStringConditional(JOSESupport.KID_JSON);
+        optionalKeyId = jwsProtectedHeader.getStringConditional(KID_JSON);
     }
 
     /**

@@ -14,22 +14,35 @@
  *  limitations under the License.
  *
  */
-package org.webpki.jose;
+package org.webpki.jose.jws;
+
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 import org.webpki.crypto.MACAlgorithms;
 
 /**
- * Holder of JWS HMAC key and algorithm
+ * Creates HMAC signatures
  */
-public class SymKeyHolder extends JOSESupport.KeyHolder {
+public class JwsHmacSigner extends JwsSigner {
+    
+    MACAlgorithms macAlgorithm;
+    byte[] secretKey;
     
     /**
      * Create holder
-     * @param secretKey
-     * @param macAlgorithms
+     * @param secretKey The key to use
+     * @param macAlgorithm HMAC Algorithm to use
+     * @throws IOException 
      */
-    public SymKeyHolder(byte[] secretKey, MACAlgorithms macAlgorithms) {
-        super(secretKey, macAlgorithms);
+    public JwsHmacSigner(byte[] secretKey, MACAlgorithms macAlgorithm) throws IOException {
+        super(macAlgorithm);
+        this.secretKey = secretKey;
+        this.macAlgorithm = macAlgorithm;
     }
 
+    @Override
+    void signData(byte[] dataToBeSigned) throws IOException, GeneralSecurityException {
+        signature = macAlgorithm.digest(secretKey, dataToBeSigned);
+    }
 }

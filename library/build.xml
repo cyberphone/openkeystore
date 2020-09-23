@@ -181,6 +181,7 @@
   	</copy>
 
   	<!-- Make documentation -->
+    <delete dir="${doc_dir}"/>
 	<!--  -Xdoclint:none: https://github.com/AdoptOpenJDK/openjdk-support/issues/131 -->
     <javadoc destdir="${doc_dir}"
     	     overview="${temp_dir}/overview.html"

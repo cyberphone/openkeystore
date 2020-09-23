@@ -61,12 +61,9 @@ import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyStoreVerifier;
 import org.webpki.crypto.MACAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
-
-import org.webpki.jose.AsymKeyHolder;
-import org.webpki.jose.AsymSignatureValidator;
-import org.webpki.jose.JOSESupport;
-import org.webpki.jose.JwsDecoder;
-import org.webpki.jose.JwsEncoder;
+import org.webpki.jose.jws.JwsAsymKeySigner;
+import org.webpki.jose.jws.JwsAsymSignatureValidator;
+import org.webpki.jose.jws.JwsDecoder;
 import org.webpki.json.JSONCryptoHelper.PUBLIC_KEY_OPTIONS;
 
 import org.webpki.util.ArrayUtil;
@@ -3435,17 +3432,13 @@ public class JSONTest {
         try {
             byte[] payload = messageString.getBytes("utf-8");
             KeyPair keyPair = JSONParser.parse(jwk).getKeyPair();
-            String jwsString = 
-                    JOSESupport.createJwsSignature(
-                            new JwsEncoder(new AsymKeyHolder(keyPair.getPrivate(),
-                                                             signatureAlgorithm)),
-                            payload, 
-                            false);
+            String jwsString = new JwsAsymKeySigner(keyPair.getPrivate(), 
+                                                    signatureAlgorithm)
+                    .createSignature(payload, false);
             assertTrue("Sign", jwsString.contentEquals(expectedJwsString));
 
-            JOSESupport.validateJwsSignature(new JwsDecoder(jwsString),
-                                             null,
-                                             new AsymSignatureValidator(keyPair.getPublic()));
+            new JwsAsymSignatureValidator(keyPair.getPublic())
+                    .validateSignature(new JwsDecoder(jwsString), null);
         } catch (Exception e) {
             assertFalse("8037", bcLoaded);
         }

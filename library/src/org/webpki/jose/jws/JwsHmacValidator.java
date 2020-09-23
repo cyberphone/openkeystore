@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package org.webpki.jose;
+package org.webpki.jose.jws;
 
 import java.io.IOException;
 
@@ -23,17 +23,17 @@ import org.webpki.crypto.MACAlgorithms;
 import org.webpki.util.ArrayUtil;
 
 /**
- * Validator for HMAC signatures
+ * JWS HMAC signature validator
  */
-public class HmacValidator extends JOSESupport.SignatureValidator {
+public class JwsHmacValidator extends JwsValidator {
     
     byte[] secretKey;
     
     /**
      * JWS HMAC signature validator
-     * @param secretKey
+     * @param secretKey The anticipated key
      */
-    public HmacValidator(byte[] secretKey) {
+    public JwsHmacValidator(byte[] secretKey) {
         this.secretKey = secretKey;
     }
 
@@ -46,5 +46,4 @@ public class HmacValidator extends JOSESupport.SignatureValidator {
             throw new IOException("HMAC signature validation error");
         }
     }
-
 }
