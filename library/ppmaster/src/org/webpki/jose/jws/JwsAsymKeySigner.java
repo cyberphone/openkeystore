@@ -24,7 +24,11 @@ import java.security.PublicKey;
 
 import java.security.cert.X509Certificate;
 
+//#if ANDROID
+import android.util.Base64;
+//#else
 import java.util.Base64;
+//#endif
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
@@ -80,7 +84,11 @@ public class JwsAsymKeySigner extends JwsSigner {
             throws IOException, GeneralSecurityException {
         JSONArrayWriter certPath = jwsProtectedHeader.setArray(X5C_JSON);
         for (X509Certificate cert : certificatePath) {
+//#if ANDROID
+            certPath.setString(Base64.encodeToString(cert.getEncoded(), Base64.NO_WRAP));
+//#else
             certPath.setString(Base64.getEncoder().encodeToString(cert.getEncoded()));
+//#endif
         }
         return this;
     }

@@ -289,6 +289,7 @@
         <include name="**/crypto/SymSignatureAlgorithms.java"/>
         <include name="**/crypto/CryptoRandom.java"/>
         <include name="**/json/*.java"/>
+        <include name="**/jose/**/*.java"/>
       </fileset>
     </copy>
   	<property name="ANDROID" value="true"/>
@@ -301,7 +302,12 @@
 
   	<antcall target="_clean_android"/>
   	
-  	<javac debug="${debug}" srcdir="${android_dir}" destdir="${bin_dir}" includeAntRuntime="false"/>
+  	<javac debug="${debug}" srcdir="${android_dir}:androidrefsrc" 
+  		destdir="${bin_dir}" 
+  		includeAntRuntime="false">
+  		<exclude name="**/android/**/*.java"/>
+  		<include name="**/android/util/*.java"/>
+    </javac>
   	
   	<!-- Create Android JSON java library -->
     <zip destfile="${dist_dir}/${android-json}.zip">
