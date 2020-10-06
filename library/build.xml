@@ -257,8 +257,14 @@
         match="ValueExact"
         replace="Value"
         flags="g"/>
-  	
-
+    <replaceregexp file="${android_dir}/org/webpki/jose/jws/JwsAsymKeySigner.java"
+        match="(.*)(Base64\.getEncoder\(\)\.encodeToString\()([^(^)]*\([^(^)]*\))"
+        replace="\1Base64.encodeToString(\3, Base64.NO_WRAP"
+        flags="g"/>
+    <replaceregexp file="${android_dir}/org/webpki/jose/jws/JwsAsymKeySigner.java"
+        match="import java\.util\.Base64;"
+        replace="import android.util.Base64;"
+        flags="g"/>
   </target>
 
   <target name="android-json">    
@@ -301,12 +307,12 @@
     </jpp>
 
   	<antcall target="_clean_android"/>
-  	
   	<javac debug="${debug}" srcdir="${android_dir}:androidrefsrc" 
   		destdir="${bin_dir}" 
   		includeAntRuntime="false">
   		<exclude name="**/android/**/*.java"/>
-  		<include name="**/android/util/*.java"/>
+ 		<exclude name="**/androidx/**/*.java"/>
+  		<include name="**/*.java"/>
     </javac>
   	
   	<!-- Create Android JSON java library -->
