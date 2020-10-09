@@ -889,6 +889,7 @@ public class CommandLineCA {
             new CommandLineCA().decodeCommandLine(argv);
         } catch (Exception e) {
             System.out.println("\n" + e.getMessage());
+            System.exit(3);
         }
     }
 }
