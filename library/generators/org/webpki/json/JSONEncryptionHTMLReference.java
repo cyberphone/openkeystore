@@ -63,18 +63,20 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
 
     static final String SECURITY_CONSIDERATIONS = "Security Considerations";
  
-    static final String EXTS_TEST_VECTOR     = "p256#ecdh-es+a256kw@a256gcm@exts-jwk.json";
-    static final String SAMPLE_TEST_VECTOR   = "p256#ecdh-es+a128kw@a128gcm@kid.json";
-    static final String SAMPLE_I_TEST_VECTOR = "p256#ecdh-es+a128kw@a128gcm@imp.json";
-    static final String SAMPLE_A_TEST_VECTOR = "p256#ecdh-es+a256kw@a128cbc-hs256@kid.json";
-    static final String MULT_TEST_VECTOR     = "p256#ecdh-es+a256kw,r2048#rsa-oaep-256@a128cbc-hs256@mult-kid.json";
-    static final String JWK_TEST_VECTOR      = "p256#ecdh-es+a256kw@a128cbc-hs256@jwk.json";
-    static final String CER_TEST_VECTOR      = "p256#ecdh-es+a256kw@a128cbc-hs256@cer.json";
-    static final String RSA_JWK_TEST_VECTOR  = "r2048#rsa-oaep-256@a256gcm@jwk.json";
-    static final String RSA_IMP_TEST_VECTOR  = "r2048#rsa-oaep-256@a256gcm@imp.json";
-    static final String RSA_KID_TEST_VECTOR  = "r2048#rsa-oaep@a128gcm@kid.json";
-    static final String P384_JWK_TEST_VECTOR = "p384#ecdh-es@a256cbc-hs512@jwk.json";
-    static final String P521_JWK_TEST_VECTOR = "p521#ecdh-es+a256kw@a128cbc-hs256@jwk.json";
+    static final String EXTS_TEST_VECTOR       = "p256#ecdh-es+a256kw@a256gcm@exts-jwk.json";
+    static final String SAMPLE_TEST_VECTOR     = "p256#ecdh-es+a128kw@a128gcm@kid.json";
+    static final String SAMPLE_I_TEST_VECTOR   = "p256#ecdh-es+a128kw@a128gcm@imp.json";
+    static final String SAMPLE_A_TEST_VECTOR   = "p256#ecdh-es+a256kw@a128cbc-hs256@kid.json";
+    static final String MULT_TEST_VECTOR       = "p256#ecdh-es+a256kw,r2048#rsa-oaep-256@a128cbc-hs256@mult-kid.json";
+    static final String JWK_TEST_VECTOR        = "p256#ecdh-es+a256kw@a128cbc-hs256@jwk.json";
+    static final String CER_TEST_VECTOR        = "p256#ecdh-es+a256kw@a128cbc-hs256@cer.json";
+    static final String RSA_JWK_TEST_VECTOR    = "r2048#rsa-oaep-256@a256gcm@jwk.json";
+    static final String RSA_IMP_TEST_VECTOR    = "r2048#rsa-oaep-256@a256gcm@imp.json";
+    static final String RSA_KID_TEST_VECTOR    = "r2048#rsa-oaep@a128gcm@kid.json";
+    static final String P384_JWK_TEST_VECTOR   = "p384#ecdh-es@a256cbc-hs512@jwk.json";
+    static final String P521_JWK_TEST_VECTOR   = "p521#ecdh-es+a256kw@a128cbc-hs256@jwk.json";
+    static final String X25519_JWK_TEST_VECTOR = "x25519#ecdh-es+a256kw@a256gcm@jwk.json";
+    static final String X448_JWK_TEST_VECTOR   = "x448#ecdh-es@a256cbc-hs512@jwk.json";
     
 
     static String enumerateJoseEcCurves() throws IOException  {
@@ -320,14 +322,18 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
         
         dataToEncrypt = json.readFile3("datatobeencrypted.txt");
      
-        AsymKey p256key = readAsymKey("p256");
-        AsymKey p384key = readAsymKey("p384");
-        AsymKey p521key = readAsymKey("p521");
-        AsymKey r2048key = readAsymKey("r2048");
+        AsymKey p256key   = readAsymKey("p256");
+        AsymKey p384key   = readAsymKey("p384");
+        AsymKey p521key   = readAsymKey("p521");
+        AsymKey r2048key  = readAsymKey("r2048");
+        AsymKey x25519key = readAsymKey("x25519");
+        AsymKey x448key   = readAsymKey("x448");
         asymmetricKeys.add(p256key);
         asymmetricKeys.add(p384key);
         asymmetricKeys.add(p521key);
         asymmetricKeys.add(r2048key);
+        asymmetricKeys.add(x25519key);
+        asymmetricKeys.add(x448key);
         
         symmetricKeys.add(readSymKey("a128bitkey"));
         symmetricKeys.add(readSymKey("a256bitkey"));
@@ -363,7 +369,9 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
           .append(
             " specification and supports the same JWA ")
           .append(json.createReference(JSONBaseHTML.REF_JWA))
-          .append(" cryptographic algorithms. Public keys are represented as JWK ")
+          .append(" and RFC8037 ")
+          .append(json.createReference(JSONBaseHTML.REF_RFC8037))
+          .append(" encryption algorithms. Public keys are represented as JWK ")
           .append(json.createReference(JSONBaseHTML.REF_JWK))
           .append(" objects while the encryption container itself utilizes a notation similar to the JSON " +
                   "Signature Format ")
@@ -481,6 +489,18 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
                    "ECDH encryption object <i>requiring the private key above</i>:",
                    P521_JWK_TEST_VECTOR) + 
            showKey(
+                   "ECDH private key for decrypting the subsequent object:",
+                    x25519key) +
+           showAsymEncryption(
+                   "ECDH encryption object <i>requiring the private key above</i>:",
+                   X25519_JWK_TEST_VECTOR) + 
+           showKey(
+                   "ECDH private key for decrypting the subsequent object:",
+                    x448key) +
+           showAsymEncryption(
+                   "ECDH encryption object <i>requiring the private key above</i>:",
+                   X448_JWK_TEST_VECTOR) + 
+           showKey(
                    "RSA private key for decrypting the subsequent object:",
                    r2048key) +
            showAsymEncryption(
@@ -517,6 +537,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
         json.addDocumentHistoryLine("2017-05-15", "0.51", "Added test vectors and missing RSA-OAEP algorithm");
         json.addDocumentHistoryLine("2019-03-15", "0.60", "Rewritten to use the JSON Canonicalization Scheme " + json.createReference(JSONBaseHTML.REF_JCS));
         json.addDocumentHistoryLine("2020-01-20", "0.61", "Refactored names");
+        json.addDocumentHistoryLine("2020-10-10", "0.62", "Added support for RFC8037 " + json.createReference(JSONBaseHTML.REF_RFC8037) + " algorithms");
 
         json.addParagraphObject("Author").append("JEF was developed by Anders Rundgren (<code>anders.rundgren.net@gmail.com</code>) as a part " +
                                                  "of the OpenKeyStore " +
@@ -680,7 +701,10 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
                     return column;
                 }
             })
-            .addString("</ul>")
+            .addString("</ul>Note that the <code>&quot;PartyUInfo&quot;</code> " +
+                       "and <code>&quot;PartyVInfo&quot;</code> arguments " +
+                       "to the NIST Concat KDF function are always set to 0 using JEF."
+                       + LINE_SEPARATOR)
             .addString(jweCounterPart("alg"))
       .newRow()
         .newColumn()
@@ -768,7 +792,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
                 "</code> nor <code>" + JSONCryptoHelper.CERTIFICATE_PATH_JSON + 
                 "</code> are defined, the associated public key is assumed to be known by the recipient.");
 
-        json.AddPublicKeyDefinitions();
+        json.AddPublicKeyDefinitions(false);
 
         json.writeHTML();
     }

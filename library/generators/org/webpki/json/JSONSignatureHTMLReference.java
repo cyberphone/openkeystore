@@ -28,6 +28,7 @@ import java.util.ArrayList;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.CertificateUtil;
+import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyStoreVerifier;
 import org.webpki.crypto.MACAlgorithms;
@@ -381,6 +382,8 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
         return ("JWS counterpart: <code>&quot;" + keyword + "&quot;</code>.");
     }
     public static void main (String args[]) throws Exception {
+        CustomCryptoProvider.forcedLoad(true);
+
         json = new JSONBaseHTML(args, "JSF - JSON Signature Format");
         
         json.setFavIcon("../webpkiorg.png");
@@ -389,10 +392,14 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
         AsymKey p384key = readAsymKey("p384");
         AsymKey p521key = readAsymKey("p521");
         AsymKey r2048key = readAsymKey("r2048");
+        AsymKey ed25519key = readAsymKey("ed25519");
+        AsymKey ed448key = readAsymKey("ed448");
         asymmetricKeys.add(p256key);
         asymmetricKeys.add(p384key);
         asymmetricKeys.add(p521key);
         asymmetricKeys.add(r2048key);
+        asymmetricKeys.add(ed25519key);
+        asymmetricKeys.add(ed448key);
         
         symmetricKeys.add(readSymKey("a128bitkey"));
         symmetricKeys.add(readSymKey("a256bitkey"));
@@ -436,7 +443,9 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             "In order to make library support of JSF straightforward in spite of " +
            "having a different structure compared to JWS, JSF uses the same JWA ")
           .append(json.createReference(JSONBaseHTML.REF_JWA))
-          .append(" cryptographic algorithms." + Types.LINE_SEPARATOR +
+          .append(" and RFC8037 ")
+          .append(json.createReference(JSONBaseHTML.REF_RFC8037))
+          .append(" signature algorithms." + Types.LINE_SEPARATOR +
             "JSF may also be used for &quot;in-object&quot; JavaScript signatures, " +
             "making JSF suitable for HTML5 applications. See " +
             "<a href=\"#" + JSONBaseHTML.makeLink(ECMASCRIPT_MODE) + 
@@ -685,6 +694,35 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
         showAsymSignature(
             certificateSignature(r2048key),
             "r2048#rs256@cer.json") +
+
+        showKey("Ed25519 private key associated with subsequent objects:", ed25519key) +
+        showAsymSignature(
+            explicitKeySignature(ed25519key),
+            "ed25519#ed25519@jwk.json") +
+        showAsymSignature(
+            keyIdSignature(ed25519key), 
+            "ed25519#ed25519@kid.json") +
+        showAsymSignature(
+            implicitKeySignature(ed25519key), 
+            "ed25519#ed25519@imp.json") +
+        showAsymSignature(
+            certificateSignature(ed25519key),
+            "ed25519#ed25519@cer.json") +
+        
+        showKey("Ed448 private key associated with subsequent objects:", ed448key) +
+        showAsymSignature(
+            explicitKeySignature(ed448key),
+            "ed448#ed448@jwk.json") +
+        showAsymSignature(
+            keyIdSignature(ed448key), 
+            "ed448#ed448@kid.json") +
+        showAsymSignature(
+            implicitKeySignature(ed448key), 
+            "ed448#ed448@imp.json") +
+        showAsymSignature(
+            certificateSignature(ed448key),
+            "ed448#ed448@cer.json") +
+        
         readSymSignature(new String[]{"a256#hs256@kid.json",
                                       "a384#hs384@kid.json",
                                       "a512#hs512@kid.json"}) +
@@ -764,7 +802,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             "&nbsp;&nbsp;&nbsp;&nbsp;}<br>" +
             "&nbsp;&nbsp;},<br>" +
             "&nbsp;&nbsp;&quot;role&quot;: &quot;notary&quot;,<br>" +
-            "&nbsp;&nbsp;&quot;timeStamp&quot;: &quot;2016-12-08T13:58:42Z&quot;,<br>" +
+            "&nbsp;&nbsp;&quot;timeStamp&quot;: &quot;2019-12-08T13:58:42Z&quot;,<br>" +
             "&nbsp;&nbsp;&quot;" + JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON + "&quot;:&nbsp;{<br>" +
             "&nbsp;&nbsp;&nbsp;<span style=\"font-size:15pt\">&nbsp;</span></code><i>Counter signature...</i><code><br>" +
             "&nbsp;&nbsp;}<br>" +
@@ -792,7 +830,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
          "&nbsp;&nbsp;writer.setString(&quot;myProperty&quot;,&nbsp;&quot;Some&nbsp;data&quot;);<br>" +
          "<br>" +
          "&nbsp;&nbsp;<span style=\"color:green\">//&nbsp;Sign&nbsp;document</span><br>" +
-         "&nbsp;&nbsp;writer.setSignature(new&nbsp;JSONAsymKeySigner(privateKey,&nbsp;publicKey,&nbsp;null));<br>" +
+         "&nbsp;&nbsp;writer.setSignature(new&nbsp;JSONAsymKeySigner(privateKey,&nbsp;publicKey));<br>" +
          "<br>" +
          "&nbsp;&nbsp;<span style=\"color:green\">//&nbsp;Serialize&nbsp;document</span><br>" +
          "&nbsp;&nbsp;String&nbsp;json&nbsp;=&nbsp;writer.toString();<br>" +
@@ -839,6 +877,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
         json.addDocumentHistoryLine("2017-05-18", "0.70", "Added multiple signatures and test vectors");
         json.addDocumentHistoryLine("2019-03-05", "0.80", "Rewritten to use the JSON Canonicalization Scheme " + json.createReference(JSONBaseHTML.REF_JCS));
         json.addDocumentHistoryLine("2019-10-12", "0.81", "Added signature chains (<code>" + JSONCryptoHelper.CHAIN_JSON + "</code>)");
+        json.addDocumentHistoryLine("2020-10-10", "0.82", "Added support for RFC8037 " +  json.createReference(JSONBaseHTML.REF_RFC8037) + " algorithms");
 
         json.addParagraphObject("Author").append("JSF was developed by Anders Rundgren (<code>anders.rundgren.net@gmail.com</code>) as a part " +
                                                  "of the OpenKeyStore project " +
@@ -887,9 +926,15 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             .newColumn()
               .addString("Signature algorithm. The currently recognized JWA ")
               .addString(json.createReference(JSONBaseHTML.REF_JWA))
+              .addString(" and RFC8037 ")
+              .addString(json.createReference(JSONBaseHTML.REF_RFC8037))
               .addString(" asymmetric key algorithms include:")
               .addString(JSONBaseHTML.enumerateJOSEAlgorithms(AsymSignatureAlgorithms.values()))
-              .addString("The currently recognized JWA ")
+              .addString("Note: Unlike RFC8037 ")
+              .addString(json.createReference(JSONBaseHTML.REF_RFC8037))
+              .addString(" JSF requires explicit Ed* algorithm names instead of <code>&quot;" +
+                         "EdDSA&quot;</code>." + Types.LINE_SEPARATOR +
+                         "The currently recognized JWA ")
               .addString(json.createReference(JSONBaseHTML.REF_JWA))
               .addString(" symmetric key algorithms include:")
               .addString(JSONBaseHTML.enumerateJOSEAlgorithms(MACAlgorithms.values()))
@@ -1029,7 +1074,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
            .addString("Array holding ")
            .addLink(SIGNATURE_CHAINS);
 
-        json.AddPublicKeyDefinitions();
+        json.AddPublicKeyDefinitions(true);
 
         json.writeHTML();
     }

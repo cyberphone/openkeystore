@@ -25,6 +25,7 @@ import java.net.URLEncoder;
 
 import java.util.LinkedHashMap;
 import java.util.TreeSet;
+import java.util.Vector;
 import java.util.ArrayList;
 
 import org.webpki.crypto.AlgorithmPreferences;
@@ -82,6 +83,8 @@ public class JSONBaseHTML  {
 
     public static final String REF_JWA                 = "RFC7518";
     
+    public static final String REF_RFC8037             = "RFC8037";
+    
     public static final String REF_BASE64              = "RFC4648";
     
     public static final String REF_PEM                 = "RFC7468";
@@ -117,6 +120,8 @@ public class JSONBaseHTML  {
     public static final String JSF_PUBLIC_KEY_RSA      = "Additional RSA Properties";
 
     public static final String JSF_PUBLIC_KEY_EC       = "Additional EC Properties";
+
+    public static final String JSF_PUBLIC_KEY_OKP      = "Additional OKP Properties";
 
     String file_name;
     String subsystem_name;
@@ -278,13 +283,12 @@ public class JSONBaseHTML  {
             externalWebReference ("https://www.w3.org/TR/xmlenc-core1/"));
 
         addReferenceEntry(REF_WEB_CRYPTO,
-            "\"Web Cryptography API\", R. Sleevi, " +
-            "M. Watson, W3C&nbsp;Candidate&nbsp;Recommendation, December&nbsp;2014. " +
+            "\"Web Cryptography API\", M. Watson, W3C&nbsp;Recommendation, January&nbsp;2017. " +
             externalWebReference ("https://www.w3.org/TR/WebCryptoAPI/"));
 
         addReferenceEntry(REF_JSF,
             "A. Rundgren, \"JSF - JSON Signature Format\", Work in progress, " +
-            "<span style=\"white-space: nowrap\">V0.81, October&nbsp;2019.</span> " +
+            "<span style=\"white-space: nowrap\">V0.82, October&nbsp;2020.</span> " +
             externalWebReference ("https://cyberphone.github.io/doc/security/jsf.html"));
 
         addReferenceEntry(REF_JCS,
@@ -298,7 +302,7 @@ public class JSONBaseHTML  {
 
         addReferenceEntry(REF_JEF,
             "A. Rundgren, \"JEF - JSON Encryption Format\", Work in progress, " +
-            "<span style=\"white-space: nowrap\">V0.61, January&nbsp;2020.</span> " +
+            "<span style=\"white-space: nowrap\">V0.62, October&nbsp;2020.</span> " +
             externalWebReference ("https://cyberphone.github.io/doc/security/jef.html"));
 
         addReferenceEntry(REF_SKS, "A. Rundgren, \"Secure Key Store (SKS) - API and Architecture\", Work in progress, " +
@@ -335,6 +339,12 @@ public class JSONBaseHTML  {
         addReferenceEntry(REF_JWE,
             "M. Jones, J. Hildebrand, \"JSON Web Encryption (JWE)\", " +
             "RFC&nbsp;7516, May&nbsp;2015.");
+
+        addReferenceEntry(REF_RFC8037,
+            "I. Liusvaara, " +
+            "\"CFRG Elliptic Curve Diffie-Hellman (ECDH) and Signatures " +
+            "in JSON Object Signing and Encryption\", " +
+            "RFC&nbsp;8037, January&nbsp;2017.");
 
         addReferenceEntry(REF_JWK,
             "M. Jones, \"JSON Web Key (JWK)\", " +
@@ -1329,7 +1339,18 @@ public class JSONBaseHTML  {
                             "</td><td>" + comment + "</td></tr>");
     }
     
-    public void AddPublicKeyDefinitions() throws IOException {
+    KeyAlgorithms[] getKeyAlgorithmSubset(String startsWith) throws IOException {
+        Vector<KeyAlgorithms> list = new Vector<>();
+        for (KeyAlgorithms keyAlgorithm : KeyAlgorithms.values()) {
+            String alg = keyAlgorithm.getAlgorithmId(AlgorithmPreferences.JOSE_ACCEPT_PREFER);
+            if (alg.startsWith(startsWith) && alg.indexOf(':') < 0) {
+                list.add(keyAlgorithm);
+            }
+        }
+        return list.toArray(new KeyAlgorithms[0]);
+    }
+    
+    public void AddPublicKeyDefinitions(boolean signatures) throws IOException {
         addSubItemTable(JSONCryptoHelper.PUBLIC_KEY_JSON)
         .newRow()
           .newColumn()
@@ -1340,12 +1361,16 @@ public class JSONBaseHTML  {
           .newColumn()
           .newColumn()
             .addString("Key type indicator.  Currently the following types are recognized:<ul>" +
-                    "<li>" + JSONBaseHTML.codeVer(JSONCryptoHelper.EC_PUBLIC_KEY, 6) + "See: ")
+                       "<li>" + JSONBaseHTML.codeVer(JSONCryptoHelper.EC_PUBLIC_KEY, 6) + "See: ")
                     .addLink (JSF_PUBLIC_KEY_EC)
-            .addString("</li><li>" + 
-                     JSONBaseHTML.codeVer(JSONCryptoHelper.RSA_PUBLIC_KEY, 6) + "See: ")
-            .addLink (JSF_PUBLIC_KEY_RSA)
-            .addString("</li></ul>")
+            .addString("</li>" +
+                       "<li>" + JSONBaseHTML.codeVer(JSONCryptoHelper.OKP_PUBLIC_KEY, 6) + "See: ")
+            .addLink (JSF_PUBLIC_KEY_OKP)
+            .addString("</li>" +
+                    "<li>" + JSONBaseHTML.codeVer(JSONCryptoHelper.RSA_PUBLIC_KEY, 6) + "See: ")
+         .addLink (JSF_PUBLIC_KEY_RSA)
+         .addString("</li>" +
+                       "</ul>")
        .newRow(JSF_PUBLIC_KEY_EC)
           .newColumn()
             .addProperty(JSONCryptoHelper.CRV_JSON)
@@ -1355,7 +1380,7 @@ public class JSONBaseHTML  {
           .newColumn()
           .newColumn()
             .addString("EC curve name. The currently recognized EC curves include:")
-            .addString(enumerateJOSEAlgorithms(KeyAlgorithms.values()))
+            .addString(enumerateJOSEAlgorithms(getKeyAlgorithmSubset("P-")))
             .addString("Note: If <i>proprietary</i> curve names are " +
                        "added, they <b>must</b> be expressed as URIs.")
       .newRow()
@@ -1388,7 +1413,41 @@ public class JSONBaseHTML  {
                       "&quot;</code> is <code>&quot;" +
                       KeyAlgorithms.NIST_P_256.getAlgorithmId (AlgorithmPreferences.JOSE) +
                       "&quot;</code>, the <i>decoded</i> argument <b>must</b> be 32 bytes.")
-      .newRow(JSF_PUBLIC_KEY_RSA)
+
+          .newRow(JSF_PUBLIC_KEY_OKP)
+          .newColumn()
+            .addProperty(JSONCryptoHelper.CRV_JSON)
+            .addSymbolicValue("Curve Name")
+          .newColumn()
+            .setType(Types.WEBPKI_DATA_TYPES.STRING)
+          .newColumn()
+          .newColumn()
+            .addString(signatures ? "EdDSA" : "ECDH")
+            .addString(" curve name. The currently recognized ")
+            .addString(signatures ? "EdDSA" : "ECDH")
+            .addString(" curves include:")
+            .addString(enumerateJOSEAlgorithms(getKeyAlgorithmSubset(signatures ? "Ed" : "X")))
+            .addString("Note: If <i>proprietary</i> curve names are " +
+                       "added, they <b>must</b> be expressed as URIs.")
+      .newRow()
+        .newColumn()
+          .addProperty(JSONCryptoHelper.X_JSON)
+          .addSymbolicValue("Coordinate")
+        .newColumn()
+          .setType(Types.WEBPKI_DATA_TYPES.BYTE_ARRAY)
+        .newColumn()
+        .newColumn()
+          .addString(signatures ? "EdDSA" : "ECDH")
+          .addString(" curve point X. The length of this field <b>must</b> " +
+                      "be the full size of a coordinate for the curve specified in the <code>&quot;" + 
+                      JSONCryptoHelper.CRV_JSON + "&quot;</code> parameter.  For example, " +
+                      "if the value of <code>&quot;" + JSONCryptoHelper.CRV_JSON +
+                      "&quot;</code> is <code>&quot;")
+          .addString((signatures ? KeyAlgorithms.ED25519 : KeyAlgorithms.X25519)
+                             .getAlgorithmId (AlgorithmPreferences.JOSE))
+          .addString("&quot;</code>, the <i>decoded</i> argument <b>must</b> be 32 bytes.")
+
+          .newRow(JSF_PUBLIC_KEY_RSA)
         .newColumn()
           .addProperty(JSONCryptoHelper.N_JSON)
           .addSymbolicValue("Modulus")

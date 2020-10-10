@@ -453,7 +453,7 @@ class EncryptionCore {
 
         int reps = (keyLength + CONCAT_KDF_DIGEST_LENGTH - 1) / CONCAT_KDF_DIGEST_LENGTH;
 
-        // KDFing...
+        // Concat KDF according to JWA
         for (int i = 1; i <= reps; i++) {
             // Round indicator
             addInt4(messageDigest, i);
@@ -462,9 +462,9 @@ class EncryptionCore {
             // AlgorithmID = Content encryption algorithm
             addInt4(messageDigest, algorithmId.length);
             messageDigest.update(algorithmId);
-            // PartyUInfo = Empty
+            // PartyUInfo = Empty as described in the JEF specification
             addInt4(messageDigest, 0);
-            // PartyVInfo = Empty
+            // PartyVInfo = Empty as described in the JEF specification
             addInt4(messageDigest, 0);
             // SuppPubInfo = Key length in bits
             addInt4(messageDigest, keyLength * 8);

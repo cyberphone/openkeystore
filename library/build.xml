@@ -180,9 +180,12 @@
       <fileset dir="${src_dir}"/>
   	</copy>
 
-  	<!-- Make documentation -->
-    <delete dir="${doc_dir}"/>
-	<!--  -Xdoclint:none: https://github.com/AdoptOpenJDK/openjdk-support/issues/131 -->
+  	<!-- Make documentation but first remove the previous version -->
+    <delete includeEmptyDirs="true">
+    	<fileset dir="${doc_dir}" includes="**/*"/>
+    </delete>
+
+  	<!--  -Xdoclint:none: https://github.com/AdoptOpenJDK/openjdk-support/issues/131 -->
     <javadoc destdir="${doc_dir}"
     	     overview="${temp_dir}/overview.html"
     	     stylesheetfile="${javadoccss}"

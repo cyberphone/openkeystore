@@ -484,7 +484,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
     public String getAlgorithmId(AlgorithmPreferences algorithmPreferences) throws IOException {
         if (joseName == null) {
             if (algorithmPreferences == AlgorithmPreferences.JOSE) {
-                throw new IOException("There is no JOSE algorithm for: " + toString());
+                throw new IOException("There is no JOSE algorithm for: " + this.toString());
             }
             return sksName;
         }
