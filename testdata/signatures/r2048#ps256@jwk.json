@@ -1,0 +1,14 @@
+{
+  "now": "2019-02-10T11:23:06Z",
+  "name": "Joe",
+  "id": 2200063,
+  "signature": {
+    "algorithm": "PS256",
+    "publicKey": {
+      "kty": "RSA",
+      "n": "ptKZyFPStvmOlb0WihOBhlHUr6wFDHC-tW7hJAudfTQ5mHZQpB8PoMz07udZA-dG8dhUIPkmXlp1TgREeYTHdhxhuf0y_GhbpZv5JPYHx3watO-HWO2qYkjRMEcrWhPMdaVkS_Xe_liaMcow4jYoWaFm8VobeYsyVD2bWWdyl4joTEETm1Z47RnnfR15kVhVudVrDzEFmM4nXV_6dmIg184RJE4httwBFxR8qZCQCwTiJmsoyJxfUR0Gs4ePKc5sB0NTkmFZc5klQSitd67RJn2ldhbqE7EpDl4XlIt-UyLJm1guCBltia8Agke7dXuhpB7hQ6LJwY4EjzthkJ8IPw",
+      "e": "AQAB"
+    },
+    "value": "SJnq3uAhfcDFv5MLCDhmfGE9_QQG5iDoF6urZp4uvOq-wGPDujImXHNs38XMPCQJVvDIf9Pdw1udXJAUCMkuWL0fBpMeBLriydIYNml4FOGJJ3506I3Hqk-zdjVwfBrguHshS1hniMzTqo8dzlPWxgPzU0KTDeg2xTuXOs2rbvENyqym-jHgn_iCMBQIWCwA5nQIxVmVVHNqF_wY5aUJcO1ySSWVsBk7P2_NpHNO_dOPaxdvvCvrbRne226edD4mOb6adtHoIdXVIhpsulkGEefBnqXQYvmjq_62rnCTZCfXTfM2ylp98NNgT_hyj1IN4yA5Wxwq86UP9of9yOxQ4w"
+  }
+}

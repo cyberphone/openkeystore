@@ -24,27 +24,33 @@ import java.security.GeneralSecurityException;
 public enum HashAlgorithms implements CryptoAlgorithms {
 
     SHA1   ("http://www.w3.org/2000/09/xmldsig#sha1",        null,
-            "1.3.14.3.2.26",          "SHA-1"),
+            "1.3.14.3.2.26",          "SHA-1",   20),
 
     SHA256 ("http://www.w3.org/2001/04/xmlenc#sha256",       "S256",
-            "2.16.840.1.101.3.4.2.1", "SHA-256"),
+            "2.16.840.1.101.3.4.2.1", "SHA-256", 32),
 
     SHA384 ("http://www.w3.org/2001/04/xmldsig-more#sha384", "S384",
-            "2.16.840.1.101.3.4.2.2", "SHA-384"),
+            "2.16.840.1.101.3.4.2.2", "SHA-384", 48),
 
     SHA512 ("http://www.w3.org/2001/04/xmlenc#sha512",       "S512",
-            "2.16.840.1.101.3.4.2.3", "SHA-512");
+            "2.16.840.1.101.3.4.2.3", "SHA-512", 64);
 
     private final String sksName;   // As expressed in SKS
     private final String joseName;  // Alternative JOSE name
     private final String oid;       // As expressed in ASN.1 messages
     private final String jceName;   // As expressed for JCE
+    private final int    bytes;     // Get number of bytes in result
 
-    private HashAlgorithms(String sksName, String joseName, String oid, String jceName) {
+    private HashAlgorithms(String sksName, 
+                           String joseName, 
+                           String oid, 
+                           String jceName,
+                           int bytes) {
         this.sksName = sksName;
         this.joseName = joseName;
         this.oid = oid;
         this.jceName = jceName;
+        this.bytes = bytes;
     }
 
     @Override
@@ -125,5 +131,9 @@ public enum HashAlgorithms implements CryptoAlgorithms {
     @Override
     public KeyTypes getKeyType() {
         return KeyTypes.SYM;
+    }
+
+    public int getResultBytes() {
+        return bytes;
     }
 }

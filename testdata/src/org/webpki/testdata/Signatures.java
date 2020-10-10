@@ -160,15 +160,18 @@ public class Signatures {
             arraySign("p256", "p384",    true,  true,  false, null, chained);
         }
 
-        asymSignCore("p256", false, true,  true,  false); 
-        asymSignCore("p256", false, true,  false, true);
-        asymSignCore("p256", true,  false, false, true);
+        asymSignCore("p256", false, true,  true,  false, null); 
+        asymSignCore("p256", false, true,  false, true, null);
+        asymSignCore("p256", true,  false, false, true, null);
+        asymSignCore("r2048", false, true,  false,  false, AsymSignatureAlgorithms.RSAPSS_SHA256);
+        asymSignCore("r2048", true, false,  false,  false, AsymSignatureAlgorithms.RSAPSS_SHA384);
+        asymSignCore("r2048", false, false,  false,  false, AsymSignatureAlgorithms.RSAPSS_SHA512);
         
         arraySign("p256", false);
         arraySign("r2048", true);
 
         signatureLabel = "authorizationSignature";
-        asymSignCore("p256", false,  true, false, false);
+        asymSignCore("p256", false,  true, false, false, null);
     }
 
     static void arraySign(String keyType, boolean exts) throws Exception {
@@ -458,10 +461,14 @@ public class Signatures {
                                              boolean wantKeyId,
                                              boolean wantPublicKey,
                                              boolean wantExtensions,
-                                             boolean wantExclusions) throws Exception {
+                                             boolean wantExclusions,
+                                             AsymSignatureAlgorithms pssAlg) throws Exception {
         KeyPair keyPair = readJwk(keyType);
-        JSONSigner signer = 
+        JSONAsymKeySigner signer = 
                 new JSONAsymKeySigner(keyPair.getPrivate(), keyPair.getPublic(), null);
+        if (pssAlg != null) {
+            signer.setSignatureAlgorithm(pssAlg);
+        }
         if (wantKeyId) {
             signer.setKeyId(keyId);
         }
@@ -521,7 +528,7 @@ public class Signatures {
     static JSONSignatureDecoder asymSignOptionalPublicKeyInfo(String keyType, 
                                                               boolean wantKeyId, 
                                                               boolean wantPublicKey) throws Exception {
-        return asymSignCore(keyType, wantKeyId, wantPublicKey, false, false);
+        return asymSignCore(keyType, wantKeyId, wantPublicKey, false, false, null);
     }
 
     static X509Certificate[] readCertificatePath(String keyType) throws IOException {

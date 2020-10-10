@@ -19,4 +19,4 @@ package org.webpki.crypto;
 /**
  * Basic types
  */
-public enum KeyTypes {RSA, PSA_PSS, EC, EDDSA, XEC, SYM};
+public enum KeyTypes {RSA, EC, EDDSA, XEC, SYM};

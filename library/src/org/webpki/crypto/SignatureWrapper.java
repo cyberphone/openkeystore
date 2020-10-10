@@ -28,6 +28,8 @@ import java.security.Signature;
 import java.security.interfaces.ECKey;
 
 import java.security.spec.ECParameterSpec;
+import java.security.spec.PSSParameterSpec;
+
 
 /**
  * Wrapper over java.security.Signature
@@ -154,7 +156,16 @@ public class SignatureWrapper {
                                     :
                 Signature.getInstance(algorithm.getJceName(), provider);
         unmodifiedSignature = algorithm.getKeyType() != KeyTypes.EC;
-        if (!unmodifiedSignature) {
+        if (unmodifiedSignature) {
+            if (algorithm.getMGF1ParameterSpec() != null) {
+                instance.setParameter(
+                        new PSSParameterSpec(algorithm.getDigestAlgorithm().getJceName(),
+                                             "MGF1", 
+                                             algorithm.getMGF1ParameterSpec(), 
+                                             algorithm.getDigestAlgorithm().getResultBytes(),
+                                             1));
+            }
+        } else {
             ecParameters = ((ECKey) key).getParams();
         }
     }
