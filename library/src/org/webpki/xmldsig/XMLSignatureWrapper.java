@@ -53,6 +53,7 @@ import org.webpki.xml.XMLObjectWrapper;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.KeyAlgorithms;
+import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.MACAlgorithms;
 import org.webpki.crypto.HashAlgorithms;
@@ -475,7 +476,7 @@ public class XMLSignatureWrapper extends XMLObjectWrapper implements Serializabl
 
     public static void writePublicKey(DOMWriterHelper wr, PublicKey publicKey) throws IOException {
         KeyAlgorithms key_alg = KeyAlgorithms.getKeyAlgorithm(publicKey);
-        if (key_alg.isRsa()) {
+        if (key_alg.getKeyType() == KeyTypes.RSA) {
             String old = wr.pushPrefix(XML_DSIG_NS_PREFIX);
             if (old == null || !old.equals(XML_DSIG_NS_PREFIX)) {
                 wr.addChildElementNS(XML_DSIG_NS, RSA_KEY_VALUE_ELEM);

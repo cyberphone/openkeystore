@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.KeyAlgorithms;
-
+import org.webpki.crypto.KeyTypes;
 import org.webpki.json.JSONBaseHTML.Extender;
 import org.webpki.json.JSONBaseHTML.RowInterface;
 import org.webpki.json.JSONBaseHTML.Types;
@@ -82,7 +82,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
     static String enumerateJoseEcCurves() throws IOException  {
         StringBuilder buffer = new StringBuilder("<ul>");
         for (KeyAlgorithms algorithm : KeyAlgorithms.values()) {
-            if (algorithm.isEcdsa()) {
+            if (algorithm.getKeyType() == KeyTypes.EC) {
                 String joseName = algorithm.getAlgorithmId(AlgorithmPreferences.JOSE_ACCEPT_PREFER);
                 if (!joseName.contains (":")) {
                     buffer.append("<li><code>")

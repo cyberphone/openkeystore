@@ -30,6 +30,7 @@ import java.util.ArrayList;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.KeyAlgorithms;
+import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.CustomCryptoProvider;
 
 import org.webpki.util.ArrayUtil;
@@ -136,7 +137,7 @@ public class Keys {
         try {
             ArrayList<KeyAlgorithms> ecs = new ArrayList<>();
             for (KeyAlgorithms ka : KeyAlgorithms.values()) {
-                if (ka.isEcdsa()) {
+                if (ka.getKeyType() == KeyTypes.EC) {
                     ecs.add(ka);
                 }
             }

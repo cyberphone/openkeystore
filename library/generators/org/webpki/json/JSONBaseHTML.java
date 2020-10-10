@@ -30,6 +30,7 @@ import java.util.ArrayList;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.KeyAlgorithms;
+import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.CryptoAlgorithms;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 
@@ -1183,7 +1184,9 @@ public class JSONBaseHTML  {
             if (algorithm.isDeprecated()) {
                 continue;
             }
-            if (filter && algorithm instanceof KeyAlgorithms && !((KeyAlgorithms)algorithm).isEcdsa()) {
+            if (filter && 
+                algorithm instanceof KeyAlgorithms && 
+                ((KeyAlgorithms)algorithm).getKeyType() != KeyTypes.EC) {
                 continue;
             }
             if (symmetric ^ algorithm.isSymmetric()) {

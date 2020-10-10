@@ -72,11 +72,6 @@ public enum SymEncryptionAlgorithms implements EncryptionAlgorithms {
     }
 
     @Override
-    public boolean isSymmetric() {
-        return true;
-    }
-
-    @Override
     public boolean isMandatorySksAlgorithm() {
         return sksMandatory;
     }
@@ -127,5 +122,10 @@ public enum SymEncryptionAlgorithms implements EncryptionAlgorithms {
     @Override
     public boolean isDeprecated() {
         return false;
+    }
+
+    @Override
+    public KeyTypes getKeyType() {
+        return KeyTypes.SYM;
     }
 }

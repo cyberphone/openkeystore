@@ -21,66 +21,71 @@ import java.io.IOException;
 public enum AsymSignatureAlgorithms implements SignatureAlgorithms {
 
     RSA_NONE     ("https://webpki.github.io/sks/algorithm#rsa.pkcs1.none", null,
-                  null,                    "NONEwithRSA",     null,                  true),
+                  null,                    "NONEwithRSA",     null,
+                  true,  KeyTypes.RSA),
       
     RSA_SHA1     ("http://www.w3.org/2000/09/xmldsig#rsa-sha1",            null,              
-                  "1.2.840.113549.1.1.5",  "SHA1withRSA",     HashAlgorithms.SHA1,   false),
+                  "1.2.840.113549.1.1.5",  "SHA1withRSA",     HashAlgorithms.SHA1,
+                  false, KeyTypes.RSA),
       
     RSA_SHA256   ("http://www.w3.org/2001/04/xmldsig-more#rsa-sha256",     "RS256",      
-                  "1.2.840.113549.1.1.11", "SHA256withRSA",   HashAlgorithms.SHA256, true),
+                  "1.2.840.113549.1.1.11", "SHA256withRSA",   HashAlgorithms.SHA256, 
+                  true,  KeyTypes.RSA),
       
     RSA_SHA384   ("http://www.w3.org/2001/04/xmldsig-more#rsa-sha384",     "RS384",     
-                  "1.2.840.113549.1.1.12", "SHA384withRSA",   HashAlgorithms.SHA384, true),
+                  "1.2.840.113549.1.1.12", "SHA384withRSA",   HashAlgorithms.SHA384, 
+                  true,  KeyTypes.RSA),
       
     RSA_SHA512   ("http://www.w3.org/2001/04/xmldsig-more#rsa-sha512",     "RS512",   
-                  "1.2.840.113549.1.1.13", "SHA512withRSA",   HashAlgorithms.SHA512, true),
+                  "1.2.840.113549.1.1.13", "SHA512withRSA",   HashAlgorithms.SHA512,
+                  true,  KeyTypes.RSA),
       
     ECDSA_NONE   ("https://webpki.github.io/sks/algorithm#ecdsa.none",     null,
-                  null,                    "NONEwithECDSA",   null,                  true),
+                  null,                    "NONEwithECDSA",   null,                  
+                  true,  KeyTypes.EC),
       
     ECDSA_SHA256 ("http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256",   "ES256",  
-                  "1.2.840.10045.4.3.2",   "SHA256withECDSA", HashAlgorithms.SHA256, true),
+                  "1.2.840.10045.4.3.2",   "SHA256withECDSA", HashAlgorithms.SHA256,
+                  true,  KeyTypes.EC),
       
     ECDSA_SHA384 ("http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha384",   "ES384",   
-                  "1.2.840.10045.4.3.3",   "SHA384withECDSA", HashAlgorithms.SHA384, true),
+                  "1.2.840.10045.4.3.3",   "SHA384withECDSA", HashAlgorithms.SHA384, 
+                  true,  KeyTypes.EC),
       
     ECDSA_SHA512 ("http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha512",   "ES512",   
-                  "1.2.840.10045.4.3.4",   "SHA512withECDSA", HashAlgorithms.SHA512, true),
+                  "1.2.840.10045.4.3.4",   "SHA512withECDSA", HashAlgorithms.SHA512, 
+                  true,  KeyTypes.EC),
 
     ED25519      ("https://webpki.github.io/sks/algorithm#ed25519",        "Ed25519",   
-                  "1.3.101.112",           "Ed25519",         null /*"pure" */,      false),
+                  "1.3.101.112",           "Ed25519",         null /*"pure" */,
+                  false, KeyTypes.EDDSA),
 
     ED448        ("https://webpki.github.io/sks/algorithm#ed448",          "Ed448",   
-                  "1.3.101.113",           "Ed448",           null /*"pure" */,      false);
+                  "1.3.101.113",           "Ed448",           null /*"pure" */,
+                  false, KeyTypes.EDDSA);
 
-    private final String sksName;   // As expressed in SKS
-    private final String joseName;  // Alternative JOSE name
-    private final String oid;       // As expressed in OIDs
-    private final String jceName;   // As expressed for JCE
-    private final HashAlgorithms digestAlg;
-    private boolean sksMandatory;   // If required in SKS
-    private boolean rsa;            // RSA algorithm
-    private boolean ecdsa;          // ECDSA algorithm
+    private final String sksName;           // As expressed in SKS
+    private final String joseName;          // Alternative JOSE name
+    private final String oid;               // As expressed in OIDs
+    private final String jceName;           // As expressed for JCE
+    private final HashAlgorithms digestAlg; // RSA and ECDSA
+    private final boolean sksMandatory;     // If required in SKS
+    private final KeyTypes keyType;         // Core type
 
     private AsymSignatureAlgorithms(String sksName,
                                     String joseName,
                                     String oid,
                                     String jceName,
                                     HashAlgorithms digestAlg,
-                                    boolean sksMandatory) {
+                                    boolean sksMandatory,
+                                    KeyTypes keyType) {
         this.sksName = sksName;
         this.joseName = joseName;
         this.oid = oid;
         this.jceName = jceName;
         this.digestAlg = digestAlg;
         this.sksMandatory = sksMandatory;
-        this.rsa = jceName.endsWith("withRSA");
-        this.ecdsa = jceName.endsWith("withECDSA");
-    }
-
-    @Override
-    public boolean isSymmetric() {
-        return false;
+        this.keyType = keyType;
     }
 
     @Override
@@ -101,21 +106,6 @@ public enum AsymSignatureAlgorithms implements SignatureAlgorithms {
     @Override
     public HashAlgorithms getDigestAlgorithm() {
         return digestAlg;
-    }
-
-    @Override
-    public boolean isRsa() {
-        return rsa;
-    }
-
-    @Override
-    public boolean isOkp() {
-        return !(ecdsa || rsa);
-    }
-
-    @Override
-    public boolean isEcdsa() {
-        return ecdsa;
     }
 
     public static boolean testAlgorithmUri(String sksName) {
@@ -151,12 +141,12 @@ public enum AsymSignatureAlgorithms implements SignatureAlgorithms {
     public String getAlgorithmId(AlgorithmPreferences algorithmPreferences) throws IOException {
         if (joseName == null) {
             if (algorithmPreferences == AlgorithmPreferences.JOSE) {
-                throw new IOException("There is no JOSE algorithm for: " + toString());
+                throw new IOException("There is no JOSE algorithm for: " + this.toString());
             }
             return sksName;
         } else if (sksName == null) {
             if (algorithmPreferences == AlgorithmPreferences.SKS) {
-                throw new IOException("There is no SKS algorithm for: " + toString());
+                throw new IOException("There is no SKS algorithm for: " + this.toString());
             }
             return joseName;
         }
@@ -166,5 +156,10 @@ public enum AsymSignatureAlgorithms implements SignatureAlgorithms {
     @Override
     public boolean isDeprecated() {
         return RSA_SHA1 == this;
+    }
+
+    @Override
+    public KeyTypes getKeyType() {
+        return keyType;
     }
 }

@@ -112,7 +112,8 @@ public class KeyStore2JWKConverter {
                 if (privateKeyFlag) {
                     KeyAlgorithms keyAlgorithm = KeyAlgorithms.getKeyAlgorithm(publicKey);
                     PrivateKey privateKey = (PrivateKey)ks.getKey(alias, argv[1].toCharArray());
-                    if (keyAlgorithm.isRsa()) {
+                    switch (keyAlgorithm.getKeyType()) {
+                    case RSA:
                         RSAPrivateCrtKey rsaPrivateKey = (RSAPrivateCrtKey)privateKey;
                         setCryptoBinary("d", rsaPrivateKey.getPrivateExponent());
                         setCryptoBinary("p", rsaPrivateKey.getPrimeP());
@@ -120,7 +121,8 @@ public class KeyStore2JWKConverter {
                         setCryptoBinary("dp", rsaPrivateKey.getPrimeExponentP());
                         setCryptoBinary("dq", rsaPrivateKey.getPrimeExponentQ());
                         setCryptoBinary("qi", rsaPrivateKey.getCrtCoefficient());
-                    } else if (keyAlgorithm.isEcdsa()) {
+                        break;
+                    case EC:
                        BigInteger d = ((ECPrivateKey)privateKey).getS();
                        byte[] curvePoint = d.toByteArray();
                        if (curvePoint.length > (keyAlgorithm.getPublicKeySizeInBits() + 7) / 8) {
@@ -134,7 +136,8 @@ public class KeyStore2JWKConverter {
                            }
                            addPrivateKeyElement("d", curvePoint);
                        }
-                    } else {
+                       break;
+                    default:
                         addPrivateKeyElement("d", OkpSupport.private2RawOkpKey(privateKey, keyAlgorithm));
                     }
                     writeJwk(fis, publicKey, alias);

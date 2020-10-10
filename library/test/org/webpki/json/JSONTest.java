@@ -59,6 +59,7 @@ import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.DeterministicSignatureWrapper;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyStoreVerifier;
+import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.MACAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
 import org.webpki.jose.jws.JwsAsymKeySigner;
@@ -2645,7 +2646,7 @@ public class JSONTest {
         JSONObjectReader rd = JSONParser.parse(jwk);
         KeyAlgorithms ec = KeyAlgorithms.getKeyAlgorithmFromId(rd.getString(JSONCryptoHelper.CRV_JSON),
                 AlgorithmPreferences.JOSE);
-        if (!ec.isEcdsa()) {
+        if (ec.getKeyType() != KeyTypes.EC) {
             throw new IOException("\"" + JSONCryptoHelper.CRV_JSON + "\" is not an EC type");
         }
         ECPoint w = new ECPoint(getCurvePoint(rd, "x", ec), getCurvePoint(rd, "y", ec));

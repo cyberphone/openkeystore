@@ -45,6 +45,7 @@ import org.webpki.asn1.cert.DistinguishedName;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.ExtendedKeyUsages;
 import org.webpki.crypto.KeyAlgorithms;
+import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.AsymKeySignerInterface;
 import org.webpki.crypto.KeyUsageBits;
 import org.webpki.crypto.CustomCryptoProvider;
@@ -370,7 +371,7 @@ public class CommandLineCA {
         StringBuilder s = new StringBuilder();
         boolean comma = false;
         for (KeyAlgorithms curve : KeyAlgorithms.values()) {
-            if (!curve.isRsa()) {
+            if (curve.getKeyType() != KeyTypes.RSA) {
                 if (comma) {
                     s.append(", ");
                 }
@@ -682,7 +683,7 @@ public class CommandLineCA {
             KeyPairGenerator kpg = null;
             if (CMD_ecc_curve.found) {
                 KeyAlgorithms keyAlgorithm = CMD_ecc_curve.getKeyAlgorithm();
-                if (keyAlgorithm.isEcdsa()) {
+                if (keyAlgorithm.getKeyType() == KeyTypes.EC) {
                     kpg = KeyPairGenerator.getInstance("EC");
                     kpg.initialize(new ECGenParameterSpec(keyAlgorithm.getJceName()));
                 } else {

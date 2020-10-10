@@ -52,6 +52,7 @@ import org.webpki.crypto.AsymKeySignerInterface;
 import org.webpki.crypto.ExtendedKeyUsages;
 import org.webpki.crypto.KeyUsageBits;
 import org.webpki.crypto.HashAlgorithms;
+import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.CertificateExtensions;
 import org.webpki.crypto.CertificateUtil;
 
@@ -142,7 +143,7 @@ public class CA {
                                                                         getASN1Time(endDate)});
 
         BaseASN1Object signatureAlgorithm = 
-                new ASN1Sequence(certSignAlg.isRsa() ?
+                new ASN1Sequence(certSignAlg.getKeyType() == KeyTypes.RSA ?
                         new BaseASN1Object[]{new ASN1ObjectID(certSignAlg.getOid()),
                                              new ASN1Null()}  // Relic from the RSA hey-days...
                                                  : 

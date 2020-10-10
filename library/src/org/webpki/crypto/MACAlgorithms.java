@@ -51,11 +51,6 @@ public enum MACAlgorithms implements SignatureAlgorithms {
     }
 
     @Override
-    public boolean isSymmetric() {
-        return true;
-    }
-
-    @Override
     public boolean isMandatorySksAlgorithm() {
         return sksMandatory;
     }
@@ -128,5 +123,10 @@ public enum MACAlgorithms implements SignatureAlgorithms {
     @Override
     public HashAlgorithms getDigestAlgorithm() {
         return digestAlg;
+    }
+
+    @Override
+    public KeyTypes getKeyType() {
+        return KeyTypes.SYM;
     }
 }

@@ -30,6 +30,7 @@ import java.security.spec.RSAKeyGenParameterSpec;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.KeyAlgorithms;
+import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.CustomCryptoProvider;
 
 import org.webpki.util.ArrayUtil;
@@ -114,7 +115,7 @@ public class Key2 {
         try {
             CustomCryptoProvider.conditionalLoad(true);
             for (KeyAlgorithms ka : KeyAlgorithms.values()) {
-                if (ka.isEcdsa()) {
+                if (ka.getKeyType() == KeyTypes.EC) {
                     AlgorithmParameterSpec alg_par_spec = new ECGenParameterSpec(ka.getJceName());
                     KeyPairGenerator kpg = KeyPairGenerator.getInstance("EC");
                     kpg.initialize(alg_par_spec, new SecureRandom());

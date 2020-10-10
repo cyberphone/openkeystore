@@ -59,6 +59,7 @@ import static org.junit.Assert.*;
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymEncryptionAlgorithms;
 import org.webpki.crypto.KeyAlgorithms;
+import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.MACAlgorithms;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
@@ -115,7 +116,8 @@ public class SKSTest {
             supported_algorithms.add(alg);
         }
         for (KeyAlgorithms ka : KeyAlgorithms.values()) {
-            if (!ka.isRsa() || ka.hasParameters() || !ka.isMandatorySksAlgorithm()) continue;
+            if (ka.getKeyType() != KeyTypes.RSA || 
+                ka.hasParameters() || !ka.isMandatorySksAlgorithm()) continue;
             if (supported_algorithms.contains(ka.getAlgorithmId(AlgorithmPreferences.SKS))) {
                 preferred_rsa_algorithm = ka;
                 break;
@@ -893,7 +895,8 @@ public class SKSTest {
     @Test
     public void test1() throws Exception {
         for (KeyAlgorithms sessionKeyAlgorithm : KeyAlgorithms.values()) {
-            if (sessionKeyAlgorithm.isRsa() || sessionKeyAlgorithm.getECParameterSpec() == null) {
+            if (sessionKeyAlgorithm.getKeyType() == KeyTypes.RSA || 
+                sessionKeyAlgorithm.getECParameterSpec() == null) {
                 continue;
             }
             String sessionKeyAlgorithmId = sessionKeyAlgorithm.getAlgorithmId(AlgorithmPreferences.SKS);
@@ -1009,7 +1012,8 @@ public class SKSTest {
                 doit = true;
             }
             if (doit) {
-                sess.setKeyParameters((keyAlgorithm.isRsa() && keyAlgorithm.hasParameters()) ?
+                sess.setKeyParameters((keyAlgorithm.getKeyType() == KeyTypes.RSA && 
+                                       keyAlgorithm.hasParameters()) ?
                         new byte[]{0, 0, 0, 3} : null);
                 sess.createKey("Key." + i++,
                                keyAlgorithm,
@@ -2635,9 +2639,10 @@ public class SKSTest {
     @Test
     public void test64() throws Exception {
         for (KeyAlgorithms ka : KeyAlgorithms.values()) {
-            if (!ka.isRsa()) continue;
+            if (ka.getKeyType() != KeyTypes.RSA) continue;
             if (ka.hasParameters()) continue;
-            if (!supported_algorithms.contains(ka.getAlgorithmId(AlgorithmPreferences.SKS))) continue;
+            if (!supported_algorithms.contains(
+                    ka.getAlgorithmId(AlgorithmPreferences.SKS))) continue;
             String good_pin = "1563";
             ProvSess sess = new ProvSess(device);
             PINPol pinPolicy = sess.createPINPolicy("PIN",
@@ -2807,7 +2812,7 @@ public class SKSTest {
         badKeySpec("http://badcrypto/snakeoil-1", null, "Unsupported \"" + SecureKeyStore.VAR_KEY_ALGORITHM + "\": http://badcrypto/snakeoil-1");
         KeyAlgorithms rsa_var_exp = null;
         for (KeyAlgorithms ka : KeyAlgorithms.values()) {
-            if (ka.isRsa() && ka.hasParameters() && 
+            if (ka.getKeyType() == KeyTypes.RSA && ka.hasParameters() && 
                     supported_algorithms.contains(ka.getAlgorithmId(AlgorithmPreferences.SKS)) &&
                     ka.getPublicKeySizeInBits() == preferred_rsa_algorithm.getPublicKeySizeInBits()) {
                 rsa_var_exp = ka;
@@ -3150,7 +3155,7 @@ public class SKSTest {
         sess.closeSession();
 
         for (AsymSignatureAlgorithms alg : AsymSignatureAlgorithms.values()) {
-            GenKey tk = alg.isRsa() ? rsa : ec;
+            GenKey tk = alg.getKeyType() == KeyTypes.RSA ? rsa : ec;
             try {
                 byte[] result = tk.signData(alg, 
                                             new KeyAuthorization(),

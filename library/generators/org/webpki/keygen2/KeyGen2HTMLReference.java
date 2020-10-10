@@ -26,6 +26,7 @@ import org.webpki.crypto.AsymEncryptionAlgorithms;
 import org.webpki.crypto.SymEncryptionAlgorithms;
 import org.webpki.crypto.CertificateFilter;
 import org.webpki.crypto.KeyContainerTypes;
+import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.KeyUsageBits;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.MACAlgorithms;
@@ -495,7 +496,7 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
                  "<table class=\"tftable\" style=\"margin-top:10pt\">" +
                 "<tr><th>SKS Name</th><th>JWA Name</th></tr>");
         for (KeyAlgorithms keyAlgorithm : KeyAlgorithms.values()) {
-            if (keyAlgorithm.isEcdsa()) {
+            if (keyAlgorithm.getKeyType() == KeyTypes.EC) {
                 buffer.append("<tr><td><code>")
                       .append(keyAlgorithm.getAlgorithmId(AlgorithmPreferences.SKS))
                       .append("</code></td><td style=\"text-align:center\"><code>")

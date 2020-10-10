@@ -26,6 +26,7 @@ import java.security.interfaces.ECKey;
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.KeyAlgorithms;
+import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.SignatureAlgorithms;
 
 import static org.webpki.jose.JoseKeyWords.*;
@@ -54,7 +55,7 @@ public abstract class JwsSigner {
      */
     JwsSigner(SignatureAlgorithms signatureAlgorithm) throws IOException {
         jwsProtectedHeader = new JSONObjectWriter()
-            .setString(ALG_JSON,signatureAlgorithm.isOkp() ? 
+            .setString(ALG_JSON,signatureAlgorithm.getKeyType() == KeyTypes.EDDSA ? 
                            EdDSA 
                                                            : 
                            signatureAlgorithm.getAlgorithmId(AlgorithmPreferences.JOSE));

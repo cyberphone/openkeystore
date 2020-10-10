@@ -23,6 +23,7 @@ import java.math.BigInteger;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.KeyAlgorithms;
+import org.webpki.crypto.KeyTypes;
 
 public class KeySpecifier implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -42,7 +43,7 @@ public class KeySpecifier implements Serializable {
             if (!key_algorithm.hasParameters()) {
                 throw new IOException("Algorithm '" + key_algorithm.toString() + "' does not use a \"Parameters\"");
             }
-            if (key_algorithm.isRsa()) {
+            if (key_algorithm.getKeyType() == KeyTypes.RSA) {
                 parameters = optional_parameter;
             } else {
                 throw new IOException("Algorithm '" + key_algorithm.toString() + "' not fu implemented");

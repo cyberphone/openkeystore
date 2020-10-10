@@ -16,31 +16,7 @@
  */
 package org.webpki.crypto;
 
-import java.io.IOException;
-
 /**
- * Crypto algorithm base interface
+ * Basic types
  */
-public interface CryptoAlgorithms {
-
-    boolean isMandatorySksAlgorithm();
-
-    String getAlgorithmId(AlgorithmPreferences algorithmPreferences) throws IOException;
-
-    default String getJoseAlgorithmId() throws IOException {
-        return getAlgorithmId(AlgorithmPreferences.JOSE);
-    }
-
-    String getOid();
-
-    String getJceName();
-    
-    KeyTypes getKeyType();
-
-    default boolean isSymmetric() {
-        return getKeyType() == KeyTypes.SYM;
-    }
-    
-    boolean isDeprecated();
-    
-}
+public enum KeyTypes {RSA, PSA_PSS, EC, EDDSA, XEC, SYM};

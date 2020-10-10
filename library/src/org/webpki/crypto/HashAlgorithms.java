@@ -121,4 +121,9 @@ public enum HashAlgorithms implements CryptoAlgorithms {
     public boolean isDeprecated() {
         return this == SHA1;
     }
+
+    @Override
+    public KeyTypes getKeyType() {
+        return KeyTypes.SYM;
+    }
 }

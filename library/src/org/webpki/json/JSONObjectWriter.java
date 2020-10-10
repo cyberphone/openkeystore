@@ -784,20 +784,23 @@ import org.webpki.json.JSONSignatureDecoder;
     throws IOException {
         JSONObjectWriter corePublicKey = new JSONObjectWriter();
         KeyAlgorithms keyAlg = KeyAlgorithms.getKeyAlgorithm(publicKey);
-        if (keyAlg.isRsa()) {
+        switch (keyAlg.getKeyType()) {
+        case RSA:
             corePublicKey.setString(JSONCryptoHelper.KTY_JSON, JSONCryptoHelper.RSA_PUBLIC_KEY);
             RSAPublicKey rsaPublicKey = (RSAPublicKey) publicKey;
             corePublicKey.setCryptoBinary(rsaPublicKey.getModulus(), JSONCryptoHelper.N_JSON);
             corePublicKey.setCryptoBinary(rsaPublicKey.getPublicExponent(), 
                                           JSONCryptoHelper.E_JSON);
-        } else if (keyAlg.isEcdsa()) {
+            break;
+        case EC:
             corePublicKey.setString(JSONCryptoHelper.KTY_JSON, JSONCryptoHelper.EC_PUBLIC_KEY);
             corePublicKey.setString(JSONCryptoHelper.CRV_JSON, 
                                     keyAlg.getAlgorithmId(algorithmPreferences));
             ECPoint ecPoint = ((ECPublicKey) publicKey).getW();
             corePublicKey.setCurvePoint(ecPoint.getAffineX(), JSONCryptoHelper.X_JSON, keyAlg);
             corePublicKey.setCurvePoint(ecPoint.getAffineY(), JSONCryptoHelper.Y_JSON, keyAlg);
-        } else {
+            break;
+        default:  // EDDSA and XEC
             corePublicKey.setString(JSONCryptoHelper.KTY_JSON, JSONCryptoHelper.OKP_PUBLIC_KEY);
             corePublicKey.setString(JSONCryptoHelper.CRV_JSON, 
                                     keyAlg.getAlgorithmId(algorithmPreferences));

@@ -141,10 +141,7 @@ public class SignatureWrapper {
     private SignatureWrapper(AsymSignatureAlgorithms algorithm, String provider, Key key) 
             throws GeneralSecurityException, IOException {
         KeyAlgorithms keyAlgorithm = KeyAlgorithms.getKeyAlgorithm(key);
-        if (keyAlgorithm.isEcdsa() != algorithm.isEcdsa() ||
-            keyAlgorithm.isRsa() != algorithm.isRsa() ||
-            keyAlgorithm.isOkp() != algorithm.isOkp() ||
-            keyAlgorithm.getRecommendedSignatureAlgorithm() == null) {
+        if (keyAlgorithm.getKeyType() != algorithm.getKeyType()) {
             throw new IllegalArgumentException(
                     "Supplied key (" +
                     keyAlgorithm.toString() +
@@ -156,7 +153,7 @@ public class SignatureWrapper {
                 Signature.getInstance(algorithm.getJceName())
                                     :
                 Signature.getInstance(algorithm.getJceName(), provider);
-        unmodifiedSignature = !algorithm.isEcdsa();
+        unmodifiedSignature = algorithm.getKeyType() != KeyTypes.EC;
         if (!unmodifiedSignature) {
             ecParameters = ((ECKey) key).getParams();
         }

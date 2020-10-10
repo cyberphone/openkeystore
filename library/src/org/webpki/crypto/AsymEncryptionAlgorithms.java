@@ -48,11 +48,6 @@ public enum AsymEncryptionAlgorithms implements EncryptionAlgorithms {
     }
 
     @Override
-    public boolean isSymmetric() {
-        return false;
-    }
-
-    @Override
     public boolean isMandatorySksAlgorithm() {
         return this != RSA_OAEP_SHA1_MGF1P;
     }
@@ -60,11 +55,6 @@ public enum AsymEncryptionAlgorithms implements EncryptionAlgorithms {
     @Override
     public String getJceName() {
         return jceName;
-    }
-
-    @Override
-    public boolean isRsa() {
-        return true;
     }
 
     @Override
@@ -116,5 +106,10 @@ public enum AsymEncryptionAlgorithms implements EncryptionAlgorithms {
     @Override
     public boolean isDeprecated() {
         return this == RSA_ES_PKCS_1_5;
+    }
+
+    @Override
+    public KeyTypes getKeyType() {
+        return KeyTypes.RSA;
     }
 }

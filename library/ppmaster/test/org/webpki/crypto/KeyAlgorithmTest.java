@@ -75,7 +75,7 @@ public class KeyAlgorithmTest {
     public void testCreate() throws Exception {
         StringBuilder failed = new StringBuilder();
         for (KeyAlgorithms keyAlgorithm : KeyAlgorithms.values()) {
-            if (keyAlgorithm.isEcdsa()) {
+            if (keyAlgorithm.getKeyType() == KeyTypes.EDDSA) {
                 KeyPairGenerator kpg = KeyPairGenerator.getInstance("EC");
                 KeyPair keyPair = null;
                 try {
