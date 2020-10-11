@@ -219,8 +219,8 @@ public class JSONSignatureDecoder implements Serializable {
                         rd.getString(JSONCryptoHelper.CRV_JSON),
                         algorithmPreferences);
                 if (keyAlgorithm.getKeyType() != KeyTypes.EC) {
-                    throw new IOException("\"" + JSONCryptoHelper.CRV_JSON + 
-                                          "\" is not an EC type");
+                    throw new IllegalArgumentException("\"" + JSONCryptoHelper.CRV_JSON + 
+                                                       "\" is not an EC type");
                 }
                 ECPoint w = new ECPoint(getCurvePoint(rd, JSONCryptoHelper.X_JSON, keyAlgorithm),
                                         getCurvePoint(rd, JSONCryptoHelper.Y_JSON, keyAlgorithm));
@@ -233,15 +233,15 @@ public class JSONSignatureDecoder implements Serializable {
                         algorithmPreferences);
                 if (keyAlgorithm.getKeyType() != KeyTypes.EDDSA &&
                     keyAlgorithm.getKeyType() != KeyTypes.XEC) {
-                    throw new IOException("\"" + JSONCryptoHelper.CRV_JSON + 
-                                          "\" is not a valid OKP type");
+                    throw new IllegalArgumentException("\"" + JSONCryptoHelper.CRV_JSON + 
+                                                       "\" is not a valid OKP type");
                 }
                 publicKey = OkpSupport.raw2PublicOkpKey(rd.getBinary(JSONCryptoHelper.X_JSON), 
                                                         keyAlgorithm);
                 break;
             default:
-                throw new IOException("Unrecognized \"" + 
-                                       JSONCryptoHelper.KTY_JSON + "\": " + kty);
+                throw new IllegalArgumentException("Unrecognized \"" + 
+                                                   JSONCryptoHelper.KTY_JSON + "\": " + kty);
             }
             return publicKey;
         } catch (GeneralSecurityException e) {
@@ -252,7 +252,7 @@ public class JSONSignatureDecoder implements Serializable {
     void asymmetricSignatureVerification(PublicKey publicKey) throws IOException {
         if (((AsymSignatureAlgorithms) signatureAlgorithm).getKeyType() !=
                 KeyAlgorithms.getKeyAlgorithm(publicKey).getKeyType()) {
-            throw new IOException("\"" + algorithmString + 
+            throw new IllegalArgumentException("Algorithm \"" + algorithmString + 
                                   "\" doesn't match key type: " + publicKey.getAlgorithm());
         }
         try {
