@@ -268,6 +268,18 @@
         match="import java\.util\.Base64;"
         replace="import android.util.Base64;"
         flags="g"/>
+    <replaceregexp file="${android_dir}/org/webpki/crypto/AsymSignatureAlgorithms.java"
+        match="&quot;RSASSA-PSS&quot;,.*256,"
+        replace="&quot;SHA256withRSA/PSS&quot;, null/* Android != JDK */,"
+        flags="g"/>
+    <replaceregexp file="${android_dir}/org/webpki/crypto/AsymSignatureAlgorithms.java"
+        match="&quot;RSASSA-PSS&quot;,.*384,"
+        replace="&quot;SHA384withRSA/PSS&quot;, null/* Android != JDK */,"
+        flags="g"/>
+    <replaceregexp file="${android_dir}/org/webpki/crypto/AsymSignatureAlgorithms.java"
+        match="&quot;RSASSA-PSS&quot;,.*512,"
+        replace="&quot;SHA512withRSA/PSS&quot;, null/* Android != JDK */,"
+        flags="g"/>
   </target>
 
   <target name="android-json">    
@@ -291,6 +303,7 @@
         <include name="**/crypto/OkpSupport.java"/>
         <include name="**/crypto/MACAlgorithms.java"/>
         <include name="**/crypto/KeyAlgorithms.java"/>
+        <include name="**/crypto/KeyTypes.java"/>
         <include name="**/crypto/HashAlgorithms.java"/>
         <include name="**/crypto/SignatureAlgorithms.java"/>
         <include name="**/crypto/AlgorithmPreferences.java"/>
@@ -382,6 +395,7 @@
         <include name="**/crypto/SymKeySignerInterface.java"/>
         <include name="**/crypto/CryptoAlgorithms.java"/>
         <include name="**/crypto/KeyAlgorithms.java"/>
+        <include name="**/crypto/KeyTypes.java"/>
         <include name="**/crypto/MACAlgorithms.java"/>
         <include name="**/crypto/HashAlgorithms.java"/>
         <include name="**/crypto/SignatureAlgorithms.java"/>

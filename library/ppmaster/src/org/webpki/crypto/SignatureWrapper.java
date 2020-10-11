@@ -28,7 +28,9 @@ import java.security.Signature;
 import java.security.interfaces.ECKey;
 
 import java.security.spec.ECParameterSpec;
+//#if !ANDROID
 import java.security.spec.PSSParameterSpec;
+//#endif
 
 
 /**
@@ -175,6 +177,9 @@ public class SignatureWrapper {
                 Signature.getInstance(algorithm.getJceName(), provider);
 //#endif
         unmodifiedSignature = algorithm.getKeyType() != KeyTypes.EC;
+//#if ANDROID
+        if (!unmodifiedSignature) {
+//#else
         if (unmodifiedSignature) {
             if (algorithm.getMGF1ParameterSpec() != null) {
                 instance.setParameter(
@@ -185,6 +190,7 @@ public class SignatureWrapper {
                                              1));
             }
         } else {
+//#endif
             ecParameters = ((ECKey) key).getParams();
         }
     }
