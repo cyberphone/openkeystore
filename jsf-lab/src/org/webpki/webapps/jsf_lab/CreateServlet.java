@@ -155,6 +155,9 @@ public class CreateServlet extends HttpServlet {
                  .add(AsymSignatureAlgorithms.RSA_SHA256)
                  .add(AsymSignatureAlgorithms.RSA_SHA384)
                  .add(AsymSignatureAlgorithms.RSA_SHA512)
+                 .add(AsymSignatureAlgorithms.RSAPSS_SHA256)
+                 .add(AsymSignatureAlgorithms.RSAPSS_SHA384)
+                 .add(AsymSignatureAlgorithms.RSAPSS_SHA512)
                  .toString())
             .append(
                 "<div style='display:inline-block;padding:0 10pt 0 5pt'>Algorithm</div>" +
