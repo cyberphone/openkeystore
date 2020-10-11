@@ -36,7 +36,7 @@ There also is an Android proof-of-concept implementation which allows you to tes
 and then using provisioned keys for authentication:<br>
 https://play.google.com/store/apps/details?id=org.webpki.mobile.android
 
-## Android JSON, JSF, and JEF support
+## Android JSON, JOSE/JWS, JSF, and JEF support
 To create a source distribution for Android perform:
 ```
 $ cd library
