@@ -686,6 +686,10 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
             explicitKeySignature(r2048key),
             "r2048#rs256@jwk.json") +
         showAsymSignature(
+            explicitKeySignature(r2048key).replace(':', '.') +
+               " Note the use of the RSASSA PSS algorithm:",
+            "r2048#ps256@jwk.json") +
+        showAsymSignature(
             keyIdSignature(r2048key), 
             "r2048#rs256@kid.json") +
         showAsymSignature(
@@ -830,7 +834,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
          "&nbsp;&nbsp;writer.setString(&quot;myProperty&quot;,&nbsp;&quot;Some&nbsp;data&quot;);<br>" +
          "<br>" +
          "&nbsp;&nbsp;<span style=\"color:green\">//&nbsp;Sign&nbsp;document</span><br>" +
-         "&nbsp;&nbsp;writer.setSignature(new&nbsp;JSONAsymKeySigner(privateKey,&nbsp;publicKey));<br>" +
+         "&nbsp;&nbsp;writer.setSignature(new&nbsp;JSONAsymKeySigner(privateKey,&nbsp;publicKey,&nbsp;null));<br>" +
          "<br>" +
          "&nbsp;&nbsp;<span style=\"color:green\">//&nbsp;Serialize&nbsp;document</span><br>" +
          "&nbsp;&nbsp;String&nbsp;json&nbsp;=&nbsp;writer.toString();<br>" +
