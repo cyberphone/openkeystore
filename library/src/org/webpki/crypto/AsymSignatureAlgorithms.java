@@ -44,15 +44,15 @@ public enum AsymSignatureAlgorithms implements SignatureAlgorithms {
       
     RSAPSS_SHA256 ("http://www.w3.org/2007/05/xmldsig-more#sha256-rsa-MGF1", "PS256",      
                    "1.2.840.113549.1.1.10", "RSASSA-PSS",      HashAlgorithms.SHA256, 
-                   true,  KeyTypes.RSA,   MGF1ParameterSpec.SHA256),
+                   false, KeyTypes.RSA,   MGF1ParameterSpec.SHA256),
 
     RSAPSS_SHA384 ("http://www.w3.org/2007/05/xmldsig-more#sha384-rsa-MGF1", "PS384",     
                    "1.2.840.113549.1.1.10", "RSASSA-PSS",      HashAlgorithms.SHA384, 
-                   true,  KeyTypes.RSA,   MGF1ParameterSpec.SHA384),
+                   false, KeyTypes.RSA,   MGF1ParameterSpec.SHA384),
 
     RSAPSS_SHA512 ("http://www.w3.org/2007/05/xmldsig-more#sha512-rsa-MGF1", "PS512",   
                    "1.2.840.113549.1.1.10", "RSASSA-PSS",      HashAlgorithms.SHA512,
-                   true,  KeyTypes.RSA,   MGF1ParameterSpec.SHA512),
+                   false, KeyTypes.RSA,   MGF1ParameterSpec.SHA512),
 
     ECDSA_NONE    ("https://webpki.github.io/sks/algorithm#ecdsa.none",     null,
                    null,                    "NONEwithECDSA",   null,                  
