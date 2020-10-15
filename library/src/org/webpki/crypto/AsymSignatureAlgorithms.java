@@ -22,10 +22,6 @@ import java.security.spec.MGF1ParameterSpec;
 
 public enum AsymSignatureAlgorithms implements SignatureAlgorithms {
 
-    RSA_NONE      ("https://webpki.github.io/sks/algorithm#rsa.pkcs1.none",  null,
-                   null,                    "NONEwithRSA",     null,
-                   true,  KeyTypes.RSA,   null),
-      
     RSA_SHA1      ("http://www.w3.org/2000/09/xmldsig#rsa-sha1",             null,              
                    "1.2.840.113549.1.1.5",  "SHA1withRSA",     HashAlgorithms.SHA1,
                    false, KeyTypes.RSA,   null),
@@ -54,10 +50,6 @@ public enum AsymSignatureAlgorithms implements SignatureAlgorithms {
                    "1.2.840.113549.1.1.10", "RSASSA-PSS",      HashAlgorithms.SHA512,
                    false, KeyTypes.RSA,   MGF1ParameterSpec.SHA512),
 
-    ECDSA_NONE    ("https://webpki.github.io/sks/algorithm#ecdsa.none",     null,
-                   null,                    "NONEwithECDSA",   null,                  
-                   true,  KeyTypes.EC,    null),
-      
     ECDSA_SHA256  ("http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256",    "ES256",  
                    "1.2.840.10045.4.3.2",   "SHA256withECDSA", HashAlgorithms.SHA256,
                    true,  KeyTypes.EC,    null),

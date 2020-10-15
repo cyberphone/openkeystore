@@ -379,14 +379,6 @@ public class SEReferenceImplementation {
                      "NONEwithECDSA",
                      ALG_ASYM_SGN | ALG_EC_KEY | ALG_HASH_512);
 
-        addAlgorithm("https://webpki.github.io/sks/algorithm#rsa.pkcs1.none",
-                     "NONEwithRSA",
-                     ALG_ASYM_SGN | ALG_RSA_KEY);
-
-        addAlgorithm("https://webpki.github.io/sks/algorithm#ecdsa.none",
-                     "NONEwithECDSA",
-                     ALG_ASYM_SGN | ALG_EC_KEY);
-
         //////////////////////////////////////////////////////////////////////////////////////
         //  Asymmetric Key Generation
         //////////////////////////////////////////////////////////////////////////////////////
