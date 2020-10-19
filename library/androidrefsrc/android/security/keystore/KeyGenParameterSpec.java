@@ -35,6 +35,9 @@ public class KeyGenParameterSpec {
         public Builder setCertificateSubject(X500Principal name) {
             return this;
         }
+        public Builder setAttestationChallenge(byte[] challenge) {
+            return this;
+        }
         public AlgorithmParameterSpec build() {
             return null;
         }
