@@ -220,7 +220,7 @@ public class CreateServlet extends HttpServlet {
             "function setUserData(unconditionally) {\n" +
             "  let element = document.getElementById('" + PRM_JSON_DATA + "').children[1];\n" +
             "  if (unconditionally || element.value == '') element.value = '{\\n" +
-            "  \"statement\": \"Hello signed world!\",\\n" +
+            "  \"statement\": \"Hello signed \\\\u0077orld!\",\\n" +
             "  \"otherProperties\": [2e+3, true]\\n}';\n" +
             "}\n" +
             "function setParameters(alg, unconditionally) {\n" +
