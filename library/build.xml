@@ -70,6 +70,16 @@
   <target name="help">
     <echo message="Targets: help build tomcat doc testkeygen2 testsks testjson testkeyalgs android-json android-saturn"/>
   </target>
+
+  <target name="_preprocess">
+    <jpp destdir="." verbose="true" force="true">
+        <fileset dir="ppmaster" includes="**/*.java" />
+    </jpp>
+  	<replace file="${test_dir}/org/webpki/sks/SKSReferenceImplementation.java">
+      <replacefilter token="MACRO_GET_PRIVATEKEY" value="privateKey"/>
+      <replacefilter token="MACRO_IMPORTED_PRIVATEKEY" value="keyEntry.privateKey"/>
+    </replace> 
+  </target>
 	
   <target name="build">
   	<antcall target="_jdk11"/>
@@ -83,15 +93,11 @@
        eol="lf"
        eof="remove"
        includes="**/*.java, **/*.xsd"/>
- 
-    <jpp destdir="." verbose="true" force="true">
-        <fileset dir="ppmaster" includes="**/*.java" />
-    </jpp>
-    <replace file="${test_dir}/org/webpki/sks/SKSReferenceImplementation.java">
-      <replacefilter token="MACRO_GET_PRIVATEKEY" value="privateKey"/>
-      <replacefilter token="MACRO_IMPORTED_PRIVATEKEY" value="keyEntry.privateKey"/>
-    </replace>  
-  	
+
+  	<antcall target="_preprocess">
+  	   <param name="BOUNCYCASTLE" value="${BC}"/>
+    </antcall>
+
     <mkdir dir="${temp_dir}"/>
  	<!-- Copy all files except .java and doc-related -->
     <copy todir="${temp_dir}" preservelastmodified="true" includeEmptyDirs="false">
@@ -143,6 +149,11 @@
        <compilerarg value="-Xlint:all,-path"/>
     </javac>
 
+  	<property name="restorenonbc" value="false"/>
+  	<antcall target="_preprocess">
+   	   <param name="BOUNCYCASTLE" value="${restorenonbc}"/>
+  	</antcall>
+  
   </target>
 
   <target name="tomcat">

@@ -34,7 +34,7 @@ import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.ECGenParameterSpec;
 //#if !ANDROID
 import java.security.spec.MGF1ParameterSpec;
-//#if BC
+//#if BOUNCYCASTLE
 
 import org.bouncycastle.jcajce.spec.XDHParameterSpec;
 //#else
@@ -74,7 +74,7 @@ import org.webpki.util.ArrayUtil;
 #if ANDROID
  * Source configured for Android. 
 #else
-#if BC
+#if BOUNCYCASTLE
  * Source configured for the BouncyCastle provider.
 #else
  * Source configured for the default provider.
@@ -428,7 +428,7 @@ class EncryptionCore {
 //#else
         String jceName = privateKey instanceof ECKey ? "ECDH" : "XDH";
         KeyAgreement keyAgreement = ecProviderName == null ?
-//#if BC
+//#if BOUNCYCASTLE
                 KeyAgreement.getInstance(jceName, "BC") 
 //#else
                 KeyAgreement.getInstance(jceName) 
@@ -543,7 +543,7 @@ class EncryptionCore {
                                               : 
                     KeyPairGenerator.getInstance("EC", ecProviderName);
         } else {
-//#if BC
+//#if BOUNCYCASTLE
             paramSpec = new XDHParameterSpec(
                     OkpSupport.getOkpKeyAlgorithm(staticKey).getJceName());
 //#else
@@ -551,7 +551,7 @@ class EncryptionCore {
                     OkpSupport.getOkpKeyAlgorithm(staticKey).getJceName());
 //#endif
             generator = ecProviderName == null ?
-//#if BC
+//#if BOUNCYCASTLE
                     KeyPairGenerator.getInstance("XDH", "BC") 
  //#else
                     KeyPairGenerator.getInstance("XDH") 

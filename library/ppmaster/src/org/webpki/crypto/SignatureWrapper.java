@@ -39,7 +39,7 @@ import java.security.spec.PSSParameterSpec;
 #if ANDROID
  * Source configured for Android. 
 #else
-#if BC
+#if BOUNCYCASTLE
  * Source configured for the BouncyCastle provider.
 #else 
  * Source configured for the default provider.
@@ -161,7 +161,7 @@ public class SignatureWrapper {
                     algorithm.toString() +
                     ")");
         }
-//#if BC
+//#if BOUNCYCASTLE
         if (provider == null) {
             instance = algorithm.getKeyType() == KeyTypes.EDDSA ?
                     Signature.getInstance(algorithm.getJceName(), "BC")

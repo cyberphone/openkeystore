@@ -55,7 +55,7 @@ import org.webpki.crypto.KeyAlgorithms;
 /**
  * Functions for decoding PEM files.
  * 
-#if BC
+#if BOUNCYCASTLE
  * Source configured for the BouncyCastle provider.
 #else 
  * Source configured for the default provider.
@@ -152,7 +152,7 @@ public class PEMDecoder {
     throws IOException, GeneralSecurityException {
         String oid = ParseUtil.oid(ParseUtil.sequence(object).get(0)).oid();
         if (oid.startsWith("1.3.101.11")) {
-//#if BC
+//#if BOUNCYCASTLE
             return KeyFactory.getInstance(getOkpKeyAlgorithm(oid).getJceName(), "BC");
 //#else
             return KeyFactory.getInstance(getOkpKeyAlgorithm(oid).getJceName());

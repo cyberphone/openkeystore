@@ -27,7 +27,7 @@ import java.security.cert.X509Certificate;
 import java.security.cert.CertificateFactory;
 
 import java.security.GeneralSecurityException;
-//#if BC
+//#if BOUNCYCASTLE
 import java.security.PublicKey;
 
 import java.security.interfaces.ECKey;
@@ -57,7 +57,7 @@ import org.webpki.asn1.cert.SubjectAltNameTypes;
 #if ANDROID_PURE
  * Source configured for the free-standing Android JSON library.
 #else
-#if BC
+#if BOUNCYCASTLE
  * Source configured for the BouncyCastle provider.
 #else
  * Source configured for the default provider.
@@ -401,7 +401,7 @@ public class CertificateUtil {
     public static X509Certificate getCertificateFromBlob(byte[] encoded) throws IOException {
         try {
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
-//#if BC
+//#if BOUNCYCASTLE
             X509Certificate certificate =
                     (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(encoded));
             PublicKey publicKey = certificate.getPublicKey();

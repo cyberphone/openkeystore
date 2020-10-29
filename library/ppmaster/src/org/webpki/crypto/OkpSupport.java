@@ -49,7 +49,7 @@ public class OkpSupport {
 }
 //#else
 
-//#if BC
+//#if BOUNCYCASTLE
 import org.bouncycastle.jcajce.interfaces.EdDSAKey;
 import org.bouncycastle.jcajce.interfaces.XDHKey;
 //#else
@@ -57,7 +57,7 @@ import java.security.interfaces.XECKey;
 import java.security.interfaces.EdECKey;
 //#endif
 
-//#if !BC
+//#if !BOUNCYCASTLE
 import java.security.spec.NamedParameterSpec;
 //#endif
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -79,7 +79,7 @@ import org.webpki.util.DebugFormatter;
 /**
  * Support methods for "OKP" (RFC 8037)
  * 
-#if BC
+#if BOUNCYCASTLE
  * Source configured for the BouncyCastle provider.
  * Note that JDK and BouncyCastle are incompatible with respect to "OKP" keys
  * and that this module only forces BouncyCastle for OKP keys.
@@ -121,13 +121,13 @@ public class OkpSupport {
             okpPrefix.put(KeyAlgorithms.ED448,
                           DebugFormatter.getByteArrayFromHex("3043300506032b6571033a00"));
             okpPrefix.put(KeyAlgorithms.X25519,
-//#if BC
+//#if BOUNCYCASTLE
                           DebugFormatter.getByteArrayFromHex("302a300506032b656e032100"));
 //#else
                           DebugFormatter.getByteArrayFromHex("302c300706032b656e0500032100"));  // JDK bug
 //#endif
             okpPrefix.put(KeyAlgorithms.X448,
-//#if BC
+//#if BOUNCYCASTLE
                           DebugFormatter.getByteArrayFromHex("3042300506032b656f033900"));
 //#else
                           DebugFormatter.getByteArrayFromHex("3044300706032b656f0500033900"));  // JDK bug
@@ -138,7 +138,7 @@ public class OkpSupport {
 
     public static PublicKey raw2PublicOkpKey(byte[] x, KeyAlgorithms keyAlgorithm) 
     throws GeneralSecurityException {
-//#if BC
+//#if BOUNCYCASTLE
         return KeyFactory.getInstance(keyAlgorithm.getJceName(), "BC")
 //#else
         return KeyFactory.getInstance(keyAlgorithm.getJceName())
@@ -163,7 +163,7 @@ public class OkpSupport {
 
     public static PrivateKey raw2PrivateOkpKey(byte[] d, KeyAlgorithms keyAlgorithm)
     throws IOException, GeneralSecurityException {
-//#if BC
+//#if BOUNCYCASTLE
         KeyFactory keyFactory = KeyFactory.getInstance(keyAlgorithm.getJceName(), "BC");
 //#else
         KeyFactory keyFactory = KeyFactory.getInstance(keyAlgorithm.getJceName());
@@ -177,7 +177,7 @@ public class OkpSupport {
     }
 
     public static KeyAlgorithms getOkpKeyAlgorithm(Key key)  throws IOException {
-//#if BC
+//#if BOUNCYCASTLE
         if (key instanceof EdDSAKey) {
             return KeyAlgorithms.getKeyAlgorithmFromId(((EdDSAKey)key).getAlgorithm(),
                                                        AlgorithmPreferences.JOSE);
