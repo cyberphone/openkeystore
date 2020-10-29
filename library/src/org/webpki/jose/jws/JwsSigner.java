@@ -55,7 +55,7 @@ public abstract class JwsSigner {
      */
     JwsSigner(SignatureAlgorithms signatureAlgorithm) throws IOException {
         jwsProtectedHeader = new JSONObjectWriter()
-            .setString(ALG_JSON,signatureAlgorithm.getKeyType() == KeyTypes.EDDSA ? 
+            .setString(ALG_JSON, signatureAlgorithm.getKeyType() == KeyTypes.EDDSA ? 
                            EdDSA 
                                                            : 
                            signatureAlgorithm.getAlgorithmId(AlgorithmPreferences.JOSE));
@@ -87,7 +87,7 @@ public abstract class JwsSigner {
     /**
      * Create compact JWS signature
      * @param jwsPayload Binary payload
-     * @param detached True if payload is not to be supplied in the string
+     * @param detached True if payload is not to be supplied in the JWS string
      * @return JWS compact (string)
      * @throws IOException
      * @throws GeneralSecurityException
