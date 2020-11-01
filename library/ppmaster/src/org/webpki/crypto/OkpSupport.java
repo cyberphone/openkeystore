@@ -100,6 +100,36 @@ public class OkpSupport {
         okpKeyLength.put(KeyAlgorithms.X448,    56);
     }
 
+    static final HashMap<KeyAlgorithms,byte[]> okpPrefix = new HashMap<>();
+
+    static {
+        try {
+            okpPrefix.put(KeyAlgorithms.ED25519, 
+                          DebugFormatter.getByteArrayFromHex("302a300506032b6570032100"));
+            okpPrefix.put(KeyAlgorithms.ED448,
+                          DebugFormatter.getByteArrayFromHex("3043300506032b6571033a00"));
+            okpPrefix.put(KeyAlgorithms.X25519,
+                          DebugFormatter.getByteArrayFromHex("302a300506032b656e032100"));
+            okpPrefix.put(KeyAlgorithms.X448,
+                          DebugFormatter.getByteArrayFromHex("3042300506032b656f033900"));
+//#if !BOUNCYCASTLE
+// https://bugs.openjdk.java.net/browse/JDK-8252377
+// This code should work even after Oracle gets it right :)
+            if (java.security.KeyPairGenerator
+                    .getInstance("X25519")
+                        .generateKeyPair()
+                            .getPublic()
+                                .getEncoded().length == 46) {
+                okpPrefix.put(KeyAlgorithms.X25519,
+                              DebugFormatter.getByteArrayFromHex("302c300706032b656e0500032100"));
+                okpPrefix.put(KeyAlgorithms.X448,
+                              DebugFormatter.getByteArrayFromHex("3044300706032b656f0500033900"));
+            }
+//#endif
+        } catch (Exception e) {
+        }
+    }
+
     public static byte[] public2RawOkpKey(PublicKey publicKey, KeyAlgorithms keyAlgorithm)
     throws IOException {
         byte[] encoded = publicKey.getEncoded();
@@ -110,30 +140,6 @@ public class OkpSupport {
         byte[] rawKey = new byte[encoded.length - prefixLength];
         System.arraycopy(encoded, prefixLength, rawKey, 0, rawKey.length);
         return rawKey;
-    }
-
-    static final HashMap<KeyAlgorithms,byte[]> okpPrefix = new HashMap<>();
-
-    static {
-        try {
-            okpPrefix.put(KeyAlgorithms.ED25519, 
-                          DebugFormatter.getByteArrayFromHex("302a300506032b6570032100"));
-            okpPrefix.put(KeyAlgorithms.ED448,
-                          DebugFormatter.getByteArrayFromHex("3043300506032b6571033a00"));
-            okpPrefix.put(KeyAlgorithms.X25519,
-//#if BOUNCYCASTLE
-                          DebugFormatter.getByteArrayFromHex("302a300506032b656e032100"));
-//#else
-                          DebugFormatter.getByteArrayFromHex("302c300706032b656e0500032100"));  // JDK bug
-//#endif
-            okpPrefix.put(KeyAlgorithms.X448,
-//#if BOUNCYCASTLE
-                          DebugFormatter.getByteArrayFromHex("3042300506032b656f033900"));
-//#else
-                          DebugFormatter.getByteArrayFromHex("3044300706032b656f0500033900"));  // JDK bug
-//#endif
-        } catch (IOException e) {
-        }
     }
 
     public static PublicKey raw2PublicOkpKey(byte[] x, KeyAlgorithms keyAlgorithm) 
