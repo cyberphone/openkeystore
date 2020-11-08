@@ -62,9 +62,11 @@ import org.webpki.crypto.KeyStoreVerifier;
 import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.MACAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
+
 import org.webpki.jose.jws.JwsAsymKeySigner;
 import org.webpki.jose.jws.JwsAsymSignatureValidator;
 import org.webpki.jose.jws.JwsDecoder;
+
 import org.webpki.json.JSONCryptoHelper.PUBLIC_KEY_OPTIONS;
 
 import org.webpki.util.ArrayUtil;
@@ -3396,6 +3398,18 @@ public class JSONTest {
                     .setPublicKeyOption(
                             JSONCryptoHelper.PUBLIC_KEY_OPTIONS.FORBIDDEN))
                                 .verify(new JSONAsymKeyVerifier(keyPair.getPublic()));
+
+        AsymSignatureAlgorithms signatureAlgorithm = 
+                KeyAlgorithms.getKeyAlgorithm(keyPair.getPublic()).getRecommendedSignatureAlgorithm();
+        JSONObjectWriter dataToSign = new JSONObjectWriter()
+                .setString("hi", "there")
+                .setBoolean("a", true);
+        byte[] payload = dataToSign.serializeToBytes(JSONOutputFormats.CANONICALIZED);
+        JSONObjectWriter jwsCt = new JwsAsymKeySigner(keyPair.getPrivate(), signatureAlgorithm)
+            .createSignature(dataToSign, "jws");
+        JwsDecoder jwsDecoder = new JwsDecoder(new JSONObjectReader(jwsCt), "jws");
+        new JwsAsymSignatureValidator(keyPair.getPublic()).validateSignature(jwsDecoder);
+        assertTrue("JWS/CT", ArrayUtil.compare(jwsDecoder.getPayload(), payload));
     }
     
     void rfc8032(KeyAlgorithms keyAlgorithm,
@@ -3439,7 +3453,7 @@ public class JSONTest {
             assertTrue("Sign", jwsString.contentEquals(expectedJwsString));
 
             new JwsAsymSignatureValidator(keyPair.getPublic())
-                    .validateSignature(new JwsDecoder(jwsString), null);
+                    .validateSignature(new JwsDecoder(jwsString));
         } catch (Exception e) {
             assertFalse("8037", bcLoaded);
         }

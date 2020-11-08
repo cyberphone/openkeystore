@@ -17,12 +17,13 @@
 package org.webpki.jose.jws;
 
 import java.io.IOException;
+
 import java.security.GeneralSecurityException;
 
 import org.webpki.crypto.MACAlgorithms;
 
 /**
- * Creates HMAC signatures
+ * JWS HMAC signer
  */
 public class JwsHmacSigner extends JwsSigner {
     
@@ -30,7 +31,11 @@ public class JwsHmacSigner extends JwsSigner {
     byte[] secretKey;
     
     /**
-     * Create holder
+     * Initialize signer.
+     * 
+     * Note that a signer object may be used any number of times
+     * (assuming that the same parameters are valid).  It is also
+     * thread-safe.
      * @param secretKey The key to use
      * @param macAlgorithm HMAC Algorithm to use
      * @throws IOException 
@@ -42,7 +47,7 @@ public class JwsHmacSigner extends JwsSigner {
     }
 
     @Override
-    void signData(byte[] dataToBeSigned) throws IOException, GeneralSecurityException {
-        signature = macAlgorithm.digest(secretKey, dataToBeSigned);
+    byte[] signData(byte[] dataToBeSigned) throws IOException, GeneralSecurityException {
+        return macAlgorithm.digest(secretKey, dataToBeSigned);
     }
 }

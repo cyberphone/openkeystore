@@ -30,8 +30,12 @@ public class JwsHmacValidator extends JwsValidator {
     byte[] secretKey;
     
     /**
-     * JWS HMAC signature validator
-     * @param secretKey The anticipated key
+     * Initialize validator.
+     * 
+     * Note that a validator object may be used any number of times
+     * (assuming that the same parameters are valid).  It is also
+     * thread-safe.
+     * @param secretKey The anticipated secret key
      */
     public JwsHmacValidator(byte[] secretKey) {
         this.secretKey = secretKey;

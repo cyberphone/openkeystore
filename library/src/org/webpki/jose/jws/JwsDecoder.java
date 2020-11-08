@@ -46,7 +46,9 @@ public class JwsDecoder {
     
     JSONObjectReader jwsProtectedHeader;
     
-    String optionalJwsPayloadB64U;
+    String jwsPayloadB64U;
+    
+    boolean validated;
     
     SignatureAlgorithms signatureAlgorithm;
     
@@ -58,13 +60,7 @@ public class JwsDecoder {
     
     String optionalKeyId;
     
-    /**
-     * JWS signature decoder
-     * @param jwsString The actual JWS string.  If there is no payload detached mode is assumed
-     * @throws IOException
-     * @throws GeneralSecurityException
-     */
-    public JwsDecoder(String jwsString) throws IOException, GeneralSecurityException {
+    private void decodeJwsString(String jwsString) throws GeneralSecurityException, IOException {
 
         // Extract the JWS elements
         int endOfHeader = jwsString.indexOf('.');
@@ -75,8 +71,8 @@ public class JwsDecoder {
         }
         if (endOfHeader < startOfSignature - 1) {
             // In-line signature
-            optionalJwsPayloadB64U = jwsString.substring(endOfHeader + 1, startOfSignature);
-            Base64URL.decode(optionalJwsPayloadB64U);  // Syntax check
+            jwsPayloadB64U = jwsString.substring(endOfHeader + 1, startOfSignature);
+            Base64URL.decode(jwsPayloadB64U);  // Syntax check
         }
         
         // Begin decoding the JWS header
@@ -134,6 +130,38 @@ public class JwsDecoder {
         // Decode possible KID
         optionalKeyId = jwsProtectedHeader.getStringConditional(KID_JSON);
     }
+    
+    /**
+     * JWS compact mode signature decoder
+     * @param jwsString The actual JWS string.  If there is no payload detached mode is assumed
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
+    public JwsDecoder(String jwsString) throws IOException, GeneralSecurityException {
+        decodeJwsString(jwsString);
+    }
+
+    /**
+     * JWS/CT signature decoder
+     * @param jwsCtObject The signed JSON object
+     * @param signatureProperty Name of top-level property holding the JWS string
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
+    public JwsDecoder(JSONObjectReader jwsCtObject, String signatureProperty) 
+            throws IOException, GeneralSecurityException {
+
+        // Do not alter the original!
+        jwsCtObject = jwsCtObject.clone();
+        String jwsString = jwsCtObject.getString(signatureProperty);
+        if (!jwsString.contains("..")) {
+            throw new GeneralSecurityException("JWS detached mode syntax error");
+        }
+        jwsCtObject.removeProperty(signatureProperty);
+        jwsPayloadB64U = Base64URL.encode(
+                jwsCtObject.serializeToBytes(JSONOutputFormats.CANONICALIZED));
+        decodeJwsString(jwsString);
+    }
 
     /**
      * Get protected header
@@ -168,5 +196,18 @@ public class JwsDecoder {
      */
     public String getOptionalKeyId() {
         return optionalKeyId;
+    }
+
+    /**
+     * Read JWS payload
+     * @return Payload binary
+     * @throws GeneralSecurityException
+     * @throws IOException
+     */
+    public byte[] getPayload() throws GeneralSecurityException, IOException {
+        if (!validated) {
+            throw new GeneralSecurityException("Trying to access payload before validation");
+        }
+        return Base64URL.decode(jwsPayloadB64U);
     }
 }

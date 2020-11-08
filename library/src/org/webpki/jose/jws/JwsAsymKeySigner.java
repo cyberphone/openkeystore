@@ -28,6 +28,7 @@ import java.util.Base64;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
+import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.SignatureWrapper;
 
 import static org.webpki.jose.JoseKeyWords.*;
@@ -36,7 +37,7 @@ import org.webpki.json.JSONArrayWriter;
 import org.webpki.json.JSONObjectWriter;
 
 /**
- * Creates asymmetric key signatures
+ * JWS asymmetric key signer
  */
 public class JwsAsymKeySigner extends JwsSigner {
     
@@ -44,16 +45,25 @@ public class JwsAsymKeySigner extends JwsSigner {
     AsymSignatureAlgorithms signatureAlgorithm;
     
     /**
-     * Create signer
+     * Initialize signer.
+     * 
+     * Note that a signer object may be used any number of times
+     * (assuming that the same parameters are valid).  It is also
+     * thread-safe.
      * @param privateKey The key to sign with
      * @param signatureAlgorithm The algorithm to use
      * @throws IOException 
+     * @throws GeneralSecurityException 
      */
     public JwsAsymKeySigner(PrivateKey privateKey, 
-                            AsymSignatureAlgorithms signatureAlgorithm) throws IOException {
-         super(signatureAlgorithm);
-         this.privateKey = privateKey;
-         this.signatureAlgorithm = signatureAlgorithm;
+                            AsymSignatureAlgorithms signatureAlgorithm)
+            throws IOException, GeneralSecurityException {
+        super(signatureAlgorithm);
+        this.privateKey = privateKey;
+        this.signatureAlgorithm = signatureAlgorithm;
+        if (signatureAlgorithm.getKeyType() == KeyTypes.EC) {
+            checkEcJwsCompliance(privateKey, signatureAlgorithm);
+        }
     }
     
     /**
@@ -86,11 +96,9 @@ public class JwsAsymKeySigner extends JwsSigner {
     }
 
     @Override
-    void signData(byte[] dataToBeSigned) throws IOException, GeneralSecurityException {
-        signature = new SignatureWrapper(signatureAlgorithm, privateKey, provider)
+    byte[] signData(byte[] dataToBeSigned) throws IOException, GeneralSecurityException {
+        return new SignatureWrapper(signatureAlgorithm, privateKey, provider)
                 .update(dataToBeSigned)
                 .sign();
-        checkEcJwsCompliance(privateKey, signatureAlgorithm);
-        privateKey = null;
     }
 }

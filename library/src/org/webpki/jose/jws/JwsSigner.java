@@ -46,8 +46,6 @@ public abstract class JwsSigner {
     
     JSONObjectWriter jwsProtectedHeader;
     
-    byte[] signature;
-    
     String provider;
     
     /*
@@ -83,9 +81,25 @@ public abstract class JwsSigner {
         }
         return this;
     }
-    
+
     /**
-     * Create compact JWS signature
+     * Create JWS/CT signature
+     * @param objectToBeSigned The JSON object to be signed
+     * @param signatureProperty Name of property holding the "detached" JWS
+     * @return The now signed object
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
+    public JSONObjectWriter createSignature(JSONObjectWriter objectToBeSigned,
+                                            String signatureProperty)
+            throws IOException, GeneralSecurityException {
+        return objectToBeSigned.setString(signatureProperty, 
+                                          createSignature(
+                    objectToBeSigned.serializeToBytes(JSONOutputFormats.CANONICALIZED), true));
+    }
+
+    /**
+     * Create compact mode JWS signature
      * @param jwsPayload Binary payload
      * @param detached True if payload is not to be supplied in the JWS string
      * @return JWS compact (string)
@@ -101,21 +115,15 @@ public abstract class JwsSigner {
         String jwsPayloadB64U = Base64URL.encode(jwsPayload);
         byte[] dataToBeSigned = (jwsProtectedHeaderB64U + "." + jwsPayloadB64U).getBytes("utf-8");
 
-        // Sign data
-        signData(dataToBeSigned);
-        
-        // Disable any efforts reusing this object
-        jwsProtectedHeader = null;
-        
-        // Return JWS string
+        // Sign data and return JWS string
         return jwsProtectedHeaderB64U +
                 "." +
                 (detached ? "" : jwsPayloadB64U) +
                 "." +
-                Base64URL.encode(signature);
+                Base64URL.encode(signData(dataToBeSigned));
     }
 
-    abstract void signData(byte[] dataToBeSigned) throws IOException, GeneralSecurityException;
+    abstract byte[] signData(byte[] dataToBeSigned) throws IOException, GeneralSecurityException;
 
     /*
      * Verify that EC algorithms follow key types as specified by RFC 7515

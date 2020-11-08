@@ -32,8 +32,12 @@ public class JwsAsymSignatureValidator extends JwsValidator {
     PublicKey publicKey;
     
     /**
-     * Create validator
-     * @param publicKey
+     * Initialize validator.
+     * 
+     * Note that a validator object may be used any number of times
+     * (assuming that the same parameters are valid).  It is also
+     * thread-safe.
+     * @param publicKey The anticipated public key
      */
     public JwsAsymSignatureValidator(PublicKey publicKey) {
         this.publicKey = publicKey;
