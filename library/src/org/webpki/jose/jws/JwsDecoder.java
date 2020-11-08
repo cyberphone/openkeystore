@@ -38,7 +38,7 @@ import org.webpki.json.JSONParser;
 import org.webpki.util.Base64URL;
 
 /**
- * Core JWS decoder
+ * JWS and JWS/CT decoder
  */
 public class JwsDecoder {
     
@@ -78,22 +78,22 @@ public class JwsDecoder {
         // Begin decoding the JWS header
         jwsProtectedHeaderB64U = jwsString.substring(0, endOfHeader);
         jwsProtectedHeader = JSONParser.parse(Base64URL.decode(jwsProtectedHeaderB64U));
-        String algorithmParam = jwsProtectedHeader.getString(ALG_JSON);
+        String algorithmProperty = jwsProtectedHeader.getString(ALG_JSON);
         
         // Get the binary signature
         signature = Base64URL.decode(jwsString.substring(startOfSignature + 1));
 
         // This is pretty ugly, two different conventions in the same standard!
-        if (algorithmParam.equals(EdDSA)) {
+        if (algorithmProperty.equals(EdDSA)) {
             signatureAlgorithm = signature.length == 64 ? 
                         AsymSignatureAlgorithms.ED25519 : AsymSignatureAlgorithms.ED448;
-        } else if (algorithmParam.startsWith("HS")) {
+        } else if (algorithmProperty.startsWith("HS")) {
             signatureAlgorithm = 
-                    MACAlgorithms.getAlgorithmFromId(algorithmParam,
+                    MACAlgorithms.getAlgorithmFromId(algorithmProperty,
                                                      AlgorithmPreferences.JOSE);
         } else {
             signatureAlgorithm =
-                    AsymSignatureAlgorithms.getAlgorithmFromId(algorithmParam, 
+                    AsymSignatureAlgorithms.getAlgorithmFromId(algorithmProperty, 
                                                                AlgorithmPreferences.JOSE);
         }
         

@@ -3458,6 +3458,79 @@ public class JSONTest {
             assertFalse("8037", bcLoaded);
         }
     }
+    
+    void jwsSpecial(KeyPair keyPair, 
+                    AsymSignatureAlgorithms signatureAlgorithm, 
+                    AsymSignatureAlgorithms signatureAlgorithm2, 
+                    String optionalError) throws Exception {
+        JSONObjectWriter data = new JSONObjectWriter().setString("hi", "there");
+        String dataB64U = Base64URL.encode(data.serializeToBytes(JSONOutputFormats.CANONICALIZED));
+        JSONObjectWriter header = new JSONObjectWriter().setString("alg", signatureAlgorithm2.getJoseAlgorithmId());
+        String headerB64U = Base64URL.encode(header.serializeToBytes(JSONOutputFormats.NORMALIZED));
+        byte[] dataToBeSigned = (headerB64U + "." + dataB64U).getBytes("utf-8");
+        String jws = headerB64U + "." + dataB64U + "." + Base64URL.encode(
+                new SignatureWrapper(signatureAlgorithm, keyPair.getPrivate())
+                    .update(dataToBeSigned)
+                    .sign());
+        try {
+            new JwsAsymSignatureValidator(keyPair.getPublic())
+                .validateSignature(new JwsDecoder(jws));
+            assertTrue("Should fail", optionalError == null);
+        } catch (Exception e) {
+            checkException(e, optionalError);
+        }
+    }
+    
+    void jwsSpecials() throws Exception {
+        KeyPair keyPair = readJwk("p256");
+        jwsSpecial(keyPair, 
+                   AsymSignatureAlgorithms.ECDSA_SHA512,
+                   AsymSignatureAlgorithms.ECDSA_SHA512,
+                   "EC key and algorithm does not match the JWS spec");
+        jwsSpecial(keyPair, 
+                   AsymSignatureAlgorithms.ECDSA_SHA256,
+                   AsymSignatureAlgorithms.ECDSA_SHA256,
+                   null);
+        jwsSpecial(keyPair, 
+                   AsymSignatureAlgorithms.ECDSA_SHA256,
+                   AsymSignatureAlgorithms.RSA_SHA256,
+                   "Supplied key (NIST_P_256) is incompatible with specified algorithm (RSA_SHA256)");
+        try {
+            new JwsDecoder(new JSONObjectReader(new JSONObjectWriter().setString("hi","there")), "jws");
+            fail("no prop");
+        } catch (Exception e) {
+            checkException(e, "Property \"jws\" is missing");
+        }
+        try {
+            new JwsDecoder(new JSONObjectReader(new JSONObjectWriter()
+                      .setString("hi","there")
+                      .setString("jws", 
+         "eyJhbGciOiJIUzI1NiJ9.eyJoaSI6InRoZXJlISJ9.hu7zlBdI9MjBx5WxiezZ9qAjubwgMzVpBg5pfbzfTe0")), "jws");
+            fail("not detached");
+        } catch (Exception e) {
+            checkException(e, "JWS detached mode syntax error");
+        }
+        JwsAsymSignatureValidator validator = new JwsAsymSignatureValidator(keyPair.getPublic());
+        byte[] dataToBeSigned = new byte[] {1,2,3};
+        String jwsString = 
+                new JwsAsymKeySigner(keyPair.getPrivate(), AsymSignatureAlgorithms.ECDSA_SHA256)
+                    .createSignature(dataToBeSigned, false);
+        JwsDecoder jwsDecoder = new JwsDecoder(jwsString);
+        try {
+            jwsDecoder.getPayload();
+            fail("don't");
+        } catch (Exception e) {
+            checkException(e, "Trying to access payload before validation");
+        }
+
+        try {
+            validator.validateDetachedSignature(jwsDecoder, dataToBeSigned);
+            fail("don't");
+        } catch (Exception e) {
+            checkException(e, "Mixing detached and JWS-supplied payload");
+        }
+        validator.validateSignature(new JwsDecoder(jwsString));
+    }
 
     @Test
     public void Signatures() throws Exception {
@@ -3476,6 +3549,8 @@ public class JSONTest {
         keyPairSignature(readJwk("p384"));
         keyPairSignature(p521);
         keyPairSignature(r2048);
+        
+        jwsSpecials();
 
         try {
             keyPairSignature(readJwk("ed25519"));

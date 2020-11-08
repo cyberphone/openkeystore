@@ -55,15 +55,14 @@ public abstract class JwsValidator {
             throws IOException, GeneralSecurityException {
 
         // Dealing with detached signatures
-        if (jwsDecoder.jwsPayloadB64U == null) {
-            if (detachedPayload == null) {
-                throw new IllegalArgumentException("Detached payload missing");
-            }
-            jwsDecoder.jwsPayloadB64U = Base64URL.encode(detachedPayload);
-        } else {
-            throw new IllegalArgumentException("Both external and JWS-supplied payload?");
+        if (detachedPayload == null) {
+            throw new IllegalArgumentException("Detached payload must not be \"null\"");
         }
-        
+        if (jwsDecoder.jwsPayloadB64U != null) {
+            throw new IllegalArgumentException("Mixing detached and JWS-supplied payload");
+        }
+        jwsDecoder.jwsPayloadB64U = Base64URL.encode(detachedPayload);
+  
         // Main JWS validator
         validateSignature(jwsDecoder);
     }
@@ -79,7 +78,8 @@ public abstract class JwsValidator {
 
         // Dealing with in-line signatures
         if (jwsDecoder.jwsPayloadB64U == null) {
-            throw new IllegalArgumentException("Missing payload, detached mode?");
+            throw new IllegalArgumentException(
+                    "Missing payload, use \"validateDetachedSignature()\"");
         }
         
         // Delegated validation
