@@ -60,7 +60,7 @@ public abstract class JwsSigner {
     }
 
     /**
-     * Set cryptographic provider
+     * Set cryptographic provider.
      * @param provider Name of provider like "BC"
      * @return this
      */
@@ -70,7 +70,7 @@ public abstract class JwsSigner {
     }
 
     /**
-     * Add header elements
+     * Add header elements.
      * @param items A set of JSON tokens
      * @throws IOException
      * @return this
@@ -83,7 +83,7 @@ public abstract class JwsSigner {
     }
 
     /**
-     * Create JWS/CT signature
+     * Create JWS/CT signature.
      * @param objectToBeSigned The JSON object to be signed
      * @param signatureProperty Name of property holding the "detached" JWS
      * @return The now signed object
@@ -99,7 +99,11 @@ public abstract class JwsSigner {
     }
 
     /**
-     * Create compact mode JWS signature
+     * Create compact mode JWS signature.
+     * Note that the detached mode follows the specification
+     * described in 
+     * <a href="https://tools.ietf.org/html/rfc7515#appendix-F" 
+     * target="_blank">https://tools.ietf.org/html/rfc7515#appendix-F</a>.
      * @param jwsPayload Binary payload
      * @param detached True if payload is not to be supplied in the JWS string
      * @return JWS compact (string)

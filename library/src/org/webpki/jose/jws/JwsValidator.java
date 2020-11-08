@@ -35,7 +35,7 @@ public abstract class JwsValidator {
             throws IOException, GeneralSecurityException;
 
     /**
-     * Set cryptographic provider
+     * Set cryptographic provider.
      * @param provider Name of provider like "BC"
      * @return this
      */
@@ -45,7 +45,11 @@ public abstract class JwsValidator {
     }
     
     /**
-     * Validate compact JWS signature in "detached" mode
+     * Validate compact JWS signature in "detached" mode.
+     * Note that the detached mode follows the specification
+     * described in 
+     * <a href="https://tools.ietf.org/html/rfc7515#appendix-F" 
+     * target="_blank">https://tools.ietf.org/html/rfc7515#appendix-F</a>.
      * @param jwsDecoder Decoded JWS data
      * @param detachedPayload Detached payload
      * @throws IOException
@@ -68,7 +72,7 @@ public abstract class JwsValidator {
     }
 
     /**
-     * Validate compact JWS signature in "standard" mode
+     * Validate compact JWS signature in "standard" mode.
      * @param jwsDecoder Decoded JWS data
      * @throws IOException
      * @throws GeneralSecurityException

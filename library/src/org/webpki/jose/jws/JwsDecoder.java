@@ -132,7 +132,7 @@ public class JwsDecoder {
     }
     
     /**
-     * JWS compact mode signature decoder
+     * JWS compact mode signature decoder.
      * @param jwsString The actual JWS string.  If there is no payload detached mode is assumed
      * @throws IOException
      * @throws GeneralSecurityException
@@ -142,7 +142,7 @@ public class JwsDecoder {
     }
 
     /**
-     * JWS/CT signature decoder
+     * JWS/CT signature decoder.
      * @param jwsCtObject The signed JSON object
      * @param signatureProperty Name of top-level property holding the JWS string
      * @throws IOException
@@ -164,42 +164,42 @@ public class JwsDecoder {
     }
 
     /**
-     * Get protected header
+     * Get protected header.
      */
     public JSONObjectReader getJwsProtectedHeader() {
         return jwsProtectedHeader;
     }
 
     /**
-     * Get signature algorithm
+     * Get signature algorithm.
      */
     public SignatureAlgorithms getSignatureAlgorithm() {
         return signatureAlgorithm;
     }
 
     /**
-     * Get optional "jwk"
+     * Get optional "jwk".
      */
     public PublicKey getOptionalPublicKey() {
         return optionalPublicKey;
     }
 
     /**
-     * Get optional "x5c"
+     * Get optional "x5c".
      */
     public X509Certificate[] getOptionalCertificatePath() {
         return optionalCertificatePath;
     }
 
     /**
-     * Get optional "kid"
+     * Get optional "kid".
      */
     public String getOptionalKeyId() {
         return optionalKeyId;
     }
 
     /**
-     * Read JWS payload
+     * Read JWS payload.
      * @return Payload binary
      * @throws GeneralSecurityException
      * @throws IOException
