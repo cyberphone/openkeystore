@@ -28,6 +28,7 @@ import java.util.Base64;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
+import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.SignatureWrapper;
 
@@ -64,6 +65,24 @@ public class JwsAsymKeySigner extends JwsSigner {
         if (signatureAlgorithm.getKeyType() == KeyTypes.EC) {
             checkEcJwsCompliance(privateKey, signatureAlgorithm);
         }
+    }
+    
+    /**
+     * Initialize signer.
+     * 
+     * Note that a signer object may be used any number of times
+     * (assuming that the same parameters are valid).  It is also
+     * thread-safe.
+     * The default signature algorithm to use is based on the recommendations
+     * in RFC 7518.
+     * @param privateKey The key to sign with
+     * @throws IOException 
+     * @throws GeneralSecurityException 
+     */
+    public JwsAsymKeySigner(PrivateKey privateKey)
+            throws IOException, GeneralSecurityException {
+        this(privateKey, 
+             KeyAlgorithms.getKeyAlgorithm(privateKey).getRecommendedSignatureAlgorithm());
     }
     
     /**

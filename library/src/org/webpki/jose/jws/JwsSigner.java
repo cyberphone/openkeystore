@@ -86,7 +86,7 @@ public abstract class JwsSigner {
      * Create JWS/CT signature.
      * @param objectToBeSigned The JSON object to be signed
      * @param signatureProperty Name of property holding the "detached" JWS
-     * @return The now signed object
+     * @return The now signed <code>objectToBeSigned</code>
      * @throws IOException
      * @throws GeneralSecurityException
      */
@@ -134,12 +134,11 @@ public abstract class JwsSigner {
      */
     static void checkEcJwsCompliance(Key key, AsymSignatureAlgorithms signatureAlgorithm)
             throws GeneralSecurityException, IOException {
-        if (key instanceof ECKey) {
-            if (KeyAlgorithms.getKeyAlgorithm(key)
+        if (key instanceof ECKey &&
+            KeyAlgorithms.getKeyAlgorithm(key)
                     .getRecommendedSignatureAlgorithm() != signatureAlgorithm) {
-                throw new GeneralSecurityException(
-                        "EC key and algorithm does not match the JWS spec");
-            }
+            throw new GeneralSecurityException(
+                    "EC key and algorithm does not match the JWS spec");
         } 
     }
 }

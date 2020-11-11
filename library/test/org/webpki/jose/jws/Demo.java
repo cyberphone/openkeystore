@@ -1,0 +1,69 @@
+/*
+ *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+package org.webpki.jose.jws;
+
+import java.io.IOException;
+
+import org.webpki.crypto.MACAlgorithms;
+
+import org.webpki.json.JSONObjectWriter;
+import org.webpki.json.JSONParser;
+
+import org.webpki.util.DebugFormatter;
+
+public class Demo {
+    
+    static final String JSON_TO_BE_SIGNED =
+        "{\n" +
+        "  \"statement\": \"Hello signed world!\",\n" +
+        "  \"otherProperties\": [2000, true]\n" +
+        "}";
+    
+    static final byte[] SECRET_KEY;
+    
+    static final String SIGNATURE_PROPERTY = "signature";
+    
+    static {
+        try {
+            SECRET_KEY = DebugFormatter.getByteArrayFromHex(
+                    "7fdd851a3b9d2dafc5f0d00030e22b9343900cd42ede4948568a4a2ee655291a");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    public static void main(String[] argc) {
+        try {
+            JwsHmacSigner signer = new JwsHmacSigner(SECRET_KEY,
+                                                     MACAlgorithms.HMAC_SHA256);
+            System.out.println(
+                signer.createSignature(
+                        new JSONObjectWriter(JSONParser.parse(JSON_TO_BE_SIGNED)),
+                        SIGNATURE_PROPERTY).toString());
+/*
+{
+  "statement": "Hello signed world!",
+  "otherProperties": [2000, true],
+  "signature": "eyJhbGciOiJIUzI1NiJ9..VHVItCBCb8Q5CI-49imarDtJeSxH2uLU0DhqQP5Zjw4"
+} 
+ */
+           
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
