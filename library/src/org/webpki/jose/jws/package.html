@@ -1,3 +1,41 @@
 <body>
 <h2>Basic JWS and JWS/CT support</h2>
+<h3>Signing Data</h3>
+<div>Create a JWS Compact Serialization Object:</div>
+<div style='margin:0.5em 0 0.5em 3em'>
+<div style='color:grey'><code>// Initialize a signer</code></div>
+<code>JwsAsymKeySigner signer = new JwsAsymKeySigner(</code><i>privateKey</i><code>);</code><br>
+<div style='color:grey'><code>// Sign data</code></div>
+<code>String jwsString signer.createSignature(</code><i>jwsPayload</i><code>,</code> <i>detachedFlag</i><code>);</code>
+</div>
+<div>Create a JWS/CT Object:</div>
+<div style='margin:0.5em 0 0.5em 3em'>
+<div style='color:grey'><code>// Initialize a signer</code></div>
+<code>JwsAsymKeySigner signer = new JwsAsymKeySigner(</code><i>privateKey</i><code>);</code><br>
+<div style='color:grey'><code>// Sign data</code></div>
+<code>JSONObjectWriter jwsCtObject signer.createSignature(</code><i>jsonObjectToSign</i><code>,</code> <i>signatureProperty</i><code>);</code>
+</div>
+<h3>Validate Signature and Fetch Payload Data</h3>
+<div>The following is a bit simplistic since you typically need
+to first parse the data and signature header in order to figure out which
+validation key to use.
+The <code>JwsDecoder</code> object provides the necessary functionality.</div>
+<div style='margin-top:1em'>Validate a JWS Compact Serialization Object:</div>
+<div style='margin:0.5em 0 0.5em 3em'>
+<div style='color:grey'><code>// Decode JWS data</code></div>
+<code>JwsDecoder jwsDecoder = new JwsDecoder(</code><i>jwsString</i><code>);</code>
+<div style='color:grey'><code>// Initialize a validator</code></div>
+<code>JwsAsymSignatureValidator validator = new JwsAsymSignatureValidator(</code><i>publicKey</i><code>);</code><br>
+<div style='color:grey'><code>// Validate signature and fetch payload</code></div>
+<code>byte[] data = validator.validateSignature(jwsDecoder).getPayload();</code><br>
+</div>
+<div style='margin-top:1em'>Validate a JWS/CT Object:</div>
+<div style='margin:0.5em 0 0.5em 3em'>
+<div style='color:grey'><code>// Decode JWS/CT object</code></div>
+<code>JwsDecoder jwsDecoder = new JwsDecoder(</code><i>jwsCtObject</i><code>,</code> <i>signatureProperty</i><code>);</code>
+<div style='color:grey'><code>// Initialize a validator</code></div>
+<code>JwsAsymSignatureValidator validator = new JwsAsymSignatureValidator(</code><i>publicKey</i><code>);</code><br>
+<div style='color:grey'><code>// Validate signature (the JSON data is already available in the <i>jwsCtObject</i>).</code></div>
+<code>validator.validateSignature(jwsDecoder);</code><br>
+</div>
 </body>

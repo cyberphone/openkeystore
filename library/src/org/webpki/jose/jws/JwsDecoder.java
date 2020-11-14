@@ -48,6 +48,8 @@ public class JwsDecoder {
     
     String jwsPayloadB64U;
     
+    JSONObjectReader savedJwsCtObject;
+    
     boolean validated;
     
     SignatureAlgorithms signatureAlgorithm;
@@ -59,6 +61,12 @@ public class JwsDecoder {
     X509Certificate[] optionalCertificatePath;
     
     String optionalKeyId;
+    
+    private void checkValidation() throws GeneralSecurityException {
+        if (!validated) {
+            throw new GeneralSecurityException("Trying to access payload before validation");
+        }        
+    }
     
     private void decodeJwsString(String jwsString) throws GeneralSecurityException, IOException {
 
@@ -152,6 +160,7 @@ public class JwsDecoder {
             throws IOException, GeneralSecurityException {
 
         // Do not alter the original!
+        savedJwsCtObject = jwsCtObject;
         jwsCtObject = jwsCtObject.clone();
         String jwsString = jwsCtObject.getString(signatureProperty);
         if (!jwsString.contains("..")) {
@@ -200,14 +209,27 @@ public class JwsDecoder {
 
     /**
      * Read JWS payload.
+     * Note that this method throws an exception if the JwsDecoder object signature have not
+     * yet been validated.
      * @return Payload binary
      * @throws GeneralSecurityException
      * @throws IOException
      */
     public byte[] getPayload() throws GeneralSecurityException, IOException {
-        if (!validated) {
-            throw new GeneralSecurityException("Trying to access payload before validation");
-        }
+        checkValidation();
         return Base64URL.decode(jwsPayloadB64U);
+    }
+
+    /**
+     * Read JWS payload.
+     * Note that this method throws an exception if the JwsDecoder object signature have not
+     * yet been validated.
+     * @return Payload as JSON
+     * @throws GeneralSecurityException
+     * @throws IOException
+     */
+    public JSONObjectReader getPayloadAsJson() throws GeneralSecurityException, IOException {
+        checkValidation();
+        return savedJwsCtObject == null ? JSONParser.parse(getPayload()) : savedJwsCtObject;
     }
 }

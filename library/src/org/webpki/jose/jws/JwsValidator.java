@@ -52,10 +52,11 @@ public abstract class JwsValidator {
      * target="_blank">https://tools.ietf.org/html/rfc7515#appendix-F</a>.
      * @param jwsDecoder Decoded JWS data
      * @param detachedPayload Detached payload
+     * @return JwsDecoder
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public void validateDetachedSignature(JwsDecoder jwsDecoder, byte[] detachedPayload) 
+    public JwsDecoder validateDetachedSignature(JwsDecoder jwsDecoder, byte[] detachedPayload) 
             throws IOException, GeneralSecurityException {
 
         // Dealing with detached signatures
@@ -68,16 +69,17 @@ public abstract class JwsValidator {
         jwsDecoder.jwsPayloadB64U = Base64URL.encode(detachedPayload);
   
         // Main JWS validator
-        validateSignature(jwsDecoder);
+        return validateSignature(jwsDecoder);
     }
 
     /**
      * Validate compact JWS signature in "standard" mode.
      * @param jwsDecoder Decoded JWS data
+     * @return JwsDecoder
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public void validateSignature(JwsDecoder jwsDecoder) 
+    public JwsDecoder validateSignature(JwsDecoder jwsDecoder) 
             throws IOException, GeneralSecurityException {
 
         // Dealing with in-line signatures
@@ -94,5 +96,8 @@ public abstract class JwsValidator {
         
         // No access to payload without having passed validation
         jwsDecoder.validated = true;
+        
+        // Convenience return
+        return jwsDecoder;
     }
 }

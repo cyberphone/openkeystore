@@ -327,9 +327,8 @@ public class CreateServlet extends HttpServlet {
             throws IOException, ServletException {
          try {
             request.setCharacterEncoding("utf-8");
-            String jsonData = getTextArea(request, PRM_JSON_DATA);
+            JSONObjectReader reader = JSONParser.parse(getTextArea(request, PRM_JSON_DATA));
             String signatureLabel = getParameter(request, PRM_SIG_LABEL);
-            JSONObjectReader reader = JSONParser.parse(jsonData);
             if (reader.getJSONArrayReader() != null) {
                 throw new IOException("The demo does not support signed arrays");
             }
@@ -392,17 +391,6 @@ public class CreateServlet extends HttpServlet {
             }
             String signedJsonObject = writer.setSignature(signatureLabel, signer)
                     .serializeToString(JSONOutputFormats.NORMALIZED);
-
-            // The following is just for the demo.  That is, we want to preserve
-            // the original ("untouched") JSON data for educational purposes.
-            int i = signedJsonObject.lastIndexOf("\"" + signatureLabel);
-            if (signedJsonObject.charAt(i - 1) == ',') {
-                i--;
-            }
-            int j = jsonData.lastIndexOf("}");
-            signedJsonObject = jsonData.substring(0, j) + 
-                    signedJsonObject.substring(i, signedJsonObject.length() - 1) +
-                    jsonData.substring(j);
 
             // We terminate by validating the signature as well
             request.getRequestDispatcher((jsFlag ? "jssignature?" : "validate?") +

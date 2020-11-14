@@ -22,8 +22,6 @@ import java.security.PublicKey;
 
 import java.security.cert.X509Certificate;
 
-import java.util.Vector;
-
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -68,33 +66,17 @@ public class ValidateServlet extends HttpServlet {
             }
             logger.info("JSON Signature Verification Entered");
             // Get the two input data items
-            String signedJsonObject = CreateServlet.getParameter(request, JSF_OBJECT);
+            JSONObjectReader signedJsonObject = JSONParser.parse(
+                    CreateServlet.getParameter(request, JSF_OBJECT));
             String validationKey = CreateServlet.getParameter(request, JSF_VALIDATION_KEY);
             String signatureLabel = CreateServlet.getParameter(request, JSF_SIGN_LABL);
 
-            // Parse the JSON data
-            JSONObjectReader parsedObject = JSONParser.parse(signedJsonObject);
-            
             // Create a pretty-printed JSON object without canonicalization
             String prettySignature = 
-                    parsedObject.serializeToString(JSONOutputFormats.PRETTY_HTML);
-            Vector<String> tokens = 
-                    new JSONTokenExtractor().getTokens(signedJsonObject);
-            int fromIndex = 0;
-            for (String token : tokens) {
-                int start = prettySignature.indexOf("<span ", fromIndex);
-                int stop = prettySignature.indexOf("</span>", start);
-                // <span style="color:#C00000">
-                prettySignature = 
-                        prettySignature.substring(0, 
-                                                  start + 28) + 
-                                                     token + 
-                                                     prettySignature.substring(stop);
-                fromIndex = start + 1;
-            }
+                    signedJsonObject.serializeToString(JSONOutputFormats.PRETTY_HTML);
             
             // Start decoding by retrieving the signature object
-            JSONObjectReader signatureObject = parsedObject.getObject(signatureLabel);
+            JSONObjectReader signatureObject = signedJsonObject.getObject(signatureLabel);
             String algorithmString = signatureObject.getString(JSONCryptoHelper.ALGORITHM_JSON);
             StringBuilder certificateData = null;
             JSONCryptoHelper.Options options = new JSONCryptoHelper.Options();
@@ -117,7 +99,8 @@ public class ValidateServlet extends HttpServlet {
                     options.setPublicKeyOption(JSONCryptoHelper.PUBLIC_KEY_OPTIONS.OPTIONAL);
                 }
             }
-            JSONSignatureDecoder signatureDecoder = parsedObject.getSignature(signatureLabel, options);
+            JSONSignatureDecoder signatureDecoder = 
+                    signedJsonObject.getSignature(signatureLabel, options);
 
             // Final validation
             boolean jwkValidationKey = validationKey.startsWith("{");
