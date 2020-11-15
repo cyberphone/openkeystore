@@ -6,7 +6,7 @@
 <div style='color:grey'><code>// Initialize a signer</code></div>
 <code>{@link JwsAsymKeySigner} signer = new {@link JwsAsymKeySigner#JwsAsymKeySigner(PrivateKey) JwsAsymKeySigner}(</code><i>privateKey</i><code>);</code><br>
 <div style='color:grey'><code>// Sign data</code></div>
-<code>String jwsString signer.{@link JwsSigner#createSignature(byte[], boolean) createSignature}(</code><i>jwsPayload</i><code>,</code> <code>false);</code>
+<code>String jwsString = signer.{@link JwsSigner#createSignature(byte[], boolean) createSignature}(</code><i>jwsPayload</i><code>,</code> <code>false);</code>
 </div>
 <div>Create a JWS/CT Object:</div>
 <div style='margin:0.5em 0 0.5em 3em'>
