@@ -3529,7 +3529,19 @@ public class JSONTest {
         } catch (Exception e) {
             checkException(e, "Mixing detached and JWS-supplied payload");
         }
-        validator.validateSignature(new JwsDecoder(jwsString));
+        assertTrue("data", ArrayUtil.compare(dataToBeSigned,
+                     validator.validateSignature(new JwsDecoder(jwsString)).getPayload()));
+        
+        JSONObjectWriter unsigned = new JSONObjectWriter()
+                .setString("z", "h")
+                .setString("a", "g");
+        JwsAsymKeySigner signer = new JwsAsymKeySigner(keyPair.getPrivate());
+        JSONObjectWriter signed = signer.createSignature(
+                new JSONObjectWriter(new JSONObjectReader(unsigned).clone()), "signature");
+        assertTrue("jwsDat", unsigned.toString().equals(
+        new JwsAsymSignatureValidator(keyPair.getPublic()).
+            validateSignature(new JwsDecoder(new JSONObjectReader(signed), 
+                                             "signature")).getPayloadAsJson().toString()));
     }
 
     @Test

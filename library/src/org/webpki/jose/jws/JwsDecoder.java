@@ -151,6 +151,7 @@ public class JwsDecoder {
 
     /**
      * JWS/CT signature decoder.
+     * Note that the <code>jwsCtObject</code> remains <i>unmodified</i>.
      * @param jwsCtObject The signed JSON object
      * @param signatureProperty Name of top-level property holding the JWS string
      * @throws IOException
@@ -160,15 +161,14 @@ public class JwsDecoder {
             throws IOException, GeneralSecurityException {
 
         // Do not alter the original!
-        savedJwsCtObject = jwsCtObject;
-        jwsCtObject = jwsCtObject.clone();
-        String jwsString = jwsCtObject.getString(signatureProperty);
+        savedJwsCtObject = jwsCtObject.clone();
+        String jwsString = savedJwsCtObject.getString(signatureProperty);
         if (!jwsString.contains("..")) {
             throw new GeneralSecurityException("JWS detached mode syntax error");
         }
-        jwsCtObject.removeProperty(signatureProperty);
+        savedJwsCtObject.removeProperty(signatureProperty);
         jwsPayloadB64U = Base64URL.encode(
-                jwsCtObject.serializeToBytes(JSONOutputFormats.CANONICALIZED));
+                savedJwsCtObject.serializeToBytes(JSONOutputFormats.CANONICALIZED));
         decodeJwsString(jwsString);
     }
 
@@ -208,9 +208,12 @@ public class JwsDecoder {
     }
 
     /**
-     * Read JWS payload.
-     * Note that this method throws an exception if the JwsDecoder object signature have not
-     * yet been validated.
+     * Get the "JWS payload".
+     * Note that this method throws an exception if the <code>JwsDecoder</code>
+     * object signature have not yet been validated.
+     * For JWS/CT, the payload holds the canonicalized
+     * version of the <code>jwsCtObject</code> with the
+     * <code>signatureProperty</code> removed.
      * @return Payload binary
      * @throws GeneralSecurityException
      * @throws IOException
@@ -221,9 +224,11 @@ public class JwsDecoder {
     }
 
     /**
-     * Read JWS payload.
-     * Note that this method throws an exception if the JwsDecoder object signature have not
-     * yet been validated.
+     * Get the "JWS payload".
+     * Note that this method throws an exception if the <code>JwsDecoder</code>
+     * object signature have not yet been validated.
+     * For JWS/CT this method return the JSON that is actually signed.  That is,
+     * all but the <code>signatureProperty</code> and its JWS argument.
      * @return Payload as JSON
      * @throws GeneralSecurityException
      * @throws IOException
