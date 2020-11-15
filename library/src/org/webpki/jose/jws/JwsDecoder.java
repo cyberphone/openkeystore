@@ -208,12 +208,17 @@ public class JwsDecoder {
     }
 
     /**
-     * Get the "JWS payload".
-     * Note that this method throws an exception if the <code>JwsDecoder</code>
-     * object signature have not yet been validated.
+     * Get "JWS payload".
+     * Note that this method throws an exception if the
+     * {@link org.webpki.jose.jws.JwsDecoder}
+     * object signature have not yet been
+     * {@link org.webpki.jose.jws.JwsValidator#validateSignature(JwsDecoder) validated}.
      * For JWS/CT, the payload holds the canonicalized
-     * version of the <code>jwsCtObject</code> with the
-     * <code>signatureProperty</code> removed.
+     * version of the 
+     * {@link org.webpki.jose.jws.JwsDecoder#JwsDecoder(JSONObjectReader, String) jwsCtObject}
+     * with the
+    * {@link org.webpki.jose.jws.JwsDecoder#JwsDecoder(JSONObjectReader, String) signatureProperty}
+     * removed.
      * @return Payload binary
      * @throws GeneralSecurityException
      * @throws IOException
@@ -224,17 +229,24 @@ public class JwsDecoder {
     }
 
     /**
-     * Get the "JWS payload".
-     * Note that this method throws an exception if the <code>JwsDecoder</code>
-     * object signature have not yet been validated.
+     * Get "JWS payload".
+     * Note that this method throws an exception if the
+     * {@link org.webpki.jose.jws.JwsDecoder}
+     * object signature have not yet been
+     * {@link org.webpki.jose.jws.JwsValidator#validateSignature(JwsDecoder) validated}.
      * For JWS/CT this method return the JSON that is actually signed.  That is,
-     * all but the <code>signatureProperty</code> and its JWS argument.
+     * all but the 
+    * {@link org.webpki.jose.jws.JwsDecoder#JwsDecoder(JSONObjectReader, String) signatureProperty}
+     * and its JWS argument.
      * @return Payload as JSON
      * @throws GeneralSecurityException
      * @throws IOException
      */
     public JSONObjectReader getPayloadAsJson() throws GeneralSecurityException, IOException {
+        if (savedJwsCtObject == null) {
+            return JSONParser.parse(getPayload());
+        }
         checkValidation();
-        return savedJwsCtObject == null ? JSONParser.parse(getPayload()) : savedJwsCtObject;
+        return savedJwsCtObject;
     }
 }

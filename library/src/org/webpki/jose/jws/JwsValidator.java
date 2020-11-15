@@ -45,7 +45,7 @@ public abstract class JwsValidator {
     }
     
     /**
-     * Validate compact JWS signature in "detached" mode.
+     * Validate JWS signature in "detached" mode.
      * Note that the detached mode follows the specification
      * described in 
      * <a href="https://tools.ietf.org/html/rfc7515#appendix-F" 
@@ -73,7 +73,9 @@ public abstract class JwsValidator {
     }
 
     /**
-     * Validate compact JWS signature in "standard" mode.
+     * Validate JWS or JWS/CT signature.
+     * Note that for JWS the "standard" mode is assumed while
+     * JWS/CT implicitly builds on the "detached" mode.
      * @param jwsDecoder Decoded JWS data
      * @return JwsDecoder
      * @throws IOException
