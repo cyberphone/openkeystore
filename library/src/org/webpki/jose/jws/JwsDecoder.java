@@ -188,6 +188,7 @@ public class JwsDecoder {
 
     /**
      * Get optional "jwk".
+     * @return Public key or <b>null</b> if there is no "jwk" property in the JWS header.
      */
     public PublicKey getOptionalPublicKey() {
         return optionalPublicKey;
@@ -195,6 +196,7 @@ public class JwsDecoder {
 
     /**
      * Get optional "x5c".
+     * @return Certificate path or <b>null</b> if there is no "x5c" property in the JWS header.
      */
     public X509Certificate[] getOptionalCertificatePath() {
         return optionalCertificatePath;
@@ -202,6 +204,7 @@ public class JwsDecoder {
 
     /**
      * Get optional "kid".
+     * @return Key identifier or <b>null</b> if there is no "kid" property in the JWS header.
      */
     public String getOptionalKeyId() {
         return optionalKeyId;
