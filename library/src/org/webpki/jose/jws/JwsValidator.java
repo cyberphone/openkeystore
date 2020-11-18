@@ -91,7 +91,7 @@ public abstract class JwsValidator {
         }
         
         // Delegated validation
-        validate((jwsDecoder.jwsProtectedHeaderB64U + 
+        validate((jwsDecoder.jwsHeaderB64U + 
                     "." + 
                     jwsDecoder.jwsPayloadB64U).getBytes("utf-8"),
                  jwsDecoder);

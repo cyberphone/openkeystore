@@ -42,9 +42,9 @@ import org.webpki.util.Base64URL;
  */
 public class JwsDecoder {
     
-    String jwsProtectedHeaderB64U;
+    String jwsHeaderB64U;
     
-    JSONObjectReader jwsProtectedHeader;
+    JSONObjectReader jwsHeader;
     
     String jwsPayloadB64U;
     
@@ -84,9 +84,9 @@ public class JwsDecoder {
         }
         
         // Begin decoding the JWS header
-        jwsProtectedHeaderB64U = jwsString.substring(0, endOfHeader);
-        jwsProtectedHeader = JSONParser.parse(Base64URL.decode(jwsProtectedHeaderB64U));
-        String algorithmProperty = jwsProtectedHeader.getString(ALG_JSON);
+        jwsHeaderB64U = jwsString.substring(0, endOfHeader);
+        jwsHeader = JSONParser.parse(Base64URL.decode(jwsHeaderB64U));
+        String algorithmProperty = jwsHeader.getString(ALG_JSON);
         
         // Get the binary signature
         signature = Base64URL.decode(jwsString.substring(startOfSignature + 1));
@@ -109,19 +109,19 @@ public class JwsDecoder {
         // elements modulo JKU and X5U
         
         // Decode possible JWK
-        if (jwsProtectedHeader.hasProperty(JWK_JSON)) {
+        if (jwsHeader.hasProperty(JWK_JSON)) {
             optionalPublicKey = 
-                    jwsProtectedHeader.getObject(JWK_JSON)
+                    jwsHeader.getObject(JWK_JSON)
                         .getCorePublicKey(AlgorithmPreferences.JOSE);
         }
 
         // Decode possible X5C?
-        if (jwsProtectedHeader.hasProperty(X5C_JSON)) {
+        if (jwsHeader.hasProperty(X5C_JSON)) {
             if (optionalPublicKey != null) {
                 throw new GeneralSecurityException("Both X5C and JWK?");
             }
             JSONArrayWriter path = new JSONArrayWriter();
-            for (String certB64 : jwsProtectedHeader.getStringArray(X5C_JSON)) {
+            for (String certB64 : jwsHeader.getStringArray(X5C_JSON)) {
                 path.setString(certB64.replace("=","")
                                       .replace('/', '_')
                                       .replace('+', '-'));
@@ -136,7 +136,7 @@ public class JwsDecoder {
         }
         
         // Decode possible KID
-        optionalKeyId = jwsProtectedHeader.getStringConditional(KID_JSON);
+        optionalKeyId = jwsHeader.getStringConditional(KID_JSON);
     }
     
     /**
@@ -173,12 +173,22 @@ public class JwsDecoder {
     }
 
     /**
-     * Get protected header.
+     * Get JWS header.
+     * @return JWS header as a JSON object.
      */
-    public JSONObjectReader getJwsProtectedHeader() {
-        return jwsProtectedHeader;
+    public JSONObjectReader getJwsHeaderAsJson() {
+        return jwsHeader;
     }
 
+    /**
+     * Get JWS header.
+     * @return JWS header as a verbatim string copy after Base64Url-decoding.
+     * @throws IOException 
+     */
+    public String getJwsHeaderAsString() throws IOException {
+        return new String(Base64URL.decode(jwsHeaderB64U), "utf-8");
+    }
+    
     /**
      * Get signature algorithm.
      */
@@ -211,7 +221,7 @@ public class JwsDecoder {
     }
 
     /**
-     * Get "JWS payload".
+     * Get JWS payload.
      * Note that this method throws an exception if the
      * {@link org.webpki.jose.jws.JwsDecoder}
      * object signature have not yet been
@@ -232,7 +242,7 @@ public class JwsDecoder {
     }
 
     /**
-     * Get "JWS payload".
+     * Get JWS payload.
      * Note that this method throws an exception if the
      * {@link org.webpki.jose.jws.JwsDecoder}
      * object signature have not yet been

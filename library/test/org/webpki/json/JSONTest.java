@@ -3522,7 +3522,6 @@ public class JSONTest {
         } catch (Exception e) {
             checkException(e, "Trying to access payload before validation");
         }
-
         try {
             validator.validateDetachedSignature(jwsDecoder, dataToBeSigned);
             fail("don't");
@@ -3530,7 +3529,10 @@ public class JSONTest {
             checkException(e, "Mixing detached and JWS-supplied payload");
         }
         assertTrue("data", ArrayUtil.compare(dataToBeSigned,
-                     validator.validateSignature(new JwsDecoder(jwsString)).getPayload()));
+                     validator.validateSignature(jwsDecoder).getPayload()));
+        assertTrue("header", jwsDecoder.getJwsHeaderAsJson()
+                    .serializeToString(JSONOutputFormats.NORMALIZED).equals(
+                jwsDecoder.getJwsHeaderAsString()));
         
         JSONObjectWriter unsigned = new JSONObjectWriter()
                 .setString("z", "h")
