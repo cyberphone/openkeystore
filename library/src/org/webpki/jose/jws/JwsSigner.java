@@ -70,6 +70,17 @@ public abstract class JwsSigner {
     }
 
     /**
+     * Adds "kid" to the JWS header.
+     * @param keyId The key identifier to be included.
+     * @return this
+     * @throws IOException
+     */
+    public JwsSigner setKeyId(String keyId) throws IOException {
+        jwsProtectedHeader.setString(KID_JSON, keyId);
+        return this;
+    }
+
+    /**
      * Add header elements.
      * @param items A set of JSON tokens
      * @throws IOException
