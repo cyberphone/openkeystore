@@ -94,7 +94,7 @@ public abstract class JwsSigner {
     }
 
     /**
-     * Create JWS/CT signature.
+     * Create JWS/CT object.
      * @param objectToBeSigned The JSON object to be signed
      * @param signatureProperty Name of property holding the "detached" JWS
      * @return The now signed <code>objectToBeSigned</code>
@@ -110,7 +110,7 @@ public abstract class JwsSigner {
     }
 
     /**
-     * Create compact mode JWS signature.
+     * Create compact mode JWS object.
      * Note that the detached mode follows the specification
      * described in 
      * <a href="https://tools.ietf.org/html/rfc7515#appendix-F" 
@@ -135,10 +135,10 @@ public abstract class JwsSigner {
                 "." +
                 (detached ? "" : jwsPayloadB64U) +
                 "." +
-                Base64URL.encode(signData(dataToBeSigned));
+                Base64URL.encode(signObject(dataToBeSigned));
     }
 
-    abstract byte[] signData(byte[] dataToBeSigned) throws IOException, GeneralSecurityException;
+    abstract byte[] signObject(byte[] dataToBeSigned) throws IOException, GeneralSecurityException;
 
     /*
      * Verify that EC algorithms follow key types as specified by RFC 7515

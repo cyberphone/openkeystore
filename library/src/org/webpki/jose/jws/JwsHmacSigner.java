@@ -47,7 +47,7 @@ public class JwsHmacSigner extends JwsSigner {
     }
 
     @Override
-    byte[] signData(byte[] dataToBeSigned) throws IOException, GeneralSecurityException {
+    byte[] signObject(byte[] dataToBeSigned) throws IOException, GeneralSecurityException {
         return macAlgorithm.digest(secretKey, dataToBeSigned);
     }
 }

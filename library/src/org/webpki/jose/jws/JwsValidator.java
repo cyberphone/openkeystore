@@ -31,7 +31,7 @@ public abstract class JwsValidator {
 
     JwsValidator() {}
     
-    abstract void validateData(byte[] signedData, JwsDecoder jwsDecoder) 
+    abstract void validateObject(byte[] signedData, JwsDecoder jwsDecoder) 
             throws IOException, GeneralSecurityException;
 
     /**
@@ -45,7 +45,7 @@ public abstract class JwsValidator {
     }
     
     /**
-     * Validate JWS signature in "detached" mode.
+     * Validate JWS object in "detached" mode.
      * Note that the detached mode follows the specification
      * described in 
      * <a href="https://tools.ietf.org/html/rfc7515#appendix-F" 
@@ -73,7 +73,7 @@ public abstract class JwsValidator {
     }
 
     /**
-     * Validate JWS or JWS/CT signature.
+     * Validate JWS or JWS/CT object.
      * Note that for JWS the "standard" mode is assumed while
      * JWS/CT implicitly builds on the "detached" mode.
      * @param jwsDecoder Decoded JWS data
@@ -91,7 +91,7 @@ public abstract class JwsValidator {
         }
         
         // Delegated validation
-        validateData((jwsDecoder.jwsHeaderB64U + 
+        validateObject((jwsDecoder.jwsHeaderB64U + 
                       "." + 
                       jwsDecoder.jwsPayloadB64U).getBytes("utf-8"),
                      jwsDecoder);

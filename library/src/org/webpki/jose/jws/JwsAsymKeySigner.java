@@ -117,7 +117,7 @@ public class JwsAsymKeySigner extends JwsSigner {
     }
 
     @Override
-    byte[] signData(byte[] dataToBeSigned) throws IOException, GeneralSecurityException {
+    byte[] signObject(byte[] dataToBeSigned) throws IOException, GeneralSecurityException {
         return new SignatureWrapper(signatureAlgorithm, privateKey, provider)
                 .update(dataToBeSigned)
                 .sign();

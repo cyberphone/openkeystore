@@ -44,8 +44,8 @@ public class JwsAsymSignatureValidator extends JwsValidator {
     }
 
     @Override
-    void validateData(byte[] signedData,
-                  JwsDecoder jwsDecoder) throws IOException, GeneralSecurityException {
+    void validateObject(byte[] signedData, JwsDecoder jwsDecoder) 
+            throws IOException, GeneralSecurityException {
         if (jwsDecoder.optionalPublicKey != null && 
             !jwsDecoder.optionalPublicKey.equals(publicKey)) {
                 throw new GeneralSecurityException(

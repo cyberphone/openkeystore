@@ -42,7 +42,7 @@ public class JwsHmacValidator extends JwsValidator {
     }
 
     @Override
-    void validateData(byte[] signedData, JwsDecoder jwsDecoder) throws IOException {
+    void validateObject(byte[] signedData, JwsDecoder jwsDecoder) throws IOException {
         if (!ArrayUtil.compare(
                ((MACAlgorithms)jwsDecoder.signatureAlgorithm).digest(secretKey, 
                                                                      signedData),
