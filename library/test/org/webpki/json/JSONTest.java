@@ -3544,6 +3544,20 @@ public class JSONTest {
         new JwsAsymSignatureValidator(keyPair.getPublic()).
             validate(new JwsDecoder(new JSONObjectReader(signed), 
                                              "signature")).getPayloadAsJson().toString()));
+        jwsString = 
+                new JwsAsymKeySigner(keyPair.getPrivate(), AsymSignatureAlgorithms.ECDSA_SHA256)
+                    .setKeyId("theKey")
+                    .sign(dataToBeSigned, false);
+        jwsDecoder = new JwsDecoder(jwsString);
+        assertTrue("kid", "theKey".equals(jwsDecoder.getOptionalKeyId()));
+        new JwsAsymSignatureValidator(keyPair.getPublic()).
+        validate(jwsDecoder);
+        jwsString = 
+                new JwsAsymKeySigner(keyPair.getPrivate(), AsymSignatureAlgorithms.ECDSA_SHA256)
+                    .setPublicKey(keyPair.getPublic())
+                    .sign(dataToBeSigned, false);
+        jwsDecoder = new JwsDecoder(jwsString);
+        new JwsAsymSignatureValidator(jwsDecoder.getOptionalPublicKey()).validate(jwsDecoder);
     }
 
     @Test
