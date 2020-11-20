@@ -62,7 +62,7 @@ public abstract class JwsSigner {
     /**
      * Set cryptographic provider.
      * @param provider Name of provider like "BC"
-     * @return this
+     * @return JwsSigner
      */
     public JwsSigner setProvider(String provider) {
         this.provider = provider;
@@ -72,7 +72,7 @@ public abstract class JwsSigner {
     /**
      * Adds "kid" to the JWS header.
      * @param keyId The key identifier to be included.
-     * @return this
+     * @return JwsSigner
      * @throws IOException
      */
     public JwsSigner setKeyId(String keyId) throws IOException {
@@ -84,7 +84,7 @@ public abstract class JwsSigner {
      * Add header elements.
      * @param items A set of JSON tokens
      * @throws IOException
-     * @return this
+     * @return JwsSigner
      */
     public JwsSigner addHeaderItems(JSONObjectReader items) throws IOException {
         for (String key : items.getProperties()) {
@@ -101,12 +101,12 @@ public abstract class JwsSigner {
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public JSONObjectWriter createSignature(JSONObjectWriter objectToBeSigned,
-                                            String signatureProperty)
+    public JSONObjectWriter sign(JSONObjectWriter objectToBeSigned, String signatureProperty)
             throws IOException, GeneralSecurityException {
         return objectToBeSigned.setString(signatureProperty, 
-                                          createSignature(
-                    objectToBeSigned.serializeToBytes(JSONOutputFormats.CANONICALIZED), true));
+                                          sign(objectToBeSigned
+                                                  .serializeToBytes(
+                                                          JSONOutputFormats.CANONICALIZED), true));
     }
 
     /**
@@ -121,8 +121,8 @@ public abstract class JwsSigner {
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public String createSignature(byte[] jwsPayload,
-                                  boolean detached) throws IOException, GeneralSecurityException {
+    public String sign(byte[] jwsPayload, boolean detached) 
+            throws IOException, GeneralSecurityException {
         
         // Create data to be signed
         String jwsProtectedHeaderB64U = Base64URL.encode(

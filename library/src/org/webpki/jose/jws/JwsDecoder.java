@@ -225,7 +225,7 @@ public class JwsDecoder {
      * Note that this method throws an exception if the
      * {@link org.webpki.jose.jws.JwsDecoder}
      * object signature have not yet been
-     * {@link org.webpki.jose.jws.JwsValidator#validateSignature(JwsDecoder) validated}.
+     * {@link org.webpki.jose.jws.JwsValidator#validate(JwsDecoder) validated}.
      * For JWS/CT, the payload holds the canonicalized
      * version of the 
      * {@link org.webpki.jose.jws.JwsDecoder#JwsDecoder(JSONObjectReader, String) jwsCtObject}
@@ -246,7 +246,7 @@ public class JwsDecoder {
      * Note that this method throws an exception if the
      * {@link org.webpki.jose.jws.JwsDecoder}
      * object signature have not yet been
-     * {@link org.webpki.jose.jws.JwsValidator#validateSignature(JwsDecoder) validated}.
+     * {@link org.webpki.jose.jws.JwsValidator#validate(JwsDecoder) validated}.
      * For JWS/CT this method return the JSON that is actually signed.  That is,
      * all but the 
     * {@link org.webpki.jose.jws.JwsDecoder#JwsDecoder(JSONObjectReader, String) signatureProperty}

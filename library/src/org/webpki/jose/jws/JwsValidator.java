@@ -31,7 +31,7 @@ public abstract class JwsValidator {
 
     JwsValidator() {}
     
-    abstract void validate(byte[] signedData, JwsDecoder jwsDecoder) 
+    abstract void validateData(byte[] signedData, JwsDecoder jwsDecoder) 
             throws IOException, GeneralSecurityException;
 
     /**
@@ -56,7 +56,7 @@ public abstract class JwsValidator {
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public JwsDecoder validateDetachedSignature(JwsDecoder jwsDecoder, byte[] detachedPayload) 
+    public JwsDecoder validate(JwsDecoder jwsDecoder, byte[] detachedPayload) 
             throws IOException, GeneralSecurityException {
 
         // Dealing with detached signatures
@@ -69,7 +69,7 @@ public abstract class JwsValidator {
         jwsDecoder.jwsPayloadB64U = Base64URL.encode(detachedPayload);
   
         // Main JWS validator
-        return validateSignature(jwsDecoder);
+        return validate(jwsDecoder);
     }
 
     /**
@@ -81,7 +81,7 @@ public abstract class JwsValidator {
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public JwsDecoder validateSignature(JwsDecoder jwsDecoder) 
+    public JwsDecoder validate(JwsDecoder jwsDecoder) 
             throws IOException, GeneralSecurityException {
 
         // Dealing with in-line signatures
@@ -91,10 +91,10 @@ public abstract class JwsValidator {
         }
         
         // Delegated validation
-        validate((jwsDecoder.jwsHeaderB64U + 
-                    "." + 
-                    jwsDecoder.jwsPayloadB64U).getBytes("utf-8"),
-                 jwsDecoder);
+        validateData((jwsDecoder.jwsHeaderB64U + 
+                      "." + 
+                      jwsDecoder.jwsPayloadB64U).getBytes("utf-8"),
+                     jwsDecoder);
         
         // No access to payload without having passed validation
         jwsDecoder.validated = true;

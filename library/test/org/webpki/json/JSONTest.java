@@ -3406,9 +3406,9 @@ public class JSONTest {
                 .setBoolean("a", true);
         byte[] payload = dataToSign.serializeToBytes(JSONOutputFormats.CANONICALIZED);
         JSONObjectWriter jwsCt = new JwsAsymKeySigner(keyPair.getPrivate(), signatureAlgorithm)
-            .createSignature(dataToSign, "jws");
+            .sign(dataToSign, "jws");
         JwsDecoder jwsDecoder = new JwsDecoder(new JSONObjectReader(jwsCt), "jws");
-        new JwsAsymSignatureValidator(keyPair.getPublic()).validateSignature(jwsDecoder);
+        new JwsAsymSignatureValidator(keyPair.getPublic()).validate(jwsDecoder);
         assertTrue("JWS/CT", ArrayUtil.compare(jwsDecoder.getPayload(), payload));
     }
     
@@ -3449,11 +3449,11 @@ public class JSONTest {
             KeyPair keyPair = JSONParser.parse(jwk).getKeyPair();
             String jwsString = new JwsAsymKeySigner(keyPair.getPrivate(), 
                                                     signatureAlgorithm)
-                    .createSignature(payload, false);
+                    .sign(payload, false);
             assertTrue("Sign", jwsString.contentEquals(expectedJwsString));
 
             new JwsAsymSignatureValidator(keyPair.getPublic())
-                    .validateSignature(new JwsDecoder(jwsString));
+                    .validate(new JwsDecoder(jwsString));
         } catch (Exception e) {
             assertFalse("8037", bcLoaded);
         }
@@ -3474,7 +3474,7 @@ public class JSONTest {
                     .sign());
         try {
             new JwsAsymSignatureValidator(keyPair.getPublic())
-                .validateSignature(new JwsDecoder(jws));
+                .validate(new JwsDecoder(jws));
             assertTrue("Should fail", optionalError == null);
         } catch (Exception e) {
             checkException(e, optionalError);
@@ -3514,7 +3514,7 @@ public class JSONTest {
         byte[] dataToBeSigned = new byte[] {1,2,3};
         String jwsString = 
                 new JwsAsymKeySigner(keyPair.getPrivate(), AsymSignatureAlgorithms.ECDSA_SHA256)
-                    .createSignature(dataToBeSigned, false);
+                    .sign(dataToBeSigned, false);
         JwsDecoder jwsDecoder = new JwsDecoder(jwsString);
         try {
             jwsDecoder.getPayload();
@@ -3523,13 +3523,13 @@ public class JSONTest {
             checkException(e, "Trying to access payload before validation");
         }
         try {
-            validator.validateDetachedSignature(jwsDecoder, dataToBeSigned);
+            validator.validate(jwsDecoder, dataToBeSigned);
             fail("don't");
         } catch (Exception e) {
             checkException(e, "Mixing detached and JWS-supplied payload");
         }
         assertTrue("data", ArrayUtil.compare(dataToBeSigned,
-                     validator.validateSignature(jwsDecoder).getPayload()));
+                     validator.validate(jwsDecoder).getPayload()));
         assertTrue("header", jwsDecoder.getJwsHeaderAsJson()
                     .serializeToString(JSONOutputFormats.NORMALIZED).equals(
                 jwsDecoder.getJwsHeaderAsString()));
@@ -3538,11 +3538,11 @@ public class JSONTest {
                 .setString("z", "h")
                 .setString("a", "g");
         JwsAsymKeySigner signer = new JwsAsymKeySigner(keyPair.getPrivate());
-        JSONObjectWriter signed = signer.createSignature(
+        JSONObjectWriter signed = signer.sign(
                 new JSONObjectWriter(new JSONObjectReader(unsigned).clone()), "signature");
         assertTrue("jwsDat", unsigned.toString().equals(
         new JwsAsymSignatureValidator(keyPair.getPublic()).
-            validateSignature(new JwsDecoder(new JSONObjectReader(signed), 
+            validate(new JwsDecoder(new JSONObjectReader(signed), 
                                              "signature")).getPayloadAsJson().toString()));
     }
 

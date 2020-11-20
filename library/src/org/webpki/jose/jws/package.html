@@ -5,15 +5,17 @@
 <div style='margin:0.5em 0 0.5em 3em'>
 <div style='color:grey'><code>// Initialize a signer</code></div>
 <code>{@link JwsAsymKeySigner} signer = new {@link JwsAsymKeySigner#JwsAsymKeySigner(PrivateKey) JwsAsymKeySigner}(</code><i>privateKey</i><code>);</code><br>
-<div style='color:grey'><code>// Sign data</code></div>
-<code>String jwsString = signer.{@link JwsSigner#createSignature(byte[], boolean) createSignature}(</code><i>jwsPayload</i><code>,</code> <code>false);</code>
+<div style='color:grey'><code>// Here you would typically set a key identifier...</code></div>
+<div style='color:grey'><code>// Sign binary data</code></div>
+<code>String jwsString = signer.{@link JwsSigner#sign(byte[], boolean) sign}(</code><i>jwsPayload</i><code>,</code> <code>false);</code>
 </div>
 <div>Create a JWS/CT Object:</div>
 <div style='margin:0.5em 0 0.5em 3em'>
 <div style='color:grey'><code>// Initialize a signer</code></div>
 <code>{@link JwsAsymKeySigner} signer = new {@link JwsAsymKeySigner#JwsAsymKeySigner(PrivateKey) JwsAsymKeySigner}(</code><i>privateKey</i><code>);</code><br>
-<div style='color:grey'><code>// Sign data</code></div>
-<code>{@link org.webpki.json.JSONObjectWriter} jwsCtObject = signer.{@link JwsSigner#createSignature(org.webpki.json.JSONObjectWriter, String) createSignature}(</code><i>jsonObjectToSign</i><code>,</code> <i>signatureProperty</i><code>);</code>
+<div style='color:grey'><code>// Here you would typically set a key identifier...</code></div>
+<div style='color:grey'><code>// Sign JSON object</code></div>
+<code>{@link org.webpki.json.JSONObjectWriter} jwsCtObject = signer.{@link JwsSigner#sign(org.webpki.json.JSONObjectWriter, String) sign}(</code><i>jsonObjectToSign</i><code>,</code> <i>signatureProperty</i><code>);</code>
 </div>
 <h3>Validate Signature and Fetch Payload Data</h3>
 <div>The following is a bit simplistic since you typically need
@@ -26,8 +28,8 @@ The {@link JwsDecoder} object provides the necessary functionality.</div>
 <code>{@link JwsDecoder} jwsDecoder = new {@link JwsDecoder#JwsDecoder(String) JwsDecoder}(</code><i>jwsString</i><code>);</code>
 <div style='color:grey'><code>// Initialize a validator</code></div>
 <code>{@link JwsAsymSignatureValidator} validator = new {@link JwsAsymSignatureValidator#JwsAsymSignatureValidator(PublicKey) JwsAsymSignatureValidator}(</code><i>publicKey</i><code>);</code><br>
-<div style='color:grey'><code>// Validate signature and fetch payload</code></div>
-<code>byte[] data = validator.{@link JwsValidator#validateSignature(JwsDecoder) validateSignature}(jwsDecoder).{@link JwsDecoder#getPayload() getPayload}();</code><br>
+<div style='color:grey'><code>// Validate signature and fetch binary payload</code></div>
+<code>byte[] data = validator.{@link JwsValidator#validate(JwsDecoder) validate}(jwsDecoder).{@link JwsDecoder#getPayload() getPayload}();</code><br>
 </div>
 <div style='margin-top:1em'>Validate a JWS/CT Object:</div>
 <div style='margin:0.5em 0 0.5em 3em'>
@@ -36,6 +38,6 @@ The {@link JwsDecoder} object provides the necessary functionality.</div>
 <div style='color:grey'><code>// Initialize a validator</code></div>
 <code>{@link JwsAsymSignatureValidator} validator = new {@link JwsAsymSignatureValidator}(</code><i>publicKey</i><code>);</code><br>
 <div style='color:grey'><code>// Validate signature (the JSON data is already available in the <i>jwsCtObject</i>).</code></div>
-<code>validator.{@link JwsValidator#validateSignature(JwsDecoder) validateSignature}(jwsDecoder);</code><br>
+<code>validator.{@link JwsValidator#validate(JwsDecoder) validate}(jwsDecoder);</code><br>
 </div>
 </body>

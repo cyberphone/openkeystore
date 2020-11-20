@@ -51,7 +51,7 @@ public class Demo {
             JwsHmacSigner signer = new JwsHmacSigner(SECRET_KEY,
                                                      MACAlgorithms.HMAC_SHA256);
             System.out.println(
-                signer.createSignature(
+                signer.sign(
                         new JSONObjectWriter(JSONParser.parse(JSON_TO_BE_SIGNED)),
                         SIGNATURE_PROPERTY).toString());
 /*

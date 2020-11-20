@@ -59,7 +59,7 @@ public class TestVector {
                 .getKeyPair(AlgorithmPreferences.JOSE);
             
             JSONObjectWriter jsonOut = new JwsAsymKeySigner(keyPair.getPrivate())
-                .createSignature(new JSONObjectWriter(jsonIn), SIGNATURE_PROPERTY);
+                .sign(new JSONObjectWriter(jsonIn), SIGNATURE_PROPERTY);
 
             System.out.println("JWS/CT=\n" + jsonOut);
         } catch (Exception e) {

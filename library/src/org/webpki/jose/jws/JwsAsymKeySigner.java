@@ -88,6 +88,7 @@ public class JwsAsymKeySigner extends JwsSigner {
     /**
      * Adds "jwk" to the JWS header.
      * @param publicKey The public key to be included
+     * @return JwsAsymKeySigner
      * @throws IOException 
      */
     public JwsAsymKeySigner setPublicKey(PublicKey publicKey) throws IOException {
@@ -102,6 +103,7 @@ public class JwsAsymKeySigner extends JwsSigner {
     /**
      * Adds "x5c" to the JWS header.
      * @param certificatePath The certificate(s) to be included
+     * @return JwsAsymKeySigner
      * @throws IOException 
      * @throws GeneralSecurityException 
      */
