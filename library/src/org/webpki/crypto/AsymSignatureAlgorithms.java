@@ -20,6 +20,10 @@ import java.io.IOException;
 
 import java.security.spec.MGF1ParameterSpec;
 
+/**
+ * Asymmetric key signature algorithms.
+ *
+ */
 public enum AsymSignatureAlgorithms implements SignatureAlgorithms {
 
     RSA_SHA1      ("http://www.w3.org/2000/09/xmldsig#rsa-sha1",             null,              

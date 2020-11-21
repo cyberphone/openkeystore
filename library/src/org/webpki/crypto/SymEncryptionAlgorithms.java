@@ -18,6 +18,10 @@ package org.webpki.crypto;
 
 import java.io.IOException;
 
+/**
+ * Symmetric key encryption algorithms.
+ *
+ */
 public enum SymEncryptionAlgorithms implements EncryptionAlgorithms {
 
     AES128_CBC      ("http://www.w3.org/2001/04/xmlenc#aes128-cbc", 

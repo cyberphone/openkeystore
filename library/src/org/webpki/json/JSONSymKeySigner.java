@@ -19,7 +19,7 @@ package org.webpki.json;
 import java.io.IOException;
 
 import org.webpki.crypto.AlgorithmPreferences;
-import org.webpki.crypto.MACAlgorithms;
+import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.SignatureAlgorithms;
 import org.webpki.crypto.SymKeySignerInterface;
 
@@ -30,7 +30,7 @@ public class JSONSymKeySigner extends JSONSigner {
 
     private static final long serialVersionUID = 1L;
 
-    MACAlgorithms algorithm;
+    HmacAlgorithms algorithm;
 
     SymKeySignerInterface signer;
 
@@ -41,7 +41,7 @@ public class JSONSymKeySigner extends JSONSigner {
      */
     public JSONSymKeySigner(SymKeySignerInterface signer) throws IOException {
         this.signer = signer;
-        algorithm = signer.getMacAlgorithm();
+        algorithm = signer.getHmacAlgorithm();
     }
 
     /**
@@ -50,16 +50,16 @@ public class JSONSymKeySigner extends JSONSigner {
      * @param algorithm MAC algorithm
      * @throws IOException &nbsp;
      */
-    public JSONSymKeySigner(final byte[] rawKey, final MACAlgorithms algorithm) throws IOException {
+    public JSONSymKeySigner(final byte[] rawKey, final HmacAlgorithms algorithm) throws IOException {
         this(new SymKeySignerInterface() {
 
             @Override
-            public byte[] signData(byte[] data, MACAlgorithms algorithm) throws IOException {
+            public byte[] signData(byte[] data, HmacAlgorithms algorithm) throws IOException {
                 return algorithm.digest(rawKey, data);
             }
 
             @Override
-            public MACAlgorithms getMacAlgorithm() throws IOException {
+            public HmacAlgorithms getHmacAlgorithm() throws IOException {
                 return algorithm;
             }
            

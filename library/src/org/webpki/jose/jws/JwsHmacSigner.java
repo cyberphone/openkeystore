@@ -20,14 +20,14 @@ import java.io.IOException;
 
 import java.security.GeneralSecurityException;
 
-import org.webpki.crypto.MACAlgorithms;
+import org.webpki.crypto.HmacAlgorithms;
 
 /**
  * JWS HMAC signer
  */
 public class JwsHmacSigner extends JwsSigner {
     
-    MACAlgorithms macAlgorithm;
+    HmacAlgorithms macAlgorithm;
     byte[] secretKey;
     
     /**
@@ -37,13 +37,13 @@ public class JwsHmacSigner extends JwsSigner {
      * (assuming that the same parameters are valid).  It is also
      * thread-safe.
      * @param secretKey The key to use
-     * @param macAlgorithm HMAC Algorithm to use
+     * @param hmacAlgorithm HMAC Algorithm to use
      * @throws IOException 
      */
-    public JwsHmacSigner(byte[] secretKey, MACAlgorithms macAlgorithm) throws IOException {
-        super(macAlgorithm);
+    public JwsHmacSigner(byte[] secretKey, HmacAlgorithms hmacAlgorithm) throws IOException {
+        super(hmacAlgorithm);
         this.secretKey = secretKey;
-        this.macAlgorithm = macAlgorithm;
+        this.macAlgorithm = hmacAlgorithm;
     }
 
     @Override

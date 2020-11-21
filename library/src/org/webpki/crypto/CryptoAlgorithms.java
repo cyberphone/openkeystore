@@ -19,7 +19,7 @@ package org.webpki.crypto;
 import java.io.IOException;
 
 /**
- * Crypto algorithm base interface
+ * Crypto algorithm base interface.
  */
 public interface CryptoAlgorithms {
 

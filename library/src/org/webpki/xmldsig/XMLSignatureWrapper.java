@@ -55,7 +55,7 @@ import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.AsymSignatureAlgorithms;
-import org.webpki.crypto.MACAlgorithms;
+import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.HashAlgorithms;
 import org.webpki.crypto.CertificateUtil;
 
@@ -151,7 +151,7 @@ public class XMLSignatureWrapper extends XMLObjectWrapper implements Serializabl
         Element element;
         CanonicalizationAlgorithms cn_alg;
         AsymSignatureAlgorithms asym_signature_alg;
-        MACAlgorithms sym_signature_alg;
+        HmacAlgorithms sym_signature_alg;
         byte[] signature_val;
     }
 
@@ -368,7 +368,7 @@ public class XMLSignatureWrapper extends XMLObjectWrapper implements Serializabl
         if (AsymSignatureAlgorithms.testAlgorithmUri(signature_alg)) {
             signedinfo_object.asym_signature_alg = AsymSignatureAlgorithms.getAlgorithmFromId(signature_alg, AlgorithmPreferences.SKS);
         } else {
-            signedinfo_object.sym_signature_alg = MACAlgorithms.getAlgorithmFromId(signature_alg, AlgorithmPreferences.SKS);
+            signedinfo_object.sym_signature_alg = HmacAlgorithms.getAlgorithmFromId(signature_alg, AlgorithmPreferences.SKS);
         }
         rd.getChild();
         if (rd.hasNext()) throw new IOException("No \"SignatureMethod\" elements allowed");

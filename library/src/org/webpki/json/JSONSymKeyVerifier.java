@@ -18,7 +18,7 @@ package org.webpki.json;
 
 import java.io.IOException;
 
-import org.webpki.crypto.MACAlgorithms;
+import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.SymKeyVerifierInterface;
 
 import org.webpki.util.ArrayUtil;
@@ -55,7 +55,7 @@ public class JSONSymKeyVerifier extends JSONVerifier {
             @Override
             public boolean verifyData(byte[] data,
                                       byte[] digest,
-                                      MACAlgorithms algorithm,
+                                      HmacAlgorithms algorithm,
                                       String keyId) throws IOException {
                 return ArrayUtil.compare(digest, algorithm.digest(rawKey, data));
             }
@@ -67,7 +67,7 @@ public class JSONSymKeyVerifier extends JSONVerifier {
     void verify(JSONSignatureDecoder signatureDecoder) throws IOException {
         if (!verifier.verifyData(signatureDecoder.normalizedData,
                                  signatureDecoder.signatureValue,
-                                 (MACAlgorithms) signatureDecoder.signatureAlgorithm,
+                                 (HmacAlgorithms) signatureDecoder.signatureAlgorithm,
                                  signatureDecoder.keyId)) {
             throw new IOException("Bad signature for key: " + signatureDecoder.keyId);
         }

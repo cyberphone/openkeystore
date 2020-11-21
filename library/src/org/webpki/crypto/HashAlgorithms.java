@@ -21,6 +21,10 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.GeneralSecurityException;
 
+/**
+ * Hash algorithms including an implementation.
+ *
+ */
 public enum HashAlgorithms implements CryptoAlgorithms {
 
     SHA1   ("http://www.w3.org/2000/09/xmldsig#sha1",        null,

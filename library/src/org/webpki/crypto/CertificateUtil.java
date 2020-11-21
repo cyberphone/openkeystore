@@ -27,6 +27,10 @@ import java.security.cert.X509Certificate;
 import java.security.cert.CertificateFactory;
 
 import java.security.GeneralSecurityException;
+import java.security.PublicKey;
+
+import java.security.interfaces.ECKey;
+import java.security.interfaces.RSAKey;
 
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -46,7 +50,7 @@ import org.webpki.asn1.cert.SubjectAltNameTypes;
 /**
  * X509 related operations.
  * 
- * Source configured for the default provider.
+ * Source configured for the BouncyCastle provider.
  */
 public class CertificateUtil {
 
@@ -383,6 +387,13 @@ public class CertificateUtil {
     public static X509Certificate getCertificateFromBlob(byte[] encoded) throws IOException {
         try {
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            X509Certificate certificate =
+                    (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(encoded));
+            PublicKey publicKey = certificate.getPublicKey();
+            if (publicKey instanceof RSAKey || publicKey instanceof ECKey) {
+                return certificate;
+            }
+            cf = CertificateFactory.getInstance("X.509", "BC");
             return (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(encoded));
         } catch (GeneralSecurityException e) {
             throw new IOException(e);

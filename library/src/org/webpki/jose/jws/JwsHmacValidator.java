@@ -18,7 +18,7 @@ package org.webpki.jose.jws;
 
 import java.io.IOException;
 
-import org.webpki.crypto.MACAlgorithms;
+import org.webpki.crypto.HmacAlgorithms;
 
 import org.webpki.util.ArrayUtil;
 
@@ -44,9 +44,9 @@ public class JwsHmacValidator extends JwsValidator {
     @Override
     void validateObject(byte[] signedData, JwsDecoder jwsDecoder) throws IOException {
         if (!ArrayUtil.compare(
-               ((MACAlgorithms)jwsDecoder.signatureAlgorithm).digest(secretKey, 
-                                                                     signedData),
-                                                                     jwsDecoder.signature)) {
+               ((HmacAlgorithms)jwsDecoder.signatureAlgorithm).digest(secretKey, 
+                                                                      signedData),
+                                                                      jwsDecoder.signature)) {
             throw new IOException("HMAC signature validation error");
         }
     }

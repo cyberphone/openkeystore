@@ -18,7 +18,7 @@ package org.webpki.jose.jws;
 
 import java.io.IOException;
 
-import org.webpki.crypto.MACAlgorithms;
+import org.webpki.crypto.HmacAlgorithms;
 
 import org.webpki.json.JSONObjectWriter;
 import org.webpki.json.JSONParser;
@@ -49,7 +49,7 @@ public class Demo {
     public static void main(String[] argc) {
         try {
             JwsHmacSigner signer = new JwsHmacSigner(SECRET_KEY,
-                                                     MACAlgorithms.HMAC_SHA256);
+                                                     HmacAlgorithms.HMAC_SHA256);
             System.out.println(
                 signer.sign(
                         new JSONObjectWriter(JSONParser.parse(JSON_TO_BE_SIGNED)),

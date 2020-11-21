@@ -43,7 +43,7 @@ import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.SignatureAlgorithms;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.OkpSupport;
-import org.webpki.crypto.MACAlgorithms;
+import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.SignatureWrapper;
@@ -101,9 +101,9 @@ public class JSONSignatureDecoder implements Serializable {
             }
         }
         if (signatureAlgorithm == null) {
-            signatureAlgorithm = MACAlgorithms.getAlgorithmFromId(
-                    algorithmString,
-                    options.algorithmPreferences);
+            signatureAlgorithm = 
+                    HmacAlgorithms.getAlgorithmFromId(algorithmString, 
+                                                      options.algorithmPreferences);
         }
 
         options.getExtensions(innerSignatureObject, outerSignatureObject, extensions);

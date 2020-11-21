@@ -6,7 +6,7 @@
 <div style='color:grey'><code>// Initialize a signer</code></div>
 <code>{@link JwsAsymKeySigner} signer = new {@link JwsAsymKeySigner#JwsAsymKeySigner(PrivateKey) JwsAsymKeySigner}(</code><i>privateKey</i><code>);</code><br>
 <div style='color:grey'><code>// Here you would typically set a key identifier...</code></div>
-<div style='color:grey'><code>// Sign binary data</code></div>
+<div style='color:grey'><code>// Sign binary data.  Argument #2 <b>false</b> = "standard" mode.</code></div>
 <code>String jwsString = signer.{@link JwsSigner#sign(byte[], boolean) sign}(</code><i>jwsPayload</i><code>,</code> <code>false);</code>
 </div>
 <div>Create a JWS/CT Object:</div>
@@ -26,6 +26,7 @@ The {@link JwsDecoder} object provides the necessary functionality.</div>
 <div style='margin:0.5em 0 0.5em 3em'>
 <div style='color:grey'><code>// Decode JWS data</code></div>
 <code>{@link JwsDecoder} jwsDecoder = new {@link JwsDecoder#JwsDecoder(String) JwsDecoder}(</code><i>jwsString</i><code>);</code>
+<div style='color:grey'><code>// Here you would typically look for a key identifier...</code></div>
 <div style='color:grey'><code>// Initialize a validator</code></div>
 <code>{@link JwsAsymSignatureValidator} validator = new {@link JwsAsymSignatureValidator#JwsAsymSignatureValidator(PublicKey) JwsAsymSignatureValidator}(</code><i>publicKey</i><code>);</code><br>
 <div style='color:grey'><code>// Validate signature and fetch binary payload</code></div>
@@ -35,6 +36,7 @@ The {@link JwsDecoder} object provides the necessary functionality.</div>
 <div style='margin:0.5em 0 0.5em 3em'>
 <div style='color:grey'><code>// Decode JWS/CT object</code></div>
 <code>{@link JwsDecoder} jwsDecoder = new {@link JwsDecoder}(</code><i>jwsCtObject</i><code>,</code> <i>signatureProperty</i><code>);</code>
+<div style='color:grey'><code>// Here you would typically look for a key identifier...</code></div>
 <div style='color:grey'><code>// Initialize a validator</code></div>
 <code>{@link JwsAsymSignatureValidator} validator = new {@link JwsAsymSignatureValidator}(</code><i>publicKey</i><code>);</code><br>
 <div style='color:grey'><code>// Validate signature (the JSON data is already available in the <i>jwsCtObject</i>).</code></div>

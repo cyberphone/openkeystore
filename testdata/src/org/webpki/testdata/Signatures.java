@@ -31,7 +31,7 @@ import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.CertificateUtil;
 import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.KeyStoreVerifier;
-import org.webpki.crypto.MACAlgorithms;
+import org.webpki.crypto.HmacAlgorithms;
 
 import org.webpki.json.JSONArrayReader;
 import org.webpki.json.JSONArrayWriter;
@@ -141,9 +141,9 @@ public class Signatures {
         }
       
         for (int i = 0; i < 2; i++) {
-            symmSign(256, MACAlgorithms.HMAC_SHA256, i == 0);
-            symmSign(384, MACAlgorithms.HMAC_SHA384, i == 0);
-            symmSign(512, MACAlgorithms.HMAC_SHA512, i == 0);
+            symmSign(256, HmacAlgorithms.HMAC_SHA256, i == 0);
+            symmSign(384, HmacAlgorithms.HMAC_SHA384, i == 0);
+            symmSign(512, HmacAlgorithms.HMAC_SHA512, i == 0);
         }
         
         for (boolean chained : new boolean[]{false,true}) {
@@ -303,7 +303,7 @@ public class Signatures {
         return;
     }
 
-    static void symmSign(int keyBits, MACAlgorithms algorithm, boolean wantKeyId) throws Exception {
+    static void symmSign(int keyBits, HmacAlgorithms algorithm, boolean wantKeyId) throws Exception {
         byte[] key = symmetricKeys.getValue(keyBits);
         String keyName = symmetricKeys.getName(keyBits);
         JSONSymKeySigner signer = new JSONSymKeySigner(key, algorithm);

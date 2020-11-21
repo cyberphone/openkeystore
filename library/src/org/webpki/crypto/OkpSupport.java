@@ -24,10 +24,9 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Key;
 
-import java.security.interfaces.XECKey;
-import java.security.interfaces.EdECKey;
+import org.bouncycastle.jcajce.interfaces.EdDSAKey;
+import org.bouncycastle.jcajce.interfaces.XDHKey;
 
-import java.security.spec.NamedParameterSpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
@@ -45,9 +44,11 @@ import org.webpki.util.ArrayUtil;
 import org.webpki.util.DebugFormatter;
 
 /**
- * Support methods for "OKP" (RFC 8037)
+ * Support methods for "OKP" (RFC 8037).
  * 
- * Source configured for the [currently] buggy JDK 15 provider.
+ * Source configured for the BouncyCastle provider.
+ * Note that JDK and BouncyCastle are incompatible with respect to "OKP" keys
+ * and that this module only forces BouncyCastle for OKP keys.
  */
 public class OkpSupport {
     
@@ -74,18 +75,6 @@ public class OkpSupport {
                           DebugFormatter.getByteArrayFromHex("302a300506032b656e032100"));
             okpPrefix.put(KeyAlgorithms.X448,
                           DebugFormatter.getByteArrayFromHex("3042300506032b656f033900"));
-// https://bugs.openjdk.java.net/browse/JDK-8252377
-// This code should work even after Oracle gets it right :)
-            if (java.security.KeyPairGenerator
-                    .getInstance("X25519")
-                        .generateKeyPair()
-                            .getPublic()
-                                .getEncoded().length == 46) {
-                okpPrefix.put(KeyAlgorithms.X25519,
-                              DebugFormatter.getByteArrayFromHex("302c300706032b656e0500032100"));
-                okpPrefix.put(KeyAlgorithms.X448,
-                              DebugFormatter.getByteArrayFromHex("3044300706032b656f0500033900"));
-            }
         } catch (Exception e) {
         }
     }
@@ -104,7 +93,7 @@ public class OkpSupport {
 
     public static PublicKey raw2PublicOkpKey(byte[] x, KeyAlgorithms keyAlgorithm) 
     throws GeneralSecurityException {
-        return KeyFactory.getInstance(keyAlgorithm.getJceName())
+        return KeyFactory.getInstance(keyAlgorithm.getJceName(), "BC")
                 .generatePublic(
                         new X509EncodedKeySpec(
                                 ArrayUtil.add(okpPrefix.get(keyAlgorithm), x)));
@@ -125,7 +114,7 @@ public class OkpSupport {
 
     public static PrivateKey raw2PrivateOkpKey(byte[] d, KeyAlgorithms keyAlgorithm)
     throws IOException, GeneralSecurityException {
-        KeyFactory keyFactory = KeyFactory.getInstance(keyAlgorithm.getJceName());
+        KeyFactory keyFactory = KeyFactory.getInstance(keyAlgorithm.getJceName(), "BC");
         byte[] pkcs8 = new ASN1Sequence(new BaseASN1Object[] {
             new ASN1Integer(0),
             new ASN1Sequence(new ASN1ObjectID(keyAlgorithm.getECDomainOID())),
@@ -135,15 +124,13 @@ public class OkpSupport {
     }
 
     public static KeyAlgorithms getOkpKeyAlgorithm(Key key)  throws IOException {
-        if (key instanceof XECKey) {
-            return KeyAlgorithms.getKeyAlgorithmFromId(
-                    ((NamedParameterSpec)((XECKey)key).getParams()).getName(),
-                    AlgorithmPreferences.JOSE);
+        if (key instanceof EdDSAKey) {
+            return KeyAlgorithms.getKeyAlgorithmFromId(((EdDSAKey)key).getAlgorithm(),
+                                                       AlgorithmPreferences.JOSE);
         }
-        if (key instanceof EdECKey) {
-            return KeyAlgorithms.getKeyAlgorithmFromId(
-                    ((EdECKey)key).getParams().getName(),
-                    AlgorithmPreferences.JOSE);
+        if (key instanceof XDHKey) {
+            return KeyAlgorithms.getKeyAlgorithmFromId(((XDHKey)key).getAlgorithm(),
+                                                       AlgorithmPreferences.JOSE);
         }
         throw new IOException("Unknown key type: " + key.getClass().getName());
     }

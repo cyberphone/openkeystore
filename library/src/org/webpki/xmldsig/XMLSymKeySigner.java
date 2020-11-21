@@ -36,7 +36,7 @@ public class XMLSymKeySigner extends XMLSignerCore {
     }
 
     byte[] getSignatureBlob(byte[] data, AsymSignatureAlgorithms sig_alg) throws GeneralSecurityException, IOException {
-        return sym_signer.signData(data, sym_signer.getMacAlgorithm());
+        return sym_signer.signData(data, sym_signer.getHmacAlgorithm());
     }
 
 

@@ -21,6 +21,10 @@ import java.io.IOException;
 
 import java.security.PublicKey;
 
+/**
+ * Common interface for asymmetric key signatures.
+ *
+ */
 public interface AsymKeySignerInterface {
 
     public byte[] signData(byte[] data, AsymSignatureAlgorithms algorithm) throws IOException;

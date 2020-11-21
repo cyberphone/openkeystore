@@ -109,7 +109,7 @@ abstract class XMLSignerCore {
         dsig_wrapper = new XMLSignatureWrapper();
         dsig_wrapper.KeyInfo_Reference_create = write_keyinfo_ref_flag;
         if (this instanceof XMLSymKeySigner) {
-            dsig_wrapper.signatureAlgorithm = ((XMLSymKeySigner) this).sym_signer.getMacAlgorithm().getAlgorithmId(AlgorithmPreferences.SKS);
+            dsig_wrapper.signatureAlgorithm = ((XMLSymKeySigner) this).sym_signer.getHmacAlgorithm().getAlgorithmId(AlgorithmPreferences.SKS);
             dsig_wrapper.symmetric_key_name = ((XMLSymKeySigner) this).key_name;
         } else {
             PublicKey publicKey = populateKeys(dsig_wrapper);

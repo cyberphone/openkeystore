@@ -60,7 +60,7 @@ import org.webpki.crypto.DeterministicSignatureWrapper;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyStoreVerifier;
 import org.webpki.crypto.KeyTypes;
-import org.webpki.crypto.MACAlgorithms;
+import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
 
 import org.webpki.jose.jws.JwsAsymKeySigner;
@@ -3293,7 +3293,7 @@ public class JSONTest {
             dec.verify(new JSONSymKeyVerifier(key));
             dec = JSONParser.parse(new JSONObjectWriter().setString("Mydata", "cool")
             .setSignature(new JSONSymKeySigner(key, 
-                    (MACAlgorithms) dec.getAlgorithm())).toString())
+                    (HmacAlgorithms) dec.getAlgorithm())).toString())
             .getSignature(new JSONCryptoHelper.Options());
             dec.verify(new JSONSymKeyVerifier(key));
             try {

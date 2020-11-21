@@ -33,7 +33,7 @@ import org.webpki.xml.DOMAttributeReaderHelper;
 import org.webpki.crypto.DemoKeyStore;
 import org.webpki.crypto.KeyStoreSigner;
 import org.webpki.crypto.KeyStoreVerifier;
-import org.webpki.crypto.MACAlgorithms;
+import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.AsymKeySignerInterface;
 import org.webpki.crypto.SymKeySignerInterface;
@@ -181,11 +181,11 @@ public class xmlobject extends XMLObjectWrapper implements XMLEnvelopedInput {
             } else {
                 XMLSymKeySigner xmls = new XMLSymKeySigner(new SymKeySignerInterface() {
 
-                    public MACAlgorithms getMacAlgorithm() throws IOException {
-                        return MACAlgorithms.HMAC_SHA256;
+                    public HmacAlgorithms getHmacAlgorithm() throws IOException {
+                        return HmacAlgorithms.HMAC_SHA256;
                     }
 
-                    public byte[] signData(byte[] data, MACAlgorithms algorithm) throws IOException {
+                    public byte[] signData(byte[] data, HmacAlgorithms algorithm) throws IOException {
                         return algorithm.digest(symkey, data);
                     }
 
@@ -210,11 +210,11 @@ public class xmlobject extends XMLObjectWrapper implements XMLEnvelopedInput {
                 verifier.validateEnvelopedSignature(o);
             } else {
                 XMLSymKeyVerifier verifier = new XMLSymKeyVerifier(new SymKeyVerifierInterface() {
-                    public boolean verifyData(byte[] data, byte[] digest, MACAlgorithms algorithm, String keyId) throws IOException {
-                        if (algorithm != MACAlgorithms.HMAC_SHA256) {
+                    public boolean verifyData(byte[] data, byte[] digest, HmacAlgorithms algorithm, String keyId) throws IOException {
+                        if (algorithm != HmacAlgorithms.HMAC_SHA256) {
                             throw new IOException("Bad sym ALG");
                         }
-                        return ArrayUtil.compare(digest, MACAlgorithms.HMAC_SHA256.digest(symkey, data));
+                        return ArrayUtil.compare(digest, HmacAlgorithms.HMAC_SHA256.digest(symkey, data));
                     }
                 });
                 verifier.validateEnvelopedSignature(o);

@@ -303,10 +303,10 @@
         <include name="**/crypto/SymKeySignerInterface.java"/>
         <include name="**/crypto/CryptoAlgorithms.java"/>
         <include name="**/crypto/OkpSupport.java"/>
-        <include name="**/crypto/MACAlgorithms.java"/>
+        <include name="**/crypto/HashAlgorithms.java"/>
         <include name="**/crypto/KeyAlgorithms.java"/>
         <include name="**/crypto/KeyTypes.java"/>
-        <include name="**/crypto/HashAlgorithms.java"/>
+        <include name="**/crypto/HmacAlgorithms.java"/>
         <include name="**/crypto/SignatureAlgorithms.java"/>
         <include name="**/crypto/AlgorithmPreferences.java"/>
         <include name="**/crypto/AsymSignatureAlgorithms.java"/>
@@ -398,8 +398,8 @@
         <include name="**/crypto/CryptoAlgorithms.java"/>
         <include name="**/crypto/KeyAlgorithms.java"/>
         <include name="**/crypto/KeyTypes.java"/>
-        <include name="**/crypto/MACAlgorithms.java"/>
         <include name="**/crypto/HashAlgorithms.java"/>
+        <include name="**/crypto/HmacAlgorithms.java"/>
         <include name="**/crypto/SignatureAlgorithms.java"/>
         <include name="**/crypto/AlgorithmPreferences.java"/>
         <include name="**/crypto/AsymSignatureAlgorithms.java"/>

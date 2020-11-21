@@ -25,7 +25,7 @@ import java.security.cert.X509Certificate;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
-import org.webpki.crypto.MACAlgorithms;
+import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.SignatureAlgorithms;
 
 import static org.webpki.jose.JoseKeyWords.*;
@@ -97,7 +97,7 @@ public class JwsDecoder {
                         AsymSignatureAlgorithms.ED25519 : AsymSignatureAlgorithms.ED448;
         } else if (algorithmProperty.startsWith("HS")) {
             signatureAlgorithm = 
-                    MACAlgorithms.getAlgorithmFromId(algorithmProperty,
+                    HmacAlgorithms.getAlgorithmFromId(algorithmProperty,
                                                      AlgorithmPreferences.JOSE);
         } else {
             signatureAlgorithm =

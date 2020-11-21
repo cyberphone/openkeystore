@@ -87,14 +87,14 @@ public abstract class JwsValidator {
         // Dealing with in-line signatures
         if (jwsDecoder.jwsPayloadB64U == null) {
             throw new IllegalArgumentException(
-                    "Missing payload, use \"validateDetachedSignature()\"");
+                    "Missing payload, use \"validate(JwsDecoder, byte[])\"");
         }
         
-        // Delegated validation
+        // Delegated validation 
         validateObject((jwsDecoder.jwsHeaderB64U + 
-                      "." + 
-                      jwsDecoder.jwsPayloadB64U).getBytes("utf-8"),
-                     jwsDecoder);
+                        "." + 
+                        jwsDecoder.jwsPayloadB64U).getBytes("utf-8"),
+                       jwsDecoder);
         
         // No access to payload without having passed validation
         jwsDecoder.validated = true;

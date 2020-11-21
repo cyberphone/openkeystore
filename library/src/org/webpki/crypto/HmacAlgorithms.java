@@ -24,7 +24,11 @@ import javax.crypto.Mac;
 
 import javax.crypto.spec.SecretKeySpec;
 
-public enum MACAlgorithms implements SignatureAlgorithms {
+/**
+ * HMAC algorithms including an implementation.
+ *
+ */
+public enum HmacAlgorithms implements SignatureAlgorithms {
 
     HMAC_SHA1   ("http://www.w3.org/2000/09/xmldsig#hmac-sha1",
                  null,    "HmacSHA1",   HashAlgorithms.SHA1,   true),
@@ -41,8 +45,8 @@ public enum MACAlgorithms implements SignatureAlgorithms {
     private HashAlgorithms digestAlg; 
     private boolean sksMandatory;   // If required in SKS
 
-    private MACAlgorithms(String sksName, String joseName, String jceName,
-                          HashAlgorithms digestAlg, boolean sksMandatory) {
+    private HmacAlgorithms(String sksName, String joseName, String jceName,
+                           HashAlgorithms digestAlg, boolean sksMandatory) {
         this.sksName = sksName;
         this.joseName = joseName;
         this.jceName = jceName;
@@ -76,7 +80,7 @@ public enum MACAlgorithms implements SignatureAlgorithms {
     }
 
     public static boolean testAlgorithmUri(String sksName) {
-        for (MACAlgorithms alg : MACAlgorithms.values()) {
+        for (HmacAlgorithms alg : HmacAlgorithms.values()) {
             if (sksName.equals(alg.sksName)) {
                 return true;
             }
@@ -84,10 +88,10 @@ public enum MACAlgorithms implements SignatureAlgorithms {
         return false;
     }
 
-    public static MACAlgorithms getAlgorithmFromId(String algorithmId,
+    public static HmacAlgorithms getAlgorithmFromId(String algorithmId,
                                                    AlgorithmPreferences algorithmPreferences) 
     throws IOException {
-        for (MACAlgorithms alg : values()) {
+        for (HmacAlgorithms alg : values()) {
             if (algorithmId.equals(alg.sksName)) {
                 if (algorithmPreferences == AlgorithmPreferences.JOSE) {
                     throw new IOException("JOSE algorithm expected: " + algorithmId);

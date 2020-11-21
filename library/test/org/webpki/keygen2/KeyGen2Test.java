@@ -71,7 +71,7 @@ import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.HashAlgorithms;
 import org.webpki.crypto.KeyContainerTypes;
 import org.webpki.crypto.KeyUsageBits;
-import org.webpki.crypto.MACAlgorithms;
+import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.SymEncryptionAlgorithms;
@@ -962,7 +962,7 @@ public class KeyGen2Test {
                                     pinPolicy);
             if (symmetricKey || encryption_key) {
                 kp.addEndorsedAlgorithm(encryption_key ?
-                    SymEncryptionAlgorithms.AES256_CBC : MACAlgorithms.HMAC_SHA1);
+                    SymEncryptionAlgorithms.AES256_CBC : HmacAlgorithms.HMAC_SHA1);
                 kp.setSymmetricKey(encryption_key ? AES32BITKEY : OTP_SEED);
             }
             if (key_agreement) {
@@ -1466,11 +1466,11 @@ public class KeyGen2Test {
             assertTrue("Prop value error", props1[i].getValue().equals(props2[i].getValue()));
         }
         assertTrue("HMAC error", ArrayUtil.compare(sks.performHmac(keyHandle,
-                MACAlgorithms.HMAC_SHA1.getAlgorithmId(AlgorithmPreferences.SKS),
+                HmacAlgorithms.HMAC_SHA1.getAlgorithmId(AlgorithmPreferences.SKS),
                 null,
                 BIOMETRIC_NONE,
                 USER_DEFINED_PIN, TEST_STRING),
-                MACAlgorithms.HMAC_SHA1.digest(OTP_SEED, TEST_STRING)));
+                HmacAlgorithms.HMAC_SHA1.digest(OTP_SEED, TEST_STRING)));
     }
 
     @Test

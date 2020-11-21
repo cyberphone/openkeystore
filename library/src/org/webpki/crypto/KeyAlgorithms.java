@@ -34,7 +34,7 @@ import java.security.spec.RSAPublicKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 /**
- * Asymmetric key algorithms
+ * Asymmetric key algorithms.
  */
 public enum KeyAlgorithms implements CryptoAlgorithms {
 

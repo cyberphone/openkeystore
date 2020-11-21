@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import org.webpki.crypto.DeviceID;
 import org.webpki.crypto.HashAlgorithms;
 import org.webpki.crypto.KeyAlgorithms;
-import org.webpki.crypto.MACAlgorithms;
+import org.webpki.crypto.HashAlgorithms;
 import org.webpki.crypto.SymKeyVerifierInterface;
 
 import org.webpki.sks.AppUsage;
@@ -1246,7 +1246,7 @@ public class ServerState implements Serializable
             new XMLSymKeyVerifier (new SymKeyVerifierInterface()
               {
                 @Override
-                public boolean verifyData (byte[] data, byte[] digest, MACAlgorithms algorithm, String keyId) throws IOException
+                public boolean verifyData (byte[] data, byte[] digest, HashAlgorithms algorithm, String keyId) throws IOException
                   {
                     return ArrayUtil.compare (serverCryptoInterface.mac (data, SecureKeyStore.KDF_EXTERNAL_SIGNATURE), digest);
                   }

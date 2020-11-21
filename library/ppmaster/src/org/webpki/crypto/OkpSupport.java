@@ -77,7 +77,7 @@ import org.webpki.util.ArrayUtil;
 import org.webpki.util.DebugFormatter;
 
 /**
- * Support methods for "OKP" (RFC 8037)
+ * Support methods for "OKP" (RFC 8037).
  * 
 #if BOUNCYCASTLE
  * Source configured for the BouncyCastle provider.

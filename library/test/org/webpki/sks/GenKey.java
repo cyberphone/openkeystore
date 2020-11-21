@@ -37,7 +37,7 @@ import org.webpki.ca.CertSpec;
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymEncryptionAlgorithms;
 import org.webpki.crypto.AsymKeySignerInterface;
-import org.webpki.crypto.MACAlgorithms;
+import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
 import org.webpki.crypto.SymEncryptionAlgorithms;
@@ -245,7 +245,7 @@ public class GenKey {
                 data);
     }
 
-    public byte[] performHMAC(MACAlgorithms alg_id, 
+    public byte[] performHMAC(HmacAlgorithms alg_id, 
                               KeyAuthorization keyAuthorization,
                               byte[] data) throws IOException {
         return prov_sess.sks.performHmac(keyHandle,

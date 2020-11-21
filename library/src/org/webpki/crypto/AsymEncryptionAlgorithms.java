@@ -18,6 +18,10 @@ package org.webpki.crypto;
 
 import java.io.IOException;
 
+/**
+ * Asymmetric key encryption algorithms.
+ *
+ */
 public enum AsymEncryptionAlgorithms implements EncryptionAlgorithms {
 
     RSA_ES_PKCS_1_5        ("https://webpki.github.io/sks/algorithm#rsa.es.pkcs1_5",

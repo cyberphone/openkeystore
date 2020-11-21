@@ -31,7 +31,7 @@ import org.webpki.crypto.CertificateUtil;
 import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyStoreVerifier;
-import org.webpki.crypto.MACAlgorithms;
+import org.webpki.crypto.HmacAlgorithms;
 
 import org.webpki.json.JSONBaseHTML.RowInterface;
 import org.webpki.json.JSONBaseHTML.Types;
@@ -941,7 +941,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
                          "The currently recognized JWA ")
               .addString(json.createReference(JSONBaseHTML.REF_JWA))
               .addString(" symmetric key algorithms include:")
-              .addString(JSONBaseHTML.enumerateJOSEAlgorithms(MACAlgorithms.values()))
+              .addString(JSONBaseHTML.enumerateJOSEAlgorithms(HmacAlgorithms.values()))
               .addString("Note: If <i>proprietary</i> signature algorithms are " +
                          "added, they <b>must</b> be expressed as URIs." + Types.LINE_SEPARATOR + 
                          jwsCounterPart("alg"))

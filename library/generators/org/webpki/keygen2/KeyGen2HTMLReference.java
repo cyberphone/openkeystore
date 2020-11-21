@@ -29,7 +29,7 @@ import org.webpki.crypto.KeyContainerTypes;
 import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.KeyUsageBits;
 import org.webpki.crypto.KeyAlgorithms;
-import org.webpki.crypto.MACAlgorithms;
+import org.webpki.crypto.HmacAlgorithms;
 
 import org.webpki.json.JSONBaseHTML;
 import org.webpki.json.JSONBaseHTML.RowInterface;
@@ -1409,7 +1409,7 @@ public class KeyGen2HTMLReference extends JSONBaseHTML.Types {
                           "See also SKS &quot;Algorithm Support&quot;." + LINE_SEPARATOR +
                           "Note that <i>endorsed algorithm URIs <b>must</b> be specified in strict lexical order</i>." + LINE_SEPARATOR +
                           "The currently recognized algorithms include:" +
-                          JSONBaseHTML.enumerateStandardAlgorithms(MACAlgorithms.values (), true, false) +
+                          JSONBaseHTML.enumerateStandardAlgorithms(HmacAlgorithms.values (), true, false) +
                           JSONBaseHTML.enumerateStandardAlgorithms(AsymSignatureAlgorithms.values (), false, false) +
                           JSONBaseHTML.enumerateStandardAlgorithms(AsymEncryptionAlgorithms.values (), false, false) +
                           JSONBaseHTML.enumerateStandardAlgorithms(SymEncryptionAlgorithms.values (), true, false) +

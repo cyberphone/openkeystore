@@ -34,7 +34,7 @@ import java.security.spec.PSSParameterSpec;
 
 
 /**
- * Wrapper over java.security.Signature
+ * Wrapper over java.security.Signature.
  *
 #if ANDROID
  * Source configured for Android. 

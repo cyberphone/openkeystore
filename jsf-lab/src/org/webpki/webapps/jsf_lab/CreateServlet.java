@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
-import org.webpki.crypto.MACAlgorithms;
+import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.SignatureAlgorithms;
 
 import org.webpki.json.JSONObjectReader;
@@ -144,9 +144,9 @@ public class CreateServlet extends HttpServlet {
                    "<div class='sigparmhead'>Signature Parameters</div>" +
                  "</div><div style='display:flex;align-items:center'>")
             .append(new SelectAlg(selected)
-                 .add(MACAlgorithms.HMAC_SHA256)
-                 .add(MACAlgorithms.HMAC_SHA384)
-                 .add(MACAlgorithms.HMAC_SHA512)
+                 .add(HmacAlgorithms.HMAC_SHA256)
+                 .add(HmacAlgorithms.HMAC_SHA384)
+                 .add(HmacAlgorithms.HMAC_SHA512)
                  .add(AsymSignatureAlgorithms.ED25519)
                  .add(AsymSignatureAlgorithms.ED448)
                  .add(AsymSignatureAlgorithms.ECDSA_SHA256)
@@ -347,7 +347,7 @@ public class CreateServlet extends HttpServlet {
                 validationKey = getParameter(request, PRM_SECRET_KEY);
                 signer = new JSONSymKeySigner(
                         DebugFormatter.getByteArrayFromHex(validationKey),
-                        MACAlgorithms.getAlgorithmFromId(algorithmString, 
+                        HmacAlgorithms.getAlgorithmFromId(algorithmString, 
                                                          AlgorithmPreferences.JOSE));
             } else {
                 // To simplify UI we require PKCS #8 with the public key embedded

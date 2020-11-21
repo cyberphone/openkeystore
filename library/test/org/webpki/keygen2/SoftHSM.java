@@ -45,7 +45,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.webpki.crypto.DemoKeyStore;
 import org.webpki.crypto.KeyAlgorithms;
-import org.webpki.crypto.MACAlgorithms;
+import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
 
@@ -104,13 +104,13 @@ public class SoftHSM implements ServerCryptoInterface {
             byte[] Z = key_agreement.generateSecret();
 
             // The custom KDF
-            Mac mac = Mac.getInstance(MACAlgorithms.HMAC_SHA256.getJceName());
+            Mac mac = Mac.getInstance(HmacAlgorithms.HMAC_SHA256.getJceName());
             mac.init(new SecretKeySpec(Z, "RAW"));
             session_key = mac.doFinal(kdf_data);
 
             if (device_certificate == null) {
                 // Privacy enabled mode
-                mac = Mac.getInstance(MACAlgorithms.HMAC_SHA256.getJceName());
+                mac = Mac.getInstance(HmacAlgorithms.HMAC_SHA256.getJceName());
                 mac.init(new SecretKeySpec(session_key, "RAW"));
                 byte[] session_key_attest = mac.doFinal(attestation_arguments);
 
@@ -139,7 +139,7 @@ public class SoftHSM implements ServerCryptoInterface {
     @Override
     public byte[] mac(byte[] data, byte[] key_modifier) throws IOException {
         try {
-            Mac mac = Mac.getInstance(MACAlgorithms.HMAC_SHA256.getJceName());
+            Mac mac = Mac.getInstance(HmacAlgorithms.HMAC_SHA256.getJceName());
             mac.init(new SecretKeySpec(ArrayUtil.add(session_key, key_modifier), "RAW"));
             return mac.doFinal(data);
         } catch (GeneralSecurityException e) {

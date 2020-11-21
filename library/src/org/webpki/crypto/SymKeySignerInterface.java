@@ -19,10 +19,14 @@ package org.webpki.crypto;
 
 import java.io.IOException;
 
+/**
+ * Common interface for HMAC signatures.
+ *
+ */
 public interface SymKeySignerInterface {
 
-    public byte[] signData(byte[] data, MACAlgorithms algorithm) throws IOException;
+    public byte[] signData(byte[] data, HmacAlgorithms algorithm) throws IOException;
 
-    public MACAlgorithms getMacAlgorithm() throws IOException;
+    public HmacAlgorithms getHmacAlgorithm() throws IOException;
 
 }
