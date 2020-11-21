@@ -72,7 +72,7 @@
   </target>
 
   <target name="_preprocess">
-    <jpp destdir="." verbose="true" force="true">
+    <jpp destdir="." verbose="false" force="true">
         <fileset dir="ppmaster" includes="**/*.java" />
     </jpp>
   	<replace file="${test_dir}/org/webpki/sks/SKSReferenceImplementation.java">
@@ -204,9 +204,10 @@
              version="true"
              Package="false"
              Use="false"
-    	     additionalparam="--allow-script-in-comments -Xdoclint:none"
+    	     additionalparam="--allow-script-in-comments -Xdoclint:none -notimestamp"
              nodeprecated="true"
              nodeprecatedlist="true"
+             noindex="true"
              classpathref="compile.classpath"
              windowtitle="WebPKI.org Support">
       <packageset dir="${temp_dir}">
@@ -221,21 +222,11 @@
       <doctitle><![CDATA[<h1>WebPKI.org Support</h1>]]></doctitle>
       <bottom><![CDATA[<i>2005-2020 WebPKI.org.</i>]]></bottom>
     </javadoc>
+  	<!--
     <delete dir="${doc_dir}">
       <include name="*.zip"/>
     </delete>
-  	<replaceregexp
-        match="&lt;\!\-\-\ Generated\ by\ javadoc.+\-\-&gt;"
-        replace=""
-        flags="m">
-  	    <fileset dir="${doc_dir}" includes="**/*.html"/>
-  	</replaceregexp>
-  	<replaceregexp
-        match="&lt;meta\ name=.+&gt;"
-        replace=""
-        flags="m">
-  	    <fileset dir="${doc_dir}" includes="**/*.html"/>
-  	</replaceregexp>
+    -->
   	<!-- Windows... -->
     <fixcrlf srcdir="${doc_dir}"
        eol="lf"
