@@ -33,8 +33,7 @@ import java.security.interfaces.ECKey;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.MGF1ParameterSpec;
-
-import org.bouncycastle.jcajce.spec.XDHParameterSpec;
+import java.security.spec.NamedParameterSpec;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyAgreement;
@@ -57,7 +56,7 @@ import org.webpki.util.ArrayUtil;
  * Implements a subset of the RFC 7516 (JWE) algorithms
  * as well as the ECDH algorithms specified by RFC 8037.
  * 
- * Source configured for the BouncyCastle provider.
+ * Source configured for the default provider.
  */
 class EncryptionCore {
 
@@ -392,7 +391,7 @@ class EncryptionCore {
         // Begin by calculating Z (do the DH)
         String jceName = privateKey instanceof ECKey ? "ECDH" : "XDH";
         KeyAgreement keyAgreement = ecProviderName == null ?
-                KeyAgreement.getInstance(jceName, "BC") 
+                KeyAgreement.getInstance(jceName) 
                                    : 
                 KeyAgreement.getInstance(jceName, ecProviderName);
         keyAgreement.init(privateKey);
@@ -497,10 +496,10 @@ class EncryptionCore {
                                               : 
                     KeyPairGenerator.getInstance("EC", ecProviderName);
         } else {
-            paramSpec = new XDHParameterSpec(
+            paramSpec = new NamedParameterSpec(
                     OkpSupport.getOkpKeyAlgorithm(staticKey).getJceName());
             generator = ecProviderName == null ?
-                    KeyPairGenerator.getInstance("XDH", "BC") 
+                    KeyPairGenerator.getInstance("XDH") 
                                               : 
                     KeyPairGenerator.getInstance("XDH", ecProviderName);
         }

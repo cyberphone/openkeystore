@@ -34,7 +34,7 @@ import java.security.spec.PSSParameterSpec;
 /**
  * Wrapper over java.security.Signature.
  *
- * Source configured for the BouncyCastle provider.
+ * Source configured for the default provider.
  */
 public class SignatureWrapper {
 
@@ -151,14 +151,10 @@ public class SignatureWrapper {
                     algorithm.toString() +
                     ")");
         }
-        if (provider == null) {
-            instance = algorithm.getKeyType() == KeyTypes.EDDSA ?
-                    Signature.getInstance(algorithm.getJceName(), "BC")
-                                             : 
-                    Signature.getInstance(algorithm.getJceName());
-        } else {
-            instance = Signature.getInstance(algorithm.getJceName(), provider);
-        }
+        instance = provider == null ? 
+                Signature.getInstance(algorithm.getJceName())
+                                    :
+                Signature.getInstance(algorithm.getJceName(), provider);
         unmodifiedSignature = algorithm.getKeyType() != KeyTypes.EC;
         if (unmodifiedSignature) {
             if (algorithm.getMGF1ParameterSpec() != null) {
