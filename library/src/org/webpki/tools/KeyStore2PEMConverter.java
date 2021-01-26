@@ -16,20 +16,58 @@
  */
 package org.webpki.tools;
 
-import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream;
 
 import java.util.Enumeration;
 
 import java.security.KeyStore;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
 import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
 
 import org.webpki.crypto.KeyStoreReader;
 import org.webpki.crypto.CustomCryptoProvider;
 
+import org.webpki.util.ArrayUtil;
 import org.webpki.util.Base64;
 
 public class KeyStore2PEMConverter {
+    
+    public KeyStore2PEMConverter() {
+    }
+    
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    
+    boolean next;
+    
+    public byte[] getData() {
+        return baos.toByteArray();
+    }
+    
+    public void writePublicKey(PublicKey publicKey) throws Exception {
+        writeObject("PUBLIC KEY", publicKey.getEncoded());
+    }
+    
+    public void writePrivateKey(PrivateKey privateKey) throws Exception {
+        writeObject("PRIVATE KEY", privateKey.getEncoded());
+    }
+    
+    public void writeCertificate(X509Certificate certificate) throws Exception {
+        writeObject("CERTIFICATE", certificate.getEncoded());
+    }
+
+    private void writeObject(String string, byte[] encoded) throws Exception {
+        if (next) {
+            baos.write((byte)'\n');
+        }
+        next = true;
+        baos.write(("-----BEGIN " + string + "-----\n").getBytes("UTF-8"));
+        baos.write(new Base64().getBase64BinaryFromBinary(encoded));
+        baos.write(("\n-----END " + string + "-----\n").getBytes("UTF-8"));
+    }
+    
     private static void fail() {
         System.out.println(KeyStore2PEMConverter.class.getName() + "  keystore-file password PEM-file qualifier\n" +
                 "   qualifier = [public private certificate trust]");
@@ -40,10 +78,9 @@ public class KeyStore2PEMConverter {
         if (argv.length < 4) {
             fail();
         }
-        boolean next[] = new boolean[1];
         boolean privateKey = false;
         boolean publicKey = false;
-        boolean certificate = false;
+        boolean certificatePath = false;
         boolean trust = false;
         for (int i = 3; i < argv.length; i++) {
             if (argv[i].equals("public")) {
@@ -51,7 +88,7 @@ public class KeyStore2PEMConverter {
             } else if (argv[i].equals("private")) {
                 privateKey = true;
             } else if (argv[i].equals("certificate")) {
-                certificate = true;
+                certificatePath = true;
             } else if (argv[i].equals("trust")) {
                 trust = true;
             } else {
@@ -60,41 +97,28 @@ public class KeyStore2PEMConverter {
         }
         CustomCryptoProvider.conditionalLoad(true);
         KeyStore ks = KeyStoreReader.loadKeyStore(argv[0], argv[1]);
-        FileOutputStream fis = new FileOutputStream(argv[2]);
+        KeyStore2PEMConverter converter = new KeyStore2PEMConverter();
         Enumeration<String> aliases = ks.aliases();
         while (aliases.hasMoreElements()) {
             String alias = aliases.nextElement();
             if (ks.isKeyEntry(alias)) {
                 if (privateKey) {
-                    writeObject(fis, "PRIVATE KEY", ks.getKey(alias, argv[1].toCharArray()).getEncoded(), next);
+                    converter.writePrivateKey((PrivateKey)ks.getKey(alias, argv[1].toCharArray()));
                 }
-                if (certificate) for (Certificate cert : ks.getCertificateChain(alias)) {
-                    writeCert(fis, cert, next);
+                if (certificatePath) for (Certificate certificate : ks.getCertificateChain(alias)) {
+                    converter.writeCertificate((X509Certificate)certificate);
                 }
                 if (publicKey) {
-                    writeObject(fis, "PUBLIC KEY", ks.getCertificateChain(alias)[0].getPublicKey().getEncoded(), next);
+                    converter.writePublicKey(ks.getCertificateChain(alias)[0].getPublicKey());
                 }
             } else if (ks.isCertificateEntry(alias)) {
                 if (trust) {
-                    writeCert(fis, ks.getCertificate(alias), next);
+                    converter.writeCertificate((X509Certificate)ks.getCertificate(alias));
                 }
             } else {
                 throw new Exception("Bad KS");
             }
         }
-    }
-
-    private static void writeObject(FileOutputStream fis, String string, byte[] encoded, boolean next[]) throws Exception {
-        if (next[0]) {
-            fis.write((byte)'\n');
-        }
-        next[0] = true;
-        fis.write(("-----BEGIN " + string + "-----\n").getBytes("UTF-8"));
-        fis.write(new Base64().getBase64BinaryFromBinary(encoded));
-        fis.write(("\n-----END " + string + "-----\n").getBytes("UTF-8"));
-    }
-
-    private static void writeCert(FileOutputStream fis, Certificate cert, boolean next[]) throws Exception {
-        writeObject(fis, "CERTIFICATE", cert.getEncoded(), next);
+        ArrayUtil.writeFile(argv[2], converter.getData());
     }
 }
