@@ -61,7 +61,7 @@ public class KeyStore2JWKConverter {
     StringBuilder keyData = new StringBuilder();
     
     private void addKeyObject(String keyObjrect) {
-        if (keyData.length() == 0) {
+        if (keyData.length() != 0) {
             keyData.append('\n');
         }
         keyData.append(keyObjrect);
