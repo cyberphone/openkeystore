@@ -16,7 +16,6 @@
  */
 package org.webpki.tools;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import java.math.BigInteger;
@@ -50,27 +49,35 @@ import org.webpki.util.ArrayUtil;
 import org.webpki.util.Base64URL;
 
 public class KeyStore2JWKConverter {
+
+    public KeyStore2JWKConverter() {
+        
+    }
+
+    LinkedHashMap<String,String> privateKeyInfo;
+    
+    String keyId;
+    
+    StringBuilder keyData = new StringBuilder();
+    
+    private void addKeyObject(String keyObjrect) {
+        if (keyData.length() == 0) {
+            keyData.append('\n');
+        }
+        keyData.append(keyObjrect);
+    }
+
     private static void fail() {
         System.out.println(KeyStore2JWKConverter.class.getName() + "  keystore-file password JWK-file qualifier\n" +
-                "   qualifier = [public private certificate trust keyid javastring]");
+                "   qualifier = [public private certpath trust keyid javastring]");
         System.exit(3);
     }
-    
-    static LinkedHashMap<String,String> privateKeyInfo = new LinkedHashMap<>();
-    
-    static boolean privateKeyFlag;
-    static boolean publicKeyFlag;
-    static boolean certificateFlag;
-    static boolean trustFlag;
-    static boolean keyidFlag;
-    static boolean javaFlag;
-    static FileOutputStream fis;
 
-    static void addPrivateKeyElement(String property, byte[] value) throws IOException {
+    void addPrivateKeyElement(String property, byte[] value) throws IOException {
         privateKeyInfo.put(property, Base64URL.encode(value));
     }
 
-    static void setCryptoBinary(String name, BigInteger value) throws IOException {
+    void setCryptoBinary(String name, BigInteger value) throws IOException {
         byte[] cryptoBinary = value.toByteArray();
         if (cryptoBinary[0] == 0x00) {
             byte[] woZero = new byte[cryptoBinary.length - 1];
@@ -84,17 +91,23 @@ public class KeyStore2JWKConverter {
         if (argv.length < 4) {
             fail();
         }
+        boolean privateKeyFlag = false;
+        boolean publicKeyFlag = false;
+        boolean certificatePathFlag = false;
+        boolean trustFlag = false;
+        boolean keyIdFlag = false;
+        boolean javaFlag = false;
         for (int i = 3; i < argv.length; i++) {
             if (argv[i].equals("public")) {
                 publicKeyFlag = true;
             } else if (argv[i].equals("private")) {
                 privateKeyFlag = true;
-            } else if (argv[i].equals("certificate")) {
-                certificateFlag = true;
+            } else if (argv[i].equals("certpath")) {
+                certificatePathFlag = true;
             } else if (argv[i].equals("trust")) {
                 trustFlag = true;
             } else if (argv[i].equals("keyid")) {
-                keyidFlag = true;
+                keyIdFlag = true;
             } else if (argv[i].equals("javastring")) {
                 javaFlag = true;
             } else {
@@ -103,104 +116,117 @@ public class KeyStore2JWKConverter {
         }
         CustomCryptoProvider.conditionalLoad(true);
         KeyStore ks = KeyStoreReader.loadKeyStore(argv[0], argv[1]);
-        fis = new FileOutputStream(argv[2]);
+        KeyStore2JWKConverter converter = new KeyStore2JWKConverter();
         Enumeration<String> aliases = ks.aliases();
         while (aliases.hasMoreElements()) {
             String alias = aliases.nextElement();
             if (ks.isKeyEntry(alias)) {
+                if (keyIdFlag && (publicKeyFlag || privateKeyFlag)) {
+                    converter.setKeyId(alias);
+                }
                 PublicKey publicKey = ks.getCertificateChain(alias)[0].getPublicKey();
                 if (privateKeyFlag) {
-                    KeyAlgorithms keyAlgorithm = KeyAlgorithms.getKeyAlgorithm(publicKey);
-                    PrivateKey privateKey = (PrivateKey)ks.getKey(alias, argv[1].toCharArray());
-                    switch (keyAlgorithm.getKeyType()) {
-                    case RSA:
-                        RSAPrivateCrtKey rsaPrivateKey = (RSAPrivateCrtKey)privateKey;
-                        setCryptoBinary("d", rsaPrivateKey.getPrivateExponent());
-                        setCryptoBinary("p", rsaPrivateKey.getPrimeP());
-                        setCryptoBinary("q", rsaPrivateKey.getPrimeQ());
-                        setCryptoBinary("dp", rsaPrivateKey.getPrimeExponentP());
-                        setCryptoBinary("dq", rsaPrivateKey.getPrimeExponentQ());
-                        setCryptoBinary("qi", rsaPrivateKey.getCrtCoefficient());
-                        break;
-                    case EC:
-                       BigInteger d = ((ECPrivateKey)privateKey).getS();
-                       byte[] curvePoint = d.toByteArray();
-                       if (curvePoint.length > (keyAlgorithm.getPublicKeySizeInBits() + 7) / 8) {
-                           if (curvePoint[0] != 0) {
-                               throw new IOException("Unexpected EC value");
-                           }
-                           setCryptoBinary("d", d);
-                       } else {
-                           while (curvePoint.length < (keyAlgorithm.getPublicKeySizeInBits() + 7) / 8) {
-                               curvePoint = ArrayUtil.add(new byte[]{0}, curvePoint);
-                           }
-                           addPrivateKeyElement("d", curvePoint);
-                       }
-                       break;
-                    default:
-                        addPrivateKeyElement("d", OkpSupport.private2RawOkpKey(privateKey, keyAlgorithm));
-                    }
-                    writeJwk(fis, publicKey, alias);
+                    converter.addKeyObject(converter.writePrivateKey(
+                                    publicKey, 
+                                    (PrivateKey)ks.getKey(alias, argv[1].toCharArray())));
                 }
-                if (certificateFlag) {
+                if (certificatePathFlag) {
                     ArrayList<X509Certificate> certPath = new ArrayList<>();
                     for (Certificate cert : ks.getCertificateChain(alias)) {
                         certPath.add((X509Certificate) cert);
                     }
-                    writeCert(fis, certPath.toArray(new X509Certificate[0]));
+                    converter.writeCert(certPath.toArray(new X509Certificate[0]));
                 }
                 if (publicKeyFlag) {
-                    writeJwk(fis, publicKey, alias);
+                    converter.addKeyObject(converter.writePublicKey(publicKey));
                 }
             } else if (ks.isCertificateEntry(alias)) {
                 if (trustFlag) {
-                    writeCert(fis, new X509Certificate[]{(X509Certificate) ks.getCertificate(alias)});
+                    converter.writeCert(new X509Certificate[]{(X509Certificate) ks.getCertificate(alias)});
                 }
             } else {
                 throw new Exception("Bad KS");
             }
+            converter.setKeyId(null);
         }
+        String total = converter.keyData.toString();
+        if (javaFlag) {
+            if (javaFlag) {
+                total = total.replace("\"", "\\\"");
+                StringBuilder s = new StringBuilder("\"");
+                int count = 1;
+                for (char c : total.trim().toCharArray()) {
+                    if (c == '\n') {
+                        s.append("\" +\n\"");
+                        count = 0;
+                        continue;
+                    }
+                    if (count == 100) {
+                        s.append("\" +\n\"");
+                        count = 0;
+                    }
+                    count++;
+                    s.append(c);
+                }
+                total = s.append('\"').toString();
+            }            
+        }
+        ArrayUtil.writeFile(argv[2], total.getBytes("utf-8"));
     }
 
-    static void writeJwk(FileOutputStream fis, 
-                         PublicKey publicKey,
-                         String keyId) throws Exception {
-        JSONObjectWriter jwk = JSONObjectWriter.createCorePublicKey(publicKey, AlgorithmPreferences.JOSE_ACCEPT_PREFER);
+    private void setKeyId(String keyId) {
+        this.keyId = keyId;
+    }
+
+    public String writePrivateKey(PublicKey publicKey, PrivateKey privateKey) throws Exception {
+        JSONObjectWriter jwk = new JSONObjectWriter(JSONParser.parse(writePublicKey(publicKey)));
+        privateKeyInfo = new LinkedHashMap<>();
+        KeyAlgorithms keyAlgorithm = KeyAlgorithms.getKeyAlgorithm(publicKey);
+        switch (keyAlgorithm.getKeyType()) {
+        case RSA:
+            RSAPrivateCrtKey rsaPrivateKey = (RSAPrivateCrtKey)privateKey;
+            setCryptoBinary("d", rsaPrivateKey.getPrivateExponent());
+            setCryptoBinary("p", rsaPrivateKey.getPrimeP());
+            setCryptoBinary("q", rsaPrivateKey.getPrimeQ());
+            setCryptoBinary("dp", rsaPrivateKey.getPrimeExponentP());
+            setCryptoBinary("dq", rsaPrivateKey.getPrimeExponentQ());
+            setCryptoBinary("qi", rsaPrivateKey.getCrtCoefficient());
+            break;
+        case EC:
+           BigInteger d = ((ECPrivateKey)privateKey).getS();
+           byte[] curvePoint = d.toByteArray();
+           if (curvePoint.length > (keyAlgorithm.getPublicKeySizeInBits() + 7) / 8) {
+               if (curvePoint[0] != 0) {
+                   throw new IOException("Unexpected EC value");
+               }
+               setCryptoBinary("d", d);
+           } else {
+               while (curvePoint.length < (keyAlgorithm.getPublicKeySizeInBits() + 7) / 8) {
+                   curvePoint = ArrayUtil.add(new byte[]{0}, curvePoint);
+               }
+               addPrivateKeyElement("d", curvePoint);
+           }
+           break;
+        default:
+            addPrivateKeyElement("d", OkpSupport.private2RawOkpKey(privateKey, keyAlgorithm));
+        }
         for (String key : privateKeyInfo.keySet()) {
             jwk.setString(key, privateKeyInfo.get(key));
         }
-        String key = jwk.serializeToString(JSONOutputFormats.NORMALIZED);
-        if (keyidFlag) {
-            key = "{\"kid\":\"" + keyId + "\"," + key.substring(1);
-        }
-        printIt(JSONParser.parse(key).toString());
-
+        return jwk.toString();
     }
 
-    static void writeCert(FileOutputStream fis, X509Certificate[] certificatePath) throws Exception {
-        printIt(JSONArrayWriter.createCoreCertificatePath(certificatePath).serializeToString(JSONOutputFormats.PRETTY_PRINT));
+    public String writePublicKey(PublicKey publicKey) throws Exception {
+        String jwk = JSONObjectWriter.createCorePublicKey(
+                publicKey, AlgorithmPreferences.JOSE_ACCEPT_PREFER)
+                    .serializeToString(JSONOutputFormats.NORMALIZED);
+        if (keyId != null) {
+            jwk = "{\"kid\":\"" + keyId + "\"," + jwk.substring(1);
+        }
+        return JSONParser.parse(jwk).toString();
     }
 
-    static void printIt(String key) throws IOException {
-        if (javaFlag) {
-            key = key.replace("\"", "\\\"");
-            StringBuilder s = new StringBuilder("\"");
-            int count = 1;
-            for (char c : key.trim().toCharArray()) {
-                if (c == '\n') {
-                    s.append("\" +\n\"");
-                    count = 0;
-                    continue;
-                }
-                if (count == 100) {
-                    s.append("\" +\n\"");
-                    count = 0;
-                }
-                count++;
-                s.append(c);
-            }
-            key = s.append('\"').toString();
-        }
-        fis.write(key.getBytes("utf-8"));
+    void writeCert(X509Certificate[] certificatePath) throws Exception {
+        addKeyObject(JSONArrayWriter.createCoreCertificatePath(certificatePath).toString());
     }
 }
