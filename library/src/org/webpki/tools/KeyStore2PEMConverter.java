@@ -70,7 +70,7 @@ public class KeyStore2PEMConverter {
     
     private static void fail() {
         System.out.println(KeyStore2PEMConverter.class.getName() + "  keystore-file password PEM-file qualifier\n" +
-                "   qualifier = [public private certificate trust]");
+                "   qualifier = [public private certpath trust]");
         System.exit(3);
     }
 
@@ -78,19 +78,19 @@ public class KeyStore2PEMConverter {
         if (argv.length < 4) {
             fail();
         }
-        boolean privateKey = false;
-        boolean publicKey = false;
-        boolean certificatePath = false;
-        boolean trust = false;
+        boolean privateKeyFlag = false;
+        boolean publicKeyFlag = false;
+        boolean certificatePathFlag = false;
+        boolean trustFlag = false;
         for (int i = 3; i < argv.length; i++) {
             if (argv[i].equals("public")) {
-                publicKey = true;
+                publicKeyFlag = true;
             } else if (argv[i].equals("private")) {
-                privateKey = true;
-            } else if (argv[i].equals("certificate")) {
-                certificatePath = true;
+                privateKeyFlag = true;
+            } else if (argv[i].equals("certpath")) {
+                certificatePathFlag = true;
             } else if (argv[i].equals("trust")) {
-                trust = true;
+                trustFlag = true;
             } else {
                 fail();
             }
@@ -102,17 +102,19 @@ public class KeyStore2PEMConverter {
         while (aliases.hasMoreElements()) {
             String alias = aliases.nextElement();
             if (ks.isKeyEntry(alias)) {
-                if (privateKey) {
+                if (privateKeyFlag) {
                     converter.writePrivateKey((PrivateKey)ks.getKey(alias, argv[1].toCharArray()));
                 }
-                if (certificatePath) for (Certificate certificate : ks.getCertificateChain(alias)) {
-                    converter.writeCertificate((X509Certificate)certificate);
+                if (certificatePathFlag) { 
+                    for (Certificate certificate : ks.getCertificateChain(alias)) {
+                        converter.writeCertificate((X509Certificate)certificate);
+                    }
                 }
-                if (publicKey) {
+                if (publicKeyFlag) {
                     converter.writePublicKey(ks.getCertificateChain(alias)[0].getPublicKey());
                 }
             } else if (ks.isCertificateEntry(alias)) {
-                if (trust) {
+                if (trustFlag) {
                     converter.writeCertificate((X509Certificate)ks.getCertificate(alias));
                 }
             } else {

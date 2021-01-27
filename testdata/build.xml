@@ -114,7 +114,7 @@
 	
    <target name="_creatr.jwk-priv.pem-all">
     <antcall target="_createpem">
-       <param name="cmd" value="${keyprefix}certificate.p12 foo123 ${keyprefix}certpath.pem certificate"/>
+       <param name="cmd" value="${keyprefix}certificate.p12 foo123 ${keyprefix}certpath.pem certpath"/>
     </antcall>
     <antcall target="_createjwk">
        <param name="cmd" value="${keyprefix}certificate.p12 foo123 ${keyprefix}privatekey.jwk private keyid"/>
@@ -126,7 +126,7 @@
        <param name="cmd" value="${keyprefix}certificate.p12 foo123 ${keyprefix}publickey.pem public"/>
     </antcall>
     <antcall target="_createpem">
-       <param name="cmd" value="${keyprefix}certificate.p12 foo123 ${keyprefix}certificate-key.pem private certificate"/>
+       <param name="cmd" value="${keyprefix}certificate.p12 foo123 ${keyprefix}certificate-key.pem private certpath"/>
     </antcall>
    </target>
 
@@ -148,7 +148,7 @@
        <param name="cmd" value="-out/keyalias mykey -selfsigned -entity/ca -validity/start 2015-07-10T10:00:00 -validity/end 2040-07-10T09:59:59 -out/storetype PKCS12 -out/keystore rootca.p12 -out/storepass foo123 -out/keypass foo123 -serial 1"/>
     </antcall>
     <antcall target="_createpem">
-       <param name="cmd" value="rootca.p12 foo123 rootca.pem certificate"/>
+       <param name="cmd" value="rootca.p12 foo123 rootca.pem certpath"/>
     </antcall>
     <exec executable="keytool" failonerror="true" dir="${key.dir}">
        <arg line="-exportcert -keystore rootca.p12 -alias mykey -storepass foo123 -storetype PKCS12 -file rootca.cer"/>
@@ -166,7 +166,7 @@
        <param name="cmd" value="-out/keyalias mykey -selfsigned -entity/ca -validity/start 2015-07-10T10:00:00 -validity/end 2030-07-10T09:59:59 -out/storetype PKCS12 -out/keystore unknownca.p12 -out/storepass foo123 -out/keypass foo123 -serial 1"/>
     </antcall>
     <antcall target="_createpem">
-       <param name="cmd" value="unknownca.p12 foo123 unknownca.pem certificate"/>
+       <param name="cmd" value="unknownca.p12 foo123 unknownca.pem certpath"/>
     </antcall>
    	<exec executable="keytool" failonerror="true" dir="${key.dir}">
        <arg line="-exportcert -keystore unknownca.p12 -alias mykey -storepass foo123 -storetype PKCS12 -file unknownca.cer"/>
