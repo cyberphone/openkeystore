@@ -127,8 +127,8 @@ public class KeyStore2JWKConverter {
                 PublicKey publicKey = ks.getCertificateChain(alias)[0].getPublicKey();
                 if (privateKeyFlag) {
                     converter.addKeyObject(converter.writePrivateKey(
-                                    publicKey, 
-                                    (PrivateKey)ks.getKey(alias, argv[1].toCharArray())));
+                            (PrivateKey)ks.getKey(alias, argv[1].toCharArray()),
+                            publicKey));
                 }
                 if (certificatePathFlag) {
                     ArrayList<X509Certificate> certPath = new ArrayList<>();
@@ -178,7 +178,7 @@ public class KeyStore2JWKConverter {
         this.keyId = keyId;
     }
 
-    public String writePrivateKey(PublicKey publicKey, PrivateKey privateKey) throws Exception {
+    public String writePrivateKey(PrivateKey privateKey, PublicKey publicKey) throws Exception {
         JSONObjectWriter jwk = new JSONObjectWriter(JSONParser.parse(writePublicKey(publicKey)));
         privateKeyInfo = new LinkedHashMap<>();
         KeyAlgorithms keyAlgorithm = KeyAlgorithms.getKeyAlgorithm(publicKey);

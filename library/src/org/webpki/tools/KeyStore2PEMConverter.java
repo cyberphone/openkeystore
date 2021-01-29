@@ -27,8 +27,26 @@ import java.security.PublicKey;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 
+import java.security.interfaces.ECKey;
+import java.security.interfaces.RSAKey;
+
+import org.webpki.asn1.ASN1Sequence;
+import org.webpki.asn1.BaseASN1Object;
+import org.webpki.asn1.CompositeContextSpecific;
+import org.webpki.asn1.ASN1BitString;
+import org.webpki.asn1.ASN1Integer;
+import org.webpki.asn1.ASN1ObjectID;
+import org.webpki.asn1.ASN1OctetString;
+import org.webpki.asn1.SimpleContextSpecific;
+
 import org.webpki.crypto.KeyStoreReader;
+import org.webpki.crypto.OkpSupport;
+
+import org.webpki.json.JSONObjectReader;
+import org.webpki.json.JSONParser;
+
 import org.webpki.crypto.CustomCryptoProvider;
+import org.webpki.crypto.KeyAlgorithms;
 
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.Base64;
@@ -37,6 +55,8 @@ public class KeyStore2PEMConverter {
     
     public KeyStore2PEMConverter() {
     }
+    
+    static String EC_PUBLIC_KEY_OID = "1.2.840.10045.2.1";
     
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     
@@ -50,8 +70,40 @@ public class KeyStore2PEMConverter {
         writeObject("PUBLIC KEY", publicKey.getEncoded());
     }
     
-    public void writePrivateKey(PrivateKey privateKey) throws Exception {
-        writeObject("PRIVATE KEY", privateKey.getEncoded());
+    public void writePrivateKey(PrivateKey privateKey, PublicKey publicKey) throws Exception {
+        byte[] encoded;
+        KeyAlgorithms keyAlgorithm = KeyAlgorithms.getKeyAlgorithm(privateKey);
+        if (privateKey instanceof RSAKey) {
+            encoded = privateKey.getEncoded();
+        } else if (privateKey instanceof ECKey) {
+            JSONObjectReader jwk = JSONParser.parse(new KeyStore2JWKConverter()
+                    .writePrivateKey(privateKey, publicKey));
+            encoded = new ASN1Sequence(new BaseASN1Object[] {
+                new ASN1Integer(0),
+                new ASN1Sequence(new BaseASN1Object[] {
+                        new ASN1ObjectID(EC_PUBLIC_KEY_OID),
+                        new ASN1ObjectID(keyAlgorithm.getECDomainOID())}),
+                new ASN1OctetString(new ASN1Sequence(new BaseASN1Object[] {
+                        new ASN1Integer(1),
+                        new ASN1OctetString(jwk.getBinary("d")),
+                        new CompositeContextSpecific(1, 
+                                new ASN1BitString(
+                      ArrayUtil.add(new byte[] {4},  
+                                    ArrayUtil.add(jwk.getBinary("x"), jwk.getBinary("y")))))
+                }).encode())
+            }).encode();
+        } else {
+            encoded = new ASN1Sequence(new BaseASN1Object[] {
+                new ASN1Integer(1),
+                new ASN1Sequence(new ASN1ObjectID(keyAlgorithm.getECDomainOID())),
+                new ASN1OctetString(new ASN1OctetString(
+                        OkpSupport.private2RawOkpKey(privateKey, keyAlgorithm)).encode()),
+                new SimpleContextSpecific(1, 
+                        ArrayUtil.add(new byte[] {0},  // BITSTRING unused bits 
+                                      OkpSupport.public2RawOkpKey(publicKey, keyAlgorithm)))
+            }).encode();
+        }
+        writeObject("PRIVATE KEY", encoded);
     }
     
     public void writeCertificate(X509Certificate certificate) throws Exception {
@@ -102,8 +154,10 @@ public class KeyStore2PEMConverter {
         while (aliases.hasMoreElements()) {
             String alias = aliases.nextElement();
             if (ks.isKeyEntry(alias)) {
+                PublicKey publicKey = ks.getCertificateChain(alias)[0].getPublicKey();
                 if (privateKeyFlag) {
-                    converter.writePrivateKey((PrivateKey)ks.getKey(alias, argv[1].toCharArray()));
+                    converter.writePrivateKey((PrivateKey)ks.getKey(alias, argv[1].toCharArray()),
+                                              publicKey);
                 }
                 if (certificatePathFlag) { 
                     for (Certificate certificate : ks.getCertificateChain(alias)) {
@@ -111,7 +165,7 @@ public class KeyStore2PEMConverter {
                     }
                 }
                 if (publicKeyFlag) {
-                    converter.writePublicKey(ks.getCertificateChain(alias)[0].getPublicKey());
+                    converter.writePublicKey(publicKey);
                 }
             } else if (ks.isCertificateEntry(alias)) {
                 if (trustFlag) {

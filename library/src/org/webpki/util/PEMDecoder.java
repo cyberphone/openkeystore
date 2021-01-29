@@ -67,7 +67,13 @@ public class PEMDecoder {
         ASN1Sequence seq = ParseUtil.sequence(DerDecoder.decode(pkcs8), 3);
         String oid = ParseUtil.oid(ParseUtil.sequence(seq.get(1), 2).get(1)).oid();
         seq = ParseUtil.sequence(DerDecoder.decode(ParseUtil.octet(seq.get(2))));
-        byte[] publicKey = ParseUtil.bitstring(ParseUtil.singleContext(seq.get(seq.size() -1), 1));
+        byte[] publicKey;
+        try {
+            publicKey = ParseUtil.bitstring(ParseUtil.singleContext(seq.get(seq.size() -1), 1));
+        } catch (Exception e) {
+            throw new GeneralSecurityException(
+                    "This implementation requires PKCS8 with public key attribute");
+        }
         int length = (publicKey.length - 1) / 2;
         byte[] parm = new byte[length];
         System.arraycopy(publicKey, 1, parm, 0, length);
@@ -91,10 +97,21 @@ public class PEMDecoder {
         ASN1Sequence seq = ParseUtil.sequence(DerDecoder.decode(pkcs8));
         KeyAlgorithms keyAlgorithm = 
                 getOkpKeyAlgorithm(ParseUtil.oid(ParseUtil.sequence(seq.get(1)).get(0)).oid());
-        byte[] content = ParseUtil.simpleContext(seq.get(seq.size() - 1), 1).encodeContent();
+        byte[] content;
+        try {
+            content = ParseUtil.simpleContext(seq.get(seq.size() - 1), 1).encodeContent();
+        } catch (Exception e) {
+            throw new GeneralSecurityException(
+                    "This implementation requires a public key attribute (RFC8410)");
+        }
+        if (content[0] != 0) {
+            throw new GeneralSecurityException(
+                    "Missing leading 0 in public key attribute (RFC8410)");
+        }
         byte[] publicKey = new byte[content.length - 1];
         System.arraycopy(content, 1, publicKey, 0, publicKey.length);
         return OkpSupport.raw2PublicOkpKey(publicKey, keyAlgorithm);
+
     }
     
     private static byte[] getPrivateKeyBlob(byte[] pemBlob) throws IOException {
