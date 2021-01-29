@@ -93,7 +93,13 @@
   </target>
 
   <target name="_createcert">
-
+    <java fork="yes"
+          classname="org.webpki.ca.CommandLineCA"
+    	  classpathref="lib.classpath"
+       	  dir="${key.dir}"
+          failonerror="true">
+        <arg line="${cmd} -subject &quot;CN=${subject}&quot; ${algorithms}"/>
+    </java>
   </target>
 
    <target name="_createjwk">
