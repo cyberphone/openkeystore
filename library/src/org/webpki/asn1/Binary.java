@@ -106,10 +106,10 @@ public abstract class Binary extends Simple {
                 dd.extractfromoctetstrings = decoder.extractfromoctetstrings;
                 dd.bytenumbers = decoder.bytenumbers;
                 dd.bytenumlistoffset = blobOffset + encodedLength - value.length;
-                dd.readNext().toString(enc, prefix + "    ");
-                s.append("encapsulates\n  " + getByteNumberBlanks() + prefix + "{\n");
+                dd.readNext().toString(enc, prefix + "  ");
+                s.append("encapsulates {\n");
                 s.append(enc);
-                s.append("\n  " + getByteNumberBlanks() + prefix + "}");
+                s.append("\n" + getByteNumberBlanks() + prefix + "}");
                 return;
             } catch (Exception e) {
             }
