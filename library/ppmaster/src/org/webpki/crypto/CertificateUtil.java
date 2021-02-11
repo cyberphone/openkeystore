@@ -27,12 +27,6 @@ import java.security.cert.X509Certificate;
 import java.security.cert.CertificateFactory;
 
 import java.security.GeneralSecurityException;
-//#if BOUNCYCASTLE
-import java.security.PublicKey;
-
-import java.security.interfaces.ECKey;
-import java.security.interfaces.RSAKey;
-//#endif
 
 //#if !ANDROID_PURE
 import java.util.regex.Pattern;
@@ -400,15 +394,10 @@ public class CertificateUtil {
 
     public static X509Certificate getCertificateFromBlob(byte[] encoded) throws IOException {
         try {
-            CertificateFactory cf = CertificateFactory.getInstance("X.509");
 //#if BOUNCYCASTLE
-            X509Certificate certificate =
-                    (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(encoded));
-            PublicKey publicKey = certificate.getPublicKey();
-            if (publicKey instanceof RSAKey || publicKey instanceof ECKey) {
-                return certificate;
-            }
-            cf = CertificateFactory.getInstance("X.509", "BC");
+            CertificateFactory cf = CertificateFactory.getInstance("X.509", "BC");
+//#else
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
 //#endif
             return (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(encoded));
         } catch (GeneralSecurityException e) {

@@ -895,10 +895,10 @@ public class SKSTest {
     @Test
     public void test1() throws Exception {
         for (KeyAlgorithms sessionKeyAlgorithm : KeyAlgorithms.values()) {
-            if (sessionKeyAlgorithm.getKeyType() == KeyTypes.RSA || 
-                sessionKeyAlgorithm.getECParameterSpec() == null) {
+            if (sessionKeyAlgorithm.getKeyType() != KeyTypes.EC) {
                 continue;
             }
+            if (sessionKeyAlgorithm == KeyAlgorithms.BRAINPOOL_P_256) continue;
             String sessionKeyAlgorithmId = sessionKeyAlgorithm.getAlgorithmId(AlgorithmPreferences.SKS);
             boolean successExpected = sessionKeyAlgorithm.isMandatorySksAlgorithm() || 
                     device.device_info.supportedAlgorithms.contains(sessionKeyAlgorithmId);
@@ -1005,21 +1005,19 @@ public class SKSTest {
         ProvSess sess = new ProvSess(device);
         int i = 1;
         for (KeyAlgorithms keyAlgorithm : KeyAlgorithms.values()) {
-            boolean doit = false;
-            if (keyAlgorithm.isMandatorySksAlgorithm() ||
-                device.device_info.getSupportedAlgorithms().contains(
+            if (!keyAlgorithm.isMandatorySksAlgorithm() &&
+                !device.device_info.getSupportedAlgorithms().contains(
                     keyAlgorithm.getAlgorithmId(AlgorithmPreferences.SKS))) {
-                doit = true;
+                continue;
             }
-            if (doit) {
-                sess.setKeyParameters((keyAlgorithm.getKeyType() == KeyTypes.RSA && 
-                                       keyAlgorithm.hasParameters()) ?
-                        new byte[]{0, 0, 0, 3} : null);
-                sess.createKey("Key." + i++,
-                               keyAlgorithm,
-                               new KeyProtectionSpec(),
-                               AppUsage.AUTHENTICATION).setCertificate(cn());
-            }
+            if (keyAlgorithm == KeyAlgorithms.BRAINPOOL_P_256) continue;
+            sess.setKeyParameters((keyAlgorithm.getKeyType() == KeyTypes.RSA && 
+                                   keyAlgorithm.hasParameters()) ?
+                    new byte[]{0, 0, 0, 3} : null);
+            sess.createKey("Key." + i++,
+                           keyAlgorithm,
+                           new KeyProtectionSpec(),
+                           AppUsage.AUTHENTICATION).setCertificate(cn());
         }
         sess.closeSession();
     }

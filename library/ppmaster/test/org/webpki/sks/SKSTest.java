@@ -112,6 +112,9 @@ public class SKSTest {
         DeviceInfo dev = device.device_info;
         reference_implementation = true;
 //#else
+//#if BOUNCYCASTLE
+        org.webpki.crypto.CustomCryptoProvider.forcedLoad(true);
+//#endif
         standalone_testing = Boolean.valueOf(System.getProperty("sks.standalone"));
         sks = (SecureKeyStore) Class.forName(System.getProperty("sks.implementation")).getDeclaredConstructor().newInstance();
         device = new Device(sks);
@@ -931,10 +934,12 @@ public class SKSTest {
     @Test
     public void test1() throws Exception {
         for (KeyAlgorithms sessionKeyAlgorithm : KeyAlgorithms.values()) {
-            if (sessionKeyAlgorithm.getKeyType() == KeyTypes.RSA || 
-                sessionKeyAlgorithm.getECParameterSpec() == null) {
+            if (sessionKeyAlgorithm.getKeyType() != KeyTypes.EC) {
                 continue;
             }
+//#if !BOUNCYCASTLE
+            if (sessionKeyAlgorithm == KeyAlgorithms.BRAINPOOL_P_256) continue;
+//#endif
             String sessionKeyAlgorithmId = sessionKeyAlgorithm.getAlgorithmId(AlgorithmPreferences.SKS);
             boolean successExpected = sessionKeyAlgorithm.isMandatorySksAlgorithm() || 
                     device.device_info.supportedAlgorithms.contains(sessionKeyAlgorithmId);
@@ -1041,21 +1046,21 @@ public class SKSTest {
         ProvSess sess = new ProvSess(device);
         int i = 1;
         for (KeyAlgorithms keyAlgorithm : KeyAlgorithms.values()) {
-            boolean doit = false;
-            if (keyAlgorithm.isMandatorySksAlgorithm() ||
-                device.device_info.getSupportedAlgorithms().contains(
+            if (!keyAlgorithm.isMandatorySksAlgorithm() &&
+                !device.device_info.getSupportedAlgorithms().contains(
                     keyAlgorithm.getAlgorithmId(AlgorithmPreferences.SKS))) {
-                doit = true;
+                continue;
             }
-            if (doit) {
-                sess.setKeyParameters((keyAlgorithm.getKeyType() == KeyTypes.RSA && 
-                                       keyAlgorithm.hasParameters()) ?
-                        new byte[]{0, 0, 0, 3} : null);
-                sess.createKey("Key." + i++,
-                               keyAlgorithm,
-                               new KeyProtectionSpec(),
-                               AppUsage.AUTHENTICATION).setCertificate(cn());
-            }
+//#if !BOUNCYCASTLE
+            if (keyAlgorithm == KeyAlgorithms.BRAINPOOL_P_256) continue;
+//#endif
+            sess.setKeyParameters((keyAlgorithm.getKeyType() == KeyTypes.RSA && 
+                                   keyAlgorithm.hasParameters()) ?
+                    new byte[]{0, 0, 0, 3} : null);
+            sess.createKey("Key." + i++,
+                           keyAlgorithm,
+                           new KeyProtectionSpec(),
+                           AppUsage.AUTHENTICATION).setCertificate(cn());
         }
         sess.closeSession();
     }
