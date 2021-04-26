@@ -43,7 +43,7 @@ public class CBORString extends CBORObject {
     }
 
     @Override
-    StringBuilder internalToString() {
-        return new StringBuilder().append('"').append(string).append('"');
+    StringBuilder internalToString(StringBuilder result) {
+        return result.append('"').append(string).append('"');
     }
 }

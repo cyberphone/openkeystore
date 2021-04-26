@@ -21,6 +21,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.Vector;
 
 import org.junit.Test;
 import org.webpki.util.ArrayUtil;
@@ -84,5 +85,77 @@ public class CBORTest {
         textCompare(cborArray,
                 "[\n  1,\n  [\n    2,\n    3],\n  [\n    4,\n  ]\n]\n");
         binaryCompare(cborArray,"8301820203820405");
+    }
+    
+    class MapTest extends CBORMapBase {
+        private static final long serialVersionUID = 1L;
+        
+        int objectNumber;
+        MapTest insert(CBORObject key) throws IOException {
+            setObject(key, new CBORInteger(objectNumber++));
+            return this;
+        }
+    }
+    
+    static String[] NEW_SORTING = {
+            "10", 
+            "100",
+            "-1",
+            "\"z\"",
+            "\"aa\"",
+            "[100]",
+            "[-1]",
+            "false"
+    };
+    
+    static String[] OLD_SORTING = {
+            "10", 
+            "-1",
+            "false",
+            "100",
+            "\"z\"",
+            "[-1]",
+            "\"aa\"",
+            "[100]"
+    };
+    
+    void sortingTest(String[] expectedOrder) throws Exception{
+        MapTest m = new MapTest();
+        m.insert(new CBORInteger(10))
+         .insert(new CBORInteger(-1))
+         .insert(new CBORBoolean(false))
+         .insert(new CBORInteger(100))
+         .insert(new CBORString("z"))
+         .insert(new CBORArray().addObject(new CBORInteger(-1)))
+         .insert(new CBORString("aa"))
+         .insert(new CBORArray().addObject(new CBORInteger(100)));
+        String total = m.toString().replace(" ", "").replace("\n","");
+        System.out.println(total);
+        Vector<String> keys = new Vector<>();
+        int i = 1;
+        int stop;
+        while (true) {
+            stop = total.indexOf(':', i);
+            if (stop < 0) {
+                break;
+            }
+            keys.add(total.substring(i, stop));
+            i = total.indexOf(',', stop);
+            if (i > 0) {
+                i++;
+            } else {
+                break;
+            }
+        }
+        for (String key : keys) {
+            System.out.println(key);
+        }
+    }
+    
+    @Test
+    public void mapperTest() throws Exception {
+        sortingTest(OLD_SORTING);
+        CBORMapBase.setRfc7049SortingMode(false);
+        sortingTest(NEW_SORTING);
     }
 }

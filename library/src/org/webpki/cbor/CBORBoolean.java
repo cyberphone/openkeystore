@@ -43,8 +43,7 @@ public class CBORBoolean extends CBORObject {
     }
 
     @Override
-    StringBuilder internalToString() {
-        // TODO Auto-generated method stub
-        return null;
+    StringBuilder internalToString(StringBuilder result) {
+        return result.append(value);
     }
 }

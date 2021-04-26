@@ -48,7 +48,7 @@ public class CBORInteger extends CBORObject {
     }
 
     @Override
-    StringBuilder internalToString() {
-        return new StringBuilder().append(value);
+    StringBuilder internalToString(StringBuilder result) {
+        return result.append(value);
     }
 }

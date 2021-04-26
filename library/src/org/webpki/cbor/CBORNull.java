@@ -40,7 +40,7 @@ public class CBORNull extends CBORObject {
     }
 
     @Override
-    StringBuilder internalToString() {
+    StringBuilder internalToString(StringBuilder result) {
         // TODO Auto-generated method stub
         return null;
     }

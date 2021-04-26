@@ -49,11 +49,15 @@ public class CBORStringMap extends CBORMapBase {
         return getObject(key).getByteArray();
     }
 
-    public CBORArray getCBORArray(String key) throws IOException {
-        return getObject(key).getCBORArray();
+    public CBORArray getArray(String key) throws IOException {
+        return getObject(key).getArray();
     }
 
-    public CBORStringMap getCBORMap(String key) throws IOException {
-        return getObject(key).getCBORStringMap();
+    public CBORIntegerMap getIntegerMap(String key) throws IOException {
+        return getObject(key).getIntegerMap();
+    }
+ 
+    public CBORStringMap getStringMap(String key) throws IOException {
+        return getObject(key).getStringMap();
     }
 }

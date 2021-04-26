@@ -28,12 +28,26 @@ import java.util.TreeMap;
 abstract class CBORMapBase extends CBORObject {
 
     private static final long serialVersionUID = 1L;
+    
+    private static boolean rfc7049Sorting = true;
+
+    /**
+     * Set RFC7049 key sorting.
+     * Default: true
+     * @param flag true for RFC7049, false for RFC 8949
+     */
+    static public void setRfc7049SortingMode(boolean flag) {
+        rfc7049Sorting = flag;
+    }
 
     class CBORKeyComparer implements Comparator<CBORObject> {
 
         @Override
         public int compare(CBORObject o1, CBORObject o2) {
-            return o1.toString().compareTo(o2.toString());
+            if (rfc7049Sorting) {
+                return o1.toString().compareTo(o2.toString());
+            }
+            return o2.toString().compareTo(o1.toString());
         }
     }
 
@@ -73,9 +87,9 @@ abstract class CBORMapBase extends CBORObject {
     }
     
     @Override
-    StringBuilder internalToString() {
+    StringBuilder internalToString(StringBuilder result) {
         StringBuilder indent = parentDepthIndent();
-        StringBuilder result = new StringBuilder("{\n");
+        result.append("{\n");
         boolean notFirst = false;
         for (CBORObject key : keys.keySet()) {
             CBORObject member = keys.get(key);

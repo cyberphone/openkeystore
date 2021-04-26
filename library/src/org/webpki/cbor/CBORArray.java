@@ -61,9 +61,9 @@ public class CBORArray extends CBORObject {
     }
 
     @Override
-    StringBuilder internalToString() {
+    StringBuilder internalToString(StringBuilder result) {
         StringBuilder indent = parentDepthIndent();
-        StringBuilder result = new StringBuilder("[\n");
+        result.append("[\n");
         boolean notFirst = false;
         for (CBORObject element : elements.toArray(new CBORObject[0])) {
             if (notFirst) {

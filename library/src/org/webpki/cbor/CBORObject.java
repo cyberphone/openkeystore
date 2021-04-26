@@ -19,8 +19,6 @@ package org.webpki.cbor;
 import java.io.IOException;
 import java.io.Serializable;
 
-import java.util.Comparator;
-
 /**
  * Abstract class for holding CBOR objects.
  */
@@ -42,7 +40,7 @@ public abstract class CBORObject implements Serializable {
 
     public abstract byte[] writeObject() throws IOException;
     
-    abstract StringBuilder internalToString();
+    abstract StringBuilder internalToString(StringBuilder result);
     
     StringBuilder parentDepthIndent() {
         StringBuilder stringBuilder = new StringBuilder();
@@ -86,18 +84,18 @@ public abstract class CBORObject implements Serializable {
         return ((CBORByteArray) this).byteArray;
     }
 
-    public CBORStringMap getCBORStringMap() throws IOException {
+    public CBORStringMap getStringMap() throws IOException {
         check(CBORTypes.MAP);
         return (CBORStringMap) this;
     }
 
 
-    public CBORIntegerMap getCBORIntegerMap() {
+    public CBORIntegerMap getIntegerMap() {
         // TODO Auto-generated method stub
         return (CBORIntegerMap) this;
     }
     
-    public CBORArray getCBORArray() throws IOException {
+    public CBORArray getArray() throws IOException {
         check(CBORTypes.ARRAY);
         return (CBORArray) this;
     }
@@ -135,6 +133,6 @@ public abstract class CBORObject implements Serializable {
 
     @Override
     public String toString() {
-        return internalToString().append('\n').toString();
+        return internalToString(new StringBuilder()).append('\n').toString();
     }
 }
