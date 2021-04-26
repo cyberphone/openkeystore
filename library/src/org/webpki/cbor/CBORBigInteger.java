@@ -34,7 +34,7 @@ public class CBORBigInteger extends CBORObject {
     
     @Override
     public CBORTypes getType() {
-        return CBORTypes.BIGINTEGER;
+        return CBORTypes.BIG_INTEGER;
     }
 
     @Override

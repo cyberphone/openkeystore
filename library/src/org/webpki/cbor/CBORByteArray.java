@@ -33,7 +33,7 @@ public class CBORByteArray extends CBORObject {
     
     @Override
     public CBORTypes getType() {
-        return CBORTypes.BYTEARRAY;
+        return CBORTypes.BYTE_ARRAY;
     }
 
     @Override

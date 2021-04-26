@@ -18,33 +18,23 @@ package org.webpki.cbor;
 
 import java.io.IOException;
 
-import java.util.TreeMap;
-
 /**
  * Class for holding CBOR string maps.
  */
-public class CBORStringMap extends CBORObject {
+public class CBORStringMap extends CBORMapBase {
 
     private static final long serialVersionUID = 1L;
-
-    TreeMap<String, CBORObject> keys = new TreeMap<>();
 
     CBORStringMap() {
     }
 
     public CBORStringMap setObject(String key, CBORObject value) throws IOException {
-        if (keys.put(key, value) != null) {
-            throw new IOException("Duplicate key: " + key);
-        }
+        setObject(new CBORString(key), value);
         return this;
     }
 
     public CBORObject getObject(String key) throws IOException {
-        CBORObject cborObject = keys.get(key);
-        if (cborObject == null) {
-            throw new IOException("No such key: " + key);
-        }
-        return cborObject;
+        return getObject(new CBORString(key));
     }
 
     public int getInt32(String key) throws IOException {
@@ -65,37 +55,5 @@ public class CBORStringMap extends CBORObject {
 
     public CBORStringMap getCBORMap(String key) throws IOException {
         return getObject(key).getCBORStringMap();
-    }
-
-    @Override
-    public CBORTypes getType() {
-        return CBORTypes.STRING_MAP;
-    }
-
-    @Override
-    public byte[] writeObject() throws IOException {
-        // TODO Auto-generated method stub
-        return new byte[] {6,7};
-    }
-
-    @Override
-    StringBuilder internalToString() {
-        StringBuilder indent = parentDepthIndent();
-        StringBuilder result = new StringBuilder("{\n");
-        boolean notFirst = false;
-        for (String key : keys.keySet()) {
-            CBORObject member = keys.get(key);
-            if (notFirst) {
-                result.insert(result.length() - 1, ',');
-            }
-            notFirst = true;
-            result.append(indent)
-                  .append(INDENT)
-                  .append('"')
-                  .append(key)
-                  .append("\": ")
-                  .append(member.toString());
-        }
-        return result.append(indent).append('}');
     }
 }

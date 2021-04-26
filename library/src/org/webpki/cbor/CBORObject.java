@@ -19,6 +19,8 @@ package org.webpki.cbor;
 import java.io.IOException;
 import java.io.Serializable;
 
+import java.util.Comparator;
+
 /**
  * Abstract class for holding CBOR objects.
  */
@@ -80,12 +82,12 @@ public abstract class CBORObject implements Serializable {
     }
 
     public byte[] getByteArray() throws IOException {
-        check(CBORTypes.BYTEARRAY);
+        check(CBORTypes.BYTE_ARRAY);
         return ((CBORByteArray) this).byteArray;
     }
 
     public CBORStringMap getCBORStringMap() throws IOException {
-        check(CBORTypes.STRING_MAP);
+        check(CBORTypes.MAP);
         return (CBORStringMap) this;
     }
 
@@ -110,16 +112,10 @@ public abstract class CBORObject implements Serializable {
 
     private void checkObjectForUnread(String explanation) throws IOException {
         switch (getType()) {
-        case STRING_MAP:
-            CBORStringMap cborStringMap = (CBORStringMap) this;
-            for (String key : cborStringMap.keys.keySet()) {
-                cborStringMap.keys.get(key).checkObjectForUnread(key);
-            }
-            break;
-        case INTEGER_MAP:
-            CBORIntegerMap cborIntegerMap = (CBORIntegerMap) this;
-            for (int key : cborIntegerMap.keys.keySet()) {
-                cborIntegerMap.keys.get(key).checkObjectForUnread(Integer.toString(key));
+        case MAP:
+            CBORMapBase cborMap = (CBORMapBase) this;
+            for (CBORObject key : cborMap.keys.keySet()) {
+                 cborMap.keys.get(key).checkObjectForUnread(CBORMapBase.keyText(key));
             }
             break;
         case ARRAY:
@@ -136,7 +132,7 @@ public abstract class CBORObject implements Serializable {
             break;
         }
     }
-    
+
     @Override
     public String toString() {
         return internalToString().append('\n').toString();

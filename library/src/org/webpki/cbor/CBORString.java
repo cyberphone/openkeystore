@@ -39,12 +39,11 @@ public class CBORString extends CBORObject {
     @Override
     public byte[] writeObject() throws IOException {
         // TODO Auto-generated method stub
-        return null;
+        return new byte[] {6,7};
     }
 
     @Override
     StringBuilder internalToString() {
-        // TODO Auto-generated method stub
-        return null;
+        return new StringBuilder().append('"').append(string).append('"');
     }
 }

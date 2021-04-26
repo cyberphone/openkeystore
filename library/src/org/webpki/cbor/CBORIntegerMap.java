@@ -18,33 +18,23 @@ package org.webpki.cbor;
 
 import java.io.IOException;
 
-import java.util.TreeMap;
-
 /**
  * Class for holding CBOR integer maps.
  */
-public class CBORIntegerMap extends CBORObject {
+public class CBORIntegerMap extends CBORMapBase {
 
     private static final long serialVersionUID = 1L;
-
-    TreeMap<Integer, CBORObject> keys = new TreeMap<>();
 
     CBORIntegerMap() {
     }
 
     CBORIntegerMap setObject(int key, CBORObject value) throws IOException {
-        if (keys.put(key, value) != null) {
-            throw new IOException("Duplicate key: " + key);
-        }
+        setObject(new CBORInteger(key), value);
         return this;
     }
 
     CBORObject getObject(int key) throws IOException {
-        CBORObject cborObject = keys.get(key);
-        if (cborObject == null) {
-            throw new IOException("No such key: " + key);
-        }
-        return cborObject;
+        return getObject(new CBORInteger(key));
     }
 
     public int getInt32(int key) throws IOException {
@@ -71,34 +61,4 @@ public class CBORIntegerMap extends CBORObject {
         return getObject(key).getCBORStringMap();
     }
     
-    @Override
-    public CBORTypes getType() {
-        return CBORTypes.INTEGER_MAP;
-    }
-
-    @Override
-    public byte[] writeObject() throws IOException {
-        // TODO Auto-generated method stub
-        return new byte[] {6,7};
-    }
-
-    @Override
-    StringBuilder internalToString() {
-        StringBuilder indent = parentDepthIndent();
-        StringBuilder result = new StringBuilder("{\n");
-        boolean notFirst = false;
-        for (int key : keys.keySet()) {
-            CBORObject member = keys.get(key);
-            if (notFirst) {
-                result.insert(result.length() - 1, ',');
-            }
-            notFirst = true;
-            result.append(indent)
-                  .append(INDENT)
-                  .append(key)
-                  .append(": ")
-                  .append(member.toString());
-        }
-        return result.append(indent).append('}');
-    }
 }

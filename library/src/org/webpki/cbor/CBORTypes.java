@@ -18,5 +18,14 @@ package org.webpki.cbor;
 
 /**
  * Enumeration of CBOR types.
+ * 
+ * Note: the types supported by this implementation.
  */
-public enum CBORTypes {INT, ARRAY, STRING_MAP, BYTEARRAY, STRING, BOOLEAN, NULL, BIGINTEGER, INTEGER_MAP};
+public enum CBORTypes {ARRAY, 
+                       MAP,
+                       INT, 
+                       BYTE_ARRAY,
+                       STRING, 
+                       BOOLEAN, 
+                       NULL, 
+                       BIG_INTEGER};
