@@ -18,6 +18,8 @@ package org.webpki.cbor;
 
 import java.io.IOException;
 
+import org.webpki.util.ArrayUtil;
+
 /**
  * Class for holding CBOR integers.
  */
@@ -26,17 +28,26 @@ public class CBORInteger extends CBORObject {
     private static final long serialVersionUID = 1L;
 
     long value;
-    boolean unsigned;
+    boolean forceUnsigned;
 
-    CBORInteger(long value, boolean unsigned) {
-        this.value = value;
-        this.unsigned = unsigned;
+    /**
+     * Normal integer handling.
+     * @param value
+     */
+    CBORInteger(long value) {
+        this(value, false);
     }
     
-    CBORInteger(long value) {
-        this(value, value >= 0);
+    /**
+     * Force unsigned integer.
+     * @param value
+     * @param forceUnsigned
+     */
+    CBORInteger(long value, boolean forceUnsigned) {
+        this.value = value;
+        this.forceUnsigned = forceUnsigned;
     }
-
+    
     @Override
     public CBORTypes getType() {
         return CBORTypes.INT;
@@ -44,7 +55,8 @@ public class CBORInteger extends CBORObject {
 
     @Override
     public byte[] writeObject() throws IOException {
-        return new byte[] {6,7};
+        return getEncodedCodedValue(
+                (value >= 0 || forceUnsigned) ? MT_UNSIGNED : MT_NEGATIVE, value, forceUnsigned);
     }
 
     @Override

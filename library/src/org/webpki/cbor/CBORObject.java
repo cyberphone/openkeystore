@@ -36,11 +36,44 @@ public abstract class CBORObject implements Serializable {
     
     static final String INDENT = "  ";
     
+    static final byte MT_UNSIGNED = (byte) 0x00;
+    static final byte MT_NEGATIVE = (byte) 0x20;
+    static final byte MT_STRING   = (byte) 0x60;
+    static final byte MT_ARRAY    = (byte) 0x80;
+    static final byte MT_MAP      = (byte) 0xa0;
+
     public abstract CBORTypes getType();
 
     public abstract byte[] writeObject() throws IOException;
     
     abstract StringBuilder internalToString(StringBuilder result);
+    
+    byte[] getEncodedCodedValue(byte major, long value, boolean forceUnsigned) {
+        if (!forceUnsigned && value < 0) {
+            // Carsten B trickery :)
+            value = ~value;
+        }
+        byte[] encoded;
+        if (value < 0 || value > 4294967295L) {
+            encoded = new byte[9];
+            encoded[0] = 27;
+            for (int i = 8; i > 0; i--) {
+                encoded[i] = (byte) value;
+                value >>>= 8;
+            } 
+        } else if (value <= 23) {
+            encoded = new byte[] {(byte) value};
+        } else if (value <= 255) {
+            encoded = new byte[] {24, (byte) value};
+        } else if (value <= 65535) {
+            encoded = new byte[] {25, (byte) (value >> 8), (byte) value};
+        } else {
+            encoded = new byte[] {26, (byte) (value >> 24), (byte) (value >> 16), 
+                                      (byte) (value >> 8),  (byte) value};
+        } 
+        encoded[0] |= major;
+        return encoded;
+    }
     
     StringBuilder parentDepthIndent() {
         StringBuilder stringBuilder = new StringBuilder();

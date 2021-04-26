@@ -18,6 +18,8 @@ package org.webpki.cbor;
 
 import java.io.IOException;
 
+import org.webpki.util.ArrayUtil;
+
 /**
  * Class for holding CBOR strings.
  */
@@ -38,8 +40,8 @@ public class CBORString extends CBORObject {
 
     @Override
     public byte[] writeObject() throws IOException {
-        // TODO Auto-generated method stub
-        return new byte[] {6,7};
+        byte[] utf8 = string.getBytes("utf-8");
+        return ArrayUtil.add(getEncodedCodedValue(MT_STRING, utf8.length, false), utf8);
     }
 
     @Override

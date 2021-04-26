@@ -20,6 +20,8 @@ import java.io.IOException;
 
 import java.util.ArrayList;
 
+import org.webpki.util.ArrayUtil;
+
 /**
  * Class for holding CBOR arrays.
  */
@@ -57,7 +59,11 @@ public class CBORArray extends CBORObject {
 
     @Override
     public byte[] writeObject() throws IOException {
-        return new byte[] {6,7};
+        byte[] arrayHeader = getEncodedCodedValue(MT_ARRAY, elements.size(), false);
+        for (CBORObject element : elements.toArray(new CBORObject[0])) {
+            arrayHeader = ArrayUtil.add(arrayHeader, element.writeObject());
+        }
+        return arrayHeader;
     }
 
     @Override

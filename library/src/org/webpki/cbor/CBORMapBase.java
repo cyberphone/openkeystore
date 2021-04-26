@@ -22,6 +22,8 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.webpki.util.ArrayUtil;
+
 /**
  * Base class for holding CBOR maps.
  */
@@ -44,10 +46,24 @@ abstract class CBORMapBase extends CBORObject {
 
         @Override
         public int compare(CBORObject o1, CBORObject o2) {
-            if (rfc7049Sorting) {
-                return o1.toString().compareTo(o2.toString());
+            try {
+                byte[] key1 = o1.writeObject();
+                byte[] key2 = o2.writeObject();
+                if (!rfc7049Sorting && key1.length < key2.length) {
+                    return -1;
+                }
+                int minIndex = Math.min(key1.length, key2.length);
+                for (int i = 0; i < minIndex; i++) {
+                    int diff = (key1[i] & 0xff) - (key2[i] & 0xff);
+                    if (diff != 0) {
+                        return diff;
+                    }
+                }
+                return key1.length - key2.length;
+            } catch (IOException e) {
+                 throw new RuntimeException(e);
             }
-            return o2.toString().compareTo(o1.toString());
+  //          return o1.toString().compareTo(o2.toString());
         }
     }
 
@@ -82,8 +98,13 @@ abstract class CBORMapBase extends CBORObject {
  
     @Override
     public byte[] writeObject() throws IOException {
-        // TODO Auto-generated method stub
-        return null;
+        byte[] mapHeader = getEncodedCodedValue(MT_MAP, keys.size(), false);
+        for (CBORObject key : keys.keySet()) {
+            mapHeader = ArrayUtil.add(mapHeader,
+                                      ArrayUtil.add(key.writeObject(), 
+                                                    keys.get(key).writeObject()));
+        }
+        return mapHeader;
     }
     
     @Override
