@@ -68,7 +68,7 @@
   </condition>
 
   <target name="help">
-    <echo message="Targets: help build tomcat doc testkeygen2 testsks testjson testkeyalgs android-json android-saturn"/>
+    <echo message="Targets: help build tomcat doc testkeygen2 testsks testjson testcbor testkeyalgs android-json android-saturn"/>
   </target>
 
   <target name="_preprocess">
@@ -535,6 +535,13 @@
      </antcall>
   </target>
   
+  <!-- JUnit test of the CBOR API.  The extra parameters for SKS/KeyGen2 are simply ignored... -->
+  <target name="testcbor">
+    <antcall target="_test">
+       <param name="test.class" value="org.webpki.cbor.CBORTest"/>
+     </antcall>
+  </target>
+	
   <!-- Java to HTML -->
   <target name="_java2html">
     <echo message="Writing: ${doc.file}"/>
