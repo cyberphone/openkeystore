@@ -18,10 +18,12 @@ package org.webpki.cbor;
 
 import java.io.IOException;
 
-import org.webpki.util.ArrayUtil;
-
 /**
  * Class for holding CBOR integers.
+ * 
+ * Note that unsigned integers outside of the signed range must
+ * use the {@link CBORInteger(long, boolean)} constructor! in order
+ * to produce proper deterministic (canonical) encoding.
  */
 public class CBORInteger extends CBORObject {
 
@@ -41,8 +43,13 @@ public class CBORInteger extends CBORObject {
     
     /**
      * Force unsigned integer.
-     * @param value
-     * @param forceUnsigned
+     * 
+     * Since Java doesn't support unsigned integers, there is 
+     * a need to use this constructor.  <code>0xffffffffffffffffL</code>
+     * would in the standard constructor be considered as <code>-1</code>
+     * which has a different encoding than the unsigned value.
+     * @param value long value
+     * @param forceUnsigned <code>true</code> if value should be considered as unsigned
      */
     public CBORInteger(long value, boolean forceUnsigned) {
         this.value = value;

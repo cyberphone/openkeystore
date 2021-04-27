@@ -34,6 +34,9 @@ public class CBORBigInteger extends CBORObject {
     static final BigInteger MAX_INT64 = new BigInteger("18446744073709551615");
     static final BigInteger MIN_INT64 = new BigInteger("-18446744073709551616");
     
+    static final byte[] UNSIGNED_BIG_INTEGER = {(byte) 0xc2};
+    static final byte[] SIGNED_BIG_INTEGER   = {(byte) 0xc3};
+    
     CBORBigInteger(BigInteger value) {
         this.value = value;
     }
@@ -46,6 +49,7 @@ public class CBORBigInteger extends CBORObject {
     @Override
     public byte[] writeObject() throws IOException {
         if (value.compareTo(MAX_INT64) <= 0 && value.compareTo(MIN_INT64) >= 0) {
+            // Fits in uint64 decoding
             CBORInteger cborInteger = new CBORInteger(value.longValue());
             // 65-bit integer emulation...
             if (value.compareTo(BigInteger.ZERO) >= 0) {
@@ -55,21 +59,23 @@ public class CBORBigInteger extends CBORObject {
             }
             return cborInteger.writeObject();
         }
+        // Didn't fit uint64 so we must use special decoding
         byte[] encoded;
-        byte major;
+        byte[] headerTag;
         if (value.compareTo(BigInteger.ZERO) < 0) {
             encoded = value.negate().subtract(BigInteger.ONE).toByteArray();
-            major = (byte) 0xc3;
+            headerTag = SIGNED_BIG_INTEGER;
         } else {
             encoded = value.toByteArray();
-            major = (byte) 0xc2;
+            headerTag = UNSIGNED_BIG_INTEGER;
         }
         if (encoded[0] == 0) {
+            // No leading zeroes please
             byte[] temp = new byte[encoded.length - 1];
             System.arraycopy(encoded, 1, temp, 0, temp.length);
             encoded = temp;
         }
-        return ArrayUtil.add(new byte[] {major}, new CBORByteArray(encoded).writeObject());
+        return ArrayUtil.add(headerTag, new CBORByteArray(encoded).writeObject());
     }
 
     @Override

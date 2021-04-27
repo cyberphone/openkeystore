@@ -19,6 +19,7 @@ package org.webpki.cbor;
 import java.io.IOException;
 
 import org.webpki.util.ArrayUtil;
+import org.webpki.util.DebugFormatter;
 
 /**
  * Class for holding CBOR byte arrays.
@@ -46,7 +47,6 @@ public class CBORByteArray extends CBORObject {
 
     @Override
     StringBuilder internalToString(StringBuilder result) {
-        // TODO Auto-generated method stub
-        return null;
+        return result.append("0x").append(DebugFormatter.getHexString(byteArray));
     }
 }
