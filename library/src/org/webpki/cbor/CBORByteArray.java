@@ -22,7 +22,7 @@ import org.webpki.util.ArrayUtil;
 import org.webpki.util.DebugFormatter;
 
 /**
- * Class for holding CBOR byte arrays.
+ * Class for holding CBOR <code>byte</code> arrays.
  */
 public class CBORByteArray extends CBORObject {
 
@@ -40,7 +40,7 @@ public class CBORByteArray extends CBORObject {
     }
 
     @Override
-    public byte[] writeObject() throws IOException {
+    public byte[] encodeObject() throws IOException {
         return ArrayUtil.add(getEncodedCodedValue(MT_BYTES, byteArray.length, false, false),
                              byteArray);
     }

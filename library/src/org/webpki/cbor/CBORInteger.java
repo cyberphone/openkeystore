@@ -18,6 +18,8 @@ package org.webpki.cbor;
 
 import java.io.IOException;
 
+import java.math.BigInteger;
+
 /**
  * Class for holding CBOR integers.
  * 
@@ -31,7 +33,7 @@ public class CBORInteger extends CBORObject {
 
     long value;
     boolean forceUnsigned;
-    boolean forceSigned;
+    boolean forceNegative;
 
     /**
      * Normal integer handling.
@@ -53,6 +55,10 @@ public class CBORInteger extends CBORObject {
      */
     public CBORInteger(long value, boolean forceUnsigned) {
         this.value = value;
+        if (value == 0) {
+            // -0 is not permitted
+            forceNegative = false;
+        }
         this.forceUnsigned = forceUnsigned;
     }
 
@@ -62,16 +68,26 @@ public class CBORInteger extends CBORObject {
     }
 
     @Override
-    public byte[] writeObject() throws IOException {
+    public byte[] encodeObject() throws IOException {
         return getEncodedCodedValue(
-              (!forceSigned && (value >= 0 || forceUnsigned)) ? MT_UNSIGNED : MT_NEGATIVE, 
+              (!forceNegative && (value >= 0 || forceUnsigned)) ? MT_UNSIGNED : MT_NEGATIVE, 
               value, 
               forceUnsigned,
-              forceSigned);
+              forceNegative);
+    }
+    
+    BigInteger getBigIntegerRepresentation() {
+        BigInteger bigInteger = BigInteger.valueOf(value);
+        if (forceUnsigned) {
+            bigInteger = bigInteger.and(CBORBigInteger.MAX_INT64);
+        } else if (forceNegative) {
+            bigInteger = bigInteger.and(CBORBigInteger.MAX_INT64).negate();
+        }
+        return bigInteger;
     }
 
     @Override
     StringBuilder internalToString(StringBuilder result) {
-        return result.append(value);
+        return result.append(getBigIntegerRepresentation().toString());
     }
 }

@@ -19,11 +19,13 @@ package org.webpki.cbor;
 import java.io.IOException;
 
 /**
- * Class for holding CBOR null.
+ * Class for holding CBOR <code>null</code>.
  */
 public class CBORNull extends CBORObject {
 
     private static final long serialVersionUID = 1L;
+    
+    static final byte[] NULL = {(byte)0xf6};
 
     CBORNull() {
     }
@@ -34,14 +36,12 @@ public class CBORNull extends CBORObject {
     }
 
     @Override
-    public byte[] writeObject() throws IOException {
-        // TODO Auto-generated method stub
-        return null;
+    public byte[] encodeObject() throws IOException {
+        return NULL;
     }
 
     @Override
     StringBuilder internalToString(StringBuilder result) {
-        // TODO Auto-generated method stub
-        return null;
+        return result.append("null");
     }
 }

@@ -19,6 +19,8 @@ package org.webpki.cbor;
 import java.io.IOException;
 import java.io.Serializable;
 
+import java.math.BigInteger;
+
 /**
  * Abstract class for holding CBOR objects.
  */
@@ -45,16 +47,16 @@ public abstract class CBORObject implements Serializable {
 
     public abstract CBORTypes getType();
 
-    public abstract byte[] writeObject() throws IOException;
+    public abstract byte[] encodeObject() throws IOException;
     
     abstract StringBuilder internalToString(StringBuilder result);
     
     byte[] getEncodedCodedValue(byte major, 
                                 long value, 
                                 boolean forceUnsigned,
-                                boolean forcedSigned) {
+                                boolean forcedNegative) {
         // 65-bit integer emulation...
-        if (forcedSigned || (!forceUnsigned && value < 0)) {
+        if (forcedNegative || (!forceUnsigned && value < 0)) {
             // Carsten B trickery :)
             value = ~value;
         }
@@ -89,7 +91,7 @@ public abstract class CBORObject implements Serializable {
         return stringBuilder;
     }
 
-    private void check(CBORTypes expectedCborType) throws IOException {
+    void check(CBORTypes expectedCborType) throws IOException {
         if (getType() != expectedCborType) {
             throw new IOException("Is type: " + getType() +
                     ",  requested: " + expectedCborType);
@@ -111,6 +113,10 @@ public abstract class CBORObject implements Serializable {
         check(CBORTypes.BOOLEAN);
         return ((CBORBoolean) this).value;
     }
+    
+    public BigInteger getBigInteger() throws IOException {
+        return CBORBigInteger.getValue(this);
+    }
 
     public String getString() throws IOException {
         check(CBORTypes.STRING);
@@ -122,23 +128,22 @@ public abstract class CBORObject implements Serializable {
         return ((CBORByteArray) this).byteArray;
     }
 
-    public CBORStringMap getStringMap() throws IOException {
-        check(CBORTypes.MAP);
+    public CBORStringMap getCBORStringMap() throws IOException {
+        check(CBORTypes.STRING_MAP);
         return (CBORStringMap) this;
     }
 
-
-    public CBORIntegerMap getIntegerMap() {
-        // TODO Auto-generated method stub
+    public CBORIntegerMap getCBORIntegerMap() throws IOException {
+        check(CBORTypes.INTEGER_MAP);
         return (CBORIntegerMap) this;
     }
-    
-    public CBORArray getArray() throws IOException {
+
+    public CBORArray getCBORArray() throws IOException {
         check(CBORTypes.ARRAY);
         return (CBORArray) this;
     }
 
-    public static CBORObject readObject(byte[] cbor) {
+    public static CBORObject decodeObject(byte[] cbor) {
         return null;
     }
 
@@ -148,7 +153,8 @@ public abstract class CBORObject implements Serializable {
 
     private void checkObjectForUnread(String explanation) throws IOException {
         switch (getType()) {
-        case MAP:
+        case STRING_MAP:
+        case INTEGER_MAP:
             CBORMapBase cborMap = (CBORMapBase) this;
             for (CBORObject key : cborMap.keys.keySet()) {
                  cborMap.keys.get(key).checkObjectForUnread(CBORMapBase.keyText(key));

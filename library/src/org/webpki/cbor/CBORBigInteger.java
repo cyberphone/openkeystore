@@ -23,7 +23,7 @@ import java.math.BigInteger;
 import org.webpki.util.ArrayUtil;
 
 /**
- * Class for holding CBOR big integers.
+ * Class for holding CBOR {@link BigInteger}.
  */
 public class CBORBigInteger extends CBORObject {
 
@@ -47,27 +47,27 @@ public class CBORBigInteger extends CBORObject {
     }
 
     @Override
-    public byte[] writeObject() throws IOException {
+    public byte[] encodeObject() throws IOException {
         if (value.compareTo(MAX_INT64) <= 0 && value.compareTo(MIN_INT64) >= 0) {
-            // Fits in uint64 decoding
+            // Fits in "uint65" decoding
             CBORInteger cborInteger = new CBORInteger(value.longValue());
             // 65-bit integer emulation...
             if (value.compareTo(BigInteger.ZERO) >= 0) {
                 cborInteger.forceUnsigned = true;
             } else {
-                cborInteger.forceSigned = true;
+                cborInteger.forceNegative = true;
             }
-            return cborInteger.writeObject();
+            return cborInteger.encodeObject();
         }
-        // Didn't fit uint64 so we must use special decoding
+        // Didn't fit "uint65" so we must use big number decoding
         byte[] encoded;
         byte[] headerTag;
-        if (value.compareTo(BigInteger.ZERO) < 0) {
-            encoded = value.negate().subtract(BigInteger.ONE).toByteArray();
-            headerTag = SIGNED_BIG_INTEGER;
-        } else {
+        if (value.compareTo(BigInteger.ZERO) >= 0) {
             encoded = value.toByteArray();
             headerTag = UNSIGNED_BIG_INTEGER;
+        } else {
+            encoded = value.negate().subtract(BigInteger.ONE).toByteArray();
+            headerTag = SIGNED_BIG_INTEGER;
         }
         if (encoded[0] == 0) {
             // No leading zeroes please
@@ -75,11 +75,19 @@ public class CBORBigInteger extends CBORObject {
             System.arraycopy(encoded, 1, temp, 0, temp.length);
             encoded = temp;
         }
-        return ArrayUtil.add(headerTag, new CBORByteArray(encoded).writeObject());
+        return ArrayUtil.add(headerTag, new CBORByteArray(encoded).encodeObject());
     }
 
     @Override
     StringBuilder internalToString(StringBuilder result) {
         return result.append(value.toString());
+    }
+
+    static BigInteger getValue(CBORObject cborObject) throws IOException {
+        if (cborObject.getType() == CBORTypes.INT) {
+            return ((CBORInteger) cborObject).getBigIntegerRepresentation();
+        }
+        cborObject.check(CBORTypes.BIG_INTEGER);
+        return ((CBORBigInteger) cborObject).value;
     }
 }

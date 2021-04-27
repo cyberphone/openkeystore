@@ -39,7 +39,7 @@ public class CBORString extends CBORObject {
     }
 
     @Override
-    public byte[] writeObject() throws IOException {
+    public byte[] encodeObject() throws IOException {
         byte[] utf8 = string.getBytes("utf-8");
         return ArrayUtil.add(getEncodedCodedValue(MT_STRING, utf8.length, false, false), utf8);
     }

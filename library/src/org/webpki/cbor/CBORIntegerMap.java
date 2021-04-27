@@ -18,6 +18,8 @@ package org.webpki.cbor;
 
 import java.io.IOException;
 
+import java.math.BigInteger;
+
 /**
  * Class for holding CBOR integer maps.
  */
@@ -45,20 +47,24 @@ public class CBORIntegerMap extends CBORMapBase {
         return getObject(key).getInt64();
     }
 
+    public BigInteger getBigInteger(int key) throws IOException {
+        return getObject(key).getBigInteger();
+    }
+
     public byte[] getByteArray(int key) throws IOException {
         return getObject(key).getByteArray();
     }
 
-    public CBORArray getArray(int key) throws IOException {
-        return getObject(key).getArray();
+    public CBORArray getCBORArray(int key) throws IOException {
+        return getObject(key).getCBORArray();
     }
 
-    public CBORIntegerMap getIntegerMap(int key) throws IOException {
-        return getObject(key).getIntegerMap();
+    public CBORIntegerMap getCBORIntegerMap(int key) throws IOException {
+        return getObject(key).getCBORIntegerMap();
     }
 
-    public CBORStringMap getStringMap(int key) throws IOException {
-        return getObject(key).getStringMap();
+    public CBORStringMap getCBORStringMap(int key) throws IOException {
+        return getObject(key).getCBORStringMap();
     }
     
 }

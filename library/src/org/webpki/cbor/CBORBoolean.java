@@ -19,7 +19,7 @@ package org.webpki.cbor;
 import java.io.IOException;
 
 /**
- * Class for holding CBOR booleans.
+ * Class for holding CBOR <code>true</code> and <code>false</code>.
  */
 public class CBORBoolean extends CBORObject {
 
@@ -40,7 +40,7 @@ public class CBORBoolean extends CBORObject {
     }
 
     @Override
-    public byte[] writeObject() throws IOException {
+    public byte[] encodeObject() throws IOException {
         return value ? TRUE : FALSE;
     }
 

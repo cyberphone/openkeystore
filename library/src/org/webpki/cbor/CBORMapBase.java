@@ -47,8 +47,8 @@ abstract class CBORMapBase extends CBORObject {
         @Override
         public int compare(CBORObject o1, CBORObject o2) {
             try {
-                byte[] key1 = o1.writeObject();
-                byte[] key2 = o2.writeObject();
+                byte[] key1 = o1.encodeObject();
+                byte[] key2 = o2.encodeObject();
                 if (!rfc7049Sorting && key1.length < key2.length) {
            //         return -1;
                 }
@@ -93,18 +93,18 @@ abstract class CBORMapBase extends CBORObject {
 
     @Override
     public CBORTypes getType() {
-        return CBORTypes.MAP;
+        return CBORTypes.INTEGER_MAP;
     }
  
     @Override
-    public byte[] writeObject() throws IOException {
-        byte[] mapHeader = getEncodedCodedValue(MT_MAP, keys.size(), false, false);
+    public byte[] encodeObject() throws IOException {
+        byte[] encoded = getEncodedCodedValue(MT_MAP, keys.size(), false, false);
         for (CBORObject key : keys.keySet()) {
-            mapHeader = ArrayUtil.add(mapHeader,
-                                      ArrayUtil.add(key.writeObject(), 
-                                                    keys.get(key).writeObject()));
+            encoded = ArrayUtil.add(encoded,
+                                    ArrayUtil.add(key.encodeObject(), 
+                                                  keys.get(key).encodeObject()));
         }
-        return mapHeader;
+        return encoded;
     }
     
     @Override

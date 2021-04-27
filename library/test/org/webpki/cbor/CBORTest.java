@@ -35,7 +35,7 @@ public class CBORTest {
 
     void binaryCompare(CBORObject cborObject, String hex) throws Exception {
         String actual = DebugFormatter
-                    .getHexString(cborObject.writeObject());
+                    .getHexString(cborObject.encodeObject());
         hex = hex.toLowerCase();
         assertTrue("binary h=" + hex + " c=" + actual, hex.equals(actual));
     }
@@ -47,7 +47,7 @@ public class CBORTest {
     }
     
     void integerTest(long value, boolean forceUnsigned, String hex) throws Exception {
-        byte[] cbor = new CBORInteger(value, forceUnsigned).writeObject();
+        byte[] cbor = new CBORInteger(value, forceUnsigned).encodeObject();
         String calc = DebugFormatter.getHexString(cbor);
         assertTrue("int=" + value + " c=" + calc + " h=" + hex, hex.equals(calc));
         BigInteger bigInteger = BigInteger.valueOf(value);
@@ -62,20 +62,20 @@ public class CBORTest {
     }
     
     void bigIntegerTest(String value, String hex) throws Exception {
-        byte[] cbor = new CBORBigInteger(new BigInteger(value)).writeObject();
+        byte[] cbor = new CBORBigInteger(new BigInteger(value)).encodeObject();
         String calc = DebugFormatter.getHexString(cbor);
         assertTrue("big int=" + value + " c=" + calc + " h=" + hex,
                 hex.equals(DebugFormatter.getHexString(cbor)));
     }
     
     void stringTest(String string, String hex) throws Exception {
-        byte[] cbor = new CBORString(string).writeObject();
+        byte[] cbor = new CBORString(string).encodeObject();
         String calc = DebugFormatter.getHexString(cbor);
         assertTrue("string=" + string + " c=" + calc + " h=" + hex, hex.equals(calc));
     }
     
     void arrayTest(CBORArray cborArray, String hex) throws Exception {
-        byte[] cbor = cborArray.writeObject();
+        byte[] cbor = cborArray.encodeObject();
         String calc = DebugFormatter.getHexString(cbor);
         assertTrue(" c=" + calc + " h=" + hex, hex.equals(calc));
     }

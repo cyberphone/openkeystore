@@ -22,7 +22,8 @@ package org.webpki.cbor;
  * Note: the types supported by this implementation.
  */
 public enum CBORTypes {ARRAY, 
-                       MAP,
+                       INTEGER_MAP,
+                       STRING_MAP,
                        INT, 
                        BYTE_ARRAY,
                        STRING, 

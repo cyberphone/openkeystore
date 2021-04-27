@@ -18,6 +18,8 @@ package org.webpki.cbor;
 
 import java.io.IOException;
 
+import java.math.BigInteger;
+
 import java.util.ArrayList;
 
 import org.webpki.util.ArrayUtil;
@@ -52,18 +54,22 @@ public class CBORArray extends CBORObject {
         return getObject(index).getInt64();
     }
 
+    public BigInteger getBigInteger(int index) throws IOException {
+        return getObject(index).getBigInteger();
+    }
+ 
     @Override
     public CBORTypes getType() {
         return CBORTypes.ARRAY;
     }
 
     @Override
-    public byte[] writeObject() throws IOException {
-        byte[] arrayHeader = getEncodedCodedValue(MT_ARRAY, elements.size(), false, false);
+    public byte[] encodeObject() throws IOException {
+        byte[] encoded = getEncodedCodedValue(MT_ARRAY, elements.size(), false, false);
         for (CBORObject element : elements.toArray(new CBORObject[0])) {
-            arrayHeader = ArrayUtil.add(arrayHeader, element.writeObject());
+            encoded = ArrayUtil.add(encoded, element.encodeObject());
         }
-        return arrayHeader;
+        return encoded;
     }
 
     @Override
