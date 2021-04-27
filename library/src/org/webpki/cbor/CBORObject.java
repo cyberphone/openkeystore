@@ -38,6 +38,7 @@ public abstract class CBORObject implements Serializable {
     
     static final byte MT_UNSIGNED = (byte) 0x00;
     static final byte MT_NEGATIVE = (byte) 0x20;
+    static final byte MT_BYTES    = (byte) 0x40;
     static final byte MT_STRING   = (byte) 0x60;
     static final byte MT_ARRAY    = (byte) 0x80;
     static final byte MT_MAP      = (byte) 0xa0;
@@ -48,8 +49,12 @@ public abstract class CBORObject implements Serializable {
     
     abstract StringBuilder internalToString(StringBuilder result);
     
-    byte[] getEncodedCodedValue(byte major, long value, boolean forceUnsigned) {
-        if (!forceUnsigned && value < 0) {
+    byte[] getEncodedCodedValue(byte major, 
+                                long value, 
+                                boolean forceUnsigned,
+                                boolean forcedSigned) {
+        // 65-bit integer emulation...
+        if (forcedSigned || (!forceUnsigned && value < 0)) {
             // Carsten B trickery :)
             value = ~value;
         }

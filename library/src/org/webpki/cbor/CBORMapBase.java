@@ -50,7 +50,7 @@ abstract class CBORMapBase extends CBORObject {
                 byte[] key1 = o1.writeObject();
                 byte[] key2 = o2.writeObject();
                 if (!rfc7049Sorting && key1.length < key2.length) {
-                    return -1;
+           //         return -1;
                 }
                 int minIndex = Math.min(key1.length, key2.length);
                 for (int i = 0; i < minIndex; i++) {
@@ -98,7 +98,7 @@ abstract class CBORMapBase extends CBORObject {
  
     @Override
     public byte[] writeObject() throws IOException {
-        byte[] mapHeader = getEncodedCodedValue(MT_MAP, keys.size(), false);
+        byte[] mapHeader = getEncodedCodedValue(MT_MAP, keys.size(), false, false);
         for (CBORObject key : keys.keySet()) {
             mapHeader = ArrayUtil.add(mapHeader,
                                       ArrayUtil.add(key.writeObject(), 

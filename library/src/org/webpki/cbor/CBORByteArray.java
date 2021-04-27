@@ -18,6 +18,8 @@ package org.webpki.cbor;
 
 import java.io.IOException;
 
+import org.webpki.util.ArrayUtil;
+
 /**
  * Class for holding CBOR byte arrays.
  */
@@ -38,8 +40,8 @@ public class CBORByteArray extends CBORObject {
 
     @Override
     public byte[] writeObject() throws IOException {
-        // TODO Auto-generated method stub
-        return null;
+        return ArrayUtil.add(getEncodedCodedValue(MT_BYTES, byteArray.length, false, false),
+                             byteArray);
     }
 
     @Override

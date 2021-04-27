@@ -59,7 +59,7 @@ public class CBORArray extends CBORObject {
 
     @Override
     public byte[] writeObject() throws IOException {
-        byte[] arrayHeader = getEncodedCodedValue(MT_ARRAY, elements.size(), false);
+        byte[] arrayHeader = getEncodedCodedValue(MT_ARRAY, elements.size(), false, false);
         for (CBORObject element : elements.toArray(new CBORObject[0])) {
             arrayHeader = ArrayUtil.add(arrayHeader, element.writeObject());
         }

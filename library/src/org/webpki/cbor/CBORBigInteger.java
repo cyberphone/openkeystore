@@ -17,7 +17,10 @@
 package org.webpki.cbor;
 
 import java.io.IOException;
+
 import java.math.BigInteger;
+
+import org.webpki.util.ArrayUtil;
 
 /**
  * Class for holding CBOR big integers.
@@ -27,7 +30,10 @@ public class CBORBigInteger extends CBORObject {
     private static final long serialVersionUID = 1L;
 
     BigInteger value;
-
+    
+    static final BigInteger MAX_INT64 = new BigInteger("18446744073709551615");
+    static final BigInteger MIN_INT64 = new BigInteger("-18446744073709551616");
+    
     CBORBigInteger(BigInteger value) {
         this.value = value;
     }
@@ -39,13 +45,35 @@ public class CBORBigInteger extends CBORObject {
 
     @Override
     public byte[] writeObject() throws IOException {
-        // TODO Auto-generated method stub
-        return null;
+        if (value.compareTo(MAX_INT64) <= 0 && value.compareTo(MIN_INT64) >= 0) {
+            CBORInteger cborInteger = new CBORInteger(value.longValue());
+            // 65-bit integer emulation...
+            if (value.compareTo(BigInteger.ZERO) >= 0) {
+                cborInteger.forceUnsigned = true;
+            } else {
+                cborInteger.forceSigned = true;
+            }
+            return cborInteger.writeObject();
+        }
+        byte[] encoded;
+        byte major;
+        if (value.compareTo(BigInteger.ZERO) < 0) {
+            encoded = value.negate().subtract(BigInteger.ONE).toByteArray();
+            major = (byte) 0xc3;
+        } else {
+            encoded = value.toByteArray();
+            major = (byte) 0xc2;
+        }
+        if (encoded[0] == 0) {
+            byte[] temp = new byte[encoded.length - 1];
+            System.arraycopy(encoded, 1, temp, 0, temp.length);
+            encoded = temp;
+        }
+        return ArrayUtil.add(new byte[] {major}, new CBORByteArray(encoded).writeObject());
     }
 
     @Override
     StringBuilder internalToString(StringBuilder result) {
-        // TODO Auto-generated method stub
-        return null;
+        return result.append(value.toString());
     }
 }

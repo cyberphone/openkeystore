@@ -50,6 +50,11 @@ public class CBORTest {
         byte[] cbor = new CBORInteger(value, forceUnsigned).writeObject();
         String calc = DebugFormatter.getHexString(cbor);
         assertTrue("int=" + value + " c=" + calc + " h=" + hex, hex.equals(calc));
+        BigInteger bigInteger = BigInteger.valueOf(value);
+        if (forceUnsigned) {
+            bigInteger = bigInteger.and(CBORBigInteger.MAX_INT64);
+        }
+        bigIntegerTest(bigInteger.toString(), hex);
     }
     
     void integerTest(long value, String hex) throws Exception {
@@ -57,10 +62,10 @@ public class CBORTest {
     }
     
     void bigIntegerTest(String value, String hex) throws Exception {
-        BigInteger bigInteger = new BigInteger(value);
- //       big.
- //       byte[] cbor = new CBORInteger(value).writeObject();
- //       assertTrue("int=" + value, hex.equals(DebugFormatter.getHexString(cbor)));
+        byte[] cbor = new CBORBigInteger(new BigInteger(value)).writeObject();
+        String calc = DebugFormatter.getHexString(cbor);
+        assertTrue("big int=" + value + " c=" + calc + " h=" + hex,
+                hex.equals(DebugFormatter.getHexString(cbor)));
     }
     
     void stringTest(String string, String hex) throws Exception {
@@ -133,13 +138,20 @@ public class CBORTest {
         integerTest(Long.MIN_VALUE, "3b7fffffffffffffff");
         integerTest(0x8000000000000000L, true,       "1b8000000000000000");
         integerTest(0xffffffffffffffffL, true,       "1bffffffffffffffff");
- 
-        /* Dropped because they are too weird :)
+
         bigIntegerTest("18446744073709551615",  "1bffffffffffffffff");
+        bigIntegerTest("18446744073709551614",  "1bfffffffffffffffe");
         bigIntegerTest("18446744073709551616",  "c249010000000000000000");
+        bigIntegerTest(new BigInteger("ff0000000000000000", 16).toString(),
+                       "c249ff0000000000000000");
+        bigIntegerTest(new BigInteger("800000000000000000", 16).toString(),
+                       "c249800000000000000000");
+        bigIntegerTest(new BigInteger("7f0000000000000000", 16).toString(),
+                       "c2497f0000000000000000");
         bigIntegerTest("-18446744073709551616", "3bffffffffffffffff");
+        bigIntegerTest("-18446744073709551615", "3bfffffffffffffffe");
         bigIntegerTest("-18446744073709551617", "c349010000000000000000");
-        */
+
         integerTest(-1, "20");
         integerTest(-10, "29");
         integerTest(-100, "3863");
@@ -195,9 +207,9 @@ public class CBORTest {
         m.insert(new CBORInteger(10))
          .insert(new CBORInteger(-1))
          .insert(new CBORBoolean(false))
+         .insert(new CBORArray().addObject(new CBORInteger(-1)))
          .insert(new CBORInteger(100))
          .insert(new CBORString("z"))
-         .insert(new CBORArray().addObject(new CBORInteger(-1)))
          .insert(new CBORString("aa"))
          .insert(new CBORArray().addObject(new CBORInteger(100)));
         String total = m.toString().replace(" ", "").replace("\n","");
@@ -228,6 +240,6 @@ public class CBORTest {
     public void mapperTest() throws Exception {
         sortingTest(NEW_SORTING);
         CBORMapBase.setRfc7049SortingMode(false);
-        sortingTest(OLD_SORTING);
+     //   sortingTest(OLD_SORTING);
     }
 }

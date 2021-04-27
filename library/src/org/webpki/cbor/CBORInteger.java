@@ -29,12 +29,13 @@ public class CBORInteger extends CBORObject {
 
     long value;
     boolean forceUnsigned;
+    boolean forceSigned;
 
     /**
      * Normal integer handling.
      * @param value
      */
-    CBORInteger(long value) {
+    public CBORInteger(long value) {
         this(value, false);
     }
     
@@ -43,11 +44,11 @@ public class CBORInteger extends CBORObject {
      * @param value
      * @param forceUnsigned
      */
-    CBORInteger(long value, boolean forceUnsigned) {
+    public CBORInteger(long value, boolean forceUnsigned) {
         this.value = value;
         this.forceUnsigned = forceUnsigned;
     }
-    
+
     @Override
     public CBORTypes getType() {
         return CBORTypes.INT;
@@ -56,7 +57,10 @@ public class CBORInteger extends CBORObject {
     @Override
     public byte[] writeObject() throws IOException {
         return getEncodedCodedValue(
-                (value >= 0 || forceUnsigned) ? MT_UNSIGNED : MT_NEGATIVE, value, forceUnsigned);
+              (!forceSigned && (value >= 0 || forceUnsigned)) ? MT_UNSIGNED : MT_NEGATIVE, 
+              value, 
+              forceUnsigned,
+              forceSigned);
     }
 
     @Override
