@@ -21,6 +21,8 @@ import java.io.Serializable;
 
 import java.math.BigInteger;
 
+import org.webpki.util.ArrayUtil;
+
 /**
  * Abstract class for holding CBOR objects.
  */
@@ -172,6 +174,16 @@ public abstract class CBORObject implements Serializable {
                         (explanation == null ? "" : " (" + explanation + ")"));
             }
             break;
+        }
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        try {
+            System.out.println("EQ");
+            return ArrayUtil.compare(((CBORObject) obj).encodeObject(), encodeObject());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

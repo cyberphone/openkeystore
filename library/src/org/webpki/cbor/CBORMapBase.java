@@ -49,8 +49,8 @@ abstract class CBORMapBase extends CBORObject {
             try {
                 byte[] key1 = o1.encodeObject();
                 byte[] key2 = o2.encodeObject();
-                if (!rfc7049Sorting && key1.length < key2.length) {
-           //         return -1;
+                if (rfc7049Sorting && key1.length != key2.length) {
+                    return key1.length - key2.length;
                 }
                 int minIndex = Math.min(key1.length, key2.length);
                 for (int i = 0; i < minIndex; i++) {

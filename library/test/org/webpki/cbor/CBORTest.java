@@ -105,10 +105,8 @@ public class CBORTest {
                 .addObject(new CBORInteger(5)));
         textCompare(cborArray,
                 "[\n  1,\n  [\n    2,\n    3],\n  [\n    4,\n  ]\n]\n");
-        /*
         binaryCompare(cborArray,
                       "8301a36462657374026562657374320267616e6f7468657203820405");
-                      */
 
         cborArray = new CBORArray()
             .addObject(new CBORInteger(1))
@@ -120,9 +118,7 @@ public class CBORTest {
                 .addObject(new CBORInteger(5)));
         textCompare(cborArray,
                 "[\n  1,\n  [\n    2,\n    3],\n  [\n    4,\n  ]\n]\n");
-        /*
-        binaryCompare(cborArray,"8301a2183a030802820405");
-        */
+        binaryCompare(cborArray,"8301a20802183a03820405");
         
         integerTest(0, "00" );
         integerTest(1, "01");
@@ -180,18 +176,19 @@ public class CBORTest {
         }
     }
     
-    static String[] NEW_SORTING = {
+    static String[] RFC8949_SORTING = {
             "10", 
             "100",
             "-1",
             "\"z\"",
             "\"aa\"",
+            "\"aaa\"",
             "[100]",
             "[-1]",
             "false"
     };
     
-    static String[] OLD_SORTING = {
+    static String[] RFC7049_SORTING = {
             "10", 
             "-1",
             "false",
@@ -199,19 +196,21 @@ public class CBORTest {
             "\"z\"",
             "[-1]",
             "\"aa\"",
-            "[100]"
+            "[100]",
+            "\"aaa\""
     };
     
     void sortingTest(String[] expectedOrder) throws Exception{
         MapTest m = new MapTest();
         m.insert(new CBORInteger(10))
+         .insert(new CBORArray().addObject(new CBORInteger(100)))
          .insert(new CBORInteger(-1))
          .insert(new CBORBoolean(false))
          .insert(new CBORArray().addObject(new CBORInteger(-1)))
          .insert(new CBORInteger(100))
+         .insert(new CBORString("aaa"))
          .insert(new CBORString("z"))
-         .insert(new CBORString("aa"))
-         .insert(new CBORArray().addObject(new CBORInteger(100)));
+         .insert(new CBORString("aa"));
         String total = m.toString().replace(" ", "").replace("\n","");
         System.out.println(total);
         Vector<String> keys = new Vector<>();
@@ -238,8 +237,8 @@ public class CBORTest {
     
     @Test
     public void mapperTest() throws Exception {
-        sortingTest(NEW_SORTING);
+        sortingTest(RFC7049_SORTING);
         CBORMapBase.setRfc7049SortingMode(false);
-     //   sortingTest(OLD_SORTING);
+        sortingTest(RFC8949_SORTING);
     }
 }
