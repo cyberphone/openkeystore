@@ -49,6 +49,9 @@ public class CBORTest {
         byte[] cbor = cborObject.encode();
         String calc = DebugFormatter.getHexString(cbor);
         assertTrue("int=" + value + " c=" + calc + " h=" + hex, hex.equals(calc));
+        CBORObject decodedInteger = CBORObject.decode(cbor);
+        assertTrue("Decoded value", decodedInteger.getInt64() == value);
+        assertTrue("Decoded string", decodedInteger.toString().equals(cborObject.toString()));
         BigInteger bigInteger = BigInteger.valueOf(value);
         if (forceUnsigned) {
             bigInteger = bigInteger.and(CBORBigInteger.MAX_INT64);

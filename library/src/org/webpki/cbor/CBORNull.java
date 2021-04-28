@@ -25,7 +25,7 @@ public class CBORNull extends CBORObject {
 
     private static final long serialVersionUID = 1L;
     
-    static final byte[] NULL = {(byte)0xf6};
+    static final byte[] NULL = {MT_NULL};
 
     CBORNull() {
     }

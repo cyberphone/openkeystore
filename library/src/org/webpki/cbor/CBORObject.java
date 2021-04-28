@@ -16,6 +16,8 @@
  */
 package org.webpki.cbor;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -43,12 +45,17 @@ public abstract class CBORObject implements Serializable {
     StringBuilder prettyPrint;
     
     // Major CBOR types
-    static final byte MT_UNSIGNED = (byte) 0x00;
-    static final byte MT_NEGATIVE = (byte) 0x20;
-    static final byte MT_BYTES    = (byte) 0x40;
-    static final byte MT_STRING   = (byte) 0x60;
-    static final byte MT_ARRAY    = (byte) 0x80;
-    static final byte MT_MAP      = (byte) 0xa0;
+    static final byte MT_UNSIGNED      = (byte) 0x00;
+    static final byte MT_NEGATIVE      = (byte) 0x20;
+    static final byte MT_BYTES         = (byte) 0x40;
+    static final byte MT_STRING        = (byte) 0x60;
+    static final byte MT_ARRAY         = (byte) 0x80;
+    static final byte MT_MAP           = (byte) 0xa0;
+    static final byte MT_BIG_UNSIGNED  = (byte) 0xc2;
+    static final byte MT_BIG_SIGNED    = (byte) 0xc3;
+    static final byte MT_FALSE         = (byte) 0xf4;
+    static final byte MT_TRUE          = (byte) 0xf5;
+    static final byte MT_NULL          = (byte) 0xf6;
 
     public abstract CBORTypes getType();
 
@@ -138,9 +145,143 @@ public abstract class CBORObject implements Serializable {
         check(CBORTypes.ARRAY);
         return (CBORArray) this;
     }
+    
+    static class Reader {
+        static final int BUFFER_SIZE = 10000;
+        ByteArrayInputStream input;
+        
+        void bad() throws IOException {
+            throw new IOException("Malformed CBOR, trying to read past EOF");
+        }
+        
+        int readByte() throws IOException {
+            int i = input.read();
+            if (i < 0) {
+                bad();
+            }
+            return i;
+        }
+        
+        long checkLength(long length) throws IOException {
+            if (length < 0) {
+                throw new IOException("Length < 0");
+            }
+            return length;
+        }
+        byte[] readBytes(long length) throws IOException {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream(BUFFER_SIZE);
+            byte[] buffer = new byte[BUFFER_SIZE];
+            int bytes = (int) (length > BUFFER_SIZE ? length % BUFFER_SIZE : length);
+            while (length != 0) {
+                if (input.read(buffer, 0, bytes) == -1) {
+                    bad();
+                }
+                baos.write(buffer, 0, bytes);
+                length -= bytes;
+                bytes = BUFFER_SIZE;
+            }
+            return baos.toByteArray();
+        }
+        
+        CBORObject getObject() throws IOException {
+            int first = readByte();
 
-    public static CBORObject decode(byte[] cbor) {
-        return null;
+            // Simple types first
+            switch (first) {
+            case MT_BIG_SIGNED:
+            case MT_BIG_UNSIGNED:
+                byte[] byteArray = getObject().getByteArray();
+                if (byteArray[0] == 0) {
+                    throw new IOException("Leading zero, improperly normalized");
+                }
+                return new CBORBigInteger(
+                        new BigInteger(first == MT_BIG_SIGNED ? -1 : 1, byteArray));
+                
+            case MT_NULL:
+                return new CBORNull();
+                
+            case MT_TRUE:
+            case MT_FALSE:
+                return new CBORBoolean(first == MT_TRUE);
+                
+            default:
+            }
+
+            // And then the more complex ones
+            long length = first & 0x1f;
+            if (length > 0x1b) {
+                throw new IOException("Not implemented: 0x1c-0x1f");
+            }
+            if (length > 0x17) {
+                int q = 1 << (length - 0x18);
+                length = 0;
+                while (q-- != 0) {
+                    length <<= 8;
+                    length |= readByte();
+                }
+            }
+            switch ((byte)(first & 0x70)) {
+            case MT_UNSIGNED:
+                return new CBORInteger(length, true);
+
+            case MT_NEGATIVE:
+                length = ~length;
+                CBORInteger cborInteger = new CBORInteger(length);
+                cborInteger.forceNegative = true;
+                return cborInteger;
+
+            case MT_BYTES:
+                return new CBORByteArray(readBytes(checkLength(length)));
+
+            case MT_STRING:
+                return new CBORString(new String(readBytes(checkLength(length)), "utf-8"));
+
+            case MT_ARRAY:
+                length = checkLength(length);
+                CBORArray cborArray = new CBORArray();
+                while (--length >= 0) {
+                    cborArray.addObject(getObject());
+                }
+                return cborArray;
+
+            case MT_MAP:
+                length = checkLength(length);
+                if (length == 0) {
+                    // Empty map, special case
+                    return new CBORStringMap();
+                }
+                CBORMapBase cborMapBase;
+                CBORObject key1 = getObject();
+                if (key1.getType() == CBORTypes.INT) {
+                    cborMapBase = new CBORIntegerMap();
+                } else if (key1.getType() == CBORTypes.STRING) {
+                    cborMapBase = new CBORStringMap();
+                } else {
+                    throw new IOException("Only integer and string map keys supported " +
+                                          key1.getType());
+                }
+                cborMapBase.setObject(key1, getObject());
+                while (--length > 0) {
+                    CBORObject key = getObject();
+                    if (key.getType() != key1.getType()) {
+                        throw new IOException(
+                            "Mixing key types in the same map is not supported " +
+                            key1.getType() + " " + key.getType());
+                    }
+                    cborMapBase.setObject(key, getObject());
+                }
+                return cborMapBase;
+
+            default:
+                throw new IOException("Unsupported tag: " + first);
+            }
+        }
+    }
+
+    public static CBORObject decode(byte[] cbor) throws IOException {
+        Reader reader = new Reader();
+        reader.input = new ByteArrayInputStream(cbor);
+        return reader.getObject();
     }
 
     public void checkObjectForUnread() throws IOException {
@@ -156,12 +297,14 @@ public abstract class CBORObject implements Serializable {
                  cborMap.keys.get(key).checkObjectForUnread(key.toString());
             }
             break;
+
         case ARRAY:
             CBORArray cborArray = (CBORArray) this;
             for (CBORObject cborObject : cborArray.elements.toArray(new CBORArray[0])) {
                 cborObject.checkObjectForUnread("Array element");
             }
             break;
+
         default:
             if (!readFlag) {
                 throw new IOException("Type: " + getType() + " not read" +

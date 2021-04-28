@@ -25,8 +25,8 @@ public class CBORBoolean extends CBORObject {
 
     private static final long serialVersionUID = 1L;
     
-    static final byte[] TRUE  = {(byte) 0xf5};
-    static final byte[] FALSE = {(byte) 0xf4};
+    static final byte[] TRUE  = {MT_TRUE};
+    static final byte[] FALSE = {MT_FALSE};
 
     boolean value;
 
