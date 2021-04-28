@@ -41,7 +41,7 @@ public class CBORNull extends CBORObject {
     }
 
     @Override
-    StringBuilder internalToString(StringBuilder result) {
-        return result.append("null");
+    void internalToString(CBORObject initiator) {
+        initiator.result.append("null");
     }
 }

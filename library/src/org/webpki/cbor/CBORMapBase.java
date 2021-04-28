@@ -108,9 +108,10 @@ abstract class CBORMapBase extends CBORObject {
     }
     
     @Override
-    StringBuilder internalToString(StringBuilder result) {
-        StringBuilder indent = parentDepthIndent();
+    void internalToString(CBORObject initiator) {
+        StringBuilder result = initiator.result;
         result.append("{\n");
+        initiator.indentationLevel++;
         boolean notFirst = false;
         for (CBORObject key : keys.keySet()) {
             CBORObject member = keys.get(key);
@@ -118,12 +119,14 @@ abstract class CBORMapBase extends CBORObject {
                 result.insert(result.length() - 1, ',');
             }
             notFirst = true;
-            result.append(indent)
-                  .append(INDENT)
-                  .append(keyText(key))
-                  .append(": ")
-                  .append(member.toString());
+            initiator.indent();
+            result.append(keyText(key))
+                  .append(": ");
+            member.internalToString(initiator);
+            result.append('\n');
         }
-        return result.append(indent).append('}');
+        initiator.indentationLevel--;
+        initiator.indent();
+        result.append('}');
     }
 }

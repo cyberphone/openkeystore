@@ -87,7 +87,7 @@ public class CBORInteger extends CBORObject {
     }
 
     @Override
-    StringBuilder internalToString(StringBuilder result) {
-        return result.append(getBigIntegerRepresentation().toString());
+    void internalToString(CBORObject initiator) {
+        initiator.result.append(getBigIntegerRepresentation().toString());
     }
 }

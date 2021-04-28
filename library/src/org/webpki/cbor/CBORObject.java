@@ -36,8 +36,6 @@ public abstract class CBORObject implements Serializable {
     
     private boolean readFlag;
 
-    CBORArray parent;
-    
     static final String INDENT = "  ";
     
     static final byte MT_UNSIGNED = (byte) 0x00;
@@ -51,7 +49,7 @@ public abstract class CBORObject implements Serializable {
 
     public abstract byte[] encodeObject() throws IOException;
     
-    abstract StringBuilder internalToString(StringBuilder result);
+    abstract void internalToString(CBORObject initiator);
     
     byte[] getEncodedCodedValue(byte major, 
                                 long value, 
@@ -82,15 +80,6 @@ public abstract class CBORObject implements Serializable {
         } 
         encoded[0] |= major;
         return encoded;
-    }
-    
-    StringBuilder parentDepthIndent() {
-        StringBuilder stringBuilder = new StringBuilder();
-        while (parent != null) {
-            stringBuilder.append(INDENT);
-            parent = parent.parent;
-        }
-        return stringBuilder;
     }
 
     void check(CBORTypes expectedCborType) throws IOException {
@@ -187,8 +176,19 @@ public abstract class CBORObject implements Serializable {
         }
     }
 
+    int indentationLevel;
+    StringBuilder result;
+    
+    void indent() {
+        for (int i = 0; i < indentationLevel; i++) {
+            result.append(INDENT);
+        }
+    }
+
     @Override
     public String toString() {
-        return internalToString(new StringBuilder()).append('\n').toString();
+        result = new StringBuilder();
+        internalToString(this);
+        return result.append('\n').toString();
     }
 }

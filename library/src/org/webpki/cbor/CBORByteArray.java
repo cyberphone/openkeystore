@@ -46,7 +46,7 @@ public class CBORByteArray extends CBORObject {
     }
 
     @Override
-    StringBuilder internalToString(StringBuilder result) {
-        return result.append("0x").append(DebugFormatter.getHexString(byteArray));
+    void internalToString(CBORObject initiator) {
+        initiator.result.append("0x").append(DebugFormatter.getHexString(byteArray));
     }
 }

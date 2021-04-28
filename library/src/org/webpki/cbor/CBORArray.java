@@ -41,7 +41,6 @@ public class CBORArray extends CBORObject {
     }
     
     public CBORArray addObject(CBORObject cborObject) {
-        cborObject.parent = this;
         elements.add(cborObject);
         return this;
     }
@@ -73,19 +72,23 @@ public class CBORArray extends CBORObject {
     }
 
     @Override
-    StringBuilder internalToString(StringBuilder result) {
-        StringBuilder indent = parentDepthIndent();
+    void internalToString(CBORObject initiator) {
+        StringBuilder result = initiator.result;
+  //      initiator.indent();
         result.append("[\n");
+        initiator.indentationLevel++;
         boolean notFirst = false;
         for (CBORObject element : elements.toArray(new CBORObject[0])) {
             if (notFirst) {
                 result.insert(result.length() - 1, ',');
             }
             notFirst = true;
-            result.append(indent)
-                  .append(INDENT)
-                  .append(element.toString());
+            initiator.indent();
+            element.internalToString(initiator);
+            result.append('\n');
         }
-        return result.append(indent).append(']');
+        initiator.indentationLevel--;
+        initiator.indent();
+        result.append(']');
     }
 }

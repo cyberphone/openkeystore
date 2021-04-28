@@ -45,7 +45,7 @@ public class CBORBoolean extends CBORObject {
     }
 
     @Override
-    StringBuilder internalToString(StringBuilder result) {
-        return result.append(value);
+    void internalToString(CBORObject initiator) {
+        initiator.result.append(value);
     }
 }
