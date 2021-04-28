@@ -34,20 +34,19 @@ import org.webpki.util.DebugFormatter;
 public class CBORTest {
 
     void binaryCompare(CBORObject cborObject, String hex) throws Exception {
-        String actual = DebugFormatter
-                    .getHexString(cborObject.encodeObject());
+        String actual = DebugFormatter.getHexString(cborObject.encode());
         hex = hex.toLowerCase();
         assertTrue("binary h=" + hex + " c=" + actual, hex.equals(actual));
     }
 
     void textCompare(CBORObject cborObject, String text) throws Exception {
         String actual = cborObject.toString();
-        System.out.println(actual);
- //       assertTrue("text", text.equals(actual));
+        assertTrue("text=\n" + actual + "\n" + text, text.equals(actual));
     }
     
     void integerTest(long value, boolean forceUnsigned, String hex) throws Exception {
-        byte[] cbor = new CBORInteger(value, forceUnsigned).encodeObject();
+        CBORObject cborObject = new CBORInteger(value, forceUnsigned);
+        byte[] cbor = cborObject.encode();
         String calc = DebugFormatter.getHexString(cbor);
         assertTrue("int=" + value + " c=" + calc + " h=" + hex, hex.equals(calc));
         BigInteger bigInteger = BigInteger.valueOf(value);
@@ -55,6 +54,7 @@ public class CBORTest {
             bigInteger = bigInteger.and(CBORBigInteger.MAX_INT64);
         }
         bigIntegerTest(bigInteger.toString(), hex);
+        assertTrue("Big", cborObject.getBigInteger().toString().equals(bigInteger.toString()));
     }
     
     void integerTest(long value, String hex) throws Exception {
@@ -62,20 +62,20 @@ public class CBORTest {
     }
     
     void bigIntegerTest(String value, String hex) throws Exception {
-        byte[] cbor = new CBORBigInteger(new BigInteger(value)).encodeObject();
+        byte[] cbor = new CBORBigInteger(new BigInteger(value)).encode();
         String calc = DebugFormatter.getHexString(cbor);
         assertTrue("big int=" + value + " c=" + calc + " h=" + hex,
                 hex.equals(DebugFormatter.getHexString(cbor)));
     }
     
     void stringTest(String string, String hex) throws Exception {
-        byte[] cbor = new CBORString(string).encodeObject();
+        byte[] cbor = new CBORString(string).encode();
         String calc = DebugFormatter.getHexString(cbor);
         assertTrue("string=" + string + " c=" + calc + " h=" + hex, hex.equals(calc));
     }
     
     void arrayTest(CBORArray cborArray, String hex) throws Exception {
-        byte[] cbor = cborArray.encodeObject();
+        byte[] cbor = cborArray.encode();
         String calc = DebugFormatter.getHexString(cbor);
         assertTrue(" c=" + calc + " h=" + hex, hex.equals(calc));
     }
@@ -91,22 +91,23 @@ public class CBORTest {
                 .addObject(new CBORInteger(4))
                 .addObject(new CBORInteger(5)));
         textCompare(cborArray,
-                "[\n  1,\n  [\n    2,\n    3],\n  [\n    4,\n  ]\n]\n");
+                "[\n  1,\n  [\n    2,\n    3\n  ],\n  [\n    4,\n    5\n  ]\n]");
         binaryCompare(cborArray,"8301820203820405");
 
         cborArray = new CBORArray()
             .addObject(new CBORInteger(1))
             .addObject(new CBORStringMap()
                 .setObject("best", new CBORInteger(2))
-                .setObject("best2", new CBORInteger(2))
-                .setObject("another", new CBORInteger(3)))
+                .setObject("best2", new CBORInteger(3))
+                .setObject("another", new CBORInteger(4)))
             .addObject(new CBORArray()
-                .addObject(new CBORInteger(4))
-                .addObject(new CBORInteger(5)));
+                .addObject(new CBORInteger(5))
+                .addObject(new CBORInteger(6)));
         textCompare(cborArray,
-                "[\n  1,\n  [\n    2,\n    3],\n  [\n    4,\n  ]\n]\n");
+                "[\n  1,\n  {\n    \"best\": 2,\n    \"best2\": 3,\n    \"another\": 4\n  }," +
+                "\n  [\n    5,\n    6\n  ]\n]");
         binaryCompare(cborArray,
-                      "8301a36462657374026562657374320267616e6f7468657203820405");
+                      "8301a36462657374026562657374320367616e6f7468657204820506");
 
         cborArray = new CBORArray()
             .addObject(new CBORInteger(1))
@@ -117,7 +118,8 @@ public class CBORTest {
                 .addObject(new CBORInteger(4))
                 .addObject(new CBORInteger(5)));
         textCompare(cborArray,
-                "[\n  1,\n  [\n    2,\n    3],\n  [\n    4,\n  ]\n]\n");
+                "[\n  1,\n  {\n    8: 2,\n    58: 3\n  }," +
+                "\n  [\n    4,\n    5\n  ]\n]");
         binaryCompare(cborArray,"8301a20802183a03820405");
         
         integerTest(0, "00" );
@@ -212,7 +214,6 @@ public class CBORTest {
          .insert(new CBORString("z"))
          .insert(new CBORString("aa"));
         String total = m.toString().replace(" ", "").replace("\n","");
-        System.out.println(total);
         Vector<String> keys = new Vector<>();
         int i = 1;
         int stop;

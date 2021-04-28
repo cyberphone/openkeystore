@@ -66,5 +66,4 @@ public class CBORIntegerMap extends CBORMapBase {
     public CBORStringMap getCBORStringMap(int key) throws IOException {
         return getObject(key).getCBORStringMap();
     }
-    
 }

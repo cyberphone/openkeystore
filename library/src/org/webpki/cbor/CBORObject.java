@@ -34,10 +34,15 @@ public abstract class CBORObject implements Serializable {
         
     }
     
+    // For checking if object was read
     private boolean readFlag;
 
+    // Pretty-print support
     static final String INDENT = "  ";
+    int indentationLevel;
+    StringBuilder prettyPrint;
     
+    // Major CBOR types
     static final byte MT_UNSIGNED = (byte) 0x00;
     static final byte MT_NEGATIVE = (byte) 0x20;
     static final byte MT_BYTES    = (byte) 0x40;
@@ -47,7 +52,7 @@ public abstract class CBORObject implements Serializable {
 
     public abstract CBORTypes getType();
 
-    public abstract byte[] encodeObject() throws IOException;
+    public abstract byte[] encode() throws IOException;
     
     abstract void internalToString(CBORObject initiator);
     
@@ -134,7 +139,7 @@ public abstract class CBORObject implements Serializable {
         return (CBORArray) this;
     }
 
-    public static CBORObject decodeObject(byte[] cbor) {
+    public static CBORObject decode(byte[] cbor) {
         return null;
     }
 
@@ -170,25 +175,22 @@ public abstract class CBORObject implements Serializable {
     public boolean equals(Object obj) {
         try {
             System.out.println("EQ");
-            return ArrayUtil.compare(((CBORObject) obj).encodeObject(), encodeObject());
+            return ArrayUtil.compare(((CBORObject) obj).encode(), encode());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    int indentationLevel;
-    StringBuilder result;
-    
     void indent() {
         for (int i = 0; i < indentationLevel; i++) {
-            result.append(INDENT);
+            prettyPrint.append(INDENT);
         }
     }
 
     @Override
     public String toString() {
-        result = new StringBuilder();
+        prettyPrint = new StringBuilder();
         internalToString(this);
-        return result.toString();
+        return prettyPrint.toString();
     }
 }

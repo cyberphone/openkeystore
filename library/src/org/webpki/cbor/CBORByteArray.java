@@ -40,13 +40,13 @@ public class CBORByteArray extends CBORObject {
     }
 
     @Override
-    public byte[] encodeObject() throws IOException {
+    public byte[] encode() throws IOException {
         return ArrayUtil.add(getEncodedCodedValue(MT_BYTES, byteArray.length, false, false),
                              byteArray);
     }
 
     @Override
     void internalToString(CBORObject initiator) {
-        initiator.result.append("0x").append(DebugFormatter.getHexString(byteArray));
+        initiator.prettyPrint.append("0x").append(DebugFormatter.getHexString(byteArray));
     }
 }

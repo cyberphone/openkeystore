@@ -68,7 +68,7 @@ public class CBORInteger extends CBORObject {
     }
 
     @Override
-    public byte[] encodeObject() throws IOException {
+    public byte[] encode() throws IOException {
         return getEncodedCodedValue(
               (!forceNegative && (value >= 0 || forceUnsigned)) ? MT_UNSIGNED : MT_NEGATIVE, 
               value, 
@@ -88,6 +88,6 @@ public class CBORInteger extends CBORObject {
 
     @Override
     void internalToString(CBORObject initiator) {
-        initiator.result.append(getBigIntegerRepresentation().toString());
+        initiator.prettyPrint.append(getBigIntegerRepresentation().toString());
     }
 }

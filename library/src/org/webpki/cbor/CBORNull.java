@@ -36,12 +36,12 @@ public class CBORNull extends CBORObject {
     }
 
     @Override
-    public byte[] encodeObject() throws IOException {
+    public byte[] encode() throws IOException {
         return NULL;
     }
 
     @Override
     void internalToString(CBORObject initiator) {
-        initiator.result.append("null");
+        initiator.prettyPrint.append("null");
     }
 }

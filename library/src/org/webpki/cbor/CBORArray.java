@@ -63,32 +63,31 @@ public class CBORArray extends CBORObject {
     }
 
     @Override
-    public byte[] encodeObject() throws IOException {
+    public byte[] encode() throws IOException {
         byte[] encoded = getEncodedCodedValue(MT_ARRAY, elements.size(), false, false);
         for (CBORObject element : elements.toArray(new CBORObject[0])) {
-            encoded = ArrayUtil.add(encoded, element.encodeObject());
+            encoded = ArrayUtil.add(encoded, element.encode());
         }
         return encoded;
     }
 
     @Override
     void internalToString(CBORObject initiator) {
-        StringBuilder result = initiator.result;
-  //      initiator.indent();
-        result.append("[\n");
+        StringBuilder prettyPrintCopy = initiator.prettyPrint;
+        prettyPrintCopy.append("[\n");
         initiator.indentationLevel++;
         boolean notFirst = false;
         for (CBORObject element : elements.toArray(new CBORObject[0])) {
             if (notFirst) {
-                result.insert(result.length() - 1, ',');
+                prettyPrintCopy.insert(prettyPrintCopy.length() - 1, ',');
             }
             notFirst = true;
             initiator.indent();
             element.internalToString(initiator);
-            result.append('\n');
+            prettyPrintCopy.append('\n');
         }
         initiator.indentationLevel--;
         initiator.indent();
-        result.append(']');
+        prettyPrintCopy.append(']');
     }
 }

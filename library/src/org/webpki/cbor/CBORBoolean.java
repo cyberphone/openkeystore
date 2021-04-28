@@ -40,12 +40,12 @@ public class CBORBoolean extends CBORObject {
     }
 
     @Override
-    public byte[] encodeObject() throws IOException {
+    public byte[] encode() throws IOException {
         return value ? TRUE : FALSE;
     }
 
     @Override
     void internalToString(CBORObject initiator) {
-        initiator.result.append(value);
+        initiator.prettyPrint.append(value);
     }
 }

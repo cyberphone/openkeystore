@@ -47,8 +47,8 @@ abstract class CBORMapBase extends CBORObject {
         @Override
         public int compare(CBORObject o1, CBORObject o2) {
             try {
-                byte[] key1 = o1.encodeObject();
-                byte[] key2 = o2.encodeObject();
+                byte[] key1 = o1.encode();
+                byte[] key2 = o2.encode();
                 if (rfc7049Sorting && key1.length != key2.length) {
                     return key1.length - key2.length;
                 }
@@ -92,36 +92,36 @@ abstract class CBORMapBase extends CBORObject {
     }
  
     @Override
-    public byte[] encodeObject() throws IOException {
+    public byte[] encode() throws IOException {
         byte[] encoded = getEncodedCodedValue(MT_MAP, keys.size(), false, false);
         for (CBORObject key : keys.keySet()) {
             encoded = ArrayUtil.add(encoded,
-                                    ArrayUtil.add(key.encodeObject(), 
-                                                  keys.get(key).encodeObject()));
+                                    ArrayUtil.add(key.encode(), 
+                                                  keys.get(key).encode()));
         }
         return encoded;
     }
     
     @Override
     void internalToString(CBORObject initiator) {
-        StringBuilder result = initiator.result;
-        result.append("{\n");
+        StringBuilder prettyPrintCopy = initiator.prettyPrint;
+        prettyPrintCopy.append("{\n");
         initiator.indentationLevel++;
         boolean notFirst = false;
         for (CBORObject key : keys.keySet()) {
             CBORObject member = keys.get(key);
             if (notFirst) {
-                result.insert(result.length() - 1, ',');
+                prettyPrintCopy.insert(prettyPrintCopy.length() - 1, ',');
             }
             notFirst = true;
             initiator.indent();
             key.internalToString(initiator);
-            result.append(": ");
+            prettyPrintCopy.append(": ");
             member.internalToString(initiator);
-            result.append('\n');
+            prettyPrintCopy.append('\n');
         }
         initiator.indentationLevel--;
         initiator.indent();
-        result.append('}');
+        prettyPrintCopy.append('}');
     }
 }

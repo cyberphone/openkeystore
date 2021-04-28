@@ -47,7 +47,7 @@ public class CBORBigInteger extends CBORObject {
     }
 
     @Override
-    public byte[] encodeObject() throws IOException {
+    public byte[] encode() throws IOException {
         if (value.compareTo(MAX_INT64) <= 0 && value.compareTo(MIN_INT64) >= 0) {
             // Fits in "uint65" decoding
             CBORInteger cborInteger = new CBORInteger(value.longValue());
@@ -57,7 +57,7 @@ public class CBORBigInteger extends CBORObject {
             } else {
                 cborInteger.forceNegative = true;
             }
-            return cborInteger.encodeObject();
+            return cborInteger.encode();
         }
         // Didn't fit "uint65" so we must use big number decoding
         byte[] encoded;
@@ -75,7 +75,7 @@ public class CBORBigInteger extends CBORObject {
             System.arraycopy(encoded, 1, temp, 0, temp.length);
             encoded = temp;
         }
-        return ArrayUtil.add(headerTag, new CBORByteArray(encoded).encodeObject());
+        return ArrayUtil.add(headerTag, new CBORByteArray(encoded).encode());
     }
 
 
@@ -89,6 +89,6 @@ public class CBORBigInteger extends CBORObject {
     
     @Override
     void internalToString(CBORObject initiator) {
-        initiator.result.append(value.toString());
+        initiator.prettyPrint.append(value.toString());
     }
 }

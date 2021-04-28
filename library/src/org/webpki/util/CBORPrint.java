@@ -43,7 +43,7 @@ public class CBORPrint {
         if (args.length != 1) {
             exitCommand();
         }
-        System.out.println(CBORObject.decodeObject(ArrayUtil.readFile(args[0])).toString());
+        System.out.println(CBORObject.decode(ArrayUtil.readFile(args[0])).toString());
     }
 
 }
