@@ -187,7 +187,7 @@ public abstract class CBORObject implements Serializable {
             int first = readByte();
 
             // Simple types first
-            switch (first) {
+            switch ((byte)first) {
             case MT_BIG_SIGNED:
             case MT_BIG_UNSIGNED:
                 byte[] byteArray = getObject().getByteArray();
@@ -220,7 +220,7 @@ public abstract class CBORObject implements Serializable {
                     length |= readByte();
                 }
             }
-            switch ((byte)(first & 0x70)) {
+            switch ((byte)(first & 0xe0)) {
             case MT_UNSIGNED:
                 return new CBORInteger(length, true);
 
