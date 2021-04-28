@@ -86,11 +86,6 @@ abstract class CBORMapBase extends CBORObject {
         return cborObject;
     }
 
-    static String keyText(CBORObject key) {
-        String keyText = key.toString();
-        return keyText.substring(0, keyText.length() - 1);
-    }
-
     @Override
     public CBORTypes getType() {
         return CBORTypes.INTEGER_MAP;
@@ -120,8 +115,8 @@ abstract class CBORMapBase extends CBORObject {
             }
             notFirst = true;
             initiator.indent();
-            result.append(keyText(key))
-                  .append(": ");
+            key.internalToString(initiator);
+            result.append(": ");
             member.internalToString(initiator);
             result.append('\n');
         }

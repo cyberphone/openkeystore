@@ -148,7 +148,7 @@ public abstract class CBORObject implements Serializable {
         case INTEGER_MAP:
             CBORMapBase cborMap = (CBORMapBase) this;
             for (CBORObject key : cborMap.keys.keySet()) {
-                 cborMap.keys.get(key).checkObjectForUnread(CBORMapBase.keyText(key));
+                 cborMap.keys.get(key).checkObjectForUnread(key.toString());
             }
             break;
         case ARRAY:
@@ -189,6 +189,6 @@ public abstract class CBORObject implements Serializable {
     public String toString() {
         result = new StringBuilder();
         internalToString(this);
-        return result.append('\n').toString();
+        return result.toString();
     }
 }
