@@ -50,14 +50,8 @@ public class CBORBigInteger extends CBORObject {
     public byte[] encode() throws IOException {
         if (value.compareTo(MAX_INT64) <= 0 && value.compareTo(MIN_INT64) >= 0) {
             // Fits in "uint65" decoding
-            CBORInteger cborInteger = new CBORInteger(value.longValue());
-            // 65-bit integer emulation...
-            if (value.compareTo(BigInteger.ZERO) >= 0) {
-                cborInteger.forceUnsigned = true;
-            } else {
-                cborInteger.forceNegative = true;
-            }
-            return cborInteger.encode();
+            return new CBORInteger(value.longValue(), 
+                                   value.compareTo(BigInteger.ZERO) >= 0).encode();
         }
         // Didn't fit "uint65" so we must use big number decoding
         byte[] encoded;

@@ -41,7 +41,7 @@ public class CBORByteArray extends CBORObject {
 
     @Override
     public byte[] encode() throws IOException {
-        return ArrayUtil.add(getEncodedCodedValue(MT_BYTES, byteArray.length, false, false),
+        return ArrayUtil.add(getEncodedCodedValue(MT_BYTES, byteArray.length, true),
                              byteArray);
     }
 

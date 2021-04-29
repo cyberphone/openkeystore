@@ -49,8 +49,9 @@ public class CBORTest {
         assertTrue("text=\n" + actual + "\n" + text, text.equals(actual));
     }
     
-    void integerTest(long value, boolean forceUnsigned, String hex) throws Exception {
-        CBORObject cborObject = new CBORInteger(value, forceUnsigned);
+    void integerTest(long value, boolean forceUnsigned, boolean set, String hex) throws Exception {
+        CBORObject cborObject = set ? 
+                new CBORInteger(value, forceUnsigned) : new CBORInteger(value);
         byte[] cbor = cborObject.encode();
         String calc = DebugFormatter.getHexString(cbor);
         assertTrue("int=" + value + " c=" + calc + " h=" + hex, hex.equals(calc));
@@ -58,7 +59,8 @@ public class CBORTest {
         assertTrue("Decoded value", decodedInteger.getInt64() == value);
         String decString = decodedInteger.toString();
         String cString = cborObject.toString();
-        assertTrue("Decoded string d=" + decString + " c=" + cString + " v=" + value,
+        assertTrue("Decoded string d=" + decString + 
+                   " c=" + cString + " v=" + value + " f=" + forceUnsigned,
                    decString.equals(cString));
         BigInteger bigInteger = BigInteger.valueOf(value);
         if (forceUnsigned) {
@@ -69,7 +71,7 @@ public class CBORTest {
     }
     
     void integerTest(long value, String hex) throws Exception {
-        integerTest(value, false, hex);
+        integerTest(value, false, false, hex);
     }
     
     void bigIntegerTest(String value, String hex) throws Exception {
@@ -148,8 +150,8 @@ public class CBORTest {
         integerTest(1000000000000L,      "1b000000e8d4a51000");
         /* Added because of java.. */
         integerTest(Long.MIN_VALUE, "3b7fffffffffffffff");
-        integerTest(0x8000000000000000L, true,       "1b8000000000000000");
-        integerTest(0xffffffffffffffffL, true,       "1bffffffffffffffff");
+        integerTest(0x8000000000000000L, true, true,      "1b8000000000000000");
+        integerTest(0xffffffffffffffffL, true, true,      "1bffffffffffffffff");
 
         bigIntegerTest("18446744073709551615",  "1bffffffffffffffff");
         bigIntegerTest("18446744073709551614",  "1bfffffffffffffffe");
@@ -160,7 +162,7 @@ public class CBORTest {
                        "c249800000000000000000");
         bigIntegerTest(new BigInteger("7f0000000000000000", 16).toString(),
                        "c2497f0000000000000000");
-     //   bigIntegerTest("-18446744073709551616", "3bffffffffffffffff");
+        bigIntegerTest("-18446744073709551616", "3bffffffffffffffff");
         bigIntegerTest("-18446744073709551615", "3bfffffffffffffffe");
         bigIntegerTest("-18446744073709551617", "c349010000000000000000");
 
@@ -246,7 +248,8 @@ public class CBORTest {
         }
         i = 0;
         for (String key : keys) {
-            assertTrue("key=" + key, key.equals(expectedOrder[i++]));
+            String expected = expectedOrder[i++];
+            assertTrue("key=" + key + " exp=" + expected, key.equals(expected));
         }
     }
     

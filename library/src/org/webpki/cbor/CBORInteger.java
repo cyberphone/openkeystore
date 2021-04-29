@@ -33,14 +33,15 @@ public class CBORInteger extends CBORObject {
 
     long value;
     boolean forceUnsigned;
-    boolean forceNegative;
+    boolean explicit = true;
 
     /**
      * Normal integer handling.
      * @param value
      */
     public CBORInteger(long value) {
-        this(value, false);
+        this(value, value >= 0);
+        explicit = false;
     }
     
     /**
@@ -55,10 +56,6 @@ public class CBORInteger extends CBORObject {
      */
     public CBORInteger(long value, boolean forceUnsigned) {
         this.value = value;
-        if (value == 0) {
-            // -0 is not permitted
-            forceNegative = false;
-        }
         this.forceUnsigned = forceUnsigned;
     }
 
@@ -70,18 +67,21 @@ public class CBORInteger extends CBORObject {
     @Override
     public byte[] encode() throws IOException {
         return getEncodedCodedValue(
-              (!forceNegative && (value >= 0 || forceUnsigned)) ? MT_UNSIGNED : MT_NEGATIVE, 
+              forceUnsigned ? MT_UNSIGNED : MT_NEGATIVE, 
               value, 
-              forceUnsigned,
-              forceNegative);
+              forceUnsigned);
     }
     
     BigInteger getBigIntegerRepresentation() {
         BigInteger bigInteger = BigInteger.valueOf(value);
         if (forceUnsigned) {
             bigInteger = bigInteger.and(CBORBigInteger.MAX_INT64);
-        } else if (forceNegative) {
-            bigInteger = bigInteger.and(CBORBigInteger.MAX_INT64).negate();
+        } else if (explicit) {
+            bigInteger = new BigInteger(-1, bigInteger.toByteArray());
+            if (value == -1) System.out.println(bigInteger.toString());
+            if (bigInteger.equals(BigInteger.ZERO)) {
+                bigInteger = CBORBigInteger.MIN_INT64;
+            }
         }
         return bigInteger;
     }

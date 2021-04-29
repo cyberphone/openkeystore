@@ -63,12 +63,9 @@ public abstract class CBORObject implements Serializable {
     
     abstract void internalToString(CBORObject initiator);
     
-    byte[] getEncodedCodedValue(byte major, 
-                                long value, 
-                                boolean forceUnsigned,
-                                boolean forcedNegative) {
+    byte[] getEncodedCodedValue(byte major, long value, boolean forceUnsigned) {
         // 65-bit integer emulation...
-        if (forcedNegative || (!forceUnsigned && value < 0)) {
+        if (!forceUnsigned) {
             // Carsten B trickery :)
             value = ~value;
         }
@@ -225,10 +222,7 @@ public abstract class CBORObject implements Serializable {
                 return new CBORInteger(length, true);
 
             case MT_NEGATIVE:
-                length = ~length;
-                CBORInteger cborInteger = new CBORInteger(length);
-                cborInteger.forceNegative = true;
-                return cborInteger;
+                return new CBORInteger(~length, false);
 
             case MT_BYTES:
                 return new CBORByteArray(readBytes(checkLength(length)));
