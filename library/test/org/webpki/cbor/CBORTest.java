@@ -54,7 +54,8 @@ public class CBORTest {
         String calc = DebugFormatter.getHexString(cbor);
         assertTrue("int=" + value + " c=" + calc + " h=" + hex, hex.equals(calc));
         CBORObject decodedInteger = CBORObject.decode(cbor);
-        assertTrue("Decoded value", decodedInteger.getInt64() == value);
+        long dv = decodedInteger.getInt64();
+        assertTrue("Decoded value dv=" + dv + " v=" + value, decodedInteger.getInt64() == value);
         String decString = decodedInteger.toString();
         String cString = cborObject.toString();
         assertTrue("Decoded string d=" + decString + 
