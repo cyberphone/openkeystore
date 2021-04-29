@@ -90,8 +90,7 @@ public class CBORInteger extends CBORObject {
         if (unsignedMode) {
             return bigInteger;
         } else {
-            return bigInteger.compareTo(BigInteger.ZERO) == 0 ?
-                    CBORBigInteger.MIN_INT64 : bigInteger.add(BigInteger.ONE).negate();
+            return bigInteger.add(BigInteger.ONE).negate();
         }
     }
 

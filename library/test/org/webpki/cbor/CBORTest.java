@@ -19,10 +19,13 @@ package org.webpki.cbor;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+
 import java.math.BigInteger;
+
 import java.util.Vector;
 
 import org.junit.Test;
+
 import org.webpki.util.DebugFormatter;
 
 
@@ -96,12 +99,14 @@ public class CBORTest {
         byte[] cbor = new CBORString(string).encode();
         String calc = DebugFormatter.getHexString(cbor);
         assertTrue("string=" + string + " c=" + calc + " h=" + hex, hex.equals(calc));
+        assertTrue("string 2", CBORObject.decode(cbor).toString().equals("\"" + string + "\""));
     }
     
     void arrayTest(CBORArray cborArray, String hex) throws Exception {
         byte[] cbor = cborArray.encode();
         String calc = DebugFormatter.getHexString(cbor);
         assertTrue(" c=" + calc + " h=" + hex, hex.equals(calc));
+        assertTrue("arr", CBORObject.decode(cbor).toString().equals(cborArray.toString()));
     }
 
     @Test
@@ -160,6 +165,8 @@ public class CBORTest {
         integerTest(Long.MIN_VALUE, "3b7fffffffffffffff");
         integerTest(0x8000000000000000L, true, true,      "1b8000000000000000");
         integerTest(0xffffffffffffffffL, true, true,      "1bffffffffffffffff");
+        integerTest(0xffffffffffffffffL, true, true,      "3bfffffffffffffffe");
+        integerTest(0,                  false, true,      "3bffffffffffffffff");
 
         bigIntegerTest("18446744073709551615",  "1bffffffffffffffff");
         bigIntegerTest("18446744073709551614",  "1bfffffffffffffffe");
@@ -174,7 +181,7 @@ public class CBORTest {
         bigIntegerTest("-18446744073709551615", "3bfffffffffffffffe");
         bigIntegerTest("-18446744073709551617", "c349010000000000000000");
         bigIntegerTest("65535", "19ffff");
-    //    bigIntegerTest("-1", "20");
+        bigIntegerTest("-1", "20");
  
         integerTest(-1, "20");
         integerTest(-10, "29");
