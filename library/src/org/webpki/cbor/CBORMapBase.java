@@ -93,7 +93,7 @@ abstract class CBORMapBase extends CBORObject {
  
     @Override
     public byte[] encode() throws IOException {
-        byte[] encoded = getEncodedCodedValue(MT_MAP, keys.size(), true);
+        byte[] encoded = getEncodedCodedValue(MT_MAP, keys.size());
         for (CBORObject key : keys.keySet()) {
             encoded = ArrayUtil.add(encoded,
                                     ArrayUtil.add(key.encode(), 

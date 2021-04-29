@@ -64,7 +64,7 @@ public class CBORArray extends CBORObject {
 
     @Override
     public byte[] encode() throws IOException {
-        byte[] encoded = getEncodedCodedValue(MT_ARRAY, elements.size(), true);
+        byte[] encoded = getEncodedCodedValue(MT_ARRAY, elements.size());
         for (CBORObject element : elements.toArray(new CBORObject[0])) {
             encoded = ArrayUtil.add(encoded, element.encode());
         }

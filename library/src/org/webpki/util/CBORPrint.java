@@ -31,7 +31,7 @@ public class CBORPrint {
     ///////////////////////////////
 
     static void exitCommand() {
-        System.out.println("\nUsage:\n\n  org.webpki.util.CBORPrint <infile>\n");
+        System.out.println("\nUsage:\n\n  CBORPrint hex|bin|b64u <infile>\n");
         System.exit(3);
     }
 
@@ -40,10 +40,23 @@ public class CBORPrint {
      * @throws Exception If anything unexpected happens...
      */
     public static void main(String[] args) throws Exception {
-        if (args.length != 1) {
+        if (args.length != 2) {
             exitCommand();
         }
-        System.out.println(CBORObject.decode(ArrayUtil.readFile(args[0])).toString());
+        byte[] data = ArrayUtil.readFile(args[1]);
+        String format = args[0];
+        if (format.equals("hex")) {
+            data = DebugFormatter.getByteArrayFromHex(new String(data, "utf-8"));
+        } else if (format.equals("b64u")) {
+            data = Base64URL.decode(new String(data, "utf-8"));
+        } else if (!format.equals("bin")) {
+            exitCommand();
+        }
+        CBORObject cbor = CBORObject.decode(data);
+        System.out.println(cbor.toString());
+        if (!ArrayUtil.compare(data, cbor.encode())) {
+            System.out.println("Failed to encode");
+        }
     }
 
 }

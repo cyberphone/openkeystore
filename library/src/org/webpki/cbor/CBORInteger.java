@@ -32,31 +32,46 @@ public class CBORInteger extends CBORObject {
     private static final long serialVersionUID = 1L;
 
     long value;
-    boolean forceUnsigned;
-    boolean explicit = true;
+    boolean unsignedMode;
 
     /**
-     * Normal integer handling.
+     * Standard integer handling.
+     * 
+     * Note: this constructor only yields correct results
+     * if value remains in the valid range for a signed long.
      * @param value
      */
     public CBORInteger(long value) {
-        this(value, value >= 0);
-        explicit = false;
-    }
+        if (value < 0) {
+            this.value = ~value;
+        } else {
+            unsignedMode = true;
+        }
+     }
     
     /**
-     * Force unsigned integer.
+     * Force magnitude mode integer.
      * 
-     * Since Java doesn't support unsigned integers, there is 
-     * a need to use this constructor.  <code>0xffffffffffffffffL</code>
-     * would in the standard constructor be considered as <code>-1</code>
-     * which has a different encoding than the unsigned value.
+     * To cope with the entire 65-bit integer span supported by CBOR
+     * you must use this constructor.  For unsigned integers values
+     * from 0 to 2^64-1 can be specified while negative values range
+     * from 1 to 2^64.  Examples:
+     * <table>
+     * <tr><th>Long&nbsp;Value</th><th>Unsigned&nbsp;Mode</th><th>Actual</th></tr>
+     * <tr><td>0</td><td>true</td><td>0</td></tr>
+     * <tr><td>0</td><td>false</td><td>-0x10000000000000000</td></tr>
+     * <tr><td>1</td><td>true</td><td>1</td></tr>
+     * <tr><td>1</td><td>false</td><td>-1</td></tr>
+     * <tr><td>0x8000000000000000</td><td>true</td><td>0x8000000000000000</td></tr>
+     * <tr><td>0x8000000000000000</td><td>false</td><td>-0x8000000000000000</td></tr>
+     * </table>
+     *
      * @param value long value
-     * @param forceUnsigned <code>true</code> if value should be considered as unsigned
+     * @param unsignedMode <code>true</code> if value should be considered as unsigned
      */
-    public CBORInteger(long value, boolean forceUnsigned) {
-        this.value = value;
-        this.forceUnsigned = forceUnsigned;
+    public CBORInteger(long value, boolean unsignedMode) {
+        this.value = unsignedMode ? value : value - 1;
+        this.unsignedMode = unsignedMode;
     }
 
     @Override
@@ -66,25 +81,17 @@ public class CBORInteger extends CBORObject {
 
     @Override
     public byte[] encode() throws IOException {
-        return getEncodedCodedValue(
-              forceUnsigned ? MT_UNSIGNED : MT_NEGATIVE, 
-              value, 
-              forceUnsigned);
+        return getEncodedCodedValue(unsignedMode ? MT_UNSIGNED : MT_NEGATIVE, value);
     }
     
     BigInteger getBigIntegerRepresentation() {
-        BigInteger bigInteger = BigInteger.valueOf(value);
-        if (forceUnsigned) {
-            bigInteger = bigInteger.and(CBORBigInteger.MAX_INT64);
-        } else if (explicit) {
-            if (value < 0) {
-                bigInteger = bigInteger.and(CBORBigInteger.MAX_INT64)
-                                       .negate();
-            } else {
-                bigInteger = bigInteger.add(CBORBigInteger.MIN_INT64);
-            }
+        BigInteger bigInteger = BigInteger.valueOf(value).and(CBORBigInteger.MAX_INT64);
+        if (unsignedMode) {
+            return bigInteger;
+        } else {
+            return bigInteger.compareTo(BigInteger.ZERO) == 0 ?
+                    CBORBigInteger.MIN_INT64 : bigInteger.add(BigInteger.ONE).negate();
         }
-        return bigInteger;
     }
 
     @Override
