@@ -96,12 +96,11 @@ public abstract class CBORObject implements Serializable {
 
     long getInt64() throws IOException {
         check(CBORTypes.INT);
-        return ((CBORInteger) this).value;
+        return ((CBORInteger) this).getBigIntegerRepresentation().longValue();
     }
 
     int getInt32() throws IOException {
-        check(CBORTypes.INT);
-        return (int)((CBORInteger) this).value;
+        return (int) getInt64();
     }
     
     boolean getBoolean() throws IOException {

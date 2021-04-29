@@ -45,6 +45,7 @@ public class CBORInteger extends CBORObject {
         if (value < 0) {
             this.value = ~value;
         } else {
+            this.value = value;
             unsignedMode = true;
         }
      }
