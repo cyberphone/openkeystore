@@ -77,10 +77,11 @@ public class CBORInteger extends CBORObject {
         if (forceUnsigned) {
             bigInteger = bigInteger.and(CBORBigInteger.MAX_INT64);
         } else if (explicit) {
-            bigInteger = new BigInteger(-1, bigInteger.toByteArray());
-            if (value == -1) System.out.println(bigInteger.toString());
-            if (bigInteger.equals(BigInteger.ZERO)) {
-                bigInteger = CBORBigInteger.MIN_INT64;
+            if (value < 0) {
+                bigInteger = bigInteger.and(CBORBigInteger.MAX_INT64)
+                                       .negate();
+            } else {
+                bigInteger = bigInteger.add(CBORBigInteger.MIN_INT64);
             }
         }
         return bigInteger;

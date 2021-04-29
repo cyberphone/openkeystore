@@ -191,15 +191,18 @@ public abstract class CBORObject implements Serializable {
                 if (byteArray[0] == 0) {
                     throw new IOException("Leading zero, improperly normalized");
                 }
-                return new CBORBigInteger(
-                        new BigInteger(first == MT_BIG_SIGNED ? -1 : 1, byteArray));
+                if ((byte)first == MT_BIG_SIGNED) {
+                    return new CBORBigInteger(
+                            new BigInteger(-1, byteArray).subtract(BigInteger.ONE));
+                }
+                return new CBORBigInteger(new BigInteger(1, byteArray));
                 
             case MT_NULL:
                 return new CBORNull();
                 
             case MT_TRUE:
             case MT_FALSE:
-                return new CBORBoolean(first == MT_TRUE);
+                return new CBORBoolean((byte)first == MT_TRUE);
                 
             default:
             }

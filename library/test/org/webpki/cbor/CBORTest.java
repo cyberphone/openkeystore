@@ -82,6 +82,15 @@ public class CBORTest {
         CBORObject decodedBig = CBORObject.decode(cbor);
         String decS = decodedBig.getBigInteger().toString();
         assertTrue("Big2 d=" + decS + " v=" + value, value.equals(decS));
+        /*
+        if (!value.equals(decS)) {
+            fail("t=" + decodedBig.getType() + " d=" + decS + 
+                    " v=" + value +
+                    " iv=" + ((CBORInteger)decodedBig).value +
+                    " if=" + ((CBORInteger)decodedBig).forceUnsigned +
+                    " ix=" + ((CBORInteger)decodedBig).explicit);
+        }
+                    */
     }
     
     void stringTest(String string, String hex) throws Exception {
@@ -165,7 +174,9 @@ public class CBORTest {
         bigIntegerTest("-18446744073709551616", "3bffffffffffffffff");
         bigIntegerTest("-18446744073709551615", "3bfffffffffffffffe");
         bigIntegerTest("-18446744073709551617", "c349010000000000000000");
-
+        bigIntegerTest("65535", "19ffff");
+    //    bigIntegerTest("-1", "20");
+ 
         integerTest(-1, "20");
         integerTest(-10, "29");
         integerTest(-100, "3863");
