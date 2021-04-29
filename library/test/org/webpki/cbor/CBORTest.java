@@ -142,14 +142,19 @@ public class CBORTest {
             .addObject(new CBORInteger(1))
             .addObject(new CBORIntegerMap()
                 .setObject(8, new CBORInteger(2))
-                .setObject(58, new CBORInteger(3)))
+                .setObject(58, new CBORInteger(3))
+                .setObject(-90, new CBORNull())
+                .setObject(-4, new CBORArray()
+                        .addObject(new CBORBoolean(true))
+                        .addObject(new CBORBoolean(false))))
             .addObject(new CBORArray()
                 .addObject(new CBORInteger(4))
                 .addObject(new CBORInteger(5)));
         textCompare(cborArray,
-                "[\n  1,\n  {\n    8: 2,\n    58: 3\n  }," +
+                "[\n  1,\n  {\n    8: 2,\n    -4: [\n" +
+                "      true,\n      false\n    ],\n    58: 3,\n    -90: null\n  }," +
                 "\n  [\n    4,\n    5\n  ]\n]");
-        binaryCompare(cborArray,"8301a20802183a03820405");
+        binaryCompare(cborArray,"8301a30802183a033859f6820405");
         
         integerTest(0, "00" );
         integerTest(1, "01");
@@ -165,8 +170,8 @@ public class CBORTest {
         integerTest(Long.MIN_VALUE, "3b7fffffffffffffff");
         integerTest(0x8000000000000000L, true, true,      "1b8000000000000000");
         integerTest(0xffffffffffffffffL, true, true,      "1bffffffffffffffff");
-        integerTest(0xffffffffffffffffL, true, true,      "3bfffffffffffffffe");
-        integerTest(0,                  false, true,      "3bffffffffffffffff");
+        integerTest(0xfffffffffffffffeL, true, true,      "1bfffffffffffffffe");
+        integerTest(1,                  false, true,      "3bffffffffffffffff");
 
         bigIntegerTest("18446744073709551615",  "1bffffffffffffffff");
         bigIntegerTest("18446744073709551614",  "1bfffffffffffffffe");
