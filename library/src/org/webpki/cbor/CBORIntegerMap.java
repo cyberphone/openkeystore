@@ -48,7 +48,7 @@ public class CBORIntegerMap extends CBORMapBase {
     }
 
     public BigInteger getBigInteger(int key) throws IOException {
-        return getObject(key).getBigInteger();
+        return CBORBigInteger.getValue(getObject(key));
     }
 
     public byte[] getByteArray(int key) throws IOException {

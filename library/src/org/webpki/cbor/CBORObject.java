@@ -63,9 +63,9 @@ public abstract class CBORObject implements Serializable {
     
     abstract void internalToString(CBORObject initiator);
     
-    byte[] getEncodedCodedValue(byte major, long value) {
+    byte[] getEncodedCore(byte majorType, long value) {
         byte[] encoded;
-        if (value < 0 || value > 4294967295L) {
+        if ((majorType == MT_NEGATIVE && value == 0) || value < 0 || value > 4294967295L) {
             encoded = new byte[9];
             encoded[0] = 27;
             for (int i = 8; i > 0; i--) {
@@ -77,12 +77,12 @@ public abstract class CBORObject implements Serializable {
         } else if (value <= 255) {
             encoded = new byte[] {24, (byte) value};
         } else if (value <= 65535) {
-            encoded = new byte[] {25, (byte) (value >> 8), (byte) value};
+            encoded = new byte[] {25, (byte) (value >> 8),  (byte) value};
         } else {
             encoded = new byte[] {26, (byte) (value >> 24), (byte) (value >> 16), 
                                       (byte) (value >> 8),  (byte) value};
         } 
-        encoded[0] |= major;
+        encoded[0] |= majorType;
         return encoded;
     }
 
@@ -137,9 +137,14 @@ public abstract class CBORObject implements Serializable {
         return (CBORArray) this;
     }
     
-    static class Reader {
+    static class CBORDecoder {
+
         static final int BUFFER_SIZE = 10000;
         ByteArrayInputStream input;
+        
+        CBORDecoder(byte[] encodedCborData) {
+            input = new ByteArrayInputStream(encodedCborData);
+        }
         
         void bad() throws IOException {
             throw new IOException("Malformed CBOR, trying to read past EOF");
@@ -159,6 +164,7 @@ public abstract class CBORObject implements Serializable {
             }
             return length;
         }
+
         byte[] readBytes(long length) throws IOException {
             ByteArrayOutputStream baos = new ByteArrayOutputStream(BUFFER_SIZE);
             byte[] buffer = new byte[BUFFER_SIZE];
@@ -203,18 +209,27 @@ public abstract class CBORObject implements Serializable {
 
             // And then the more complex ones
             long length = first & 0x1f;
+            byte majorType = (byte)(first & 0xe0);
             if (length > 0x1b) {
                 throw new IOException("Not implemented: 0x1c-0x1f");
             }
             if (length > 0x17) {
-                int q = 1 << (length - 0x18);
+                int bytesToRead = 1 << (length - 0x18);
+                int q = 0;
                 length = 0;
-                while (q-- != 0) {
+                while (++q <= bytesToRead) {
                     length <<= 8;
                     length |= readByte();
                 }
+                if (length == 0) {
+                    if (bytesToRead == 8 && majorType == MT_NEGATIVE) {
+                        length = -1;
+                    } else {
+                        throw new IOException("Zero value found in extension bytes");
+                    }
+                }
             }
-            switch ((byte)(first & 0xe0)) {
+            switch (majorType) {
             case MT_UNSIGNED:
                 return new CBORInteger(length, true);
 
@@ -267,12 +282,19 @@ public abstract class CBORObject implements Serializable {
                 throw new IOException("Unsupported tag: " + first);
             }
         }
+
+        void checkForUnexpectedInput() throws IOException {
+            if (input.read() != -1) {
+                throw new IOException("Unexpected data found after CBOR object");
+            }
+        }
     }
 
-    public static CBORObject decode(byte[] cbor) throws IOException {
-        Reader reader = new Reader();
-        reader.input = new ByteArrayInputStream(cbor);
-        return reader.getObject();
+    public static CBORObject decode(byte[] encodedCborData) throws IOException {
+        CBORDecoder cborDecoder = new CBORDecoder(encodedCborData);
+        CBORObject cborObject = cborDecoder.getObject();
+        cborDecoder.checkForUnexpectedInput();
+        return cborObject;
     }
 
     public void checkObjectForUnread() throws IOException {

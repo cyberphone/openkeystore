@@ -43,7 +43,8 @@ public class CBORInteger extends CBORObject {
      */
     public CBORInteger(long value) {
         if (value < 0) {
-            this.value = ~value;
+            // Convert to magnitude mode
+            this.value = -value;
         } else {
             this.value = value;
             unsignedMode = true;
@@ -71,7 +72,7 @@ public class CBORInteger extends CBORObject {
      * @param unsignedMode <code>true</code> if value should be considered as unsigned
      */
     public CBORInteger(long value, boolean unsignedMode) {
-        this.value = unsignedMode ? value : value - 1;
+        this.value = unsignedMode || value != 0 ? value : 0;
         this.unsignedMode = unsignedMode;
     }
 
@@ -82,7 +83,7 @@ public class CBORInteger extends CBORObject {
 
     @Override
     public byte[] encode() throws IOException {
-        return getEncodedCodedValue(unsignedMode ? MT_UNSIGNED : MT_NEGATIVE, value);
+        return getEncodedCore(unsignedMode ? MT_UNSIGNED : MT_NEGATIVE, value);
     }
     
     BigInteger getBigIntegerRepresentation() {
@@ -90,7 +91,7 @@ public class CBORInteger extends CBORObject {
         if (unsignedMode) {
             return bigInteger;
         } else {
-            return bigInteger.add(BigInteger.ONE).negate();
+            return value == 0 ? CBORBigInteger.MIN_INT64 : bigInteger.negate();
         }
     }
 

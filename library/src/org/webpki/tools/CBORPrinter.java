@@ -14,24 +14,27 @@
  *  limitations under the License.
  *
  */
-package org.webpki.util;
+package org.webpki.tools;
 
 import org.webpki.cbor.CBORObject;
+import org.webpki.util.ArrayUtil;
+import org.webpki.util.Base64URL;
+import org.webpki.util.DebugFormatter;
 
 /**
  * Decodes CBOR data.
  */
-public class CBORPrint {
+public class CBORPrinter {
 
 
-    private CBORPrint() {}  // No instantiation please
+    private CBORPrinter() {}  // No instantiation please
 
     ///////////////////////////////
     ////       DEBUGGING       ////
     ///////////////////////////////
 
     static void exitCommand() {
-        System.out.println("\nUsage:\n\n  CBORPrint hex|bin|b64u <infile>\n");
+        System.out.println("\nUsage:\n\n  CBORPrinter hex|bin|b64u <infile>\n");
         System.exit(3);
     }
 
