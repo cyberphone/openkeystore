@@ -31,9 +31,6 @@ public class CBORInteger extends CBORObject {
 
     private static final long serialVersionUID = 1L;
     
-    static final byte[] MOST_NEGATIVE = {0x3b, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
-                                               (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff};
-
     long value;
     boolean unsignedMode;
 
@@ -47,7 +44,7 @@ public class CBORInteger extends CBORObject {
     public CBORInteger(long value) {
         if (value < 0) {
             // Convert to magnitude mode
-            this.value = -value;
+            this.value = ~value;
         } else {
             this.value = value;
             unsignedMode = true;
@@ -75,7 +72,7 @@ public class CBORInteger extends CBORObject {
      * @param unsignedMode <code>true</code> if value should be considered as unsigned
      */
     public CBORInteger(long value, boolean unsignedMode) {
-        this.value = unsignedMode || value != 0 ? value : 0;
+        this.value = unsignedMode ? value : value - 1;
         this.unsignedMode = unsignedMode;
     }
 
@@ -86,18 +83,16 @@ public class CBORInteger extends CBORObject {
 
     @Override
     public byte[] encode() throws IOException {
-        if (unsignedMode) {
-            return getEncodedCore(MT_UNSIGNED, value);
-        }
-        return value == 0 ? MOST_NEGATIVE : getEncodedCore(MT_NEGATIVE, value - 1);
+        return getEncodedCore(unsignedMode ? MT_UNSIGNED : MT_NEGATIVE, value);
     }
+
     
     BigInteger getBigIntegerRepresentation() {
         BigInteger bigInteger = BigInteger.valueOf(value).and(CBORBigInteger.MAX_INT64);
         if (unsignedMode) {
             return bigInteger;
         } else {
-            return value == 0 ? CBORBigInteger.MIN_INT64 : bigInteger.negate();
+            return value == -1 ? CBORBigInteger.MIN_INT64 : bigInteger.add(BigInteger.ONE).negate();
         }
     }
 

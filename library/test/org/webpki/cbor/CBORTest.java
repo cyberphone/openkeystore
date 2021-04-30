@@ -171,7 +171,7 @@ public class CBORTest {
         integerTest(0x8000000000000000L, true, true,      "1b8000000000000000");
         integerTest(0xffffffffffffffffL, true, true,      "1bffffffffffffffff");
         integerTest(0xfffffffffffffffeL, true, true,      "1bfffffffffffffffe");
-        integerTest(1,                  false, true,      "3bffffffffffffffff");
+        integerTest(0,                  false, true,      "3bffffffffffffffff");
 
         bigIntegerTest("18446744073709551615",  "1bffffffffffffffff");
         bigIntegerTest("18446744073709551614",  "1bfffffffffffffffe");
