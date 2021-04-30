@@ -17,6 +17,7 @@
 package org.webpki.cbor;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
@@ -25,7 +26,7 @@ import java.math.BigInteger;
 import java.util.Vector;
 
 import org.junit.Test;
-
+import org.webpki.util.ArrayUtil;
 import org.webpki.util.DebugFormatter;
 
 
@@ -34,6 +35,13 @@ import org.webpki.util.DebugFormatter;
  */
 public class CBORTest {
 
+    void checkException(Exception e, String compareMessage) {
+        String m = e.getMessage();
+        if (compareMessage != null && !m.equals(compareMessage)) {
+            fail("Exception: " + m);
+        }
+    }
+    
     void binaryCompare(CBORObject cborObject, String hex) throws Exception {
         byte[] cbor = cborObject.encode();
         String actual = DebugFormatter.getHexString(cbor);
@@ -49,7 +57,11 @@ public class CBORTest {
         String actual = cborObject.toString();
         assertTrue("text=\n" + actual + "\n" + text, text.equals(actual));
     }
-    
+
+    CBORObject parseCborHex(String hex) throws IOException {
+        return CBORObject.decode(DebugFormatter.getByteArrayFromHex(hex));
+    }
+
     void integerTest(long value, boolean forceUnsigned, boolean set, String hex) throws Exception {
         CBORObject cborObject = set ? 
                 new CBORInteger(value, forceUnsigned) : new CBORInteger(value);
@@ -64,10 +76,7 @@ public class CBORTest {
         assertTrue("Decoded string d=" + decString + 
                    " c=" + cString + " v=" + value + " f=" + forceUnsigned,
                    decString.equals(cString));
-        BigInteger bigInteger = BigInteger.valueOf(value);
-        if (forceUnsigned) {
-            bigInteger = bigInteger.and(CBORBigInteger.MAX_INT64);
-        }
+        BigInteger bigInteger = decodedInteger.getBigInteger();
         bigIntegerTest(bigInteger.toString(), hex);
         assertTrue("Big", cborObject.getBigInteger().toString().equals(bigInteger.toString()));
     }
@@ -84,15 +93,6 @@ public class CBORTest {
         CBORObject decodedBig = CBORObject.decode(cbor);
         String decS = decodedBig.getBigInteger().toString();
         assertTrue("Big2 d=" + decS + " v=" + value, value.equals(decS));
-        /*
-        if (!value.equals(decS)) {
-            fail("t=" + decodedBig.getType() + " d=" + decS + 
-                    " v=" + value +
-                    " iv=" + ((CBORInteger)decodedBig).value +
-                    " if=" + ((CBORInteger)decodedBig).forceUnsigned +
-                    " ix=" + ((CBORInteger)decodedBig).explicit);
-        }
-                    */
     }
     
     void stringTest(String string, String hex) throws Exception {
@@ -164,6 +164,16 @@ public class CBORTest {
         integerTest(25, "1819");
         integerTest(100, "1864");
         integerTest(1000, "1903e8");
+        integerTest(255, "18ff");
+        integerTest(256, "190100");
+        integerTest(-255, "38fe");
+        integerTest(-256, "38ff");
+        integerTest(-257, "390100");
+        integerTest(65535, "19ffff");
+        integerTest(65536, "1a00010000");
+        integerTest(-65535, "39fffe");
+        integerTest(-65536, "39ffff");
+        integerTest(-65537, "3a00010000");
         integerTest(1000000, "1a000f4240");
         integerTest(1000000000000L,      "1b000000e8d4a51000");
         /* Added because of java.. */
@@ -280,5 +290,38 @@ public class CBORTest {
         sortingTest(RFC7049_SORTING);
         CBORMapBase.setRfc7049SortingMode(false);
         sortingTest(RFC8949_SORTING);
+    }
+
+    @Test
+    public void bufferTest() throws Exception {
+        int length = CBORObject.CBORDecoder.BUFFER_SIZE - 2;
+        while (length < CBORObject.CBORDecoder.BUFFER_SIZE + 2) {
+            byte[] byteArray = new byte[length];
+            for (int i = 0; i < length; i++) {
+                byteArray[i] = (byte) i;
+            }
+            byte[] cborData = new CBORByteArray(byteArray).encode();
+            assertTrue("buf", 
+                ArrayUtil.compare(byteArray,
+                                  ((CBORByteArray)CBORObject.decode(cborData)).getByteArray()));
+        }
+    }
+ 
+    @Test
+    public void unreadsElementTest() throws Exception {
+        try {
+            CBORObject unread = parseCborHex("8301a408022382f5f4183a033859f6820405");
+            ((CBORArray) unread).getInt32(0);
+            unread.checkObjectForUnread();
+        } catch (Exception e) {
+            checkException(e, "Map key 8 of type=CBORInteger with value=2 was never read");
+        }
+
+        try {
+            CBORObject unread = parseCborHex("17");
+            unread.checkObjectForUnread();  
+        } catch (Exception e) {
+            checkException(e, "Data of type=CBORInteger with value=23 was never read");
+        }
     }
 }

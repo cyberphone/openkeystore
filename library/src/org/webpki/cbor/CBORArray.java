@@ -56,6 +56,10 @@ public class CBORArray extends CBORObject {
     public BigInteger getBigInteger(int index) throws IOException {
         return CBORBigInteger.getValue(getObject(index));
     }
+
+    public CBORObject[] getElements() {
+        return elements.toArray(new CBORObject[0]);
+    }
  
     @Override
     public CBORTypes getType() {
@@ -65,7 +69,7 @@ public class CBORArray extends CBORObject {
     @Override
     public byte[] encode() throws IOException {
         byte[] encoded = getEncodedCore(MT_ARRAY, elements.size());
-        for (CBORObject element : elements.toArray(new CBORObject[0])) {
+        for (CBORObject element : getElements()) {
             encoded = ArrayUtil.add(encoded, element.encode());
         }
         return encoded;
@@ -77,7 +81,7 @@ public class CBORArray extends CBORObject {
         prettyPrintCopy.append("[\n");
         initiator.indentationLevel++;
         boolean notFirst = false;
-        for (CBORObject element : elements.toArray(new CBORObject[0])) {
+        for (CBORObject element : getElements()) {
             if (notFirst) {
                 prettyPrintCopy.insert(prettyPrintCopy.length() - 1, ',');
             }

@@ -308,19 +308,19 @@ public abstract class CBORObject implements Serializable {
 
         case ARRAY:
             CBORArray cborArray = (CBORArray) this;
-            for (CBORObject element : cborArray.elements.toArray(new CBORObject[0])) {
+            for (CBORObject element : cborArray.getElements()) {
                 element.checkObjectForUnread(cborArray);
             }
             break;
 
         default:
             if (!readFlag) {
-                throw new IOException("Type " + getClass().getSimpleName() + 
-                        " with data=" + toString() + " not read" +
-                        (holderObject == null ? "" : 
+                throw new IOException((holderObject == null ? "Data" : 
                             holderObject instanceof CBORArray ?
-                            " (featured in an array)" :
-                            " (featured in key " + holderObject.toString() + ")"));
+                                    "Array element" :
+                                    "Map key " + holderObject.toString()) +                    
+                        " of type=" + getClass().getSimpleName() + 
+                        " with value=" + toString() + " was never read");
             }
             break;
         }
