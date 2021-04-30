@@ -29,12 +29,9 @@ import org.webpki.util.ArrayUtil;
  */
 public class CBORArray extends CBORObject {
 
-    private static final long serialVersionUID = 1L;
-
     ArrayList<CBORObject> elements = new ArrayList<>();
 
-    public CBORArray() {
-    }
+    public CBORArray() {}
     
     public CBORObject getObject(int index) throws IOException {
         return markAsAccessed(elements.get(index));

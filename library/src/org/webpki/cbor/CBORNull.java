@@ -23,12 +23,9 @@ import java.io.IOException;
  */
 public class CBORNull extends CBORObject {
 
-    private static final long serialVersionUID = 1L;
-    
     static final byte[] NULL = {MT_NULL};
 
-    CBORNull() {
-    }
+    public CBORNull() {}
 
     @Override
     public CBORTypes getType() {

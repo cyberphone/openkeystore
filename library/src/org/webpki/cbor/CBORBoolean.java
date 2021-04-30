@@ -23,8 +23,6 @@ import java.io.IOException;
  */
 public class CBORBoolean extends CBORObject {
 
-    private static final long serialVersionUID = 1L;
-    
     static final byte[] TRUE  = {MT_TRUE};
     static final byte[] FALSE = {MT_FALSE};
 

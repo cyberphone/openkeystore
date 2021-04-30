@@ -25,13 +25,10 @@ import java.math.BigInteger;
  */
 public class CBORIntegerMap extends CBORMapBase {
 
-    private static final long serialVersionUID = 1L;
+    public CBORIntegerMap() {}
 
-    CBORIntegerMap() {
-    }
-
-    CBORIntegerMap setObject(int key, CBORObject value) throws IOException {
-        setObject(new CBORInteger(key), value);
+    public CBORIntegerMap setObject(int key, CBORObject cborObject) throws IOException {
+        setObject(new CBORInteger(key), cborObject);
         return this;
     }
 

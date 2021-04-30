@@ -27,8 +27,6 @@ import org.webpki.util.ArrayUtil;
  */
 public class CBORBigInteger extends CBORObject {
 
-    private static final long serialVersionUID = 1L;
-
     BigInteger value;
     
     static final BigInteger MAX_INT64 = new BigInteger("18446744073709551615");
@@ -37,7 +35,7 @@ public class CBORBigInteger extends CBORObject {
     static final byte[] UNSIGNED_BIG_INTEGER = {MT_BIG_UNSIGNED};
     static final byte[] SIGNED_BIG_INTEGER   = {MT_BIG_SIGNED};
     
-    CBORBigInteger(BigInteger value) {
+    public CBORBigInteger(BigInteger value) {
         this.value = value;
     }
     
@@ -50,10 +48,7 @@ public class CBORBigInteger extends CBORObject {
     public byte[] encode() throws IOException {
         if (value.compareTo(MAX_INT64) <= 0 && value.compareTo(MIN_INT64) >= 0) {
             // Fits in "uint65" decoding
-            if (value.compareTo(BigInteger.ZERO) >= 0) {
-                return new CBORInteger(value.longValue(), true).encode();
-            }
-            return new CBORInteger(value.negate().longValue(), false).encode();
+            return new CBORInteger(value).encode();
         }
         // Didn't fit "uint65" so we must use big number decoding
         byte[] encoded;
@@ -76,7 +71,7 @@ public class CBORBigInteger extends CBORObject {
 
 
     static BigInteger getValue(CBORObject cborObject) throws IOException {
-        if (cborObject.getType() == CBORTypes.INT) {
+        if (cborObject.getType() == CBORTypes.INTEGER) {
             return ((CBORInteger) cborObject).getBigIntegerRepresentation();
         }
         cborObject.check(CBORTypes.BIG_INTEGER);

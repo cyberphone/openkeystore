@@ -29,8 +29,6 @@ import org.webpki.util.ArrayUtil;
  */
 abstract class CBORMapBase extends CBORObject {
 
-    private static final long serialVersionUID = 1L;
-    
     private static boolean rfc7049Sorting = true;
 
     /**

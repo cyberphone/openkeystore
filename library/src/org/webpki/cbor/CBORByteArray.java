@@ -26,8 +26,6 @@ import org.webpki.util.DebugFormatter;
  */
 public class CBORByteArray extends CBORObject {
 
-    private static final long serialVersionUID = 1L;
-
     byte[] byteArray;
 
     public CBORByteArray(byte[] byteArray) {

@@ -25,11 +25,9 @@ import org.webpki.util.ArrayUtil;
  */
 public class CBORString extends CBORObject {
 
-    private static final long serialVersionUID = 1L;
-
     String string;
 
-    CBORString(String string) {
+    public CBORString(String string) {
         this.string = string;
     }
 

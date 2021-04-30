@@ -29,8 +29,6 @@ import java.math.BigInteger;
  */
 public class CBORInteger extends CBORObject {
 
-    private static final long serialVersionUID = 1L;
-    
     long value;
     boolean unsignedMode;
 
@@ -86,17 +84,23 @@ public class CBORInteger extends CBORObject {
      * @throws IOException 
      */
     public CBORInteger(BigInteger value) throws IOException {
-        this(value.longValue(), value.compareTo(BigInteger.ZERO) >= 0);
         if (value.compareTo(CBORBigInteger.MIN_INT64) < 0 ||
             value.compareTo(CBORBigInteger.MAX_INT64) > 0) {
-            throw new IOException("Value out of range for " + 
-                                  this.getClass().getSimpleName());
+                throw new IOException("Value out of range for " +
+                                      CBORInteger.class.getSimpleName());
         }
+        if (value.compareTo(BigInteger.ZERO) >= 0) {
+            this.value =  value.longValue();
+            this.unsignedMode = true;
+        } else {
+            this.value =  value.add(BigInteger.ONE).negate().longValue();
+        }
+
     }
 
     @Override
     public CBORTypes getType() {
-        return CBORTypes.INT;
+        return CBORTypes.INTEGER;
     }
 
     @Override

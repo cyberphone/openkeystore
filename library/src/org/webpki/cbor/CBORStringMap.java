@@ -25,10 +25,7 @@ import java.math.BigInteger;
  */
 public class CBORStringMap extends CBORMapBase {
 
-    private static final long serialVersionUID = 1L;
-
-    CBORStringMap() {
-    }
+    public CBORStringMap() {}
 
     public CBORStringMap setObject(String key, CBORObject value) throws IOException {
         setObject(new CBORString(key), value);

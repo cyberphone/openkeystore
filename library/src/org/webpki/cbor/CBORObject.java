@@ -19,7 +19,6 @@ package org.webpki.cbor;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.Serializable;
 
 import java.math.BigInteger;
 
@@ -28,13 +27,9 @@ import org.webpki.util.ArrayUtil;
 /**
  * Abstract class for holding CBOR objects.
  */
-public abstract class CBORObject implements Serializable {
+public abstract class CBORObject {
     
-    private static final long serialVersionUID = 1L;
-    
-    CBORObject() {
-        
-    }
+    CBORObject() {}
     
     // For checking if object was read
     private boolean readFlag;
@@ -100,7 +95,7 @@ public abstract class CBORObject implements Serializable {
     }
 
     long getInt64() throws IOException {
-        check(CBORTypes.INT);
+        check(CBORTypes.INTEGER);
         return ((CBORInteger) this).getBigIntegerRepresentation().longValue();
     }
 
@@ -258,7 +253,7 @@ public abstract class CBORObject implements Serializable {
                 }
                 CBORMapBase cborMapBase;
                 CBORObject key1 = getObject();
-                if (key1.getType() == CBORTypes.INT) {
+                if (key1.getType() == CBORTypes.INTEGER) {
                     cborMapBase = new CBORIntegerMap();
                 } else if (key1.getType() == CBORTypes.STRING) {
                     cborMapBase = new CBORStringMap();

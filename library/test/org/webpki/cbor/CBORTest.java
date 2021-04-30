@@ -339,7 +339,7 @@ public class CBORTest {
             ((CBORArray) cbor).getObject(0).getCBORIntegerMap();
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, "Is type: INT, requested: INTEGER_MAP");
+            checkException(e, "Is type: INTEGER, requested: INTEGER_MAP");
         }
 
         try {
