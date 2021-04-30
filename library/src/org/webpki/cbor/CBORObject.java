@@ -296,27 +296,31 @@ public abstract class CBORObject implements Serializable {
         checkObjectForUnread(null);
     }
 
-    private void checkObjectForUnread(String explanation) throws IOException {
+    private void checkObjectForUnread(CBORObject holderObject) throws IOException {
         switch (getType()) {
         case STRING_MAP:
         case INTEGER_MAP:
             CBORMapBase cborMap = (CBORMapBase) this;
             for (CBORObject key : cborMap.keys.keySet()) {
-                 cborMap.keys.get(key).checkObjectForUnread(key.toString());
+                 cborMap.keys.get(key).checkObjectForUnread(key);
             }
             break;
 
         case ARRAY:
             CBORArray cborArray = (CBORArray) this;
-            for (CBORObject cborObject : cborArray.elements.toArray(new CBORArray[0])) {
-                cborObject.checkObjectForUnread("Array element");
+            for (CBORObject element : cborArray.elements.toArray(new CBORObject[0])) {
+                element.checkObjectForUnread(cborArray);
             }
             break;
 
         default:
             if (!readFlag) {
-                throw new IOException("Type: " + getType() + " not read" +
-                        (explanation == null ? "" : " (" + explanation + ")"));
+                throw new IOException("Type " + getClass().getSimpleName() + 
+                        " with data=" + toString() + " not read" +
+                        (holderObject == null ? "" : 
+                            holderObject instanceof CBORArray ?
+                            " (featured in an array)" :
+                            " (featured in key " + holderObject.toString() + ")"));
             }
             break;
         }

@@ -35,7 +35,7 @@ public class CBORIntegerMap extends CBORMapBase {
         return this;
     }
 
-    CBORObject getObject(int key) throws IOException {
+    public CBORObject getObject(int key) throws IOException {
         return getObject(new CBORInteger(key));
     }
 
