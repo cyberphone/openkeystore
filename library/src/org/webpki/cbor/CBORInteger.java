@@ -30,6 +30,9 @@ import java.math.BigInteger;
 public class CBORInteger extends CBORObject {
 
     private static final long serialVersionUID = 1L;
+    
+    static final byte[] MOST_NEGATIVE = {0x3b, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                                               (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff};
 
     long value;
     boolean unsignedMode;
@@ -83,7 +86,10 @@ public class CBORInteger extends CBORObject {
 
     @Override
     public byte[] encode() throws IOException {
-        return getEncodedCore(unsignedMode ? MT_UNSIGNED : MT_NEGATIVE, value);
+        if (unsignedMode) {
+            return getEncodedCore(MT_UNSIGNED, value);
+        }
+        return value == 0 ? MOST_NEGATIVE : getEncodedCore(MT_NEGATIVE, value - 1);
     }
     
     BigInteger getBigIntegerRepresentation() {

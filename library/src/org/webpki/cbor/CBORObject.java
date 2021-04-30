@@ -65,7 +65,7 @@ public abstract class CBORObject implements Serializable {
     
     byte[] getEncodedCore(byte majorType, long value) {
         byte[] encoded;
-        if ((majorType == MT_NEGATIVE && value == 0) || value < 0 || value > 4294967295L) {
+        if (value < 0 || value > 4294967295L) {
             encoded = new byte[9];
             encoded[0] = 27;
             for (int i = 8; i > 0; i--) {
@@ -214,19 +214,14 @@ public abstract class CBORObject implements Serializable {
                 throw new IOException("Not implemented: 0x1c-0x1f");
             }
             if (length > 0x17) {
-                int bytesToRead = 1 << (length - 0x18);
-                int q = 0;
+                int q = 1 << (length - 0x18);
                 length = 0;
-                while (++q <= bytesToRead) {
+                while (--q >= 0) {
                     length <<= 8;
                     length |= readByte();
                 }
                 if (length == 0) {
-                    if (bytesToRead == 8 && majorType == MT_NEGATIVE) {
-                        length = -1;
-                    } else {
-                        throw new IOException("Zero value found in extension bytes");
-                    }
+                    throw new IOException("Zero value found in extension bytes");
                 }
             }
             switch (majorType) {

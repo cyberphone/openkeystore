@@ -154,7 +154,7 @@ public class CBORTest {
                 "[\n  1,\n  {\n    8: 2,\n    -4: [\n" +
                 "      true,\n      false\n    ],\n    58: 3,\n    -90: null\n  }," +
                 "\n  [\n    4,\n    5\n  ]\n]");
-        binaryCompare(cborArray,"8301a30802183a033859f6820405");
+        binaryCompare(cborArray,"8301a408022382f5f4183a033859f6820405");
         
         integerTest(0, "00" );
         integerTest(1, "01");
