@@ -63,7 +63,6 @@ abstract class CBORMapBase extends CBORObject {
             } catch (IOException e) {
                  throw new RuntimeException(e);
             }
-  //          return o1.toString().compareTo(o2.toString());
         }
     }
 
@@ -83,7 +82,7 @@ abstract class CBORMapBase extends CBORObject {
         if (cborObject == null) {
             throw new IOException("No such key: " + key.toString());
         }
-        return cborObject;
+        return markAsAccessed(cborObject);
     }
 
     @Override

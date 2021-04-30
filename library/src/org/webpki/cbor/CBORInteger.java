@@ -49,7 +49,7 @@ public class CBORInteger extends CBORObject {
             this.value = value;
             unsignedMode = true;
         }
-     }
+    }
     
     /**
      * Force magnitude mode integer.
@@ -74,6 +74,24 @@ public class CBORInteger extends CBORObject {
     public CBORInteger(long value, boolean unsignedMode) {
         this.value = unsignedMode ? value : value - 1;
         this.unsignedMode = unsignedMode;
+    }
+
+    /**
+     * Using BigInteger as input.
+     * 
+     * This constructor permits using the full range of applicable
+     * integer values (-2^64 to 2^64-1).
+     * 
+     * @param value
+     * @throws IOException 
+     */
+    public CBORInteger(BigInteger value) throws IOException {
+        this(value.longValue(), value.compareTo(BigInteger.ZERO) >= 0);
+        if (value.compareTo(CBORBigInteger.MIN_INT64) < 0 ||
+            value.compareTo(CBORBigInteger.MAX_INT64) > 0) {
+            throw new IOException("Value out of range for " + 
+                                  this.getClass().getSimpleName());
+        }
     }
 
     @Override

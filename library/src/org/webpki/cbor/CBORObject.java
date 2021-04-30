@@ -89,9 +89,14 @@ public abstract class CBORObject implements Serializable {
     void check(CBORTypes expectedCborType) throws IOException {
         if (getType() != expectedCborType) {
             throw new IOException("Is type: " + getType() +
-                    ",  requested: " + expectedCborType);
+                    ", requested: " + expectedCborType);
         }
-        readFlag = true;
+        markAsAccessed(this);
+    }
+    
+    static CBORObject markAsAccessed(CBORObject cborObject) {
+        cborObject.readFlag = true;
+        return cborObject;
     }
 
     long getInt64() throws IOException {

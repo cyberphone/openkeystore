@@ -37,7 +37,7 @@ public class CBORArray extends CBORObject {
     }
     
     public CBORObject getObject(int index) throws IOException {
-        return elements.get(index);
+        return markAsAccessed(elements.get(index));
     }
     
     public CBORArray addObject(CBORObject cborObject) {
