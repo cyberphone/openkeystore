@@ -86,7 +86,7 @@ public abstract class CBORObject {
     
     public long getLong() throws IOException {
         checkTypeAndMarkAsRead(CBORTypes.INTEGER);
-        return ((CBORInteger) this).getBigIntegerRepresentation().longValue();
+        return ((CBORInteger) this).getValueAsBigInteger().longValue();
     }
 
     public int getInt() throws IOException {
@@ -99,9 +99,9 @@ public abstract class CBORObject {
     }
 
     public BigInteger getBigInteger() throws IOException {
-        if (getType() == CBORTypes.INTEGER) {
+        if (CBORBigInteger.shortestIntegerMode && getType() == CBORTypes.INTEGER) {
             checkTypeAndMarkAsRead(CBORTypes.INTEGER);
-            return ((CBORInteger) this).getBigIntegerRepresentation();
+            return ((CBORInteger) this).getValueAsBigInteger();
         }
         checkTypeAndMarkAsRead(CBORTypes.BIG_INTEGER);
         return ((CBORBigInteger) this).value;
@@ -189,7 +189,7 @@ public abstract class CBORObject {
             case MT_BIG_UNSIGNED:
                 byte[] byteArray = getObject().getByteString();
                 if (byteArray[0] == 0) {
-                    throw new IOException("Leading zero, improperly normalized");
+                    throw new IOException("Non-deterministic encoding: leading zero byte");
                 }
                 if ((byte)first == MT_BIG_SIGNED) {
                     return new CBORBigInteger(
@@ -221,7 +221,8 @@ public abstract class CBORObject {
                     length |= readByte();
                 }
                 if (length == 0) {
-                    throw new IOException("Zero value found in extension bytes");
+                    throw new IOException(
+                        "Non-deterministic encoding: additional bytes form a zero value");
                 }
             }
             switch (majorType) {
@@ -258,8 +259,9 @@ public abstract class CBORObject {
                 } else if (key1.getType() == CBORTypes.TEXT_STRING) {
                     cborMapBase = new CBORTextStringMap();
                 } else {
-                    throw new IOException("Only integer and text string map keys supported, found: " +
-                                          key1.getType());
+                    throw new IOException(
+                        "Only integer and text string map keys supported, found: " +
+                         key1.getType());
                 }
                 cborMapBase.setObject(key1, getObject());
                 while (--length > 0) {

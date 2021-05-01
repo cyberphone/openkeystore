@@ -152,8 +152,8 @@ public class CBORTest {
                 .setMappedValue(58, new CBORInteger(3))
                 .setMappedValue(-90, new CBORNull())
                 .setMappedValue(-4, new CBORArray()
-                        .addElement(new CBORBoolean(true))
-                        .addElement(new CBORBoolean(false))))
+                    .addElement(new CBORBoolean(true))
+                    .addElement(new CBORBoolean(false))))
             .addElement(new CBORArray()
                 .addElement(new CBORInteger(4))
                 .addElement(new CBORInteger(5)));
@@ -329,15 +329,19 @@ public class CBORTest {
 
     @Test
     public void bufferTest() throws Exception {
+        // To not "accidently" allocate potentially GBs of memory the
+        // decoder uses a buffer scheme.
+        // The assumption is that receive have already checked
+        // that the CBOR code itself is within reason.
         int length = CBORObject.CBORDecoder.BUFFER_SIZE - 2;
         while (length < CBORObject.CBORDecoder.BUFFER_SIZE + 2) {
-            byte[] byteArray = new byte[length];
+            byte[] byteString = new byte[length];
             for (int i = 0; i < length; i++) {
-                byteArray[i] = (byte) i;
+                byteString[i] = (byte) i;
             }
-            byte[] cborData = new CBORByteString(byteArray).encode();
+            byte[] cborData = new CBORByteString(byteString).encode();
             assertTrue("buf", 
-                ArrayUtil.compare(byteArray,
+                ArrayUtil.compare(byteString,
                                   ((CBORByteString)CBORObject.decode(cborData)).getByteString()));
             length++;
         }
@@ -431,4 +435,53 @@ public class CBORTest {
                 "Data of type=CBORInteger with value=23 was never read");
         }
     }
-}
+    
+    @Test
+    public void typeCheckTest() throws Exception {
+        CBORObject cborObject = parseCborHex("17");
+        try {
+            cborObject.getBoolean();  
+            fail("must not execute");
+        } catch (Exception e) {
+            checkException(e, 
+                "Is type: INTEGER, requested: BOOLEAN");
+        }
+        try {
+            cborObject.getByteString();  
+            fail("must not execute");
+        } catch (Exception e) {
+            checkException(e, 
+                "Is type: INTEGER, requested: BYTE_STRING");
+        }
+    }
+
+    @Test
+    public void endOfFileTest() throws Exception {
+         try {
+            parseCborHex("83");
+            fail("must not execute");
+        } catch (Exception e) {
+            checkException(e, 
+                "Malformed CBOR, trying to read past EOF");
+        }
+    }
+
+    @Test
+    public void deterministicEncodingTest() throws Exception {
+         try {
+            parseCborHex("3800");
+            fail("must not execute");
+        } catch (Exception e) {
+            checkException(e, 
+                "Non-deterministic encoding: additional bytes form a zero value");
+        }
+
+        try {
+            parseCborHex("c34900ffffffffffffffff");
+            fail("must not execute");
+        } catch (Exception e) {
+            checkException(e, 
+                 "Non-deterministic encoding: leading zero byte");
+        }
+    }
+ }

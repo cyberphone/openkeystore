@@ -109,7 +109,7 @@ public class CBORInteger extends CBORObject {
     }
 
     
-    BigInteger getBigIntegerRepresentation() {
+    public BigInteger getValueAsBigInteger() {
         BigInteger bigInteger = BigInteger.valueOf(value).and(CBORBigInteger.MAX_INT64);
         if (unsignedMode) {
             return bigInteger;
@@ -120,6 +120,6 @@ public class CBORInteger extends CBORObject {
 
     @Override
     void internalToString(CBORObject.PrettyPrinter prettyPrinter) {
-        prettyPrinter.appendText(getBigIntegerRepresentation().toString());
+        prettyPrinter.appendText(getValueAsBigInteger().toString());
     }
 }
