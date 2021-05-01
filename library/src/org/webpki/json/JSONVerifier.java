@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2021 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,14 +17,11 @@
 package org.webpki.json;
 
 import java.io.IOException;
-import java.io.Serializable;
 
 /**
  * Support class for signature verifiers.
  */
-public abstract class JSONVerifier implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public abstract class JSONVerifier {
 
     JSONVerifier(JSONSignatureTypes signatureType) {
         this.signatureType = signatureType;

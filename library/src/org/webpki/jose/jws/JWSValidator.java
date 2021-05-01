@@ -25,13 +25,13 @@ import org.webpki.util.Base64URL;
 /**
  * JWS validator base class
  */
-public abstract class JwsValidator {
+public abstract class JWSValidator {
     
     String provider;
 
-    JwsValidator() {}
+    JWSValidator() {}
     
-    abstract void validateObject(byte[] signedData, JwsDecoder jwsDecoder) 
+    abstract void validateObject(byte[] signedData, JWSDecoder jwsDecoder) 
             throws IOException, GeneralSecurityException;
 
     /**
@@ -39,7 +39,7 @@ public abstract class JwsValidator {
      * @param provider Name of provider like "BC"
      * @return this
      */
-    public JwsValidator setProvider(String provider) {
+    public JWSValidator setProvider(String provider) {
         this.provider = provider;
         return this;
     }
@@ -56,7 +56,7 @@ public abstract class JwsValidator {
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public JwsDecoder validate(JwsDecoder jwsDecoder, byte[] detachedPayload) 
+    public JWSDecoder validate(JWSDecoder jwsDecoder, byte[] detachedPayload) 
             throws IOException, GeneralSecurityException {
 
         // Dealing with detached signatures
@@ -81,7 +81,7 @@ public abstract class JwsValidator {
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public JwsDecoder validate(JwsDecoder jwsDecoder) 
+    public JWSDecoder validate(JWSDecoder jwsDecoder) 
             throws IOException, GeneralSecurityException {
 
         // Dealing with in-line signatures

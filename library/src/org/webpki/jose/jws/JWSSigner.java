@@ -29,7 +29,7 @@ import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.SignatureAlgorithms;
 
-import static org.webpki.jose.JoseKeyWords.*;
+import static org.webpki.jose.JOSEKeyWords.*;
 
 import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONObjectWriter;
@@ -40,9 +40,9 @@ import org.webpki.util.Base64URL;
 /**
  * JWS encoder base class
  */
-public abstract class JwsSigner {
+public abstract class JWSSigner {
     
-    JwsSigner() {}
+    JWSSigner() {}
     
     JSONObjectWriter jwsProtectedHeader;
     
@@ -51,7 +51,7 @@ public abstract class JwsSigner {
     /*
      * Package level constructor
      */
-    JwsSigner(SignatureAlgorithms signatureAlgorithm) throws IOException {
+    JWSSigner(SignatureAlgorithms signatureAlgorithm) throws IOException {
         jwsProtectedHeader = new JSONObjectWriter()
             .setString(ALG_JSON, signatureAlgorithm.getKeyType() == KeyTypes.EDDSA ? 
                            EdDSA 
@@ -64,7 +64,7 @@ public abstract class JwsSigner {
      * @param provider Name of provider like "BC"
      * @return JwsSigner
      */
-    public JwsSigner setProvider(String provider) {
+    public JWSSigner setProvider(String provider) {
         this.provider = provider;
         return this;
     }
@@ -75,7 +75,7 @@ public abstract class JwsSigner {
      * @return JwsSigner
      * @throws IOException
      */
-    public JwsSigner setKeyId(String keyId) throws IOException {
+    public JWSSigner setKeyId(String keyId) throws IOException {
         jwsProtectedHeader.setString(KID_JSON, keyId);
         return this;
     }
@@ -86,7 +86,7 @@ public abstract class JwsSigner {
      * @throws IOException
      * @return JwsSigner
      */
-    public JwsSigner addHeaderItems(JSONObjectReader items) throws IOException {
+    public JWSSigner addHeaderItems(JSONObjectReader items) throws IOException {
         for (String key : items.getProperties()) {
             jwsProtectedHeader.copyElement(key, key, items);
         }

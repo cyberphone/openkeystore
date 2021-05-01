@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2021 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.webpki.json;
 
 import java.io.IOException;
-import java.io.Serializable;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -61,9 +60,7 @@ import org.webpki.util.ISODateTime;
  * <a href="https://tools.ietf.org/html/rfc7517" target="_blank"><b>JWK</b></a>
  * objects.</p>
  */
-public class JSONObjectWriter implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class JSONObjectWriter {
 
     static final int STANDARD_INDENT = 2;
     

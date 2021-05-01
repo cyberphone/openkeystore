@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2021 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -52,15 +52,15 @@ public class CBORIntegerMap extends CBORMapBase {
         return getObject(key).getByteArray();
     }
 
-    public CBORArray getCBORArray(int key) throws IOException {
-        return getObject(key).getCBORArray();
+    public CBORArray getArray(int key) throws IOException {
+        return getObject(key).getArray();
     }
 
-    public CBORIntegerMap getCBORIntegerMap(int key) throws IOException {
-        return getObject(key).getCBORIntegerMap();
+    public CBORIntegerMap getIntegerMap(int key) throws IOException {
+        return getObject(key).getIntegerMap();
     }
 
-    public CBORStringMap getCBORStringMap(int key) throws IOException {
-        return getObject(key).getCBORStringMap();
+    public CBORStringMap getStringMap(int key) throws IOException {
+        return getObject(key).getStringMap();
     }
 }

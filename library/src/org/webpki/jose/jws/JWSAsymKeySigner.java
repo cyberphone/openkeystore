@@ -32,7 +32,7 @@ import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.SignatureWrapper;
 
-import static org.webpki.jose.JoseKeyWords.*;
+import static org.webpki.jose.JOSEKeyWords.*;
 
 import org.webpki.json.JSONArrayWriter;
 import org.webpki.json.JSONObjectWriter;
@@ -40,7 +40,7 @@ import org.webpki.json.JSONObjectWriter;
 /**
  * JWS asymmetric key signer
  */
-public class JwsAsymKeySigner extends JwsSigner {
+public class JWSAsymKeySigner extends JWSSigner {
     
     PrivateKey privateKey;
     AsymSignatureAlgorithms signatureAlgorithm;
@@ -56,7 +56,7 @@ public class JwsAsymKeySigner extends JwsSigner {
      * @throws IOException 
      * @throws GeneralSecurityException 
      */
-    public JwsAsymKeySigner(PrivateKey privateKey, 
+    public JWSAsymKeySigner(PrivateKey privateKey, 
                             AsymSignatureAlgorithms signatureAlgorithm)
             throws IOException, GeneralSecurityException {
         super(signatureAlgorithm);
@@ -79,7 +79,7 @@ public class JwsAsymKeySigner extends JwsSigner {
      * @throws IOException 
      * @throws GeneralSecurityException 
      */
-    public JwsAsymKeySigner(PrivateKey privateKey)
+    public JWSAsymKeySigner(PrivateKey privateKey)
             throws IOException, GeneralSecurityException {
         this(privateKey, 
              KeyAlgorithms.getKeyAlgorithm(privateKey).getRecommendedSignatureAlgorithm());
@@ -91,7 +91,7 @@ public class JwsAsymKeySigner extends JwsSigner {
      * @return JwsAsymKeySigner
      * @throws IOException 
      */
-    public JwsAsymKeySigner setPublicKey(PublicKey publicKey) throws IOException {
+    public JWSAsymKeySigner setPublicKey(PublicKey publicKey) throws IOException {
         jwsProtectedHeader.setObject(JWK_JSON, 
                                      JSONObjectWriter.createCorePublicKey(
                                              publicKey,
@@ -107,7 +107,7 @@ public class JwsAsymKeySigner extends JwsSigner {
      * @throws IOException 
      * @throws GeneralSecurityException 
      */
-    public JwsAsymKeySigner setCertificatePath(X509Certificate[] certificatePath) 
+    public JWSAsymKeySigner setCertificatePath(X509Certificate[] certificatePath) 
             throws IOException, GeneralSecurityException {
         JSONArrayWriter certPath = jwsProtectedHeader.setArray(X5C_JSON);
         for (X509Certificate cert : certificatePath) {

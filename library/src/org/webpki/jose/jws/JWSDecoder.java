@@ -28,7 +28,7 @@ import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.SignatureAlgorithms;
 
-import static org.webpki.jose.JoseKeyWords.*;
+import static org.webpki.jose.JOSEKeyWords.*;
 
 import org.webpki.json.JSONArrayWriter;
 import org.webpki.json.JSONObjectReader;
@@ -40,7 +40,7 @@ import org.webpki.util.Base64URL;
 /**
  * JWS and JWS/CT decoder
  */
-public class JwsDecoder {
+public class JWSDecoder {
     
     String jwsHeaderB64U;
     
@@ -48,7 +48,7 @@ public class JwsDecoder {
     
     String jwsPayloadB64U;
     
-    JSONObjectReader savedJwsCtObject;
+    JSONObjectReader savedJWSCtObject;
     
     boolean validated;
     
@@ -68,7 +68,7 @@ public class JwsDecoder {
         }        
     }
     
-    private void decodeJwsString(String jwsString) throws GeneralSecurityException, IOException {
+    private void decodeJWSString(String jwsString) throws GeneralSecurityException, IOException {
 
         // Extract the JWS elements
         int endOfHeader = jwsString.indexOf('.');
@@ -145,8 +145,8 @@ public class JwsDecoder {
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public JwsDecoder(String jwsString) throws IOException, GeneralSecurityException {
-        decodeJwsString(jwsString);
+    public JWSDecoder(String jwsString) throws IOException, GeneralSecurityException {
+        decodeJWSString(jwsString);
     }
 
     /**
@@ -157,26 +157,26 @@ public class JwsDecoder {
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public JwsDecoder(JSONObjectReader jwsCtObject, String signatureProperty) 
+    public JWSDecoder(JSONObjectReader jwsCtObject, String signatureProperty) 
             throws IOException, GeneralSecurityException {
 
         // Do not alter the original!
-        savedJwsCtObject = jwsCtObject.clone();
-        String jwsString = savedJwsCtObject.getString(signatureProperty);
+        savedJWSCtObject = jwsCtObject.clone();
+        String jwsString = savedJWSCtObject.getString(signatureProperty);
         if (!jwsString.contains("..")) {
             throw new GeneralSecurityException("JWS detached mode syntax error");
         }
-        savedJwsCtObject.removeProperty(signatureProperty);
+        savedJWSCtObject.removeProperty(signatureProperty);
         jwsPayloadB64U = Base64URL.encode(
-                savedJwsCtObject.serializeToBytes(JSONOutputFormats.CANONICALIZED));
-        decodeJwsString(jwsString);
+                savedJWSCtObject.serializeToBytes(JSONOutputFormats.CANONICALIZED));
+        decodeJWSString(jwsString);
     }
 
     /**
      * Get JWS header.
      * @return JWS header as a JSON object.
      */
-    public JSONObjectReader getJwsHeaderAsJson() {
+    public JSONObjectReader getJWSHeaderAsJson() {
         return jwsHeader;
     }
 
@@ -185,7 +185,7 @@ public class JwsDecoder {
      * @return JWS header as a verbatim string copy after Base64Url-decoding.
      * @throws IOException 
      */
-    public String getJwsHeaderAsString() throws IOException {
+    public String getJWSHeaderAsString() throws IOException {
         return new String(Base64URL.decode(jwsHeaderB64U), "utf-8");
     }
     
@@ -223,14 +223,14 @@ public class JwsDecoder {
     /**
      * Get JWS payload.
      * Note that this method throws an exception if the
-     * {@link org.webpki.jose.jws.JwsDecoder}
+     * {@link org.webpki.jose.jws.JWSDecoder}
      * object signature have not yet been
-     * {@link org.webpki.jose.jws.JwsValidator#validate(JwsDecoder) validated}.
+     * {@link org.webpki.jose.jws.JWSValidator#validate(JWSDecoder) validated}.
      * For JWS/CT, the payload holds the canonicalized
      * version of the 
-     * {@link org.webpki.jose.jws.JwsDecoder#JwsDecoder(JSONObjectReader, String) jwsCtObject}
+     * {@link org.webpki.jose.jws.JWSDecoder#JWSDecoder(JSONObjectReader, String) jwsCtObject}
      * with the
-    * {@link org.webpki.jose.jws.JwsDecoder#JwsDecoder(JSONObjectReader, String) signatureProperty}
+    * {@link org.webpki.jose.jws.JWSDecoder#JWSDecoder(JSONObjectReader, String) signatureProperty}
      * removed.
      * @return Payload binary
      * @throws GeneralSecurityException
@@ -244,22 +244,22 @@ public class JwsDecoder {
     /**
      * Get JWS payload.
      * Note that this method throws an exception if the
-     * {@link org.webpki.jose.jws.JwsDecoder}
+     * {@link org.webpki.jose.jws.JWSDecoder}
      * object signature have not yet been
-     * {@link org.webpki.jose.jws.JwsValidator#validate(JwsDecoder) validated}.
+     * {@link org.webpki.jose.jws.JWSValidator#validate(JWSDecoder) validated}.
      * For JWS/CT this method return the JSON that is actually signed.  That is,
      * all but the 
-    * {@link org.webpki.jose.jws.JwsDecoder#JwsDecoder(JSONObjectReader, String) signatureProperty}
+    * {@link org.webpki.jose.jws.JWSDecoder#JWSDecoder(JSONObjectReader, String) signatureProperty}
      * and its JWS argument.
      * @return Payload as JSON
      * @throws GeneralSecurityException
      * @throws IOException
      */
     public JSONObjectReader getPayloadAsJson() throws GeneralSecurityException, IOException {
-        if (savedJwsCtObject == null) {
+        if (savedJWSCtObject == null) {
             return JSONParser.parse(getPayload());
         }
         checkValidation();
-        return savedJwsCtObject;
+        return savedJWSCtObject;
     }
 }

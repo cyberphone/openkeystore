@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2021 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.webpki.json;
 
 import java.io.IOException;
-import java.io.Serializable;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -43,7 +42,7 @@ import org.webpki.util.ISODateTime;
  * @see #setArray(JSONArrayWriter)
  * @see #JSONArrayWriter()
  */
-public class JSONArrayWriter implements Serializable {
+public class JSONArrayWriter {
 
     private static final long serialVersionUID = 1L;
 

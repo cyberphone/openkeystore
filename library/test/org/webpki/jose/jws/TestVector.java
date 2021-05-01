@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2021 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
-import org.webpki.jose.JoseKeyWords;
+import org.webpki.jose.JOSEKeyWords;
 import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONObjectWriter;
 import org.webpki.json.JSONOutputFormats;
@@ -55,10 +55,10 @@ public class TestVector {
             JSONObjectReader jsonIn = JSONParser.parse(JSON_TO_BE_SIGNED);
             
             KeyPair keyPair = JSONParser.parse(ArrayUtil.readFile(argc[0]))
-                .removeProperty(JoseKeyWords.KID_JSON)
+                .removeProperty(JOSEKeyWords.KID_JSON)
                 .getKeyPair(AlgorithmPreferences.JOSE);
             
-            JSONObjectWriter jsonOut = new JwsAsymKeySigner(keyPair.getPrivate())
+            JSONObjectWriter jsonOut = new JWSAsymKeySigner(keyPair.getPrivate())
                 .sign(new JSONObjectWriter(jsonIn), SIGNATURE_PROPERTY);
 
             System.out.println("JWS/CT=\n" + jsonOut);

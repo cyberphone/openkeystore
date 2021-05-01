@@ -27,7 +27,7 @@ import org.webpki.crypto.SignatureWrapper;
 /**
  * JWS asymmetric key signature validator
  */
-public class JwsAsymSignatureValidator extends JwsValidator {
+public class JWSAsymSignatureValidator extends JWSValidator {
     
     PublicKey publicKey;
     
@@ -39,12 +39,12 @@ public class JwsAsymSignatureValidator extends JwsValidator {
      * thread-safe.
      * @param publicKey The anticipated public key
      */
-    public JwsAsymSignatureValidator(PublicKey publicKey) {
+    public JWSAsymSignatureValidator(PublicKey publicKey) {
         this.publicKey = publicKey;
     }
 
     @Override
-    void validateObject(byte[] signedData, JwsDecoder jwsDecoder) 
+    void validateObject(byte[] signedData, JWSDecoder jwsDecoder) 
             throws IOException, GeneralSecurityException {
         if (jwsDecoder.optionalPublicKey != null && 
             !jwsDecoder.optionalPublicKey.equals(publicKey)) {
@@ -59,6 +59,6 @@ public class JwsAsymSignatureValidator extends JwsValidator {
             throw new GeneralSecurityException("Signature did not validate for key: " + 
                                                publicKey.toString());
         }
-        JwsSigner.checkEcJwsCompliance(publicKey, algorithm);
+        JWSSigner.checkEcJwsCompliance(publicKey, algorithm);
     }
 }

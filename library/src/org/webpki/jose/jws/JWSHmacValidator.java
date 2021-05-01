@@ -25,7 +25,7 @@ import org.webpki.util.ArrayUtil;
 /**
  * JWS HMAC signature validator
  */
-public class JwsHmacValidator extends JwsValidator {
+public class JWSHmacValidator extends JWSValidator {
     
     byte[] secretKey;
     
@@ -37,12 +37,12 @@ public class JwsHmacValidator extends JwsValidator {
      * thread-safe.
      * @param secretKey The anticipated secret key
      */
-    public JwsHmacValidator(byte[] secretKey) {
+    public JWSHmacValidator(byte[] secretKey) {
         this.secretKey = secretKey;
     }
 
     @Override
-    void validateObject(byte[] signedData, JwsDecoder jwsDecoder) throws IOException {
+    void validateObject(byte[] signedData, JWSDecoder jwsDecoder) throws IOException {
         if (!ArrayUtil.compare(
                ((HmacAlgorithms)jwsDecoder.signatureAlgorithm).digest(secretKey, 
                                                                       signedData),

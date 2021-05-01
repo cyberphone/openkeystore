@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2021 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -63,9 +63,9 @@ import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
 
-import org.webpki.jose.jws.JwsAsymKeySigner;
-import org.webpki.jose.jws.JwsAsymSignatureValidator;
-import org.webpki.jose.jws.JwsDecoder;
+import org.webpki.jose.jws.JWSAsymKeySigner;
+import org.webpki.jose.jws.JWSAsymSignatureValidator;
+import org.webpki.jose.jws.JWSDecoder;
 
 import org.webpki.json.JSONCryptoHelper.PUBLIC_KEY_OPTIONS;
 
@@ -3405,10 +3405,10 @@ public class JSONTest {
                 .setString("hi", "there")
                 .setBoolean("a", true);
         byte[] payload = dataToSign.serializeToBytes(JSONOutputFormats.CANONICALIZED);
-        JSONObjectWriter jwsCt = new JwsAsymKeySigner(keyPair.getPrivate(), signatureAlgorithm)
+        JSONObjectWriter jwsCt = new JWSAsymKeySigner(keyPair.getPrivate(), signatureAlgorithm)
             .sign(dataToSign, "jws");
-        JwsDecoder jwsDecoder = new JwsDecoder(new JSONObjectReader(jwsCt), "jws");
-        new JwsAsymSignatureValidator(keyPair.getPublic()).validate(jwsDecoder);
+        JWSDecoder jwsDecoder = new JWSDecoder(new JSONObjectReader(jwsCt), "jws");
+        new JWSAsymSignatureValidator(keyPair.getPublic()).validate(jwsDecoder);
         assertTrue("JWS/CT", ArrayUtil.compare(jwsDecoder.getPayload(), payload));
     }
     
@@ -3447,13 +3447,13 @@ public class JSONTest {
         try {
             byte[] payload = messageString.getBytes("utf-8");
             KeyPair keyPair = JSONParser.parse(jwk).getKeyPair();
-            String jwsString = new JwsAsymKeySigner(keyPair.getPrivate(), 
+            String jwsString = new JWSAsymKeySigner(keyPair.getPrivate(), 
                                                     signatureAlgorithm)
                     .sign(payload, false);
             assertTrue("Sign", jwsString.contentEquals(expectedJwsString));
 
-            new JwsAsymSignatureValidator(keyPair.getPublic())
-                    .validate(new JwsDecoder(jwsString));
+            new JWSAsymSignatureValidator(keyPair.getPublic())
+                    .validate(new JWSDecoder(jwsString));
         } catch (Exception e) {
             assertFalse("8037", bcLoaded);
         }
@@ -3473,8 +3473,8 @@ public class JSONTest {
                     .update(dataToBeSigned)
                     .sign());
         try {
-            new JwsAsymSignatureValidator(keyPair.getPublic())
-                .validate(new JwsDecoder(jws));
+            new JWSAsymSignatureValidator(keyPair.getPublic())
+                .validate(new JWSDecoder(jws));
             assertTrue("Should fail", optionalError == null);
         } catch (Exception e) {
             checkException(e, optionalError);
@@ -3496,13 +3496,13 @@ public class JSONTest {
                    AsymSignatureAlgorithms.RSA_SHA256,
                    "Supplied key (NIST_P_256) is incompatible with specified algorithm (RSA_SHA256)");
         try {
-            new JwsDecoder(new JSONObjectReader(new JSONObjectWriter().setString("hi","there")), "jws");
+            new JWSDecoder(new JSONObjectReader(new JSONObjectWriter().setString("hi","there")), "jws");
             fail("no prop");
         } catch (Exception e) {
             checkException(e, "Property \"jws\" is missing");
         }
         try {
-            new JwsDecoder(new JSONObjectReader(new JSONObjectWriter()
+            new JWSDecoder(new JSONObjectReader(new JSONObjectWriter()
                       .setString("hi","there")
                       .setString("jws", 
          "eyJhbGciOiJIUzI1NiJ9.eyJoaSI6InRoZXJlISJ9.hu7zlBdI9MjBx5WxiezZ9qAjubwgMzVpBg5pfbzfTe0")), "jws");
@@ -3510,12 +3510,12 @@ public class JSONTest {
         } catch (Exception e) {
             checkException(e, "JWS detached mode syntax error");
         }
-        JwsAsymSignatureValidator validator = new JwsAsymSignatureValidator(keyPair.getPublic());
+        JWSAsymSignatureValidator validator = new JWSAsymSignatureValidator(keyPair.getPublic());
         byte[] dataToBeSigned = new byte[] {1,2,3};
         String jwsString = 
-                new JwsAsymKeySigner(keyPair.getPrivate(), AsymSignatureAlgorithms.ECDSA_SHA256)
+                new JWSAsymKeySigner(keyPair.getPrivate(), AsymSignatureAlgorithms.ECDSA_SHA256)
                     .sign(dataToBeSigned, false);
-        JwsDecoder jwsDecoder = new JwsDecoder(jwsString);
+        JWSDecoder jwsDecoder = new JWSDecoder(jwsString);
         try {
             jwsDecoder.getPayload();
             fail("don't");
@@ -3530,34 +3530,34 @@ public class JSONTest {
         }
         assertTrue("data", ArrayUtil.compare(dataToBeSigned,
                      validator.validate(jwsDecoder).getPayload()));
-        assertTrue("header", jwsDecoder.getJwsHeaderAsJson()
+        assertTrue("header", jwsDecoder.getJWSHeaderAsJson()
                     .serializeToString(JSONOutputFormats.NORMALIZED).equals(
-                jwsDecoder.getJwsHeaderAsString()));
+                jwsDecoder.getJWSHeaderAsString()));
         
         JSONObjectWriter unsigned = new JSONObjectWriter()
                 .setString("z", "h")
                 .setString("a", "g");
-        JwsAsymKeySigner signer = new JwsAsymKeySigner(keyPair.getPrivate());
+        JWSAsymKeySigner signer = new JWSAsymKeySigner(keyPair.getPrivate());
         JSONObjectWriter signed = signer.sign(
                 new JSONObjectWriter(new JSONObjectReader(unsigned).clone()), "signature");
         assertTrue("jwsDat", unsigned.toString().equals(
-        new JwsAsymSignatureValidator(keyPair.getPublic()).
-            validate(new JwsDecoder(new JSONObjectReader(signed), 
+        new JWSAsymSignatureValidator(keyPair.getPublic()).
+            validate(new JWSDecoder(new JSONObjectReader(signed), 
                                              "signature")).getPayloadAsJson().toString()));
         jwsString = 
-                new JwsAsymKeySigner(keyPair.getPrivate(), AsymSignatureAlgorithms.ECDSA_SHA256)
+                new JWSAsymKeySigner(keyPair.getPrivate(), AsymSignatureAlgorithms.ECDSA_SHA256)
                     .setKeyId("theKey")
                     .sign(dataToBeSigned, false);
-        jwsDecoder = new JwsDecoder(jwsString);
+        jwsDecoder = new JWSDecoder(jwsString);
         assertTrue("kid", "theKey".equals(jwsDecoder.getOptionalKeyId()));
-        new JwsAsymSignatureValidator(keyPair.getPublic()).
+        new JWSAsymSignatureValidator(keyPair.getPublic()).
         validate(jwsDecoder);
         jwsString = 
-                new JwsAsymKeySigner(keyPair.getPrivate(), AsymSignatureAlgorithms.ECDSA_SHA256)
+                new JWSAsymKeySigner(keyPair.getPrivate(), AsymSignatureAlgorithms.ECDSA_SHA256)
                     .setPublicKey(keyPair.getPublic())
                     .sign(dataToBeSigned, false);
-        jwsDecoder = new JwsDecoder(jwsString);
-        new JwsAsymSignatureValidator(jwsDecoder.getOptionalPublicKey()).validate(jwsDecoder);
+        jwsDecoder = new JWSDecoder(jwsString);
+        new JWSAsymSignatureValidator(jwsDecoder.getOptionalPublicKey()).validate(jwsDecoder);
     }
 
     @Test

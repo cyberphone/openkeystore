@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2021 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.webpki.json;
 import java.lang.reflect.InvocationTargetException;
 
 import java.io.IOException;
-import java.io.Serializable;
 
 import java.util.Hashtable;
 
@@ -39,9 +38,7 @@ import java.util.Hashtable;
  * Note: <code>@qualifier</code> is only required if multiple objects share the same <code>@context</code>.<p>
  * A restriction imposed by this particular JSON processing model is that all properties must by default be read.
  */
-public class JSONDecoderCache implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class JSONDecoderCache {
 
     /**
      * Emulation of XML namespace

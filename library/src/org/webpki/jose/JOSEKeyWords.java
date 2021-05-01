@@ -19,7 +19,7 @@ package org.webpki.jose;
 /**
  * Holds JOSE key words
  */
-public interface JoseKeyWords {
+public interface JOSEKeyWords {
     
     String ALG_JSON = "alg";
     String KID_JSON = "kid";

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2021 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,8 +24,6 @@ import org.webpki.crypto.VerifierInterface;
  * Initiator object for X.509 signature verifiers.
  */
 public class JSONX509Verifier extends JSONVerifier {
-
-    private static final long serialVersionUID = 1L;
 
     VerifierInterface verifier;
 

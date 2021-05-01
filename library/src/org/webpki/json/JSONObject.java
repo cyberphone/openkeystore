@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2021 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.webpki.json;
 
 import java.io.IOException;
-import java.io.Serializable;
 
 import java.util.LinkedHashMap;
 import java.util.ArrayList;
@@ -27,7 +26,7 @@ import java.util.ArrayList;
  * Note that outer-level arrays are (&quot;hackishly&quot;) represented as a
  * JSON object having a single <b>null</b> property.
  */
-class JSONObject implements Serializable {
+class JSONObject {
 
     private static final long serialVersionUID = 1L;
 

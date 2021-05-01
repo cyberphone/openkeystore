@@ -1,5 +1,5 @@
 /*
- *  Copyright 2006-2020 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2021 WebPKI.org (http://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -336,20 +336,20 @@ public class CBORTest {
     public void accessTest() throws Exception {
         CBORObject cbor = parseCborHex("8301a408022382f5f4183a033859f6820405");
         try {
-            ((CBORArray) cbor).getObject(0).getCBORIntegerMap();
+            ((CBORArray) cbor).getObject(0).getIntegerMap();
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, "Is type: INTEGER, requested: INTEGER_MAP");
         }
 
         try {
-            ((CBORArray) cbor).getObject(1).getCBORIntegerMap().getInt32(-91);
+            ((CBORArray) cbor).getObject(1).getIntegerMap().getInt32(-91);
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, "No such key: -91");
         }
         
-        assertTrue("v1", ((CBORArray) cbor).getObject(1).getCBORIntegerMap().getInt32(58) == 3);
+        assertTrue("v1", ((CBORArray) cbor).getObject(1).getIntegerMap().getInt32(58) == 3);
 
         try {
             CBORObject unread = parseCborHex("17");
@@ -373,7 +373,7 @@ public class CBORTest {
 
         try {
             CBORObject unread = parseCborHex("8301a408022382f5f4183a033859f6820405");
-            unread = ((CBORArray) unread).getObject(1).getCBORIntegerMap();
+            unread = ((CBORArray) unread).getObject(1).getIntegerMap();
             ((CBORIntegerMap)unread).getBigInteger(8);
             ((CBORArray)((CBORIntegerMap)unread).getObject(-4)).getObject(0);
             unread.checkObjectForUnread();

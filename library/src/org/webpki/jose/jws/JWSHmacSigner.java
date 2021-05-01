@@ -25,7 +25,7 @@ import org.webpki.crypto.HmacAlgorithms;
 /**
  * JWS HMAC signer
  */
-public class JwsHmacSigner extends JwsSigner {
+public class JWSHmacSigner extends JWSSigner {
     
     HmacAlgorithms hmacAlgorithm;
     byte[] secretKey;
@@ -40,7 +40,7 @@ public class JwsHmacSigner extends JwsSigner {
      * @param hmacAlgorithm HMAC Algorithm to use
      * @throws IOException 
      */
-    public JwsHmacSigner(byte[] secretKey, HmacAlgorithms hmacAlgorithm) throws IOException {
+    public JWSHmacSigner(byte[] secretKey, HmacAlgorithms hmacAlgorithm) throws IOException {
         super(hmacAlgorithm);
         this.secretKey = secretKey;
         this.hmacAlgorithm = hmacAlgorithm;
