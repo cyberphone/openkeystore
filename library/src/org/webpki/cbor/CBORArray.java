@@ -59,22 +59,18 @@ public class CBORArray extends CBORObject {
     }
 
     @Override
-    void internalToString(CBORObject initiator) {
-        StringBuilder prettyPrintCopy = initiator.prettyPrint;
-        prettyPrintCopy.append("[\n");
-        initiator.indentationLevel++;
+    void internalToString(CBORObject.PrettyPrinter prettyPrinter) {
+        prettyPrinter.beginStructure("[\n");
         boolean notFirst = false;
         for (CBORObject element : getElements()) {
             if (notFirst) {
-                prettyPrintCopy.insert(prettyPrintCopy.length() - 1, ',');
+                prettyPrinter.insertComma();
             }
             notFirst = true;
-            initiator.indent();
-            element.internalToString(initiator);
-            prettyPrintCopy.append('\n');
+            prettyPrinter.indent();
+            element.internalToString(prettyPrinter);
+            prettyPrinter.appendText("\n");
         }
-        initiator.indentationLevel--;
-        initiator.indent();
-        prettyPrintCopy.append(']');
+        prettyPrinter.endStructure("]");
     }
 }

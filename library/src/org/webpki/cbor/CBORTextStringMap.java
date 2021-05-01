@@ -19,18 +19,18 @@ package org.webpki.cbor;
 import java.io.IOException;
 
 /**
- * Class for holding CBOR string maps.
+ * Class for holding CBOR text string maps.
  */
-public class CBORStringMap extends CBORMapBase {
+public class CBORTextStringMap extends CBORMapBase {
 
-    public CBORStringMap() {}
+    public CBORTextStringMap() {}
 
-    public CBORStringMap setMappedValue(String key, CBORObject value) throws IOException {
-        setObject(new CBORString(key), value);
+    public CBORTextStringMap setMappedValue(String key, CBORObject value) throws IOException {
+        setObject(new CBORTextString(key), value);
         return this;
     }
 
     public CBORObject getMappedValue(String key) throws IOException {
-        return getObject(new CBORString(key));
+        return getObject(new CBORTextString(key));
     }
 }

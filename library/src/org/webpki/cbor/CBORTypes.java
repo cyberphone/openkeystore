@@ -23,10 +23,10 @@ package org.webpki.cbor;
  */
 public enum CBORTypes {ARRAY, 
                        INTEGER_MAP,
-                       STRING_MAP,
+                       TEXT_STRING_MAP,
                        INTEGER, 
-                       BYTE_ARRAY,
-                       STRING, 
+                       BYTE_STRING,
+                       TEXT_STRING, 
                        BOOLEAN, 
                        NULL, 
                        BIG_INTEGER};

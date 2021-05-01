@@ -69,8 +69,8 @@ public class CBORTest {
         String calc = DebugFormatter.getHexString(cbor);
         assertTrue("int=" + value + " c=" + calc + " h=" + hex, hex.equals(calc));
         CBORObject decodedInteger = CBORObject.decode(cbor);
-        long dv = decodedInteger.getInt64();
-        assertTrue("Decoded value dv=" + dv + " v=" + value, decodedInteger.getInt64() == value);
+        long dv = decodedInteger.getLong();
+        assertTrue("Decoded value dv=" + dv + " v=" + value, decodedInteger.getLong() == value);
         String decString = decodedInteger.toString();
         String cString = cborObject.toString();
         assertTrue("Decoded string d=" + decString + 
@@ -103,7 +103,7 @@ public class CBORTest {
     }
 
     void stringTest(String string, String hex) throws Exception {
-        byte[] cbor = new CBORString(string).encode();
+        byte[] cbor = new CBORTextString(string).encode();
         String calc = DebugFormatter.getHexString(cbor);
         assertTrue("string=" + string + " c=" + calc + " h=" + hex, hex.equals(calc));
         assertTrue("string 2", CBORObject.decode(cbor).toString().equals("\"" + string + "\""));
@@ -132,7 +132,7 @@ public class CBORTest {
 
         cborArray = new CBORArray()
             .addElement(new CBORInteger(1))
-            .addElement(new CBORStringMap()
+            .addElement(new CBORTextStringMap()
                 .setMappedValue("best", new CBORInteger(2))
                 .setMappedValue("best2", new CBORInteger(3))
                 .setMappedValue("another", new CBORInteger(4)))
@@ -279,9 +279,9 @@ public class CBORTest {
          .insert(new CBORBoolean(false))
          .insert(new CBORArray().addElement(new CBORInteger(-1)))
          .insert(new CBORInteger(100))
-         .insert(new CBORString("aaa"))
-         .insert(new CBORString("z"))
-         .insert(new CBORString("aa"));
+         .insert(new CBORTextString("aaa"))
+         .insert(new CBORTextString("z"))
+         .insert(new CBORTextString("aa"));
         String total = m.toString().replace(" ", "").replace("\n","");
         Vector<String> keys = new Vector<>();
         int i = 1;
@@ -316,7 +316,14 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                    "Mixing key types in the same map is not supported: INTEGER versus STRING");
+                "Mixing key types in the same map is not supported: INTEGER versus TEXT_STRING");
+        }
+        try {
+            parseCborHex("A2F404F507");
+            fail("must not execute");
+        } catch (Exception e) {
+            checkException(e, 
+                "Only integer and text string map keys supported, found: BOOLEAN");
         }
     }
 
@@ -328,10 +335,10 @@ public class CBORTest {
             for (int i = 0; i < length; i++) {
                 byteArray[i] = (byte) i;
             }
-            byte[] cborData = new CBORByteArray(byteArray).encode();
+            byte[] cborData = new CBORByteString(byteArray).encode();
             assertTrue("buf", 
                 ArrayUtil.compare(byteArray,
-                                  ((CBORByteArray)CBORObject.decode(cborData)).getByteArray()));
+                                  ((CBORByteString)CBORObject.decode(cborData)).getByteString()));
             length++;
         }
     }
@@ -347,20 +354,21 @@ public class CBORTest {
         }
 
         try {
-            ((CBORArray) cbor).getElement(1).getIntegerMap().getMappedValue(-91).getInt32();
+            ((CBORArray) cbor).getElement(1).getIntegerMap().getMappedValue(-91).getInt();
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, "No such key: -91");
         }
         
-        assertTrue("v1", ((CBORArray) cbor).getElement(1).getIntegerMap().getMappedValue(58).getInt32() == 3);
+        assertTrue("v1", ((CBORArray) cbor).getElement(1).getIntegerMap().getMappedValue(58).getInt() == 3);
 
         try {
             CBORObject unread = parseCborHex("17");
             unread.checkObjectForUnread();  
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, "Data of type=CBORInteger with value=23 was never read");
+            checkException(e, 
+                "Data of type=CBORInteger with value=23 was never read");
         }
     }
 
@@ -368,11 +376,12 @@ public class CBORTest {
     public void unreadElementTest() throws Exception {
         try {
             CBORObject unread = parseCborHex("8301a408022382f5f4183a033859f6820405");
-            ((CBORArray) unread).getElement(0).getInt32();
+            ((CBORArray) unread).getElement(0).getInt();
             unread.checkObjectForUnread();
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, "Map key 8 of type=CBORInteger with value=2 was never read");
+            checkException(e, 
+                "Map key 8 of type=CBORInteger with value=2 was never read");
         }
 
         try {
@@ -383,7 +392,8 @@ public class CBORTest {
             unread.checkObjectForUnread();
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, "Array element of type=CBORBoolean with value=false was never read");
+            checkException(e, 
+                "Array element of type=CBORBoolean with value=false was never read");
         }
 
         // If you just want to mark an item as "read" you can use scan();
@@ -395,7 +405,8 @@ public class CBORTest {
             unread.checkObjectForUnread();
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, "Array element of type=CBORBoolean with value=false was never read");
+            checkException(e, 
+                "Array element of type=CBORBoolean with value=false was never read");
         }
 
         // Getting an object without reading the value is considered as "unread".
@@ -407,7 +418,8 @@ public class CBORTest {
             unread.checkObjectForUnread();
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, "Array element of type=CBORBoolean with value=true was never read");
+            checkException(e, 
+                "Array element of type=CBORBoolean with value=true was never read");
         }
         
         try {
@@ -415,7 +427,8 @@ public class CBORTest {
             unread.checkObjectForUnread();  
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, "Data of type=CBORInteger with value=23 was never read");
+            checkException(e, 
+                "Data of type=CBORInteger with value=23 was never read");
         }
     }
 }

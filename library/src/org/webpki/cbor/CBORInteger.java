@@ -119,7 +119,7 @@ public class CBORInteger extends CBORObject {
     }
 
     @Override
-    void internalToString(CBORObject initiator) {
-        initiator.prettyPrint.append(getBigIntegerRepresentation().toString());
+    void internalToString(CBORObject.PrettyPrinter prettyPrinter) {
+        prettyPrinter.appendText(getBigIntegerRepresentation().toString());
     }
 }

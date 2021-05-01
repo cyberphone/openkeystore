@@ -66,11 +66,11 @@ public class CBORBigInteger extends CBORObject {
             System.arraycopy(encoded, 1, temp, 0, temp.length);
             encoded = temp;
         }
-        return ArrayUtil.add(headerTag, new CBORByteArray(encoded).encode());
+        return ArrayUtil.add(headerTag, new CBORByteString(encoded).encode());
     }
     
     @Override
-    void internalToString(CBORObject initiator) {
-        initiator.prettyPrint.append(value.toString());
+    void internalToString(CBORObject.PrettyPrinter prettyPrinter) {
+        prettyPrinter.appendText(value.toString());
     }
 }

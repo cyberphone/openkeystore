@@ -100,25 +100,21 @@ abstract class CBORMapBase extends CBORObject {
     }
     
     @Override
-    void internalToString(CBORObject initiator) {
-        StringBuilder prettyPrintCopy = initiator.prettyPrint;
-        prettyPrintCopy.append("{\n");
-        initiator.indentationLevel++;
+    void internalToString(CBORObject.PrettyPrinter prettyPrinter) {
+        prettyPrinter.beginStructure("{\n");
         boolean notFirst = false;
         for (CBORObject key : keys.keySet()) {
             CBORObject member = keys.get(key);
             if (notFirst) {
-                prettyPrintCopy.insert(prettyPrintCopy.length() - 1, ',');
+                prettyPrinter.insertComma();
             }
             notFirst = true;
-            initiator.indent();
-            key.internalToString(initiator);
-            prettyPrintCopy.append(": ");
-            member.internalToString(initiator);
-            prettyPrintCopy.append('\n');
+            prettyPrinter.indent();
+            key.internalToString(prettyPrinter);
+            prettyPrinter.appendText(": ");
+            member.internalToString(prettyPrinter);
+            prettyPrinter.appendText("\n");
         }
-        initiator.indentationLevel--;
-        initiator.indent();
-        prettyPrintCopy.append('}');
+        prettyPrinter.endStructure("}");
     }
 }

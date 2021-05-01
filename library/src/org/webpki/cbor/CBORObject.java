@@ -34,16 +34,11 @@ public abstract class CBORObject {
     // For checking if object was read
     private boolean readFlag;
 
-    // Pretty-print support
-    static final String INDENT = "  ";
-    int indentationLevel;
-    StringBuilder prettyPrint;
-    
     // Major CBOR types
     static final byte MT_UNSIGNED      = (byte) 0x00;
     static final byte MT_NEGATIVE      = (byte) 0x20;
-    static final byte MT_BYTES         = (byte) 0x40;
-    static final byte MT_STRING        = (byte) 0x60;
+    static final byte MT_BYTE_STRING   = (byte) 0x40;
+    static final byte MT_TEXT_STRING   = (byte) 0x60;
     static final byte MT_ARRAY         = (byte) 0x80;
     static final byte MT_MAP           = (byte) 0xa0;
     static final byte MT_BIG_UNSIGNED  = (byte) 0xc2;
@@ -56,7 +51,7 @@ public abstract class CBORObject {
 
     public abstract byte[] encode() throws IOException;
     
-    abstract void internalToString(CBORObject initiator);
+    abstract void internalToString(PrettyPrinter prettyPrinter);
     
     byte[] getEncodedCore(byte majorType, long value) {
         byte[] encoded;
@@ -81,7 +76,7 @@ public abstract class CBORObject {
         return encoded;
     }
 
-    void check(CBORTypes expectedCborType) throws IOException {
+    void checkTypeAndMarkAsRead(CBORTypes expectedCborType) throws IOException {
         if (getType() != expectedCborType) {
             throw new IOException("Is type: " + getType() +
                     ", requested: " + expectedCborType);
@@ -89,73 +84,73 @@ public abstract class CBORObject {
         readFlag = true;
     }
     
-    public long getInt64() throws IOException {
-        check(CBORTypes.INTEGER);
+    public long getLong() throws IOException {
+        checkTypeAndMarkAsRead(CBORTypes.INTEGER);
         return ((CBORInteger) this).getBigIntegerRepresentation().longValue();
     }
 
-    public int getInt32() throws IOException {
-        return (int) getInt64();
+    public int getInt() throws IOException {
+        return (int) getLong();
     }
     
     public boolean getBoolean() throws IOException {
-        check(CBORTypes.BOOLEAN);
+        checkTypeAndMarkAsRead(CBORTypes.BOOLEAN);
         return ((CBORBoolean) this).value;
     }
 
     public BigInteger getBigInteger() throws IOException {
         if (getType() == CBORTypes.INTEGER) {
-            check(CBORTypes.INTEGER);
+            checkTypeAndMarkAsRead(CBORTypes.INTEGER);
             return ((CBORInteger) this).getBigIntegerRepresentation();
         }
-        check(CBORTypes.BIG_INTEGER);
+        checkTypeAndMarkAsRead(CBORTypes.BIG_INTEGER);
         return ((CBORBigInteger) this).value;
     }
 
-    public String getString() throws IOException {
-        check(CBORTypes.STRING);
-        return ((CBORString) this).string;
+    public String getTextString() throws IOException {
+        checkTypeAndMarkAsRead(CBORTypes.TEXT_STRING);
+        return ((CBORTextString) this).textString;
     }
 
-    public byte[] getByteArray() throws IOException {
-        check(CBORTypes.BYTE_ARRAY);
-        return ((CBORByteArray) this).byteArray;
+    public byte[] getByteString() throws IOException {
+        checkTypeAndMarkAsRead(CBORTypes.BYTE_STRING);
+        return ((CBORByteString) this).byteString;
     }
 
-    public CBORStringMap getStringMap() throws IOException {
-        check(CBORTypes.STRING_MAP);
-        return (CBORStringMap) this;
+    public CBORTextStringMap getTextStringMap() throws IOException {
+        checkTypeAndMarkAsRead(CBORTypes.TEXT_STRING_MAP);
+        return (CBORTextStringMap) this;
     }
 
     public CBORIntegerMap getIntegerMap() throws IOException {
-        check(CBORTypes.INTEGER_MAP);
+        checkTypeAndMarkAsRead(CBORTypes.INTEGER_MAP);
         return (CBORIntegerMap) this;
     }
 
     public CBORArray getArray() throws IOException {
-        check(CBORTypes.ARRAY);
+        checkTypeAndMarkAsRead(CBORTypes.ARRAY);
         return (CBORArray) this;
     }
     
     public CBORObject scan() throws IOException {
-        check(getType());
+        checkTypeAndMarkAsRead(getType());
         return this;
     }
     
     static class CBORDecoder {
 
         static final int BUFFER_SIZE = 10000;
-        ByteArrayInputStream input;
+        private ByteArrayInputStream input;
         
-        CBORDecoder(byte[] encodedCborData) {
+        private CBORDecoder(byte[] encodedCborData) {
             input = new ByteArrayInputStream(encodedCborData);
         }
         
-        void bad() throws IOException {
+        private void bad() throws IOException {
             throw new IOException("Malformed CBOR, trying to read past EOF");
         }
         
-        int readByte() throws IOException {
+        private int readByte() throws IOException {
             int i = input.read();
             if (i < 0) {
                 bad();
@@ -163,14 +158,14 @@ public abstract class CBORObject {
             return i;
         }
         
-        long checkLength(long length) throws IOException {
+        private long checkLength(long length) throws IOException {
             if (length < 0) {
                 throw new IOException("Length < 0");
             }
             return length;
         }
 
-        byte[] readBytes(long length) throws IOException {
+        private byte[] readBytes(long length) throws IOException {
             ByteArrayOutputStream baos = new ByteArrayOutputStream(BUFFER_SIZE);
             byte[] buffer = new byte[BUFFER_SIZE];
             int bytes = (int) (length > BUFFER_SIZE ? length % BUFFER_SIZE : length);
@@ -185,14 +180,14 @@ public abstract class CBORObject {
             return baos.toByteArray();
         }
         
-        CBORObject getObject() throws IOException {
+        private CBORObject getObject() throws IOException {
             int first = readByte();
 
             // Simple types first
             switch ((byte)first) {
             case MT_BIG_SIGNED:
             case MT_BIG_UNSIGNED:
-                byte[] byteArray = getObject().getByteArray();
+                byte[] byteArray = getObject().getByteString();
                 if (byteArray[0] == 0) {
                     throw new IOException("Leading zero, improperly normalized");
                 }
@@ -236,11 +231,11 @@ public abstract class CBORObject {
             case MT_NEGATIVE:
                 return new CBORInteger(length + 1, false);
 
-            case MT_BYTES:
-                return new CBORByteArray(readBytes(checkLength(length)));
+            case MT_BYTE_STRING:
+                return new CBORByteString(readBytes(checkLength(length)));
 
-            case MT_STRING:
-                return new CBORString(new String(readBytes(checkLength(length)), "utf-8"));
+            case MT_TEXT_STRING:
+                return new CBORTextString(new String(readBytes(checkLength(length)), "utf-8"));
 
             case MT_ARRAY:
                 length = checkLength(length);
@@ -254,16 +249,16 @@ public abstract class CBORObject {
                 length = checkLength(length);
                 if (length == 0) {
                     // Empty map, special case
-                    return new CBORStringMap();
+                    return new CBORTextStringMap();
                 }
                 CBORMapBase cborMapBase;
                 CBORObject key1 = getObject();
                 if (key1.getType() == CBORTypes.INTEGER) {
                     cborMapBase = new CBORIntegerMap();
-                } else if (key1.getType() == CBORTypes.STRING) {
-                    cborMapBase = new CBORStringMap();
+                } else if (key1.getType() == CBORTypes.TEXT_STRING) {
+                    cborMapBase = new CBORTextStringMap();
                 } else {
-                    throw new IOException("Only integer and string map keys supported " +
+                    throw new IOException("Only integer and text string map keys supported, found: " +
                                           key1.getType());
                 }
                 cborMapBase.setObject(key1, getObject());
@@ -283,7 +278,7 @@ public abstract class CBORObject {
             }
         }
 
-        void checkForUnexpectedInput() throws IOException {
+        private void checkForUnexpectedInput() throws IOException {
             if (input.read() != -1) {
                 throw new IOException("Unexpected data found after CBOR object");
             }
@@ -303,7 +298,7 @@ public abstract class CBORObject {
 
     private void checkObjectForUnread(CBORObject holderObject) throws IOException {
         switch (getType()) {
-        case STRING_MAP:
+        case TEXT_STRING_MAP:
         case INTEGER_MAP:
             CBORMapBase cborMap = (CBORMapBase) this;
             for (CBORObject key : cborMap.keys.keySet()) {
@@ -331,9 +326,48 @@ public abstract class CBORObject {
         }
     }
 
-    void indent() {
-        for (int i = 0; i < indentationLevel; i++) {
-            prettyPrint.append(INDENT);
+    class PrettyPrinter {
+ 
+        static final String INDENT = "  ";
+        
+        private int indentationLevel;
+        private StringBuilder result;
+               
+        private PrettyPrinter() {
+            result = new StringBuilder();
+        }
+
+        PrettyPrinter indent() {
+            for (int i = 0; i < indentationLevel; i++) {
+                result.append(INDENT);
+            }
+            return this;
+        }
+        
+        PrettyPrinter beginStructure(String text) {
+            appendText(text);
+            indentationLevel++;
+            return this;
+        }
+
+        PrettyPrinter endStructure(String text) {
+            indentationLevel--;
+            indent();
+            appendText(text);
+            return this;
+        }
+
+        PrettyPrinter appendText(String text) {
+            result.append(text);
+            return this;
+        }
+        
+        String getTotalText() {
+            return result.toString();
+        }
+
+        void insertComma() {
+            result.insert(result.length() - 1, ',');
         }
     }
 
@@ -348,8 +382,8 @@ public abstract class CBORObject {
 
     @Override
     public String toString() {
-        prettyPrint = new StringBuilder();
-        internalToString(this);
-        return prettyPrint.toString();
+        PrettyPrinter prettyPrinter = new PrettyPrinter();
+        internalToString(prettyPrinter);
+        return prettyPrinter.getTotalText();
     }
 }

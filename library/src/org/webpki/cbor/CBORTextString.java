@@ -21,29 +21,29 @@ import java.io.IOException;
 import org.webpki.util.ArrayUtil;
 
 /**
- * Class for holding CBOR strings.
+ * Class for holding CBOR text strings.
  */
-public class CBORString extends CBORObject {
+public class CBORTextString extends CBORObject {
 
-    String string;
+    String textString;
 
-    public CBORString(String string) {
-        this.string = string;
+    public CBORTextString(String textString) {
+        this.textString = textString;
     }
 
     @Override
     public CBORTypes getType() {
-        return CBORTypes.STRING;
+        return CBORTypes.TEXT_STRING;
     }
 
     @Override
     public byte[] encode() throws IOException {
-        byte[] utf8 = string.getBytes("utf-8");
-        return ArrayUtil.add(getEncodedCore(MT_STRING, utf8.length), utf8);
+        byte[] utf8 = textString.getBytes("utf-8");
+        return ArrayUtil.add(getEncodedCore(MT_TEXT_STRING, utf8.length), utf8);
     }
 
     @Override
-    void internalToString(CBORObject initiator) {
-        initiator.prettyPrint.append('"').append(string).append('"');
+    void internalToString(CBORObject.PrettyPrinter prettyPrinter) {
+        prettyPrinter.appendText("\"").appendText(textString).appendText("\"");
     }
 }

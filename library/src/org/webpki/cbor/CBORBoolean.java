@@ -43,7 +43,7 @@ public class CBORBoolean extends CBORObject {
     }
 
     @Override
-    void internalToString(CBORObject initiator) {
-        initiator.prettyPrint.append(value);
+    void internalToString(CBORObject.PrettyPrinter prettyPrinter) {
+        prettyPrinter.appendText(String.valueOf(value));
     }
 }

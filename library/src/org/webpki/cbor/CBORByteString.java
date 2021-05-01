@@ -22,28 +22,28 @@ import org.webpki.util.ArrayUtil;
 import org.webpki.util.DebugFormatter;
 
 /**
- * Class for holding CBOR <code>byte</code> arrays.
+ * Class for holding CBOR byte strings.
  */
-public class CBORByteArray extends CBORObject {
+public class CBORByteString extends CBORObject {
 
-    byte[] byteArray;
+    byte[] byteString;
 
-    public CBORByteArray(byte[] byteArray) {
-        this.byteArray = byteArray;
+    public CBORByteString(byte[] byteString) {
+        this.byteString = byteString;
     }
     
     @Override
     public CBORTypes getType() {
-        return CBORTypes.BYTE_ARRAY;
+        return CBORTypes.BYTE_STRING;
     }
 
     @Override
     public byte[] encode() throws IOException {
-        return ArrayUtil.add(getEncodedCore(MT_BYTES, byteArray.length), byteArray);
+        return ArrayUtil.add(getEncodedCore(MT_BYTE_STRING, byteString.length), byteString);
     }
 
     @Override
-    void internalToString(CBORObject initiator) {
-        initiator.prettyPrint.append("0x").append(DebugFormatter.getHexString(byteArray));
+    void internalToString(CBORObject.PrettyPrinter prettyPrinter) {
+        prettyPrinter.appendText("0x").appendText(DebugFormatter.getHexString(byteString));
     }
 }

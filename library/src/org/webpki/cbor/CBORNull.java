@@ -38,7 +38,7 @@ public class CBORNull extends CBORObject {
     }
 
     @Override
-    void internalToString(CBORObject initiator) {
-        initiator.prettyPrint.append("null");
+    void internalToString(CBORObject.PrettyPrinter prettyPrinter) {
+        prettyPrinter.appendText("null");
     }
 }
