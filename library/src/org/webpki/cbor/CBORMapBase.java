@@ -80,7 +80,7 @@ abstract class CBORMapBase extends CBORObject {
         if (cborObject == null) {
             throw new IOException("No such key: " + key.toString());
         }
-        return markAsAccessed(cborObject);
+        return cborObject;
     }
 
     @Override

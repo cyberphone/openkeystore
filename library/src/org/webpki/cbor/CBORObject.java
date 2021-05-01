@@ -86,30 +86,30 @@ public abstract class CBORObject {
             throw new IOException("Is type: " + getType() +
                     ", requested: " + expectedCborType);
         }
-        markAsAccessed(this);
+        readFlag = true;
     }
     
-    static CBORObject markAsAccessed(CBORObject cborObject) {
-        cborObject.readFlag = true;
-        return cborObject;
-    }
-
-    long getInt64() throws IOException {
+    public long getInt64() throws IOException {
         check(CBORTypes.INTEGER);
         return ((CBORInteger) this).getBigIntegerRepresentation().longValue();
     }
 
-    int getInt32() throws IOException {
+    public int getInt32() throws IOException {
         return (int) getInt64();
     }
     
-    boolean getBoolean() throws IOException {
+    public boolean getBoolean() throws IOException {
         check(CBORTypes.BOOLEAN);
         return ((CBORBoolean) this).value;
     }
-    
+
     public BigInteger getBigInteger() throws IOException {
-        return CBORBigInteger.getValue(this);
+        if (getType() == CBORTypes.INTEGER) {
+            check(CBORTypes.INTEGER);
+            return ((CBORInteger) this).getBigIntegerRepresentation();
+        }
+        check(CBORTypes.BIG_INTEGER);
+        return ((CBORBigInteger) this).value;
     }
 
     public String getString() throws IOException {
@@ -135,6 +135,11 @@ public abstract class CBORObject {
     public CBORArray getArray() throws IOException {
         check(CBORTypes.ARRAY);
         return (CBORArray) this;
+    }
+    
+    public CBORObject scan() throws IOException {
+        check(getType());
+        return this;
     }
     
     static class CBORDecoder {
@@ -241,7 +246,7 @@ public abstract class CBORObject {
                 length = checkLength(length);
                 CBORArray cborArray = new CBORArray();
                 while (--length >= 0) {
-                    cborArray.addObject(getObject());
+                    cborArray.addElement(getObject());
                 }
                 return cborArray;
 
@@ -266,8 +271,8 @@ public abstract class CBORObject {
                     CBORObject key = getObject();
                     if (key.getType() != key1.getType()) {
                         throw new IOException(
-                            "Mixing key types in the same map is not supported " +
-                            key1.getType() + " " + key.getType());
+                            "Mixing key types in the same map is not supported: " +
+                            key1.getType() + " versus " + key.getType());
                     }
                     cborMapBase.setObject(key, getObject());
                 }
@@ -325,20 +330,19 @@ public abstract class CBORObject {
             break;
         }
     }
-    
-    @Override
-    public boolean equals(Object obj) {
-        try {
-            System.out.println("EQ");
-            return ArrayUtil.compare(((CBORObject) obj).encode(), encode());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     void indent() {
         for (int i = 0; i < indentationLevel; i++) {
             prettyPrint.append(INDENT);
+        }
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        try {
+            return ArrayUtil.compare(((CBORObject) object).encode(), encode());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

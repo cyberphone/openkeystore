@@ -68,15 +68,6 @@ public class CBORBigInteger extends CBORObject {
         }
         return ArrayUtil.add(headerTag, new CBORByteArray(encoded).encode());
     }
-
-
-    static BigInteger getValue(CBORObject cborObject) throws IOException {
-        if (cborObject.getType() == CBORTypes.INTEGER) {
-            return ((CBORInteger) cborObject).getBigIntegerRepresentation();
-        }
-        cborObject.check(CBORTypes.BIG_INTEGER);
-        return ((CBORBigInteger) cborObject).value;
-    }
     
     @Override
     void internalToString(CBORObject initiator) {

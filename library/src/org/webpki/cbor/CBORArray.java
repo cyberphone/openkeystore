@@ -18,8 +18,6 @@ package org.webpki.cbor;
 
 import java.io.IOException;
 
-import java.math.BigInteger;
-
 import java.util.ArrayList;
 
 import org.webpki.util.ArrayUtil;
@@ -33,27 +31,15 @@ public class CBORArray extends CBORObject {
 
     public CBORArray() {}
     
-    public CBORObject getObject(int index) throws IOException {
-        return markAsAccessed(elements.get(index));
+    public CBORObject getElement(int index) throws IOException {
+        return elements.get(index);
     }
     
-    public CBORArray addObject(CBORObject cborObject) {
+    public CBORArray addElement(CBORObject cborObject) {
         elements.add(cborObject);
         return this;
     }
     
-    public int getInt32(int index) throws IOException {
-        return getObject(index).getInt32();
-    }
-
-    public long getInt64(int index) throws IOException {
-        return getObject(index).getInt64();
-    }
-
-    public BigInteger getBigInteger(int index) throws IOException {
-        return CBORBigInteger.getValue(getObject(index));
-    }
-
     public CBORObject[] getElements() {
         return elements.toArray(new CBORObject[0]);
     }

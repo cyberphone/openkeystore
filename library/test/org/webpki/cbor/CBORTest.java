@@ -30,7 +30,6 @@ import org.junit.Test;
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.DebugFormatter;
 
-
 /**
  * CBOR JUnit suite
  */
@@ -120,26 +119,26 @@ public class CBORTest {
     @Test
     public void assortedTests() throws Exception {
         CBORArray cborArray = new CBORArray()
-            .addObject(new CBORInteger(1))
-            .addObject(new CBORArray()
-                .addObject(new CBORInteger(2))
-                .addObject(new CBORInteger(3)))
-            .addObject(new CBORArray()
-                .addObject(new CBORInteger(4))
-                .addObject(new CBORInteger(5)));
+            .addElement(new CBORInteger(1))
+            .addElement(new CBORArray()
+                .addElement(new CBORInteger(2))
+                .addElement(new CBORInteger(3)))
+            .addElement(new CBORArray()
+                .addElement(new CBORInteger(4))
+                .addElement(new CBORInteger(5)));
         textCompare(cborArray,
                 "[\n  1,\n  [\n    2,\n    3\n  ],\n  [\n    4,\n    5\n  ]\n]");
         binaryCompare(cborArray,"8301820203820405");
 
         cborArray = new CBORArray()
-            .addObject(new CBORInteger(1))
-            .addObject(new CBORStringMap()
-                .setObject("best", new CBORInteger(2))
-                .setObject("best2", new CBORInteger(3))
-                .setObject("another", new CBORInteger(4)))
-            .addObject(new CBORArray()
-                .addObject(new CBORInteger(5))
-                .addObject(new CBORInteger(6)));
+            .addElement(new CBORInteger(1))
+            .addElement(new CBORStringMap()
+                .setMappedValue("best", new CBORInteger(2))
+                .setMappedValue("best2", new CBORInteger(3))
+                .setMappedValue("another", new CBORInteger(4)))
+            .addElement(new CBORArray()
+                .addElement(new CBORInteger(5))
+                .addElement(new CBORInteger(6)));
         textCompare(cborArray,
                 "[\n  1,\n  {\n    \"best\": 2,\n    \"best2\": 3,\n    \"another\": 4\n  }," +
                 "\n  [\n    5,\n    6\n  ]\n]");
@@ -147,17 +146,17 @@ public class CBORTest {
                       "8301a36462657374026562657374320367616e6f7468657204820506");
 
         cborArray = new CBORArray()
-            .addObject(new CBORInteger(1))
-            .addObject(new CBORIntegerMap()
-                .setObject(8, new CBORInteger(2))
-                .setObject(58, new CBORInteger(3))
-                .setObject(-90, new CBORNull())
-                .setObject(-4, new CBORArray()
-                        .addObject(new CBORBoolean(true))
-                        .addObject(new CBORBoolean(false))))
-            .addObject(new CBORArray()
-                .addObject(new CBORInteger(4))
-                .addObject(new CBORInteger(5)));
+            .addElement(new CBORInteger(1))
+            .addElement(new CBORIntegerMap()
+                .setMappedValue(8, new CBORInteger(2))
+                .setMappedValue(58, new CBORInteger(3))
+                .setMappedValue(-90, new CBORNull())
+                .setMappedValue(-4, new CBORArray()
+                        .addElement(new CBORBoolean(true))
+                        .addElement(new CBORBoolean(false))))
+            .addElement(new CBORArray()
+                .addElement(new CBORInteger(4))
+                .addElement(new CBORInteger(5)));
         textCompare(cborArray,
                 "[\n  1,\n  {\n    8: 2,\n    -4: [\n" +
                 "      true,\n      false\n    ],\n    58: 3,\n    -90: null\n  }," +
@@ -191,7 +190,6 @@ public class CBORTest {
         integerTest(0xfffffffffffffffeL, true, true,      "1bfffffffffffffffe");
         integerTest(0,                  false, true,      "3bffffffffffffffff");
         
-        integerTest("8");
         integerTest("18446744073709551615");
         integerTest("-18446744073709551616");
         try {
@@ -235,13 +233,12 @@ public class CBORTest {
         
         arrayTest(new CBORArray(), "80");
         arrayTest(new CBORArray()
-                .addObject(new CBORInteger(1))
-                .addObject(new CBORInteger(2))
-                .addObject(new CBORInteger(3)), "83010203");
+                .addElement(new CBORInteger(1))
+                .addElement(new CBORInteger(2))
+                .addElement(new CBORInteger(3)), "83010203");
     }
     
     class MapTest extends CBORMapBase {
-        private static final long serialVersionUID = 1L;
         
         int objectNumber;
         MapTest insert(CBORObject key) throws IOException {
@@ -277,10 +274,10 @@ public class CBORTest {
     void sortingTest(String[] expectedOrder) throws Exception{
         MapTest m = new MapTest();
         m.insert(new CBORInteger(10))
-         .insert(new CBORArray().addObject(new CBORInteger(100)))
+         .insert(new CBORArray().addElement(new CBORInteger(100)))
          .insert(new CBORInteger(-1))
          .insert(new CBORBoolean(false))
-         .insert(new CBORArray().addObject(new CBORInteger(-1)))
+         .insert(new CBORArray().addElement(new CBORInteger(-1)))
          .insert(new CBORInteger(100))
          .insert(new CBORString("aaa"))
          .insert(new CBORString("z"))
@@ -314,6 +311,13 @@ public class CBORTest {
         sortingTest(RFC7049_SORTING);
         CBORMapBase.setRfc7049SortingMode(false);
         sortingTest(RFC8949_SORTING);
+        try {
+            parseCborHex("A20706636B657906");
+            fail("must not execute");
+        } catch (Exception e) {
+            checkException(e, 
+                    "Mixing key types in the same map is not supported: INTEGER versus STRING");
+        }
     }
 
     @Test
@@ -336,20 +340,20 @@ public class CBORTest {
     public void accessTest() throws Exception {
         CBORObject cbor = parseCborHex("8301a408022382f5f4183a033859f6820405");
         try {
-            ((CBORArray) cbor).getObject(0).getIntegerMap();
+            ((CBORArray) cbor).getElement(0).getIntegerMap();
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, "Is type: INTEGER, requested: INTEGER_MAP");
         }
 
         try {
-            ((CBORArray) cbor).getObject(1).getIntegerMap().getInt32(-91);
+            ((CBORArray) cbor).getElement(1).getIntegerMap().getMappedValue(-91).getInt32();
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, "No such key: -91");
         }
         
-        assertTrue("v1", ((CBORArray) cbor).getObject(1).getIntegerMap().getInt32(58) == 3);
+        assertTrue("v1", ((CBORArray) cbor).getElement(1).getIntegerMap().getMappedValue(58).getInt32() == 3);
 
         try {
             CBORObject unread = parseCborHex("17");
@@ -364,7 +368,7 @@ public class CBORTest {
     public void unreadElementTest() throws Exception {
         try {
             CBORObject unread = parseCborHex("8301a408022382f5f4183a033859f6820405");
-            ((CBORArray) unread).getInt32(0);
+            ((CBORArray) unread).getElement(0).getInt32();
             unread.checkObjectForUnread();
             fail("must not execute");
         } catch (Exception e) {
@@ -373,15 +377,39 @@ public class CBORTest {
 
         try {
             CBORObject unread = parseCborHex("8301a408022382f5f4183a033859f6820405");
-            unread = ((CBORArray) unread).getObject(1).getIntegerMap();
-            ((CBORIntegerMap)unread).getBigInteger(8);
-            ((CBORArray)((CBORIntegerMap)unread).getObject(-4)).getObject(0);
+            unread = ((CBORArray) unread).getElement(1).getIntegerMap();
+            ((CBORIntegerMap)unread).getMappedValue(8).getBigInteger();
+            ((CBORArray)((CBORIntegerMap)unread).getMappedValue(-4)).getElement(0).getBoolean();
             unread.checkObjectForUnread();
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, "Array element of type=CBORBoolean with value=false was never read");
         }
 
+        // If you just want to mark an item as "read" you can use scan();
+        try {
+            CBORObject unread = parseCborHex("8301a408022382f5f4183a033859f6820405");
+            unread = ((CBORArray) unread).getElement(1).getIntegerMap();
+            ((CBORIntegerMap)unread).getMappedValue(8).getBigInteger();
+            ((CBORArray)((CBORIntegerMap)unread).getMappedValue(-4)).getElement(0).scan();
+            unread.checkObjectForUnread();
+            fail("must not execute");
+        } catch (Exception e) {
+            checkException(e, "Array element of type=CBORBoolean with value=false was never read");
+        }
+
+        // Getting an object without reading the value is considered as "unread".
+        try {
+            CBORObject unread = parseCborHex("8301a408022382f5f4183a033859f6820405");
+            unread = ((CBORArray) unread).getElement(1).getIntegerMap();
+            ((CBORIntegerMap)unread).getMappedValue(8).getBigInteger();
+            ((CBORArray)((CBORIntegerMap)unread).getMappedValue(-4)).getElement(0);
+            unread.checkObjectForUnread();
+            fail("must not execute");
+        } catch (Exception e) {
+            checkException(e, "Array element of type=CBORBoolean with value=true was never read");
+        }
+        
         try {
             CBORObject unread = parseCborHex("17");
             unread.checkObjectForUnread();  

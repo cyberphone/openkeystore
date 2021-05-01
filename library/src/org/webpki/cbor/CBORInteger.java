@@ -23,8 +23,9 @@ import java.math.BigInteger;
 /**
  * Class for holding CBOR integers.
  * 
- * Note that unsigned integers outside of the signed range must
- * use the {@link CBORInteger(long, boolean)} constructor! in order
+ * Note that unsigned integers outside of the signed range MUST
+ * use the {@link CBORInteger(long, boolean)} or 
+ * {@link CBORInteger(BigInteger)} constructors in order
  * to produce proper deterministic (canonical) encoding.
  */
 public class CBORInteger extends CBORObject {
@@ -57,13 +58,13 @@ public class CBORInteger extends CBORObject {
      * from 0 to 2^64-1 can be specified while negative values range
      * from 1 to 2^64.  Examples:
      * <table>
-     * <tr><th>Long&nbsp;Value</th><th>Unsigned&nbsp;Mode</th><th>Actual</th></tr>
+     * <tr><th>Long&nbsp;Value</th><th>Unsigned&nbsp;Mode</th><th>Actual Value</th></tr>
      * <tr><td>0</td><td>true</td><td>0</td></tr>
-     * <tr><td>0</td><td>false</td><td>-0x10000000000000000</td></tr>
+     * <tr><td>0</td><td>false</td><td>-0x10000000000000000 (-2^64)</td></tr>
      * <tr><td>1</td><td>true</td><td>1</td></tr>
      * <tr><td>1</td><td>false</td><td>-1</td></tr>
-     * <tr><td>0x8000000000000000</td><td>true</td><td>0x8000000000000000</td></tr>
-     * <tr><td>0x8000000000000000</td><td>false</td><td>-0x8000000000000000</td></tr>
+     * <tr><td>0xffffffffffffffff</td><td>true</td><td>0xffffffffffffffff</td></tr>
+     * <tr><td>0xffffffffffffffff</td><td>false</td><td>-0xffffffffffffffff</td></tr>
      * </table>
      *
      * @param value long value
@@ -95,7 +96,6 @@ public class CBORInteger extends CBORObject {
         } else {
             this.value =  value.add(BigInteger.ONE).negate().longValue();
         }
-
     }
 
     @Override
