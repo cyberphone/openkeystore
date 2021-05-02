@@ -1,3 +1,40 @@
 <body>
-<h2>Core CBOR support</h2>
+<h2>Basic CBOR support</h2>
+This package contains java support for CBOR (RFC 8949).
+It is mainly intended for low-level security constructs
+like COSE and FIDO/CTAP2.
+<h3>Currently Supported Primitives</h3>
+<table>
+<tr><th>CBOR Data Type</th><th>&nbsp;&nbsp;</th><th>Java Counterpart</th></tr>
+<tr><td><code>unsigned integer</code></td><td></td><td><code>long</code></td></tr>
+<tr><td><code>negative integer</code></td><td></td><td><code>long</code></td></tr>
+<tr><td><code>byte string</code></td><td></td><td><code>byte[]</code></td></tr>
+<tr><td><code>text string</code></td><td></td><td><code>String</code></td></tr>
+<tr><td><code>unsigned bignum</code></td><td></td><td><code>BigInteger</code></td></tr>
+<tr><td><code>negative bignum</code></td><td></td><td><code>BigInteger</code></td></tr>
+<tr><td><code>true</code></td><td></td><td><code>boolean</code></td></tr>
+<tr><td><code>false</code></td><td></td><td><code>boolean</code></td></tr>
+<tr><td><code>null</code></td><td></td><td><code>null</code></td></tr>
+</table>
+&nbsp;<br>
+CBOR maps are limited to either use <code>integer</code>
+or <code>text&nbsp;string</code> objects as keys.
+<h3>Deterministic Serialization</h3>
+Since this package is intended for security related
+work, it is (by design) quite picky about serialization
+and does not accept:
+<ul>
+<li>Leading zeros.</li>
+<li><code>bignum</code> objects
+that due to their value could equally well be provided in the
+shorter <code>integer</code> format.</li>
+<li>Map objects mixing <code>integer</code> and <code>text string</code> keys.</li>
+</ul>
+On output (encode) the preferred serialization format is always used.
+<h3>Map Sorting</h3>
+Maps are <i>automatically sorted</i> according to section 4.2.3 (which
+follows RFC 7049) by default, but can (with an option), be set
+to adhere to section 4.2.1.  That is, there are no requirements
+for map sorting on input (decode), while output (encode) always
+uses the currently mandated sorting order.
 </body>
