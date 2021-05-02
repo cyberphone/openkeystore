@@ -140,8 +140,9 @@ public abstract class CBORObject {
     static class CBORDecoder {
 
         static final int BUFFER_SIZE = 10000;
+        private static final byte[] ZERO_BYTE = {0};
         private ByteArrayInputStream input;
-        
+         
         private CBORDecoder(byte[] encodedCborData) {
             input = new ByteArrayInputStream(encodedCborData);
         }
@@ -188,7 +189,9 @@ public abstract class CBORObject {
             case MT_BIG_SIGNED:
             case MT_BIG_UNSIGNED:
                 byte[] byteArray = getObject().getByteString();
-                if (byteArray[0] == 0) {
+                if (byteArray.length == 0) {
+                    byteArray = ZERO_BYTE;  // Zero length byte string => n == 0
+                } else if (byteArray[0] == 0) {
                     throw new IOException("Non-deterministic encoding: leading zero byte");
                 }
                 if ((byte)first == MT_BIG_SIGNED) {

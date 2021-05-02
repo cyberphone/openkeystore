@@ -76,10 +76,12 @@ public class CBORTest {
         assertTrue("Decoded string d=" + decString + 
                    " c=" + cString + " v=" + value + " f=" + forceUnsigned,
                    decString.equals(cString));
-        BigInteger bigInteger = decodedInteger.getBigInteger();
-        bigIntegerTest(bigInteger.toString(), hex);
-        assertTrue("Big", cborObject.getBigInteger().toString().equals(bigInteger.toString()));
-    }
+        BigInteger bigInteger = ((CBORInteger)decodedInteger).getValueAsBigInteger();
+        if (CBORBigInteger.shortestIntegerMode) {
+            bigIntegerTest(bigInteger.toString(), hex);
+            assertTrue("Big", cborObject.getBigInteger().toString().equals(bigInteger.toString()));
+        }
+     }
 
     void integerTest(long value, String hex) throws Exception {
         integerTest(value, false, false, hex);
@@ -205,8 +207,12 @@ public class CBORTest {
            checkException(e, "Value out of range for CBORInteger"); 
         }
         
-        bigIntegerTest("18446744073709551615",  "1bffffffffffffffff");
-        bigIntegerTest("18446744073709551614",  "1bfffffffffffffffe");
+        bigIntegerTest("18446744073709551615",  
+            CBORBigInteger.shortestIntegerMode ?
+                          "1bffffffffffffffff" : "c248ffffffffffffffff");
+        bigIntegerTest("18446744073709551614", 
+            CBORBigInteger.shortestIntegerMode ?
+                          "1bfffffffffffffffe" : "c248fffffffffffffffe");
         bigIntegerTest("18446744073709551616",  "c249010000000000000000");
         bigIntegerTest(new BigInteger("ff0000000000000000", 16).toString(),
                        "c249ff0000000000000000");
@@ -214,11 +220,19 @@ public class CBORTest {
                        "c249800000000000000000");
         bigIntegerTest(new BigInteger("7f0000000000000000", 16).toString(),
                        "c2497f0000000000000000");
-        bigIntegerTest("-18446744073709551616", "3bffffffffffffffff");
-        bigIntegerTest("-18446744073709551615", "3bfffffffffffffffe");
+        bigIntegerTest("-18446744073709551616",
+            CBORBigInteger.shortestIntegerMode ?
+                          "3bffffffffffffffff" : "c348ffffffffffffffff");
+        bigIntegerTest("-18446744073709551615",
+            CBORBigInteger.shortestIntegerMode ?
+                          "3bfffffffffffffffe" : "c348fffffffffffffffe");
         bigIntegerTest("-18446744073709551617", "c349010000000000000000");
-        bigIntegerTest("65535", "19ffff");
-        bigIntegerTest("-1", "20");
+        bigIntegerTest("65535", 
+            CBORBigInteger.shortestIntegerMode ?
+                                      "19ffff" : "c242ffff");
+        bigIntegerTest("-1",
+            CBORBigInteger.shortestIntegerMode ?
+                                          "20" : "c340");
  
         integerTest(-1, "20");
         integerTest(-10, "29");
@@ -391,7 +405,7 @@ public class CBORTest {
         try {
             CBORObject unread = parseCborHex("8301a408022382f5f4183a033859f6820405");
             unread = ((CBORArray) unread).getElement(1).getIntegerMap();
-            ((CBORIntegerMap)unread).getMappedValue(8).getBigInteger();
+            ((CBORIntegerMap)unread).getMappedValue(8).getInt();
             ((CBORArray)((CBORIntegerMap)unread).getMappedValue(-4)).getElement(0).getBoolean();
             unread.checkObjectForUnread();
             fail("must not execute");
@@ -404,7 +418,7 @@ public class CBORTest {
         try {
             CBORObject unread = parseCborHex("8301a408022382f5f4183a033859f6820405");
             unread = ((CBORArray) unread).getElement(1).getIntegerMap();
-            ((CBORIntegerMap)unread).getMappedValue(8).getBigInteger();
+            ((CBORIntegerMap)unread).getMappedValue(8).getInt();
             ((CBORArray)((CBORIntegerMap)unread).getMappedValue(-4)).getElement(0).scan();
             unread.checkObjectForUnread();
             fail("must not execute");
@@ -417,7 +431,7 @@ public class CBORTest {
         try {
             CBORObject unread = parseCborHex("8301a408022382f5f4183a033859f6820405");
             unread = ((CBORArray) unread).getElement(1).getIntegerMap();
-            ((CBORIntegerMap)unread).getMappedValue(8).getBigInteger();
+            ((CBORIntegerMap)unread).getMappedValue(8).getInt();
             ((CBORArray)((CBORIntegerMap)unread).getMappedValue(-4)).getElement(0);
             unread.checkObjectForUnread();
             fail("must not execute");
@@ -477,7 +491,7 @@ public class CBORTest {
         }
 
         try {
-            parseCborHex("c34900ffffffffffffffff");
+            parseCborHex("c24900ffffffffffffffff");
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 

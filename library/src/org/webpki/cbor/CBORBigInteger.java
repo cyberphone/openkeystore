@@ -28,7 +28,7 @@ import org.webpki.util.ArrayUtil;
 public class CBORBigInteger extends CBORObject {
 
     BigInteger value;
-    static boolean shortestIntegerMode = true;
+    static boolean shortestIntegerMode;
     
     static final BigInteger MAX_INT64 = new BigInteger("18446744073709551615");
     static final BigInteger MIN_INT64 = new BigInteger("-18446744073709551616");
