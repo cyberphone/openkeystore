@@ -28,7 +28,6 @@ import org.webpki.util.ArrayUtil;
 public class CBORBigInteger extends CBORObject {
 
     BigInteger value;
-    static boolean shortestIntegerMode;
     
     static final BigInteger MAX_INT64 = new BigInteger("18446744073709551615");
     static final BigInteger MIN_INT64 = new BigInteger("-18446744073709551616");
@@ -40,31 +39,22 @@ public class CBORBigInteger extends CBORObject {
         this.value = value;
     }
 
-    /**
-     * Set BigInteger representation.
-     * If the integer fits in the short forms (type 0 and 1)
-     * the encoder and decoder can honor this as an option.
-     * 
-     * Default: false
-     * @param flag Controls this option.
-     */
-    static public void setShortestIntegerMode(boolean flag) {
-        shortestIntegerMode = flag;
-    }    
-
     @Override
     public CBORTypes getType() {
         return CBORTypes.BIG_INTEGER;
     }
+    
+    static boolean fitsAnInteger(BigInteger value) {
+        return value.compareTo(MAX_INT64) <= 0 && value.compareTo(MIN_INT64) >= 0;
+    }
 
     @Override
     public byte[] encode() throws IOException {
-        if (shortestIntegerMode && 
-            value.compareTo(MAX_INT64) <= 0 && value.compareTo(MIN_INT64) >= 0) {
-            // Fits in "uint65" decoding
+        if (fitsAnInteger(value)) {
+            // Fits in "int65" decoding
             return new CBORInteger(value).encode();
         }
-        // Didn't fit "uint65" so we must use big number decoding
+        // Didn't fit "int65" so we must use big number decoding
         byte[] encoded;
         byte[] headerTag;
         if (value.compareTo(BigInteger.ZERO) >= 0) {

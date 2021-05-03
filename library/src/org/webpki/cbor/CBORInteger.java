@@ -85,8 +85,7 @@ public class CBORInteger extends CBORObject {
      * @throws IOException 
      */
     public CBORInteger(BigInteger value) throws IOException {
-        if (value.compareTo(CBORBigInteger.MIN_INT64) < 0 ||
-            value.compareTo(CBORBigInteger.MAX_INT64) > 0) {
+        if (!CBORBigInteger.fitsAnInteger(value)) {
                 throw new IOException("Value out of range for " +
                                       CBORInteger.class.getSimpleName());
         }
@@ -109,7 +108,7 @@ public class CBORInteger extends CBORObject {
     }
 
     
-    public BigInteger getValueAsBigInteger() {
+    BigInteger getValueAsBigInteger() {
         BigInteger bigInteger = BigInteger.valueOf(value).and(CBORBigInteger.MAX_INT64);
         if (unsignedMode) {
             return bigInteger;

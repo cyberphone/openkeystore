@@ -99,7 +99,7 @@ public abstract class CBORObject {
     }
 
     public BigInteger getBigInteger() throws IOException {
-        if (CBORBigInteger.shortestIntegerMode && getType() == CBORTypes.INTEGER) {
+        if (getType() == CBORTypes.INTEGER) {
             checkTypeAndMarkAsRead(CBORTypes.INTEGER);
             return ((CBORInteger) this).getValueAsBigInteger();
         }
@@ -194,12 +194,16 @@ public abstract class CBORObject {
                 } else if (byteArray[0] == 0) {
                     throw new IOException("Non-deterministic encoding: leading zero byte");
                 }
-                if ((byte)first == MT_BIG_SIGNED) {
-                    return new CBORBigInteger(
-                            new BigInteger(-1, byteArray).subtract(BigInteger.ONE));
+                BigInteger bigInteger = 
+                    ((byte)first == MT_BIG_SIGNED) ?
+                        new BigInteger(-1, byteArray).subtract(BigInteger.ONE)
+                                                   :
+                    new BigInteger(1, byteArray);
+                if (CBORBigInteger.fitsAnInteger(bigInteger)) {
+                    throw new IOException("Non-deterministic encoding: bignum fits integer");
                 }
-                return new CBORBigInteger(new BigInteger(1, byteArray));
-                
+                return new CBORBigInteger(bigInteger);
+
             case MT_NULL:
                 return new CBORNull();
                 
@@ -310,14 +314,14 @@ public abstract class CBORObject {
                  cborMap.keys.get(key).checkObjectForUnread(key);
             }
             break;
-
+    
         case ARRAY:
             CBORArray cborArray = (CBORArray) this;
             for (CBORObject element : cborArray.getElements()) {
                 element.checkObjectForUnread(cborArray);
             }
             break;
-
+    
         default:
             if (!readFlag) {
                 throw new IOException((holderObject == null ? "Data" : 
@@ -327,7 +331,6 @@ public abstract class CBORObject {
                         " of type=" + getClass().getSimpleName() + 
                         " with value=" + toString() + " was never read");
             }
-            break;
         }
     }
 
