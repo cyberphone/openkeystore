@@ -17,6 +17,7 @@
 package org.webpki.tools;
 
 import org.webpki.cbor.CBORObject;
+
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.Base64URL;
 import org.webpki.util.DebugFormatter;
@@ -46,19 +47,22 @@ public class CBORPrinter {
         if (args.length != 2) {
             exitCommand();
         }
-        byte[] data = ArrayUtil.readFile(args[1]);
+        byte[] readCbor = ArrayUtil.readFile(args[1]);
         String format = args[0];
         if (format.equals("hex")) {
-            data = DebugFormatter.getByteArrayFromHex(new String(data, "utf-8"));
+            readCbor = DebugFormatter.getByteArrayFromHex(new String(readCbor, "utf-8"));
         } else if (format.equals("b64u")) {
-            data = Base64URL.decode(new String(data, "utf-8"));
+            readCbor = Base64URL.decode(new String(readCbor, "utf-8"));
         } else if (!format.equals("bin")) {
             exitCommand();
         }
-        CBORObject cbor = CBORObject.decode(data);
-        System.out.println(cbor.toString());
-        if (!ArrayUtil.compare(data, cbor.encode())) {
-            System.out.println("Failed to encode");
+        CBORObject decodedCborObject = CBORObject.decode(readCbor);
+        byte[] decodedCbor = decodedCborObject.encode();
+        System.out.println(decodedCborObject.toString());
+        String readCborHex = DebugFormatter.getHexString(readCbor);
+        String decodedCborHex = DebugFormatter.getHexString(decodedCbor);
+        if (!readCborHex.equals(decodedCborHex)) {
+            System.out.println("Failed to encode \n" + readCborHex + "\n" + decodedCborHex);
         }
     }
 
