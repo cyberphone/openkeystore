@@ -22,6 +22,8 @@ import java.io.IOException;
 
 import java.math.BigInteger;
 
+import java.util.GregorianCalendar;
+
 import org.webpki.util.ArrayUtil;
 
 /**
@@ -32,7 +34,7 @@ public abstract class CBORObject {
     CBORObject() {}
     
     // For checking if object was read
-    private boolean readFlag;
+    boolean readFlag;
 
     // Major CBOR types
     static final byte MT_UNSIGNED      = (byte) 0x00;
@@ -41,6 +43,7 @@ public abstract class CBORObject {
     static final byte MT_TEXT_STRING   = (byte) 0x60;
     static final byte MT_ARRAY         = (byte) 0x80;
     static final byte MT_MAP           = (byte) 0xa0;
+    static final byte MT_DATE_TIME     = (byte) 0xc0;
     static final byte MT_BIG_UNSIGNED  = (byte) 0xc2;
     static final byte MT_BIG_SIGNED    = (byte) 0xc3;
     static final byte MT_FALSE         = (byte) 0xf4;
@@ -110,6 +113,11 @@ public abstract class CBORObject {
     public String getTextString() throws IOException {
         checkTypeAndMarkAsRead(CBORTypes.TEXT_STRING);
         return ((CBORTextString) this).textString;
+    }
+
+    public GregorianCalendar getDateTime() throws IOException {
+        checkTypeAndMarkAsRead(CBORTypes.DATE_TIME);
+        return ((CBORDateTime) this).dateTime;
     }
 
     public byte[] getByteString() throws IOException {
@@ -184,8 +192,11 @@ public abstract class CBORObject {
         private CBORObject getObject() throws IOException {
             int first = readByte();
 
-            // Simple types first
+            // Begin with the types uniquely defined by the initial byte
             switch ((byte)first) {
+            case MT_DATE_TIME:
+                return new CBORDateTime(getObject().getTextString()); 
+ 
             case MT_BIG_SIGNED:
             case MT_BIG_UNSIGNED:
                 byte[] byteArray = getObject().getByteString();
@@ -214,7 +225,7 @@ public abstract class CBORObject {
             default:
             }
 
-            // And then the more complex ones
+            // Then decode the types blending length data in the initial byte as well
             long length = first & 0x1f;
             byte majorType = (byte)(first & 0xe0);
             if (length > 0x1b) {
@@ -323,14 +334,14 @@ public abstract class CBORObject {
             break;
     
         default:
-            if (!readFlag) {
-                throw new IOException((holderObject == null ? "Data" : 
-                            holderObject instanceof CBORArray ?
-                                    "Array element" :
-                                    "Map key " + holderObject.toString()) +                    
-                        " of type=" + getClass().getSimpleName() + 
-                        " with value=" + toString() + " was never read");
-            }
+        }
+        if (!readFlag) {
+            throw new IOException((holderObject == null ? "Data" : 
+                        holderObject instanceof CBORArray ?
+                                "Array element" :
+                                "Map key " + holderObject.toString()) +                    
+                    " of type=" + getClass().getSimpleName() + 
+                    " with value=" + toString() + " was never read");
         }
     }
 

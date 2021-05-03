@@ -22,13 +22,15 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 
 import java.math.BigInteger;
-
+import java.util.EnumSet;
+import java.util.GregorianCalendar;
 import java.util.Vector;
 
 import org.junit.Test;
 
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.DebugFormatter;
+import org.webpki.util.ISODateTime;
 
 /**
  * CBOR JUnit suite
@@ -115,6 +117,26 @@ public class CBORTest {
         assertTrue(" c=" + calc + " h=" + hex, hex.equals(calc));
         assertTrue("arr", CBORObject.decode(cbor).toString().equals(cborArray.toString()));
     }
+    
+   void dateTimeTest(GregorianCalendar dateTime, 
+                     EnumSet<ISODateTime.DatePatterns> format) throws IOException {
+       CBORObject cborObject = new CBORDateTime(dateTime, format);
+       byte[] cbor = cborObject.encode();
+       CBORObject decoded = CBORObject.decode(cbor);
+       assertTrue("Date", decoded.toString().equals(cborObject.toString()));
+       assertTrue("Date 2", ArrayUtil.compare(cbor, decoded.encode()));
+       GregorianCalendar decodedDateTime = decoded.getDateTime();
+       assertTrue("Date 3 \nd=" + decodedDateTime.getTimeInMillis() + "\no=" + dateTime.getTimeInMillis(),
+                  decodedDateTime.getTimeInMillis() / 1000 == dateTime.getTimeInMillis() / 1000);
+    }
+   
+   void dateTimeTest(String hex, String isoNotation) throws IOException {
+       CBORObject cbor = parseCborHex(hex);
+       GregorianCalendar derived = cbor.getDateTime();
+       GregorianCalendar actual = ISODateTime.parseDateTime(isoNotation, ISODateTime.COMPLETE);
+       assertTrue("Date 4 \nd=" + derived.getTimeInMillis() + "\no=" + actual.getTimeInMillis(),
+               derived.getTimeInMillis() == actual.getTimeInMillis());
+   }
 
     @Test
     public void assortedTests() throws Exception {
@@ -236,6 +258,23 @@ public class CBORTest {
                 .addElement(new CBORInteger(1))
                 .addElement(new CBORInteger(2))
                 .addElement(new CBORInteger(3)), "83010203");
+        
+        dateTimeTest(new GregorianCalendar(), ISODateTime.UTC_NO_SUBSECONDS);
+        dateTimeTest(new GregorianCalendar(), ISODateTime.LOCAL_NO_SUBSECONDS);
+        dateTimeTest(new GregorianCalendar(), ISODateTime.COMPLETE);
+        dateTimeTest("c074323032312d30352d30335430393a35303a30385a", 
+                     "2021-05-03T09:50:08Z");
+        dateTimeTest("c07819323032312d30352d30335431323a30333a33312b30323a3030", 
+                     "2021-05-03T12:03:31+02:00");
+        dateTimeTest("c07818323032312d30352d30335431303a30353a33302e3433315a", 
+                     "2021-05-03T10:05:30.431Z");
+        try {
+            parseCborHex("c073323032312d30352d30335430393a35303a3038");
+            fail("must not execute");
+       } catch (Exception e) {
+           checkException(e, "DateTime syntax error: 2021-05-03T09:50:08");
+       }
+
     }
     
     class MapTest extends CBORMapBase {
@@ -442,6 +481,24 @@ public class CBORTest {
         } catch (Exception e) {
             checkException(e, 
                 "Map key 7 of type=CBORTextString with value=\"mydata\" was never read");
+        }
+
+        try {
+            CBORObject unread = parseCborHex("A0");
+            unread.checkObjectForUnread();  
+            fail("must not execute");
+        } catch (Exception e) {
+            checkException(e, 
+                "Data of type=CBORTextStringMap with value={\n} was never read");
+        }
+
+        try {
+            CBORObject unread = parseCborHex("80");
+            unread.checkObjectForUnread();  
+            fail("must not execute");
+        } catch (Exception e) {
+            checkException(e, 
+                "Data of type=CBORArray with value=[\n] was never read");
         }
     }
     

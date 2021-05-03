@@ -32,8 +32,8 @@ public class CBORBigInteger extends CBORObject {
     static final BigInteger MAX_INT64 = new BigInteger("18446744073709551615");
     static final BigInteger MIN_INT64 = new BigInteger("-18446744073709551616");
     
-    static final byte[] UNSIGNED_BIG_INTEGER = {MT_BIG_UNSIGNED};
-    static final byte[] SIGNED_BIG_INTEGER   = {MT_BIG_SIGNED};
+    static final byte[] UNSIGNED_BIG_INTEGER_TAG = {MT_BIG_UNSIGNED};
+    static final byte[] SIGNED_BIG_INTEGER_TAG   = {MT_BIG_SIGNED};
     
     public CBORBigInteger(BigInteger value) {
         this.value = value;
@@ -59,10 +59,10 @@ public class CBORBigInteger extends CBORObject {
         byte[] headerTag;
         if (value.compareTo(BigInteger.ZERO) >= 0) {
             encoded = value.toByteArray();
-            headerTag = UNSIGNED_BIG_INTEGER;
+            headerTag = UNSIGNED_BIG_INTEGER_TAG;
         } else {
             encoded = value.negate().subtract(BigInteger.ONE).toByteArray();
-            headerTag = SIGNED_BIG_INTEGER;
+            headerTag = SIGNED_BIG_INTEGER_TAG;
         }
         if (encoded[0] == 0) {
             // No leading zeroes please

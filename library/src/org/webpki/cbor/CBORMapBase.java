@@ -76,6 +76,7 @@ abstract class CBORMapBase extends CBORObject {
     }
 
     CBORObject getObject(CBORObject key) throws IOException {
+        readFlag = true;
         CBORObject cborObject = keys.get(key);
         if (cborObject == null) {
             throw new IOException("No such key: " + key.toString());

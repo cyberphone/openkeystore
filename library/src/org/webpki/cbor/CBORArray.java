@@ -32,6 +32,7 @@ public class CBORArray extends CBORObject {
     public CBORArray() {}
     
     public CBORObject getElement(int index) throws IOException {
+        readFlag = true;
         return elements.get(index);
     }
     
