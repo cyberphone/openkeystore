@@ -23,7 +23,7 @@ import java.io.IOException;
  */
 public class CBORNull extends CBORObject {
 
-    static final byte[] NULL = {MT_NULL};
+    static final byte[] NULL_TAG = {MT_NULL};
 
     public CBORNull() {}
 
@@ -34,7 +34,7 @@ public class CBORNull extends CBORObject {
 
     @Override
     public byte[] encode() throws IOException {
-        return NULL;
+        return NULL_TAG;
     }
 
     @Override

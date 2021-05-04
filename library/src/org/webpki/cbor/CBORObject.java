@@ -101,6 +101,11 @@ public abstract class CBORObject {
         return ((CBORBoolean) this).value;
     }
 
+    public boolean isNULL() throws IOException {
+        checkTypeAndMarkAsRead(getType());
+        return getType() == CBORTypes.NULL;
+    }
+    
     public BigInteger getBigInteger() throws IOException {
         if (getType() == CBORTypes.INTEGER) {
             checkTypeAndMarkAsRead(CBORTypes.INTEGER);

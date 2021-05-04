@@ -16,34 +16,31 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
+import java.security.PublicKey;
 
 /**
- * Class for holding CBOR <code>true</code> and <code>false</code>.
+ * Class for CBOR asymmetric key signature validation
+ * 
  */
-public class CBORBoolean extends CBORObject {
+public class CBORAsymKeyValidator extends CBORValidator {
+    
+    PublicKey publicKey;
 
-    static final byte[] TRUE  = {MT_TRUE};
-    static final byte[] FALSE = {MT_FALSE};
-
-    boolean value;
-
-    public CBORBoolean(boolean value) {
-        this.value = value;
+    /**
+     * Initialize validator.
+     * 
+     * Note that a validator object may be used any number of times
+     * (assuming that the same parameters are valid).  It is also
+     * thread-safe.
+     * @param publicKey The anticipated public key
+     */
+    public CBORAsymKeyValidator(PublicKey publicKey) {
+        this.publicKey = publicKey;
     }
-
+    
     @Override
-    public CBORTypes getType() {
-        return CBORTypes.BOOLEAN;
-    }
-
-    @Override
-    public byte[] encode() throws IOException {
-        return value ? TRUE : FALSE;
-    }
-
-    @Override
-    void internalToString(CBORObject.PrettyPrinter prettyPrinter) {
-        prettyPrinter.appendText(String.valueOf(value));
+    void validate(CBORIntegerMap signatureObject, byte[] signedData) {
+        // TODO Auto-generated method stub
+        
     }
 }

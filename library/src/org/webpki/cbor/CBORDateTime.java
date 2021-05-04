@@ -45,7 +45,7 @@ public class CBORDateTime extends CBORObject {
         this.backingData = ISODateTime.formatDateTime(dateTime, format);
     }
 
-    CBORDateTime(String dateTimeString) throws IOException {
+    public CBORDateTime(String dateTimeString) throws IOException {
         this.backingData = dateTimeString;
         this.dateTime = ISODateTime.parseDateTime(dateTimeString, ISODateTime.COMPLETE);
     }

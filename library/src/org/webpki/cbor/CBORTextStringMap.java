@@ -17,6 +17,7 @@
 package org.webpki.cbor;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 /**
  * Class for holding CBOR text string maps.
@@ -27,6 +28,16 @@ public class CBORTextStringMap extends CBORMapBase {
 
     public CBORTextStringMap setMappedValue(String key, CBORObject value) throws IOException {
         setObject(new CBORTextString(key), value);
+        return this;
+    }
+
+    public CBORValidator validate(String key, CBORValidator validator) throws IOException {
+        return validate(new CBORTextString(key), validator);
+    }
+
+    public CBORTextStringMap sign(String key, CBORSigner signer) throws IOException,
+                                                                        GeneralSecurityException {
+        sign(new CBORTextString(key), signer);
         return this;
     }
 

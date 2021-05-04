@@ -17,6 +17,7 @@
 package org.webpki.cbor;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 /**
  * Class for holding CBOR integer maps.
@@ -30,6 +31,16 @@ public class CBORIntegerMap extends CBORMapBase {
         return this;
     }
 
+    public CBORValidator validate(int key, CBORValidator validator) throws IOException {
+        return validate(new CBORInteger(key), validator);
+    }
+
+    public CBORIntegerMap sign(int key, CBORSigner signer) throws IOException,
+                                                                  GeneralSecurityException {
+        sign(new CBORInteger(key), signer);
+        return this;
+    }
+    
     public CBORObject getMappedValue(int key) throws IOException {
         return getObject(new CBORInteger(key));
     }

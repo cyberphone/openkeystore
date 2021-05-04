@@ -19,15 +19,23 @@ package org.webpki.cbor;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.io.IOException;
 
 import java.math.BigInteger;
+import java.security.KeyPair;
+
 import java.util.EnumSet;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.Vector;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
-
+import org.webpki.crypto.CustomCryptoProvider;
+import org.webpki.json.JSONObjectReader;
+import org.webpki.json.JSONParser;
+import org.webpki.json.SymmetricKeys;
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.DebugFormatter;
 import org.webpki.util.ISODateTime;
@@ -36,6 +44,25 @@ import org.webpki.util.ISODateTime;
  * CBOR JUnit suite
  */
 public class CBORTest {
+
+    @BeforeClass
+    public static void openFile() throws Exception {
+        Locale.setDefault(Locale.FRANCE);  // Should create HUGE problems :-)
+        baseKey = System.clearProperty("json.keys") + File.separator;
+    }
+
+    static String baseKey;
+    
+    static String keyId;
+    
+    static KeyPair readJwk(String keyType) throws Exception {
+        JSONObjectReader jwkPlus = JSONParser.parse(ArrayUtil.readFile(baseKey + keyType + "privatekey.jwk"));
+        // Note: The built-in JWK decoder does not accept "kid" since it doesn't have a meaning in JSF or JEF. 
+        if ((keyId = jwkPlus.getStringConditional("kid")) != null) {
+            jwkPlus.removeProperty("kid");
+        }
+        return jwkPlus.getKeyPair();
+    }
 
     void checkException(Exception e, String compareMessage) {
         String m = e.getMessage();
@@ -558,4 +585,32 @@ public class CBORTest {
                  "Non-deterministic encoding: bignum fits integer");
         }
     }
+   
+    @Test
+    public void signatureTest() throws Exception {
+        KeyPair p256 = readJwk("p256");
+        String keyIdP256 = keyId;
+        KeyPair p521 = readJwk("p521");
+        KeyPair r2048 = readJwk("r2048");
+        
+        System.out.println(CBORPublicKey.createPublicKey(p256.getPublic()).toString());
+
+        CBORObject toBeSigned = new CBORIntegerMap()
+                .setMappedValue(1, new CBORIntegerMap()
+                    .setMappedValue(1, new CBORTextString("Space Shop"))
+                    .setMappedValue(2, new CBORTextString("100.00"))
+                    .setMappedValue(3, new CBORTextString("EUR")))
+                .setMappedValue(2, new CBORTextString("spaceshop.com"))
+                .setMappedValue(3, new CBORTextString("FR7630002111110020050014382"))
+                .setMappedValue(4, new CBORTextString("https://europeanpaymentsinitiative.eu/fwp"))
+                .setMappedValue(5, new CBORTextString("62932"))
+                .setMappedValue(6, new CBORDateTime("2021-05-03T09:50:08Z"));
+        
+             
+        toBeSigned.getIntegerMap().sign(7, new CBORAsymKeySigner(p256.getPrivate()));
+        System.out.println(toBeSigned.toString());
+        toBeSigned.getIntegerMap().validate(7, new CBORValidator());
+        System.out.println(toBeSigned.toString());
+    }
+    
  }

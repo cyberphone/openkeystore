@@ -16,34 +16,12 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
-
 /**
- * Class for holding CBOR <code>true</code> and <code>false</code>.
+ * Class for CBOR signature validation
+ * 
  */
-public class CBORBoolean extends CBORObject {
+public abstract class CBORValidator {
 
-    static final byte[] TRUE  = {MT_TRUE};
-    static final byte[] FALSE = {MT_FALSE};
+    abstract void validate(CBORIntegerMap signatureObject, byte[] signedData);
 
-    boolean value;
-
-    public CBORBoolean(boolean value) {
-        this.value = value;
-    }
-
-    @Override
-    public CBORTypes getType() {
-        return CBORTypes.BOOLEAN;
-    }
-
-    @Override
-    public byte[] encode() throws IOException {
-        return value ? TRUE : FALSE;
-    }
-
-    @Override
-    void internalToString(CBORObject.PrettyPrinter prettyPrinter) {
-        prettyPrinter.appendText(String.valueOf(value));
-    }
 }

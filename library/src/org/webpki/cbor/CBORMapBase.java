@@ -17,7 +17,7 @@
 package org.webpki.cbor;
 
 import java.io.IOException;
-
+import java.security.GeneralSecurityException;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeMap;
@@ -67,6 +67,21 @@ abstract class CBORMapBase extends CBORObject {
     Map<CBORObject, CBORObject> keys = new TreeMap<>(new CBORKeyComparer());
 
     CBORMapBase() {
+    }
+    
+    CBORValidator validate(CBORObject key, CBORValidator validator) throws IOException {
+        CBORIntegerMap signatureObject = getObject(key).getIntegerMap();
+        byte[] signatureValue = 
+                signatureObject.getObject(CBORSigner.SIGNATURE_LABEL).getByteString();
+        signatureObject.keys.remove(CBORSigner.SIGNATURE_LABEL);
+        validator.validate(signatureObject, encode());
+        System.out.println(this.toString());
+        signatureObject.keys.put(CBORSigner.SIGNATURE_LABEL, new CBORByteString(signatureValue));
+        return validator;
+    }
+
+    void sign(CBORObject key, CBORSigner signer) throws IOException, GeneralSecurityException {
+        signer.sign(key, this);
     }
 
     void setObject(CBORObject key, CBORObject value) throws IOException {
