@@ -71,6 +71,10 @@ abstract class CBORMapBase extends CBORObject {
     CBORMapBase() {
     }
     
+    boolean hasKey(CBORObject key) {
+        return keys.containsKey(key);
+    }
+    
     CBORValidator validate(CBORObject key, CBORValidator validator) throws IOException {
         CBORIntegerMap signatureObject = getObject(key).getIntegerMap();
         byte[] signatureValue = 

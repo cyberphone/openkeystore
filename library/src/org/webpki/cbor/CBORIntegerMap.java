@@ -40,7 +40,11 @@ public class CBORIntegerMap extends CBORMapBase {
         sign(new CBORInteger(key), signer);
         return this;
     }
-    
+
+    public boolean hasKey(int key) {
+        return hasKey(new CBORInteger(key));
+    }
+
     public CBORObject getMappedValue(int key) throws IOException {
         return getObject(new CBORInteger(key));
     }

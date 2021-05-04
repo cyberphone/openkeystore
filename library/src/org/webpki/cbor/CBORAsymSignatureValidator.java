@@ -21,6 +21,9 @@ import java.security.PublicKey;
 /**
  * Class for CBOR asymmetric key signature validation
  * 
+ * Note that a validator object may be used any number of times
+ * (assuming that the same parameters are valid).  It is also
+ * thread-safe. 
  */
 public class CBORAsymSignatureValidator extends CBORValidator {
     
@@ -29,9 +32,6 @@ public class CBORAsymSignatureValidator extends CBORValidator {
     /**
      * Initialize validator with public key.
      * 
-     * Note that a validator object may be used any number of times
-     * (assuming that the same parameters are valid).  It is also
-     * thread-safe.
      * @param publicKey The anticipated public key
      */
     public CBORAsymSignatureValidator(PublicKey publicKey) {
@@ -43,11 +43,7 @@ public class CBORAsymSignatureValidator extends CBORValidator {
      * 
      * This option requires that the public key is provided in
      * the signature object.
-     * 
-     * Note that a validator object may be used any number of times
-     * (assuming that the same parameters are valid).  It is also
-     * thread-safe.
-      */
+     */
     public CBORAsymSignatureValidator() {
     }
     
@@ -55,6 +51,9 @@ public class CBORAsymSignatureValidator extends CBORValidator {
     void validate(CBORIntegerMap signatureObject, 
                   int signatureAlgorithm, 
                   byte[] signedData) {
+        if (signatureObject.hasKey(CBORSigner.PUBLIC_KEY_LABEL)) {
+            
+        }
         if (publicKey == null) {
             
         }

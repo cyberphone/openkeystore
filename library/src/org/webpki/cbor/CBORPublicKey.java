@@ -20,16 +20,21 @@ import java.io.IOException;
 
 import java.math.BigInteger;
 
+import java.security.GeneralSecurityException;
+import java.security.KeyFactory;
 import java.security.PublicKey;
 
 import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPublicKey;
 
 import java.security.spec.ECPoint;
+import java.security.spec.ECPublicKeySpec;
+import java.security.spec.RSAPublicKeySpec;
 
 import java.util.HashMap;
 
 import org.webpki.crypto.KeyAlgorithms;
+import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.OkpSupport;
 
 import org.webpki.util.ArrayUtil;
@@ -45,33 +50,37 @@ public class CBORPublicKey {
     ////////////////////////////////
     static final int KTY     = 1;
     
-    static final int OKP_KTY_ARGUMENT = 1;
-    static final int OKP_CRV  = -1;
-    static final int OKP_X    = -2;
+    static final int OKP_CBOR_KTY = 1;
+    static final int OKP_CRV      = -1;
+    static final int OKP_X        = -2;
      
-    static final int EC2_KTY_ARGUMENT = 2;
-    static final int EC2_CRV  = -1;
-    static final int EC2_X    = -2;
-    static final int EC2_Y    = -3;
+    static final int EC2_CBOR_KTY = 2;
+    static final int EC2_CRV      = -1;
+    static final int EC2_X        = -2;
+    static final int EC2_Y        = -3;
     
-    static final int RSA_KTY_ARGUMENT = 3;
+    static final int RSA_CBOR_KTY = 3;
     static final int RSA_N   = -1;
     static final int RSA_E   = -2;
 
-    static CBORInteger OKP_CBOR_KTY = new CBORInteger(OKP_KTY_ARGUMENT);
-    static CBORInteger EC2_CBOR_KTY = new CBORInteger(EC2_KTY_ARGUMENT);
-    static CBORInteger RSA_CBOR_KTY = new CBORInteger(RSA_KTY_ARGUMENT);
-    
-    static final HashMap<KeyAlgorithms, CBORInteger> COSE_CRV = new HashMap<>();
+    static final HashMap<KeyAlgorithms, Integer> WEBPKI_2_COSE_CRV= new HashMap<>();
 
     static {
-        COSE_CRV.put(KeyAlgorithms.NIST_P_256, new CBORInteger(1));
-        COSE_CRV.put(KeyAlgorithms.NIST_P_384, new CBORInteger(2));
-        COSE_CRV.put(KeyAlgorithms.NIST_P_521, new CBORInteger(3));
-        COSE_CRV.put(KeyAlgorithms.X25519,     new CBORInteger(4));
-        COSE_CRV.put(KeyAlgorithms.X448,       new CBORInteger(5));
-        COSE_CRV.put(KeyAlgorithms.ED25519,    new CBORInteger(6));
-        COSE_CRV.put(KeyAlgorithms.ED448,      new CBORInteger(7));
+        WEBPKI_2_COSE_CRV.put(KeyAlgorithms.NIST_P_256, 1);
+        WEBPKI_2_COSE_CRV.put(KeyAlgorithms.NIST_P_384, 2);
+        WEBPKI_2_COSE_CRV.put(KeyAlgorithms.NIST_P_521, 3);
+        WEBPKI_2_COSE_CRV.put(KeyAlgorithms.X25519,     4);
+        WEBPKI_2_COSE_CRV.put(KeyAlgorithms.X448,       5);
+        WEBPKI_2_COSE_CRV.put(KeyAlgorithms.ED25519,    6);
+        WEBPKI_2_COSE_CRV.put(KeyAlgorithms.ED448,      7);
+    }
+
+    static final HashMap<Integer, KeyAlgorithms> COSE_2_WEBPKI_CRV= new HashMap<>();
+    
+    static {
+        for (KeyAlgorithms key : WEBPKI_2_COSE_CRV.keySet()) {
+            COSE_2_WEBPKI_CRV.put(WEBPKI_2_COSE_CRV.get(key), key);
+        }
     }
 
     static CBORByteString cryptoBinary(BigInteger value) {
@@ -104,25 +113,78 @@ public class CBORPublicKey {
         switch (keyAlg.getKeyType()) {
         case RSA:
             RSAPublicKey rsaPublicKey = (RSAPublicKey) publicKey;
-            cborPublicKey.setMappedValue(KTY, RSA_CBOR_KTY)
+            cborPublicKey.setMappedValue(KTY, new CBORInteger(RSA_CBOR_KTY))
                          .setMappedValue(RSA_N, cryptoBinary(rsaPublicKey.getModulus()))
                          .setMappedValue(RSA_E, cryptoBinary(rsaPublicKey.getPublicExponent()));
             break;
 
         case EC:
             ECPoint ecPoint = ((ECPublicKey) publicKey).getW();
-            cborPublicKey.setMappedValue(KTY, EC2_CBOR_KTY)
-                         .setMappedValue(EC2_CRV, COSE_CRV.get(keyAlg))
+            cborPublicKey.setMappedValue(KTY, new CBORInteger(EC2_CBOR_KTY))
+                         .setMappedValue(EC2_CRV, new CBORInteger(WEBPKI_2_COSE_CRV.get(keyAlg)))
                          .setMappedValue(EC2_X, curvePoint(ecPoint.getAffineX(), keyAlg))
                          .setMappedValue(EC2_Y, curvePoint(ecPoint.getAffineY(), keyAlg));
             break;
  
         default:  // EDDSA and XEC
-            cborPublicKey.setMappedValue(KTY, OKP_CBOR_KTY)
-                         .setMappedValue(OKP_CRV, COSE_CRV.get(keyAlg))
+            cborPublicKey.setMappedValue(KTY, new CBORInteger(OKP_CBOR_KTY))
+                         .setMappedValue(OKP_CRV, new CBORInteger(WEBPKI_2_COSE_CRV.get(keyAlg)))
                          .setMappedValue(OKP_X, new CBORByteString(
                                  OkpSupport.public2RawOkpKey(publicKey, keyAlg)));
         }
         return cborPublicKey;
+    }
+
+    static BigInteger getCryptoBinary(CBORObject value) throws IOException {
+        byte[] cryptoBinary = value.getByteString();
+        if (cryptoBinary[0] == 0x00) {
+            throw new IOException("RSA key parameter contains leading zeroes");
+        }
+        return new BigInteger(1, cryptoBinary);
+    }
+
+    static BigInteger getCurvePoint(CBORObject value, KeyAlgorithms ec) throws IOException {
+        byte[] fixedBinary = value.getByteString();
+        if (fixedBinary.length != (ec.getPublicKeySizeInBits() + 7) / 8) {
+            throw new IOException("Public EC key parameter is not normalized");
+        }
+        return new BigInteger(1, fixedBinary);
+    }
+
+    public static PublicKey decodePublicKey(CBORObject cborPublicKey) 
+    throws IOException, GeneralSecurityException {
+        CBORIntegerMap publicKeyMap = cborPublicKey.getIntegerMap();
+        KeyAlgorithms keyAlgorithm;
+        int kty = publicKeyMap.getMappedValue(KTY).getInt();
+        switch (kty) {
+        case RSA_CBOR_KTY:
+            return KeyFactory.getInstance("RSA").generatePublic(
+                    new RSAPublicKeySpec(getCryptoBinary(publicKeyMap.getMappedValue(RSA_N)),
+                                         getCryptoBinary(publicKeyMap.getMappedValue(RSA_E))));
+  
+        case EC2_CBOR_KTY:
+            keyAlgorithm = COSE_2_WEBPKI_CRV.get(publicKeyMap.getMappedValue(EC2_CRV).getInt());
+            if (keyAlgorithm.getKeyType() != KeyTypes.EC) {
+                throw new IllegalArgumentException(keyAlgorithm.getKeyType()  +
+                                                   " is not a valid EC curve");
+            }
+            return KeyFactory.getInstance("EC").generatePublic(new ECPublicKeySpec(
+                new ECPoint(getCurvePoint(publicKeyMap.getMappedValue(EC2_X), keyAlgorithm),
+                            getCurvePoint(publicKeyMap.getMappedValue(EC2_Y), keyAlgorithm)),
+                keyAlgorithm.getECParameterSpec()));
+            
+        case OKP_CBOR_KTY:
+            keyAlgorithm = COSE_2_WEBPKI_CRV.get(publicKeyMap.getMappedValue(OKP_CRV).getInt());
+            if (keyAlgorithm.getKeyType() != KeyTypes.EDDSA &&
+                keyAlgorithm.getKeyType() != KeyTypes.XEC) {
+                throw new IllegalArgumentException(keyAlgorithm.getKeyType()  +
+                                                   " is not a valid OKP curve");
+            }
+            return OkpSupport.raw2PublicOkpKey(publicKeyMap.getMappedValue(OKP_X).getByteString(), 
+                                               keyAlgorithm);
+            
+        default:
+            throw new IllegalArgumentException("Unrecognized key type: " + kty);
+        }
     }
 }

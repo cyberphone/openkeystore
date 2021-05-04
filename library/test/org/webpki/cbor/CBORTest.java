@@ -23,7 +23,9 @@ import java.io.File;
 import java.io.IOException;
 
 import java.math.BigInteger;
+
 import java.security.KeyPair;
+import java.security.PublicKey;
 
 import java.util.EnumSet;
 import java.util.GregorianCalendar;
@@ -32,10 +34,10 @@ import java.util.Vector;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.webpki.crypto.CustomCryptoProvider;
+
 import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONParser;
-import org.webpki.json.SymmetricKeys;
+
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.DebugFormatter;
 import org.webpki.util.ISODateTime;
@@ -585,6 +587,26 @@ public class CBORTest {
                  "Non-deterministic encoding: bignum fits integer");
         }
     }
+    
+    CBORObject createDataToBeSigned() throws IOException {
+        return new CBORIntegerMap()
+        .setMappedValue(1, new CBORIntegerMap()
+                .setMappedValue(1, new CBORTextString("Space Shop"))
+                .setMappedValue(2, new CBORTextString("100.00"))
+                .setMappedValue(3, new CBORTextString("EUR")))
+            .setMappedValue(2, new CBORTextString("spaceshop.com"))
+            .setMappedValue(3, new CBORTextString("FR7630002111110020050014382"))
+            .setMappedValue(4, new CBORTextString("https://europeanpaymentsinitiative.eu/fwp"))
+            .setMappedValue(5, new CBORTextString("62932"))
+            .setMappedValue(6, new CBORDateTime("2021-05-03T09:50:08Z"));
+    }
+    
+    void backAndForth(KeyPair keyPair) throws Exception {
+        CBORObject cborPublicKey = CBORPublicKey.createPublicKey(keyPair.getPublic());
+        System.out.println(cborPublicKey.toString());
+        PublicKey publicKey = CBORPublicKey.decodePublicKey(cborPublicKey);
+        assertTrue("PK" + cborPublicKey.toString(), publicKey.equals(keyPair.getPublic()));
+    }
    
     @Test
     public void signatureTest() throws Exception {
@@ -592,25 +614,21 @@ public class CBORTest {
         String keyIdP256 = keyId;
         KeyPair p521 = readJwk("p521");
         KeyPair r2048 = readJwk("r2048");
+        KeyPair x448 = readJwk("x448");
+        
+        backAndForth(p256);
+        backAndForth(r2048);
+        backAndForth(x448);
         
         System.out.println(CBORPublicKey.createPublicKey(p256.getPublic()).toString());
-
-        CBORObject toBeSigned = new CBORIntegerMap()
-                .setMappedValue(1, new CBORIntegerMap()
-                    .setMappedValue(1, new CBORTextString("Space Shop"))
-                    .setMappedValue(2, new CBORTextString("100.00"))
-                    .setMappedValue(3, new CBORTextString("EUR")))
-                .setMappedValue(2, new CBORTextString("spaceshop.com"))
-                .setMappedValue(3, new CBORTextString("FR7630002111110020050014382"))
-                .setMappedValue(4, new CBORTextString("https://europeanpaymentsinitiative.eu/fwp"))
-                .setMappedValue(5, new CBORTextString("62932"))
-                .setMappedValue(6, new CBORDateTime("2021-05-03T09:50:08Z"));
         
-             
-        toBeSigned.getIntegerMap().sign(7, 
-                new CBORAsymKeySigner(p256.getPrivate()).setPublicKey(p256.getPublic()));
+        CBORObject toBeSigned = createDataToBeSigned();
+        
+        CBORAsymKeySigner asymKeySigner = new CBORAsymKeySigner(p256.getPrivate());
+        CBORAsymSignatureValidator asymKeyValidator = new CBORAsymSignatureValidator(p256.getPublic());
+        toBeSigned.getIntegerMap().sign(7, asymKeySigner);
         System.out.println(toBeSigned.toString());
-        toBeSigned.getIntegerMap().validate(7, new CBORAsymSignatureValidator(p256.getPublic()));
+        toBeSigned.getIntegerMap().validate(7, asymKeyValidator);
         System.out.println(toBeSigned.toString());
     }
     

@@ -41,6 +41,10 @@ public class CBORTextStringMap extends CBORMapBase {
         return this;
     }
 
+    public boolean hasKey(String key) {
+        return hasKey(new CBORTextString(key));
+    }
+
     public CBORObject getMappedValue(String key) throws IOException {
         return getObject(new CBORTextString(key));
     }
