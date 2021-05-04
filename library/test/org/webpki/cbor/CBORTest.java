@@ -607,9 +607,10 @@ public class CBORTest {
                 .setMappedValue(6, new CBORDateTime("2021-05-03T09:50:08Z"));
         
              
-        toBeSigned.getIntegerMap().sign(7, new CBORAsymKeySigner(p256.getPrivate()));
+        toBeSigned.getIntegerMap().sign(7, 
+                new CBORAsymKeySigner(p256.getPrivate()).setPublicKey(p256.getPublic()));
         System.out.println(toBeSigned.toString());
-        toBeSigned.getIntegerMap().validate(7, new CBORValidator());
+        toBeSigned.getIntegerMap().validate(7, new CBORAsymSignatureValidator(p256.getPublic()));
         System.out.println(toBeSigned.toString());
     }
     

@@ -19,6 +19,7 @@ package org.webpki.cbor;
 import java.io.IOException;
 
 import java.security.GeneralSecurityException;
+import java.security.PublicKey;
 
 /**
  * Base class for creating CBOR signatures.
@@ -31,7 +32,13 @@ public abstract class CBORSigner {
     public static final CBORInteger CERT_PATH_LABEL  = new CBORInteger(4);
     public static final CBORInteger SIGNATURE_LABEL  = new CBORInteger(5);
     
+    public static final int ECDSA_SHA256 = -5;
+    
     String provider;
+    
+    PublicKey publicKey;
+    
+    int algorithmId;
 
     CBORSigner() {}
     
@@ -40,6 +47,11 @@ public abstract class CBORSigner {
     void sign(CBORObject key, CBORMapBase objectToSign) throws IOException, 
                                                                GeneralSecurityException {
         CBORMapBase signatureObject = new CBORIntegerMap();
+        signatureObject.setObject(ALGORITHM_LABEL, new CBORInteger(algorithmId));
+        if (publicKey != null) {
+            signatureObject.setObject(PUBLIC_KEY_LABEL, 
+                                      CBORPublicKey.createPublicKey(publicKey));
+        }
         objectToSign.setObject(key, signatureObject);
         System.out.println(this.toString());
         signatureObject.keys.put(SIGNATURE_LABEL, 

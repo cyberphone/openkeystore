@@ -16,12 +16,16 @@
  */
 package org.webpki.cbor;
 
+import java.io.IOException;
+
 /**
- * Class for CBOR signature validation
+ * Base class for CBOR signature validation
  * 
  */
 public abstract class CBORValidator {
 
-    abstract void validate(CBORIntegerMap signatureObject, byte[] signedData);
+    abstract void validate(CBORIntegerMap signatureObject, 
+                           int signatureAlgorithm, 
+                           byte[] signedData);
 
 }

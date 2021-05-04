@@ -22,24 +22,42 @@ import java.security.PublicKey;
  * Class for CBOR asymmetric key signature validation
  * 
  */
-public class CBORAsymKeyValidator extends CBORValidator {
+public class CBORAsymSignatureValidator extends CBORValidator {
     
     PublicKey publicKey;
 
     /**
-     * Initialize validator.
+     * Initialize validator with public key.
      * 
      * Note that a validator object may be used any number of times
      * (assuming that the same parameters are valid).  It is also
      * thread-safe.
      * @param publicKey The anticipated public key
      */
-    public CBORAsymKeyValidator(PublicKey publicKey) {
+    public CBORAsymSignatureValidator(PublicKey publicKey) {
         this.publicKey = publicKey;
     }
     
+    /**
+     * Initialize validator without public key.
+     * 
+     * This option requires that the public key is provided in
+     * the signature object.
+     * 
+     * Note that a validator object may be used any number of times
+     * (assuming that the same parameters are valid).  It is also
+     * thread-safe.
+      */
+    public CBORAsymSignatureValidator() {
+    }
+    
     @Override
-    void validate(CBORIntegerMap signatureObject, byte[] signedData) {
+    void validate(CBORIntegerMap signatureObject, 
+                  int signatureAlgorithm, 
+                  byte[] signedData) {
+        if (publicKey == null) {
+            
+        }
         // TODO Auto-generated method stub
         
     }

@@ -20,6 +20,9 @@ import java.io.IOException;
 
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
+import java.security.PublicKey;
+
+import java.util.HashMap;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.KeyAlgorithms;
@@ -33,6 +36,13 @@ public class CBORAsymKeySigner extends CBORSigner {
     PrivateKey privateKey;
 
     AsymSignatureAlgorithms signatureAlgorithm;
+    
+    static final HashMap<AsymSignatureAlgorithms, Integer> asymSignatureAlgorithms = 
+            new HashMap<>();
+    
+    static {
+        asymSignatureAlgorithms.put(AsymSignatureAlgorithms.ECDSA_SHA256, ECDSA_SHA256);
+    }
 
     /**
      * Initialize signer.
@@ -49,6 +59,7 @@ public class CBORAsymKeySigner extends CBORSigner {
                              AsymSignatureAlgorithms signatureAlgorithm) throws IOException {
         this.privateKey = privateKey;
         this.signatureAlgorithm = signatureAlgorithm;
+        this.algorithmId = asymSignatureAlgorithms.get(signatureAlgorithm);
     }
     
     /**
@@ -66,6 +77,11 @@ public class CBORAsymKeySigner extends CBORSigner {
     public CBORAsymKeySigner(PrivateKey privateKey) throws IOException {
         this(privateKey,
              KeyAlgorithms.getKeyAlgorithm(privateKey).getRecommendedSignatureAlgorithm());
+    }
+
+    public CBORAsymKeySigner setPublicKey(PublicKey publicKey) {
+        this.publicKey = publicKey;
+        return this;
     }
 
     @Override
