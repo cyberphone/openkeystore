@@ -63,7 +63,7 @@ public class CBORPublicKey {
     static final int RSA_N        = -1;
     static final int RSA_E        = -2;
 
-    static final HashMap<KeyAlgorithms, Integer> WEBPKI_2_COSE_CRV= new HashMap<>();
+    static final HashMap<KeyAlgorithms, Integer> WEBPKI_2_COSE_CRV = new HashMap<>();
 
     static {
         WEBPKI_2_COSE_CRV.put(KeyAlgorithms.NIST_P_256, 1);
@@ -75,7 +75,7 @@ public class CBORPublicKey {
         WEBPKI_2_COSE_CRV.put(KeyAlgorithms.ED448,      7);
     }
 
-    static final HashMap<Integer, KeyAlgorithms> COSE_2_WEBPKI_CRV= new HashMap<>();
+    static final HashMap<Integer, KeyAlgorithms> COSE_2_WEBPKI_CRV = new HashMap<>();
     
     static {
         for (KeyAlgorithms key : WEBPKI_2_COSE_CRV.keySet()) {
