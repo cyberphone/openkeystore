@@ -48,20 +48,20 @@ public class CBORPublicKey {
     ////////////////////////////////
     // From RFC 8152 and RFC 8230 //
     ////////////////////////////////
-    static final int KTY     = 1;
+    static final int KTY          = 1;
     
-    static final int OKP_CBOR_KTY = 1;
+    static final int OKP_KTY      = 1;
     static final int OKP_CRV      = -1;
     static final int OKP_X        = -2;
      
-    static final int EC2_CBOR_KTY = 2;
+    static final int EC2_KTY      = 2;
     static final int EC2_CRV      = -1;
     static final int EC2_X        = -2;
     static final int EC2_Y        = -3;
     
-    static final int RSA_CBOR_KTY = 3;
-    static final int RSA_N   = -1;
-    static final int RSA_E   = -2;
+    static final int RSA_KTY      = 3;
+    static final int RSA_N        = -1;
+    static final int RSA_E        = -2;
 
     static final HashMap<KeyAlgorithms, Integer> WEBPKI_2_COSE_CRV= new HashMap<>();
 
@@ -115,21 +115,21 @@ public class CBORPublicKey {
         switch (keyAlg.getKeyType()) {
         case RSA:
             RSAPublicKey rsaPublicKey = (RSAPublicKey) publicKey;
-            cborPublicKey.setMappedValue(KTY, new CBORInteger(RSA_CBOR_KTY))
+            cborPublicKey.setMappedValue(KTY, new CBORInteger(RSA_KTY))
                          .setMappedValue(RSA_N, cryptoBinary(rsaPublicKey.getModulus()))
                          .setMappedValue(RSA_E, cryptoBinary(rsaPublicKey.getPublicExponent()));
             break;
 
         case EC:
             ECPoint ecPoint = ((ECPublicKey) publicKey).getW();
-            cborPublicKey.setMappedValue(KTY, new CBORInteger(EC2_CBOR_KTY))
+            cborPublicKey.setMappedValue(KTY, new CBORInteger(EC2_KTY))
                          .setMappedValue(EC2_CRV, new CBORInteger(WEBPKI_2_COSE_CRV.get(keyAlg)))
                          .setMappedValue(EC2_X, curvePoint(ecPoint.getAffineX(), keyAlg))
                          .setMappedValue(EC2_Y, curvePoint(ecPoint.getAffineY(), keyAlg));
             break;
  
         default:  // EDDSA and XEC
-            cborPublicKey.setMappedValue(KTY, new CBORInteger(OKP_CBOR_KTY))
+            cborPublicKey.setMappedValue(KTY, new CBORInteger(OKP_KTY))
                          .setMappedValue(OKP_CRV, new CBORInteger(WEBPKI_2_COSE_CRV.get(keyAlg)))
                          .setMappedValue(OKP_X, new CBORByteString(
                                  OkpSupport.public2RawOkpKey(publicKey, keyAlg)));
@@ -161,12 +161,12 @@ public class CBORPublicKey {
         KeyAlgorithms keyAlgorithm;
         int kty = publicKeyMap.getMappedValue(KTY).getInt();
         switch (kty) {
-        case RSA_CBOR_KTY:
+        case RSA_KTY:
             return KeyFactory.getInstance("RSA").generatePublic(
                     new RSAPublicKeySpec(getCryptoBinary(publicKeyMap.getMappedValue(RSA_N)),
                                          getCryptoBinary(publicKeyMap.getMappedValue(RSA_E))));
   
-        case EC2_CBOR_KTY:
+        case EC2_KTY:
             keyAlgorithm = COSE_2_WEBPKI_CRV.get(publicKeyMap.getMappedValue(EC2_CRV).getInt());
             if (keyAlgorithm.getKeyType() != KeyTypes.EC) {
                 throw new GeneralSecurityException(keyAlgorithm.getKeyType()  +
@@ -177,7 +177,7 @@ public class CBORPublicKey {
                             getCurvePoint(publicKeyMap.getMappedValue(EC2_Y), keyAlgorithm)),
                 keyAlgorithm.getECParameterSpec()));
             
-        case OKP_CBOR_KTY:
+        case OKP_KTY:
             keyAlgorithm = COSE_2_WEBPKI_CRV.get(publicKeyMap.getMappedValue(OKP_CRV).getInt());
             if (keyAlgorithm.getKeyType() != KeyTypes.EDDSA &&
                 keyAlgorithm.getKeyType() != KeyTypes.XEC) {
