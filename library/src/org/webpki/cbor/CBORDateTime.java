@@ -62,6 +62,6 @@ public class CBORDateTime extends CBORObject {
 
     @Override
     void internalToString(CBORObject.PrettyPrinter prettyPrinter) {
-        prettyPrinter.appendText(backingData);
+        prettyPrinter.appendText("0(\"").appendText(backingData).appendText("\")");
     }
 }

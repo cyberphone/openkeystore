@@ -31,12 +31,13 @@ public class CBORTextStringMap extends CBORMapBase {
         return this;
     }
 
-    public CBORValidator validate(String key, CBORValidator validator) throws IOException {
+    public CBORValidator validate(String key, CBORValidator validator) 
+            throws IOException, GeneralSecurityException {
         return validate(new CBORTextString(key), validator);
     }
 
-    public CBORTextStringMap sign(String key, CBORSigner signer) throws IOException,
-                                                                        GeneralSecurityException {
+    public CBORTextStringMap sign(String key, CBORSigner signer) 
+            throws IOException, GeneralSecurityException {
         sign(new CBORTextString(key), signer);
         return this;
     }

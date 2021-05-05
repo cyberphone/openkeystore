@@ -75,15 +75,20 @@ abstract class CBORMapBase extends CBORObject {
         return keys.containsKey(key);
     }
     
-    CBORValidator validate(CBORObject key, CBORValidator validator) throws IOException {
+    CBORValidator validate(CBORObject key, CBORValidator validator) 
+            throws IOException, GeneralSecurityException {
         CBORIntegerMap signatureObject = getObject(key).getIntegerMap();
         byte[] signatureValue = 
                 signatureObject.getObject(CBORSigner.SIGNATURE_LABEL).getByteString();
         signatureObject.keys.remove(CBORSigner.SIGNATURE_LABEL);
+        String optionalKeyId =
+                signatureObject.hasKey(CBORSigner.KEY_ID_LABEL) ?
+            signatureObject.getObject(CBORSigner.KEY_ID_LABEL).getTextString() : null;
         validator.validate(signatureObject, 
                            signatureObject.getObject(CBORSigner.ALGORITHM_LABEL).getInt(),
+                           optionalKeyId,
+                           signatureValue,
                            encode());
-        System.out.println(this.toString());
         signatureObject.keys.put(CBORSigner.SIGNATURE_LABEL, new CBORByteString(signatureValue));
         return validator;
     }

@@ -16,7 +16,14 @@
  */
 package org.webpki.cbor;
 
+import java.io.IOException;
+
+import java.security.GeneralSecurityException;
 import java.security.PublicKey;
+
+import org.webpki.crypto.AsymSignatureAlgorithms;
+import org.webpki.crypto.KeyAlgorithms;
+import org.webpki.crypto.SignatureWrapper;
 
 /**
  * Class for CBOR asymmetric key signature validation
@@ -27,7 +34,16 @@ import java.security.PublicKey;
  */
 public class CBORAsymSignatureValidator extends CBORValidator {
     
+    public interface KeyLocator {
+
+        PublicKey locate(PublicKey optionalPublicKey, 
+                         String optionalKeyId, 
+                         AsymSignatureAlgorithms signatureAlgorithm)
+            throws IOException, GeneralSecurityException;
+    }
+    
     PublicKey publicKey;
+    KeyLocator keyLocator;
 
     /**
      * Initialize validator with public key.
@@ -37,27 +53,54 @@ public class CBORAsymSignatureValidator extends CBORValidator {
     public CBORAsymSignatureValidator(PublicKey publicKey) {
         this.publicKey = publicKey;
     }
-    
+
     /**
-     * Initialize validator without public key.
+     * Initialize validator with a locator.
      * 
-     * This option requires that the public key is provided in
-     * the signature object.
+     * This option provides full control for the verifier
+     * regarding in-lined public keys and key identifiers.
      */
-    public CBORAsymSignatureValidator() {
+    public CBORAsymSignatureValidator(KeyLocator keyLocator) {
+        this.keyLocator = keyLocator;
     }
-    
+
     @Override
     void validate(CBORIntegerMap signatureObject, 
-                  int signatureAlgorithm, 
-                  byte[] signedData) {
+                  int coseSignatureAlgorithm,
+                  String optionalKeyId,
+                  byte[] signatureValue,
+                  byte[] signedData) throws IOException, GeneralSecurityException {
+        AsymSignatureAlgorithms signatureAlgorithm =
+                (AsymSignatureAlgorithms) CBORSigner.getSignatureAlgorithm(
+                        coseSignatureAlgorithm, true);
+        PublicKey inLinePublicKey = null;
         if (signatureObject.hasKey(CBORSigner.PUBLIC_KEY_LABEL)) {
-            
+            inLinePublicKey = CBORPublicKey.decodePublicKey(
+                    signatureObject.getObject(CBORSigner.PUBLIC_KEY_LABEL));
         }
-        if (publicKey == null) {
-            
+        if (keyLocator != null) {
+            publicKey = inLinePublicKey == null ?
+                 keyLocator.locate(inLinePublicKey, optionalKeyId, signatureAlgorithm) 
+                                                : 
+                 inLinePublicKey;
         }
-        // TODO Auto-generated method stub
-        
+        if (inLinePublicKey != null) {
+            if (!publicKey.equals(inLinePublicKey)) {
+                throw new GeneralSecurityException("Public keys not identical");
+            }
+        }
+        KeyAlgorithms keyAlgorithm = KeyAlgorithms.getKeyAlgorithm(publicKey);
+        if (signatureAlgorithm.getKeyType() != keyAlgorithm.getKeyType()) {
+            throw new IllegalArgumentException("Algorithm " + signatureAlgorithm + 
+                                  " does not match key type " + keyAlgorithm);
+        }
+        if (!new SignatureWrapper(signatureAlgorithm, publicKey)
+                 .update(signedData)
+                 .verify(signatureValue)) {
+            throw new GeneralSecurityException("Bad signature for key: " + publicKey.toString());
+        }
+        if (keyLocator != null && inLinePublicKey != null) {
+            keyLocator.locate(inLinePublicKey, optionalKeyId, signatureAlgorithm);
+        }
     }
 }

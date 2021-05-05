@@ -22,34 +22,26 @@ import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
-import java.util.HashMap;
-
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
 
 /**
  * Class for creating CBOR asymmetric key signatures.
+ * 
+ * Note that signer objects may be used any number of times
+ * (assuming that the same parameters are valid).  They are also
+ * thread-safe.
  */
 public class CBORAsymKeySigner extends CBORSigner {
 
     PrivateKey privateKey;
 
     AsymSignatureAlgorithms signatureAlgorithm;
-    
-    static final HashMap<AsymSignatureAlgorithms, Integer> asymSignatureAlgorithms = 
-            new HashMap<>();
-    
-    static {
-        asymSignatureAlgorithms.put(AsymSignatureAlgorithms.ECDSA_SHA256, ECDSA_SHA256);
-    }
 
     /**
      * Initialize signer.
      * 
-     * Note that a signer object may be used any number of times
-     * (assuming that the same parameters are valid).  It is also
-     * thread-safe.
      * @param privateKey The key to sign with
      * @param signatureAlgorithm The algorithm to use
      * @throws IOException 
@@ -59,17 +51,15 @@ public class CBORAsymKeySigner extends CBORSigner {
                              AsymSignatureAlgorithms signatureAlgorithm) throws IOException {
         this.privateKey = privateKey;
         this.signatureAlgorithm = signatureAlgorithm;
-        this.algorithmId = asymSignatureAlgorithms.get(signatureAlgorithm);
+        this.algorithmId = WEBPKI_2_CBOR_ALG.get(signatureAlgorithm);
     }
     
     /**
      * Initialize signer.
      * 
-     * Note that a signer object may be used any number of times
-     * (assuming that the same parameters are valid).  It is also
-     * thread-safe.
      * The default signature algorithm to use is based on the recommendations
      * in RFC 7518.
+     * 
      * @param privateKey The key to sign with
      * @throws IOException 
      * @throws GeneralSecurityException 

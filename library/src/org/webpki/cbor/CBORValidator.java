@@ -18,6 +18,8 @@ package org.webpki.cbor;
 
 import java.io.IOException;
 
+import java.security.GeneralSecurityException;
+
 /**
  * Base class for CBOR signature validation
  * 
@@ -25,7 +27,9 @@ import java.io.IOException;
 public abstract class CBORValidator {
 
     abstract void validate(CBORIntegerMap signatureObject, 
-                           int signatureAlgorithm, 
-                           byte[] signedData);
-
+                           int cborSignatureAlgorithm,
+                           String optionalKeyId,
+                           byte[] signatureValue,
+                           byte[] signedData) throws IOException, GeneralSecurityException;
+    
 }

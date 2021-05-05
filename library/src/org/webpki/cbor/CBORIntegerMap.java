@@ -31,12 +31,13 @@ public class CBORIntegerMap extends CBORMapBase {
         return this;
     }
 
-    public CBORValidator validate(int key, CBORValidator validator) throws IOException {
+    public CBORValidator validate(int key, CBORValidator validator) 
+            throws IOException, GeneralSecurityException {
         return validate(new CBORInteger(key), validator);
     }
 
-    public CBORIntegerMap sign(int key, CBORSigner signer) throws IOException,
-                                                                  GeneralSecurityException {
+    public CBORIntegerMap sign(int key, CBORSigner signer) 
+            throws IOException, GeneralSecurityException {
         sign(new CBORInteger(key), signer);
         return this;
     }

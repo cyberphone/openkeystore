@@ -44,6 +44,8 @@ public class CBORByteString extends CBORObject {
 
     @Override
     void internalToString(CBORObject.PrettyPrinter prettyPrinter) {
-        prettyPrinter.appendText("0x").appendText(DebugFormatter.getHexString(byteString));
+        prettyPrinter.appendText("h'")
+                     .appendText(DebugFormatter.getHexString(byteString))
+                     .appendText("'");
     }
 }

@@ -24,6 +24,7 @@ import java.io.IOException;
 
 import java.math.BigInteger;
 
+import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.PublicKey;
 
@@ -34,6 +35,8 @@ import java.util.Vector;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import org.webpki.crypto.AsymSignatureAlgorithms;
 
 import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONParser;
@@ -68,8 +71,12 @@ public class CBORTest {
 
     void checkException(Exception e, String compareMessage) {
         String m = e.getMessage();
-        if (compareMessage != null && !m.equals(compareMessage)) {
-            fail("Exception: " + m);
+        String full = m;
+        if (compareMessage.length() < m.length()) {
+            m = m.substring(0, compareMessage.length());
+        }
+        if (!m.equals(compareMessage)) {
+            fail("Exception: " + full);
         }
     }
     
@@ -603,33 +610,154 @@ public class CBORTest {
     
     void backAndForth(KeyPair keyPair) throws Exception {
         CBORObject cborPublicKey = CBORPublicKey.createPublicKey(keyPair.getPublic());
-        System.out.println(cborPublicKey.toString());
         PublicKey publicKey = CBORPublicKey.decodePublicKey(cborPublicKey);
         assertTrue("PK" + cborPublicKey.toString(), publicKey.equals(keyPair.getPublic()));
+    }
+    
+    CBORObject signAndVerify(CBORSigner signer, CBORValidator validator) 
+            throws IOException, GeneralSecurityException {
+        CBORObject tbs = createDataToBeSigned();
+        tbs.getIntegerMap().sign(7, signer);
+        byte[] sd = tbs.encode();
+        CBORObject cborSd = CBORObject.decode(sd);
+        cborSd.getIntegerMap().validate(7, validator);
+        return tbs;
     }
    
     @Test
     public void signatureTest() throws Exception {
         KeyPair p256 = readJwk("p256");
         String keyIdP256 = keyId;
+        KeyPair p256_2 = readJwk("p256-2");
         KeyPair p521 = readJwk("p521");
         KeyPair r2048 = readJwk("r2048");
         KeyPair x448 = readJwk("x448");
+        KeyPair x25519 = readJwk("x25519");
+        KeyPair ed448 = readJwk("ed448");
+        KeyPair ed25519 = readJwk("ed25519");
         
         backAndForth(p256);
         backAndForth(r2048);
         backAndForth(x448);
+        backAndForth(x25519);
+        backAndForth(ed448);
+        backAndForth(ed25519);
         
-        System.out.println(CBORPublicKey.createPublicKey(p256.getPublic()).toString());
+        signAndVerify(new CBORAsymKeySigner(p256.getPrivate()), 
+                      new CBORAsymSignatureValidator(p256.getPublic()));
+
+        signAndVerify(new CBORAsymKeySigner(p256.getPrivate()).setPublicKey(p256.getPublic()), 
+                      new CBORAsymSignatureValidator(p256.getPublic()));
+
+        signAndVerify(new CBORAsymKeySigner(ed25519.getPrivate()).setPublicKey(ed25519.getPublic()), 
+                new CBORAsymSignatureValidator(ed25519.getPublic()));
+
+        signAndVerify(new CBORAsymKeySigner(r2048.getPrivate()).setPublicKey(r2048.getPublic()), 
+                new CBORAsymSignatureValidator(r2048.getPublic()));
+
+        signAndVerify(new CBORAsymKeySigner(p256.getPrivate()), 
+                new CBORAsymSignatureValidator(new CBORAsymSignatureValidator.KeyLocator() {
+                    
+                    @Override
+                    public PublicKey locate(PublicKey optionalPublicKey, 
+                                            String optionalKeyId,
+                                            AsymSignatureAlgorithms signatureAlgorithm)
+                            throws IOException, GeneralSecurityException {
+                        return p256.getPublic();
+                    }
+                }));
+
+        signAndVerify(new CBORAsymKeySigner(p256.getPrivate()), 
+                new CBORAsymSignatureValidator(new CBORAsymSignatureValidator.KeyLocator() {
+                    
+                    @Override
+                    public PublicKey locate(PublicKey optionalPublicKey, 
+                                            String optionalKeyId,
+                                            AsymSignatureAlgorithms signatureAlgorithm)
+                            throws IOException, GeneralSecurityException {
+                        return p256.getPublic();
+                    }
+                }));
+
+        signAndVerify(new CBORAsymKeySigner(p256.getPrivate()).setKeyId(keyIdP256), 
+                new CBORAsymSignatureValidator(new CBORAsymSignatureValidator.KeyLocator() {
+                    
+                    @Override
+                    public PublicKey locate(PublicKey optionalPublicKey, 
+                                            String optionalKeyId,
+                                            AsymSignatureAlgorithms signatureAlgorithm)
+                            throws IOException, GeneralSecurityException {
+                        return keyIdP256.equals(optionalKeyId) ? 
+                                              p256.getPublic() : p256_2.getPublic();
+                    }
+                }));
         
-        CBORObject toBeSigned = createDataToBeSigned();
         
-        CBORAsymKeySigner asymKeySigner = new CBORAsymKeySigner(p256.getPrivate());
-        CBORAsymSignatureValidator asymKeyValidator = new CBORAsymSignatureValidator(p256.getPublic());
-        toBeSigned.getIntegerMap().sign(7, asymKeySigner);
-        System.out.println(toBeSigned.toString());
-        toBeSigned.getIntegerMap().validate(7, asymKeyValidator);
-        System.out.println(toBeSigned.toString());
+        signAndVerify(new CBORAsymKeySigner(p256.getPrivate()).setPublicKey(p256.getPublic()), 
+                new CBORAsymSignatureValidator(new CBORAsymSignatureValidator.KeyLocator() {
+                    
+                    @Override
+                    public PublicKey locate(PublicKey optionalPublicKey, 
+                                            String optionalKeyId,
+                                            AsymSignatureAlgorithms signatureAlgorithm)
+                            throws IOException, GeneralSecurityException {
+                        assertTrue("pk", p256.getPublic().equals(optionalPublicKey));
+                        return null;
+                    }
+                }));
+
+        try {
+            signAndVerify(new CBORAsymKeySigner(p256.getPrivate()), 
+                    new CBORAsymSignatureValidator(new CBORAsymSignatureValidator.KeyLocator() {
+                        
+                        @Override
+                        public PublicKey locate(PublicKey optionalPublicKey, 
+                                                String optionalKeyId,
+                                                AsymSignatureAlgorithms signatureAlgorithm)
+                                throws IOException, GeneralSecurityException {
+                            return p256_2.getPublic();
+                        }
+                    }));
+            fail("must not execute");
+        } catch (Exception e) {
+            checkException(e, "Bad signature for key: ");
+        }
+
+        try {
+            signAndVerify(new CBORAsymKeySigner(p256.getPrivate()).setPublicKey(p256.getPublic()), 
+                    new CBORAsymSignatureValidator(p256_2.getPublic()));
+            fail("must not execute");
+        } catch (Exception e) {
+            checkException(e, "Public keys not identical");
+        }
+        
+        try {
+            signAndVerify(new CBORAsymKeySigner(p256.getPrivate()), 
+                    new CBORAsymSignatureValidator(ed25519.getPublic()));
+            fail("must not execute");
+        } catch (Exception e) {
+            checkException(e, "Algorithm ECDSA_SHA256 does not match key type ED25519");
+        }
+        
+        try {
+            signAndVerify(new CBORAsymKeySigner(p256.getPrivate()), 
+                    new CBORAsymSignatureValidator(new CBORAsymSignatureValidator.KeyLocator() {
+                        
+                        @Override
+                        public PublicKey locate(PublicKey optionalPublicKey, 
+                                                String optionalKeyId,
+                                                AsymSignatureAlgorithms signatureAlgorithm)
+                                throws IOException, GeneralSecurityException {
+                            if ("otherkey".equals(optionalKeyId)) {
+                                return p256_2.getPublic();
+                            }
+                            throw new IOException("KeyId = " + optionalKeyId);
+                        }
+                    }));
+            fail("must not execute");
+        } catch (Exception e) {
+            checkException(e, "KeyId = null");
+        }
+        
     }
-    
- }
+}
