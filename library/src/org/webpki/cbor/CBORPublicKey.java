@@ -45,6 +45,8 @@ import org.webpki.util.ArrayUtil;
  */
 public class CBORPublicKey {
     
+    private CBORPublicKey() {}
+    
     ////////////////////////////////
     // From RFC 8152 and RFC 8230 //
     ////////////////////////////////
@@ -108,7 +110,7 @@ public class CBORPublicKey {
         return new CBORByteString(curvePoint);        
      }
 
-    public static CBORIntegerMap createPublicKey(PublicKey publicKey) 
+    public static CBORIntegerMap encodePublicKey(PublicKey publicKey) 
             throws IOException, GeneralSecurityException {
         CBORIntegerMap cborPublicKey = new CBORIntegerMap();
         KeyAlgorithms keyAlg = KeyAlgorithms.getKeyAlgorithm(publicKey);

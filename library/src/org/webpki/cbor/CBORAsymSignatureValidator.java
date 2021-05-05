@@ -59,6 +59,24 @@ public class CBORAsymSignatureValidator extends CBORValidator {
      * 
      * This option provides full control for the verifier
      * regarding in-lined public keys and key identifiers.
+     * <p>
+     * If no public key is found in the signature object, 
+     * the {@link KeyLocator} will be called BEFORE signature validation
+     * with a <code>null</code> public key argument.  This permits
+     * applications to retrieve a suitable key for validation.
+     * This is usually done by requiring a key identifier.
+     * </p>
+     * <p>
+     * If on the other a public is found in the signature object,
+     * it will be used for signature validation.  AFTER successful
+     * signature validation, the {@link KeyLocator} will be called
+     * with the public key argument holding the public key of
+     * the signature object.  This permits applications to first
+     * validate the signature and then lookup the key which may
+     * simplify database design. 
+     * </p>
+     * 
+     * @param keyLocator The call back
      */
     public CBORAsymSignatureValidator(KeyLocator keyLocator) {
         this.keyLocator = keyLocator;

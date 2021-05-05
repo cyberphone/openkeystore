@@ -109,7 +109,7 @@ public abstract class CBORSigner {
         signatureObject.setObject(ALGORITHM_LABEL, new CBORInteger(algorithmId));
         if (publicKey != null) {
             signatureObject.setObject(PUBLIC_KEY_LABEL, 
-                                      CBORPublicKey.createPublicKey(publicKey));
+                                      CBORPublicKey.encodePublicKey(publicKey));
         }
         if (keyId != null) {
             signatureObject.setObject(KEY_ID_LABEL, new CBORTextString(keyId));

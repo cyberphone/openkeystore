@@ -609,7 +609,7 @@ public class CBORTest {
     }
     
     void backAndForth(KeyPair keyPair) throws Exception {
-        CBORObject cborPublicKey = CBORPublicKey.createPublicKey(keyPair.getPublic());
+        CBORObject cborPublicKey = CBORPublicKey.encodePublicKey(keyPair.getPublic());
         PublicKey publicKey = CBORPublicKey.decodePublicKey(cborPublicKey);
         assertTrue("PK" + cborPublicKey.toString(), publicKey.equals(keyPair.getPublic()));
     }
@@ -723,6 +723,16 @@ public class CBORTest {
             checkException(e, "Bad signature for key: ");
         }
 
+        try {
+            signAndVerify(new CBORAsymKeySigner(p256.getPrivate(), AsymSignatureAlgorithms.ED25519)
+                    .setPublicKey(p256.getPublic()), 
+                    new CBORAsymSignatureValidator(p256.getPublic()));
+            fail("must not execute");
+        } catch (Exception e) {
+            checkException(e, 
+                "Supplied key (NIST_P_256) is incompatible with specified algorithm (ED25519)");
+        }
+        
         try {
             signAndVerify(new CBORAsymKeySigner(p256.getPrivate()).setPublicKey(p256.getPublic()), 
                     new CBORAsymSignatureValidator(p256_2.getPublic()));
