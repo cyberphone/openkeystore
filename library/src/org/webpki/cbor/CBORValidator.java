@@ -25,6 +25,8 @@ import java.security.GeneralSecurityException;
  * 
  */
 public abstract class CBORValidator {
+    
+    CBORValidator() {}
 
     abstract void validate(CBORIntegerMap signatureObject, 
                            int cborSignatureAlgorithm,
