@@ -52,14 +52,17 @@ public abstract class CBORSigner {
         WEBPKI_2_CBOR_ALG.put(HmacAlgorithms.HMAC_SHA384,              6);
         WEBPKI_2_CBOR_ALG.put(HmacAlgorithms.HMAC_SHA512,              7);
                               
-        // Not compatible with COSE but with PKIX's way of dealing with EdDSA*
+        // Incompatible with COSE, but compatible with most cryptographic
+        // APIs as well as PKIX's way of dealing with with different EdDSA
+        // variants.  That is, each being treated as a specific algorithm.
         WEBPKI_2_CBOR_ALG.put(AsymSignatureAlgorithms.ED25519,        -9);
         WEBPKI_2_CBOR_ALG.put(AsymSignatureAlgorithms.ED448,         -10);
         
-        // Not supported by COSE
-        WEBPKI_2_CBOR_ALG.put(AsymSignatureAlgorithms.RSA_SHA256,    -20);
-        WEBPKI_2_CBOR_ALG.put(AsymSignatureAlgorithms.RSA_SHA384,    -21);
-        WEBPKI_2_CBOR_ALG.put(AsymSignatureAlgorithms.RSA_SHA512,    -22);
+        // Not supported by COSE, but RS256 was added by FIDO and the
+        // other PKCS 1.5 variants may very well follow
+        WEBPKI_2_CBOR_ALG.put(AsymSignatureAlgorithms.RSA_SHA256,    -257);
+        WEBPKI_2_CBOR_ALG.put(AsymSignatureAlgorithms.RSA_SHA384,    -258);
+        WEBPKI_2_CBOR_ALG.put(AsymSignatureAlgorithms.RSA_SHA512,    -259);
     }
 
     static final HashMap<Integer, SignatureAlgorithms> CBOR_2_WEBPKI_ALG = new HashMap<>();
@@ -98,6 +101,26 @@ public abstract class CBORSigner {
     
     abstract byte[] signData(byte[] dataToSign) throws GeneralSecurityException, IOException;
     
+    /**
+     * Set signature key Id.
+     * 
+     * In the case the public key is not provided in the signature
+     * object, the signature key may be tied to an identifier
+     * known by the relying party.  How such an identifier
+     * is used to retrieve the proper public key is up to a
+     * convention between the parties using
+     * a specific message scheme.  A keyId may be a database
+     * index or a hash of the public key.  It may also be a
+     * URL pointing to a Web server holding a public key in
+     * PEM format.
+     * <p>
+     * For HMAC-signatures, a keyId or implicit key are
+     * the only ways to retrieve the proper secret key.
+     * </p>
+     * 
+     * @param keyId A keId string
+     * @return this
+     */
     public CBORSigner setKeyId(String keyId) {
         this.keyId = keyId;
         return this;
@@ -105,16 +128,28 @@ public abstract class CBORSigner {
 
     void sign(CBORObject key, CBORMapBase objectToSign) throws IOException, 
                                                                GeneralSecurityException {
+        // Create empty signature object.
         CBORMapBase signatureObject = new CBORIntegerMap();
+        
+        // Add the mandatory signature algorithm.
         signatureObject.setObject(ALGORITHM_LABEL, new CBORInteger(algorithmId));
+        
+        // If a public key has been defined, add it to the signature object.
         if (publicKey != null) {
             signatureObject.setObject(PUBLIC_KEY_LABEL, 
                                       CBORPublicKey.encodePublicKey(publicKey));
         }
+
+        // Add a keyId if there is one.
         if (keyId != null) {
             signatureObject.setObject(KEY_ID_LABEL, new CBORTextString(keyId));
         }
+
+        // Add the prepared signature object to the object we want to sign. 
         objectToSign.setObject(key, signatureObject);
+
+        // Finally, sign all but the signature label and associated value.
+        // encode() is supposed to produce a deterministic representation.
         signatureObject.keys.put(SIGNATURE_LABEL, 
                                  new CBORByteString(signData(objectToSign.encode())));
     }

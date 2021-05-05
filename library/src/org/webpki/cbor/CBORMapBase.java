@@ -28,6 +28,8 @@ import org.webpki.util.ArrayUtil;
 
 /**
  * Base class for holding CBOR maps.
+ * 
+ * This class also provides support for signature creation and validation.
  */
 abstract class CBORMapBase extends CBORObject {
 
@@ -74,22 +76,43 @@ abstract class CBORMapBase extends CBORObject {
     boolean hasKey(CBORObject key) {
         return keys.containsKey(key);
     }
-    
-    CBORValidator validate(CBORObject key, CBORValidator validator) 
-            throws IOException, GeneralSecurityException {
+    /**
+     * Core validation method.
+     * 
+     * @param key
+     * @param validator
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
+    CBORValidator validate(CBORObject key, CBORValidator validator) throws IOException, 
+                                                                  GeneralSecurityException {
+        // Fetch signature object
         CBORIntegerMap signatureObject = getObject(key).getIntegerMap();
+        
+        // Get the signature value.
         byte[] signatureValue = 
                 signatureObject.getObject(CBORSigner.SIGNATURE_LABEL).getByteString();
+        
+        // Remove the signature value label and its argument.
+        // The remaining object is used for signature calculation.
         signatureObject.keys.remove(CBORSigner.SIGNATURE_LABEL);
+        
+        // Fetch optional keyId.
         String optionalKeyId =
                 signatureObject.hasKey(CBORSigner.KEY_ID_LABEL) ?
             signatureObject.getObject(CBORSigner.KEY_ID_LABEL).getTextString() : null;
+        
+        // Call specific validator.
         validator.validate(signatureObject, 
                            signatureObject.getObject(CBORSigner.ALGORITHM_LABEL).getInt(),
                            optionalKeyId,
                            signatureValue,
                            encode());
+
+        // Restore object.
         signatureObject.keys.put(CBORSigner.SIGNATURE_LABEL, new CBORByteString(signatureValue));
+        
+        // Caller convenience.
         return validator;
     }
 
