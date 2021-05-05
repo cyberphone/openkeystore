@@ -743,6 +743,14 @@ public class CBORTest {
         
         try {
             signAndVerify(new CBORAsymKeySigner(p256.getPrivate()), 
+                    new CBORHmacValidator(new byte[] {9}));
+            fail("must not execute");
+        } catch (Exception e) {
+            checkException(e, "Asymmetric versus symmetric algorithm: -7");
+        }
+        
+        try {
+            signAndVerify(new CBORAsymKeySigner(p256.getPrivate()), 
                     new CBORAsymSignatureValidator(ed25519.getPublic()));
             fail("must not execute");
         } catch (Exception e) {
