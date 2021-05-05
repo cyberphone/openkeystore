@@ -69,6 +69,12 @@ public class CBORAsymKeySigner extends CBORSigner {
              KeyAlgorithms.getKeyAlgorithm(privateKey).getRecommendedSignatureAlgorithm());
     }
 
+    /**
+     * Put a public into the signature container.
+     * 
+     * @param publicKey The public key
+     * @return this
+     */
     public CBORAsymKeySigner setPublicKey(PublicKey publicKey) {
         this.publicKey = publicKey;
         return this;

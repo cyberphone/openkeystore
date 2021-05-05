@@ -26,10 +26,10 @@ import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
 
 /**
- * Class for CBOR asymmetric key signature validation
+ * Class for CBOR asymmetric key signature validation.
  * 
- * Note that a validator object may be used any number of times
- * (assuming that the same parameters are valid).  It is also
+ * Note that validator objects may be used any number of times
+ * (assuming that the same parameters are valid).  They are also
  * thread-safe. 
  */
 public class CBORAsymSignatureValidator extends CBORValidator {
@@ -96,6 +96,8 @@ public class CBORAsymSignatureValidator extends CBORValidator {
             inLinePublicKey = CBORPublicKey.decodePublicKey(
                     signatureObject.getObject(CBORSigner.PUBLIC_KEY_LABEL));
         }
+        // There is a locator, call it unless we already have gotten a
+        // public key object.
         if (keyLocator != null) {
             publicKey = inLinePublicKey == null ?
                  keyLocator.locate(inLinePublicKey, optionalKeyId, signatureAlgorithm) 
@@ -109,7 +111,7 @@ public class CBORAsymSignatureValidator extends CBORValidator {
         }
         KeyAlgorithms keyAlgorithm = KeyAlgorithms.getKeyAlgorithm(publicKey);
         if (signatureAlgorithm.getKeyType() != keyAlgorithm.getKeyType()) {
-            throw new IllegalArgumentException("Algorithm " + signatureAlgorithm + 
+            throw new GeneralSecurityException("Algorithm " + signatureAlgorithm + 
                                   " does not match key type " + keyAlgorithm);
         }
         if (!new SignatureWrapper(signatureAlgorithm, publicKey)
@@ -117,6 +119,9 @@ public class CBORAsymSignatureValidator extends CBORValidator {
                  .verify(signatureValue)) {
             throw new GeneralSecurityException("Bad signature for key: " + publicKey.toString());
         }
+        // There is a locator, call it only if we already have gotten a
+        // public key object (for verifying that the received key that
+        // matched signature also belongs to a known entity).
         if (keyLocator != null && inLinePublicKey != null) {
             keyLocator.locate(inLinePublicKey, optionalKeyId, signatureAlgorithm);
         }
