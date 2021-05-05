@@ -93,11 +93,12 @@ public class CBORPublicKey {
         return new CBORByteString(cryptoBinary);        
     }
 
-    static CBORByteString curvePoint(BigInteger value, KeyAlgorithms ec) throws IOException {
+    static CBORByteString curvePoint(BigInteger value, 
+                                     KeyAlgorithms ec) throws GeneralSecurityException {
         byte[] curvePoint = value.toByteArray();
         if (curvePoint.length > (ec.getPublicKeySizeInBits() + 7) / 8) {
             if (curvePoint[0] != 0) {
-                throw new IOException("Unexpected EC point");
+                throw new GeneralSecurityException("Unexpected EC point");
             }
             return cryptoBinary(value);
         }
@@ -107,7 +108,8 @@ public class CBORPublicKey {
         return new CBORByteString(curvePoint);        
      }
 
-    public static CBORIntegerMap createPublicKey(PublicKey publicKey) throws IOException {
+    public static CBORIntegerMap createPublicKey(PublicKey publicKey) 
+            throws IOException, GeneralSecurityException {
         CBORIntegerMap cborPublicKey = new CBORIntegerMap();
         KeyAlgorithms keyAlg = KeyAlgorithms.getKeyAlgorithm(publicKey);
         switch (keyAlg.getKeyType()) {
@@ -135,18 +137,20 @@ public class CBORPublicKey {
         return cborPublicKey;
     }
 
-    static BigInteger getCryptoBinary(CBORObject value) throws IOException {
+    static BigInteger getCryptoBinary(CBORObject value) 
+            throws IOException, GeneralSecurityException {
         byte[] cryptoBinary = value.getByteString();
         if (cryptoBinary[0] == 0x00) {
-            throw new IOException("RSA key parameter contains leading zeroes");
+            throw new GeneralSecurityException("RSA key parameter contains leading zeroes");
         }
         return new BigInteger(1, cryptoBinary);
     }
 
-    static BigInteger getCurvePoint(CBORObject value, KeyAlgorithms ec) throws IOException {
+    static BigInteger getCurvePoint(CBORObject value, KeyAlgorithms ec) 
+            throws IOException, GeneralSecurityException {
         byte[] fixedBinary = value.getByteString();
         if (fixedBinary.length != (ec.getPublicKeySizeInBits() + 7) / 8) {
-            throw new IOException("Public EC key parameter is not normalized");
+            throw new GeneralSecurityException("Public EC key parameter is not normalized");
         }
         return new BigInteger(1, fixedBinary);
     }
@@ -165,7 +169,7 @@ public class CBORPublicKey {
         case EC2_CBOR_KTY:
             keyAlgorithm = COSE_2_WEBPKI_CRV.get(publicKeyMap.getMappedValue(EC2_CRV).getInt());
             if (keyAlgorithm.getKeyType() != KeyTypes.EC) {
-                throw new IllegalArgumentException(keyAlgorithm.getKeyType()  +
+                throw new GeneralSecurityException(keyAlgorithm.getKeyType()  +
                                                    " is not a valid EC curve");
             }
             return KeyFactory.getInstance("EC").generatePublic(new ECPublicKeySpec(
@@ -177,14 +181,14 @@ public class CBORPublicKey {
             keyAlgorithm = COSE_2_WEBPKI_CRV.get(publicKeyMap.getMappedValue(OKP_CRV).getInt());
             if (keyAlgorithm.getKeyType() != KeyTypes.EDDSA &&
                 keyAlgorithm.getKeyType() != KeyTypes.XEC) {
-                throw new IllegalArgumentException(keyAlgorithm.getKeyType()  +
+                throw new GeneralSecurityException(keyAlgorithm.getKeyType()  +
                                                    " is not a valid OKP curve");
             }
             return OkpSupport.raw2PublicOkpKey(publicKeyMap.getMappedValue(OKP_X).getByteString(), 
                                                keyAlgorithm);
             
         default:
-            throw new IllegalArgumentException("Unrecognized key type: " + kty);
+            throw new GeneralSecurityException("Unrecognized key type: " + kty);
         }
     }
 }
