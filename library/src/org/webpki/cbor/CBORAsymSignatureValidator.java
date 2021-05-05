@@ -88,15 +88,20 @@ public class CBORAsymSignatureValidator extends CBORValidator {
                   String optionalKeyId,
                   byte[] signatureValue,
                   byte[] signedData) throws IOException, GeneralSecurityException {
+        
+        // Get signature algorithm.
         AsymSignatureAlgorithms signatureAlgorithm =
                 (AsymSignatureAlgorithms) CBORSigner.getSignatureAlgorithm(
                         coseSignatureAlgorithm, true);
+        
+        // Acquire public key if there is one. 
         PublicKey inLinePublicKey = null;
         if (signatureObject.hasKey(CBORSigner.PUBLIC_KEY_LABEL)) {
             inLinePublicKey = CBORPublicKey.decodePublicKey(
                     signatureObject.getObject(CBORSigner.PUBLIC_KEY_LABEL));
         }
-        // There is a locator, call it unless we already have gotten a
+
+        // If there is a locator, call it unless we already have gotten a
         // public key object.
         if (keyLocator != null) {
             publicKey = inLinePublicKey == null ?
@@ -104,24 +109,32 @@ public class CBORAsymSignatureValidator extends CBORValidator {
                                                 : 
                  inLinePublicKey;
         }
+        
+        // Check if a supplied public matches the one [optionally] found in the signature object.
         if (inLinePublicKey != null) {
             if (!publicKey.equals(inLinePublicKey)) {
                 throw new GeneralSecurityException("Public keys not identical");
             }
         }
+        
+        // By now, we should have a public key.
+        // Verify that the public key matches the signature algorithm.
         KeyAlgorithms keyAlgorithm = KeyAlgorithms.getKeyAlgorithm(publicKey);
         if (signatureAlgorithm.getKeyType() != keyAlgorithm.getKeyType()) {
             throw new GeneralSecurityException("Algorithm " + signatureAlgorithm + 
                                   " does not match key type " + keyAlgorithm);
         }
+        
+        // Finally, verify the signature.
         if (!new SignatureWrapper(signatureAlgorithm, publicKey)
                  .update(signedData)
                  .verify(signatureValue)) {
             throw new GeneralSecurityException("Bad signature for key: " + publicKey.toString());
         }
+
         // There is a locator, call it only if we already have gotten a
-        // public key object (for verifying that the received key that
-        // matched signature also belongs to a known entity).
+        // public key object (for verifying that the received key (that
+        // apparently matched the signature), also belongs to a known entity).
         if (keyLocator != null && inLinePublicKey != null) {
             keyLocator.locate(inLinePublicKey, optionalKeyId, signatureAlgorithm);
         }

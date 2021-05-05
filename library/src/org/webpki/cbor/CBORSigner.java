@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import java.security.GeneralSecurityException;
 import java.security.PublicKey;
+
 import java.util.HashMap;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
@@ -74,15 +75,16 @@ public abstract class CBORSigner {
     }
     
     static SignatureAlgorithms getSignatureAlgorithm(int cborSignatureAlgorithm, 
-                                                     boolean publicKey)                                      
+                                                     boolean wantPublicKeyAlgorithm)                                      
         throws GeneralSecurityException {
         
         SignatureAlgorithms signatureAlgorithms = CBOR_2_WEBPKI_ALG.get(cborSignatureAlgorithm);
         if (signatureAlgorithms ==  null) {
             throw new GeneralSecurityException("Unknown algorithm: " + cborSignatureAlgorithm);
         }
-        if (signatureAlgorithms.isSymmetric() ^ publicKey) {
-            
+        if (signatureAlgorithms.isSymmetric() == wantPublicKeyAlgorithm) {
+            throw new GeneralSecurityException(
+                    "Asymmetric versus symmetric algorithm: " + cborSignatureAlgorithm);
         }
         return signatureAlgorithms;
     }
