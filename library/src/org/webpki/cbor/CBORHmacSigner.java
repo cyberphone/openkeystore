@@ -45,7 +45,7 @@ public class CBORHmacSigner extends CBORSigner {
     public CBORHmacSigner(byte[] secretKey, HmacAlgorithms hmacAlgorithm) throws IOException {
         this.secretKey = secretKey;
         this.hmacAlgorithm = hmacAlgorithm;
-        this.algorithmId = WEBPKI_2_CBOR_ALG.get(hmacAlgorithm);
+        this.cborAlgorithmId = WEBPKI_2_CBOR_ALG.get(hmacAlgorithm);
     }
     
     @Override

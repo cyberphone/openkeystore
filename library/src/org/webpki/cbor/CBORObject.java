@@ -50,8 +50,19 @@ public abstract class CBORObject {
     static final byte MT_TRUE          = (byte) 0xf5;
     static final byte MT_NULL          = (byte) 0xf6;
 
+    /**
+     * Get core CBOR type.
+     * 
+     * @return The CBOR core type
+     */
     public abstract CBORTypes getType();
 
+    /**
+     * Encode CBOR object.
+     * 
+     * @return Byte data
+     * @throws IOException
+     */
     public abstract byte[] encode() throws IOException;
     
     abstract void internalToString(PrettyPrinter prettyPrinter);

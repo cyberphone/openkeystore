@@ -93,17 +93,17 @@ public abstract class CBORSigner {
         }
     }
     
-    static SignatureAlgorithms getSignatureAlgorithm(int cborSignatureAlgorithm, 
+    static SignatureAlgorithms getSignatureAlgorithm(int cborAlgorithmId, 
                                                      boolean wantPublicKeyAlgorithm)                                      
         throws GeneralSecurityException {
         
-        SignatureAlgorithms signatureAlgorithms = CBOR_2_WEBPKI_ALG.get(cborSignatureAlgorithm);
+        SignatureAlgorithms signatureAlgorithms = CBOR_2_WEBPKI_ALG.get(cborAlgorithmId);
         if (signatureAlgorithms ==  null) {
-            throw new GeneralSecurityException("Unknown algorithm: " + cborSignatureAlgorithm);
+            throw new GeneralSecurityException("Unknown algorithm: " + cborAlgorithmId);
         }
         if (signatureAlgorithms.isSymmetric() == wantPublicKeyAlgorithm) {
             throw new GeneralSecurityException(
-                    "Asymmetric versus symmetric algorithm: " + cborSignatureAlgorithm);
+                    "Asymmetric versus symmetric algorithm: " + cborAlgorithmId);
         }
         return signatureAlgorithms;
     }
@@ -113,7 +113,7 @@ public abstract class CBORSigner {
     
     PublicKey publicKey;
     
-    int algorithmId;
+    int cborAlgorithmId;
     
     // Optional key ID
     String keyId;
@@ -147,13 +147,24 @@ public abstract class CBORSigner {
         return this;
     }
 
+    /**
+     * Set cryptographic provider.
+     * 
+     * @param provider Name of provider like "BC"
+     * @return CBORSigner
+     */
+    public CBORSigner setProvider(String provider) {
+        this.provider = provider;
+        return this;
+    }
+
     void sign(CBORObject key, CBORMapBase objectToSign) throws IOException, 
                                                                GeneralSecurityException {
         // Create empty signature object.
         CBORMapBase signatureObject = new CBORIntegerMap();
         
         // Add the mandatory signature algorithm.
-        signatureObject.setObject(ALGORITHM_LABEL, new CBORInteger(algorithmId));
+        signatureObject.setObject(ALGORITHM_LABEL, new CBORInteger(cborAlgorithmId));
         
         // If a public key has been defined, add it to the signature object.
         if (publicKey != null) {

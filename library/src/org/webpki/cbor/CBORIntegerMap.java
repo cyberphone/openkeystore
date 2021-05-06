@@ -26,26 +26,63 @@ public class CBORIntegerMap extends CBORMapBase {
 
     public CBORIntegerMap() {}
 
-    public CBORIntegerMap setMappedValue(int key, CBORObject cborObject) throws IOException {
-        setObject(new CBORInteger(key), cborObject);
+    /**
+     * Set map value.
+     * 
+     * @param key The key
+     * @param value The value expressed as a CBOR object
+     * @return The CBORIntegerMap
+     * @throws IOException
+     */
+    public CBORIntegerMap setMappedValue(int key, CBORObject value) throws IOException {
+        setObject(new CBORInteger(key), value);
         return this;
     }
 
-    public CBORValidator validate(int key, CBORValidator validator) 
+    /**
+     * Validate signed CBOR object.
+     * 
+     * @param key Of map to validate
+     * @param validator Holds the validation method
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
+    public void validate(int key, CBORValidator validator) 
             throws IOException, GeneralSecurityException {
-        return validate(new CBORInteger(key), validator);
+        validate(new CBORInteger(key), validator);
     }
 
+    /**
+     * Sign CBOR object.
+     * 
+     * @param key Of the map to sign
+     * @param signer Holder of signature method and key
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
     public CBORIntegerMap sign(int key, CBORSigner signer) 
             throws IOException, GeneralSecurityException {
         sign(new CBORInteger(key), signer);
         return this;
     }
 
+    /**
+     * Check map for key presence.
+     * 
+     * @param key The key
+     * @return <code>true</code> if the key is present
+     */
     public boolean hasKey(int key) {
         return hasKey(new CBORInteger(key));
     }
 
+    /**
+     * Get map value.
+     * 
+     * @param key
+     * @return The CBORObject
+     * @throws IOException
+     */
     public CBORObject getMappedValue(int key) throws IOException {
         return getObject(new CBORInteger(key));
     }

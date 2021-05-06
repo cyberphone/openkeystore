@@ -44,14 +44,12 @@ public class CBORAsymKeySigner extends CBORSigner {
      * 
      * @param privateKey The key to sign with
      * @param signatureAlgorithm The algorithm to use
-     * @throws IOException 
-     * @throws GeneralSecurityException 
      */
     public CBORAsymKeySigner(PrivateKey privateKey,
-                             AsymSignatureAlgorithms signatureAlgorithm) throws IOException {
+                             AsymSignatureAlgorithms signatureAlgorithm) {
         this.privateKey = privateKey;
         this.signatureAlgorithm = signatureAlgorithm;
-        this.algorithmId = WEBPKI_2_CBOR_ALG.get(signatureAlgorithm);
+        this.cborAlgorithmId = WEBPKI_2_CBOR_ALG.get(signatureAlgorithm);
     }
     
     /**
@@ -62,7 +60,6 @@ public class CBORAsymKeySigner extends CBORSigner {
      * 
      * @param privateKey The key to sign with
      * @throws IOException 
-     * @throws GeneralSecurityException 
      */
     public CBORAsymKeySigner(PrivateKey privateKey) throws IOException {
         this(privateKey,

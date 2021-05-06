@@ -76,15 +76,8 @@ abstract class CBORMapBase extends CBORObject {
     boolean hasKey(CBORObject key) {
         return keys.containsKey(key);
     }
-    /**
-     * Core validation method.
-     * 
-     * @param key
-     * @param validator
-     * @throws IOException
-     * @throws GeneralSecurityException
-     */
-    CBORValidator validate(CBORObject key, CBORValidator validator) throws IOException, 
+
+    void validate(CBORObject key, CBORValidator validator) throws IOException, 
                                                                   GeneralSecurityException {
         // Fetch signature object
         CBORIntegerMap signatureObject = getObject(key).getIntegerMap();
@@ -114,9 +107,6 @@ abstract class CBORMapBase extends CBORObject {
 
         // Restore object.
         signatureObject.keys.put(CBORSigner.SIGNATURE_LABEL, new CBORByteString(signatureValue));
-        
-        // Caller convenience.
-        return validator;
     }
 
     void sign(CBORObject key, CBORSigner signer) throws IOException, GeneralSecurityException {

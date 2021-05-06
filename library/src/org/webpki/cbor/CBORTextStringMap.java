@@ -26,26 +26,63 @@ public class CBORTextStringMap extends CBORMapBase {
 
     public CBORTextStringMap() {}
 
+    /**
+     * Set map value.
+     * 
+     * @param key The key
+     * @param value The value expressed as a CBOR object
+     * @return The CBORIntegerMap
+     * @throws IOException
+     */
     public CBORTextStringMap setMappedValue(String key, CBORObject value) throws IOException {
         setObject(new CBORTextString(key), value);
         return this;
     }
 
-    public CBORValidator validate(String key, CBORValidator validator) 
+    /**
+     * Validate signed CBOR object.
+     * 
+     * @param key Of map to validate
+     * @param validator Holds the validation method
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
+    public void validate(String key, CBORValidator validator) 
             throws IOException, GeneralSecurityException {
-        return validate(new CBORTextString(key), validator);
+        validate(new CBORTextString(key), validator);
     }
 
+    /**
+     * Sign CBOR object.
+     * 
+     * @param key Of the map to sign
+     * @param signer Holder of signature method and key
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
     public CBORTextStringMap sign(String key, CBORSigner signer) 
             throws IOException, GeneralSecurityException {
         sign(new CBORTextString(key), signer);
         return this;
     }
 
+    /**
+     * Check map for key presence.
+     * 
+     * @param key The key
+     * @return <code>true</code> if the key is present
+     */
     public boolean hasKey(String key) {
         return hasKey(new CBORTextString(key));
     }
 
+    /**
+     * Get map value.
+     * 
+     * @param key The key
+     * @return The value expressed as a CBOR object
+     * @throws IOException
+     */
     public CBORObject getMappedValue(String key) throws IOException {
         return getObject(new CBORTextString(key));
     }
