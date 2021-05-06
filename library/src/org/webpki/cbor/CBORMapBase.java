@@ -108,6 +108,9 @@ abstract class CBORMapBase extends CBORObject {
                            optionalKeyId,
                            signatureValue,
                            encode());
+        
+        // Check that nothing "extra" was supplied.
+        signatureObject.checkObjectForUnread();
 
         // Restore object.
         signatureObject.keys.put(CBORSigner.SIGNATURE_LABEL, new CBORByteString(signatureValue));

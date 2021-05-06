@@ -23,7 +23,7 @@ import org.webpki.util.ArrayUtil;
 import org.webpki.util.DebugFormatter;
 
 /*
- * Holder if symmetric keys
+ * Holder of symmetric keys
  */
 public class SymmetricKeys {
 

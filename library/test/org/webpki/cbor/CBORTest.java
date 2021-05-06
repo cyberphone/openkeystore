@@ -37,9 +37,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
+import org.webpki.crypto.HmacAlgorithms;
 
 import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONParser;
+import org.webpki.json.SymmetricKeys;
 
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.DebugFormatter;
@@ -57,6 +59,8 @@ public class CBORTest {
     }
 
     static String baseKey;
+    
+    static SymmetricKeys symmetricKeys;
     
     static String keyId;
     
@@ -623,7 +627,40 @@ public class CBORTest {
         cborSd.getIntegerMap().validate(7, validator);
         return tbs;
     }
-   
+
+    void hmacTest(final int size, final HmacAlgorithms algorithm) throws IOException, GeneralSecurityException {
+        CBORObject tbs = createDataToBeSigned();
+        tbs.getIntegerMap().sign(7, 
+                new CBORHmacSigner(symmetricKeys.getValue(size), algorithm));
+        byte[] sd = tbs.encode();
+        CBORObject cborSd = CBORObject.decode(sd);
+        cborSd.getIntegerMap().validate(7, new CBORHmacValidator(symmetricKeys.getValue(size)));
+        
+        tbs = createDataToBeSigned();
+        final String keyId = symmetricKeys.getName(size);
+        tbs.getIntegerMap().sign(7, 
+                new CBORHmacSigner(symmetricKeys.getValue(size), algorithm).setKeyId(keyId));
+        sd = tbs.encode();
+        cborSd = CBORObject.decode(sd);
+        cborSd.getIntegerMap().validate(7, new CBORHmacValidator(
+                new CBORHmacValidator.KeyLocator() {
+
+                    @Override
+                    public byte[] locate(String optionalKeyId,
+                            HmacAlgorithms hmacAlgorithm)
+                            throws IOException, GeneralSecurityException {
+                        if (!keyId.equals(optionalKeyId)) {
+                            throw new IOException("Unknown keyId");
+                        }
+                        if (!algorithm.equals(hmacAlgorithm)) {
+                            throw new IOException("Algorithm error");
+                        }
+                        return symmetricKeys.getValue(size);
+                    }
+                    
+                }));
+    }
+
     @Test
     public void signatureTest() throws Exception {
         KeyPair p256 = readJwk("p256");
@@ -635,6 +672,8 @@ public class CBORTest {
         KeyPair x25519 = readJwk("x25519");
         KeyPair ed448 = readJwk("ed448");
         KeyPair ed25519 = readJwk("ed25519");
+        
+        symmetricKeys = new SymmetricKeys(baseKey);
         
         backAndForth(p256);
         backAndForth(r2048);
@@ -675,6 +714,10 @@ public class CBORTest {
                                             String optionalKeyId,
                                             AsymSignatureAlgorithms signatureAlgorithm)
                             throws IOException, GeneralSecurityException {
+                        assertTrue("public", optionalPublicKey == null);
+                        assertTrue("keyId", optionalKeyId == null);
+                        assertTrue("alg", AsymSignatureAlgorithms.ECDSA_SHA256.equals(
+                                signatureAlgorithm));
                         return p256.getPublic();
                     }
                 }));
@@ -740,6 +783,11 @@ public class CBORTest {
         } catch (Exception e) {
             checkException(e, "Public keys not identical");
         }
+
+        // HMAC signatures
+        hmacTest(256, HmacAlgorithms.HMAC_SHA256);
+        hmacTest(384, HmacAlgorithms.HMAC_SHA384);
+        hmacTest(512, HmacAlgorithms.HMAC_SHA512);
         
         try {
             signAndVerify(new CBORAsymKeySigner(p256.getPrivate()), 

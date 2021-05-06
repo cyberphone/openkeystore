@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 
 import org.webpki.crypto.HmacAlgorithms;
+
 import org.webpki.util.ArrayUtil;
 
 /**
@@ -42,7 +43,11 @@ public class CBORHmacValidator extends CBORValidator {
     KeyLocator keyLocator;
 
     /**
-     * Initialize validator with public key.
+     * Initialize validator with secret key.
+     * 
+     * Using this option the algorithm provided by the
+     * producer is supposed to be correct.  The alternative
+     * constructor gives the validator full control.
      * 
      * @param secretKey The anticipated public key
      */
@@ -54,7 +59,7 @@ public class CBORHmacValidator extends CBORValidator {
      * Initialize validator with a locator.
      * 
      * This option provides full control for the verifier
-     * regarding key identifiers.
+     * regarding key identifiers and HMAC algorithms.
      *
      * @param keyLocator The call back
      */

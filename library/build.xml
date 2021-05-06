@@ -174,12 +174,12 @@
   </target>
 
   <target name="doc">
-   	<available file="../../../github.repositories/doc/openkeystore/javaapi" type="dir" property="github.doc.present"/>
+   	<available file="../../../github.repositories/doc" type="dir" property="github.doc.present"/>
   	<condition property="doc_root" value="../../" else="">
       <isset property="github.doc.present"/>
   	</condition>
     <property name="public_doc_dir" location="${doc_root}doc/security"/>
-    <property name="doc_dir" location="${doc_root}doc/openkeystore/javaapi"/>
+    <property name="doc_dir" location="${doc_root}javaapi"/>
   	<antcall target="_setdoc_dir"/>
   	
   	<!-- Create temp directory -->
@@ -193,7 +193,11 @@
 
   	<!-- Make documentation but first remove the previous version -->
     <delete includeEmptyDirs="true">
-    	<fileset dir="${doc_dir}" includes="**/*"/>
+    	<fileset dir="${doc_dir}">
+    		<include name="**/*"/>
+    		<exclude name="README*"/>
+            <exclude name="LICENSE*"/>
+        </fileset>
     </delete>
 
   	<!--  -Xdoclint:none: https://github.com/AdoptOpenJDK/openjdk-support/issues/131 -->
@@ -219,7 +223,7 @@
       <link offline="false" href="https://docs.oracle.com/en/java/javase/11/docs/api/"/>
       <link offline="false" href="https://javaee.github.io/javaee-spec/javadocs/"/>
       <doctitle><![CDATA[<h1>WebPKI.org Support</h1>]]></doctitle>
-      <bottom><![CDATA[<i>2005-2020 WebPKI.org.</i>]]></bottom>
+      <bottom><![CDATA[<i>2005-2021 WebPKI.org.</i>]]></bottom>
     </javadoc>
   	<!--
     <delete dir="${doc_dir}">
