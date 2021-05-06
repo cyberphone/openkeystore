@@ -32,10 +32,29 @@ import org.webpki.crypto.SignatureAlgorithms;
  */
 public abstract class CBORSigner {
 
+    /**
+     * Integer value: 1
+     */
     public static final CBORInteger ALGORITHM_LABEL  = new CBORInteger(1);
+    
+    /**
+     * Integer value: 2
+     */
     public static final CBORInteger PUBLIC_KEY_LABEL = new CBORInteger(2);
+    
+    /**
+     * Integer value: 3
+     */
     public static final CBORInteger KEY_ID_LABEL     = new CBORInteger(3);
+    
+    /**
+     * Integer value: 4
+     */
     public static final CBORInteger CERT_PATH_LABEL  = new CBORInteger(4);
+    
+    /**
+     * Integer value: 5
+     */
     public static final CBORInteger SIGNATURE_LABEL  = new CBORInteger(5);
     
     
@@ -139,7 +158,7 @@ public abstract class CBORSigner {
         // If a public key has been defined, add it to the signature object.
         if (publicKey != null) {
             signatureObject.setObject(PUBLIC_KEY_LABEL, 
-                                      CBORPublicKey.encodePublicKey(publicKey));
+                                      CBORPublicKey.encode(publicKey));
         }
 
         // Add a keyId if there is one.

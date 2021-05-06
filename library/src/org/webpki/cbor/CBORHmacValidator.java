@@ -33,8 +33,20 @@ import org.webpki.util.ArrayUtil;
  */
 public class CBORHmacValidator extends CBORValidator {
     
+    /**
+     * For dynamic key retrieval.
+     */
     public interface KeyLocator {
 
+        /**
+         * Check signature data and retrieve validation key.
+         * 
+         * @param optionalKeyId KeyId or null
+         * @param hmacAlgorithm The found HMAC algorithm
+         * @return Secret key for validation 
+         * @throws IOException
+         * @throws GeneralSecurityException
+         */
         byte[] locate(String optionalKeyId, HmacAlgorithms hmacAlgorithm)
             throws IOException, GeneralSecurityException;
     }
@@ -69,13 +81,13 @@ public class CBORHmacValidator extends CBORValidator {
 
     @Override
     void validate(CBORIntegerMap signatureObject, 
-                  int coseSignatureAlgorithm,
+                  int cborSignatureAlgorithm,
                   String optionalKeyId,
                   byte[] signatureValue,
                   byte[] signedData) throws IOException, GeneralSecurityException {
         // Get algorithm from the signature object.
         HmacAlgorithms hmacAlgorithm =
-                (HmacAlgorithms) CBORSigner.getSignatureAlgorithm(coseSignatureAlgorithm, false);
+                (HmacAlgorithms) CBORSigner.getSignatureAlgorithm(cborSignatureAlgorithm, false);
 
         // If there is a locator, call it.
         if (keyLocator != null) {

@@ -613,8 +613,8 @@ public class CBORTest {
     }
     
     void backAndForth(KeyPair keyPair) throws Exception {
-        CBORObject cborPublicKey = CBORPublicKey.encodePublicKey(keyPair.getPublic());
-        PublicKey publicKey = CBORPublicKey.decodePublicKey(cborPublicKey);
+        CBORObject cborPublicKey = CBORPublicKey.encode(keyPair.getPublic());
+        PublicKey publicKey = CBORPublicKey.decode(cborPublicKey);
         assertTrue("PK" + cborPublicKey.toString(), publicKey.equals(keyPair.getPublic()));
     }
     

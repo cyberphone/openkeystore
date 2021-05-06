@@ -34,8 +34,21 @@ import org.webpki.crypto.SignatureWrapper;
  */
 public class CBORAsymSignatureValidator extends CBORValidator {
     
+    /**
+     * For dynamic key retrieval.
+     */
     public interface KeyLocator {
 
+        /**
+         * Check signature data and optional retrieve validation key.
+         * 
+         * @param optionalPublicKey Optional public key found in the signature object
+         * @param optionalKeyId KeyId or <code>null</code>
+         * @param signatureAlgorithm The specified signature algorithm
+         * @return Public validation key or <code>null</code> if signature was already validated
+         * @throws IOException
+         * @throws GeneralSecurityException
+         */
         PublicKey locate(PublicKey optionalPublicKey, 
                          String optionalKeyId, 
                          AsymSignatureAlgorithms signatureAlgorithm)
@@ -84,7 +97,7 @@ public class CBORAsymSignatureValidator extends CBORValidator {
 
     @Override
     void validate(CBORIntegerMap signatureObject, 
-                  int coseSignatureAlgorithm,
+                  int cborSignatureAlgorithm,
                   String optionalKeyId,
                   byte[] signatureValue,
                   byte[] signedData) throws IOException, GeneralSecurityException {
@@ -92,12 +105,12 @@ public class CBORAsymSignatureValidator extends CBORValidator {
         // Get signature algorithm.
         AsymSignatureAlgorithms signatureAlgorithm =
                 (AsymSignatureAlgorithms) CBORSigner.getSignatureAlgorithm(
-                        coseSignatureAlgorithm, true);
+                        cborSignatureAlgorithm, true);
         
         // Acquire public key if there is one. 
         PublicKey inLinePublicKey = null;
         if (signatureObject.hasKey(CBORSigner.PUBLIC_KEY_LABEL)) {
-            inLinePublicKey = CBORPublicKey.decodePublicKey(
+            inLinePublicKey = CBORPublicKey.decode(
                     signatureObject.getObject(CBORSigner.PUBLIC_KEY_LABEL));
         }
 

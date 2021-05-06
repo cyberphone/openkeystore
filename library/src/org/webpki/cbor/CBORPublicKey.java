@@ -108,9 +108,17 @@ public class CBORPublicKey {
             curvePoint = ArrayUtil.add(new byte[]{0}, curvePoint);
         }
         return new CBORByteString(curvePoint);        
-     }
+    }
 
-    public static CBORIntegerMap encodePublicKey(PublicKey publicKey) 
+    /**
+     * Java/JCE to CBOR/COSE conversion.
+     * 
+     * @param publicKey
+     * @return
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
+    public static CBORIntegerMap encode(PublicKey publicKey) 
             throws IOException, GeneralSecurityException {
         CBORIntegerMap cborPublicKey = new CBORIntegerMap();
         KeyAlgorithms keyAlg = KeyAlgorithms.getKeyAlgorithm(publicKey);
@@ -157,7 +165,15 @@ public class CBORPublicKey {
         return new BigInteger(1, fixedBinary);
     }
 
-    public static PublicKey decodePublicKey(CBORObject cborPublicKey) 
+    /**
+     * CBOR/COSE to Java/JCE conversion.
+     * 
+     * @param cborPublicKey
+     * @return
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
+    public static PublicKey decode(CBORObject cborPublicKey) 
     throws IOException, GeneralSecurityException {
         CBORIntegerMap publicKeyMap = cborPublicKey.getIntegerMap();
         KeyAlgorithms keyAlgorithm;
