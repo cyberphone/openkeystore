@@ -90,10 +90,10 @@ public abstract class CBORObject {
         return encoded;
     }
 
-    void checkTypeAndMarkAsRead(CBORTypes expectedCborType) throws IOException {
-        if (getType() != expectedCborType) {
+    void checkTypeAndMarkAsRead(CBORTypes requestedCborType) throws IOException {
+        if (getType() != requestedCborType) {
             throw new IOException("Is type: " + getType() +
-                    ", requested: " + expectedCborType);
+                    ", requested: " + requestedCborType);
         }
         readFlag = true;
     }
@@ -321,6 +321,13 @@ public abstract class CBORObject {
         }
     }
 
+    /**
+     * Decode CBOR data.
+     * 
+     * @param encodedCborData
+     * @return CBOBObject
+     * @throws IOException
+     */
     public static CBORObject decode(byte[] encodedCborData) throws IOException {
         CBORDecoder cborDecoder = new CBORDecoder(encodedCborData);
         CBORObject cborObject = cborDecoder.getObject();
@@ -328,6 +335,12 @@ public abstract class CBORObject {
         return cborObject;
     }
 
+    /**
+     * Check for unread CBOR data.
+     * 
+     * Check if all data from the current node and downwards have been read.
+     * @throws IOException
+     */
     public void checkObjectForUnread() throws IOException {
         checkObjectForUnread(null);
     }
