@@ -38,16 +38,13 @@ follows RFC 7049) by default, but can (with an option), be set
 to adhere to section 4.2.1.  That is, there are no requirements
 for map sorting on input (decode), while output (encode) always
 uses the currently mandated sorting order.
-<h3>Signature Support</h3>
+<h3 id='csf'>Signature Support</h3>
 The CBOR library also contains support for creating and validating
-signatures.
-<p>
-This signature scheme is tentatively called
+signatures using a specific scheme tentatively called
 &quot;CBOR Signature Format&quot; (CSF). 
-</p>
 <p>
 Note that unlike COSE (RFC 8152), CSF
-leverages deterministic serialization,
+leverages <i>deterministic serialization</i>,
 enabling constructs like the following:
 </p>
 <pre>
@@ -84,10 +81,11 @@ enabling constructs like the following:
 }
 </pre>
 <i>Explanation: </i>
-Labels 1-6 represent the application data while the application-specific label 7
-holds an associated digital signature.  A CBOR signature is (for compatibility
-with CSF),
-provided as a <code>map</code> having a fixed set of labels according to the following table:
+Labels 1-6 represent the application data while the <i>application-specific</i>
+label 7 holds an associated <i>enveloped</i> signature.  A CBOR signature must
+(for compatibility with CSF),
+be provided as a CBOR <code>map</code> having a fixed set of labels 
+according to the following table:
 <table>
 <tr><th>Label</th><th>&nbsp;&nbsp;</th><th>Function</th></tr>
 <tr><td>1</td><td></td><td>Algorithm</td></tr>
@@ -97,9 +95,9 @@ provided as a <code>map</code> having a fixed set of labels according to the fol
 <tr><td>5</td><td></td><td>Signature value</td></tr>
 </table>
 &nbsp;<br>
-A signature is validated by running the signature validation 
-algorithm over the complete CBOR binary with the signature label (5) and
+CSF signatures are validated by running the signature validation 
+algorithm over the complete CBOR binary representation, with the signature label (5) and
 its associated value as the sole exception. Note that the length
 of the <code>map</code> object holding the signature value must
-be updated (to reflect the removal of an element) during validation!
+be updated (to reflect the removal of an element) during validation.
 </body>
