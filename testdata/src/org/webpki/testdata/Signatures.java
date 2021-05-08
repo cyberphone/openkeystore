@@ -44,8 +44,8 @@ import org.webpki.json.JSONOutputFormats;
 import org.webpki.json.JSONParser;
 import org.webpki.json.JSONSignatureDecoder;
 import org.webpki.json.JSONSigner;
-import org.webpki.json.JSONSymKeySigner;
-import org.webpki.json.JSONSymKeyVerifier;
+import org.webpki.json.JSONHmacSigner;
+import org.webpki.json.JSONHmacVerifier;
 import org.webpki.json.JSONX509Signer;
 import org.webpki.json.JSONX509Verifier;
 // Test
@@ -306,7 +306,7 @@ public class Signatures {
     static void symmSign(int keyBits, HmacAlgorithms algorithm, boolean wantKeyId) throws Exception {
         byte[] key = symmetricKeys.getValue(keyBits);
         String keyName = symmetricKeys.getName(keyBits);
-        JSONSymKeySigner signer = new JSONSymKeySigner(key, algorithm);
+        JSONHmacSigner signer = new JSONHmacSigner(key, algorithm);
         if (wantKeyId) {
             signer.setKeyId(keyName);
         }
@@ -317,7 +317,7 @@ public class Signatures {
         }
         JSONSignatureDecoder decoder = 
                 JSONParser.parse(signedData).getSignature(options);
-        decoder.verify(new JSONSymKeyVerifier(key));
+        decoder.verify(new JSONHmacVerifier(key));
         optionalUpdate(baseSignatures + prefix("a" + keyBits) + 
                 getAlgorithm(decoder) + '@' + keyIndicator(wantKeyId, false), signedData, false);
     }

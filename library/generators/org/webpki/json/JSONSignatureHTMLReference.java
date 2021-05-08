@@ -191,7 +191,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
                      .append(showTextAndCode("The following object was signed by the key above:",
                                              name, 
                                              signature));
-                    dec.verify(new JSONSymKeyVerifier(key));
+                    dec.verify(new JSONHmacVerifier(key));
                     if (!symKey.keyId.equals(dec.getKeyId())) {
                         throw new IOException("Sym sign");
                     }

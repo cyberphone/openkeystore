@@ -21,16 +21,16 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 
 import org.webpki.crypto.HmacAlgorithms;
-import org.webpki.crypto.SymKeyVerifierInterface;
+import org.webpki.crypto.HmacVerifierInterface;
 
 import org.webpki.util.ArrayUtil;
 
 /**
- * Initiator object for symmetric key signature verifiers.
+ * Initiator object for HMAC signature verifiers.
  */
-public class JSONSymKeyVerifier extends JSONVerifier {
+public class JSONHmacVerifier extends JSONVerifier {
 
-    SymKeyVerifierInterface verifier;
+    HmacVerifierInterface verifier;
 
     /**
      * Custom crypto verifier for symmetric keys.
@@ -38,7 +38,7 @@ public class JSONSymKeyVerifier extends JSONVerifier {
      *
      * @param verifier Handle to implementation
      */
-    public JSONSymKeyVerifier(SymKeyVerifierInterface verifier) {
+    public JSONHmacVerifier(HmacVerifierInterface verifier) {
         super(JSONSignatureTypes.SYMMETRIC_KEY);
         this.verifier = verifier;
     }
@@ -49,8 +49,8 @@ public class JSONSymKeyVerifier extends JSONVerifier {
      *
      * @param rawKey Key
      */
-    public JSONSymKeyVerifier(final byte[] rawKey) {
-        this(new SymKeyVerifierInterface() {
+    public JSONHmacVerifier(final byte[] rawKey) {
+        this(new HmacVerifierInterface() {
 
             @Override
             public boolean verifyData(byte[] data,

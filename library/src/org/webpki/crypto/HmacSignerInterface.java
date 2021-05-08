@@ -25,7 +25,7 @@ import java.security.GeneralSecurityException;
  * Common interface for HMAC signatures.
  *
  */
-public interface SymKeySignerInterface {
+public interface HmacSignerInterface {
 
     /**
      * Sign data.
@@ -44,7 +44,9 @@ public interface SymKeySignerInterface {
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    HmacAlgorithms getAlgorithm() throws IOException, GeneralSecurityException;
+    default HmacAlgorithms getAlgorithm() throws IOException, GeneralSecurityException {
+        throw new GeneralSecurityException("Missing implementation!");
+    }
 
     /**
      * Set signature algorithm.
@@ -53,6 +55,9 @@ public interface SymKeySignerInterface {
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    void setAlgorithm(HmacAlgorithms algorithm) throws IOException, GeneralSecurityException;
+    default void setAlgorithm(HmacAlgorithms algorithm) throws IOException,
+                                                               GeneralSecurityException {
+        throw new GeneralSecurityException("Missing implementation!");
+    }
 
 }

@@ -23,14 +23,14 @@ import java.security.GeneralSecurityException;
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.SignatureAlgorithms;
-import org.webpki.crypto.SymKeySignerInterface;
+import org.webpki.crypto.HmacSignerInterface;
 
 /**
- * Initiator object for symmetric key signatures.
+ * Initiator object for HMAC signatures.
  */
-public class JSONSymKeySigner extends JSONSigner {
+public class JSONHmacSigner extends JSONSigner {
 
-    SymKeySignerInterface signer;
+    HmacSignerInterface signer;
 
     /**
      * Constructor for custom crypto solutions.
@@ -38,7 +38,7 @@ public class JSONSymKeySigner extends JSONSigner {
      * @throws IOException
      * @throws GeneralSecurityException 
      */
-    public JSONSymKeySigner(SymKeySignerInterface signer) throws IOException,
+    public JSONHmacSigner(HmacSignerInterface signer) throws IOException,
                                                                  GeneralSecurityException {
         this.signer = signer;
     }
@@ -49,9 +49,9 @@ public class JSONSymKeySigner extends JSONSigner {
      * @param algorithm MAC algorithm
      * @throws IOException
      */
-    public JSONSymKeySigner(final byte[] rawKey, final HmacAlgorithms algorithm) 
+    public JSONHmacSigner(final byte[] rawKey, final HmacAlgorithms algorithm) 
             throws IOException {
-        signer = new SymKeySignerInterface() {
+        signer = new HmacSignerInterface() {
 
             @Override
             public byte[] signData(byte[] data) throws IOException, GeneralSecurityException {
@@ -71,7 +71,7 @@ public class JSONSymKeySigner extends JSONSigner {
         };
     }
 
-    public JSONSymKeySigner setAlgorithmPreferences(AlgorithmPreferences algorithmPreferences) {
+    public JSONHmacSigner setAlgorithmPreferences(AlgorithmPreferences algorithmPreferences) {
         this.algorithmPreferences = algorithmPreferences;
         return this;
     }

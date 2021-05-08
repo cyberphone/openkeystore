@@ -41,8 +41,8 @@ import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.AsymKeySignerInterface;
-import org.webpki.crypto.SymKeySignerInterface;
-import org.webpki.crypto.SymKeyVerifierInterface;
+import org.webpki.crypto.HmacSignerInterface;
+import org.webpki.crypto.HmacVerifierInterface;
 import org.webpki.crypto.SignatureWrapper;
 
 public class xmlobject extends XMLObjectWrapper implements XMLEnvelopedInput {
@@ -191,7 +191,7 @@ public class xmlobject extends XMLObjectWrapper implements XMLEnvelopedInput {
                 XMLSigner xmls = new XMLSigner(signer);
                 xmls.createEnvelopedSignature(o);
             } else {
-                XMLSymKeySigner xmls = new XMLSymKeySigner(new SymKeySignerInterface() {
+                XMLSymKeySigner xmls = new XMLSymKeySigner(new HmacSignerInterface() {
 
                     public HmacAlgorithms getAlgorithm() throws IOException {
                         return HmacAlgorithms.HMAC_SHA256;
@@ -226,7 +226,7 @@ public class xmlobject extends XMLObjectWrapper implements XMLEnvelopedInput {
                 XMLVerifier verifier = new XMLVerifier(new KeyStoreVerifier(DemoKeyStore.getMarionKeyStore()));
                 verifier.validateEnvelopedSignature(o);
             } else {
-                XMLSymKeyVerifier verifier = new XMLSymKeyVerifier(new SymKeyVerifierInterface() {
+                XMLSymKeyVerifier verifier = new XMLSymKeyVerifier(new HmacVerifierInterface() {
                     public boolean verifyData(byte[] data, byte[] digest, HmacAlgorithms algorithm, String keyId) 
                             throws IOException, GeneralSecurityException {
                         if (algorithm != HmacAlgorithms.HMAC_SHA256) {

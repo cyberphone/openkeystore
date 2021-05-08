@@ -74,18 +74,6 @@ public class CBORAsymKeySigner extends CBORSigner {
                         .update(dataToBeSigned)
                         .sign();            
             }
-
-            @Override
-            public AsymSignatureAlgorithms getAlgorithm() throws IOException,
-                                                                 GeneralSecurityException {
-                return null;  // Not used here
-            }
-
-            @Override
-            public void setAlgorithm(AsymSignatureAlgorithms algorithm) 
-                    throws IOException, GeneralSecurityException {
-                // Not used here
-            }
             
         };
         setAlgorithm(KeyAlgorithms.getKeyAlgorithm(privateKey)
@@ -113,7 +101,7 @@ public class CBORAsymKeySigner extends CBORSigner {
      */
     public CBORAsymKeySigner setAlgorithm(AsymSignatureAlgorithms algorithm) 
             throws IOException, GeneralSecurityException {
-        signer.setAlgorithm(this.algorithm = algorithm);
+        this.algorithm = algorithm;
         this.cborAlgorithmId = WEBPKI_2_CBOR_ALG.get(algorithm);
         return this;
     }    

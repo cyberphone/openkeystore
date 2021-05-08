@@ -21,12 +21,12 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 
-import org.webpki.crypto.SymKeySignerInterface;
+import org.webpki.crypto.HmacSignerInterface;
 
 
 public class XMLSymKeySigner extends XMLSignerCore {
 
-    SymKeySignerInterface sym_signer;
+    HmacSignerInterface sym_signer;
 
     String key_name = "symmetric-key";
 
@@ -44,7 +44,7 @@ public class XMLSymKeySigner extends XMLSignerCore {
      *
      * @param signer Signer interface
      */
-    public XMLSymKeySigner(SymKeySignerInterface signer) {
+    public XMLSymKeySigner(HmacSignerInterface signer) {
         this.sym_signer = signer;
     }
 

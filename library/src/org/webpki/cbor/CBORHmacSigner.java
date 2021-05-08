@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 
 import org.webpki.crypto.HmacAlgorithms;
-import org.webpki.crypto.SymKeySignerInterface;
+import org.webpki.crypto.HmacSignerInterface;
 
 /**
  * Class for creating CBOR HMAC signatures.
@@ -32,34 +32,24 @@ import org.webpki.crypto.SymKeySignerInterface;
  */
 public class CBORHmacSigner extends CBORSigner {
 
-    SymKeySignerInterface signer;
+    HmacSignerInterface signer;
 
     /**
      * Initialize internal signer.
      * 
      * @param secretKey The key to sign with
-     * @param hmacAlgorithm The algorithm to use
+     * @param algorithm The algorithm to use
      * @throws IOException 
      * @throws GeneralSecurityException 
      */
     public CBORHmacSigner(byte[] secretKey, HmacAlgorithms algorithm) 
             throws IOException, GeneralSecurityException {
         
-        this.signer = new SymKeySignerInterface() {
+        this.signer = new HmacSignerInterface() {
 
             @Override
             public byte[] signData(byte[] data) throws IOException, GeneralSecurityException {
                 return algorithm.digest(secretKey, data);
-            }
-
-            @Override
-            public HmacAlgorithms getAlgorithm() throws IOException, GeneralSecurityException {
-                return null;
-            }
-
-            @Override
-            public void setAlgorithm(HmacAlgorithms algorithm) throws IOException, 
-                                                                      GeneralSecurityException {
             }
             
         };
@@ -69,12 +59,11 @@ public class CBORHmacSigner extends CBORSigner {
     /**
      * Initialize external signer.
      * 
-     * @param secretKey The key to sign with
-     * @param hmacAlgorithm The algorithm to use
+     * @param signer The external signer
      * @throws IOException 
      * @throws GeneralSecurityException 
      */
-    public CBORHmacSigner(SymKeySignerInterface signer) throws IOException,
+    public CBORHmacSigner(HmacSignerInterface signer) throws IOException,
                                                                GeneralSecurityException {
         this.signer = signer;
         setAlgorithm(signer.getAlgorithm());

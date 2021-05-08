@@ -3290,14 +3290,14 @@ public class JSONTest {
                         .setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED));
             int keyBits = dec.getSignatureValue().length * 8;
             byte[] key = symmetricKeys.getValue(keyBits);
-            dec.verify(new JSONSymKeyVerifier(key));
+            dec.verify(new JSONHmacVerifier(key));
             dec = JSONParser.parse(new JSONObjectWriter().setString("Mydata", "cool")
-            .setSignature(new JSONSymKeySigner(key, 
+            .setSignature(new JSONHmacSigner(key, 
                     (HmacAlgorithms) dec.getAlgorithm())).toString())
             .getSignature(new JSONCryptoHelper.Options());
-            dec.verify(new JSONSymKeyVerifier(key));
+            dec.verify(new JSONHmacVerifier(key));
             try {
-                dec.verify(new JSONSymKeyVerifier(ArrayUtil.add(key, new byte[]{5})));
+                dec.verify(new JSONHmacVerifier(ArrayUtil.add(key, new byte[]{5})));
                 fail("Must not pass");
             } catch (Exception e) {
             }

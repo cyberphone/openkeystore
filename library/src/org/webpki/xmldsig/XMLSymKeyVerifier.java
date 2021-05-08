@@ -20,12 +20,12 @@ import java.io.IOException;
 
 import java.security.GeneralSecurityException;
 
-import org.webpki.crypto.SymKeyVerifierInterface;
+import org.webpki.crypto.HmacVerifierInterface;
 
 
 public class XMLSymKeyVerifier extends XMLVerifierCore {
 
-    SymKeyVerifierInterface sym_verifier;
+    HmacVerifierInterface sym_verifier;
 
     void verify(XMLSignatureWrapper signature) throws IOException, GeneralSecurityException {
         // Right kind of XML Dsig?
@@ -38,7 +38,7 @@ public class XMLSymKeyVerifier extends XMLVerifierCore {
     }
 
 
-    public XMLSymKeyVerifier(SymKeyVerifierInterface sym_verifier) {
+    public XMLSymKeyVerifier(HmacVerifierInterface sym_verifier) {
         this.sym_verifier = sym_verifier;
     }
 

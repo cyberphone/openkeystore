@@ -38,6 +38,7 @@ import org.junit.Test;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.HmacAlgorithms;
+import org.webpki.crypto.HmacSignerInterface;
 
 import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONParser;
@@ -636,6 +637,29 @@ public class CBORTest {
         CBORObject cborSd = CBORObject.decode(sd);
         cborSd.getIntegerMap().validate(7, new CBORHmacValidator(symmetricKeys.getValue(size)));
         
+        tbs = createDataToBeSigned();
+        tbs.getIntegerMap().sign(7, 
+                new CBORHmacSigner(new HmacSignerInterface() {
+
+                    @Override
+                    public byte[] signData(byte[] data) throws IOException, GeneralSecurityException {
+                        return algorithm.digest(symmetricKeys.getValue(size), data);
+                    }
+
+                    @Override
+                    public HmacAlgorithms getAlgorithm() throws IOException, GeneralSecurityException {
+                        return algorithm;
+                    }
+
+                    @Override
+                    public void setAlgorithm(HmacAlgorithms algorithm) throws IOException, GeneralSecurityException {
+                    }
+                    
+                }));
+        sd = tbs.encode();
+        cborSd = CBORObject.decode(sd);
+        cborSd.getIntegerMap().validate(7, new CBORHmacValidator(symmetricKeys.getValue(size)));
+
         tbs = createDataToBeSigned();
         final String keyId = symmetricKeys.getName(size);
         tbs.getIntegerMap().sign(7, 
