@@ -26,7 +26,7 @@ import java.security.cert.X509Certificate;
 /**
  * Verify certificates using the KeyStore interface.
  */
-public class KeyStoreVerifier implements VerifierInterface {
+public class KeyStoreVerifier implements X509VerifierInterface {
 
     private X509Store caCertificates;
 
@@ -95,7 +95,7 @@ public class KeyStoreVerifier implements VerifierInterface {
     }
 
 
-    public X509Certificate[] getSignerCertificatePath() throws IOException {
+    public X509Certificate[] getCertificatePath() throws IOException {
         return certificatePath;
     }
 

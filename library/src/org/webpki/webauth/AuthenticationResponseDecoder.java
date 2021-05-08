@@ -25,7 +25,7 @@ import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
-import org.webpki.crypto.VerifierInterface;
+import org.webpki.crypto.X509VerifierInterface;
 
 import org.webpki.json.JSONCryptoHelper;
 import org.webpki.json.JSONObjectReader;
@@ -71,7 +71,7 @@ public class AuthenticationResponseDecoder extends InputValidator {
     }
 
 
-    public void verifySignature(VerifierInterface verifier) throws IOException,
+    public void verifySignature(X509VerifierInterface verifier) throws IOException,
                                                                    GeneralSecurityException {
         signature.verify(new JSONX509Verifier(verifier));
     }

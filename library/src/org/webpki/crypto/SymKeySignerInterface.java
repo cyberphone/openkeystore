@@ -27,8 +27,32 @@ import java.security.GeneralSecurityException;
  */
 public interface SymKeySignerInterface {
 
-    public byte[] signData(byte[] data) throws IOException, GeneralSecurityException;
+    /**
+     * Sign data.
+     * 
+     * @param data Data to sign
+     * @return Signed data
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
+    byte[] signData(byte[] data) throws IOException, GeneralSecurityException;
 
-    public HmacAlgorithms getAlgorithm() throws IOException, GeneralSecurityException;
+    /**
+     * Get signature algorithm.
+     * 
+     * @return Signature algorithm
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
+    HmacAlgorithms getAlgorithm() throws IOException, GeneralSecurityException;
+
+    /**
+     * Set signature algorithm.
+     * 
+     * @param algorithm The signature algorithm
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
+    void setAlgorithm(HmacAlgorithms algorithm) throws IOException, GeneralSecurityException;
 
 }

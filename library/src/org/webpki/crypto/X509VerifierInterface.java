@@ -16,44 +16,36 @@
  */
 package org.webpki.crypto;
 
-
 import java.io.IOException;
 
 import java.security.GeneralSecurityException;
 
+import java.security.cert.X509Certificate;
+
 /**
- * Common interface for asymmetric key signatures.
- *
- */
-public interface AsymKeySignerInterface {
+  * Common interface for X509 signature validation.
+  *
+  */
+public interface X509VerifierInterface {
 
     /**
-     * Sign data.
+     * Set if trusted path is required.
      * 
-     * @param data Data to sign
-     * @return Signed data
+     * @param flag
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    byte[] signData(byte[] data) throws IOException, GeneralSecurityException;
-    
-    /**
-     * Get signature algorithm.
-     * 
-     * @return Signature algorithm
-     * @throws IOException
-     * @throws GeneralSecurityException
-     */
-    AsymSignatureAlgorithms getAlgorithm() throws IOException, GeneralSecurityException;
+    void setTrustedRequired(boolean flag) throws IOException, GeneralSecurityException;
 
     /**
-     * Set signature algorithm.
+     * Verify certificate path.
      * 
-     * @param algorithm The signature algorithm
+     * @param certificatePath
+     * @return
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    void setAlgorithm(AsymSignatureAlgorithms algorithm) throws IOException,
-                                                                GeneralSecurityException;
+    boolean verifyCertificatePath(X509Certificate[] certificatePath) 
+            throws IOException, GeneralSecurityException;
 
 }

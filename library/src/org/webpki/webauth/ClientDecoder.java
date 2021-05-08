@@ -20,7 +20,7 @@ import java.io.IOException;
 
 import java.security.GeneralSecurityException;
 
-import org.webpki.crypto.VerifierInterface;
+import org.webpki.crypto.X509VerifierInterface;
 
 import org.webpki.json.JSONCryptoHelper;
 import org.webpki.json.JSONObjectReader;
@@ -34,7 +34,7 @@ abstract class ClientDecoder extends InputValidator {
 
     abstract void readServerRequest(JSONObjectReader rd) throws IOException;
 
-    public void verifySignature(VerifierInterface verifier) throws IOException,
+    public void verifySignature(X509VerifierInterface verifier) throws IOException,
                                                                    GeneralSecurityException {
         signature.verify(new JSONX509Verifier(verifier));
     }

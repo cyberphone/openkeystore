@@ -34,7 +34,6 @@ public class Sign {
         KeyStoreSigner signer = new KeyStoreSigner(DemoKeyStore.getMarionKeyStore(), null);
         signer.setKey(null, DemoKeyStore.getSignerPassword());
         PKCS7Signer pkcs7 = new PKCS7Signer(signer);
-//        pkcs7.setSignatureAlgorithm (org.webpki.crypto.SignatureAlgorithms.RSA_SHA256);
         ArrayUtil.writeFile(args[0],
                 args.length == 2 ?
                         pkcs7.signMessage(ArrayUtil.readFile(args[1]))

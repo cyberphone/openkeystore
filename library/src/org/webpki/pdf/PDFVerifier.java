@@ -26,7 +26,7 @@ import java.util.Date;
 import java.security.cert.X509Certificate;
 import java.security.GeneralSecurityException;
 
-import org.webpki.crypto.VerifierInterface;
+import org.webpki.crypto.X509VerifierInterface;
 import org.webpki.crypto.CertificateUtil;
 
 import com.lowagie.text.pdf.PdfReader;
@@ -35,7 +35,7 @@ import com.lowagie.text.pdf.PdfPKCS7;
 
 public class PDFVerifier {
 
-    private VerifierInterface verifier;
+    private X509VerifierInterface verifier;
 
     private Date signing_time;
 
@@ -54,7 +54,7 @@ public class PDFVerifier {
     private byte[] file_data;
 
 
-    public PDFVerifier(VerifierInterface verifier) {
+    public PDFVerifier(X509VerifierInterface verifier) {
         this.verifier = verifier;
     }
 

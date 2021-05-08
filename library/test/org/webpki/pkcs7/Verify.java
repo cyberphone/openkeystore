@@ -18,7 +18,6 @@ package org.webpki.pkcs7;
 
 import org.webpki.crypto.CertificateInfo;
 import org.webpki.crypto.DemoKeyStore;
-import org.webpki.crypto.VerifierInterface;
 import org.webpki.crypto.KeyStoreVerifier;
 
 import org.webpki.util.ArrayUtil;
@@ -32,7 +31,7 @@ public class Verify {
                     "   -d            : detached signature\n");
             System.exit(3);
         }
-        VerifierInterface verifier = new KeyStoreVerifier(DemoKeyStore.getCAKeyStore());
+        KeyStoreVerifier verifier = new KeyStoreVerifier(DemoKeyStore.getCAKeyStore());
         PKCS7Verifier pkcs7 = new PKCS7Verifier(verifier);
         verifier.setTrustedRequired(false);
         if (args.length == 2) {
@@ -43,6 +42,6 @@ public class Verify {
         } else {
             pkcs7.verifyDetachedMessage(ArrayUtil.readFile(args[0]), ArrayUtil.readFile(args[1]));
         }
-        System.out.println("\nVERIFICATION SUCCESSFUL\n\n" + new CertificateInfo(verifier.getSignerCertificatePath()[0]).toString());
+        System.out.println("\nVERIFICATION SUCCESSFUL\n\n" + new CertificateInfo(verifier.getCertificatePath()[0]).toString());
     }
 }

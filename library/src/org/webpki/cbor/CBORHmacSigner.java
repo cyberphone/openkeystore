@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 
 import org.webpki.crypto.HmacAlgorithms;
+import org.webpki.crypto.SymKeySignerInterface;
 
 /**
  * Class for creating CBOR HMAC signatures.
@@ -31,25 +32,71 @@ import org.webpki.crypto.HmacAlgorithms;
  */
 public class CBORHmacSigner extends CBORSigner {
 
-    byte[] secretKey;
-
-    HmacAlgorithms hmacAlgorithm;
+    SymKeySignerInterface signer;
 
     /**
-     * Initialize signer.
+     * Initialize internal signer.
      * 
      * @param secretKey The key to sign with
      * @param hmacAlgorithm The algorithm to use
      * @throws IOException 
+     * @throws GeneralSecurityException 
      */
-    public CBORHmacSigner(byte[] secretKey, HmacAlgorithms hmacAlgorithm) throws IOException {
-        this.secretKey = secretKey;
-        this.hmacAlgorithm = hmacAlgorithm;
-        this.cborAlgorithmId = WEBPKI_2_CBOR_ALG.get(hmacAlgorithm);
+    public CBORHmacSigner(byte[] secretKey, HmacAlgorithms algorithm) 
+            throws IOException, GeneralSecurityException {
+        
+        this.signer = new SymKeySignerInterface() {
+
+            @Override
+            public byte[] signData(byte[] data) throws IOException, GeneralSecurityException {
+                return algorithm.digest(secretKey, data);
+            }
+
+            @Override
+            public HmacAlgorithms getAlgorithm() throws IOException, GeneralSecurityException {
+                return null;
+            }
+
+            @Override
+            public void setAlgorithm(HmacAlgorithms algorithm) throws IOException, 
+                                                                      GeneralSecurityException {
+            }
+            
+        };
+        setAlgorithm(algorithm);
+     }
+    
+    /**
+     * Initialize external signer.
+     * 
+     * @param secretKey The key to sign with
+     * @param hmacAlgorithm The algorithm to use
+     * @throws IOException 
+     * @throws GeneralSecurityException 
+     */
+    public CBORHmacSigner(SymKeySignerInterface signer) throws IOException,
+                                                               GeneralSecurityException {
+        this.signer = signer;
+        setAlgorithm(signer.getAlgorithm());
     }
     
+    /**
+     * Set signature algorithm.
+     * 
+     * @param algorithm The algorithm
+     * @return this
+     * @throws GeneralSecurityException 
+     * @throws IOException 
+     */
+    public CBORHmacSigner setAlgorithm(HmacAlgorithms algorithm) throws IOException,
+                                                                        GeneralSecurityException {
+        this.cborAlgorithmId = WEBPKI_2_CBOR_ALG.get(algorithm);
+        return this;
+    }  
+    
     @Override
-    byte[] signData(byte[] dataToBeSigned) throws GeneralSecurityException, IOException {
-        return hmacAlgorithm.digest(secretKey, dataToBeSigned);
+    byte[] signData(byte[] dataToBeSigned) throws IOException,
+                                                  GeneralSecurityException {
+        return signer.signData(dataToBeSigned);
     }
 }

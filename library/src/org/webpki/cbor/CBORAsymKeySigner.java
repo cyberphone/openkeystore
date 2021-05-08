@@ -36,8 +36,6 @@ import org.webpki.crypto.SignatureWrapper;
  */
 public class CBORAsymKeySigner extends CBORSigner {
 
-    PrivateKey privateKey;
-
     AsymSignatureAlgorithms algorithm;
     
     AsymKeySignerInterface signer;

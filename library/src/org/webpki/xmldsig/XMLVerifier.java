@@ -24,13 +24,13 @@ import java.security.GeneralSecurityException;
 
 import javax.security.auth.x500.X500Principal;
 
-import org.webpki.crypto.VerifierInterface;
+import org.webpki.crypto.X509VerifierInterface;
 import org.webpki.crypto.CertificateUtil;
 
 public class XMLVerifier extends XMLVerifierCore {
     private X509Certificate[] certpath;
 
-    private VerifierInterface verifier_interface;
+    private X509VerifierInterface verifier_interface;
 
 
     private void badCertMatch() throws IOException {
@@ -73,10 +73,10 @@ public class XMLVerifier extends XMLVerifierCore {
     /**
      * Creates an XMLVerifier using the given verifier object
      *
-     * @param verifier {@link VerifierInterface VerifierInterface} containing the
+     * @param verifier {@link X509VerifierInterface VerifierInterface} containing the
      *                 certificates and method needed.
      */
-    public XMLVerifier(VerifierInterface verifier) {
+    public XMLVerifier(X509VerifierInterface verifier) {
         this.verifier_interface = verifier;
     }
 

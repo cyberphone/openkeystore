@@ -17,15 +17,16 @@
 package org.webpki.json;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 
-import org.webpki.crypto.VerifierInterface;
+import org.webpki.crypto.X509VerifierInterface;
 
 /**
  * Initiator object for X.509 signature verifiers.
  */
 public class JSONX509Verifier extends JSONVerifier {
 
-    VerifierInterface verifier;
+    X509VerifierInterface verifier;
 
     /**
      * Verifier for X509-based keys.
@@ -33,13 +34,14 @@ public class JSONX509Verifier extends JSONVerifier {
      *
      * @param verifier Verifier which presumably would do full PKIX path validation etc.
      */
-    public JSONX509Verifier(VerifierInterface verifier) {
+    public JSONX509Verifier(X509VerifierInterface verifier) {
         super(JSONSignatureTypes.X509_CERTIFICATE);
         this.verifier = verifier;
     }
 
     @Override
-    void verify(JSONSignatureDecoder signatureDecoder) throws IOException {
+    void verify(JSONSignatureDecoder signatureDecoder) throws IOException,
+                                                              GeneralSecurityException {
         verifier.verifyCertificatePath(signatureDecoder.certificatePath);
     }
 }

@@ -17,6 +17,7 @@
 package org.webpki.json;
 
 import java.io.IOException;
+
 import java.security.GeneralSecurityException;
 
 import org.webpki.crypto.AlgorithmPreferences;
@@ -48,7 +49,8 @@ public class JSONSymKeySigner extends JSONSigner {
      * @param algorithm MAC algorithm
      * @throws IOException
      */
-    public JSONSymKeySigner(final byte[] rawKey, final HmacAlgorithms algorithm) throws IOException {
+    public JSONSymKeySigner(final byte[] rawKey, final HmacAlgorithms algorithm) 
+            throws IOException {
         signer = new SymKeySignerInterface() {
 
             @Override
@@ -59,6 +61,11 @@ public class JSONSymKeySigner extends JSONSigner {
             @Override
             public HmacAlgorithms getAlgorithm() throws IOException {
                 return algorithm;
+            }
+
+            @Override
+            public void setAlgorithm(HmacAlgorithms algorithm)
+                    throws IOException, GeneralSecurityException {
             }
            
         };

@@ -27,7 +27,7 @@ import java.security.cert.X509Certificate;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.AsymEncryptionAlgorithms;
 import org.webpki.crypto.HashAlgorithms;
-import org.webpki.crypto.VerifierInterface;
+import org.webpki.crypto.X509VerifierInterface;
 import org.webpki.crypto.CertificateUtil;
 import org.webpki.crypto.SignatureWrapper;
 
@@ -45,7 +45,7 @@ import org.webpki.asn1.cert.DistinguishedName;
 public class PKCS7Verifier {
     private X509Certificate[] certpath;
 
-    private VerifierInterface verifier_interface;
+    private X509VerifierInterface verifier_interface;
 
     private HashAlgorithms digest_algorithm;
 
@@ -255,10 +255,10 @@ public class PKCS7Verifier {
     /**
      * Creates a PKCS7Verifier using the given verifier object
      *
-     * @param verifier {@link VerifierInterface VerifierInterface} containing the
+     * @param verifier {@link X509VerifierInterface VerifierInterface} containing the
      *                 certificates and method needed.
      */
-    public PKCS7Verifier(VerifierInterface verifier) {
+    public PKCS7Verifier(X509VerifierInterface verifier) {
         this.verifier_interface = verifier;
     }
 

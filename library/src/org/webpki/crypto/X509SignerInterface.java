@@ -23,7 +23,7 @@ import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
 
 /**
- * Common interface for X509 signatures.
+ * Common interface for X509 signature creation.
  *
  */
 public interface X509SignerInterface extends AsymKeySignerInterface {
@@ -35,6 +35,6 @@ public interface X509SignerInterface extends AsymKeySignerInterface {
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public X509Certificate[] getCertificatePath() throws IOException, GeneralSecurityException;
+    X509Certificate[] getCertificatePath() throws IOException, GeneralSecurityException;
 
 }

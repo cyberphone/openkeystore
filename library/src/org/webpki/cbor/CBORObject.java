@@ -27,7 +27,8 @@ import java.util.GregorianCalendar;
 import org.webpki.util.ArrayUtil;
 
 /**
- * Abstract class for holding CBOR objects.
+ * Base class for all CBOR objects.
+ * 
  */
 public abstract class CBORObject {
     
