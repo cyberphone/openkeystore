@@ -16,26 +16,16 @@
  */
 package org.webpki.jose.jws;
 
-import java.io.IOException;
-
 import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.SecureRandom;
-import java.security.spec.ECGenParameterSpec;
-import java.util.Base64.Encoder;
 
 import org.webpki.crypto.AlgorithmPreferences;
-import org.webpki.crypto.AsymSignatureAlgorithms;
-import org.webpki.crypto.KeyAlgorithms;
-import org.webpki.crypto.SignatureWrapper;
+
 import org.webpki.jose.JOSEKeyWords;
 import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONObjectWriter;
-import org.webpki.json.JSONOutputFormats;
 import org.webpki.json.JSONParser;
+
 import org.webpki.util.ArrayUtil;
-import org.webpki.util.Base64URL;
-import org.webpki.util.DebugFormatter;
 
 public class TestVector {
     

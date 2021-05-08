@@ -29,30 +29,30 @@ public class KeyStoreReader {
 
     private KeyStoreReader() {} // No instantiation
 
-    public static KeyStore loadKeyStore(byte[] buffer, String password) throws IOException {
-        try {
-            // JKS magic number + version (2)
-            byte[] jks = {(byte) 0xfe, (byte) 0xed, (byte) 0xfe, (byte) 0xed, 0, 0, 0, 2};
-            String type = "JKS";
-            for (int i = 0; i < 8; i++) {
-                if (buffer[i] != jks[i]) {
-                    type = "PKCS12";
-                    break;
-                }
+    public static KeyStore loadKeyStore(byte[] buffer, String password) 
+            throws IOException, GeneralSecurityException {
+        // JKS magic number + version (2)
+        byte[] jks = {(byte) 0xfe, (byte) 0xed, (byte) 0xfe, (byte) 0xed, 0, 0, 0, 2};
+        String type = "JKS";
+        for (int i = 0; i < 8; i++) {
+            if (buffer[i] != jks[i]) {
+                type = "PKCS12";
+                break;
             }
-            KeyStore ks = KeyStore.getInstance(type);
-            ks.load(new ByteArrayInputStream(buffer), password.toCharArray());
-            return ks;
-        } catch (GeneralSecurityException e) {
-            throw new IOException(e);
         }
+        KeyStore ks = KeyStore.getInstance(type);
+        ks.load(new ByteArrayInputStream(buffer), password.toCharArray());
+        return ks;
+
     }
 
-    public static KeyStore loadKeyStore(String keystoreFileName, String password) throws IOException {
+    public static KeyStore loadKeyStore(String keystoreFileName, String password) 
+            throws IOException, GeneralSecurityException {
         return loadKeyStore(ArrayUtil.readFile(keystoreFileName), password);
     }
 
-    public static KeyStore loadKeyStore(InputStream inputStream, String password) throws IOException {
+    public static KeyStore loadKeyStore(InputStream inputStream, String password) 
+            throws IOException, GeneralSecurityException {
         return loadKeyStore(ArrayUtil.getByteArrayFromInputStream(inputStream), password);
     }
 }

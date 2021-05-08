@@ -18,6 +18,8 @@ package org.webpki.json;
 
 import java.io.IOException;
 
+import java.security.GeneralSecurityException;
+
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.SignatureAlgorithms;
 
@@ -31,8 +33,8 @@ public abstract class JSONSigner extends JSONCryptoHelper.ExtensionsEncoder {
     String[] excluded;
 
     String keyId;
-
-    boolean outputPublicKeyInfo = true;
+    
+    String provider;
 
     byte[] normalizedData;
 
@@ -40,10 +42,10 @@ public abstract class JSONSigner extends JSONCryptoHelper.ExtensionsEncoder {
     
     JSONSigner() {
     }
-
-    abstract SignatureAlgorithms getAlgorithm();
     
-    abstract byte[] signData(byte[] data) throws IOException;
+    abstract SignatureAlgorithms getAlgorithm() throws IOException, GeneralSecurityException;
+    
+    abstract byte[] signData(byte[] data) throws IOException, GeneralSecurityException;
 
     abstract void writeKeyData(JSONObjectWriter wr) throws IOException;
 
@@ -53,7 +55,7 @@ public abstract class JSONSigner extends JSONCryptoHelper.ExtensionsEncoder {
      * scenario
      * @param names A list of permitted extensions 
      * @return this
-     * @throws IOException &nbsp;
+     * @throws IOException
      */
     public JSONSigner setExtensionNames(String[] names) throws IOException {
         super.setExtensionNames(names, false);
@@ -64,7 +66,7 @@ public abstract class JSONSigner extends JSONCryptoHelper.ExtensionsEncoder {
      * Set specific extension data for this signature.
      * @param extensions JSON object holding the extension properties and associated values
      * @return this
-     * @throws IOException &nbsp;
+     * @throws IOException
      */
     public JSONSigner setExtensionData(JSONObjectWriter extensions) throws IOException {
         this.extensionData = new JSONObjectReader(extensions);
@@ -76,7 +78,7 @@ public abstract class JSONSigner extends JSONCryptoHelper.ExtensionsEncoder {
      * Set &quot;excl&quot; for this signature.
      * @param excluded Array holding the names of properties that must be excluded from the signature
      * @return this
-     * @throws IOException &nbsp;
+     * @throws IOException
      */
     public JSONSigner setExcluded(String[] excluded) throws IOException {
         this.excluded = excluded;
@@ -92,17 +94,6 @@ public abstract class JSONSigner extends JSONCryptoHelper.ExtensionsEncoder {
      */
     public JSONSigner setKeyId(String keyId) {
         this.keyId = keyId;
-        return this;
-    }
-
-    /**
-     * Set if public key information should be provided in the signature.
-     * Note: default <code>true</code>.
-     * @param flag <code>true</code> if such information is to be provided
-     * @return this
-     */
-    public JSONSigner setOutputPublicKeyInfo(boolean flag) {
-        this.outputPublicKeyInfo = flag;
         return this;
     }
 

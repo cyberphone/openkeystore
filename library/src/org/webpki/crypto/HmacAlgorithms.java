@@ -69,14 +69,10 @@ public enum HmacAlgorithms implements SignatureAlgorithms {
         return null;
     }
 
-    public byte[] digest(byte[] key, byte[] data) throws IOException {
-        try {
-            Mac mac = Mac.getInstance(getJceName());
-            mac.init(new SecretKeySpec(key, "RAW"));  // Note: any length is OK in HMAC
-            return mac.doFinal(data);
-        } catch (GeneralSecurityException gse) {
-            throw new IOException(gse);
-        }
+    public byte[] digest(byte[] key, byte[] data) throws IOException, GeneralSecurityException {
+        Mac mac = Mac.getInstance(getJceName());
+        mac.init(new SecretKeySpec(key, "RAW"));  // Note: any length is OK in HMAC
+        return mac.doFinal(data);
     }
 
     public static boolean testAlgorithmUri(String sksName) {

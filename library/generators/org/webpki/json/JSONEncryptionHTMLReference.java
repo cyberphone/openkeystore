@@ -152,7 +152,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
         byte[] keyValue;
     }
     
-    static AsymKey readAsymKey(String keyType) throws IOException {
+    static AsymKey readAsymKey(String keyType) throws IOException, GeneralSecurityException {
         AsymKey asymKey = new AsymKey();
         JSONObjectReader key = json.readJson1(asymKey.fileName = keyType + "privatekey.jwk");
         asymKey.text = key.toString();
@@ -253,7 +253,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
         return encryptedObject.toString();
     }
  
-    static X509Certificate[] readCertPath(String name) throws IOException {
+    static X509Certificate[] readCertPath(String name) throws IOException, GeneralSecurityException {
         return json.readJson1(name + "certificate.x5c").getJSONArrayReader().getCertificatePath();
     }
 

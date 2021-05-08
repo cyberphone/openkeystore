@@ -73,7 +73,8 @@ public class JSONSignatureDecoder {
     JSONSignatureDecoder(JSONObjectReader signedData,
                          JSONObjectReader innerSignatureObject,
                          JSONObjectReader outerSignatureObject,
-                         JSONCryptoHelper.Options options) throws IOException {
+                         JSONCryptoHelper.Options options) throws IOException,
+                                                                  GeneralSecurityException {
         this.options = options;
         algorithmString = innerSignatureObject.getString(JSONCryptoHelper.ALGORITHM_JSON);
         keyId = options.getKeyId(innerSignatureObject);
@@ -308,7 +309,7 @@ public class JSONSignatureDecoder {
                           JSONSignatureTypes.ASYMMETRIC_KEY : JSONSignatureTypes.SYMMETRIC_KEY;
     }
 
-    public void verify(JSONVerifier verifier) throws IOException {
+    public void verify(JSONVerifier verifier) throws IOException, GeneralSecurityException {
         checkRequest(verifier.signatureType);
         verifier.verify(this);
     }

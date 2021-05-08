@@ -253,8 +253,10 @@ public class HTTPSWrapper {
      * @param store_name       Path to the Trust store file.
      * @param store_passphrase Passphrase to unlock Trust Store.
      * @throws IOException If something unexpected happens...
+     * @throws GeneralSecurityException 
      */
-    public void setTrustStore(String store_name, String store_passphrase) throws IOException {
+    public void setTrustStore(String store_name, String store_passphrase) 
+            throws IOException, GeneralSecurityException {
         trust_store = KeyStoreReader.loadKeyStore(store_name, store_passphrase);
         ssl_initialized = false;
     }
@@ -270,8 +272,10 @@ public class HTTPSWrapper {
      * @param store_name       Path to the Trust store file.
      * @param store_passphrase Passphrase to unlock Trust Store.
      * @throws IOException If something unexpected happens...
+     * @throws GeneralSecurityException 
      */
-    public static void setDefaultTrustStore(String store_name, String store_passphrase) throws IOException {
+    public static void setDefaultTrustStore(String store_name, String store_passphrase)
+            throws IOException, GeneralSecurityException {
         default_trust_store = KeyStoreReader.loadKeyStore(store_name, store_passphrase);
     }
 
@@ -344,9 +348,12 @@ public class HTTPSWrapper {
      * @param key_store_file     PKCS #12 or Java Keystore file
      * @param key_store_password Password to private key
      * @throws IOException If something unexpected happens...
+     * @throws GeneralSecurityException 
      */
-    public void setKeyStore(String key_store_file, String key_store_password) throws IOException {
-        setKeyStore(KeyStoreReader.loadKeyStore(key_store_file, key_store_password), key_store_password);
+    public void setKeyStore(String key_store_file, String key_store_password) 
+            throws IOException, GeneralSecurityException {
+        setKeyStore(KeyStoreReader.loadKeyStore(key_store_file, key_store_password), 
+                                                key_store_password);
     }
 
 

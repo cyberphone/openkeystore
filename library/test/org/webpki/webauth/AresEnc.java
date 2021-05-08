@@ -28,7 +28,7 @@ import org.webpki.util.ArrayUtil;
 import org.webpki.crypto.CertificateInfo;
 import org.webpki.crypto.DemoKeyStore;
 import org.webpki.crypto.KeyStoreSigner;
-import org.webpki.crypto.SignerInterface;
+import org.webpki.crypto.X509SignerInterface;
 
 import org.webpki.json.JSONDecoderCache;
 import org.webpki.json.JSONOutputFormats;
@@ -38,7 +38,7 @@ import org.webpki.json.JSONX509Signer;
 public class AresEnc {
 
 
-    static void test(String in_file, String out_file, SignerInterface signer, boolean localfixed) throws Exception {
+    static void test(String in_file, String out_file, X509SignerInterface signer, boolean localfixed) throws Exception {
 
 // The following is equivalent to the receival of of a AuthenticationRequest
         AuthenticationRequestDecoder authdec = AreqDec.test(in_file, false);

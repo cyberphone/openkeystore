@@ -26,7 +26,7 @@ public class JSONSymKeyEncrypter extends JSONEncrypter {
      /**
      * Constructor for JCE based solutions.
      * @param contentEncryptionKey Symmetric key
-     * @throws IOException &nbsp;
+     * @throws IOException
      */
     public JSONSymKeyEncrypter(byte[] contentEncryptionKey) throws IOException {
         this.contentEncryptionKey = contentEncryptionKey;

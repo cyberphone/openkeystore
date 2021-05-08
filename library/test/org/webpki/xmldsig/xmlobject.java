@@ -19,21 +19,26 @@ package org.webpki.xmldsig;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.PublicKey;
+
 import java.security.PrivateKey;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.Base64;
+
 import org.webpki.xml.XMLObjectWrapper;
 import org.webpki.xml.XMLSchemaCache;
 import org.webpki.xml.DOMReaderHelper;
 import org.webpki.xml.DOMWriterHelper;
 import org.webpki.xml.DOMAttributeReaderHelper;
+
 import org.webpki.crypto.DemoKeyStore;
 import org.webpki.crypto.KeyStoreSigner;
 import org.webpki.crypto.KeyStoreVerifier;
 import org.webpki.crypto.HmacAlgorithms;
+import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.AsymKeySignerInterface;
 import org.webpki.crypto.SymKeySignerInterface;
@@ -52,25 +57,32 @@ public class xmlobject extends XMLObjectWrapper implements XMLEnvelopedInput {
 
     static class rsaKey implements AsymKeySignerInterface {
         PrivateKey priv_key;
-        PublicKey pub_key;
+        AsymSignatureAlgorithms algorithm;
 
-        rsaKey(PrivateKey priv_key, PublicKey pub_key) {
+        rsaKey(PrivateKey priv_key) throws IOException {
             this.priv_key = priv_key;
-            this.pub_key = pub_key;
+            algorithm = KeyAlgorithms.getKeyAlgorithm(priv_key).getRecommendedSignatureAlgorithm();
         }
 
-        public byte[] signData(byte[] data, AsymSignatureAlgorithms sign_alg) throws IOException {
-            try {
-                return new SignatureWrapper(sign_alg, priv_key)
+        @Override
+        public byte[] signData(byte[] data) throws IOException, GeneralSecurityException {
+                return new SignatureWrapper(algorithm, priv_key)
                         .update(data)
                         .sign();
-            } catch (GeneralSecurityException e) {
-                throw new IOException(e);
-            }
         }
 
-        public PublicKey getPublicKey() throws IOException {
-            return pub_key;
+        @Override
+        public AsymSignatureAlgorithms getAlgorithm()
+                throws IOException, GeneralSecurityException {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public void setAlgorithm(AsymSignatureAlgorithms algorithm)
+                throws IOException, GeneralSecurityException {
+            // TODO Auto-generated method stub
+            
         }
 
     }
@@ -125,7 +137,7 @@ public class xmlobject extends XMLObjectWrapper implements XMLEnvelopedInput {
     }
 
 
-    protected void fromXML(DOMReaderHelper rd) throws IOException {
+    protected void fromXML(DOMReaderHelper rd) throws IOException, GeneralSecurityException {
         DOMAttributeReaderHelper ah = rd.getAttributeHelper();
 
         rd.getChild();
@@ -171,7 +183,7 @@ public class xmlobject extends XMLObjectWrapper implements XMLEnvelopedInput {
             if (args[0].equals("-rsa")) {
                 PrivateKey privateKey = (PrivateKey) DemoKeyStore.getMarionKeyStore().getKey("mykey", DemoKeyStore.getSignerPassword().toCharArray());
                 PublicKey publicKey = DemoKeyStore.getMarionKeyStore().getCertificate("mykey").getPublicKey();
-                XMLAsymKeySigner xmls = new XMLAsymKeySigner(new rsaKey(privateKey, publicKey));
+                XMLAsymKeySigner xmls = new XMLAsymKeySigner(new rsaKey(privateKey), publicKey);
                 xmls.createEnvelopedSignature(o);
             } else if (args[0].equals("-x509")) {
                 KeyStoreSigner signer = new KeyStoreSigner(DemoKeyStore.getMarionKeyStore(), null);
@@ -181,12 +193,12 @@ public class xmlobject extends XMLObjectWrapper implements XMLEnvelopedInput {
             } else {
                 XMLSymKeySigner xmls = new XMLSymKeySigner(new SymKeySignerInterface() {
 
-                    public HmacAlgorithms getHmacAlgorithm() throws IOException {
+                    public HmacAlgorithms getAlgorithm() throws IOException {
                         return HmacAlgorithms.HMAC_SHA256;
                     }
 
-                    public byte[] signData(byte[] data, HmacAlgorithms algorithm) throws IOException {
-                        return algorithm.digest(symkey, data);
+                    public byte[] signData(byte[] data) throws IOException, GeneralSecurityException {
+                        return getAlgorithm().digest(symkey, data);
                     }
 
                 });
@@ -210,7 +222,8 @@ public class xmlobject extends XMLObjectWrapper implements XMLEnvelopedInput {
                 verifier.validateEnvelopedSignature(o);
             } else {
                 XMLSymKeyVerifier verifier = new XMLSymKeyVerifier(new SymKeyVerifierInterface() {
-                    public boolean verifyData(byte[] data, byte[] digest, HmacAlgorithms algorithm, String keyId) throws IOException {
+                    public boolean verifyData(byte[] data, byte[] digest, HmacAlgorithms algorithm, String keyId) 
+                            throws IOException, GeneralSecurityException {
                         if (algorithm != HmacAlgorithms.HMAC_SHA256) {
                             throw new IOException("Bad sym ALG");
                         }

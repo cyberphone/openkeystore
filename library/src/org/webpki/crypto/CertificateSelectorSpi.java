@@ -18,6 +18,8 @@ package org.webpki.crypto;
 
 import java.io.IOException;
 
+import java.security.GeneralSecurityException;
+
 
 public interface CertificateSelectorSpi {
 
@@ -25,6 +27,7 @@ public interface CertificateSelectorSpi {
      * Filters PKI certificates.  This method is primarily designed for on-line signature and
      * authentication where they relying party provides a filter scheme such as with TLS.
      */
-    CertificateSelection getCertificateSelection(CertificateFilter[] cfs) throws IOException;
+    CertificateSelection getCertificateSelection(CertificateFilter[] cfs)
+            throws IOException, GeneralSecurityException;
 
 }

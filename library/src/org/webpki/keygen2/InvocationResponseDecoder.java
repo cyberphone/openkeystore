@@ -26,8 +26,6 @@ import static org.webpki.keygen2.KeyGen2Constants.*;
 
 public class InvocationResponseDecoder extends KeyGen2Validator {
 
-    private static final long serialVersionUID = 1L;
-
     LinkedHashMap<String, ServerState.CapabilityBase> receivedCapabilities = new LinkedHashMap<>();
 
     String serverSessionId;

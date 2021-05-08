@@ -17,6 +17,9 @@
 package org.webpki.webutil.locale;
 
 import java.io.IOException;
+
+import java.security.GeneralSecurityException;
+
 import java.io.File;
 import java.io.FileFilter;
 
@@ -49,6 +52,7 @@ public class Configure extends LocalizationServlet {
 
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        try {
         StringBuilder s = new StringBuilder();
 
         response.setContentType("text/html");
@@ -94,6 +98,9 @@ public class Configure extends LocalizationServlet {
                 ServletUtil.getContextURL(request) + "\">Go to application</a><td></tr>" +
                 "</table></td></tr></table></form></body></html>");
         response.getWriter().print(s.toString());
+        } catch (GeneralSecurityException e) {
+            throw new IOException(e);
+        }
     }
 
 }

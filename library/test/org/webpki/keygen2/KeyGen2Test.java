@@ -16,19 +16,14 @@
  */
 package org.webpki.keygen2;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.ObjectInputStream;
 
 import java.math.BigInteger;
 
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
-import java.security.KeyStoreException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
@@ -461,7 +456,7 @@ public class KeyGen2Test {
         ///////////////////////////////////////////////////////////////////////////////////
         // Get platform request and respond with SKS compatible data
         ///////////////////////////////////////////////////////////////////////////////////
-        byte[] invocationResponse(byte[] json_data) throws IOException {
+        byte[] invocationResponse(byte[] json_data) throws IOException, GeneralSecurityException {
             invocation_request = (InvocationRequestDecoder) client_json_cache.parse(json_data);
             assertTrue("Languages", invocation_request.getOptionalLanguageList() == null ^ languages);
             assertTrue("Key containers", invocation_request.getOptionalKeyContainerList() == null ^ key_container_list);
@@ -532,7 +527,7 @@ public class KeyGen2Test {
         }
 
         ///////////////////////////////////////////////////////////////////////////////////
-        // Get credential doscovery request
+        // Get credential discovery request
         ///////////////////////////////////////////////////////////////////////////////////
         byte[] creDiscResponse(byte[] json_data) throws IOException, GeneralSecurityException {
             cre_disc_req = (CredentialDiscoveryRequestDecoder) client_json_cache.parse(json_data);
@@ -568,7 +563,7 @@ public class KeyGen2Test {
         ///////////////////////////////////////////////////////////////////////////////////
         // Get key initialization request and respond with freshly generated public keys
         ///////////////////////////////////////////////////////////////////////////////////
-        byte[] keyCreResponse(byte[] json_data) throws IOException {
+        byte[] keyCreResponse(byte[] json_data) throws IOException, GeneralSecurityException {
             key_creation_request = (KeyCreationRequestDecoder) client_json_cache.parse(json_data);
             KeyCreationResponseEncoder key_creation_response = new KeyCreationResponseEncoder(key_creation_request);
             for (KeyCreationRequestDecoder.UserPINDescriptor upd : key_creation_request.getUserPINDescriptors()) {
@@ -868,7 +863,7 @@ public class KeyGen2Test {
         }
 
         ///////////////////////////////////////////////////////////////////////////////////
-        // Create credential discover request for the client
+        // Create credential discovery request for the client
         ///////////////////////////////////////////////////////////////////////////////////
         byte[] creDiscRequest(byte[] json_data) throws IOException, GeneralSecurityException {
             getProvSess(ServerState.parseReceivedMessage(json_data));
@@ -1074,37 +1069,39 @@ public class KeyGen2Test {
                         gen_public_key = kp.getPublic();
                         gen_private_key = kp.getPrivate();
                     }
-
+                    
+                    X509Certificate caCert = (X509Certificate) DemoKeyStore.getSubCAKeyStore().getCertificate("mykey");
+                    PublicKey caPublicKey = caCert.getPublicKey();
+                    AsymSignatureAlgorithms algorithm = KeyAlgorithms.getKeyAlgorithm(caPublicKey)
+                            .getRecommendedSignatureAlgorithm();
                     ArrayList<X509Certificate> cert_path = new ArrayList<>();
                     cert_path.add(new CA().createCert(cert_spec,
-                            DistinguishedName.subjectDN((X509Certificate) DemoKeyStore.getSubCAKeyStore().getCertificate("mykey")),
+                            DistinguishedName.subjectDN(caCert),
                             new BigInteger(String.valueOf(new GregorianCalendar().getTimeInMillis())),
                             start.getTime(),
                             end.getTime(),
-                            AsymSignatureAlgorithms.RSA_SHA256,
                             new AsymKeySignerInterface() {
 
                                 @Override
-                                public PublicKey getPublicKey() throws IOException {
-                                    try {
-                                        return ((X509Certificate) DemoKeyStore.getSubCAKeyStore().getCertificate("mykey")).getPublicKey();
-                                    } catch (KeyStoreException e) {
-                                        throw new IOException(e);
-                                    }
+                                public byte[] signData(byte[] data) throws IOException, GeneralSecurityException {
+                                    return new SignatureWrapper(algorithm, (PrivateKey) DemoKeyStore.getSubCAKeyStore().getKey("mykey", DemoKeyStore.getSignerPassword().toCharArray()))
+                                            .update(data)
+                                            .sign();
                                 }
 
                                 @Override
-                                public byte[] signData(byte[] data, AsymSignatureAlgorithms algorithm) throws IOException {
-                                    try {
-                                        return new SignatureWrapper(algorithm, (PrivateKey) DemoKeyStore.getSubCAKeyStore().getKey("mykey", DemoKeyStore.getSignerPassword().toCharArray()))
-                                                .update(data)
-                                                .sign();
-                                    } catch (GeneralSecurityException e) {
-                                        throw new IOException(e);
-                                    }
+                                public AsymSignatureAlgorithms getAlgorithm() throws IOException, GeneralSecurityException {
+                                     return algorithm;
                                 }
 
-                            }, gen_public_key));
+                                @Override
+                                public void setAlgorithm(AsymSignatureAlgorithms algorithm) 
+                                        throws IOException, GeneralSecurityException {
+                                }
+
+                            },
+                            caPublicKey,
+                            gen_public_key));
 
                     if (set_trust_anchor) {
                         for (Certificate certificate : DemoKeyStore.getSubCAKeyStore().getCertificateChain("mykey")) {
@@ -1138,21 +1135,10 @@ public class KeyGen2Test {
         ///////////////////////////////////////////////////////////////////////////////////
         // Finally we get the attested response
         ///////////////////////////////////////////////////////////////////////////////////
-        void creFinalizeResponse(byte[] json_data) throws IOException {
+        void creFinalizeResponse(byte[] json_data) throws IOException, GeneralSecurityException {
             ProvisioningFinalizationResponseDecoder prov_final_response = (ProvisioningFinalizationResponseDecoder) ServerState.parseReceivedMessage(json_data);
             serverState.update(prov_final_response);
 
-            ///////////////////////////////////////////////////////////////////////////////////
-            // Just a small consistency check
-            ///////////////////////////////////////////////////////////////////////////////////
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            new ObjectOutputStream(baos).writeObject(serverState);
-            byte[] serialized = baos.toByteArray();
-            try {
-                ServerState scs = (ServerState) new ObjectInputStream(new ByteArrayInputStream(serialized)).readObject();
-            } catch (ClassNotFoundException e) {
-                throw new IOException(e);
-            }
         }
     }
 

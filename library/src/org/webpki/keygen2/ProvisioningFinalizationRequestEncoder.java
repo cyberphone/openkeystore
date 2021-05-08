@@ -41,8 +41,6 @@ import static org.webpki.keygen2.KeyGen2Constants.*;
 
 public class ProvisioningFinalizationRequestEncoder extends ServerEncoder {
 
-    private static final long serialVersionUID = 1L;
-
     ServerState serverState;
 
     // Constructors

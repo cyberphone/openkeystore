@@ -36,8 +36,6 @@ import static org.webpki.webauth.WebAuthConstants.*;
 
 public class AuthenticationRequestDecoder extends ClientDecoder {
 
-    private static final long serialVersionUID = 1L;
-
     GregorianCalendar serverTime;
 
     String id;

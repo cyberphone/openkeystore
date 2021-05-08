@@ -26,6 +26,7 @@ import java.util.GregorianCalendar;
 
 import java.security.cert.X509Certificate;
 
+import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 
 import org.webpki.asn1.BaseASN1Object;
@@ -108,7 +109,8 @@ public class CA {
     }
 
 
-    private ASN1OctetString createKeyID(PublicKey publicKey) throws IOException {
+    private ASN1OctetString createKeyID(PublicKey publicKey) throws IOException,
+                                                                    GeneralSecurityException {
         return new ASN1OctetString(HashAlgorithms.SHA1.digest(publicKey.getEncoded()));
     }
 
@@ -130,9 +132,10 @@ public class CA {
                                       DistinguishedName issuerName,
                                       BigInteger serialNumber,
                                       Date startDate, Date endDate,
-                                      AsymSignatureAlgorithms certSignAlg,
                                       AsymKeySignerInterface signer,
-                                      PublicKey subjectPublicKey) throws IOException {
+                                      PublicKey issuerPublicKey,
+                                      PublicKey subjectPublicKey) throws IOException,
+                                                                         GeneralSecurityException {
         Extensions extensions = new Extensions();
 
         BaseASN1Object version = new CompositeContextSpecific(0, new ASN1Integer(2));
@@ -142,6 +145,7 @@ public class CA {
         BaseASN1Object validity = new ASN1Sequence(new BaseASN1Object[]{getASN1Time(startDate),
                                                                         getASN1Time(endDate)});
 
+        AsymSignatureAlgorithms certSignAlg = signer.getAlgorithm();
         BaseASN1Object signatureAlgorithm = 
                 new ASN1Sequence(certSignAlg.getKeyType() == KeyTypes.RSA ?
                         new BaseASN1Object[]{new ASN1ObjectID(certSignAlg.getOid()),
@@ -217,7 +221,7 @@ public class CA {
             extensions.add(CertificateExtensions.AUTHORITY_KEY_IDENTIFIER, 
                            new ASN1Sequence(
                                    new SimpleContextSpecific(0,
-                                                             createKeyID(signer.getPublicKey()))));
+                                                             createKeyID(issuerPublicKey))));
         }
 
         //////////////////////////////////////////////////////
@@ -318,7 +322,7 @@ public class CA {
         BaseASN1Object tbsCertificate = new ASN1Sequence(inner);
 
         BaseASN1Object signature = 
-                new ASN1BitString(signer.signData(tbsCertificate.encode(), certSignAlg));
+                new ASN1BitString(signer.signData(tbsCertificate.encode()));
 
         byte[] certificate = new ASN1Sequence(new BaseASN1Object[]{tbsCertificate,
                                                                    signatureAlgorithm, 

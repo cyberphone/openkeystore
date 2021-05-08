@@ -18,6 +18,8 @@ package org.webpki.keygen2;
 
 import java.io.IOException;
 
+import java.security.GeneralSecurityException;
+
 import java.util.Iterator;
 
 import org.webpki.sks.SecureKeyStore;
@@ -31,8 +33,6 @@ import org.webpki.keygen2.ServerState.ProtocolPhase;
 import static org.webpki.keygen2.KeyGen2Constants.*;
 
 public class KeyCreationRequestEncoder extends ServerEncoder {
-
-    private static final long serialVersionUID = 1L;
 
     boolean deferredIssuance;
 
@@ -60,7 +60,8 @@ public class KeyCreationRequestEncoder extends ServerEncoder {
     }
 
 
-    void writeKeys(JSONObjectWriter wr, PINPolicy pinPolicy) throws IOException {
+    void writeKeys(JSONObjectWriter wr, PINPolicy pinPolicy) throws IOException,
+                                                                    GeneralSecurityException {
         JSONArrayWriter keys = null;
         for (ServerState.Key requestedKey : serverState.requestedKeys.values()) {
             if (requestedKey.pinPolicy == pinPolicy) {
@@ -73,7 +74,7 @@ public class KeyCreationRequestEncoder extends ServerEncoder {
     }
 
     @Override
-    void writeServerRequest(JSONObjectWriter wr) throws IOException {
+    void writeServerRequest(JSONObjectWriter wr) throws IOException, GeneralSecurityException {
         //////////////////////////////////////////////////////////////////////////
         // Session properties
         //////////////////////////////////////////////////////////////////////////

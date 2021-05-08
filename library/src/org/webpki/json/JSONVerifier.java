@@ -18,6 +18,8 @@ package org.webpki.json;
 
 import java.io.IOException;
 
+import java.security.GeneralSecurityException;
+
 /**
  * Support class for signature verifiers.
  */
@@ -27,7 +29,8 @@ public abstract class JSONVerifier {
         this.signatureType = signatureType;
     }
 
-    abstract void verify(JSONSignatureDecoder signatureDecoder) throws IOException;
+    abstract void verify(JSONSignatureDecoder signatureDecoder) 
+            throws IOException, GeneralSecurityException;
 
     JSONSignatureTypes signatureType;
 }

@@ -17,8 +17,8 @@
 package org.webpki.keygen2;
 
 import java.io.IOException;
-import java.io.Serializable;
 
+import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 
 import java.security.cert.X509Certificate;
@@ -27,24 +27,30 @@ import java.security.interfaces.ECPublicKey;
 
 import org.webpki.crypto.KeyAlgorithms;
 
-public interface ServerCryptoInterface extends Serializable {
+public interface ServerCryptoInterface {
 
-    ECPublicKey generateEphemeralKey(KeyAlgorithms ecKeyAlgorithm) throws IOException;
+    ECPublicKey generateEphemeralKey(KeyAlgorithms ecKeyAlgorithm) throws IOException,
+                                                                          GeneralSecurityException;
 
     void generateAndVerifySessionKey(ECPublicKey clientEphemeralKey,
                                      byte[] kdfData,
                                      byte[] attestationArguments,
                                      X509Certificate deviceCertificate,
-                                     byte[] sessionAttestation) throws IOException;
+                                     byte[] sessionAttestation) throws IOException,
+                                                                       GeneralSecurityException;
 
-    public byte[] mac(byte[] data, byte[] keyModifier) throws IOException;
+    public byte[] mac(byte[] data, byte[] keyModifier) throws IOException,
+                                                              GeneralSecurityException;
 
-    public byte[] encrypt(byte[] data) throws IOException;
+    public byte[] encrypt(byte[] data) throws IOException,
+                                              GeneralSecurityException;
 
-    public byte[] generateNonce() throws IOException;
+    public byte[] generateNonce() throws IOException,
+                                         GeneralSecurityException;
 
-    public byte[] generateKeyManagementAuthorization(PublicKey keyManagementKey, byte[] data) throws IOException;
+    public byte[] generateKeyManagementAuthorization(PublicKey keyManagementKey, byte[] data) 
+            throws IOException, GeneralSecurityException;
 
-    public PublicKey[] enumerateKeyManagementKeys() throws IOException;
+    public PublicKey[] enumerateKeyManagementKeys() throws IOException, GeneralSecurityException;
 
 }

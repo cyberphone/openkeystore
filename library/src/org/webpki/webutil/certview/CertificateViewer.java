@@ -18,8 +18,11 @@ package org.webpki.webutil.certview;
 
 import java.io.IOException;
 
+import java.security.GeneralSecurityException;
+
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
+
 import java.text.SimpleDateFormat;
 
 import javax.servlet.ServletException;
@@ -118,6 +121,7 @@ public abstract class CertificateViewer extends HttpServlet {
 
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        try {
         boolean no_session = request.getSession(false) == null;
         CertificateInfo ci = getCertificateInfo(request);
         if (ci == null) {
@@ -167,6 +171,9 @@ public abstract class CertificateViewer extends HttpServlet {
                 append("\"></form></body></html>");
         DefaultHTML.setHTMLMode(response);
         response.getOutputStream().print(s.toString());
+        } catch (GeneralSecurityException e) {
+            throw new IOException(e);
+        }
     }
 
 

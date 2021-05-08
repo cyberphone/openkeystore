@@ -177,8 +177,7 @@ public class Signatures {
     static void arraySign(String keyType, boolean exts) throws Exception {
         KeyPair keyPair = readJwk(keyType);
         JSONSigner signer = 
-                new JSONAsymKeySigner(keyPair.getPrivate(), keyPair.getPublic(), null);
-        signer.setOutputPublicKeyInfo(true);
+                new JSONAsymKeySigner(keyPair.getPrivate()).setPublicKey(keyPair.getPublic());
         if (exts) {
             setExtensionData(signer, true);
         }
@@ -238,7 +237,8 @@ public class Signatures {
                       new JSONArrayWriter()
                 .setInt(2000)
                 .setBoolean(true));
-        javaScriptSignature.setSignature(new JSONAsymKeySigner(localKey.getPrivate(), localKey.getPublic(), null));
+        javaScriptSignature.setSignature(new JSONAsymKeySigner(localKey.getPrivate())
+                .setPublicKey(localKey.getPublic()));
         JSONSignatureDecoder decoder = new JSONObjectReader(javaScriptSignature)
             .getSignature(new JSONCryptoHelper.Options());
         byte[] signatureData = javaScriptSignature.serializeToBytes(JSONOutputFormats.PRETTY_JS_NATIVE);
@@ -379,25 +379,27 @@ public class Signatures {
         KeyPair keyPair2 = readJwk(keyType2);
         String keyId2 = keyId;
         ArrayList<JSONSigner> signers = new ArrayList<>();
-        JSONAsymKeySigner signer = new JSONAsymKeySigner(keyPair1.getPrivate(), keyPair1.getPublic(), null);
+        JSONAsymKeySigner signer = new JSONAsymKeySigner(keyPair1.getPrivate());
         if (exts) {
             setExtensionData(signer, true);
         }
         if (wantKeyId) {
             signer.setKeyId(keyId1);
-            signer.setOutputPublicKeyInfo(false);
+        } else {
+            signer.setPublicKey(keyPair1.getPublic());
         }
         if (excl) {
             signer.setExcluded(UNSIGNED_DATA);
         }
         signers.add(signer);
-        signer = new JSONAsymKeySigner(keyPair2.getPrivate(), keyPair2.getPublic(), null); 
+        signer = new JSONAsymKeySigner(keyPair2.getPrivate()); 
         if (exts) {
             setExtensionData(signer, false);
         }
         if (wantKeyId) {
             signer.setKeyId(keyId2);
-            signer.setOutputPublicKeyInfo(false);
+        } else {
+            signer.setPublicKey(keyPair2.getPublic());
         }
         signers.add(signer);
         JSONCryptoHelper.ExtensionHolder extensionHolder = new JSONCryptoHelper.ExtensionHolder()
@@ -465,14 +467,16 @@ public class Signatures {
                                              AsymSignatureAlgorithms pssAlg) throws Exception {
         KeyPair keyPair = readJwk(keyType);
         JSONAsymKeySigner signer = 
-                new JSONAsymKeySigner(keyPair.getPrivate(), keyPair.getPublic(), null);
+                new JSONAsymKeySigner(keyPair.getPrivate());
         if (pssAlg != null) {
-            signer.setSignatureAlgorithm(pssAlg);
+            signer.setAlgorithm(pssAlg);
         }
         if (wantKeyId) {
             signer.setKeyId(keyId);
         }
-        signer.setOutputPublicKeyInfo(wantPublicKey);
+        if (wantPublicKey) {
+            signer.setPublicKey(keyPair.getPublic());
+        }
         if (wantExtensions) {
             setExtensionData(signer, true);
         }
@@ -538,8 +542,7 @@ public class Signatures {
     static void certSign(String keyType) throws Exception {
         KeyPair keyPair = readJwk(keyType);
         byte[] signedData = createSignature(new JSONX509Signer(keyPair.getPrivate(), 
-                                                               readCertificatePath(keyType),
-                                                               null));
+                                                               readCertificatePath(keyType)));
         JSONSignatureDecoder decoder = 
                 JSONParser.parse(signedData).getSignature(
                         new JSONCryptoHelper.Options()

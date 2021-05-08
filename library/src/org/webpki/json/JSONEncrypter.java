@@ -152,7 +152,7 @@ public abstract class JSONEncrypter {
      * Set &quot;crit&quot; for this encryption object.
      * @param extensions JSON object holding the extension properties and associated values
      * @return this
-     * @throws IOException &nbsp;
+     * @throws IOException
      */
     public JSONEncrypter setExtensions(JSONObjectWriter extensions) throws IOException {
         this.extensions = new JSONObjectReader(extensions);

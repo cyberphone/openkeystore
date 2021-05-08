@@ -16,30 +16,25 @@
  */
 package org.webpki.crypto;
 
+
 import java.io.IOException;
 
+import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
 
-
 /**
- * PKI signature interface.
- * Note that the actual key, certificate path, and signature creation mechanism are supposed to
- * be hosted by the implementing class.
+ * Common interface for X509 signatures.
+ *
  */
-public interface SignerInterface {
-    /**
-     * @return Returns the certificate path associated with the key.
-     * @throws IOException For various problems...
-     */
-    public X509Certificate[] getCertificatePath() throws IOException;
+public interface X509SignerInterface extends AsymKeySignerInterface {
 
     /**
-     * Signs data using the key.
-     *
-     * @param data      Data to be signed
-     * @param algorithm Algorithm to use
-     * @return Signed data
-     * @throws IOException For various problems...
+     * Get certificate path.
+     * 
+     * @return Certificate path
+     * @throws IOException
+     * @throws GeneralSecurityException
      */
-    public byte[] signData(byte[] data, AsymSignatureAlgorithms algorithm) throws IOException;
+    public X509Certificate[] getCertificatePath() throws IOException, GeneralSecurityException;
+
 }

@@ -17,6 +17,7 @@
 package org.webpki.cbor;
 
 import java.io.IOException;
+
 import java.security.GeneralSecurityException;
 
 /**
@@ -47,8 +48,8 @@ public class CBORTextStringMap extends CBORMapBase {
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public void validate(String key, CBORValidator validator) 
-            throws IOException, GeneralSecurityException {
+    public void validate(String key, CBORValidator validator) throws IOException, 
+                                                                     GeneralSecurityException {
         validate(new CBORTextString(key), validator);
     }
 

@@ -44,8 +44,6 @@ import static org.webpki.keygen2.KeyGen2Constants.*;
 
 public class InvocationResponseEncoder extends JSONEncoder {
 
-    private static final long serialVersionUID = 1L;
-
     String serverSessionId;
 
     byte[] nonce;  // For VMs

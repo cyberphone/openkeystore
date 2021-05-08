@@ -213,28 +213,33 @@ public class CommandLineCA {
 
     class CertificateSigner implements AsymKeySignerInterface {
         PrivateKey signKey;
-        PublicKey publicKey;
+        AsymSignatureAlgorithms certalg;
 
-        CertificateSigner(PrivateKey signKey, PublicKey publicKey) {
+        CertificateSigner(PrivateKey signKey, AsymSignatureAlgorithms certalg) {
             this.signKey = signKey;
-            this.publicKey = publicKey;
+            this.certalg = certalg;
         }
 
 
-        public byte[] signData(byte[] data, AsymSignatureAlgorithms certalg) throws IOException {
-            try {
-                return new SignatureWrapper(certalg, signKey)
+        @Override
+        public byte[] signData(byte[] data) throws IOException, GeneralSecurityException {
+            return new SignatureWrapper(certalg, signKey)
                         .setEcdsaSignatureEncoding(true)
                         .update(data)
                         .sign();
-            } catch (GeneralSecurityException e) {
-                throw new IOException(e);
-            }
+        }
+
+        @Override
+        public AsymSignatureAlgorithms getAlgorithm() throws IOException,
+                                                             GeneralSecurityException {
+             return certalg;
         }
 
 
-        public PublicKey getPublicKey() throws IOException {
-            return publicKey;
+        @Override
+        public void setAlgorithm(AsymSignatureAlgorithms algorithm)
+                throws IOException, GeneralSecurityException {
+            // Not used here
         }
 
     }
@@ -857,8 +862,8 @@ public class CommandLineCA {
                                   serial, 
                                   start_date, 
                                   end_date,
-                                  certalg, 
-                                  new CertificateSigner(sign_key, issuer_pub_key),
+                                  new CertificateSigner(sign_key, certalg),
+                                  issuer_pub_key,
                                   subject_pub_key);
             cert_path.add(0, signer_cert);
 

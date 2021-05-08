@@ -767,7 +767,8 @@ public class CBORTest {
         }
 
         try {
-            signAndVerify(new CBORAsymKeySigner(p256.getPrivate(), AsymSignatureAlgorithms.ED25519)
+            signAndVerify(new CBORAsymKeySigner(p256.getPrivate())
+                    .setAlgorithm(AsymSignatureAlgorithms.ED25519)
                     .setPublicKey(p256.getPublic()), 
                     new CBORAsymSignatureValidator(p256.getPublic()));
             fail("must not execute");

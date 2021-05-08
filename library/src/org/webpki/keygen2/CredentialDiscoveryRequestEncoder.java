@@ -17,7 +17,7 @@
 package org.webpki.keygen2;
 
 import java.io.IOException;
-
+import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 
 import java.security.interfaces.RSAKey;
@@ -42,8 +42,6 @@ import org.webpki.sks.Grouping;
 import static org.webpki.keygen2.KeyGen2Constants.*;
 
 public class CredentialDiscoveryRequestEncoder extends ServerEncoder {
-
-    private static final long serialVersionUID = 1L;
 
     ServerCryptoInterface serverCryptoInterface;
 
@@ -106,7 +104,7 @@ public class CredentialDiscoveryRequestEncoder extends ServerEncoder {
             return this;
         }
 
-        void write(JSONObjectWriter wr) throws IOException {
+        void write(JSONObjectWriter wr) throws IOException, GeneralSecurityException {
             wr.setString(ID_JSON, id);
 
             wr.setBinary(NONCE_JSON, nonce);
@@ -130,20 +128,25 @@ public class CredentialDiscoveryRequestEncoder extends ServerEncoder {
                     searchWriter.setString(APP_USAGE_JSON, appUsage.getProtocolName());
                 }
             }
-            JSONAsymKeySigner signer = new JSONAsymKeySigner(this);
-            signer.setSignatureAlgorithm(keyManagementKey instanceof RSAKey ?
-                    AsymSignatureAlgorithms.RSA_SHA256 : AsymSignatureAlgorithms.ECDSA_SHA256);
+            JSONAsymKeySigner signer = new JSONAsymKeySigner(this).setPublicKey(keyManagementKey);
             wr.setSignature(signer);
         }
 
         @Override
-        public PublicKey getPublicKey() throws IOException {
-            return keyManagementKey;
+        public byte[] signData(byte[] data) throws IOException, GeneralSecurityException {
+            return serverCryptoInterface.generateKeyManagementAuthorization(keyManagementKey, data);
         }
 
         @Override
-        public byte[] signData(byte[] data, AsymSignatureAlgorithms algorithm) throws IOException {
-            return serverCryptoInterface.generateKeyManagementAuthorization(keyManagementKey, data);
+        public AsymSignatureAlgorithms getAlgorithm()
+                throws IOException, GeneralSecurityException {
+            return keyManagementKey instanceof RSAKey ?
+                   AsymSignatureAlgorithms.RSA_SHA256 : AsymSignatureAlgorithms.ECDSA_SHA256;
+         }
+
+        @Override
+        public void setAlgorithm(AsymSignatureAlgorithms algorithm) 
+                throws IOException, GeneralSecurityException {
         }
     }
 
@@ -174,7 +177,8 @@ public class CredentialDiscoveryRequestEncoder extends ServerEncoder {
 
 
     @Override
-    void writeServerRequest(JSONObjectWriter wr) throws IOException {
+    void writeServerRequest(JSONObjectWriter wr) throws IOException,
+                                                        GeneralSecurityException {
         //////////////////////////////////////////////////////////////////////////
         // Session properties
         //////////////////////////////////////////////////////////////////////////

@@ -19,7 +19,6 @@ package org.webpki.keygen2;
 import static org.webpki.keygen2.KeyGen2Constants.*;
 
 import java.io.IOException;
-import java.io.Serializable;
 
 import java.security.GeneralSecurityException;
 import java.security.PublicKey;
@@ -62,10 +61,8 @@ import org.webpki.util.Base64URL;
 import org.webpki.util.ISODateTime;
 import org.webpki.util.MIMETypedObject;
 
-public class ServerState implements Serializable {
+public class ServerState {
 
-    private static final long serialVersionUID = 1L;
-    
     static final JSONDecoderCache keygen2JSONCache = new JSONDecoderCache();
 
     static {
@@ -80,7 +77,8 @@ public class ServerState implements Serializable {
         }
     }
 
-    public static JSONDecoder parseReceivedMessage(byte[] json) throws IOException {
+    public static JSONDecoder parseReceivedMessage(byte[] json) 
+            throws IOException, GeneralSecurityException {
         return keygen2JSONCache.parse(json);
     }
 
@@ -116,9 +114,7 @@ public class ServerState implements Serializable {
         }
     }
 
-    class PostProvisioningTargetKey implements Serializable {
-
-        private static final long serialVersionUID = 1L;
+    class PostProvisioningTargetKey {
 
         String clientSessionId;
 
@@ -151,9 +147,7 @@ public class ServerState implements Serializable {
 
     ArrayList<PostProvisioningTargetKey> postOperations = new ArrayList<>();
 
-    public abstract class ExtensionInterface implements Serializable {
-
-        private static final long serialVersionUID = 1L;
+    public abstract class ExtensionInterface {
 
         String type;
 
@@ -184,9 +178,7 @@ public class ServerState implements Serializable {
         }
     }
 
-    public class Extension extends ExtensionInterface implements Serializable {
-
-        private static final long serialVersionUID = 1L;
+    public class Extension extends ExtensionInterface {
 
         byte[] data;
 
@@ -216,9 +208,7 @@ public class ServerState implements Serializable {
         }
     }
 
-    public class EncryptedExtension extends ExtensionInterface implements Serializable {
-
-        private static final long serialVersionUID = 1L;
+    public class EncryptedExtension extends ExtensionInterface {
 
         byte[] encryptedData;
 
@@ -248,9 +238,7 @@ public class ServerState implements Serializable {
         }
     }
 
-    public class Logotype extends ExtensionInterface implements Serializable {
-
-        private static final long serialVersionUID = 1L;
+    public class Logotype extends ExtensionInterface {
 
         MIMETypedObject logotype;
 
@@ -286,9 +274,7 @@ public class ServerState implements Serializable {
         }
     }
 
-    public class Property implements Serializable {
-
-        private static final long serialVersionUID = 1L;
+    public class Property {
 
         String name;
 
@@ -312,9 +298,7 @@ public class ServerState implements Serializable {
         }
     }
 
-    public class PropertyBag extends ExtensionInterface implements Serializable {
-
-        private static final long serialVersionUID = 1L;
+    public class PropertyBag extends ExtensionInterface {
 
         LinkedHashMap<String, Property> properties = new LinkedHashMap<>();
 
@@ -376,9 +360,7 @@ public class ServerState implements Serializable {
     }
 
 
-    public class PUKPolicy implements Serializable {
-
-        private static final long serialVersionUID = 1L;
+    public class PUKPolicy {
 
         String id;
 
@@ -400,7 +382,7 @@ public class ServerState implements Serializable {
             pukPolicies.add(this);
         }
 
-        void writePolicy(JSONObjectWriter wr) throws IOException {
+        void writePolicy(JSONObjectWriter wr) throws IOException, GeneralSecurityException {
             wr.setString(ID_JSON, id);
             wr.setBinary(ENCRYPTED_PUK_JSON, encryptedValue);
             wr.setInt(RETRY_LIMIT_JSON, retryLimit);
@@ -411,14 +393,13 @@ public class ServerState implements Serializable {
             pukPolicyMac.addArray(encryptedValue);
             pukPolicyMac.addByte(format.getSksValue());
             pukPolicyMac.addShort(retryLimit);
-            wr.setBinary(MAC_JSON, mac(pukPolicyMac.getResult(), SecureKeyStore.METHOD_CREATE_PUK_POLICY));
+            wr.setBinary(MAC_JSON, 
+                         mac(pukPolicyMac.getResult(), SecureKeyStore.METHOD_CREATE_PUK_POLICY));
         }
     }
 
 
-    public class PINPolicy implements Serializable {
-
-        private static final long serialVersionUID = 1L;
+    public class PINPolicy {
 
         boolean written;
 
@@ -484,7 +465,7 @@ public class ServerState implements Serializable {
             pinPolicies.add(this);
         }
 
-        void writePolicy(JSONObjectWriter wr) throws IOException {
+        void writePolicy(JSONObjectWriter wr) throws IOException, GeneralSecurityException {
             wr.setString(ID_JSON, id);
             wr.setInt(MIN_LENGTH_JSON, minLength);
             wr.setInt(MAX_LENGTH_JSON, maxLength);
@@ -539,9 +520,7 @@ public class ServerState implements Serializable {
     }
 
 
-    public class Key implements Serializable {
-
-        private static final long serialVersionUID = 1L;
+    public class Key {
 
         LinkedHashMap<String, ExtensionInterface> extensions = new LinkedHashMap<>();
 
@@ -591,7 +570,8 @@ public class ServerState implements Serializable {
             return this;
         }
 
-        public Key addEncryptedExtension(String type, byte[] data) throws IOException {
+        public Key addEncryptedExtension(String type, byte[] data) throws IOException,
+                                                                          GeneralSecurityException {
             addExtension(new EncryptedExtension(type, encrypt(data)));
             return this;
         }
@@ -616,7 +596,8 @@ public class ServerState implements Serializable {
 
         byte[] encryptedSymmetricKey;
 
-        public Key setSymmetricKey(byte[] symmetricKey) throws IOException {
+        public Key setSymmetricKey(byte[] symmetricKey) throws IOException, 
+                                                               GeneralSecurityException {
             this.encryptedSymmetricKey = encrypt(symmetricKey);
             return this;
         }
@@ -641,7 +622,7 @@ public class ServerState implements Serializable {
 
         byte[] encryptedPrivateKey;
 
-        public Key setPrivateKey(byte[] privateKey) throws IOException {
+        public Key setPrivateKey(byte[] privateKey) throws IOException, GeneralSecurityException {
             this.encryptedPrivateKey = encrypt(privateKey);
             return this;
         }
@@ -852,7 +833,7 @@ public class ServerState implements Serializable {
         
         byte[] keyMac;
 
-        void writeRequest(JSONObjectWriter wr) throws IOException {
+        void writeRequest(JSONObjectWriter wr) throws IOException, GeneralSecurityException {
             keyInitDone = true;
             MacGenerator keyPairMac = new MacGenerator();
             keyPairMac.addString(id);
@@ -952,9 +933,7 @@ public class ServerState implements Serializable {
 
     LinkedHashMap<String, CAPABILITY> queriedCapabilities = new LinkedHashMap<>();
 
-    static abstract class CapabilityBase implements Serializable {
-
-        private static final long serialVersionUID = 1L;
+    static abstract class CapabilityBase {
 
         String type;
 
@@ -972,8 +951,6 @@ public class ServerState implements Serializable {
     }
 
     public static class ImagePreference extends CapabilityBase {
-
-        private static final long serialVersionUID = 1L;
 
         String mimeType;
         int width;
@@ -1001,8 +978,6 @@ public class ServerState implements Serializable {
 
     static class Values extends CapabilityBase {
 
-        private static final long serialVersionUID = 1L;
-
         String[] values;
 
         Values(String[] values) {
@@ -1017,8 +992,6 @@ public class ServerState implements Serializable {
     }
 
     static class Feature extends CapabilityBase {
-
-        private static final long serialVersionUID = 1L;
 
         Feature(boolean supported) {
             this.supported = supported;
@@ -1142,22 +1115,26 @@ public class ServerState implements Serializable {
         return new byte[]{(byte) (q >>> 8), (byte) (q & 0xFF)};
     }
 
-    byte[] mac(byte[] data, byte[] method) throws IOException {
+    byte[] mac(byte[] data, byte[] method) throws IOException, GeneralSecurityException {
         return serverCryptoInterface.mac(data, ArrayUtil.add(method, getMacSequenceCounterAndUpdate()));
     }
 
-    byte[] attest(byte[] data, byte[] macCounter) throws IOException {
-        return serverCryptoInterface.mac(data, ArrayUtil.add(SecureKeyStore.KDF_DEVICE_ATTESTATION, macCounter));
+    byte[] attest(byte[] data, byte[] macCounter) throws IOException, GeneralSecurityException {
+        return serverCryptoInterface.mac(data, 
+                                         ArrayUtil.add(SecureKeyStore.KDF_DEVICE_ATTESTATION,
+                                         macCounter));
     }
 
-    byte[] encrypt(byte[] data) throws IOException {
+    byte[] encrypt(byte[] data) throws IOException, GeneralSecurityException {
         return serverCryptoInterface.encrypt(data);
     }
 
-    void checkFinalResult(byte[] closeSessionAttestation) throws IOException, GeneralSecurityException {
+    void checkFinalResult(byte[] closeSessionAttestation) throws IOException, 
+                                                                 GeneralSecurityException {
         MacGenerator check = new MacGenerator();
         check.addArray(savedCloseNonce);
-        if (!ArrayUtil.compare(attest(check.getResult(), getMacSequenceCounterAndUpdate()), closeSessionAttestation)) {
+        if (!ArrayUtil.compare(attest(check.getResult(), getMacSequenceCounterAndUpdate()),
+                               closeSessionAttestation)) {
             bad("Final attestation failed!");
         }
     }
@@ -1321,7 +1298,8 @@ public class ServerState implements Serializable {
     }
 
 
-    public void update(KeyCreationResponseDecoder keyCreationResponse) throws IOException {
+    public void update(KeyCreationResponseDecoder keyCreationResponse) 
+            throws IOException, GeneralSecurityException {
         checkState(false, ProtocolPhase.KEY_CREATION);
         checkSession(keyCreationResponse.clientSessionId,
                      keyCreationResponse.serverSessionId);
@@ -1367,7 +1345,8 @@ public class ServerState implements Serializable {
         return deviceCertificatePath == null ? null : deviceCertificatePath[0];
     }
 
-    public String getDeviceIDString(boolean longVersion) {
+    public String getDeviceIDString(boolean longVersion) 
+            throws IOException, GeneralSecurityException {
         return DeviceID.getDeviceId(getDeviceCertificate(), longVersion);
     }
 
@@ -1433,7 +1412,8 @@ public class ServerState implements Serializable {
 
     ArrayList<PUKPolicy> pukPolicies = new ArrayList<>();
 
-    public PUKPolicy createPUKPolicy(byte[] puk, PassphraseFormat format, int retryLimit) throws IOException {
+    public PUKPolicy createPUKPolicy(byte[] puk, PassphraseFormat format, int retryLimit)
+            throws IOException, GeneralSecurityException {
         return new PUKPolicy(encrypt(puk), format, retryLimit);
     }
 
@@ -1459,7 +1439,7 @@ public class ServerState implements Serializable {
     public Key createKeyWithPresetPIN(AppUsage appUsage, 
                                       KeySpecifier keySpecifier,
                                       PINPolicy pinPolicy,
-                                      byte[] pin) throws IOException {
+                                      byte[] pin) throws IOException, GeneralSecurityException {
         if (pinPolicy == null) {
             bad("PresetPIN without PINPolicy is not allowed");
         }
@@ -1493,7 +1473,7 @@ public class ServerState implements Serializable {
     }
 
 
-    public ECPublicKey generateEphemeralKey() throws IOException {
+    public ECPublicKey generateEphemeralKey() throws IOException, GeneralSecurityException {
         return serverCryptoInterface.generateEphemeralKey(ephemeraKeyAlgorithm);
     }
 }

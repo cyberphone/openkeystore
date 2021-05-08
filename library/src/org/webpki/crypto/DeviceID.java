@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import java.security.GeneralSecurityException;
 
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 
 import org.webpki.util.ArrayUtil;
@@ -116,24 +117,18 @@ public class DeviceID {
         }
     }
 
-    public static String getDeviceId(byte[] identityBlobOrNull, boolean longVersion) {
+    public static String getDeviceId(byte[] identityBlobOrNull, boolean longVersion) 
+            throws IOException, GeneralSecurityException {
         if (identityBlobOrNull != null) {
-            try {
-                byte[] hash = HashAlgorithms.SHA1.digest(identityBlobOrNull);
-                return getDeviceIdFromHash(longVersion ? hash : half(hash));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            byte[] hash = HashAlgorithms.SHA1.digest(identityBlobOrNull);
+            return getDeviceIdFromHash(longVersion ? hash : half(hash));
         }
         return "N/A";
     }
 
-    public static String getDeviceId(X509Certificate deviceCertificateOrNull, boolean longVersion) {
-        try {
-            return getDeviceId(deviceCertificateOrNull == null ? null : deviceCertificateOrNull.getEncoded(), longVersion);
-        } catch (GeneralSecurityException e) {
-            throw new RuntimeException(e);
-        }
+    public static String getDeviceId(X509Certificate deviceCertificateOrNull, boolean longVersion) 
+            throws CertificateEncodingException, IOException, GeneralSecurityException {
+        return getDeviceId(deviceCertificateOrNull == null ? null : deviceCertificateOrNull.getEncoded(), longVersion);
     }
 
     public static void validateDeviceID(String deviceId) throws IOException {
@@ -172,7 +167,7 @@ public class DeviceID {
         }
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, GeneralSecurityException {
         if (args.length != 2) {
             System.out.println("\n" + DeviceID.class.getName() + " certificate-in-der-format long_version_expressed_as_true_or_false\n");
             System.exit(3);

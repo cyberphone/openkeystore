@@ -22,6 +22,7 @@ import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
+import org.webpki.crypto.AsymKeySignerInterface;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
@@ -37,19 +38,21 @@ public class CBORAsymKeySigner extends CBORSigner {
 
     PrivateKey privateKey;
 
-    AsymSignatureAlgorithms signatureAlgorithm;
+    AsymSignatureAlgorithms algorithm;
+    
+    AsymKeySignerInterface signer;
 
     /**
      * Initialize signer.
      * 
-     * @param privateKey The key to sign with
-     * @param signatureAlgorithm The algorithm to use
+     * @param signer Custom signer
+     * @throws GeneralSecurityException 
+     * @throws IOException 
      */
-    public CBORAsymKeySigner(PrivateKey privateKey,
-                             AsymSignatureAlgorithms signatureAlgorithm) {
-        this.privateKey = privateKey;
-        this.signatureAlgorithm = signatureAlgorithm;
-        this.cborAlgorithmId = WEBPKI_2_CBOR_ALG.get(signatureAlgorithm);
+    public CBORAsymKeySigner(AsymKeySignerInterface signer) throws IOException,
+                                                                   GeneralSecurityException {
+        this.signer = signer;
+        setAlgorithm(signer.getAlgorithm());
     }
     
     /**
@@ -60,10 +63,35 @@ public class CBORAsymKeySigner extends CBORSigner {
      * 
      * @param privateKey The key to sign with
      * @throws IOException 
+     * @throws GeneralSecurityException 
      */
-    public CBORAsymKeySigner(PrivateKey privateKey) throws IOException {
-        this(privateKey,
-             KeyAlgorithms.getKeyAlgorithm(privateKey).getRecommendedSignatureAlgorithm());
+    public CBORAsymKeySigner(PrivateKey privateKey) throws IOException, GeneralSecurityException {
+        
+       signer = new AsymKeySignerInterface() {
+
+            @Override
+            public byte[] signData(byte[] dataToBeSigned) throws IOException,
+                                                                 GeneralSecurityException {
+                return new SignatureWrapper(algorithm, privateKey, provider)
+                        .update(dataToBeSigned)
+                        .sign();            
+            }
+
+            @Override
+            public AsymSignatureAlgorithms getAlgorithm() throws IOException,
+                                                                 GeneralSecurityException {
+                return null;  // Not used here
+            }
+
+            @Override
+            public void setAlgorithm(AsymSignatureAlgorithms algorithm) 
+                    throws IOException, GeneralSecurityException {
+                // Not used here
+            }
+            
+        };
+        setAlgorithm(KeyAlgorithms.getKeyAlgorithm(privateKey)
+                .getRecommendedSignatureAlgorithm());
     }
 
     /**
@@ -76,11 +104,24 @@ public class CBORAsymKeySigner extends CBORSigner {
         this.publicKey = publicKey;
         return this;
     }
+    
+    /**
+     * Set signature algorithm.
+     * 
+     * @param algorithm The algorithm
+     * @return this
+     * @throws GeneralSecurityException 
+     * @throws IOException 
+     */
+    public CBORAsymKeySigner setAlgorithm(AsymSignatureAlgorithms algorithm) 
+            throws IOException, GeneralSecurityException {
+        signer.setAlgorithm(this.algorithm = algorithm);
+        this.cborAlgorithmId = WEBPKI_2_CBOR_ALG.get(algorithm);
+        return this;
+    }    
 
     @Override
     byte[] signData(byte[] dataToBeSigned) throws GeneralSecurityException, IOException {
-        return new SignatureWrapper(signatureAlgorithm, privateKey, provider)
-                .update(dataToBeSigned)
-                .sign();
+        return signer.signData(dataToBeSigned);
     }
 }

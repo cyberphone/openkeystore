@@ -102,14 +102,14 @@ abstract class XMLSignerCore {
 
     abstract PublicKey populateKeys(XMLSignatureWrapper dsig_wrapper) throws GeneralSecurityException, IOException;
 
-    abstract byte[] getSignatureBlob(byte[] data, AsymSignatureAlgorithms sig_alg) throws GeneralSecurityException, IOException;
+    abstract byte[] getSignatureBlob(byte[] data) throws GeneralSecurityException, IOException;
 
 
     private void setupSignatureData() throws GeneralSecurityException, IOException {
         dsig_wrapper = new XMLSignatureWrapper();
         dsig_wrapper.KeyInfo_Reference_create = write_keyinfo_ref_flag;
         if (this instanceof XMLSymKeySigner) {
-            dsig_wrapper.signatureAlgorithm = ((XMLSymKeySigner) this).sym_signer.getHmacAlgorithm().getAlgorithmId(AlgorithmPreferences.SKS);
+            dsig_wrapper.signatureAlgorithm = ((XMLSymKeySigner) this).sym_signer.getAlgorithm().getAlgorithmId(AlgorithmPreferences.SKS);
             dsig_wrapper.symmetric_key_name = ((XMLSymKeySigner) this).key_name;
         } else {
             PublicKey publicKey = populateKeys(dsig_wrapper);
@@ -140,7 +140,7 @@ abstract class XMLSignerCore {
         }
         // Sign the Reference (SignedInfo)
         byte[] data = XPathCanonicalizer.serializeSubset(dsig_wrapper.SignedInfo_element, dsig_wrapper.canonicalization_algorithm);
-        updateBase64Field(dsig_wrapper.SignatureValue_node, getSignatureBlob(data, signatureAlgorithm));
+        updateBase64Field(dsig_wrapper.SignatureValue_node, getSignatureBlob(data));
 
         if (remove_xml_ns) {
             dsig_wrapper.root.removeAttributeNS("http://www.w3.org/2000/xmlns/", XMLSignatureWrapper.XML_DSIG_NS_PREFIX);

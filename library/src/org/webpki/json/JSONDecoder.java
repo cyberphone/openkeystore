@@ -18,6 +18,8 @@ package org.webpki.json;
 
 import java.io.IOException;
 
+import java.security.GeneralSecurityException;
+
 /**
  * Base class for java classes which can be created from specific JSON object types.
  * <p>
@@ -32,8 +34,10 @@ public abstract class JSONDecoder {
      *
      * @param rd A JSON reader
      * @throws IOException For any kind of error...
+     * @throws GeneralSecurityException 
      */
-    protected abstract void readJSONData(JSONObjectReader rd) throws IOException;
+    protected abstract void readJSONData(JSONObjectReader rd) 
+            throws IOException, GeneralSecurityException;
 
     /**
      * Emulation of XML namespace

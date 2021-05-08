@@ -37,13 +37,13 @@ public class JWSHmacSigner extends JWSSigner {
      * (assuming that the same parameters are valid).  It is also
      * thread-safe.
      * @param secretKey The key to use
-     * @param hmacAlgorithm HMAC Algorithm to use
+     * @param algorithm HMAC Algorithm to use
      * @throws IOException 
      */
-    public JWSHmacSigner(byte[] secretKey, HmacAlgorithms hmacAlgorithm) throws IOException {
-        super(hmacAlgorithm);
+    public JWSHmacSigner(byte[] secretKey, HmacAlgorithms algorithm) throws IOException {
+        super(algorithm);
         this.secretKey = secretKey;
-        this.hmacAlgorithm = hmacAlgorithm;
+        this.hmacAlgorithm = algorithm;
     }
 
     @Override

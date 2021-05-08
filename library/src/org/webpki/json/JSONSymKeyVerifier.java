@@ -18,6 +18,8 @@ package org.webpki.json;
 
 import java.io.IOException;
 
+import java.security.GeneralSecurityException;
+
 import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.SymKeyVerifierInterface;
 
@@ -54,7 +56,7 @@ public class JSONSymKeyVerifier extends JSONVerifier {
             public boolean verifyData(byte[] data,
                                       byte[] digest,
                                       HmacAlgorithms algorithm,
-                                      String keyId) throws IOException {
+                                      String keyId) throws IOException, GeneralSecurityException {
                 return ArrayUtil.compare(digest, algorithm.digest(rawKey, data));
             }
             
@@ -62,7 +64,7 @@ public class JSONSymKeyVerifier extends JSONVerifier {
     }
 
     @Override
-    void verify(JSONSignatureDecoder signatureDecoder) throws IOException {
+    void verify(JSONSignatureDecoder signatureDecoder) throws IOException, GeneralSecurityException {
         if (!verifier.verifyData(signatureDecoder.normalizedData,
                                  signatureDecoder.signatureValue,
                                  (HmacAlgorithms) signatureDecoder.signatureAlgorithm,

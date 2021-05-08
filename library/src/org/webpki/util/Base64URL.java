@@ -118,7 +118,7 @@ public class Base64URL {
      *
      * @param byteArray Binary data
      * @return Encoded data as a String
-     * @throws IOException &nbsp;
+     * @throws IOException
      */
     public static String encode(byte[] byteArray) throws IOException {
         //determine length of output

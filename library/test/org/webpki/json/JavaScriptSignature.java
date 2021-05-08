@@ -16,18 +16,12 @@
  */
 package org.webpki.json;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
-import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.spec.ECGenParameterSpec;
 
-import org.webpki.crypto.AsymKeySignerInterface;
-import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.KeyAlgorithms;
-import org.webpki.crypto.SignatureWrapper;
 
 /**
  * Demo code for JDOC
@@ -48,23 +42,8 @@ public class JavaScriptSignature {
         writer.setDouble("value", 1.3e4);
 
         // Sign object
-        writer.setSignature(new JSONAsymKeySigner(new AsymKeySignerInterface() {
-            @Override
-            public byte[] signData(byte[] data, AsymSignatureAlgorithms algorithm) throws IOException {
-                try {
-                    return new SignatureWrapper(algorithm, keyPair.getPrivate())
-                            .update(data)
-                            .sign();
-                } catch (GeneralSecurityException e) {
-                    throw new IOException(e);
-                }
-            }
-
-            @Override
-            public PublicKey getPublicKey() throws IOException {
-                return keyPair.getPublic();
-            }
-        }));
+        writer.setSignature(new JSONAsymKeySigner(keyPair.getPrivate())
+                                .setPublicKey(keyPair.getPublic()));
 
         // Serialize the signed object in JavaScript format
         String javaScript = "var reading = \n" +

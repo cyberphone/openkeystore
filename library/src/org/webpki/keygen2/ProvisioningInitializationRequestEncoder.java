@@ -44,8 +44,6 @@ import static org.webpki.keygen2.KeyGen2Constants.*;
 
 public class ProvisioningInitializationRequestEncoder extends ServerEncoder {
 
-    private static final long serialVersionUID = 1L;
-
     ServerState serverState;
 
     KeyManagementKeyUpdateHolder kmkRoot;
@@ -62,7 +60,8 @@ public class ProvisioningInitializationRequestEncoder extends ServerEncoder {
             this.keyManagementKey = keyManagementKey;
         }
 
-        public KeyManagementKeyUpdateHolder update(PublicKey keyManagementKey) throws IOException {
+        public KeyManagementKeyUpdateHolder update(PublicKey keyManagementKey) 
+                throws IOException, GeneralSecurityException {
             KeyManagementKeyUpdateHolder kmk = new KeyManagementKeyUpdateHolder(keyManagementKey);
             kmk.authorization = serverState.serverCryptoInterface.generateKeyManagementAuthorization(keyManagementKey,
                     ArrayUtil.add(SecureKeyStore.KMK_ROLL_OVER_AUTHORIZATION,
@@ -97,7 +96,8 @@ public class ProvisioningInitializationRequestEncoder extends ServerEncoder {
 
     public ProvisioningInitializationRequestEncoder(ServerState serverState,
                                                     short sessionLifeTime,
-                                                    short sessionKeyLimit) throws IOException {
+                                                    short sessionKeyLimit) 
+            throws IOException, GeneralSecurityException {
         serverState.checkState(true, ProtocolPhase.PROVISIONING_INITIALIZATION);
         this.serverState = serverState;
         this.sessionLifeTime = serverState.sessionLifeTime = sessionLifeTime;

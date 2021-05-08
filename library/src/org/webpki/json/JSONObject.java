@@ -28,8 +28,6 @@ import java.util.ArrayList;
  */
 class JSONObject {
 
-    private static final long serialVersionUID = 1L;
-
     LinkedHashMap<String, JSONValue> properties = new LinkedHashMap<>();
 
     JSONObject() {

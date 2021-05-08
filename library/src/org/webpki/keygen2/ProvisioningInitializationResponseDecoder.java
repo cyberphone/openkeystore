@@ -19,7 +19,7 @@ package org.webpki.keygen2;
 import java.io.IOException;
 
 import java.util.GregorianCalendar;
-
+import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
 
 import java.security.interfaces.ECPublicKey;
@@ -33,8 +33,6 @@ import org.webpki.util.ISODateTime;
 import static org.webpki.keygen2.KeyGen2Constants.*;
 
 public class ProvisioningInitializationResponseDecoder extends KeyGen2Validator {
-
-    private static final long serialVersionUID = 1L;
 
     String serverSessionId;
 
@@ -55,7 +53,7 @@ public class ProvisioningInitializationResponseDecoder extends KeyGen2Validator 
     }
 
     @Override
-    protected void readJSONData(JSONObjectReader rd) throws IOException {
+    protected void readJSONData(JSONObjectReader rd) throws IOException, GeneralSecurityException {
         /////////////////////////////////////////////////////////////////////////////////////////
         // The core session properties
         /////////////////////////////////////////////////////////////////////////////////////////

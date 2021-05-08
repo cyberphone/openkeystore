@@ -19,6 +19,8 @@ package org.webpki.xml;
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
+
+import java.security.GeneralSecurityException;
 import java.io.InputStream;
 
 import java.util.ArrayList;
@@ -124,10 +126,11 @@ public abstract class XMLObjectWrapper {
      * @param e Element
      * @return Wrapper
      * @throws IOException           If something unexpected happens...
+     * @throws GeneralSecurityException 
      * @throws IllegalStateException If this wrapper object was not created by an
      *                               {@link XMLSchemaCache XMLSchemaCache}.
      */
-    protected XMLObjectWrapper wrap(Element e) throws IOException {
+    protected XMLObjectWrapper wrap(Element e) throws IOException, GeneralSecurityException {
         XMLObjectWrapper o = schemaCache.wrap(e);
         wrapped_children.add(o);
         return o;
@@ -143,8 +146,10 @@ public abstract class XMLObjectWrapper {
      *
      * @param helper Helper
      * @throws IOException If something unexpected happens...
+     * @throws GeneralSecurityException 
      */
-    protected abstract void fromXML(DOMReaderHelper helper) throws IOException;
+    protected abstract void fromXML(DOMReaderHelper helper)
+            throws IOException, GeneralSecurityException;
 
     /**
      * Get the XML-encoding of the object.

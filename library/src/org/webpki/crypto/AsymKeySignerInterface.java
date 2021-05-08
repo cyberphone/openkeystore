@@ -19,7 +19,7 @@ package org.webpki.crypto;
 
 import java.io.IOException;
 
-import java.security.PublicKey;
+import java.security.GeneralSecurityException;
 
 /**
  * Common interface for asymmetric key signatures.
@@ -27,8 +27,33 @@ import java.security.PublicKey;
  */
 public interface AsymKeySignerInterface {
 
-    public byte[] signData(byte[] data, AsymSignatureAlgorithms algorithm) throws IOException;
+    /**
+     * Sign data.
+     * 
+     * @param data Data to sign
+     * @return Signed data
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
+    public byte[] signData(byte[] data) throws IOException, GeneralSecurityException;
+    
+    /**
+     * Get signature algorithm.
+     * 
+     * @return Signature algorithm
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
+    public AsymSignatureAlgorithms getAlgorithm() throws IOException, GeneralSecurityException;
 
-    public PublicKey getPublicKey() throws IOException;
+    /**
+     * Set signature algorithm.
+     * 
+     * @param algorithm The signature algorithm
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
+    public void setAlgorithm(AsymSignatureAlgorithms algorithm) throws IOException,
+                                                                       GeneralSecurityException;
 
 }

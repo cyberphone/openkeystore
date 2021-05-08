@@ -31,8 +31,8 @@ import org.webpki.crypto.SignatureWrapper;
 import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONOutputFormats;
 import org.webpki.json.JSONParser;
+
 import org.webpki.util.ArrayUtil;
-import org.webpki.util.Base64URL;
 import org.webpki.util.DebugFormatter;
 
 public class Benchmark {

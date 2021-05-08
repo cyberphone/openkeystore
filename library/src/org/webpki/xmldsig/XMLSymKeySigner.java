@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 
-import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.SymKeySignerInterface;
 
 
@@ -35,8 +34,8 @@ public class XMLSymKeySigner extends XMLSignerCore {
         return null;
     }
 
-    byte[] getSignatureBlob(byte[] data, AsymSignatureAlgorithms sig_alg) throws GeneralSecurityException, IOException {
-        return sym_signer.signData(data, sym_signer.getHmacAlgorithm());
+    byte[] getSignatureBlob(byte[] data) throws GeneralSecurityException, IOException {
+        return sym_signer.signData(data);
     }
 
 

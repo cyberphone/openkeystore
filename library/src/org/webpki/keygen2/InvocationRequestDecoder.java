@@ -30,8 +30,6 @@ import static org.webpki.keygen2.KeyGen2Constants.*;
 
 public class InvocationRequestDecoder extends ClientDecoder {
 
-    private static final long serialVersionUID = 1L;
-
     enum CAPABILITY {UNDEFINED, URI_FEATURE, VALUES, IMAGE_ATTRIBUTES}
 
     LinkedHashMap<String, CAPABILITY> queriedCapabilities = new LinkedHashMap<>();

@@ -18,6 +18,8 @@ package org.webpki.keygen2;
 
 import java.io.IOException;
 
+import java.security.GeneralSecurityException;
+
 import org.webpki.crypto.VerifierInterface;
 
 import org.webpki.json.JSONCryptoHelper;
@@ -28,13 +30,13 @@ import org.webpki.json.JSONX509Verifier;
 
 abstract class ClientDecoder extends KeyGen2Validator {
 
-    private static final long serialVersionUID = 1L;
-
     private JSONSignatureDecoder signature;  // Optional
 
-    abstract void readServerRequest(JSONObjectReader rd) throws IOException;
+    abstract void readServerRequest(JSONObjectReader rd) 
+            throws IOException, GeneralSecurityException;
 
-    public void verifySignature(VerifierInterface verifier) throws IOException {
+    public void verifySignature(VerifierInterface verifier) throws IOException,
+                                                                   GeneralSecurityException {
         signature.verify(new JSONX509Verifier(verifier));
     }
 
@@ -43,7 +45,8 @@ abstract class ClientDecoder extends KeyGen2Validator {
     }
 
     @Override
-    final protected void readJSONData(JSONObjectReader rd) throws IOException {
+    final protected void readJSONData(JSONObjectReader rd) throws IOException,
+                                                                  GeneralSecurityException {
         readServerRequest(rd);
 
         //////////////////////////////////////////////////////////////////

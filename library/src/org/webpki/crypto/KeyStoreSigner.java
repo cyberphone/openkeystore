@@ -31,9 +31,11 @@ import java.security.GeneralSecurityException;
 /**
  * Sign data using the KeyStore interface.
  */
-public class KeyStoreSigner implements SignerInterface, CertificateSelectorSpi {
+public class KeyStoreSigner implements X509SignerInterface, CertificateSelectorSpi {
 
     private PrivateKey privateKey;
+    
+    private AsymSignatureAlgorithms algorithm;
 
     private KeyStore signerCertKeystore;
 
@@ -68,7 +70,8 @@ public class KeyStoreSigner implements SignerInterface, CertificateSelectorSpi {
     }
 
 
-    public CertificateSelection getCertificateSelection(CertificateFilter[] cfs) throws IOException {
+    public CertificateSelection getCertificateSelection(CertificateFilter[] cfs) 
+            throws IOException,GeneralSecurityException {
         boolean path_expansion = false;
         for (CertificateFilter cf : cfs) {
             if (cf.needsPathExpansion()) {
@@ -77,39 +80,30 @@ public class KeyStoreSigner implements SignerInterface, CertificateSelectorSpi {
             }
         }
         CertificateSelection cs = new CertificateSelection(this);
-        try {
-            Enumeration<String> aliases = signerCertKeystore.aliases();
-            while (aliases.hasMoreElements()) {
-                String new_key = aliases.nextElement();
-                if (signerCertKeystore.isKeyEntry(new_key)) {
-                    X509Certificate[] curr_path = getCertPath(new_key, path_expansion);
-                    if (cfs.length == 0) {
+        Enumeration<String> aliases = signerCertKeystore.aliases();
+        while (aliases.hasMoreElements()) {
+            String new_key = aliases.nextElement();
+            if (signerCertKeystore.isKeyEntry(new_key)) {
+                X509Certificate[] curr_path = getCertPath(new_key, path_expansion);
+                if (cfs.length == 0) {
+                    cs.addEntry(new_key, curr_path[0]);
+                    continue;
+                }
+                for (CertificateFilter cf : cfs) {
+                    if (cf.matches(curr_path)) {
                         cs.addEntry(new_key, curr_path[0]);
-                        continue;
-                    }
-                    for (CertificateFilter cf : cfs) {
-                        if (cf.matches(curr_path)) {
-                            cs.addEntry(new_key, curr_path[0]);
-                            break;  // No need to test other filters for this key; it is already selected
-                        }
+                        break;  // No need to test other filters for this key; it is already selected
                     }
                 }
             }
-        } catch (GeneralSecurityException e) {
-            throw new IOException(e.getMessage());
         }
         return cs;
     }
 
 
-    @Override
-    public X509Certificate[] getCertificatePath() throws IOException {
-        try {
-            X509Certificate[] path = getCertPath(keyAlias, true);
-            return extendedCertpath ? path : new X509Certificate[]{path[0]};
-        } catch (GeneralSecurityException e) {
-            throw new IOException(e.getMessage());
-        }
+    public X509Certificate[] getCertificatePath() throws IOException, GeneralSecurityException {
+        X509Certificate[] path = getCertPath(keyAlias, true);
+        return extendedCertpath ? path : new X509Certificate[]{path[0]};
     }
 
 
@@ -126,15 +120,11 @@ public class KeyStoreSigner implements SignerInterface, CertificateSelectorSpi {
 
 
     @Override
-    public byte[] signData(byte[] data, AsymSignatureAlgorithms algorithm) throws IOException {
-        try {
-            return new SignatureWrapper(algorithm, privateKey)
+    public byte[] signData(byte[] data) throws IOException, GeneralSecurityException {
+         return new SignatureWrapper(algorithm, privateKey)
                 .setEcdsaSignatureEncoding(ecdsaDerEncoded)
                 .update(data)
                 .sign();
-        } catch (GeneralSecurityException e) {
-            throw new IOException(e);
-        }
     }
 
 
@@ -143,39 +133,48 @@ public class KeyStoreSigner implements SignerInterface, CertificateSelectorSpi {
     }
 
 
-    public KeyStoreSigner setKey(String inKeyAlias, String password) throws IOException {
+    public KeyStoreSigner setKey(String inKeyAlias, String password) 
+            throws IOException, GeneralSecurityException {
         keyAlias = inKeyAlias;
-        try {
-            if (keyAlias == null) {
-                // Search for signer certificate/key:
-                Enumeration<String> aliases = signerCertKeystore.aliases();
+        if (keyAlias == null) {
+            // Search for signer certificate/key:
+            Enumeration<String> aliases = signerCertKeystore.aliases();
 
-                while (aliases.hasMoreElements()) {
-                    String new_key = aliases.nextElement();
-                    if (signerCertKeystore.isKeyEntry(new_key)) {
-                        if (keyAlias != null) {
-                            throw new IOException("Missing certificate alias and multiple matches");
-                        }
-                        keyAlias = new_key;
+            while (aliases.hasMoreElements()) {
+                String new_key = aliases.nextElement();
+                if (signerCertKeystore.isKeyEntry(new_key)) {
+                    if (keyAlias != null) {
+                        throw new IOException("Missing certificate alias and multiple matches");
                     }
+                    keyAlias = new_key;
                 }
-                if (keyAlias == null) {
-                    throw new IOException("No matching certificate");
-                }
-            } else {
-                testKey(keyAlias);
             }
-            privateKey = (PrivateKey) signerCertKeystore.getKey(keyAlias,
-                    password == null ? null : password.toCharArray());
-            return this;
-        } catch (GeneralSecurityException e) {
-            throw new IOException(e);
+            if (keyAlias == null) {
+                throw new IOException("No matching certificate");
+            }
+        } else {
+            testKey(keyAlias);
         }
-    }
+        privateKey = (PrivateKey) signerCertKeystore.getKey(keyAlias,
+                password == null ? null : password.toCharArray());
+        algorithm = KeyAlgorithms.getKeyAlgorithm(privateKey).getRecommendedSignatureAlgorithm();
+        return this;
 
+    }
 
     public KeyStoreSigner setExtendedCertPath(boolean flag) {
         extendedCertpath = flag;
         return this;
     }
+
+    @Override
+    public void setAlgorithm(AsymSignatureAlgorithms algorithm) {
+        this.algorithm = algorithm;
+    }
+    
+    @Override
+    public AsymSignatureAlgorithms getAlgorithm() throws IOException, GeneralSecurityException {
+        return algorithm;
+    }
+
 }

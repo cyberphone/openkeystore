@@ -27,11 +27,8 @@ import java.security.SecureRandom;
 
 import java.security.spec.ECGenParameterSpec;
 
-import org.webpki.crypto.AsymKeySignerInterface;
-import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.CustomCryptoProvider;
-import org.webpki.crypto.SignatureWrapper;
 
 /**
  * Demo code for JDOC
@@ -51,23 +48,7 @@ public class DemoCode {
         writer.setString("myProperty", "Some data");
 
         // Sign document
-        writer.setSignature(new JSONAsymKeySigner(new AsymKeySignerInterface() {
-            @Override
-            public byte[] signData(byte[] data, AsymSignatureAlgorithms algorithm) throws IOException {
-                try {
-                    return new SignatureWrapper(algorithm, privateKey)
-                            .update(data)
-                            .sign();
-                } catch (GeneralSecurityException e) {
-                    throw new IOException(e);
-                }
-            }
-
-            @Override
-            public PublicKey getPublicKey() throws IOException {
-                return publicKey;
-            }
-        }));
+        writer.setSignature(new JSONAsymKeySigner(privateKey).setPublicKey(publicKey));
 
         // Serialize document
         String json = writer.toString();

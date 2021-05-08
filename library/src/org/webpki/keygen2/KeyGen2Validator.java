@@ -36,8 +36,6 @@ import org.webpki.util.ISODateTime;
 
 abstract class KeyGen2Validator extends JSONDecoder {
 
-    private static final long serialVersionUID = 1L;
-
     static String validateID(String name, String value) throws IOException {
         int l = value.length();
         if (l == 0 || l > SecureKeyStore.MAX_LENGTH_ID_TYPE) {

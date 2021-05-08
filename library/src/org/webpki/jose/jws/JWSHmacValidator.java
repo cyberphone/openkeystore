@@ -18,6 +18,8 @@ package org.webpki.jose.jws;
 
 import java.io.IOException;
 
+import java.security.GeneralSecurityException;
+
 import org.webpki.crypto.HmacAlgorithms;
 
 import org.webpki.util.ArrayUtil;
@@ -42,7 +44,8 @@ public class JWSHmacValidator extends JWSValidator {
     }
 
     @Override
-    void validateObject(byte[] signedData, JWSDecoder jwsDecoder) throws IOException {
+    void validateObject(byte[] signedData, JWSDecoder jwsDecoder)
+            throws IOException, GeneralSecurityException {
         if (!ArrayUtil.compare(
                ((HmacAlgorithms)jwsDecoder.signatureAlgorithm).digest(secretKey, 
                                                                       signedData),

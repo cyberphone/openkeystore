@@ -28,8 +28,6 @@ import static org.webpki.keygen2.KeyGen2Constants.*;
 
 public class InvocationRequestEncoder extends ServerEncoder {
 
-    private static final long serialVersionUID = 1L;
-
     Action action = Action.MANAGE;
 
     private ServerState serverState;

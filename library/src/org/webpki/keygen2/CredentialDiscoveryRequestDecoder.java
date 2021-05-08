@@ -18,6 +18,7 @@ package org.webpki.keygen2;
 
 import java.io.IOException;
 
+import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 
 import java.security.cert.X509Certificate;
@@ -42,8 +43,6 @@ import static org.webpki.keygen2.KeyGen2Constants.*;
 
 public class CredentialDiscoveryRequestDecoder extends ClientDecoder {
 
-    private static final long serialVersionUID = 1L;
-
     public class LookupSpecifier extends CertificateFilter {
 
         String id;
@@ -55,7 +54,7 @@ public class CredentialDiscoveryRequestDecoder extends ClientDecoder {
 
         PublicKey keyManagementKey;
 
-        LookupSpecifier(JSONObjectReader rd) throws IOException {
+        LookupSpecifier(JSONObjectReader rd) throws IOException, GeneralSecurityException {
             id = KeyGen2Validator.getID(rd, ID_JSON);
             if (!ArrayUtil.compare(nonce_reference, rd.getBinary(NONCE_JSON))) {
                 throw new IOException("\"" + NONCE_JSON + "\"  error");
@@ -149,7 +148,7 @@ public class CredentialDiscoveryRequestDecoder extends ClientDecoder {
 
 
     @Override
-    void readServerRequest(JSONObjectReader rd) throws IOException {
+    void readServerRequest(JSONObjectReader rd) throws IOException, GeneralSecurityException {
         /////////////////////////////////////////////////////////////////////////////////////////
         // Session properties
         /////////////////////////////////////////////////////////////////////////////////////////

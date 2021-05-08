@@ -18,6 +18,8 @@ package org.webpki.json;
 
 import java.lang.reflect.InvocationTargetException;
 
+import java.security.GeneralSecurityException;
+
 import java.io.IOException;
 
 import java.util.Hashtable;
@@ -56,7 +58,8 @@ public class JSONDecoderCache {
 
     Hashtable<String, Class<? extends JSONDecoder>> classMap = new Hashtable<>();
 
-    public JSONDecoder parse(JSONObjectReader reader) throws IOException {
+    public JSONDecoder parse(JSONObjectReader reader) 
+            throws IOException, GeneralSecurityException {
         String objectTypeIdentifier = reader.getString(CONTEXT_JSON);
         if (reader.hasProperty(QUALIFIER_JSON)) {
             objectTypeIdentifier += CONTEXT_QUALIFIER_DIVIDER + reader.getString(QUALIFIER_JSON);
@@ -79,7 +82,7 @@ public class JSONDecoderCache {
         }
     }
 
-    public JSONDecoder parse(byte[] jsonUtf8) throws IOException {
+    public JSONDecoder parse(byte[] jsonUtf8) throws IOException, GeneralSecurityException {
         return parse(JSONParser.parse(jsonUtf8));
     }
 

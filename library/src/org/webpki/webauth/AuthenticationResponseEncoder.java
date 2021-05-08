@@ -39,8 +39,6 @@ import static org.webpki.webauth.WebAuthConstants.*;
 
 public class AuthenticationResponseEncoder extends JSONEncoder {
 
-    private static final long serialVersionUID = 1L;
-
     private GregorianCalendar serverTime;
 
     private GregorianCalendar clientTime;
@@ -81,7 +79,8 @@ public class AuthenticationResponseEncoder extends JSONEncoder {
     }
 
     @Override
-    protected void writeJSONData(JSONObjectWriter wr) throws IOException {
+    protected void writeJSONData(JSONObjectWriter wr)
+            throws IOException, GeneralSecurityException {
         wr.setString(ID_JSON, id);
 
         wr.setDateTime(SERVER_TIME_JSON, serverTime, ISODateTime.UTC_NO_SUBSECONDS);

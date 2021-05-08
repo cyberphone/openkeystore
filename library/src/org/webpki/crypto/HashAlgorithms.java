@@ -62,12 +62,8 @@ public enum HashAlgorithms implements CryptoAlgorithms {
         return jceName;
     }
 
-    public byte[] digest(byte[] data) throws IOException {
-        try {
-            return MessageDigest.getInstance(getJceName()).digest(data);
-        } catch (GeneralSecurityException gse) {
-            throw new IOException(gse);
-        }
+    public byte[] digest(byte[] data) throws IOException, GeneralSecurityException {
+        return MessageDigest.getInstance(getJceName()).digest(data);
     }
 
     public static HashAlgorithms getAlgorithmFromOid(String oid) throws IOException {

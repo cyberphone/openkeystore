@@ -17,7 +17,7 @@
 package org.webpki.keygen2;
 
 import java.io.IOException;
-
+import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
 
 import java.util.ArrayList;
@@ -28,8 +28,6 @@ import org.webpki.json.JSONObjectReader;
 import static org.webpki.keygen2.KeyGen2Constants.*;
 
 public class CredentialDiscoveryResponseDecoder extends KeyGen2Validator {
-
-    private static final long serialVersionUID = 1L;
 
     public class MatchingCredential {
 
@@ -68,7 +66,7 @@ public class CredentialDiscoveryResponseDecoder extends KeyGen2Validator {
 
         ArrayList<MatchingCredential> matchingCredentials = new ArrayList<>();
 
-        LookupResult(JSONObjectReader rd) throws IOException {
+        LookupResult(JSONObjectReader rd) throws IOException, GeneralSecurityException {
             id = KeyGen2Validator.getID(rd, ID_JSON);
             JSONArrayReader matches = rd.getArray(MATCHING_CREDENTIALS_JSON);
             while (matches.hasMore()) {
@@ -104,7 +102,7 @@ public class CredentialDiscoveryResponseDecoder extends KeyGen2Validator {
 
 
     @Override
-    protected void readJSONData(JSONObjectReader rd) throws IOException {
+    protected void readJSONData(JSONObjectReader rd) throws IOException, GeneralSecurityException {
         /////////////////////////////////////////////////////////////////////////////////////////
         // Session properties
         /////////////////////////////////////////////////////////////////////////////////////////

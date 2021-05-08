@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-
+import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
@@ -38,8 +38,6 @@ import static org.webpki.webauth.WebAuthConstants.*;
 
 
 public class AuthenticationResponseDecoder extends InputValidator {
-
-    private static final long serialVersionUID = 1L;
 
     String serverTime;
 
@@ -73,7 +71,8 @@ public class AuthenticationResponseDecoder extends InputValidator {
     }
 
 
-    public void verifySignature(VerifierInterface verifier) throws IOException {
+    public void verifySignature(VerifierInterface verifier) throws IOException,
+                                                                   GeneralSecurityException {
         signature.verify(new JSONX509Verifier(verifier));
     }
 
@@ -82,7 +81,7 @@ public class AuthenticationResponseDecoder extends InputValidator {
     /////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
-    protected void readJSONData(JSONObjectReader rd) throws IOException {
+    protected void readJSONData(JSONObjectReader rd) throws IOException, GeneralSecurityException {
         //////////////////////////////////////////////////////////////////////////
         // Get the top-level properties
         //////////////////////////////////////////////////////////////////////////

@@ -18,6 +18,7 @@ package org.webpki.pdf;
 
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 import org.webpki.util.ArrayUtil;
 import org.webpki.crypto.DemoKeyStore;
@@ -25,7 +26,7 @@ import org.webpki.crypto.KeyStoreSigner;
 
 public class Sign {
 
-    public static void main(String argv[]) throws IOException {
+    public static void main(String argv[]) throws IOException, GeneralSecurityException {
         if (argv.length < 6 ||
                 (!argv[0].equals("c") && !argv[0].equals("s")) ||
                 (!argv[1].equals("v") && !argv[1].equals("i")) ||

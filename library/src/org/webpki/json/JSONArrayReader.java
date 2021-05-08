@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import java.security.GeneralSecurityException;
+
 import java.security.cert.X509Certificate;
 
 import java.util.EnumSet;
@@ -161,7 +163,7 @@ public class JSONArrayReader {
         return blobs;
     }
 
-    public X509Certificate[] getCertificatePath() throws IOException {
+    public X509Certificate[] getCertificatePath() throws IOException, GeneralSecurityException {
         ArrayList<byte[]> blobs = new ArrayList<>();
         do {
             blobs.add(Base64URL.decode(getString()));
@@ -169,7 +171,8 @@ public class JSONArrayReader {
         return CertificateUtil.makeCertificatePath(blobs);
     }
 
-    public JSONSignatureDecoder getSignature(JSONCryptoHelper.Options options) throws IOException {
+    public JSONSignatureDecoder getSignature(JSONCryptoHelper.Options options) 
+            throws IOException, GeneralSecurityException {
         options.initializeOperation(false);
         JSONObject dummy = new JSONObject();
         dummy.properties.put(null, new JSONValue(JSONTypes.ARRAY, array));
@@ -177,6 +180,9 @@ public class JSONArrayReader {
         index = array.size() - 1;
         JSONObjectReader signature = getObject();
         index = save;
-        return new JSONSignatureDecoder(new JSONObjectReader(dummy), signature, signature, options);
+        return new JSONSignatureDecoder(new JSONObjectReader(dummy), 
+                                        signature,
+                                        signature, 
+                                        options);
     }
 }

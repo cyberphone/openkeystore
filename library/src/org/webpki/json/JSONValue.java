@@ -23,8 +23,6 @@ import java.io.IOException;
  */
 class JSONValue {
 
-    private static final long serialVersionUID = 1L;
-
     JSONTypes type;    // Number, String, etc.
 
     Object value;      // Holds either a String, JSONObject or ArrayList<JSONValue>

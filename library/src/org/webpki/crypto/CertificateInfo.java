@@ -58,9 +58,11 @@ public class CertificateInfo {
         this.certificate = certificate;
         this.trusted = trusted;
         trustModeSet = true;
-        issuerDn = CertificateUtil.convertRFC2253ToLegacy(certificate.getIssuerX500Principal().getName());
+        issuerDn = CertificateUtil.convertRFC2253ToLegacy(
+                certificate.getIssuerX500Principal().getName());
         serialNumber = certificate.getSerialNumber().toString();
-        subjectDn = CertificateUtil.convertRFC2253ToLegacy(certificate.getSubjectX500Principal().getName());
+        subjectDn = CertificateUtil.convertRFC2253ToLegacy(
+                certificate.getSubjectX500Principal().getName());
         notValidBefore.setTime(certificate.getNotBefore());
         notValidAfter.setTime(certificate.getNotAfter());
     }
@@ -196,12 +198,8 @@ public class CertificateInfo {
     /*
      * Returns the certificate hash.
      */
-    public byte[] getCertificateHash() {
-        try {
-            return CertificateUtil.getCertificateSHA256(certificate);
-        } catch (IOException ioe) {
-            return null;
-        }
+    public byte[] getCertificateHash() throws IOException, GeneralSecurityException {
+        return CertificateUtil.getCertificateSHA256(certificate);
     }
 
 
@@ -290,7 +288,8 @@ public class CertificateInfo {
 
 
     public String getPublicKeyAlgorithm() throws IOException {
-        return KeyAlgorithms.getKeyAlgorithm(certificate.getPublicKey()).getAlgorithmId(AlgorithmPreferences.SKS);
+        return KeyAlgorithms.getKeyAlgorithm(
+                certificate.getPublicKey()).getAlgorithmId(AlgorithmPreferences.SKS);
     }
 
 
@@ -332,7 +331,7 @@ public class CertificateInfo {
     }
 
 
-    public String toString(boolean Verbose) {
+    public String toString(boolean Verbose) throws IOException, GeneralSecurityException {
         byte hash[] = getCertificateHash();
         return "  Subject DN: " + getSubject() + "\n" +
                "  Issuer DN: " + getIssuer() + "\n" +
@@ -347,7 +346,11 @@ public class CertificateInfo {
 
 
     public String toString() {
-        return toString(false);
+        try {
+            return toString(false);
+        } catch (IOException | GeneralSecurityException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

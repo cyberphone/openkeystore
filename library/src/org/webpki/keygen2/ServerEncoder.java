@@ -20,6 +20,8 @@ import java.io.IOException;
 
 import java.math.BigInteger;
 
+import java.security.GeneralSecurityException;
+
 import java.util.GregorianCalendar;
 
 import org.webpki.json.JSONEncoder;
@@ -29,9 +31,8 @@ import org.webpki.util.ISODateTime;
 
 abstract class ServerEncoder extends JSONEncoder {
 
-    private static final long serialVersionUID = 1L;
-
-    abstract void writeServerRequest(JSONObjectWriter wr) throws IOException;
+    abstract void writeServerRequest(JSONObjectWriter wr) throws IOException,
+                                                                 GeneralSecurityException;
 
     final void bad(String message) throws IOException {
         throw new IOException(message);
@@ -43,7 +44,8 @@ abstract class ServerEncoder extends JSONEncoder {
     }
 
     @Override
-    final protected void writeJSONData(JSONObjectWriter wr) throws IOException {
+    final protected void writeJSONData(JSONObjectWriter wr) throws IOException,
+                                                                   GeneralSecurityException {
         writeServerRequest(wr);
     }
 
@@ -71,7 +73,9 @@ abstract class ServerEncoder extends JSONEncoder {
         }
     }
 
-    void setOptionalDateTime(JSONObjectWriter wr, String name, GregorianCalendar dateTime) throws IOException {
+    void setOptionalDateTime(JSONObjectWriter wr, 
+                             String name, 
+                             GregorianCalendar dateTime) throws IOException {
         if (dateTime != null) {
             wr.setDateTime(name, dateTime, ISODateTime.UTC_NO_SUBSECONDS);  // Server UTC
         }

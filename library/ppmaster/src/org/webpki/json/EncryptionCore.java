@@ -486,7 +486,7 @@ class EncryptionCore {
      * @param encryptedKeyData For ECDH+KW based operations only
      * @return Shared secret
      * @throws GeneralSecurityException &nbsp;
-     * @throws IOException &nbsp;
+     * @throws IOException
      */
     public static byte[] receiverKeyAgreement(KeyEncryptionAlgorithms keyEncryptionAlgorithm,
                                               DataEncryptionAlgorithms dataEncryptionAlgorithm,
@@ -520,7 +520,7 @@ class EncryptionCore {
      * @param staticKey The receiver's (usually static) public key
      * @return A composite object including the (plain text) data encryption key
      * @throws GeneralSecurityException &nbsp;
-     * @throws IOException &nbsp;
+     * @throws IOException
      */
     static AsymmetricEncryptionResult
             senderKeyAgreement(byte[] dataEncryptionKey,

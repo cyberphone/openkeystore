@@ -25,15 +25,14 @@ import java.security.PublicKey;
 
 import javax.security.auth.x500.X500Principal;
 
-import org.webpki.crypto.AsymSignatureAlgorithms;
-import org.webpki.crypto.SignerInterface;
+import org.webpki.crypto.X509SignerInterface;
 import org.webpki.crypto.CertificateUtil;
 
 
 public class XMLSigner extends XMLSignerCore {
 
-    private SignerInterface signer_implem;
-
+    private X509SignerInterface signer_implem;
+ 
     PublicKey populateKeys(XMLSignatureWrapper r) throws GeneralSecurityException, IOException {
         // Prepare all certificate data
         r.certificates = signer_implem.getCertificatePath();
@@ -42,22 +41,24 @@ public class XMLSigner extends XMLSignerCore {
         r.x509IssuerName = certificate.getIssuerX500Principal().getName(X500Principal.RFC2253);
         r.x509SerialNumber = certificate.getSerialNumber();
         // Note: only output as a comment and therefore NOT normalized (unreadable)
-        r.x509SubjectName = CertificateUtil.convertRFC2253ToLegacy(certificate.getSubjectX500Principal().getName());
+        r.x509SubjectName = CertificateUtil.convertRFC2253ToLegacy(
+                certificate.getSubjectX500Principal().getName());
         return certificate.getPublicKey();
     }
 
-    byte[] getSignatureBlob(byte[] data, AsymSignatureAlgorithms sig_alg) throws GeneralSecurityException, IOException {
-        return signer_implem.signData(data, sig_alg);
+    byte[] getSignatureBlob(byte[] data) 
+            throws GeneralSecurityException, IOException {
+        return signer_implem.signData(data);
     }
 
 
     /**
-     * Creates an XMLSigner using the given {@link SignerInterface SignerInterface}.
+     * Creates an XMLSigner using the given {@link X509SignerInterface X509SignerInterface}.
      *
      * @param signer Signer implementation
      */
-    public XMLSigner(SignerInterface signer) {
+    public XMLSigner(X509SignerInterface signer) {
         this.signer_implem = signer;
     }
 
-}
+ }

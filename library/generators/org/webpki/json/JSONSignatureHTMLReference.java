@@ -135,7 +135,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
         byte[] keyValue;
     }
     
-    static AsymKey readAsymKey(String keyType) throws IOException {
+    static AsymKey readAsymKey(String keyType) throws IOException, GeneralSecurityException {
         AsymKey asymKey = new AsymKey();
         JSONObjectReader key = json.readJson1(asymKey.fileName = keyType + "privatekey.jwk");
         asymKey.text = key.toString();

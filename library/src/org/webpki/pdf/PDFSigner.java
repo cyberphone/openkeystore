@@ -19,13 +19,14 @@ package org.webpki.pdf;
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+
 import java.util.ArrayList;
 
+import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import org.webpki.crypto.SignerInterface;
-import org.webpki.crypto.AsymSignatureAlgorithms;
+import org.webpki.crypto.X509SignerInterface;
 
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.DocumentException;
@@ -43,8 +44,8 @@ import com.lowagie.text.pdf.PdfString;
 
 public class PDFSigner {
 
-    private SignerInterface signer;
-
+    private X509SignerInterface signer;
+    
     private String reason;
 
     private String location;
@@ -60,7 +61,7 @@ public class PDFSigner {
     private ArrayList<Attachment> attachments = new ArrayList<>();
 
 
-    public PDFSigner(SignerInterface signer) {
+    public PDFSigner(X509SignerInterface signer) {
         this.signer = signer;
     }
 
@@ -89,7 +90,8 @@ public class PDFSigner {
     }
 
 
-    public byte[] addDocumentSignature(byte[] indoc, boolean certified) throws IOException {
+    public byte[] addDocumentSignature(byte[] indoc, boolean certified) 
+            throws IOException, GeneralSecurityException {
         try {
             PdfReader reader = new PdfReader(indoc);
             ByteArrayOutputStream bout = new ByteArrayOutputStream(8192);
@@ -130,7 +132,7 @@ public class PDFSigner {
             PdfLiteral slit = (PdfLiteral) sg.get(PdfName.CONTENTS);
             byte[] outc = new byte[(slit.getPosLength() - 2) / 2];
             PdfPKCS7 sig = sg.getSigner();
-            sig.setExternalDigest(signer.signData(hash, AsymSignatureAlgorithms.RSA_SHA1), hash, "RSA");
+            sig.setExternalDigest(signer.signData(hash), hash, "RSA");
             PdfDictionary dic = new PdfDictionary();
             byte[] ssig = sig.getEncodedPKCS7();
             System.arraycopy(ssig, 0, outc, 0, ssig.length);

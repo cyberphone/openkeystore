@@ -258,12 +258,13 @@ public class XMLSignatureWrapper extends XMLObjectWrapper implements Serializabl
     }
 
 
-    public static X509Certificate[] readSortedX509DataSubset(DOMReaderHelper rd) throws IOException {
+    public static X509Certificate[] readSortedX509DataSubset(DOMReaderHelper rd) throws IOException, GeneralSecurityException {
         return readSortedX509Data(rd, null);
     }
 
 
-    private static X509Certificate[] readSortedX509Data(DOMReaderHelper rd, XMLSignatureWrapper sigwrap) throws IOException {
+    private static X509Certificate[] readSortedX509Data(DOMReaderHelper rd, XMLSignatureWrapper sigwrap) 
+            throws IOException, GeneralSecurityException {
         ArrayList<X509Certificate> certificates = new ArrayList<>();
         rd.getNext(X509_DATA_ELEM);
         rd.getChild();
@@ -348,7 +349,7 @@ public class XMLSignatureWrapper extends XMLObjectWrapper implements Serializabl
     }
 
 
-    protected void fromXML(DOMReaderHelper rd) throws IOException {
+    protected void fromXML(DOMReaderHelper rd) throws IOException, GeneralSecurityException {
         DOMAttributeReaderHelper aHelper = rd.getAttributeHelper();
 
         signedinfo_object = new SignedInfoObject();

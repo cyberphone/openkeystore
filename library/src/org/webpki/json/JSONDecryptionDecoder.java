@@ -153,10 +153,11 @@ public class JSONDecryptionDecoder {
      * @param encryptionObject JSON input data
      * @param last <code>true</code> if this is the final encryption object
      * @throws IOException
+     * @throws GeneralSecurityException 
      */
     JSONDecryptionDecoder(Holder holder, 
                           JSONObjectReader encryptionObject,
-                          boolean last) throws IOException {
+                          boolean last) throws IOException, GeneralSecurityException {
         this.holder = holder;
         
         checkEncryptionConstruct(holder.options.publicKeyOption != 
@@ -214,7 +215,7 @@ public class JSONDecryptionDecoder {
      * Decrypt data based on a specific symmetric key.
      * @param dataDecryptionKey Symmetric key
      * @return Decrypted data
-     * @throws IOException &nbsp;
+     * @throws IOException
      * @throws GeneralSecurityException &nbsp;
      */
     public byte[] getDecryptedData(byte[] dataDecryptionKey) throws IOException, 
@@ -227,7 +228,7 @@ public class JSONDecryptionDecoder {
      * Decrypt data based on a specific private key.
      * @param privateKey The private key
      * @return Decrypted data
-     * @throws IOException &nbsp;
+     * @throws IOException
      * @throws GeneralSecurityException &nbsp;
      */
     public byte[] getDecryptedData(PrivateKey privateKey) throws IOException, 
@@ -249,7 +250,7 @@ public class JSONDecryptionDecoder {
      * Decrypt data based on a collection of possible [private] keys.
      * @param decryptionKeys Collection
      * @return Decrypted data
-     * @throws IOException &nbsp;
+     * @throws IOException
      * @throws GeneralSecurityException &nbsp;
      */
     public byte[] getDecryptedData(List<DecryptionKeyHolder> decryptionKeys)

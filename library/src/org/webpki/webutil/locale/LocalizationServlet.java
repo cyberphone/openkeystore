@@ -18,6 +18,8 @@ package org.webpki.webutil.locale;
 
 import java.io.IOException;
 
+import java.security.GeneralSecurityException;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
 
@@ -60,7 +62,8 @@ public abstract class LocalizationServlet extends HttpServlet {
         return locale;
     }
 
-    protected LocalizedStringsSchema getLocalizationData(String locale, ServletContext context) throws IOException {
+    protected LocalizedStringsSchema getLocalizationData(String locale, ServletContext context) 
+            throws IOException, GeneralSecurityException {
         XMLSchemaCache sc = new XMLSchemaCache();
         sc.addWrapper(LocalizedStringsSchema.class);
         return (LocalizedStringsSchema) sc.parse(ArrayUtil.readFile(
@@ -68,7 +71,7 @@ public abstract class LocalizationServlet extends HttpServlet {
     }
 
 
-    protected String getLocalizedString(int sindex) throws IOException {
+    protected String getLocalizedString(int sindex) throws IOException, GeneralSecurityException {
         ServletContext context = getServletContext();
         String localedata[] = (String[]) context.getAttribute(LOCALEDATA_ATTRIBUTE);
         if (localedata == null) {
@@ -81,7 +84,8 @@ public abstract class LocalizationServlet extends HttpServlet {
     }
 
 
-    protected String[] getLocalizedStringSet(int sindex, int breakchar) throws IOException {
+    protected String[] getLocalizedStringSet(int sindex, int breakchar)
+            throws IOException, GeneralSecurityException {
         String res = getLocalizedString(sindex);
         int i = 0;
         int j = 1;
@@ -102,7 +106,8 @@ public abstract class LocalizationServlet extends HttpServlet {
     }
 
 
-    protected String[] getLocalizedStringSet(int sindex) throws IOException {
+    protected String[] getLocalizedStringSet(int sindex) 
+            throws IOException, GeneralSecurityException {
         return getLocalizedStringSet(sindex, ',');
     }
 

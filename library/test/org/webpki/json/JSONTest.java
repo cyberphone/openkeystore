@@ -3390,9 +3390,7 @@ public class JSONTest {
     
     void keyPairSignature(KeyPair keyPair) throws IOException, GeneralSecurityException {
         String json = new JSONObjectWriter().setString("hi", "there")
-            .setSignature(new JSONAsymKeySigner(keyPair.getPrivate(), 
-                                                keyPair.getPublic(), 
-                                                null).setOutputPublicKeyInfo(false)).toString();
+            .setSignature(new JSONAsymKeySigner(keyPair.getPrivate())).toString();
         JSONParser.parse(json).getSignature(
                 new JSONCryptoHelper.Options()
                     .setPublicKeyOption(
@@ -3629,7 +3627,7 @@ public class JSONTest {
 
         JSONObjectWriter writer = new JSONObjectWriter()
             .setString("myData", "cool")
-            .setSignature(new JSONAsymKeySigner(p256.getPrivate(), p256.getPublic(), null));
+            .setSignature(new JSONAsymKeySigner(p256.getPrivate()).setPublicKey(p256.getPublic()));
         verifySignature(writer, new JSONCryptoHelper.Options(), p256.getPublic());
         try {
             verifySignature(writer, new JSONCryptoHelper.Options(), r2048.getPublic());
@@ -3659,7 +3657,7 @@ public class JSONTest {
             checkException(e, "SKS algorithm expected: ES256");
         }
         writer = new JSONObjectWriter().setString("myData", "cool!")
-        .setSignature(new JSONAsymKeySigner(p256.getPrivate(), p256.getPublic(), null)
+        .setSignature(new JSONAsymKeySigner(p256.getPrivate())
             .setExtensionNames(new String[]{"https://example.com/ext"})
             .setExtensionData(new JSONObjectWriter().setString("https://example.com/ext", "foobar")));
         try {
@@ -3718,7 +3716,7 @@ public class JSONTest {
         holder = new JSONCryptoHelper.ExtensionHolder();
         holder.addExtension(ExampleComExtGood.class, true);
         writer = new JSONObjectWriter().setString("myData", "cool!")
-                .setSignature(new JSONAsymKeySigner(p256.getPrivate(), p256.getPublic(), null));
+                .setSignature(new JSONAsymKeySigner(p256.getPrivate()));
         try {
             readSignature(writer, new JSONCryptoHelper.Options().setPermittedExtensions(holder));
             fail("Not ok");
@@ -3730,8 +3728,8 @@ public class JSONTest {
         readSignature(writer, new JSONCryptoHelper.Options().setPermittedExtensions(holder));
         try {
             writer = new JSONObjectWriter().setString("myData", "cool!")
-                    .setSignature(new JSONAsymKeySigner(p256.getPrivate(), p256.getPublic(), null)
-                    .setSignatureAlgorithm(AsymSignatureAlgorithms.RSA_SHA256));
+                    .setSignature(new JSONAsymKeySigner(p256.getPrivate())
+                    .setAlgorithm(AsymSignatureAlgorithms.RSA_SHA256));
                 fail("Must not");
         } catch (Exception e) {
         }
@@ -3785,8 +3783,8 @@ public class JSONTest {
         }
         ArrayList<JSONSignatureDecoder> signatures;
         writer = new JSONObjectWriter()
-            .setSignature(new JSONAsymKeySigner(p256.getPrivate(), p256.getPublic(), null)
-               .setSignatureAlgorithm(AsymSignatureAlgorithms.ECDSA_SHA512));
+            .setSignature(new JSONAsymKeySigner(p256.getPrivate())
+               .setAlgorithm(AsymSignatureAlgorithms.ECDSA_SHA512));
         assertTrue(verifySignature(writer, 
                                    new JSONCryptoHelper.Options(),
                                    p256.getPublic()).getAlgorithm() == AsymSignatureAlgorithms.ECDSA_SHA512);
@@ -3802,17 +3800,16 @@ public class JSONTest {
         signatures.get(0).verify(new JSONAsymKeyVerifier(p256.getPublic()));
         signatures.get(1).verify(new JSONAsymKeyVerifier(r2048.getPublic()));
         writer = new JSONObjectWriter().setInt("value", 3)
-            .setMultiSignature(new JSONAsymKeySigner(p256.getPrivate(), p256.getPublic(), null))
-            .setMultiSignature(new JSONAsymKeySigner(p521.getPrivate(), p521.getPublic(), null));
+            .setMultiSignature(new JSONAsymKeySigner(p256.getPrivate()))
+            .setMultiSignature(new JSONAsymKeySigner(p521.getPrivate()));
         signatures = new JSONObjectReader(writer).getMultiSignature(new JSONCryptoHelper.Options());
         assertTrue(signatures.size() == 2);
         signatures.get(0).verify(new JSONAsymKeyVerifier(p256.getPublic()));
         signatures.get(1).verify(new JSONAsymKeyVerifier(p521.getPublic()));
         writer = new JSONObjectWriter().setInt("value", 3)
-            .setMultiSignature(new JSONAsymKeySigner(p256.getPrivate(), p256.getPublic(), null)
-                .setOutputPublicKeyInfo(false))
-            .setMultiSignature(new JSONAsymKeySigner(p521.getPrivate(), p521.getPublic(), null)
-                .setOutputPublicKeyInfo(false).setKeyId("mykey"));
+            .setMultiSignature(new JSONAsymKeySigner(p256.getPrivate()))
+            .setMultiSignature(new JSONAsymKeySigner(p521.getPrivate())
+                .setKeyId("mykey"));
         try {
             new JSONObjectReader(writer).clone().getMultiSignature(new JSONCryptoHelper.Options()
                 .setPublicKeyOption(JSONCryptoHelper.PUBLIC_KEY_OPTIONS.FORBIDDEN)
@@ -3867,9 +3864,9 @@ public class JSONTest {
 
         writer = new JSONObjectWriter()
             .setString("myData", "cool")
-            .setChainedSignature(new JSONAsymKeySigner(p256.getPrivate(), p256.getPublic(), null))
-            .setChainedSignature(new JSONAsymKeySigner(r2048.getPrivate(), r2048.getPublic(), null))
-            .setChainedSignature(new JSONAsymKeySigner(p521.getPrivate(), p521.getPublic(), null));
+            .setChainedSignature(new JSONAsymKeySigner(p256.getPrivate()))
+            .setChainedSignature(new JSONAsymKeySigner(r2048.getPrivate()))
+            .setChainedSignature(new JSONAsymKeySigner(p521.getPrivate()));
         signatures = new JSONObjectReader(writer).getSignatureChain(new JSONCryptoHelper.Options());
         signatures.get(0).verify(new JSONAsymKeyVerifier(p256.getPublic()));
         signatures.get(1).verify(new JSONAsymKeyVerifier(r2048.getPublic()));
@@ -3906,13 +3903,13 @@ public class JSONTest {
             checkException(e, "Unknown CA: CN=Test Root CA");
         }
         writer = new JSONObjectWriter().setString("myData", "cool!")
-                .setSignature("attestSignature", new JSONAsymKeySigner(p256.getPrivate(), p256.getPublic(), null));
+                .setSignature("attestSignature", new JSONAsymKeySigner(p256.getPrivate()));
         JSONParser.parse(writer.toString()).getSignature("attestSignature", new JSONCryptoHelper.Options());
         JSONArrayWriter arraySignature = new JSONArrayWriter();
 
         arraySignature.setString("Hi there!")
                       .setInt(2003)
-                      .setSignature(new JSONAsymKeySigner(p256.getPrivate(), p256.getPublic(), null));
+                      .setSignature(new JSONAsymKeySigner(p256.getPrivate()));
         JSONArrayReader arrayReader = JSONParser.parse(arraySignature.toString()).getJSONArrayReader();
         assertTrue("size", arrayReader.size() == 3);
         arrayReader.getSignature(new JSONCryptoHelper.Options());

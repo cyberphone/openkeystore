@@ -44,8 +44,6 @@ import org.webpki.util.ISODateTime;
  */
 public class JSONArrayWriter {
 
-    private static final long serialVersionUID = 1L;
-
     ArrayList<JSONValue> array;
 
     /**
@@ -127,7 +125,8 @@ public class JSONArrayWriter {
         return new JSONObjectWriter(dummy);
         
     }
-    public JSONArrayWriter setSignature (JSONSigner signer) throws IOException {
+    public JSONArrayWriter setSignature (JSONSigner signer) throws IOException,
+                                                                   GeneralSecurityException {
         JSONObjectWriter signatureObject = setObject();
         JSONObjectWriter.coreSign(signer, 
                                   signatureObject,
@@ -152,7 +151,7 @@ public class JSONArrayWriter {
      * Create nested array.<p>
      * This method creates a new array writer at the current position.</p>
      * @return Array writer
-     * @throws IOException &nbsp;
+     * @throws IOException
      */
     public JSONArrayWriter setArray() throws IOException {
         JSONArrayWriter writer = new JSONArrayWriter();
@@ -165,7 +164,7 @@ public class JSONArrayWriter {
      * This method inserts an existing array writer at the current position.</p>
      * @param writer Instance of array writer
      * @return Array writer
-     * @throws IOException &nbsp;
+     * @throws IOException
      */
     public JSONArrayWriter setArray(JSONArrayWriter writer) throws IOException {
         add(JSONTypes.ARRAY, writer.array);

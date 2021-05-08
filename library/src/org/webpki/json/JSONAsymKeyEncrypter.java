@@ -29,7 +29,7 @@ public class JSONAsymKeyEncrypter extends JSONEncrypter {
      * Constructor for JCE based solutions.
      * @param publicKey Public key used for encrypting the key
      * @param keyEncryptionAlgorithm The algorithm used for encrypting the key
-     * @throws IOException &nbsp;
+     * @throws IOException
      */
     public JSONAsymKeyEncrypter(PublicKey publicKey,
                                 KeyEncryptionAlgorithms keyEncryptionAlgorithm) throws IOException {

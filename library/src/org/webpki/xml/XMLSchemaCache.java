@@ -17,7 +17,7 @@
 package org.webpki.xml;
 
 import java.lang.reflect.InvocationTargetException;
-
+import java.security.GeneralSecurityException;
 import java.io.InputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -192,7 +192,8 @@ public class XMLSchemaCache {
     }
 
 
-    private XMLObjectWrapper wrap(Element e, String namespace) throws IOException {
+    private XMLObjectWrapper wrap(Element e, String namespace) 
+            throws IOException, GeneralSecurityException {
         try {
             String element = e.getLocalName();
             Class<?> wrapperClass = classMap.get(new ElementID(namespace, element));
@@ -222,19 +223,20 @@ public class XMLSchemaCache {
      * @param d Document
      * @return XMLObjectWrapper
      * @throws IOException If anything unexpected happens...
+     * @throws GeneralSecurityException 
      */
-    public XMLObjectWrapper wrap(Document d) throws IOException {
+    public XMLObjectWrapper wrap(Document d) throws IOException, GeneralSecurityException {
         Element e = d.getDocumentElement();
         String namespace = DOMUtil.getDefiningNamespace(e);
         return wrap(e, namespace);
     }
 
-    XMLObjectWrapper wrap(Element e) throws IOException {
+    XMLObjectWrapper wrap(Element e) throws IOException, GeneralSecurityException {
         XMLObjectWrapper o = wrap(e, DOMUtil.getDefiningNamespace(e));
         return o;
     }
 
-    public XMLObjectWrapper wrap(XMLCookie cookie) throws IOException {
+    public XMLObjectWrapper wrap(XMLCookie cookie) throws IOException, GeneralSecurityException {
         return wrap(cookie.element);
     }
 
@@ -391,12 +393,12 @@ public class XMLSchemaCache {
         return validate(new FileInputStream(new File(fname)));
     }
 
-    public XMLObjectWrapper parse(byte[] xmldata) throws IOException {
+    public XMLObjectWrapper parse(byte[] xmldata) throws IOException, GeneralSecurityException {
         return wrap(validate(xmldata));
     }
 
 
-    public XMLObjectWrapper parse(InputStream is) throws IOException {
+    public XMLObjectWrapper parse(InputStream is) throws IOException, GeneralSecurityException {
         return wrap(validate(is));
     }
 

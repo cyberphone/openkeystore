@@ -18,12 +18,12 @@ package org.webpki.json;
 
 import java.io.IOException;
 
+import java.security.GeneralSecurityException;
+
 /**
  * Base class for java classes which are used for creating specific JSON object types.
  */
 public abstract class JSONEncoder {
-
-    private static final long serialVersionUID = 1L;
 
     JSONObject root;  // Of written document
 
@@ -37,8 +37,9 @@ public abstract class JSONEncoder {
      *
      * @param wr A JSON writer
      * @throws IOException For any underlying error
+     * @throws GeneralSecurityException 
      */
-    protected abstract void writeJSONData(JSONObjectWriter wr) throws IOException;
+    protected abstract void writeJSONData(JSONObjectWriter wr) throws IOException, GeneralSecurityException;
 
     /**
      * Emulation of XML namespace
@@ -60,8 +61,10 @@ public abstract class JSONEncoder {
      * @param outputFormat The wanted formatting
      * @return Document in JSON [binary] format
      * @throws IOException For any underlying error
+     * @throws GeneralSecurityException 
      */
-    public byte[] serializeJSONDocument(JSONOutputFormats outputFormat) throws IOException {
+    public byte[] serializeJSONDocument(JSONOutputFormats outputFormat) 
+            throws IOException, GeneralSecurityException {
         JSONObjectWriter wr = new JSONObjectWriter();
         root = wr.root;
         wr.setString(JSONDecoderCache.CONTEXT_JSON, getContext());
