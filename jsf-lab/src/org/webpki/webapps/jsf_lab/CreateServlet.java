@@ -40,7 +40,7 @@ import org.webpki.json.JSONObjectWriter;
 import org.webpki.json.JSONOutputFormats;
 import org.webpki.json.JSONParser;
 import org.webpki.json.JSONSigner;
-import org.webpki.json.JSONSymKeySigner;
+import org.webpki.json.JSONHmacSigner;
 import org.webpki.json.JSONAsymKeySigner;
 import org.webpki.json.JSONX509Signer;
 
@@ -345,7 +345,7 @@ public class CreateServlet extends HttpServlet {
             // Symmetric or asymmetric?
             if (isSymmetric(algorithmString)) {
                 validationKey = getParameter(request, PRM_SECRET_KEY);
-                signer = new JSONSymKeySigner(
+                signer = new JSONHmacSigner(
                         DebugFormatter.getByteArrayFromHex(validationKey),
                         HmacAlgorithms.getAlgorithmFromId(algorithmString, 
                                                          AlgorithmPreferences.JOSE));
@@ -374,14 +374,14 @@ public class CreateServlet extends HttpServlet {
                 if (certOption) {
                     signer = new JSONX509Signer(
                             keyPair.getPrivate(),
-                            PEMDecoder.getCertificatePath(getBinaryParameter(request, PRM_CERT_PATH)),
-                            null).setSignatureAlgorithm(asymSignatureAlgorithm);
+                            PEMDecoder.getCertificatePath(getBinaryParameter(request, PRM_CERT_PATH)))
+                                .setAlgorithm(asymSignatureAlgorithm);
                 } else {
-                    signer = new JSONAsymKeySigner(
-                            keyPair.getPrivate(),
-                            keyPair.getPublic(),
-                            null).setSignatureAlgorithm(asymSignatureAlgorithm)
-                                 .setOutputPublicKeyInfo(keyInlining);
+                    signer = new JSONAsymKeySigner(keyPair.getPrivate())
+                                .setAlgorithm(asymSignatureAlgorithm);
+                            if (keyInlining) {
+                                ((JSONAsymKeySigner)signer).setPublicKey(keyPair.getPublic());
+                            }
                 }
             }
 

@@ -166,9 +166,7 @@ public class JSFService extends InitPropertyReader implements ServletContextList
             KeyPair sampleKey = PEMDecoder.getKeyPair(getEmbeddedResource("p256privatekey.pem"));
             String signedData =  new JSONObjectWriter(JSONParser.parse(sampleDataToSign))
                 .setSignature(
-                    new JSONAsymKeySigner(sampleKey.getPrivate(), 
-                                          sampleKey.getPublic(), 
-                                          null).setOutputPublicKeyInfo(false))
+                    new JSONAsymKeySigner(sampleKey.getPrivate()))
                         .serializeToString(JSONOutputFormats.PRETTY_PRINT);
             sampleSignature = sampleDataToSign.substring(0, sampleDataToSign.lastIndexOf('}')) +
                               "," +

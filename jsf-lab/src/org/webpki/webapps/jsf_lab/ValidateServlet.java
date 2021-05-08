@@ -39,7 +39,7 @@ import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONOutputFormats;
 import org.webpki.json.JSONParser;
 import org.webpki.json.JSONSignatureDecoder;
-import org.webpki.json.JSONSymKeyVerifier;
+import org.webpki.json.JSONHmacVerifier;
 
 import org.webpki.util.DebugFormatter;
 import org.webpki.util.PEMDecoder;
@@ -106,7 +106,7 @@ public class ValidateServlet extends HttpServlet {
             boolean jwkValidationKey = validationKey.startsWith("{");
             if (CreateServlet.isSymmetric(algorithmString)) {
                 signatureDecoder.verify(
-                        new JSONSymKeyVerifier(DebugFormatter.getByteArrayFromHex(validationKey)));
+                        new JSONHmacVerifier(DebugFormatter.getByteArrayFromHex(validationKey)));
             } else {
                 PublicKey externalPublicKey =  jwkValidationKey ? 
                     JSONParser.parse(validationKey).getCorePublicKey(AlgorithmPreferences.JOSE)
