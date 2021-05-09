@@ -78,13 +78,6 @@ public class xmlobject extends XMLObjectWrapper implements XMLEnvelopedInput {
             return null;
         }
 
-        @Override
-        public void setAlgorithm(AsymSignatureAlgorithms algorithm)
-                throws IOException, GeneralSecurityException {
-            // TODO Auto-generated method stub
-            
-        }
-
     }
 
     public String id;

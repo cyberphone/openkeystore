@@ -235,13 +235,6 @@ public class CommandLineCA {
              return certalg;
         }
 
-
-        @Override
-        public void setAlgorithm(AsymSignatureAlgorithms algorithm)
-                throws IOException, GeneralSecurityException {
-            // Not used here
-        }
-
     }
 
 

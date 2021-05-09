@@ -76,12 +76,6 @@ public class JSONAsymKeySigner extends JSONSigner {
                                                                  GeneralSecurityException {
                 return algorithm;
             }
-
-            @Override
-            public void setAlgorithm(AsymSignatureAlgorithms algorithm)
-                    throws IOException, GeneralSecurityException {
-                // Not used here
-            }
           
         };
     }
@@ -93,7 +87,7 @@ public class JSONAsymKeySigner extends JSONSigner {
 
     public JSONAsymKeySigner setAlgorithm(AsymSignatureAlgorithms algorithm) 
             throws IOException, GeneralSecurityException {
-        signer.setAlgorithm(this.algorithm = algorithm);
+        this.algorithm = algorithm;
         return this;
     }
     

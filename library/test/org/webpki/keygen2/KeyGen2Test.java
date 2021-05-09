@@ -1094,11 +1094,6 @@ public class KeyGen2Test {
                                      return algorithm;
                                 }
 
-                                @Override
-                                public void setAlgorithm(AsymSignatureAlgorithms algorithm) 
-                                        throws IOException, GeneralSecurityException {
-                                }
-
                             },
                             caPublicKey,
                             gen_public_key));

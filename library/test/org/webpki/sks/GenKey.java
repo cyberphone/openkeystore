@@ -105,11 +105,6 @@ public class GenKey {
                                 return AsymSignatureAlgorithms.RSA_SHA256;
                             }
 
-                            @Override
-                            public void setAlgorithm(AsymSignatureAlgorithms algorithm)
-                                    throws IOException, GeneralSecurityException {
-                            }
-
                         },
                         ProvSess.RSA_KEY_2.getPublic(),
                         publicKey);

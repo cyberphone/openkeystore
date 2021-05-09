@@ -167,7 +167,6 @@ public class KeyStoreSigner implements X509SignerInterface, CertificateSelectorS
         return this;
     }
 
-    @Override
     public void setAlgorithm(AsymSignatureAlgorithms algorithm) {
         this.algorithm = algorithm;
     }

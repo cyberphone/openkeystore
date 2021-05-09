@@ -144,10 +144,6 @@ public class CredentialDiscoveryRequestEncoder extends ServerEncoder {
                    AsymSignatureAlgorithms.RSA_SHA256 : AsymSignatureAlgorithms.ECDSA_SHA256;
          }
 
-        @Override
-        public void setAlgorithm(AsymSignatureAlgorithms algorithm) 
-                throws IOException, GeneralSecurityException {
-        }
     }
 
 

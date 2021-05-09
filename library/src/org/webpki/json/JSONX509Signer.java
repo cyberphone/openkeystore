@@ -85,12 +85,6 @@ public class JSONX509Signer extends JSONSigner {
             }
 
             @Override
-            public void setAlgorithm(AsymSignatureAlgorithms algorithm)
-                    throws IOException, GeneralSecurityException {
-                // Not used here
-            }
-
-            @Override
             public X509Certificate[] getCertificatePath()
                     throws IOException, GeneralSecurityException {
                 return null;  // Not used here
@@ -101,7 +95,7 @@ public class JSONX509Signer extends JSONSigner {
 
     public JSONX509Signer setAlgorithm(AsymSignatureAlgorithms algorithm)
             throws IOException, GeneralSecurityException {
-        signer.setAlgorithm(this.algorithm = algorithm);
+        this.algorithm = algorithm;
         return this;
     }
 

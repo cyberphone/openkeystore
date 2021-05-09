@@ -48,16 +48,4 @@ public interface AsymKeySignerInterface {
         throw new GeneralSecurityException("Missing implementation!");
     }
 
-    /**
-     * Set signature algorithm.
-     * 
-     * @param algorithm The signature algorithm
-     * @throws IOException
-     * @throws GeneralSecurityException
-     */
-    default void setAlgorithm(AsymSignatureAlgorithms algorithm) throws IOException,
-                                                                        GeneralSecurityException {
-        throw new GeneralSecurityException("Missing implementation!");
-    }
-
 }
