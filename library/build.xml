@@ -265,11 +265,11 @@
         match="ValueExact"
         replace="Value"
         flags="g"/>
-    <replaceregexp file="${android_dir}/org/webpki/jose/jws/JwsAsymKeySigner.java"
+    <replaceregexp file="${android_dir}/org/webpki/jose/jws/JWSAsymKeySigner.java"
         match="(.*)(Base64\.getEncoder\(\)\.encodeToString\()([^(^)]*\([^(^)]*\))"
         replace="\1Base64.encodeToString(\3, Base64.NO_WRAP"
         flags="g"/>
-    <replaceregexp file="${android_dir}/org/webpki/jose/jws/JwsAsymKeySigner.java"
+    <replaceregexp file="${android_dir}/org/webpki/jose/jws/JWSAsymKeySigner.java"
         match="import java\.util\.Base64;"
         replace="import android.util.Base64;"
         flags="g"/>
@@ -299,11 +299,11 @@
         <include name="**/util/ISODateTime.java"/>
         <include name="**/util/ArrayUtil.java"/>
         <include name="**/util/Base64URL.java"/>
-        <include name="**/crypto/VerifierInterface.java"/>
-        <include name="**/crypto/SymKeyVerifierInterface.java"/>
-        <include name="**/crypto/SignerInterface.java"/>
+        <include name="**/crypto/X509VerifierInterface.java"/>
+        <include name="**/crypto/HmacVerifierInterface.java"/>
+        <include name="**/crypto/X509SignerInterface.java"/>
         <include name="**/crypto/AsymKeySignerInterface.java"/>
-        <include name="**/crypto/SymKeySignerInterface.java"/>
+        <include name="**/crypto/HmacSignerInterface.java"/>
         <include name="**/crypto/CryptoAlgorithms.java"/>
         <include name="**/crypto/OkpSupport.java"/>
         <include name="**/crypto/HashAlgorithms.java"/>
@@ -324,6 +324,7 @@
     <jpp destdir="${android_dir}" verbose="true" force="true">
         <fileset dir="ppmaster/src" includes="**/*.java">
         	<exclude name="**/PEMDecoder.java"/>
+            <exclude name="**/CustomCryptoProvider.java"/>
         </fileset>
     </jpp>
 
@@ -393,11 +394,11 @@
         <include name="**/crypto/ExtendedKeyUsages.java"/>
         <include name="**/crypto/DeviceID.java"/>
         <include name="**/crypto/KeyUsageBits.java"/>
-        <include name="**/crypto/VerifierInterface.java"/>
-        <include name="**/crypto/SymKeyVerifierInterface.java"/>
-        <include name="**/crypto/SignerInterface.java"/>
+        <include name="**/crypto/X509VerifierInterface.java"/>
+        <include name="**/crypto/HmacVerifierInterface.java"/>
+        <include name="**/crypto/X509SignerInterface.java"/>
         <include name="**/crypto/AsymKeySignerInterface.java"/>
-        <include name="**/crypto/SymKeySignerInterface.java"/>
+        <include name="**/crypto/HmacSignerInterface.java"/>
         <include name="**/crypto/CryptoAlgorithms.java"/>
         <include name="**/crypto/KeyAlgorithms.java"/>
         <include name="**/crypto/KeyTypes.java"/>
