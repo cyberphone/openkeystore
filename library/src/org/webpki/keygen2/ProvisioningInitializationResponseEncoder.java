@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import java.util.GregorianCalendar;
 
+import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
 
 import java.security.interfaces.ECPublicKey;
@@ -68,7 +69,8 @@ public class ProvisioningInitializationResponseEncoder extends JSONEncoder {
     }
 
     @Override
-    protected void writeJSONData(JSONObjectWriter wr) throws IOException {
+    protected void writeJSONData(JSONObjectWriter wr)
+            throws IOException, GeneralSecurityException {
         //////////////////////////////////////////////////////////////////////////
         // Session properties
         //////////////////////////////////////////////////////////////////////////

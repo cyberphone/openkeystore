@@ -39,6 +39,7 @@ import org.junit.Test;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.HmacSignerInterface;
+import org.webpki.crypto.CustomCryptoProvider;
 
 import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONParser;
@@ -57,6 +58,7 @@ public class CBORTest {
     public static void openFile() throws Exception {
         Locale.setDefault(Locale.FRANCE);  // Should create HUGE problems :-)
         baseKey = System.clearProperty("json.keys") + File.separator;
+        CustomCryptoProvider.forcedLoad(false);
     }
 
     static String baseKey;

@@ -115,7 +115,7 @@ public class JSONX509Signer extends JSONSigner {
     }
 
     @Override
-    void writeKeyData(JSONObjectWriter wr) throws IOException {
+    void writeKeyData(JSONObjectWriter wr) throws IOException, GeneralSecurityException {
         wr.setCertificatePath(certificatePath);
     }
 }

@@ -146,7 +146,7 @@ public abstract class JSONEncrypter {
         }
     }
 
-    abstract void writeKeyData(JSONObjectWriter wr) throws IOException;
+    abstract void writeKeyData(JSONObjectWriter wr) throws IOException, GeneralSecurityException;
 
     /**
      * Set &quot;crit&quot; for this encryption object.

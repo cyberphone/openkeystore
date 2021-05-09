@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.ArrayList;
 
+import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
 
 import org.webpki.json.JSONArrayWriter;
@@ -95,7 +96,8 @@ public class CredentialDiscoveryResponseEncoder extends JSONEncoder {
 
 
     @Override
-    protected void writeJSONData(JSONObjectWriter wr) throws IOException {
+    protected void writeJSONData(JSONObjectWriter wr)
+            throws IOException, GeneralSecurityException{
         //////////////////////////////////////////////////////////////////////////
         // Session properties
         //////////////////////////////////////////////////////////////////////////

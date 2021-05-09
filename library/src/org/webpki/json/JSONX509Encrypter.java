@@ -18,6 +18,7 @@ package org.webpki.json;
 
 import java.io.IOException;
 
+import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
 
 /**
@@ -41,7 +42,7 @@ public class JSONX509Encrypter extends JSONEncrypter {
     }
 
     @Override
-    void writeKeyData(JSONObjectWriter wr) throws IOException {
+    void writeKeyData(JSONObjectWriter wr) throws IOException, GeneralSecurityException {
         wr.setCertificatePath(certificatePath);
     }
 }

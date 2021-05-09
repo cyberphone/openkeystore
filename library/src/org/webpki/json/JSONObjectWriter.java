@@ -866,7 +866,7 @@ import org.webpki.json.JSONSignatureDecoder;
      * @throws IOException
      */
     public JSONObjectWriter setCertificatePath(X509Certificate[] certificatePath) 
-    throws IOException {
+    throws IOException, GeneralSecurityException {
         return setArray(JSONCryptoHelper.CERTIFICATE_PATH_JSON, 
                         JSONArrayWriter.createCoreCertificatePath(certificatePath));
     }

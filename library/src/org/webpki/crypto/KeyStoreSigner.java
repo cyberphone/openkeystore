@@ -39,8 +39,6 @@ public class KeyStoreSigner implements X509SignerInterface, CertificateSelectorS
 
     private KeyStore signerCertKeystore;
 
-    private AuthorityInfoAccessCAIssuersSpi aiaCaissuerHandler;
-
     private String keyAlias;
 
     private boolean extendedCertpath;
@@ -62,9 +60,6 @@ public class KeyStoreSigner implements X509SignerInterface, CertificateSelectorS
         X509Certificate[] certificatePath = new X509Certificate[cp.length];
         for (int q = 0; q < cp.length; q++) {
             certificatePath[q] = (X509Certificate) cp[q];
-        }
-        if (pathExpansion && aiaCaissuerHandler != null) {
-            return aiaCaissuerHandler.getUpdatedPath(certificatePath);
         }
         return certificatePath;
     }
@@ -109,12 +104,6 @@ public class KeyStoreSigner implements X509SignerInterface, CertificateSelectorS
 
     public KeyStoreSigner setECDSASignatureEncoding(boolean derEncoded) {
         ecdsaDerEncoded = derEncoded;
-        return this;
-    }
-
-
-    public KeyStoreSigner setAuthorityInfoAccessCAIssuersHandler(AuthorityInfoAccessCAIssuersSpi aiaCaissuerHandler) {
-        this.aiaCaissuerHandler = aiaCaissuerHandler;
         return this;
     }
 

@@ -182,12 +182,14 @@ public class PEMDecoder {
                 .generatePublic(new X509EncodedKeySpec(publicKeyBlob)); 
     }
 
-    public static X509Certificate[] getCertificatePath(byte[] pemBlob) throws IOException {
-        return CertificateUtil.getSortedPathFromBlobs(decodePemObjects(pemBlob, "CERTIFICATE"));
+    public static X509Certificate[] getCertificatePath(byte[] pemBlob) 
+            throws IOException, GeneralSecurityException {
+        return CertificateUtil.getSortedPathFromBlobs(
+                decodePemObjects(pemBlob, "CERTIFICATE"));
     }
 
     public static KeyStore getKeyStore(byte[] pemBlob, String alias, String password)
-    throws GeneralSecurityException, IOException {
+            throws IOException, GeneralSecurityException {
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
         keyStore.load(null, password.toCharArray());
         keyStore.setKeyEntry(alias,
@@ -198,7 +200,7 @@ public class PEMDecoder {
     }
 
     public static X509Certificate getRootCertificate(byte[] pemBlob) 
-    throws IOException {
+    throws IOException, GeneralSecurityException {
         X509Certificate[] certPath = getCertificatePath(pemBlob);
         return certPath[certPath.length - 1];
     }

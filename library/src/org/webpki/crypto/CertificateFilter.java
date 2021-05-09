@@ -332,7 +332,8 @@ public class CertificateFilter {
     }
 
 
-    private static boolean matchExtendedKeyUsage(String[] specifier, X509Certificate certificate) throws IOException {
+    private static boolean matchExtendedKeyUsage(String[] specifier, X509Certificate certificate)
+            throws IOException, GeneralSecurityException {
         if (specifier == null) {
             return true;
         }
@@ -350,7 +351,8 @@ public class CertificateFilter {
     }
 
 
-    private static boolean matchEmailAddress(String specifier, X509Certificate certificate) throws IOException {
+    private static boolean matchEmailAddress(String specifier, X509Certificate certificate)
+            throws IOException, GeneralSecurityException {
         if (specifier == null) {
             return true;
         }
@@ -368,7 +370,8 @@ public class CertificateFilter {
     }
 
 
-    private static boolean matchPolicy(String specifier[], X509Certificate certificate) throws IOException {
+    private static boolean matchPolicy(String specifier[], X509Certificate certificate)
+            throws IOException, GeneralSecurityException {
         if (specifier == null) {
             return true;
         }

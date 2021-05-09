@@ -34,8 +34,6 @@ public class KeyStoreVerifier implements X509VerifierInterface {
 
     private boolean trusted;
 
-    private AuthorityInfoAccessCAIssuersSpi aiaCaissuerHandler;
-
     private X509Certificate[] certificatePath;
 
     /**
@@ -72,9 +70,6 @@ public class KeyStoreVerifier implements X509VerifierInterface {
     public boolean verifyCertificatePath(X509Certificate[] inCertificatePath) throws IOException {
         try {
             certificatePath = inCertificatePath;
-            if (aiaCaissuerHandler != null) {
-                certificatePath = aiaCaissuerHandler.getUpdatedPath(certificatePath);
-            }
             trusted = caCertificates.verifyCertificates(certificatePath);
             if (abortOnNonTrusted && !trusted) {
                 throw new IOException("Unknown CA: " + certificatePath[certificatePath.length - 1].getIssuerX500Principal().getName());
@@ -84,11 +79,6 @@ public class KeyStoreVerifier implements X509VerifierInterface {
         }
         return trusted;
     }
-
-    public void setAuthorityInfoAccessCAIssuersHandler(AuthorityInfoAccessCAIssuersSpi aiaCaissuerHandler) {
-        this.aiaCaissuerHandler = aiaCaissuerHandler;
-    }
-
 
     public void setTrustedRequired(boolean flag) throws IOException {
         abortOnNonTrusted = flag;

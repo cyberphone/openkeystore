@@ -54,7 +54,8 @@ public class CertificateInfo {
     private boolean trustModeSet;
 
 
-    public CertificateInfo(X509Certificate certificate, boolean trusted) throws IOException {
+    public CertificateInfo(X509Certificate certificate, boolean trusted) 
+            throws IOException, GeneralSecurityException {
         this.certificate = certificate;
         this.trusted = trusted;
         trustModeSet = true;
@@ -68,7 +69,8 @@ public class CertificateInfo {
     }
 
 
-    public CertificateInfo(X509Certificate certificate) throws IOException {
+    public CertificateInfo(X509Certificate certificate)
+            throws IOException, GeneralSecurityException {
         this(certificate, true);
         trustModeSet = false;
     }
@@ -252,27 +254,27 @@ public class CertificateInfo {
     }
 
 
-    public String[] getPolicyOIDs() throws IOException {
+    public String[] getPolicyOIDs() throws IOException, GeneralSecurityException {
         return CertificateUtil.getPolicyOIDs(certificate);
     }
 
 
-    public String[] getAIAOCSPResponders() throws IOException {
+    public String[] getAIAOCSPResponders() throws IOException, GeneralSecurityException {
         return CertificateUtil.getAIAOCSPResponders(certificate);
     }
 
 
-    public String[] getAIACAIssuers() throws IOException {
+    public String[] getAIACAIssuers() throws IOException, GeneralSecurityException {
         return CertificateUtil.getAIACAIssuers(certificate);
     }
 
 
-    public String[] getExtendedKeyUsage() throws IOException {
+    public String[] getExtendedKeyUsage() throws IOException, GeneralSecurityException {
         return CertificateUtil.getExtendedKeyUsage(certificate);
     }
 
 
-    public String[] getKeyUsages() throws IOException {
+    public String[] getKeyUsages() throws IOException, GeneralSecurityException {
         return CertificateUtil.getKeyUsages(certificate);
     }
 

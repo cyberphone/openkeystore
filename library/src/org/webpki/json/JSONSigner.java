@@ -47,7 +47,7 @@ public abstract class JSONSigner extends JSONCryptoHelper.ExtensionsEncoder {
     
     abstract byte[] signData(byte[] data) throws IOException, GeneralSecurityException;
 
-    abstract void writeKeyData(JSONObjectWriter wr) throws IOException;
+    abstract void writeKeyData(JSONObjectWriter wr) throws IOException, GeneralSecurityException;
 
     /**
      * Set (object level) list of permitted extension elements.

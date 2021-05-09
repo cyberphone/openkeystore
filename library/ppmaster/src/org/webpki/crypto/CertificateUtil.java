@@ -77,7 +77,8 @@ public class CertificateUtil {
                 DerDecoder.decode(ParseUtil.octet(DerDecoder.decode(extensionBytes))));
     }
 
-    public static X509Certificate[] getSortedPathFromPKCS7Bag(byte[] bag) throws IOException {
+    public static X509Certificate[] getSortedPathFromPKCS7Bag(byte[] bag) 
+            throws IOException, GeneralSecurityException {
         ArrayList<byte[]> certs = new ArrayList<>();
 
         ASN1Sequence outer = ParseUtil.sequence(DerDecoder.decode(bag));
@@ -99,7 +100,8 @@ public class CertificateUtil {
         throw new IOException("PKCS7 bag error");
     }
 
-    public static String[] getKeyUsages(X509Certificate certificate) throws IOException {
+    public static String[] getKeyUsages(X509Certificate certificate)
+            throws IOException, GeneralSecurityException {
         boolean[] keyUsage = certificate.getKeyUsage();
         if (keyUsage == null) {
             return null;
@@ -117,55 +119,51 @@ public class CertificateUtil {
     }
 
     public static X509Certificate[] getSortedPath(X509Certificate[] certificatePath)
-    throws IOException {
-        try {
-            // Build/check path
-            int n = 0;
-            int[] idx = new int[certificatePath.length];
-            int[] jidx = new int[certificatePath.length];
-            boolean[] done = new boolean[certificatePath.length];
-            for (int i = 0; i < certificatePath.length; i++) {
-                X500Principal p = certificatePath[i].getIssuerX500Principal();
-                idx[i] = -1;
-                for (int j = 0; j < certificatePath.length; j++) {
-                    if (j == i || done[j]) continue;
-                    if (p.equals(certificatePath[j].getSubjectX500Principal()))
-                    { 
-                        // Verify that J is certifying I
-                        n++;
-                        idx[i] = j;
-                        jidx[j] = i;
-                        done[j] = true;
-                        certificatePath[i].verify(certificatePath[j].getPublicKey());
-                        break;
-                    }
-                }
-            }
-            if (n != (certificatePath.length - 1)) {
-                throw new IOException(
-                        "X509Certificate elements contain multiple or broken cert paths");
-            }
-
-            // Path OK, now sort it
-            X509Certificate[] certpath = new X509Certificate[certificatePath.length];
-            for (int i = 0; i < certificatePath.length; i++) {
-                if (idx[i] < 0) // Must be the highest
-                {
-                    certpath[n] = certificatePath[i];
-                    while (--n >= 0) {
-                        certpath[n] = certificatePath[i = jidx[i]];
-                    }
+            throws IOException, GeneralSecurityException {
+        // Build/check path
+        int n = 0;
+        int[] idx = new int[certificatePath.length];
+        int[] jidx = new int[certificatePath.length];
+        boolean[] done = new boolean[certificatePath.length];
+        for (int i = 0; i < certificatePath.length; i++) {
+            X500Principal p = certificatePath[i].getIssuerX500Principal();
+            idx[i] = -1;
+            for (int j = 0; j < certificatePath.length; j++) {
+                if (j == i || done[j]) continue;
+                if (p.equals(certificatePath[j].getSubjectX500Principal()))
+                { 
+                    // Verify that J is certifying I
+                    n++;
+                    idx[i] = j;
+                    jidx[j] = i;
+                    done[j] = true;
+                    certificatePath[i].verify(certificatePath[j].getPublicKey());
                     break;
                 }
             }
-            return certpath;
-        } catch (GeneralSecurityException e) {
-            throw new IOException(e);
         }
+        if (n != (certificatePath.length - 1)) {
+            throw new IOException(
+                    "X509Certificate elements contain multiple or broken cert paths");
+        }
+
+        // Path OK, now sort it
+        X509Certificate[] certpath = new X509Certificate[certificatePath.length];
+        for (int i = 0; i < certificatePath.length; i++) {
+            if (idx[i] < 0) // Must be the highest
+            {
+                certpath[n] = certificatePath[i];
+                while (--n >= 0) {
+                    certpath[n] = certificatePath[i = jidx[i]];
+                }
+                break;
+            }
+        }
+        return certpath;
     }
 
     public static X509Certificate[] getSortedPathFromBlobs(List<byte[]> blobVector) 
-    throws IOException {
+            throws IOException, GeneralSecurityException {
         X509Certificate[] certificatePath = new X509Certificate[blobVector.size()];
         for (int i = 0; i < certificatePath.length; i++) {
             certificatePath[i] = getCertificateFromBlob(blobVector.get(i));
@@ -173,7 +171,8 @@ public class CertificateUtil {
         return getSortedPath(certificatePath);
     }
 
-    public static String[] getPolicyOIDs(X509Certificate certificate) throws IOException {
+    public static String[] getPolicyOIDs(X509Certificate certificate) 
+            throws IOException, GeneralSecurityException {
         ASN1Sequence outer = getExtension(certificate, 
                                           CertificateExtensions.CERTIFICATE_POLICIES);
         if (outer == null) {
@@ -187,7 +186,7 @@ public class CertificateUtil {
     }
 
     public static String[] getSubjectEmailAddresses(X509Certificate certificate) 
-    throws IOException {
+            throws IOException, GeneralSecurityException {
         HashSet<String> emailAddresses = new HashSet<>();
 
         Pattern pattern = 
@@ -210,8 +209,8 @@ public class CertificateUtil {
         return emailAddresses.isEmpty() ? null : emailAddresses.toArray(new String[0]);
     }
 
-    private static String[] getAIAURIs(X509Certificate certificate, 
-                                       String subOid) throws IOException {
+    private static String[] getAIAURIs(X509Certificate certificate, String subOid) 
+            throws IOException, GeneralSecurityException {
         ASN1Sequence outer = getExtension(certificate, 
                                           CertificateExtensions.AUTHORITY_INFO_ACCESS);
         if (outer == null) {
@@ -221,7 +220,7 @@ public class CertificateUtil {
         for (int q = 0; q < outer.size(); q++) {
             ASN1Sequence inner = ParseUtil.sequence(ParseUtil.sequence(outer.get(q)));
             if (inner.size() != 2) {
-                throw new IOException("AIA extension size error");
+                throw new GeneralSecurityException("AIA extension size error");
             }
             if (ParseUtil.oid(inner.get(0)).oid().equals(subOid)) {
                 if (ParseUtil.isSimpleContext(inner.get(1), 6)) {
@@ -237,24 +236,23 @@ public class CertificateUtil {
         return uris.isEmpty() ? null : uris.toArray(new String[0]);
     }
 
-    public static String[] getAIAOCSPResponders(X509Certificate certificate) throws IOException {
+    public static String[] getAIAOCSPResponders(X509Certificate certificate) 
+            throws IOException, GeneralSecurityException {
         return getAIAURIs(certificate, AIA_OCSP_RESPONDER);
     }
 
-    public static String[] getAIACAIssuers(X509Certificate certificate) throws IOException {
+    public static String[] getAIACAIssuers(X509Certificate certificate) 
+            throws IOException, GeneralSecurityException {
         return getAIAURIs(certificate, AIA_CA_ISSUERS);
     }
 
-    public static String[] getExtendedKeyUsage(X509Certificate certificate) throws IOException {
-        try {
-            List<String> eku = certificate.getExtendedKeyUsage();
-            if (eku == null) {
-                return null;
-            }
-            return eku.toArray(new String[0]);
-        } catch (GeneralSecurityException e) {
-            throw new IOException(e);
+    public static String[] getExtendedKeyUsage(X509Certificate certificate)
+            throws IOException, GeneralSecurityException {
+        List<String> eku = certificate.getExtendedKeyUsage();
+        if (eku == null) {
+            return null;
         }
+        return eku.toArray(new String[0]);
     }
 
     private static String getHexASN1String(String asciiHex) throws IOException {
@@ -319,33 +317,24 @@ public class CertificateUtil {
         return new X500Principal(dn).getName(X500Principal.RFC2253);
     }
 
-    public static byte[] getCertificateSHA1(X509Certificate certificate) throws IOException {
-        try {
-            return HashAlgorithms.SHA1.digest(certificate.getEncoded());
-        } catch (GeneralSecurityException e) {
-            throw new IOException(e);
-        }
+    public static byte[] getCertificateSHA1(X509Certificate certificate)
+            throws IOException, GeneralSecurityException {
+        return HashAlgorithms.SHA1.digest(certificate.getEncoded());
     }
 
-    public static byte[] getCertificateSHA256(X509Certificate certificate) throws IOException {
-        try {
-            return HashAlgorithms.SHA256.digest(certificate.getEncoded());
-        } catch (GeneralSecurityException e) {
-            throw new IOException(e);
-        }
+    public static byte[] getCertificateSHA256(X509Certificate certificate)
+            throws IOException, GeneralSecurityException {
+        return HashAlgorithms.SHA256.digest(certificate.getEncoded());
     }
 
-    public static boolean isTrustAnchor(X509Certificate certificate) throws IOException {
+    public static boolean isTrustAnchor(X509Certificate certificate)
+            throws IOException, GeneralSecurityException {
         boolean trustAnchor = 
                 certificate.getSubjectX500Principal().equals(
                         certificate.getIssuerX500Principal()) && 
                         certificate.getBasicConstraints() >= 0;
         if (trustAnchor) {
-            try {
                 certificate.verify(certificate.getPublicKey());
-            } catch (Exception e) {
-                throw new IOException(e);
-            }
             return true;
         }
         return false;
@@ -371,7 +360,7 @@ public class CertificateUtil {
 //#endif
 
     public static X509Certificate[] checkCertificatePath(X509Certificate[] certificatePath) 
-    throws IOException {
+            throws IOException, GeneralSecurityException {
         X509Certificate signedCertificate = certificatePath[0];
         int i = 0;
         while (++i < certificatePath.length) {
@@ -382,31 +371,24 @@ public class CertificateUtil {
                 throw new IOException("Path issuer order error, '" + 
                                       issuer + "' versus '" + subject + "'");
             }
-            try {
-                signedCertificate.verify(signerCertificate.getPublicKey());
-            } catch (GeneralSecurityException e) {
-                throw new IOException(e);
-            }
+            signedCertificate.verify(signerCertificate.getPublicKey());
             signedCertificate = signerCertificate;
         }
         return certificatePath;
     }
 
-    public static X509Certificate getCertificateFromBlob(byte[] encoded) throws IOException {
-        try {
+    public static X509Certificate getCertificateFromBlob(byte[] encoded)
+            throws IOException, GeneralSecurityException {
 //#if BOUNCYCASTLE
-            CertificateFactory cf = CertificateFactory.getInstance("X.509", "BC");
+        CertificateFactory cf = CertificateFactory.getInstance("X.509", "BC");
 //#else
-            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+        CertificateFactory cf = CertificateFactory.getInstance("X.509");
 //#endif
-            return (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(encoded));
-        } catch (GeneralSecurityException e) {
-            throw new IOException(e);
-        }
+        return (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(encoded));
     }
 
     public static X509Certificate[] makeCertificatePath(List<byte[]> certificateBlobs)
-    throws IOException {
+            throws IOException, GeneralSecurityException {
         ArrayList<X509Certificate> certificates = new ArrayList<>();
         for (byte[] certificateBlob : certificateBlobs) {
             certificates.add(getCertificateFromBlob(certificateBlob));

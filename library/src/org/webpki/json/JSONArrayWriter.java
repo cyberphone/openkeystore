@@ -135,7 +135,8 @@ public class JSONArrayWriter {
         return this;
     }
 
-    static public JSONArrayWriter createCoreCertificatePath(X509Certificate[] certificatePath) throws IOException {
+    static public JSONArrayWriter createCoreCertificatePath(X509Certificate[] certificatePath) 
+            throws IOException, GeneralSecurityException {
         JSONArrayWriter arrayWriter = new JSONArrayWriter();
         for (X509Certificate certificate : CertificateUtil.checkCertificatePath(certificatePath)) {
             try {

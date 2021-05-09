@@ -2295,9 +2295,8 @@ public class JSONTest {
     @BeforeClass
     public static void openFile() throws Exception {
         // Start deprecating Bouncycastle since Android will remove most of it anyway
-        if (!System.clearProperty("bcprovider").isEmpty()) {
-            bcLoaded = CustomCryptoProvider.conditionalLoad(false);
-        }
+        CustomCryptoProvider.forcedLoad(false);
+        
         Locale.setDefault(Locale.FRANCE);  // Should create HUGE problems :-)
         baseKey = System.clearProperty("json.keys") + File.separator;
         baseData = System.clearProperty("json.data") + File.separator;

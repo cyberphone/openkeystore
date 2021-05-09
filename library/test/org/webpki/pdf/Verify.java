@@ -18,6 +18,8 @@ package org.webpki.pdf;
 
 import java.io.IOException;
 
+import java.security.GeneralSecurityException;
+
 import java.util.TimeZone;
 
 import java.text.SimpleDateFormat;
@@ -30,7 +32,7 @@ import org.webpki.crypto.KeyStoreVerifier;
 
 public class Verify {
 
-    public static void main(String argv[]) throws IOException {
+    public static void main(String argv[]) throws IOException, GeneralSecurityException {
         if (argv.length != 2 && argv.length != 1) {
             System.out.println("PDFVerifier [n] infile\n\n      n = index of selected signature\n" +
                     "  (default is the whole-document signature)");

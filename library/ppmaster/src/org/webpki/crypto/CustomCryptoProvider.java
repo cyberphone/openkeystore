@@ -32,7 +32,38 @@ public class CustomCryptoProvider {
     private CustomCryptoProvider() {} // No instantiation
 
     private static boolean loadBouncyCastle(boolean insertFirst, boolean require) {
+//#if BOUNCYCASTLE
+        boolean loaded = false;
+        try {
+            Provider bc = (Provider) Class.forName("org.bouncycastle.jce.provider.BouncyCastleProvider").getDeclaredConstructor().newInstance();
+            if (Security.getProvider(bc.getName()) == null) {
+                try {
+                    if (insertFirst) {
+                        Security.insertProviderAt(bc, 1);
+                        logger.info("BouncyCastle successfully inserted at position #1");
+                    } else {
+                        Security.addProvider(bc);
+                        logger.info("BouncyCastle successfully added to the list of providers");
+                    }
+                } catch (Exception e) {
+                    logger.log(Level.SEVERE, "BouncyCastle didn't load");
+                    throw new RuntimeException(e);
+                }
+            } else {
+                logger.info("BouncyCastle was already loaded");
+            }
+            loaded = true;
+        } catch (Exception e) {
+            if (require) {
+                logger.log(Level.SEVERE, "BouncyCastle was not found");
+                throw new RuntimeException(e);
+            }
+            logger.info("BouncyCastle was not found, continue anyway");
+        }
+        return loaded;
+//#else
         return false;
+//#endif
     }
 
     public static boolean conditionalLoad(boolean insertFirst) {
