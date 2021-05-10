@@ -36,7 +36,7 @@ public class JSONAsymKeyVerifier extends JSONVerifier {
      * which is useful if there are multiple keys possible.
      *
      * @param expectedPublicKey Expected public key
-     * @throws GeneralSecurityException &nbsp;
+     * @throws GeneralSecurityException
      * @throws IOException
      */
     public JSONAsymKeyVerifier(PublicKey expectedPublicKey) 

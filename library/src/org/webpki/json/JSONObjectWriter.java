@@ -879,7 +879,7 @@ import org.webpki.json.JSONSignatureDecoder;
      * @param encrypter Holds keys etc.
      * @return New instance of {@link org.webpki.json.JSONObjectWriter}
      * @throws IOException
-     * @throws GeneralSecurityException &nbsp;
+     * @throws GeneralSecurityException
      */
     public static JSONObjectWriter 
             createEncryptionObject(byte[] unencryptedData,
@@ -904,7 +904,7 @@ import org.webpki.json.JSONSignatureDecoder;
      * @param encrypters Holds keys etc.
      * @return New instance of {@link org.webpki.json.JSONObjectWriter}
      * @throws IOException
-     * @throws GeneralSecurityException &nbsp;
+     * @throws GeneralSecurityException
      */
     public static JSONObjectWriter 
             createEncryptionObjects(byte[] unencryptedData,

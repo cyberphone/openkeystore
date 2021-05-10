@@ -216,7 +216,7 @@ public class JSONDecryptionDecoder {
      * @param dataDecryptionKey Symmetric key
      * @return Decrypted data
      * @throws IOException
-     * @throws GeneralSecurityException &nbsp;
+     * @throws GeneralSecurityException
      */
     public byte[] getDecryptedData(byte[] dataDecryptionKey) throws IOException, 
                                                                     GeneralSecurityException {
@@ -229,7 +229,7 @@ public class JSONDecryptionDecoder {
      * @param privateKey The private key
      * @return Decrypted data
      * @throws IOException
-     * @throws GeneralSecurityException &nbsp;
+     * @throws GeneralSecurityException
      */
     public byte[] getDecryptedData(PrivateKey privateKey) throws IOException, 
                                                                  GeneralSecurityException {
@@ -251,7 +251,7 @@ public class JSONDecryptionDecoder {
      * @param decryptionKeys Collection
      * @return Decrypted data
      * @throws IOException
-     * @throws GeneralSecurityException &nbsp;
+     * @throws GeneralSecurityException
      */
     public byte[] getDecryptedData(List<DecryptionKeyHolder> decryptionKeys)
     throws IOException, GeneralSecurityException {

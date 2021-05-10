@@ -243,7 +243,7 @@ class EncryptionCore {
      * @param plainText The data to be encrypted
      * @param authData Additional input factor for authentication
      * @return A composite object including encrypted data
-     * @throws GeneralSecurityException &nbsp;
+     * @throws GeneralSecurityException
      */
     public static SymmetricEncryptionResult 
             dataEncryption(DataEncryptionAlgorithms dataEncryptionAlgorithm,
@@ -282,7 +282,7 @@ class EncryptionCore {
      * @param authData Additional input used for authentication purposes
      * @param tag Authentication tag
      * @return The data in clear
-     * @throws GeneralSecurityException &nbsp;
+     * @throws GeneralSecurityException
      */
     public static byte[] dataDecryption(DataEncryptionAlgorithms dataEncryptionAlgorithm,
                                         byte[] key,
@@ -345,7 +345,7 @@ class EncryptionCore {
      * @param keyEncryptionAlgorithm The RSA encryption algorithm
      * @param publicKey The receiver's (usually static) public key
      * @return A composite object including the (plain text) data encryption key
-     * @throws GeneralSecurityException &nbsp;
+     * @throws GeneralSecurityException
      */
     static AsymmetricEncryptionResult rsaEncryptKey(byte[] dataEncryptionKey,
                                                     KeyEncryptionAlgorithms keyEncryptionAlgorithm,
@@ -365,7 +365,7 @@ class EncryptionCore {
      * @param encryptedKey Contains a symmetric key used for encrypting the data
      * @param privateKey The RSA private key
      * @return The key in plain text
-     * @throws GeneralSecurityException &nbsp;
+     * @throws GeneralSecurityException
      */
     public static byte[] rsaDecryptKey(KeyEncryptionAlgorithms keyEncryptionAlgorithm,
                                        byte[] encryptedKey,
@@ -443,7 +443,7 @@ class EncryptionCore {
      * @param privateKey The receiver's private key
      * @param encryptedKeyData For ECDH+KW based operations only
      * @return Shared secret
-     * @throws GeneralSecurityException &nbsp;
+     * @throws GeneralSecurityException
      * @throws IOException
      */
     public static byte[] receiverKeyAgreement(KeyEncryptionAlgorithms keyEncryptionAlgorithm,
@@ -477,7 +477,7 @@ class EncryptionCore {
      * @param dataEncryptionAlgorithm The designated content encryption algorithm
      * @param staticKey The receiver's (usually static) public key
      * @return A composite object including the (plain text) data encryption key
-     * @throws GeneralSecurityException &nbsp;
+     * @throws GeneralSecurityException
      * @throws IOException
      */
     static AsymmetricEncryptionResult
