@@ -19,6 +19,7 @@ package org.webpki.testdata;
 import java.io.File;
 import java.io.IOException;
 
+import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 
 import java.security.cert.X509Certificate;
@@ -122,9 +123,7 @@ public class Encryption {
         if (args.length != 3) {
             throw new Exception("Wrong number of arguments");
         }
-        if (!System.getProperty("bc.prov").isEmpty()) {
-            CustomCryptoProvider.forcedLoad(Boolean.parseBoolean(System.getProperty("bc.first")));
-        }
+        CustomCryptoProvider.forcedLoad(false);
         baseKey = args[0] + File.separator;
         baseData = args[1] + File.separator;
         baseEncryption = args[2] + File.separator;
@@ -207,7 +206,8 @@ public class Encryption {
                     null);
     }
 
-    static X509Certificate[] getCertificatePath(String keyType) throws IOException {
+    static X509Certificate[] getCertificatePath(String keyType)
+            throws IOException, GeneralSecurityException {
         return PEMDecoder.getCertificatePath(ArrayUtil.readFile(baseKey + keyType + "certpath.pem"));
     }
 

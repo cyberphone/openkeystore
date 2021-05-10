@@ -19,6 +19,7 @@ package org.webpki.testdata;
 import java.io.File;
 import java.io.IOException;
 
+import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.KeyStore;
 
@@ -95,9 +96,7 @@ public class Signatures {
         if (args.length != 3) {
             throw new Exception("Wrong number of arguments");
         }
-        if (!System.getProperty("bc.prov").isEmpty()) {
-            CustomCryptoProvider.forcedLoad(Boolean.parseBoolean(System.getProperty("bc.first")));
-        }
+        CustomCryptoProvider.forcedLoad(false);
         baseKey = args[0] + File.separator;
         baseData = args[1] + File.separator;
         baseSignatures = args[2] + File.separator;
@@ -531,11 +530,13 @@ public class Signatures {
 
     static JSONSignatureDecoder asymSignOptionalPublicKeyInfo(String keyType, 
                                                               boolean wantKeyId, 
-                                                              boolean wantPublicKey) throws Exception {
+                                                              boolean wantPublicKey)
+                                                                      throws Exception {
         return asymSignCore(keyType, wantKeyId, wantPublicKey, false, false, null);
     }
 
-    static X509Certificate[] readCertificatePath(String keyType) throws IOException {
+    static X509Certificate[] readCertificatePath(String keyType)
+            throws IOException, GeneralSecurityException {
         return PEMDecoder.getCertificatePath(ArrayUtil.readFile(baseKey + keyType + "certpath.pem"));
     }
 
