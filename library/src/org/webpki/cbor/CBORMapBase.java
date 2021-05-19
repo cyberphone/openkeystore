@@ -129,11 +129,6 @@ abstract class CBORMapBase extends CBORObject {
     }
 
     @Override
-    public CBORTypes getType() {
-        return CBORTypes.INTEGER_MAP;
-    }
- 
-    @Override
     public byte[] encode() throws IOException {
         byte[] encoded = getEncodedCore(MT_MAP, keys.size());
         for (CBORObject key : keys.keySet()) {

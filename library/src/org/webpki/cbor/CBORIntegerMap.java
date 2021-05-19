@@ -27,6 +27,11 @@ public class CBORIntegerMap extends CBORMapBase {
 
     public CBORIntegerMap() {}
 
+    @Override
+    public CBORTypes getType() {
+        return CBORTypes.INTEGER_MAP;
+    }
+ 
     /**
      * Set map value.
      * 

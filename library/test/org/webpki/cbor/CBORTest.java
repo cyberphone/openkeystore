@@ -327,6 +327,11 @@ public class CBORTest {
             setObject(key, new CBORInteger(objectNumber++));
             return this;
         }
+
+        @Override
+        public CBORTypes getType() {
+            return CBORTypes.INTEGER_MAP;
+        }
     }
     
     static String[] RFC8949_SORTING = {

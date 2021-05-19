@@ -27,6 +27,11 @@ public class CBORTextStringMap extends CBORMapBase {
 
     public CBORTextStringMap() {}
 
+    @Override
+    public CBORTypes getType() {
+        return CBORTypes.TEXT_STRING_MAP;
+    }
+ 
     /**
      * Set map value.
      * 
