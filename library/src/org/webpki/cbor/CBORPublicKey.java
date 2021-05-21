@@ -125,23 +125,23 @@ public class CBORPublicKey {
         switch (keyAlg.getKeyType()) {
         case RSA:
             RSAPublicKey rsaPublicKey = (RSAPublicKey) publicKey;
-            cborPublicKey.setMappedValue(KTY, new CBORInteger(RSA_KTY))
-                         .setMappedValue(RSA_N, cryptoBinary(rsaPublicKey.getModulus()))
-                         .setMappedValue(RSA_E, cryptoBinary(rsaPublicKey.getPublicExponent()));
+            cborPublicKey.setObject(KTY, new CBORInteger(RSA_KTY))
+                         .setObject(RSA_N, cryptoBinary(rsaPublicKey.getModulus()))
+                         .setObject(RSA_E, cryptoBinary(rsaPublicKey.getPublicExponent()));
             break;
 
         case EC:
             ECPoint ecPoint = ((ECPublicKey) publicKey).getW();
-            cborPublicKey.setMappedValue(KTY, new CBORInteger(EC2_KTY))
-                         .setMappedValue(EC2_CRV, new CBORInteger(WEBPKI_2_COSE_CRV.get(keyAlg)))
-                         .setMappedValue(EC2_X, curvePoint(ecPoint.getAffineX(), keyAlg))
-                         .setMappedValue(EC2_Y, curvePoint(ecPoint.getAffineY(), keyAlg));
+            cborPublicKey.setObject(KTY, new CBORInteger(EC2_KTY))
+                         .setObject(EC2_CRV, new CBORInteger(WEBPKI_2_COSE_CRV.get(keyAlg)))
+                         .setObject(EC2_X, curvePoint(ecPoint.getAffineX(), keyAlg))
+                         .setObject(EC2_Y, curvePoint(ecPoint.getAffineY(), keyAlg));
             break;
  
         default:  // EDDSA and XEC
-            cborPublicKey.setMappedValue(KTY, new CBORInteger(OKP_KTY))
-                         .setMappedValue(OKP_CRV, new CBORInteger(WEBPKI_2_COSE_CRV.get(keyAlg)))
-                         .setMappedValue(OKP_X, new CBORByteString(
+            cborPublicKey.setObject(KTY, new CBORInteger(OKP_KTY))
+                         .setObject(OKP_CRV, new CBORInteger(WEBPKI_2_COSE_CRV.get(keyAlg)))
+                         .setObject(OKP_X, new CBORByteString(
                                  OkpSupport.public2RawOkpKey(publicKey, keyAlg)));
         }
         return cborPublicKey;
@@ -177,32 +177,32 @@ public class CBORPublicKey {
     throws IOException, GeneralSecurityException {
         CBORIntegerMap publicKeyMap = cborPublicKey.getIntegerMap();
         KeyAlgorithms keyAlgorithm;
-        int kty = publicKeyMap.getMappedValue(KTY).getInt();
+        int kty = publicKeyMap.getObject(KTY).getInt();
         switch (kty) {
         case RSA_KTY:
             return KeyFactory.getInstance("RSA").generatePublic(
-                    new RSAPublicKeySpec(getCryptoBinary(publicKeyMap.getMappedValue(RSA_N)),
-                                         getCryptoBinary(publicKeyMap.getMappedValue(RSA_E))));
+                    new RSAPublicKeySpec(getCryptoBinary(publicKeyMap.getObject(RSA_N)),
+                                         getCryptoBinary(publicKeyMap.getObject(RSA_E))));
   
         case EC2_KTY:
-            keyAlgorithm = COSE_2_WEBPKI_CRV.get(publicKeyMap.getMappedValue(EC2_CRV).getInt());
+            keyAlgorithm = COSE_2_WEBPKI_CRV.get(publicKeyMap.getObject(EC2_CRV).getInt());
             if (keyAlgorithm.getKeyType() != KeyTypes.EC) {
                 throw new GeneralSecurityException(keyAlgorithm.getKeyType()  +
                                                    " is not a valid EC curve");
             }
             return KeyFactory.getInstance("EC").generatePublic(new ECPublicKeySpec(
-                new ECPoint(getCurvePoint(publicKeyMap.getMappedValue(EC2_X), keyAlgorithm),
-                            getCurvePoint(publicKeyMap.getMappedValue(EC2_Y), keyAlgorithm)),
+                new ECPoint(getCurvePoint(publicKeyMap.getObject(EC2_X), keyAlgorithm),
+                            getCurvePoint(publicKeyMap.getObject(EC2_Y), keyAlgorithm)),
                 keyAlgorithm.getECParameterSpec()));
             
         case OKP_KTY:
-            keyAlgorithm = COSE_2_WEBPKI_CRV.get(publicKeyMap.getMappedValue(OKP_CRV).getInt());
+            keyAlgorithm = COSE_2_WEBPKI_CRV.get(publicKeyMap.getObject(OKP_CRV).getInt());
             if (keyAlgorithm.getKeyType() != KeyTypes.EDDSA &&
                 keyAlgorithm.getKeyType() != KeyTypes.XEC) {
                 throw new GeneralSecurityException(keyAlgorithm.getKeyType()  +
                                                    " is not a valid OKP curve");
             }
-            return OkpSupport.raw2PublicOkpKey(publicKeyMap.getMappedValue(OKP_X).getByteString(), 
+            return OkpSupport.raw2PublicOkpKey(publicKeyMap.getObject(OKP_X).getByteString(), 
                                                keyAlgorithm);
             
         default:

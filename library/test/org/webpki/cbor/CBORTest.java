@@ -198,9 +198,9 @@ public class CBORTest {
         cborArray = new CBORArray()
             .addElement(new CBORInteger(1))
             .addElement(new CBORTextStringMap()
-                .setMappedValue("best", new CBORInteger(2))
-                .setMappedValue("best2", new CBORInteger(3))
-                .setMappedValue("another", new CBORInteger(4)))
+                .setObject("best", new CBORInteger(2))
+                .setObject("best2", new CBORInteger(3))
+                .setObject("another", new CBORInteger(4)))
             .addElement(new CBORArray()
                 .addElement(new CBORInteger(5))
                 .addElement(new CBORInteger(6)));
@@ -213,10 +213,10 @@ public class CBORTest {
         cborArray = new CBORArray()
             .addElement(new CBORInteger(1))
             .addElement(new CBORIntegerMap()
-                .setMappedValue(8, new CBORInteger(2))
-                .setMappedValue(58, new CBORInteger(3))
-                .setMappedValue(-90, new CBORNull())
-                .setMappedValue(-4, new CBORArray()
+                .setObject(8, new CBORInteger(2))
+                .setObject(58, new CBORInteger(3))
+                .setObject(-90, new CBORNull())
+                .setObject(-4, new CBORArray()
                     .addElement(new CBORBoolean(true))
                     .addElement(new CBORBoolean(false))))
             .addElement(new CBORArray()
@@ -445,13 +445,13 @@ public class CBORTest {
         }
 
         try {
-            ((CBORArray) cbor).getElement(1).getIntegerMap().getMappedValue(-91).getInt();
+            ((CBORArray) cbor).getElement(1).getIntegerMap().getObject(-91).getInt();
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, "No such key: -91");
         }
         
-        assertTrue("v1", ((CBORArray) cbor).getElement(1).getIntegerMap().getMappedValue(58).getInt() == 3);
+        assertTrue("v1", ((CBORArray) cbor).getElement(1).getIntegerMap().getObject(58).getInt() == 3);
 
         try {
             CBORObject unread = parseCborHex("17");
@@ -478,8 +478,8 @@ public class CBORTest {
         try {
             CBORObject unread = parseCborHex("8301a408022382f5f4183a033859f6820405");
             unread = ((CBORArray) unread).getElement(1).getIntegerMap();
-            ((CBORIntegerMap)unread).getMappedValue(8).getInt();
-            ((CBORArray)((CBORIntegerMap)unread).getMappedValue(-4)).getElement(0).getBoolean();
+            ((CBORIntegerMap)unread).getObject(8).getInt();
+            ((CBORArray)((CBORIntegerMap)unread).getObject(-4)).getElement(0).getBoolean();
             unread.checkObjectForUnread();
             fail("must not execute");
         } catch (Exception e) {
@@ -491,8 +491,8 @@ public class CBORTest {
         try {
             CBORObject unread = parseCborHex("8301a408022382f5f4183a033859f6820405");
             unread = ((CBORArray) unread).getElement(1).getIntegerMap();
-            ((CBORIntegerMap)unread).getMappedValue(8).getInt();
-            ((CBORArray)((CBORIntegerMap)unread).getMappedValue(-4)).getElement(0).scan();
+            ((CBORIntegerMap)unread).getObject(8).getInt();
+            ((CBORArray)((CBORIntegerMap)unread).getObject(-4)).getElement(0).scan();
             unread.checkObjectForUnread();
             fail("must not execute");
         } catch (Exception e) {
@@ -504,8 +504,8 @@ public class CBORTest {
         try {
             CBORObject unread = parseCborHex("8301a408022382f5f4183a033859f6820405");
             unread = ((CBORArray) unread).getElement(1).getIntegerMap();
-            ((CBORIntegerMap)unread).getMappedValue(8).getInt();
-            ((CBORArray)((CBORIntegerMap)unread).getMappedValue(-4)).getElement(0);
+            ((CBORIntegerMap)unread).getObject(8).getInt();
+            ((CBORArray)((CBORIntegerMap)unread).getObject(-4)).getElement(0);
             unread.checkObjectForUnread();
             fail("must not execute");
         } catch (Exception e) {
@@ -582,7 +582,8 @@ public class CBORTest {
 
     @Test
     public void deterministicEncodingTest() throws Exception {
-         try {
+
+        try {
             parseCborHex("3800");
             fail("must not execute");
         } catch (Exception e) {
@@ -605,19 +606,27 @@ public class CBORTest {
             checkException(e, 
                  "Non-deterministic encoding: bignum fits integer");
         }
+        
+        try {
+            parseCborHex("A204616B026166");
+            fail("must not execute");
+        } catch (Exception e) {
+            checkException(e, 
+                 "Improperly canonicalized key: 2");
+        }
     }
     
     CBORObject createDataToBeSigned() throws IOException {
         return new CBORIntegerMap()
-        .setMappedValue(1, new CBORIntegerMap()
-                .setMappedValue(1, new CBORTextString("Space Shop"))
-                .setMappedValue(2, new CBORTextString("100.00"))
-                .setMappedValue(3, new CBORTextString("EUR")))
-            .setMappedValue(2, new CBORTextString("spaceshop.com"))
-            .setMappedValue(3, new CBORTextString("FR7630002111110020050014382"))
-            .setMappedValue(4, new CBORTextString("https://europeanpaymentsinitiative.eu/fwp"))
-            .setMappedValue(5, new CBORTextString("62932"))
-            .setMappedValue(6, new CBORDateTime("2021-05-03T09:50:08Z"));
+        .setObject(1, new CBORIntegerMap()
+                .setObject(1, new CBORTextString("Space Shop"))
+                .setObject(2, new CBORTextString("100.00"))
+                .setObject(3, new CBORTextString("EUR")))
+            .setObject(2, new CBORTextString("spaceshop.com"))
+            .setObject(3, new CBORTextString("FR7630002111110020050014382"))
+            .setObject(4, new CBORTextString("https://europeanpaymentsinitiative.eu/fwp"))
+            .setObject(5, new CBORTextString("62932"))
+            .setObject(6, new CBORDateTime("2021-05-03T09:50:08Z"));
     }
     
     void backAndForth(KeyPair keyPair) throws Exception {
@@ -646,23 +655,23 @@ public class CBORTest {
         
         tbs = createDataToBeSigned();
         tbs.getIntegerMap().sign(7, 
-                new CBORHmacSigner(new HmacSignerInterface() {
+            new CBORHmacSigner(new HmacSignerInterface() {
 
-                    @Override
-                    public byte[] signData(byte[] data) throws IOException, GeneralSecurityException {
-                        return algorithm.digest(symmetricKeys.getValue(size), data);
-                    }
+                @Override
+                public byte[] signData(byte[] data) throws IOException, GeneralSecurityException {
+                    return algorithm.digest(symmetricKeys.getValue(size), data);
+                }
 
-                    @Override
-                    public HmacAlgorithms getAlgorithm() throws IOException, GeneralSecurityException {
-                        return algorithm;
-                    }
+                @Override
+                public HmacAlgorithms getAlgorithm() throws IOException, GeneralSecurityException {
+                    return algorithm;
+                }
 
-                    @Override
-                    public void setAlgorithm(HmacAlgorithms algorithm) throws IOException, GeneralSecurityException {
-                    }
-                    
-                }));
+                @Override
+                public void setAlgorithm(HmacAlgorithms algorithm) throws IOException, GeneralSecurityException {
+                }
+                
+            }));
         sd = tbs.encode();
         cborSd = CBORObject.decode(sd);
         cborSd.getIntegerMap().validate(7, new CBORHmacValidator(symmetricKeys.getValue(size)));
@@ -674,22 +683,22 @@ public class CBORTest {
         sd = tbs.encode();
         cborSd = CBORObject.decode(sd);
         cborSd.getIntegerMap().validate(7, new CBORHmacValidator(
-                new CBORHmacValidator.KeyLocator() {
+            new CBORHmacValidator.KeyLocator() {
 
-                    @Override
-                    public byte[] locate(String optionalKeyId,
-                            HmacAlgorithms hmacAlgorithm)
-                            throws IOException, GeneralSecurityException {
-                        if (!keyId.equals(optionalKeyId)) {
-                            throw new IOException("Unknown keyId");
-                        }
-                        if (!algorithm.equals(hmacAlgorithm)) {
-                            throw new IOException("Algorithm error");
-                        }
-                        return symmetricKeys.getValue(size);
+                @Override
+                public byte[] locate(String optionalKeyId,
+                        HmacAlgorithms hmacAlgorithm)
+                        throws IOException, GeneralSecurityException {
+                    if (!keyId.equals(optionalKeyId)) {
+                        throw new IOException("Unknown keyId");
                     }
-                    
-                }));
+                    if (!algorithm.equals(hmacAlgorithm)) {
+                        throw new IOException("Algorithm error");
+                    }
+                    return symmetricKeys.getValue(size);
+                }
+                
+            }));
     }
 
     @Test
@@ -726,48 +735,62 @@ public class CBORTest {
                 new CBORAsymSignatureValidator(r2048.getPublic()));
 
         signAndVerify(new CBORAsymKeySigner(p256.getPrivate()), 
-                new CBORAsymSignatureValidator(new CBORAsymSignatureValidator.KeyLocator() {
-                    
-                    @Override
-                    public PublicKey locate(PublicKey optionalPublicKey, 
-                                            String optionalKeyId,
-                                            AsymSignatureAlgorithms signatureAlgorithm)
-                            throws IOException, GeneralSecurityException {
-                        return p256.getPublic();
-                    }
-                }));
+            new CBORAsymSignatureValidator(new CBORAsymSignatureValidator.KeyLocator() {
+                
+                @Override
+                public PublicKey locate(PublicKey optionalPublicKey, 
+                                        String optionalKeyId,
+                                        AsymSignatureAlgorithms signatureAlgorithm)
+                        throws IOException, GeneralSecurityException {
+                    return p256.getPublic();
+                }
+            }));
 
         signAndVerify(new CBORAsymKeySigner(p256.getPrivate()), 
-                new CBORAsymSignatureValidator(new CBORAsymSignatureValidator.KeyLocator() {
-                    
-                    @Override
-                    public PublicKey locate(PublicKey optionalPublicKey, 
-                                            String optionalKeyId,
-                                            AsymSignatureAlgorithms signatureAlgorithm)
-                            throws IOException, GeneralSecurityException {
-                        assertTrue("public", optionalPublicKey == null);
-                        assertTrue("keyId", optionalKeyId == null);
-                        assertTrue("alg", AsymSignatureAlgorithms.ECDSA_SHA256.equals(
-                                signatureAlgorithm));
-                        return p256.getPublic();
-                    }
-                }));
+            new CBORAsymSignatureValidator(new CBORAsymSignatureValidator.KeyLocator() {
+                
+                @Override
+                public PublicKey locate(PublicKey optionalPublicKey, 
+                                        String optionalKeyId,
+                                        AsymSignatureAlgorithms signatureAlgorithm)
+                        throws IOException, GeneralSecurityException {
+                    assertTrue("public", optionalPublicKey == null);
+                    assertTrue("keyId", optionalKeyId == null);
+                    assertTrue("alg", AsymSignatureAlgorithms.ECDSA_SHA256.equals(
+                            signatureAlgorithm));
+                    return p256.getPublic();
+                }
+            }));
 
         signAndVerify(new CBORAsymKeySigner(p256.getPrivate()).setKeyId(keyIdP256), 
-                new CBORAsymSignatureValidator(new CBORAsymSignatureValidator.KeyLocator() {
-                    
-                    @Override
-                    public PublicKey locate(PublicKey optionalPublicKey, 
-                                            String optionalKeyId,
-                                            AsymSignatureAlgorithms signatureAlgorithm)
-                            throws IOException, GeneralSecurityException {
-                        return keyIdP256.equals(optionalKeyId) ? 
-                                              p256.getPublic() : p256_2.getPublic();
-                    }
-                }));
+            new CBORAsymSignatureValidator(new CBORAsymSignatureValidator.KeyLocator() {
+                
+                @Override
+                public PublicKey locate(PublicKey optionalPublicKey, 
+                                        String optionalKeyId,
+                                        AsymSignatureAlgorithms signatureAlgorithm)
+                        throws IOException, GeneralSecurityException {
+                    return keyIdP256.equals(optionalKeyId) ? 
+                                          p256.getPublic() : p256_2.getPublic();
+                }
+            }));
         
         
         signAndVerify(new CBORAsymKeySigner(p256.getPrivate()).setPublicKey(p256.getPublic()), 
+            new CBORAsymSignatureValidator(new CBORAsymSignatureValidator.KeyLocator() {
+                
+                @Override
+                public PublicKey locate(PublicKey optionalPublicKey, 
+                                        String optionalKeyId,
+                                        AsymSignatureAlgorithms signatureAlgorithm)
+                        throws IOException, GeneralSecurityException {
+                    assertTrue("pk", p256.getPublic().equals(optionalPublicKey));
+                    return null;
+                }
+            }));
+
+        try {
+            signAndVerify(new CBORAsymKeySigner(p256.getPrivate()), 
                 new CBORAsymSignatureValidator(new CBORAsymSignatureValidator.KeyLocator() {
                     
                     @Override
@@ -775,23 +798,9 @@ public class CBORTest {
                                             String optionalKeyId,
                                             AsymSignatureAlgorithms signatureAlgorithm)
                             throws IOException, GeneralSecurityException {
-                        assertTrue("pk", p256.getPublic().equals(optionalPublicKey));
-                        return null;
+                        return p256_2.getPublic();
                     }
                 }));
-
-        try {
-            signAndVerify(new CBORAsymKeySigner(p256.getPrivate()), 
-                    new CBORAsymSignatureValidator(new CBORAsymSignatureValidator.KeyLocator() {
-                        
-                        @Override
-                        public PublicKey locate(PublicKey optionalPublicKey, 
-                                                String optionalKeyId,
-                                                AsymSignatureAlgorithms signatureAlgorithm)
-                                throws IOException, GeneralSecurityException {
-                            return p256_2.getPublic();
-                        }
-                    }));
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, "Bad signature for key: ");
@@ -839,19 +848,19 @@ public class CBORTest {
         
         try {
             signAndVerify(new CBORAsymKeySigner(p256.getPrivate()), 
-                    new CBORAsymSignatureValidator(new CBORAsymSignatureValidator.KeyLocator() {
-                        
-                        @Override
-                        public PublicKey locate(PublicKey optionalPublicKey, 
-                                                String optionalKeyId,
-                                                AsymSignatureAlgorithms signatureAlgorithm)
-                                throws IOException, GeneralSecurityException {
-                            if ("otherkey".equals(optionalKeyId)) {
-                                return p256_2.getPublic();
-                            }
-                            throw new IOException("KeyId = " + optionalKeyId);
+                new CBORAsymSignatureValidator(new CBORAsymSignatureValidator.KeyLocator() {
+                    
+                    @Override
+                    public PublicKey locate(PublicKey optionalPublicKey, 
+                                            String optionalKeyId,
+                                            AsymSignatureAlgorithms signatureAlgorithm)
+                            throws IOException, GeneralSecurityException {
+                        if ("otherkey".equals(optionalKeyId)) {
+                            return p256_2.getPublic();
                         }
-                    }));
+                        throw new IOException("KeyId = " + optionalKeyId);
+                    }
+                }));
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, "KeyId = null");

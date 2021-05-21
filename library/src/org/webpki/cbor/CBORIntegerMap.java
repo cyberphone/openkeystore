@@ -31,7 +31,19 @@ public class CBORIntegerMap extends CBORMapBase {
     public CBORTypes getType() {
         return CBORTypes.INTEGER_MAP;
     }
- 
+    
+    /**
+     * Remove object from map.
+     * 
+     * @param key The key
+     * @return The CBORIntegerMap
+     * @throws IOException
+     */
+    public CBORIntegerMap removeObject(int key) throws IOException {
+        removeObject(new CBORInteger(key));
+        return this;
+    }
+
     /**
      * Set map value.
      * 
@@ -40,7 +52,7 @@ public class CBORIntegerMap extends CBORMapBase {
      * @return The CBORIntegerMap
      * @throws IOException
      */
-    public CBORIntegerMap setMappedValue(int key, CBORObject value) throws IOException {
+    public CBORIntegerMap setObject(int key, CBORObject value) throws IOException {
         setObject(new CBORInteger(key), value);
         return this;
     }
@@ -66,8 +78,8 @@ public class CBORIntegerMap extends CBORMapBase {
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public CBORIntegerMap sign(int key, CBORSigner signer) 
-            throws IOException, GeneralSecurityException {
+    public CBORIntegerMap sign(int key, CBORSigner signer) throws IOException, 
+                                                                  GeneralSecurityException {
         sign(new CBORInteger(key), signer);
         return this;
     }
@@ -89,7 +101,7 @@ public class CBORIntegerMap extends CBORMapBase {
      * @return The CBORObject
      * @throws IOException
      */
-    public CBORObject getMappedValue(int key) throws IOException {
+    public CBORObject getObject(int key) throws IOException {
         return getObject(new CBORInteger(key));
     }
 }

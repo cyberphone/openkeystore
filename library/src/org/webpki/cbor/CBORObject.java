@@ -299,6 +299,7 @@ public abstract class CBORObject {
                          key1.getType());
                 }
                 cborMapBase.setObject(key1, getObject());
+                cborMapBase.parsingMode = true;
                 while (--length > 0) {
                     CBORObject key = getObject();
                     if (key.getType() != key1.getType()) {
@@ -308,6 +309,7 @@ public abstract class CBORObject {
                     }
                     cborMapBase.setObject(key, getObject());
                 }
+                cborMapBase.parsingMode = false;
                 return cborMapBase;
 
             default:

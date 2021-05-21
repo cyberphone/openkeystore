@@ -34,6 +34,9 @@ import org.webpki.util.ArrayUtil;
 abstract class CBORMapBase extends CBORObject {
 
     private static boolean rfc7049Sorting = true;
+    
+    boolean parsingMode;
+    CBORObject lastKey;
 
     /**
      * Set RFC7049 key sorting.
@@ -44,7 +47,7 @@ abstract class CBORMapBase extends CBORObject {
         rfc7049Sorting = flag;
     }
 
-    class CBORKeyComparer implements Comparator<CBORObject> {
+    private static Comparator<CBORObject> comparator = new Comparator<>() {
 
         @Override
         public int compare(CBORObject o1, CBORObject o2) {
@@ -66,9 +69,10 @@ abstract class CBORMapBase extends CBORObject {
                  throw new RuntimeException(e);
             }
         }
-    }
+        
+    };
 
-    Map<CBORObject, CBORObject> keys = new TreeMap<>(new CBORKeyComparer());
+    Map<CBORObject, CBORObject> keys = new TreeMap<>(comparator);
 
     CBORMapBase() {
     }
@@ -117,6 +121,19 @@ abstract class CBORMapBase extends CBORObject {
         if (keys.put(key, value) != null) {
             throw new IOException("Duplicate key: " + key.toString());
         }
+        if (parsingMode) {
+            if (comparator.compare(lastKey, key) > 0) {
+                throw new IOException("Improperly canonicalized key: " + key);
+            }
+        }
+        lastKey = key;
+    }
+
+    void removeObject(CBORObject key) throws IOException {
+        if (!keys.containsKey(key)) {
+            throw new IOException("No such key: " + key.toString());
+        }
+        keys.remove(key);
     }
 
     CBORObject getObject(CBORObject key) throws IOException {
