@@ -47,7 +47,7 @@ abstract class CBORMapBase extends CBORObject {
         rfc7049Sorting = flag;
     }
 
-    private static Comparator<CBORObject> comparator = new Comparator<>() {
+    private static Comparator<CBORObject> comparator = new Comparator<CBORObject>() {
 
         @Override
         public int compare(CBORObject o1, CBORObject o2) {
