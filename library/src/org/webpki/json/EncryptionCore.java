@@ -383,32 +383,10 @@ class EncryptionCore {
         }
     }
 
-    private static byte[] coreKeyAgreement(KeyEncryptionAlgorithms keyEncryptionAlgorithm,
-                                           DataEncryptionAlgorithms dataEncryptionAlgorithm,
-                                           PublicKey receivedPublicKey,
-                                           PrivateKey privateKey)
-    throws GeneralSecurityException, IOException {
-        // Begin by calculating Z (do the DH)
-        String jceName = privateKey instanceof ECKey ? "ECDH" : "XDH";
-        KeyAgreement keyAgreement = ecProviderName == null ?
-                KeyAgreement.getInstance(jceName) 
-                                   : 
-                KeyAgreement.getInstance(jceName, ecProviderName);
-        keyAgreement.init(privateKey);
-        keyAgreement.doPhase(receivedPublicKey, true);
-        byte[] Z = keyAgreement.generateSecret();
-
-        // NIST Concat KDF
+    static byte[] performKdf(byte[] secret, byte[] algorithmId, int keyLength) 
+            throws IOException, GeneralSecurityException {
         final MessageDigest messageDigest = MessageDigest.getInstance(CONCAT_KDF_DIGEST_JCENAME);
-
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-        byte[] algorithmId = (keyEncryptionAlgorithm.keyWrap ?
-                keyEncryptionAlgorithm : dataEncryptionAlgorithm).toString().getBytes("UTF-8");
-
-        int keyLength = keyEncryptionAlgorithm.keyWrap ?
-                keyEncryptionAlgorithm.keyEncryptionKeyLength : dataEncryptionAlgorithm.keyLength;
-
         int reps = (keyLength + CONCAT_KDF_DIGEST_LENGTH - 1) / CONCAT_KDF_DIGEST_LENGTH;
 
         // Concat KDF according to JWA
@@ -416,7 +394,7 @@ class EncryptionCore {
             // Round indicator
             addInt4(messageDigest, i);
             // Z
-            messageDigest.update(Z);
+            messageDigest.update(secret);
             // AlgorithmID = Content encryption algorithm
             addInt4(messageDigest, algorithmId.length);
             messageDigest.update(algorithmId);
@@ -433,6 +411,30 @@ class EncryptionCore {
         byte[] result = new byte[keyLength];
         System.arraycopy(baos.toByteArray(), 0, result, 0, keyLength);
         return result;
+    }    
+
+    private static byte[] coreKeyAgreement(KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+                                           DataEncryptionAlgorithms dataEncryptionAlgorithm,
+                                           PublicKey receivedPublicKey,
+                                           PrivateKey privateKey)
+    throws GeneralSecurityException, IOException {
+        // Begin by calculating Z (do the DH)
+        String jceName = privateKey instanceof ECKey ? "ECDH" : "XDH";
+        KeyAgreement keyAgreement = ecProviderName == null ?
+                KeyAgreement.getInstance(jceName) 
+                                   : 
+                KeyAgreement.getInstance(jceName, ecProviderName);
+        keyAgreement.init(privateKey);
+        keyAgreement.doPhase(receivedPublicKey, true);
+        return performKdf(keyAgreement.generateSecret(),
+                (keyEncryptionAlgorithm.keyWrap ?
+                     keyEncryptionAlgorithm 
+                                                : 
+                     dataEncryptionAlgorithm).toString().getBytes("UTF-8"),
+                keyEncryptionAlgorithm.keyWrap ?
+                    keyEncryptionAlgorithm.keyEncryptionKeyLength 
+                                               : 
+                    dataEncryptionAlgorithm.keyLength);
     }
 
     /**
