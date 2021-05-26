@@ -4637,6 +4637,13 @@ public class JSONTest {
         encryptionOptionTest();
         
         rfc7748Encryption();
+        
+        String derivedKey = "pgs50IOZ6BxfqvTSie4t9OjWxGr4whiHo1v9Dti93CRiJE2PP60FojLatVVrcjg3BxpuFjnlQxL97GOwAfcwLA";
+        String kdfed = Base64URL.encode(EncryptionCore.performKdf(
+                Base64URL.decode("Sq8rGLm4rEtzScmnSsY5r1n-AqBl_iBU8FxN80Uc0S0"),
+                DataEncryptionAlgorithms.JOSE_A256CBC_HS512_ALG_ID.joseName.getBytes("utf-8"), 
+                64));
+        assertTrue("kdf", derivedKey.equals(kdfed));
     }
 
     @Test
