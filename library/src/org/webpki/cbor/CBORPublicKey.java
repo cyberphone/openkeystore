@@ -169,7 +169,7 @@ public class CBORPublicKey {
      * CBOR/COSE to Java/JCE conversion.
      * 
      * @param cborPublicKey
-     * @return
+     * @return PublicKey
      * @throws IOException
      * @throws GeneralSecurityException
      */
@@ -178,35 +178,37 @@ public class CBORPublicKey {
         CBORIntegerMap publicKeyMap = cborPublicKey.getIntegerMap();
         KeyAlgorithms keyAlgorithm;
         int kty = publicKeyMap.getObject(KTY).getInt();
-        switch (kty) {
-        case RSA_KTY:
-            return KeyFactory.getInstance("RSA").generatePublic(
+        PublicKey publicKey;
+
+        if (kty == RSA_KTY) {
+            publicKey =  KeyFactory.getInstance("RSA").generatePublic(
                     new RSAPublicKeySpec(getCryptoBinary(publicKeyMap.getObject(RSA_N)),
                                          getCryptoBinary(publicKeyMap.getObject(RSA_E))));
-  
-        case EC2_KTY:
+
+        } else if (kty == EC2_KTY) {
             keyAlgorithm = COSE_2_WEBPKI_CRV.get(publicKeyMap.getObject(EC2_CRV).getInt());
             if (keyAlgorithm.getKeyType() != KeyTypes.EC) {
                 throw new GeneralSecurityException(keyAlgorithm.getKeyType()  +
                                                    " is not a valid EC curve");
             }
-            return KeyFactory.getInstance("EC").generatePublic(new ECPublicKeySpec(
+            publicKey = KeyFactory.getInstance("EC").generatePublic(new ECPublicKeySpec(
                 new ECPoint(getCurvePoint(publicKeyMap.getObject(EC2_X), keyAlgorithm),
                             getCurvePoint(publicKeyMap.getObject(EC2_Y), keyAlgorithm)),
                 keyAlgorithm.getECParameterSpec()));
-            
-        case OKP_KTY:
+
+        } else if (kty == OKP_KTY) {
             keyAlgorithm = COSE_2_WEBPKI_CRV.get(publicKeyMap.getObject(OKP_CRV).getInt());
             if (keyAlgorithm.getKeyType() != KeyTypes.EDDSA &&
                 keyAlgorithm.getKeyType() != KeyTypes.XEC) {
                 throw new GeneralSecurityException(keyAlgorithm.getKeyType()  +
                                                    " is not a valid OKP curve");
             }
-            return OkpSupport.raw2PublicOkpKey(publicKeyMap.getObject(OKP_X).getByteString(), 
-                                               keyAlgorithm);
-            
-        default:
+            publicKey = OkpSupport.raw2PublicOkpKey(publicKeyMap.getObject(OKP_X).getByteString(), 
+                                                    keyAlgorithm);
+        } else {
             throw new GeneralSecurityException("Unrecognized key type: " + kty);
         }
+        publicKeyMap.checkObjectForUnread();
+        return publicKey;
     }
 }
