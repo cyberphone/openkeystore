@@ -45,7 +45,8 @@ import org.webpki.crypto.OkpSupport;
 import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyTypes;
-import org.webpki.crypto.SignatureWrapper;
+
+import org.webpki.crypto.signatures.SignatureWrapper;
 
 /**
  * Decoder for JSF signatures.

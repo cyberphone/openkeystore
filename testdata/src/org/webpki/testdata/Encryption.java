@@ -31,6 +31,9 @@ import java.util.ArrayList;
 import org.webpki.crypto.CustomCryptoProvider;
 
 //Std
+import org.webpki.crypto.encryption.DataEncryptionAlgorithms;
+import org.webpki.crypto.encryption.KeyEncryptionAlgorithms;
+
 import org.webpki.json.JSONArrayReader;
 import org.webpki.json.JSONAsymKeyEncrypter;
 import org.webpki.json.JSONX509Encrypter;
@@ -41,9 +44,7 @@ import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONObjectWriter;
 import org.webpki.json.JSONOutputFormats;
 import org.webpki.json.JSONParser;
-import org.webpki.json.DataEncryptionAlgorithms;
 import org.webpki.json.JSONSymKeyEncrypter;
-import org.webpki.json.KeyEncryptionAlgorithms;
 // Test
 import org.webpki.json.SymmetricKeys;
 import org.webpki.json.Extension1;
@@ -242,8 +243,8 @@ public class Encryption {
                JSONObjectWriter.createEncryptionObject(dataToBeEncrypted, 
                                                        dataEncryptionAlgorithm,
                                                        encrypter).serializeToBytes(JSONOutputFormats.PRETTY_PRINT);
-        optionalUpdate(keyType + "#" + keyEncryptionAlgorithm.toString().toLowerCase() + 
-                           "@" + dataEncryptionAlgorithm.toString().toLowerCase() + "@" + fileSuffix,
+        optionalUpdate(keyType + "#" + keyEncryptionAlgorithm.getJoseAlgorithmId().toLowerCase() + 
+                           "@" + dataEncryptionAlgorithm.getJoseAlgorithmId().toLowerCase() + "@" + fileSuffix,
                        encryptedData,
                        new LocalDecrypt() {
         
@@ -273,7 +274,7 @@ public class Encryption {
                 JSONObjectWriter.createEncryptionObject(dataToBeEncrypted, 
                                                         dataEncryptionAlgorithm,
                                                         encrypter).serializeToBytes(JSONOutputFormats.PRETTY_PRINT);
-        optionalUpdate("a" + keyBits + "@" + dataEncryptionAlgorithm.toString().toLowerCase() + "@" + fileSuffix,
+        optionalUpdate("a" + keyBits + "@" + dataEncryptionAlgorithm.getJoseAlgorithmId().toLowerCase() + "@" + fileSuffix,
                        encryptedData,
                        new LocalDecrypt() {
          
@@ -343,8 +344,8 @@ public class Encryption {
                JSONObjectWriter.createEncryptionObject(dataToBeEncrypted, 
                                                        dataEncryptionAlgorithm,
                                                        encrypter).serializeToBytes(JSONOutputFormats.PRETTY_PRINT);
-        optionalUpdate(keyType + "#" +  keyEncryptionAlgorithm.toString().toLowerCase() + 
-                           "@" + dataEncryptionAlgorithm.toString().toLowerCase() + "@" + fileSuffix,
+        optionalUpdate(keyType + "#" +  keyEncryptionAlgorithm.getJoseAlgorithmId().toLowerCase() + 
+                           "@" + dataEncryptionAlgorithm.getJoseAlgorithmId().toLowerCase() + "@" + fileSuffix,
                        encryptedData,
                        new LocalDecrypt() {
           
@@ -415,7 +416,7 @@ public class Encryption {
             if (algList.length() > 0) {
                 algList += ",";
             }
-            algList += keyType + "#" + keyEncryptionAlgorithm.toString().toLowerCase();
+            algList += keyType + "#" + keyEncryptionAlgorithm.getJoseAlgorithmId().toLowerCase();
             encrypters.add(encrypter);
         }
         JSONCryptoHelper.Options options = new JSONCryptoHelper.Options();
@@ -429,7 +430,7 @@ public class Encryption {
                JSONObjectWriter.createEncryptionObjects(dataToBeEncrypted, 
                                                         dataEncryptionAlgorithm,
                                                         encrypters).serializeToBytes(JSONOutputFormats.PRETTY_PRINT);
-        String baseName = algList + "@" + dataEncryptionAlgorithm.toString().toLowerCase() + "@" + fileSuffix;
+        String baseName = algList + "@" + dataEncryptionAlgorithm.getJoseAlgorithmId().toLowerCase() + "@" + fileSuffix;
         String fileName = baseEncryption + baseName;
         int q = 0;
         JSONObjectReader newEncryptedData = JSONParser.parse(encryptedData);

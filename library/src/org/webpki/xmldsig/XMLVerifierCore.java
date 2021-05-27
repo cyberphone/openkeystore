@@ -31,9 +31,9 @@ import org.webpki.util.ArrayUtil;
 import org.webpki.xml.XMLObjectWrapper;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
-import org.webpki.crypto.SignatureWrapper;
 import org.webpki.crypto.HashAlgorithms;
 
+import org.webpki.crypto.signatures.SignatureWrapper;
 
 abstract class XMLVerifierCore {
     private static Logger logger = Logger.getLogger(XMLVerifierCore.class.getCanonicalName());

@@ -27,6 +27,10 @@ import java.security.cert.X509Certificate;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.webpki.crypto.encryption.EncryptionCore;
+import org.webpki.crypto.encryption.DataEncryptionAlgorithms;
+import org.webpki.crypto.encryption.KeyEncryptionAlgorithms;
+
 ////////////////////////////////////////////////////////////////////////////////////
 // JEF is effectively a "remake" of of JWE.  Why a remake?  Because the           //
 // encryption system (naturally) borrows heavily from JSF including clear text    //
@@ -312,7 +316,7 @@ public class JSONDecryptionDecoder {
     }
 
     static void keyWrapCheck(KeyEncryptionAlgorithms keyEncryptionAlgorithm) throws IOException {
-        if (!keyEncryptionAlgorithm.keyWrap) {
+        if (!keyEncryptionAlgorithm.isKeyWrap()) {
             throw new IOException("Multiple encryptions only permitted for key wrapping schemes");
         }
     }

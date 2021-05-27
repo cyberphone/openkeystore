@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package org.webpki.json;
+package org.webpki.crypto.encryption;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -58,12 +58,12 @@ import org.webpki.util.ArrayUtil;
  * 
  * Source configured for the default provider.
  */
-class EncryptionCore {
+public class EncryptionCore {
 
     /**
      * Return object for symmetric key encryptions.
      */
-    static class SymmetricEncryptionResult {
+    public static class SymmetricEncryptionResult {
         byte[] tag;
         byte[] cipherText;
 
@@ -72,11 +72,11 @@ class EncryptionCore {
             this.cipherText = cipherText;
         }
 
-        byte[] getTag() {
+        public byte[] getTag() {
             return tag;
         }
 
-        byte[] getCipherText() {
+        public byte[] getCipherText() {
             return cipherText;
         }
     }
@@ -84,7 +84,7 @@ class EncryptionCore {
     /**
      * Return object for ECDH and RSA encryptions.
      */
-    static class AsymmetricEncryptionResult {
+    public static class AsymmetricEncryptionResult {
 
         private byte[] dataEncryptionKey;
         private byte[] encryptedKeyData;
@@ -98,15 +98,15 @@ class EncryptionCore {
             this.ephemeralKey = ephemeralKey;
         }
 
-        byte[] getDataEncryptionKey() {
+        public byte[] getDataEncryptionKey() {
             return dataEncryptionKey;
         }
 
-        byte[] getEncryptedKeyData() {
+        public byte[] getEncryptedKeyData() {
             return encryptedKeyData;
         }
 
-        PublicKey getEphemeralKey() {
+        public PublicKey getEphemeralKey() {
             return ephemeralKey;
         }
     }
@@ -222,16 +222,16 @@ class EncryptionCore {
         if (parameter == null) {
             throw new GeneralSecurityException("Parameter \"" + parameterName +
                                                "\"=null for " +
-                                               dataEncryptionAlgorithm);
+                                               dataEncryptionAlgorithm.joseName);
         }
         if (parameter.length != expectedLength) {
             throw new GeneralSecurityException("Incorrect parameter \"" + parameterName +
                                                "\" length (" + parameter.length + ") for " +
-                                               dataEncryptionAlgorithm);
+                                               dataEncryptionAlgorithm.joseName);
         }
     }
  
-    static byte[] createIv(DataEncryptionAlgorithms dataEncryptionAlgorithm) {
+    public static byte[] createIv(DataEncryptionAlgorithms dataEncryptionAlgorithm) {
         return CryptoRandom.generateRandom(dataEncryptionAlgorithm.ivLength);
     }
 
@@ -306,7 +306,7 @@ class EncryptionCore {
                                            authData,
                                            dataEncryptionAlgorithm))) {
             throw new GeneralSecurityException("Authentication error on algorithm: " + 
-                                               dataEncryptionAlgorithm);
+                                               dataEncryptionAlgorithm.joseName);
         }
         return aesCbcCore(Cipher.DECRYPT_MODE, 
                           key, 
@@ -347,10 +347,10 @@ class EncryptionCore {
      * @return A composite object including the (plain text) data encryption key
      * @throws GeneralSecurityException
      */
-    static AsymmetricEncryptionResult rsaEncryptKey(byte[] dataEncryptionKey,
-                                                    KeyEncryptionAlgorithms keyEncryptionAlgorithm,
-                                                    PublicKey publicKey)
-    throws GeneralSecurityException {
+    public static AsymmetricEncryptionResult rsaEncryptKey(
+            byte[] dataEncryptionKey,
+            KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+            PublicKey publicKey) throws GeneralSecurityException {
         return new AsymmetricEncryptionResult(dataEncryptionKey,
                                               rsaCore(Cipher.ENCRYPT_MODE,
                                                       publicKey,
@@ -383,7 +383,7 @@ class EncryptionCore {
         }
     }
 
-    static byte[] performKdf(byte[] secret, byte[] algorithmId, int keyLength) 
+    public static byte[] performKdf(byte[] secret, byte[] algorithmId, int keyLength) 
             throws IOException, GeneralSecurityException {
         final MessageDigest messageDigest = MessageDigest.getInstance(CONCAT_KDF_DIGEST_JCENAME);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -428,9 +428,9 @@ class EncryptionCore {
         keyAgreement.doPhase(receivedPublicKey, true);
         return performKdf(keyAgreement.generateSecret(),
                 (keyEncryptionAlgorithm.keyWrap ?
-                     keyEncryptionAlgorithm 
+                     keyEncryptionAlgorithm.getJoseAlgorithmId() 
                                                 : 
-                     dataEncryptionAlgorithm).toString().getBytes("UTF-8"),
+                     dataEncryptionAlgorithm.getJoseAlgorithmId()).getBytes("UTF-8"),
                 keyEncryptionAlgorithm.keyWrap ?
                     keyEncryptionAlgorithm.keyEncryptionKeyLength 
                                                : 
@@ -482,7 +482,7 @@ class EncryptionCore {
      * @throws GeneralSecurityException
      * @throws IOException
      */
-    static AsymmetricEncryptionResult
+    public static AsymmetricEncryptionResult
             senderKeyAgreement(byte[] dataEncryptionKey,
                                KeyEncryptionAlgorithms keyEncryptionAlgorithm,
                                DataEncryptionAlgorithms dataEncryptionAlgorithm,

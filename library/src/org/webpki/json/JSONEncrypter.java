@@ -26,6 +26,10 @@ import java.util.LinkedHashSet;
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.CryptoRandom;
 
+import org.webpki.crypto.encryption.EncryptionCore;
+import org.webpki.crypto.encryption.KeyEncryptionAlgorithms;
+import org.webpki.crypto.encryption.DataEncryptionAlgorithms;
+
 /**
  * Support class for encryption generators.
  */
@@ -64,11 +68,11 @@ public abstract class JSONEncrypter {
             contentEncryptionKey = encrypter.contentEncryptionKey;
             encryptionWriter = new JSONObjectWriter();
             encryptionWriter.setString(JSONCryptoHelper.ALGORITHM_JSON, 
-                                       dataEncryptionAlgorithm.joseName);
+                                       dataEncryptionAlgorithm.getJoseAlgorithmId());
             if (encrypter.keyEncryptionAlgorithm != null && 
-                    encrypter.keyEncryptionAlgorithm.keyWrap) {
+                    encrypter.keyEncryptionAlgorithm.isKeyWrap()) {
                 contentEncryptionKey = 
-                        CryptoRandom.generateRandom(dataEncryptionAlgorithm.keyLength);
+                        CryptoRandom.generateRandom(dataEncryptionAlgorithm.getKeyLength());
             }
         }
 
@@ -76,7 +80,7 @@ public abstract class JSONEncrypter {
         throws IOException, GeneralSecurityException {
             if (encrypter.keyEncryptionAlgorithm != null) {
                 currentRecipient.setString(JSONCryptoHelper.ALGORITHM_JSON, 
-                                           encrypter.keyEncryptionAlgorithm.joseName);
+                                           encrypter.keyEncryptionAlgorithm.getJoseAlgorithmId());
             }
 
             if (encrypter.keyId != null) {

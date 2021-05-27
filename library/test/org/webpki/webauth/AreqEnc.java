@@ -21,7 +21,7 @@ import java.io.IOException;
 import org.webpki.util.ArrayUtil;
 
 import org.webpki.crypto.DemoKeyStore;
-import org.webpki.crypto.KeyStoreSigner;
+import org.webpki.crypto.signatures.KeyStoreSigner;
 import org.webpki.crypto.CertificateFilter;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 

@@ -26,7 +26,8 @@ import java.util.Base64.Encoder;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.KeyAlgorithms;
-import org.webpki.crypto.SignatureWrapper;
+
+import org.webpki.crypto.signatures.SignatureWrapper;
 
 import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONOutputFormats;

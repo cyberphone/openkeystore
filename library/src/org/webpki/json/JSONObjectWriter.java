@@ -43,6 +43,8 @@ import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.OkpSupport;
 import org.webpki.crypto.KeyAlgorithms;
 
+import org.webpki.crypto.encryption.DataEncryptionAlgorithms;
+
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.Base64URL;
 import org.webpki.util.ISODateTime;

@@ -47,7 +47,8 @@ import org.webpki.crypto.DemoKeyStore;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.AsymSignatureAlgorithms;
-import org.webpki.crypto.SignatureWrapper;
+
+import org.webpki.crypto.signatures.SignatureWrapper;
 
 import org.webpki.sks.SecureKeyStore;
 

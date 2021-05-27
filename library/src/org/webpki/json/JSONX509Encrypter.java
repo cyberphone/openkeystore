@@ -19,7 +19,10 @@ package org.webpki.json;
 import java.io.IOException;
 
 import java.security.GeneralSecurityException;
+
 import java.security.cert.X509Certificate;
+
+import org.webpki.crypto.encryption.KeyEncryptionAlgorithms;
 
 /**
  * Initiator object for certificate based encryptions.

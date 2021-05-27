@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package org.webpki.json;
+package org.webpki.crypto.encryption;
 
 import java.io.IOException;
 
@@ -57,11 +57,6 @@ public enum DataEncryptionAlgorithms {
         this.gcm = gcm;
     }
 
-    @Override
-    public String toString() {
-        return joseName;
-    }
-
     public int getKeyLength() {
         return keyLength;
     }
@@ -74,12 +69,16 @@ public enum DataEncryptionAlgorithms {
         return tagLength;
     }
     
+    public String getJoseAlgorithmId() {
+        return joseName;
+    }
+    
     public static DataEncryptionAlgorithms getAlgorithmFromId(String algorithmId) throws IOException {
         for (DataEncryptionAlgorithms algorithm : DataEncryptionAlgorithms.values()) {
             if (algorithmId.equals(algorithm.joseName)) {
                 return algorithm;
             }
         }
-        throw new IOException("Unexpected argument to \"" + JSONCryptoHelper.ALGORITHM_JSON + "\": " + algorithmId);
+        throw new IOException("Unexpected algorithm: " + algorithmId);
     }
 }

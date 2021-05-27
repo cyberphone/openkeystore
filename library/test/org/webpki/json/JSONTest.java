@@ -58,10 +58,15 @@ import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.DeterministicSignatureWrapper;
 import org.webpki.crypto.KeyAlgorithms;
-import org.webpki.crypto.KeyStoreVerifier;
 import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.HmacAlgorithms;
-import org.webpki.crypto.SignatureWrapper;
+
+import org.webpki.crypto.signatures.SignatureWrapper;
+
+import org.webpki.crypto.encryption.EncryptionCore;
+import org.webpki.crypto.encryption.DataEncryptionAlgorithms;
+import org.webpki.crypto.encryption.KeyEncryptionAlgorithms;
+import org.webpki.crypto.signatures.KeyStoreVerifier;
 
 import org.webpki.jose.jws.JWSAsymKeySigner;
 import org.webpki.jose.jws.JWSAsymSignatureValidator;
@@ -4603,8 +4608,8 @@ public class JSONTest {
         variousEncryptionErrors("err-wrong-alg3.json", "Property \"" + JSONCryptoHelper.EPHEMERAL_KEY_JSON + "\" is missing");
         variousEncryptionErrors("err-wrong-alg4.json", "Property \"redundant\" was never read");
         variousEncryptionErrors("err-wrong-alg5.json", "Multiple encryptions only permitted for key wrapping schemes");
-        variousEncryptionErrors("err-wrong-alg6.json", "Unexpected argument to \"" + JSONCryptoHelper.ALGORITHM_JSON + "\": SUPERCRYPTO");
-        variousEncryptionErrors("err-wrong-alg7.json", "Unexpected argument to \"" + JSONCryptoHelper.ALGORITHM_JSON + "\": SUPERCRYPTO");
+        variousEncryptionErrors("err-wrong-alg6.json", "Unexpected algorithm: SUPERCRYPTO");
+        variousEncryptionErrors("err-wrong-alg7.json", "Unexpected algorithm: SUPERCRYPTO");
         variousEncryptionErrors("err-bad-id.json", "Property \"" + JSONCryptoHelper.KEY_ID_JSON + "\" was never read");
 
         encryptionFieldErrors("err-bad-ciphertext.json",
@@ -4641,7 +4646,7 @@ public class JSONTest {
         String derivedKey = "pgs50IOZ6BxfqvTSie4t9OjWxGr4whiHo1v9Dti93CRiJE2PP60FojLatVVrcjg3BxpuFjnlQxL97GOwAfcwLA";
         String kdfed = Base64URL.encode(EncryptionCore.performKdf(
                 Base64URL.decode("Sq8rGLm4rEtzScmnSsY5r1n-AqBl_iBU8FxN80Uc0S0"),
-                DataEncryptionAlgorithms.JOSE_A256CBC_HS512_ALG_ID.joseName.getBytes("utf-8"), 
+                DataEncryptionAlgorithms.JOSE_A256CBC_HS512_ALG_ID.getJoseAlgorithmId().getBytes("utf-8"), 
                 64));
         assertTrue("kdf", derivedKey.equals(kdfed));
     }

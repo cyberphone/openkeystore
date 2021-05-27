@@ -27,9 +27,8 @@ import org.webpki.util.ArrayUtil;
 
 import org.webpki.crypto.CertificateInfo;
 import org.webpki.crypto.DemoKeyStore;
-import org.webpki.crypto.KeyStoreSigner;
 import org.webpki.crypto.X509SignerInterface;
-
+import org.webpki.crypto.signatures.KeyStoreSigner;
 import org.webpki.json.JSONDecoderCache;
 import org.webpki.json.JSONOutputFormats;
 import org.webpki.json.JSONX509Signer;

@@ -49,7 +49,8 @@ import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.AsymKeySignerInterface;
 import org.webpki.crypto.KeyUsageBits;
 import org.webpki.crypto.CustomCryptoProvider;
-import org.webpki.crypto.SignatureWrapper;
+
+import org.webpki.crypto.signatures.SignatureWrapper;
 
 public class CommandLineCA {
     ArrayList<CmdLineArgument> list = new ArrayList<>();

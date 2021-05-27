@@ -20,6 +20,8 @@ import java.io.IOException;
 
 import java.security.PublicKey;
 
+import org.webpki.crypto.encryption.KeyEncryptionAlgorithms;
+
 /**
  * Initiator object for asymmetric key encryptions.
  */

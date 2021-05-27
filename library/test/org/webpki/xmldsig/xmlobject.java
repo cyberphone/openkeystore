@@ -35,15 +35,16 @@ import org.webpki.xml.DOMWriterHelper;
 import org.webpki.xml.DOMAttributeReaderHelper;
 
 import org.webpki.crypto.DemoKeyStore;
-import org.webpki.crypto.KeyStoreSigner;
-import org.webpki.crypto.KeyStoreVerifier;
 import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.AsymKeySignerInterface;
 import org.webpki.crypto.HmacSignerInterface;
 import org.webpki.crypto.HmacVerifierInterface;
-import org.webpki.crypto.SignatureWrapper;
+import org.webpki.crypto.signatures.KeyStoreSigner;
+import org.webpki.crypto.signatures.KeyStoreVerifier;
+
+import org.webpki.crypto.signatures.SignatureWrapper;
 
 public class xmlobject extends XMLObjectWrapper implements XMLEnvelopedInput {
     static byte[] symkey;

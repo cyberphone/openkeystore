@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package org.webpki.crypto;
+package org.webpki.crypto.signatures;
 
 import java.io.IOException;
 
@@ -27,6 +27,15 @@ import java.security.KeyStore;
 import java.security.PrivateKey;
 
 import java.security.GeneralSecurityException;
+
+import org.webpki.crypto.AsymSignatureAlgorithms;
+import org.webpki.crypto.CertificateFilter;
+import org.webpki.crypto.CertificateSelection;
+import org.webpki.crypto.CertificateSelectorSpi;
+import org.webpki.crypto.KeyAlgorithms;
+import org.webpki.crypto.KeyContainerTypes;
+import org.webpki.crypto.X509SignerInterface;
+
 
 /**
  * Sign data using the KeyStore interface.
