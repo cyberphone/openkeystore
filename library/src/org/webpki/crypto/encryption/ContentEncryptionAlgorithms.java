@@ -21,7 +21,7 @@ import java.io.IOException;
 /**
  * JWE content encryption algorithms.
  */
-public enum DataEncryptionAlgorithms {
+public enum ContentEncryptionAlgorithms {
 
     JOSE_A128CBC_HS256_ALG_ID ("A128CBC-HS256", 32, EncryptionCore.AES_CBC_IV_LENGTH, 
                                16,                                     "HMACSHA256", false),
@@ -43,7 +43,7 @@ public enum DataEncryptionAlgorithms {
     String jceNameOfTagHmac;
     boolean gcm;
 
-    DataEncryptionAlgorithms(String joseName,
+    ContentEncryptionAlgorithms(String joseName,
                                 int keyLength,
                                 int ivLength,
                                 int tagLength,
@@ -73,8 +73,8 @@ public enum DataEncryptionAlgorithms {
         return joseName;
     }
     
-    public static DataEncryptionAlgorithms getAlgorithmFromId(String algorithmId) throws IOException {
-        for (DataEncryptionAlgorithms algorithm : DataEncryptionAlgorithms.values()) {
+    public static ContentEncryptionAlgorithms getAlgorithmFromId(String algorithmId) throws IOException {
+        for (ContentEncryptionAlgorithms algorithm : ContentEncryptionAlgorithms.values()) {
             if (algorithmId.equals(algorithm.joseName)) {
                 return algorithm;
             }

@@ -28,7 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.webpki.crypto.encryption.EncryptionCore;
-import org.webpki.crypto.encryption.DataEncryptionAlgorithms;
+import org.webpki.crypto.encryption.ContentEncryptionAlgorithms;
 import org.webpki.crypto.encryption.KeyEncryptionAlgorithms;
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -58,7 +58,7 @@ public class JSONDecryptionDecoder {
         byte[] tag;
         byte[] encryptedData;
         
-        DataEncryptionAlgorithms dataEncryptionAlgorithm;
+        ContentEncryptionAlgorithms contentEncryptionAlgorithm;
         JSONObjectReader globalEncryptionObject;
 
         Holder (JSONCryptoHelper.Options options, 
@@ -92,7 +92,7 @@ public class JSONDecryptionDecoder {
             ////////////////////////////////////////////////////////////////////////////////////
 
             // Collect mandatory elements
-            dataEncryptionAlgorithm = DataEncryptionAlgorithms
+            contentEncryptionAlgorithm = ContentEncryptionAlgorithms
                     .getAlgorithmFromId(globalEncryptionObject.getString(
                             JSONCryptoHelper.ALGORITHM_JSON));
             iv = globalEncryptionObject.getBinary(JSONCryptoHelper.IV_JSON);
@@ -139,8 +139,8 @@ public class JSONDecryptionDecoder {
         return keyId;
     }
 
-    public DataEncryptionAlgorithms getDataEncryptionAlgorithm() {
-        return holder.dataEncryptionAlgorithm;
+    public ContentEncryptionAlgorithms getContentEncryptionAlgorithm() {
+        return holder.contentEncryptionAlgorithm;
     }
 
     public KeyEncryptionAlgorithms getKeyEncryptionAlgorithm() {
@@ -206,13 +206,14 @@ public class JSONDecryptionDecoder {
         }
     }
 
-    private byte[] localDecrypt(byte[] dataDecryptionKey) throws IOException, GeneralSecurityException {
-        return EncryptionCore.dataDecryption(holder.dataEncryptionAlgorithm,
-                                             dataDecryptionKey,
-                                             holder.encryptedData,
-                                             holder.iv,
-                                             holder.authenticatedData,
-                                             holder.tag);
+    private byte[] localDecrypt(byte[] dataDecryptionKey) 
+            throws IOException, GeneralSecurityException {
+        return EncryptionCore.contentDecryption(holder.contentEncryptionAlgorithm,
+                                                dataDecryptionKey,
+                                                holder.encryptedData,
+                                                holder.iv,
+                                                holder.authenticatedData,
+                                                holder.tag);
     }
 
     /**
@@ -244,7 +245,7 @@ public class JSONDecryptionDecoder {
                                              privateKey)
                                                            :
                 EncryptionCore.receiverKeyAgreement(keyEncryptionAlgorithm,
-                                                    holder.dataEncryptionAlgorithm,
+                                                    holder.contentEncryptionAlgorithm,
                                                     ephemeralPublicKey,
                                                     privateKey,
                                                     encryptedKeyData));

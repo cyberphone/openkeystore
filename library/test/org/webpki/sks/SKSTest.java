@@ -67,7 +67,6 @@ import org.webpki.crypto.SymEncryptionAlgorithms;
 import org.webpki.crypto.signatures.SignatureWrapper;
 
 
-
 import org.webpki.util.ArrayUtil;
 
 import org.webpki.keygen2.KeyGen2Constants;

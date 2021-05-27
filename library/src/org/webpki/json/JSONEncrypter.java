@@ -28,7 +28,7 @@ import org.webpki.crypto.CryptoRandom;
 
 import org.webpki.crypto.encryption.EncryptionCore;
 import org.webpki.crypto.encryption.KeyEncryptionAlgorithms;
-import org.webpki.crypto.encryption.DataEncryptionAlgorithms;
+import org.webpki.crypto.encryption.ContentEncryptionAlgorithms;
 
 /**
  * Support class for encryption generators.
@@ -54,7 +54,7 @@ public abstract class JSONEncrypter {
 
     static class Header {
 
-        DataEncryptionAlgorithms dataEncryptionAlgorithm;
+        ContentEncryptionAlgorithms contentEncryptionAlgorithm;
 
         JSONObjectWriter encryptionWriter;
 
@@ -62,17 +62,17 @@ public abstract class JSONEncrypter {
         
         LinkedHashSet<String> foundExtensions = new LinkedHashSet<>();
         
-        Header(DataEncryptionAlgorithms dataEncryptionAlgorithm, JSONEncrypter encrypter) 
+        Header(ContentEncryptionAlgorithms contentEncryptionAlgorithm, JSONEncrypter encrypter) 
                 throws IOException {
-            this.dataEncryptionAlgorithm = dataEncryptionAlgorithm;
+            this.contentEncryptionAlgorithm = contentEncryptionAlgorithm;
             contentEncryptionKey = encrypter.contentEncryptionKey;
             encryptionWriter = new JSONObjectWriter();
             encryptionWriter.setString(JSONCryptoHelper.ALGORITHM_JSON, 
-                                       dataEncryptionAlgorithm.getJoseAlgorithmId());
+                                       contentEncryptionAlgorithm.getJoseAlgorithmId());
             if (encrypter.keyEncryptionAlgorithm != null && 
                     encrypter.keyEncryptionAlgorithm.isKeyWrap()) {
                 contentEncryptionKey = 
-                        CryptoRandom.generateRandom(dataEncryptionAlgorithm.getKeyLength());
+                        CryptoRandom.generateRandom(contentEncryptionAlgorithm.getKeyLength());
             }
         }
 
@@ -101,9 +101,9 @@ public abstract class JSONEncrypter {
                                                        :
                             EncryptionCore.senderKeyAgreement(contentEncryptionKey,
                                                               encrypter.keyEncryptionAlgorithm,
-                                                              dataEncryptionAlgorithm,
+                                                              contentEncryptionAlgorithm,
                                                               encrypter.publicKey);
-                contentEncryptionKey = asymmetricEncryptionResult.getDataEncryptionKey();
+                contentEncryptionKey = asymmetricEncryptionResult.getContentEncryptionKey();
                 if (!encrypter.keyEncryptionAlgorithm.isRsa()) {
                     currentRecipient
                         .setObject(JSONCryptoHelper.EPHEMERAL_KEY_JSON,
@@ -133,13 +133,13 @@ public abstract class JSONEncrypter {
                 encryptionWriter.setStringArray(JSONCryptoHelper.EXTENSIONS_JSON,
                                                 foundExtensions.toArray(new String[0]));
             }
-            byte[] iv = EncryptionCore.createIv(dataEncryptionAlgorithm);
+            byte[] iv = EncryptionCore.createIv(contentEncryptionAlgorithm);
             EncryptionCore.SymmetricEncryptionResult symmetricEncryptionResult =
-                EncryptionCore.dataEncryption(dataEncryptionAlgorithm,
-                                              contentEncryptionKey,
-                                              iv,
-                                              unencryptedData,
-                                              encryptionWriter.serializeToBytes(
+                EncryptionCore.contentEncryption(contentEncryptionAlgorithm,
+                                                 contentEncryptionKey,
+                                                 iv,
+                                                 unencryptedData,
+                                                 encryptionWriter.serializeToBytes(
                                                       JSONOutputFormats.CANONICALIZED));
             encryptionWriter.setBinary(JSONCryptoHelper.IV_JSON, iv);
             encryptionWriter.setBinary(JSONCryptoHelper.TAG_JSON,

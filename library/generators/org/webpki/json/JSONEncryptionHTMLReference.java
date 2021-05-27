@@ -33,7 +33,7 @@ import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyTypes;
 
-import org.webpki.crypto.encryption.DataEncryptionAlgorithms;
+import org.webpki.crypto.encryption.ContentEncryptionAlgorithms;
 import org.webpki.crypto.encryption.KeyEncryptionAlgorithms;
 
 import org.webpki.json.JSONBaseHTML.Extender;
@@ -274,7 +274,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
             JSONDecryptionDecoder dec = rd.getEncryptionObject(options);
             for (SymKey symKey : symmetricKeys) {
                 byte[] key = symKey.keyValue;
-                if (key.length == dec.getDataEncryptionAlgorithm().getKeyLength()) {
+                if (key.length == dec.getContentEncryptionAlgorithm().getKeyLength()) {
                     s.append(LINE_SEPARATOR + "AES key");
                     if (dec.getKeyId() != null) {
                         s.append(" named <code>&quot;")
@@ -562,7 +562,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
         .newExtensionRow(new Extender() {
             @Override
             public Column execute(Column column) throws IOException {
-                for (DataEncryptionAlgorithms dea : DataEncryptionAlgorithms.values()) {
+                for (ContentEncryptionAlgorithms dea : ContentEncryptionAlgorithms.values()) {
                     column.addString("<li><code>")
                           .addString(dea.toString())
                           .addString("</code></li>");

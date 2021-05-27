@@ -43,7 +43,7 @@ import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.OkpSupport;
 import org.webpki.crypto.KeyAlgorithms;
 
-import org.webpki.crypto.encryption.DataEncryptionAlgorithms;
+import org.webpki.crypto.encryption.ContentEncryptionAlgorithms;
 
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.Base64URL;
@@ -305,7 +305,8 @@ public class JSONObjectWriter {
      * @throws IOException
      * @see #setMoney(String, BigDecimal)
      */
-    public JSONObjectWriter setMoney(String name, BigDecimal value, int decimals) throws IOException {
+    public JSONObjectWriter setMoney(String name, BigDecimal value, int decimals) 
+            throws IOException {
         return setString(name, moneyToString(value, decimals));
     }
 
@@ -877,7 +878,7 @@ import org.webpki.json.JSONSignatureDecoder;
      * Create a <a href="https://cyberphone.github.io/doc/security/jef.html" target="_blank"><b>JEF</b></a>
      * encrypted object.
      * @param unencryptedData Data to be encrypted
-     * @param dataEncryptionAlgorithm Content encryption algorithm
+     * @param contentEncryptionAlgorithm Content encryption algorithm
      * @param encrypter Holds keys etc.
      * @return New instance of {@link org.webpki.json.JSONObjectWriter}
      * @throws IOException
@@ -885,11 +886,11 @@ import org.webpki.json.JSONSignatureDecoder;
      */
     public static JSONObjectWriter 
             createEncryptionObject(byte[] unencryptedData,
-                                   DataEncryptionAlgorithms dataEncryptionAlgorithm,
+                                   ContentEncryptionAlgorithms contentEncryptionAlgorithm,
                                    JSONEncrypter encrypter)
     throws IOException, GeneralSecurityException {
         JSONEncrypter.Header header = 
-                new JSONEncrypter.Header(dataEncryptionAlgorithm, encrypter);
+                new JSONEncrypter.Header(contentEncryptionAlgorithm, encrypter);
         JSONObjectWriter encryptionObject = header.encryptionWriter;
         if (encrypter.keyEncryptionAlgorithm != null) {
             encryptionObject = encryptionObject.setObject(JSONCryptoHelper.KEY_ENCRYPTION_JSON);
@@ -902,7 +903,7 @@ import org.webpki.json.JSONSignatureDecoder;
      * Create a <a href="https://cyberphone.github.io/doc/security/jef.html" target="_blank"><b>JEF</b></a>
      * encrypted object for multiple recipients.
      * @param unencryptedData Data to be encrypted
-     * @param dataEncryptionAlgorithm Content encryption algorithm
+     * @param contentEncryptionAlgorithm Content encryption algorithm
      * @param encrypters Holds keys etc.
      * @return New instance of {@link org.webpki.json.JSONObjectWriter}
      * @throws IOException
@@ -910,14 +911,14 @@ import org.webpki.json.JSONSignatureDecoder;
      */
     public static JSONObjectWriter 
             createEncryptionObjects(byte[] unencryptedData,
-                                    DataEncryptionAlgorithms dataEncryptionAlgorithm,
+                                    ContentEncryptionAlgorithms contentEncryptionAlgorithm,
                                     List<JSONEncrypter> encrypters)
     throws IOException, GeneralSecurityException {
         if (encrypters.isEmpty()) {
             throw new IOException("Empty encrypter list");
         }
         JSONEncrypter.Header header = 
-                new JSONEncrypter.Header(dataEncryptionAlgorithm, encrypters.get(0));
+                new JSONEncrypter.Header(contentEncryptionAlgorithm, encrypters.get(0));
         JSONArrayWriter recipientList = 
                 header.encryptionWriter.setArray(JSONCryptoHelper.RECIPIENTS_JSON);
         for (JSONEncrypter encrypter : encrypters) {
