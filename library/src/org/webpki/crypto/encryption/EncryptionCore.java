@@ -130,8 +130,8 @@ public class EncryptionCore {
     static final int    CONCAT_KDF_DIGEST_LENGTH  = 32;
     
     // RSA OAEP
-    static final String JOSE_RSA_OAEP_JCENAME     = "RSA/ECB/OAEPWithSHA-1AndMGF1Padding";
-    static final String JOSE_RSA_OAEP_256_JCENAME = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
+    static final String RSA_OAEP_JCENAME          = "RSA/ECB/OAEPWithSHA-1AndMGF1Padding";
+    static final String RSA_OAEP_256_JCENAME      = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
 
     private static String aesProviderName;
 
@@ -324,13 +324,13 @@ public class EncryptionCore {
             throw new GeneralSecurityException(
                     "Unsupported RSA algorithm: " + keyEncryptionAlgorithm);
         }
-        String jceName = keyEncryptionAlgorithm == KeyEncryptionAlgorithms.JOSE_RSA_OAEP_ALG_ID ?
-                JOSE_RSA_OAEP_JCENAME : JOSE_RSA_OAEP_256_JCENAME;
+        String jceName = keyEncryptionAlgorithm == KeyEncryptionAlgorithms.RSA_OAEP_ALG_ID ?
+                RSA_OAEP_JCENAME : RSA_OAEP_256_JCENAME;
         Cipher cipher = rsaProviderName == null ? 
                 Cipher.getInstance(jceName)
                                                 : 
                 Cipher.getInstance(jceName, rsaProviderName);
-        if (keyEncryptionAlgorithm == KeyEncryptionAlgorithms.JOSE_RSA_OAEP_256_ALG_ID) {
+        if (keyEncryptionAlgorithm == KeyEncryptionAlgorithms.RSA_OAEP_256_ALG_ID) {
             cipher.init(mode, key, new OAEPParameterSpec("SHA-256", "MGF1",
                     MGF1ParameterSpec.SHA256, PSource.PSpecified.DEFAULT));
         } else {

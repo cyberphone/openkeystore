@@ -19,24 +19,37 @@ package org.webpki.crypto.encryption;
 import java.io.IOException;
 
 /**
- * JWE algorithms.
+ * JWE and COSE key encryption algorithms.
  */
 public enum KeyEncryptionAlgorithms {
 
-    JOSE_ECDH_ES_ALG_ID        ("ECDH-ES",        false, false, -1),
-    JOSE_ECDH_ES_A128KW_ALG_ID ("ECDH-ES+A128KW", false, true,  16),
-    JOSE_ECDH_ES_A192KW_ALG_ID ("ECDH-ES+A192KW", false, true,  24),
-    JOSE_ECDH_ES_A256KW_ALG_ID ("ECDH-ES+A256KW", false, true,  32),
-    JOSE_RSA_OAEP_ALG_ID       ("RSA-OAEP",       true,  true,  -1),
-    JOSE_RSA_OAEP_256_ALG_ID   ("RSA-OAEP-256",   true,  true,  -1);
+    ECDH_ES_ALG_ID             ("ECDH-ES",              20,  true, false, false, -1),
+    ECDH_ES_A128KW_ALG_ID      ("ECDH-ES+A128KW",       21,  true, false, true,  16),
+    ECDH_ES_A192KW_ALG_ID      ("ECDH-ES+A192KW",       22,  true, false, true,  24),
+    ECDH_ES_A256KW_ALG_ID      ("ECDH-ES+A256KW",       23,  true, false, true,  32),
+    ECDH_ES_K256_ALG_ID        ("ECDH-ES-K256",        -25, false, false, false, -1),
+    ECDH_ES_K256_A128KW_ALG_ID ("ECDH-ES-K256+A128KW", -29, false, false, true,  16),
+    ECDH_ES_K256_A192KW_ALG_ID ("ECDH-ES-K256+A192KW", -30, false, false, true,  24),
+    ECDH_ES_K256_A256KW_ALG_ID ("ECDH-ES-K256+A256KW", -31, false, false, true,  32),
+    RSA_OAEP_ALG_ID            ("RSA-OAEP",            -40, false, true,  true,  -1),
+    RSA_OAEP_256_ALG_ID        ("RSA-OAEP-256",        -41, false, true,  true,  -1);
 
     String joseName;
+    int coseId;
+    boolean concatKdf;  // false => HKDF-256
     boolean rsa;
     boolean keyWrap;
     int keyEncryptionKeyLength;
 
-    KeyEncryptionAlgorithms(String joseName, boolean rsa, boolean keyWrap, int keyEncryptionKeyLength) {
+    KeyEncryptionAlgorithms(String joseName,
+                            int coseId,
+                            boolean concatKdf,
+                            boolean rsa, 
+                            boolean keyWrap, 
+                            int keyEncryptionKeyLength) {
         this.joseName = joseName;
+        this.coseId = coseId;
+        this.concatKdf = concatKdf;
         this.rsa = rsa;
         this.keyWrap = keyWrap;
         this.keyEncryptionKeyLength = keyEncryptionKeyLength;
@@ -52,6 +65,14 @@ public enum KeyEncryptionAlgorithms {
 
     public String getJoseAlgorithmId() {
         return joseName;
+    }
+    
+    public int getCoseId() {
+        return coseId;
+    }
+    
+    public boolean usesConcatKdf() {
+        return concatKdf;
     }
 
     public static KeyEncryptionAlgorithms getAlgorithmFromId(String algorithmId) throws IOException {
