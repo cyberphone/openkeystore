@@ -195,11 +195,6 @@ public class xmlobject extends XMLObjectWrapper implements XMLEnvelopedInput {
                         return getAlgorithm().digest(symkey, data);
                     }
 
-                    @Override
-                    public void setAlgorithm(HmacAlgorithms algorithm)
-                            throws IOException, GeneralSecurityException {
-                    }
-
                 });
                 xmls.createEnvelopedSignature(o);
             }

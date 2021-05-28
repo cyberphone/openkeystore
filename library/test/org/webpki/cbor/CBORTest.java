@@ -666,10 +666,6 @@ public class CBORTest {
                 public HmacAlgorithms getAlgorithm() throws IOException, GeneralSecurityException {
                     return algorithm;
                 }
-
-                @Override
-                public void setAlgorithm(HmacAlgorithms algorithm) throws IOException, GeneralSecurityException {
-                }
                 
             }));
         sd = tbs.encode();

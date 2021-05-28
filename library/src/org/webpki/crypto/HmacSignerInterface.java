@@ -48,16 +48,4 @@ public interface HmacSignerInterface {
         throw new GeneralSecurityException("Missing implementation!");
     }
 
-    /**
-     * Set signature algorithm.
-     * 
-     * @param algorithm The signature algorithm
-     * @throws IOException
-     * @throws GeneralSecurityException
-     */
-    default void setAlgorithm(HmacAlgorithms algorithm) throws IOException,
-                                                               GeneralSecurityException {
-        throw new GeneralSecurityException("Missing implementation!");
-    }
-
 }

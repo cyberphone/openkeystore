@@ -63,11 +63,6 @@ public class JSONHmacSigner extends JSONSigner {
                 return algorithm;
             }
 
-            @Override
-            public void setAlgorithm(HmacAlgorithms algorithm)
-                    throws IOException, GeneralSecurityException {
-            }
-           
         };
     }
 

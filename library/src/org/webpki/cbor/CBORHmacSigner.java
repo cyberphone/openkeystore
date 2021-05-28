@@ -64,7 +64,7 @@ public class CBORHmacSigner extends CBORSigner {
      * @throws GeneralSecurityException 
      */
     public CBORHmacSigner(HmacSignerInterface signer) throws IOException,
-                                                               GeneralSecurityException {
+                                                             GeneralSecurityException {
         this.signer = signer;
         setAlgorithm(signer.getAlgorithm());
     }
