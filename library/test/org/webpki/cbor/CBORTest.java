@@ -835,7 +835,7 @@ public class CBORTest {
                     new CBORHmacValidator(new byte[] {9}));
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, "Asymmetric versus symmetric algorithm: -7");
+            checkException(e, "Unknown COSE HMAC algorithm: -7");
         }
         
         try {

@@ -30,6 +30,7 @@ import java.security.interfaces.RSAPublicKey;
 
 import java.security.spec.ECParameterSpec;
 import java.security.spec.ECPublicKeySpec;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
@@ -400,7 +401,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
         return ecParmSpec;
     }
 
-    public static KeyAlgorithms getECKeyAlgorithm(ECParameterSpec actual) throws IOException {
+    public static KeyAlgorithms getECKeyAlgorithm(ECParameterSpec actual) {
         for (KeyAlgorithms alg : values()) {
             if (alg.keyType == KeyTypes.EC) {
                 ECParameterSpec ref = alg.ecParmSpec;
@@ -412,10 +413,10 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                 }
             }
         }
-        throw new IOException("Unknown EC type: " + actual.toString());
+        throw new IllegalArgumentException("Unknown EC type: " + actual.toString());
     }
 
-    public static KeyAlgorithms getKeyAlgorithm(Key key, Boolean keyParameters) throws IOException {
+    public static KeyAlgorithms getKeyAlgorithm(Key key, Boolean keyParameters) {
         if (key instanceof ECKey) {
             return getECKeyAlgorithm(((ECKey) key).getParams());
         }
@@ -428,7 +429,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                     return alg;
                 }
             }
-            throw new IOException("Unsupported RSA key size: " + lengthInBits);
+            throw new IllegalArgumentException("Unsupported RSA key size: " + lengthInBits);
         }
         return OkpSupport.getOkpKeyAlgorithm(key);
     }
@@ -436,7 +437,8 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
     // Public keys read from specific security providers are not comparable to 
     // public keys created directly from crypto parameters and thus don't compare :-(
     // This method normalizes the former.
-    public static PublicKey normalizePublicKey(PublicKey publicKey) throws GeneralSecurityException, IOException {
+    public static PublicKey normalizePublicKey(PublicKey publicKey)
+            throws GeneralSecurityException, IOException {
         if (publicKey instanceof ECKey) {
             return KeyFactory.getInstance("EC")
                     .generatePublic(new ECPublicKeySpec(((ECPublicKey)publicKey).getW(),
@@ -452,34 +454,35 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                                            keyAlgorithm);
     }
 
-    public static KeyAlgorithms getKeyAlgorithm(Key key) throws IOException {
+    public static KeyAlgorithms getKeyAlgorithm(Key key) {
         return getKeyAlgorithm(key, null);
     }
 
     public static KeyAlgorithms getKeyAlgorithmFromId(String algorithmId, 
-                                                      AlgorithmPreferences algorithmPreferences) throws IOException {
+                                                      AlgorithmPreferences algorithmPreferences) {
         for (KeyAlgorithms alg : values()) {
             if (algorithmId.equals(alg.sksName)) {
                 if (algorithmPreferences == AlgorithmPreferences.JOSE) {
-                    throw new IOException("JOSE algorithm expected: " + algorithmId);
+                    throw new IllegalArgumentException("JOSE algorithm expected: " + algorithmId);
                 }
                 return alg;
             }
             if (algorithmId.equals(alg.joseName)) {
                 if (algorithmPreferences == AlgorithmPreferences.SKS) {
-                    throw new IOException("SKS algorithm expected: " + algorithmId);
+                    throw new IllegalArgumentException("SKS algorithm expected: " + algorithmId);
                 }
                 return alg;
             }
         }
-        throw new IOException("Unknown algorithm: " + algorithmId);
+        throw new IllegalArgumentException("Unknown algorithm: " + algorithmId);
     }
 
     @Override
-    public String getAlgorithmId(AlgorithmPreferences algorithmPreferences) throws IOException {
+    public String getAlgorithmId(AlgorithmPreferences algorithmPreferences) {
         if (joseName == null) {
             if (algorithmPreferences == AlgorithmPreferences.JOSE) {
-                throw new IOException("There is no JOSE algorithm for: " + this.toString());
+                throw new IllegalArgumentException("There is no JOSE algorithm for: " + 
+                                                   this.toString());
             }
             return sksName;
         }

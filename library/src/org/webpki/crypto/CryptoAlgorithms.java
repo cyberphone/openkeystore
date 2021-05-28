@@ -16,8 +16,6 @@
  */
 package org.webpki.crypto;
 
-import java.io.IOException;
-
 /**
  * Crypto algorithm base interface.
  */
@@ -25,9 +23,10 @@ public interface CryptoAlgorithms {
 
     boolean isMandatorySksAlgorithm();
 
-    String getAlgorithmId(AlgorithmPreferences algorithmPreferences) throws IOException;
+    String getAlgorithmId(AlgorithmPreferences algorithmPreferences) 
+            throws IllegalArgumentException;
 
-    default String getJoseAlgorithmId() throws IOException {
+    default String getJoseAlgorithmId() {
         return getAlgorithmId(AlgorithmPreferences.JOSE);
     }
 

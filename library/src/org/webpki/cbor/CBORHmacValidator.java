@@ -81,13 +81,12 @@ public class CBORHmacValidator extends CBORValidator {
 
     @Override
     void validate(CBORIntegerMap signatureObject, 
-                  int cborAlgorithmId,
+                  int coseAlgorithmId,
                   String optionalKeyId,
                   byte[] signatureValue,
                   byte[] signedData) throws IOException, GeneralSecurityException {
         // Get algorithm from the signature object.
-        HmacAlgorithms hmacAlgorithm =
-                (HmacAlgorithms) CBORSigner.getSignatureAlgorithm(cborAlgorithmId, false);
+        HmacAlgorithms hmacAlgorithm = HmacAlgorithms.getAlgorithmFromId(coseAlgorithmId);
 
         // If there is a locator, call it.
         if (keyLocator != null) {

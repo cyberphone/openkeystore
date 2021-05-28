@@ -58,13 +58,14 @@ public class SignatureWrapper {
 
     boolean ecdsaDerEncoded;
 
-    private static int getExtendTo(ECParameterSpec ecParameters) throws IOException {
+    private static int getExtendTo(ECParameterSpec ecParameters) 
+            throws IOException, GeneralSecurityException {
         return (KeyAlgorithms.getECKeyAlgorithm(ecParameters).getPublicKeySizeInBits() + 7) / 8;
     }
 
     public static byte[] decodeDEREncodedECDSASignature(byte[] derCodedSignature,
                                                         ECParameterSpec ecParameters)
-            throws IOException {
+            throws IOException, GeneralSecurityException {
         int extendTo = getExtendTo(ecParameters);
         int index = 2;
         int length;
@@ -103,7 +104,8 @@ public class SignatureWrapper {
     }
 
     public static byte[] encodeDEREncodedECDSASignature(byte[] concatenatedSignature,
-                                                        ECParameterSpec ecParameters) throws IOException {
+                                                        ECParameterSpec ecParameters) 
+            throws IOException, GeneralSecurityException {
         int extendTo = getExtendTo(ecParameters);
         if (extendTo != concatenatedSignature.length / 2) {
             throw new IOException("Signature length error");

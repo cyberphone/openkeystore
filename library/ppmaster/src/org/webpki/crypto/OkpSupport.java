@@ -182,7 +182,7 @@ public class OkpSupport {
         return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(pkcs8));
     }
 
-    public static KeyAlgorithms getOkpKeyAlgorithm(Key key)  throws IOException {
+    public static KeyAlgorithms getOkpKeyAlgorithm(Key key) {
 //#if BOUNCYCASTLE
         if (key instanceof EdDSAKey) {
             return KeyAlgorithms.getKeyAlgorithmFromId(((EdDSAKey)key).getAlgorithm(),
@@ -204,7 +204,7 @@ public class OkpSupport {
                     AlgorithmPreferences.JOSE);
         }
 //#endif
-        throw new IOException("Unknown key type: " + key.getClass().getName());
+        throw new IllegalArgumentException("Unknown key type: " + key.getClass().getName());
     }
 }
 //#endif

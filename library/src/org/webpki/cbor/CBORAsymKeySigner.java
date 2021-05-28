@@ -101,9 +101,9 @@ public class CBORAsymKeySigner extends CBORSigner {
      * @throws IOException 
      */
     public CBORAsymKeySigner setAlgorithm(AsymSignatureAlgorithms algorithm) 
-            throws IOException, GeneralSecurityException {
+            throws IOException{
         this.algorithm = algorithm;
-        this.cborAlgorithmId = WEBPKI_2_CBOR_ALG.get(algorithm);
+        this.coseAlgorithmId = algorithm.getCoseAlgorithmId();
         return this;
     }    
 

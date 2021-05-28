@@ -74,12 +74,9 @@ public class CBORHmacSigner extends CBORSigner {
      * 
      * @param algorithm The algorithm
      * @return this
-     * @throws GeneralSecurityException 
-     * @throws IOException 
      */
-    public CBORHmacSigner setAlgorithm(HmacAlgorithms algorithm) throws IOException,
-                                                                        GeneralSecurityException {
-        this.cborAlgorithmId = WEBPKI_2_CBOR_ALG.get(algorithm);
+    public CBORHmacSigner setAlgorithm(HmacAlgorithms algorithm) {
+        this.coseAlgorithmId = algorithm.getCoseAlgorithmId();
         return this;
     }  
     

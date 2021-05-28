@@ -16,8 +16,6 @@
  */
 package org.webpki.crypto;
 
-import java.io.IOException;
-
 /**
  * Symmetric key encryption algorithms.
  *
@@ -106,19 +104,20 @@ public enum SymEncryptionAlgorithms implements EncryptionAlgorithms {
         return needsPadding;
     }
 
-    public static SymEncryptionAlgorithms getAlgorithmFromId(String algorithmId) throws IOException {
+    public static SymEncryptionAlgorithms getAlgorithmFromId(String algorithmId) {
         for (SymEncryptionAlgorithms alg : values()) {
             if (algorithmId.equals(alg.sksName)) {
                 return alg;
             }
         }
-        throw new IOException("Unknown algorithm: " + algorithmId);
+        throw new IllegalArgumentException("Unknown algorithm: " + algorithmId);
     }
 
     @Override
-    public String getAlgorithmId(AlgorithmPreferences algorithmPreferences) throws IOException {
+    public String getAlgorithmId(AlgorithmPreferences algorithmPreferences) {
         if (algorithmPreferences == AlgorithmPreferences.JOSE) {
-            throw new IOException("There is no JOSE algorithm for: " + toString());
+            throw new IllegalArgumentException("There is no JOSE algorithm for: " + 
+                                               this.toString());
         }
         return sksName;
     }

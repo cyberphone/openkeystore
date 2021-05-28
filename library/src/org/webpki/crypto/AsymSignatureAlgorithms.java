@@ -16,8 +16,6 @@
  */
 package org.webpki.crypto;
 
-import java.io.IOException;
-
 import java.security.spec.MGF1ParameterSpec;
 
 /**
@@ -27,55 +25,64 @@ import java.security.spec.MGF1ParameterSpec;
 public enum AsymSignatureAlgorithms implements SignatureAlgorithms {
 
     RSA_SHA1      ("http://www.w3.org/2000/09/xmldsig#rsa-sha1",             null,              
-                   "1.2.840.113549.1.1.5",  "SHA1withRSA",     HashAlgorithms.SHA1,
-                   false, KeyTypes.RSA,   null),
-      
+                   0,    "1.2.840.113549.1.1.5",  "SHA1withRSA",
+                   HashAlgorithms.SHA1, false, KeyTypes.RSA,   null),
+ 
+    // Not defined by COSE but RS256 is defined by FIDO
     RSA_SHA256    ("http://www.w3.org/2001/04/xmldsig-more#rsa-sha256",      "RS256",      
-                   "1.2.840.113549.1.1.11", "SHA256withRSA",   HashAlgorithms.SHA256, 
-                   true,  KeyTypes.RSA,   null),
+                   -257, "1.2.840.113549.1.1.11", "SHA256withRSA", 
+                   HashAlgorithms.SHA256, true,  KeyTypes.RSA,   null),
       
+    // Not defined by COSE
     RSA_SHA384    ("http://www.w3.org/2001/04/xmldsig-more#rsa-sha384",      "RS384",     
-                   "1.2.840.113549.1.1.12", "SHA384withRSA",   HashAlgorithms.SHA384, 
-                   true,  KeyTypes.RSA,   null),
+                   -258, "1.2.840.113549.1.1.12", "SHA384withRSA", 
+                   HashAlgorithms.SHA384, true,  KeyTypes.RSA,   null),
       
+    // Not defined by COSE
     RSA_SHA512    ("http://www.w3.org/2001/04/xmldsig-more#rsa-sha512",      "RS512",   
-                   "1.2.840.113549.1.1.13", "SHA512withRSA",   HashAlgorithms.SHA512,
-                   true,  KeyTypes.RSA,   null),
+                   -259, "1.2.840.113549.1.1.13", "SHA512withRSA",
+                   HashAlgorithms.SHA512, true,  KeyTypes.RSA,   null),
       
     RSAPSS_SHA256 ("http://www.w3.org/2007/05/xmldsig-more#sha256-rsa-MGF1", "PS256",      
-                   "1.2.840.113549.1.1.10", "RSASSA-PSS",      HashAlgorithms.SHA256, 
-                   false, KeyTypes.RSA,   MGF1ParameterSpec.SHA256),
+                   -37,  "1.2.840.113549.1.1.10", "RSASSA-PSS",
+                   HashAlgorithms.SHA256, false, KeyTypes.RSA,   MGF1ParameterSpec.SHA256),
 
     RSAPSS_SHA384 ("http://www.w3.org/2007/05/xmldsig-more#sha384-rsa-MGF1", "PS384",     
-                   "1.2.840.113549.1.1.10", "RSASSA-PSS",      HashAlgorithms.SHA384, 
-                   false, KeyTypes.RSA,   MGF1ParameterSpec.SHA384),
+                   -38,  "1.2.840.113549.1.1.10", "RSASSA-PSS",
+                   HashAlgorithms.SHA384, false, KeyTypes.RSA,   MGF1ParameterSpec.SHA384),
 
     RSAPSS_SHA512 ("http://www.w3.org/2007/05/xmldsig-more#sha512-rsa-MGF1", "PS512",   
-                   "1.2.840.113549.1.1.10", "RSASSA-PSS",      HashAlgorithms.SHA512,
-                   false, KeyTypes.RSA,   MGF1ParameterSpec.SHA512),
+                   -39,  "1.2.840.113549.1.1.10", "RSASSA-PSS",
+                   HashAlgorithms.SHA512, false, KeyTypes.RSA,   MGF1ParameterSpec.SHA512),
 
     ECDSA_SHA256  ("http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256",    "ES256",  
-                   "1.2.840.10045.4.3.2",   "SHA256withECDSA", HashAlgorithms.SHA256,
-                   true,  KeyTypes.EC,    null),
+                   -7,   "1.2.840.10045.4.3.2",   "SHA256withECDSA",
+                   HashAlgorithms.SHA256, true,  KeyTypes.EC,    null),
       
     ECDSA_SHA384  ("http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha384",    "ES384",   
-                   "1.2.840.10045.4.3.3",   "SHA384withECDSA", HashAlgorithms.SHA384, 
-                   true,  KeyTypes.EC,    null),
+                   -35,  "1.2.840.10045.4.3.3",   "SHA384withECDSA",
+                   HashAlgorithms.SHA384, true,  KeyTypes.EC,    null),
       
     ECDSA_SHA512  ("http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha512",    "ES512",   
-                   "1.2.840.10045.4.3.4",   "SHA512withECDSA", HashAlgorithms.SHA512, 
-                   true,  KeyTypes.EC,    null),
+                   -36,  "1.2.840.10045.4.3.4",   "SHA512withECDSA",
+                   HashAlgorithms.SHA512, true,  KeyTypes.EC,    null),
 
+    // In COSE this is just "EdDSA", but here we say it is Ed25519 which is also
+    // how FIDO treated this.
     ED25519       ("https://webpki.github.io/sks/algorithm#ed25519",         "Ed25519",   
-                   "1.3.101.112",           "Ed25519",         null /*"pure" */,
-                   false, KeyTypes.EDDSA, null),
+                   -8,   "1.3.101.112",           "Ed25519",
+                   null /*"pure" */,      false, KeyTypes.EDDSA, null),
 
+    // Incompatible with COSE, but compatible with most cryptographic
+    // APIs as well as PKIX's way of dealing with with different EdDSA
+    // variants.  That is, each being treated as a specific algorithm.
     ED448         ("https://webpki.github.io/sks/algorithm#ed448",           "Ed448",   
-                   "1.3.101.113",           "Ed448",           null /*"pure" */,
-                   false, KeyTypes.EDDSA, null);
+                   -9,   "1.3.101.113",           "Ed448",
+                   null /*"pure" */,      false, KeyTypes.EDDSA, null);
 
-    private final String sksName;           // As expressed in SKS
-    private final String joseName;          // Alternative JOSE name
+    private final String sksId;             // As expressed in SKS
+    private final String joseId;            // JOSE
+    private final int coseId;               // COSE
     private final String oid;               // As expressed in OIDs
     private final String jceName;           // As expressed for JCE
     private final HashAlgorithms digestAlg; // RSA and ECDSA
@@ -83,16 +90,18 @@ public enum AsymSignatureAlgorithms implements SignatureAlgorithms {
     private final KeyTypes keyType;         // Core type
     private final MGF1ParameterSpec mgf1;   // For RSA PSS
 
-    private AsymSignatureAlgorithms(String sksName,
-                                    String joseName,
+    private AsymSignatureAlgorithms(String sksId,
+                                    String joseId,
+                                    int coseId,
                                     String oid,
                                     String jceName,
                                     HashAlgorithms digestAlg,
                                     boolean sksMandatory,
                                     KeyTypes keyType,
                                     MGF1ParameterSpec mgf1) {
-        this.sksName = sksName;
-        this.joseName = joseName;
+        this.sksId = sksId;
+        this.joseId = joseId;
+        this.coseId = coseId;
         this.oid = oid;
         this.jceName = jceName;
         this.digestAlg = digestAlg;
@@ -121,49 +130,51 @@ public enum AsymSignatureAlgorithms implements SignatureAlgorithms {
         return digestAlg;
     }
 
-    public static boolean testAlgorithmUri(String sksName) {
+    public static boolean testAlgorithmUri(String sksId) {
         for (AsymSignatureAlgorithms alg : values()) {
-            if (sksName.equals(alg.sksName)) {
+            if (sksId.equals(alg.sksId)) {
                 return true;
             }
         }
         return false;
     }
 
-    public static AsymSignatureAlgorithms getAlgorithmFromId(String algorithmId,
-                                                             AlgorithmPreferences algorithmPreferences)
-    throws IOException {
+    public static AsymSignatureAlgorithms getAlgorithmFromId(
+            String algorithmId,
+            AlgorithmPreferences algorithmPreferences) {
         for (AsymSignatureAlgorithms alg : AsymSignatureAlgorithms.values()) {
-            if (algorithmId.equals(alg.sksName)) {
+            if (algorithmId.equals(alg.sksId)) {
                 if (algorithmPreferences == AlgorithmPreferences.JOSE) {
-                    throw new IOException("JOSE algorithm expected: " + algorithmId);
+                    throw new IllegalArgumentException("JOSE algorithm expected: " + algorithmId);
                 }
                 return alg;
             }
-            if (algorithmId.equals(alg.joseName)) {
+            if (algorithmId.equals(alg.joseId)) {
                 if (algorithmPreferences == AlgorithmPreferences.SKS) {
-                    throw new IOException("SKS algorithm expected: " + algorithmId);
+                    throw new IllegalArgumentException("SKS algorithm expected: " + algorithmId);
                 }
                 return alg;
             }
         }
-        throw new IOException("Unknown signature algorithm: " + algorithmId);
+        throw new IllegalArgumentException("Unknown signature algorithm: " + algorithmId);
     }
 
     @Override
-    public String getAlgorithmId(AlgorithmPreferences algorithmPreferences) throws IOException {
-        if (joseName == null) {
+    public String getAlgorithmId(AlgorithmPreferences algorithmPreferences) {
+        if (joseId == null) {
             if (algorithmPreferences == AlgorithmPreferences.JOSE) {
-                throw new IOException("There is no JOSE algorithm for: " + this.toString());
+                throw new IllegalArgumentException("There is no JOSE algorithm for: " +
+                                                   this.toString());
             }
-            return sksName;
-        } else if (sksName == null) {
+            return sksId;
+        } else if (sksId == null) {
             if (algorithmPreferences == AlgorithmPreferences.SKS) {
-                throw new IOException("There is no SKS algorithm for: " + this.toString());
+                throw new IllegalArgumentException("There is no SKS algorithm for: " + 
+                                                   this.toString());
             }
-            return joseName;
+            return joseId;
         }
-        return algorithmPreferences == AlgorithmPreferences.SKS ? sksName : joseName;
+        return algorithmPreferences == AlgorithmPreferences.SKS ? sksId : joseId;
     }
 
     @Override
@@ -178,5 +189,25 @@ public enum AsymSignatureAlgorithms implements SignatureAlgorithms {
 
     public MGF1ParameterSpec getMGF1ParameterSpec() {
         return mgf1;
+    }
+
+    @Override
+    public int getCoseAlgorithmId() {
+        if (coseId == 0) {
+            throw new IllegalArgumentException("There is no COSE algorithm for :" + 
+                                               this.toString());
+        }
+        return coseId;
+    }
+
+    public static AsymSignatureAlgorithms getAlgorithmFromId(int coseAlgorithmId) {
+        for (AsymSignatureAlgorithms alg : AsymSignatureAlgorithms.values()) {
+            if (coseAlgorithmId == alg.coseId) {
+                alg.getCoseAlgorithmId();
+                return alg;
+            }
+        }
+        throw new IllegalArgumentException("Unknown COSE signature algorithm: " +
+                                           coseAlgorithmId);
     }
 }

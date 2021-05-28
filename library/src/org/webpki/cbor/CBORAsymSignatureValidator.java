@@ -98,14 +98,14 @@ public class CBORAsymSignatureValidator extends CBORValidator {
 
     @Override
     void validate(CBORIntegerMap signatureObject, 
-                  int cborAlgorithmId,
+                  int coseAlgorithmId,
                   String optionalKeyId,
                   byte[] signatureValue,
                   byte[] signedData) throws IOException, GeneralSecurityException {
         
         // Get signature algorithm.
         AsymSignatureAlgorithms signatureAlgorithm =
-                (AsymSignatureAlgorithms) CBORSigner.getSignatureAlgorithm(cborAlgorithmId, true);
+                AsymSignatureAlgorithms.getAlgorithmFromId(coseAlgorithmId);
         
         // Acquire public key if there is one. 
         PublicKey inLinePublicKey = null;
