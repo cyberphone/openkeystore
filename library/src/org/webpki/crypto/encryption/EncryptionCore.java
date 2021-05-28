@@ -52,9 +52,9 @@ import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.util.ArrayUtil;
 
 /**
- * Core JEF (JSON Encryption Format) class.
- * Implements a subset of the RFC 7516 (JWE) algorithms
- * as well as the ECDH algorithms specified by RFC 8037.
+ * Core JOSE and COSE encryption support.
+ *
+ * Implements a subset of the RFC 7516 (JWE) and RFC 8152 (COSE) algorithms.
  * 
  * Source configured for the default provider.
  */
@@ -222,12 +222,12 @@ public class EncryptionCore {
         if (parameter == null) {
             throw new GeneralSecurityException("Parameter \"" + parameterName +
                                                "\"=null for " +
-                                               contentEncryptionAlgorithm.joseName);
+                                               contentEncryptionAlgorithm.toString());
         }
         if (parameter.length != expectedLength) {
             throw new GeneralSecurityException("Incorrect parameter \"" + parameterName +
                                                "\" length (" + parameter.length + ") for " +
-                                               contentEncryptionAlgorithm.joseName);
+                                               contentEncryptionAlgorithm.toString());
         }
     }
  
@@ -306,7 +306,7 @@ public class EncryptionCore {
                                            authData,
                                            contentEncryptionAlgorithm))) {
             throw new GeneralSecurityException("Authentication error on algorithm: " + 
-                                               contentEncryptionAlgorithm.joseName);
+                                               contentEncryptionAlgorithm.toString());
         }
         return aesCbcCore(Cipher.DECRYPT_MODE, 
                           key, 
@@ -324,13 +324,13 @@ public class EncryptionCore {
             throw new GeneralSecurityException(
                     "Unsupported RSA algorithm: " + keyEncryptionAlgorithm);
         }
-        String jceName = keyEncryptionAlgorithm == KeyEncryptionAlgorithms.RSA_OAEP_ALG_ID ?
+        String jceName = keyEncryptionAlgorithm == KeyEncryptionAlgorithms.RSA_OAEP ?
                 RSA_OAEP_JCENAME : RSA_OAEP_256_JCENAME;
         Cipher cipher = rsaProviderName == null ? 
                 Cipher.getInstance(jceName)
                                                 : 
                 Cipher.getInstance(jceName, rsaProviderName);
-        if (keyEncryptionAlgorithm == KeyEncryptionAlgorithms.RSA_OAEP_256_ALG_ID) {
+        if (keyEncryptionAlgorithm == KeyEncryptionAlgorithms.RSA_OAEP_256) {
             cipher.init(mode, key, new OAEPParameterSpec("SHA-256", "MGF1",
                     MGF1ParameterSpec.SHA256, PSource.PSpecified.DEFAULT));
         } else {
@@ -381,6 +381,12 @@ public class EncryptionCore {
         for (int i = 24; i >= 0; i -= 8) {
             messageDigest.update((byte) (value >>> i));
         }
+    }
+    
+    public static byte[] hmacKdf(byte[] secret, int algorithmId, int keyLength) 
+            throws IOException, GeneralSecurityException {
+//TODO will use the COSE definition
+        return null;
     }
 
     public static byte[] concatKdf(byte[] secret, byte[] algorithmId, int keyLength) 
@@ -457,8 +463,8 @@ public class EncryptionCore {
         // Sanity check
         if (keyEncryptionAlgorithm.keyWrap ^ (encryptedKeyData != null)) {
             throw new GeneralSecurityException("\"encryptedKeyData\" must " + 
-                    (encryptedKeyData == null ? "not be null" : "be null") + " for algoritm: " +
-                    keyEncryptionAlgorithm);
+                    (encryptedKeyData == null ? "not be null" : "be null") + " for algorithm: " +
+                    keyEncryptionAlgorithm.toString());
         }
         byte[] derivedKey = coreKeyAgreement(keyEncryptionAlgorithm,
                                              contentEncryptionAlgorithm,

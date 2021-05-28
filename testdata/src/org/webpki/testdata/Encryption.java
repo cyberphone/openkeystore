@@ -131,63 +131,63 @@ public class Encryption {
         symmetricKeys = new SymmetricKeys(baseKey);
         dataToBeEncrypted = ArrayUtil.readFile(baseData + "datatobeencrypted.txt");
         
-        asymEnc("p256", ContentEncryptionAlgorithms.A128CBC_HS256_ALG_ID);
-        asymEnc("p256", ContentEncryptionAlgorithms.A256CBC_HS512_ALG_ID);
-        asymEnc("p384", ContentEncryptionAlgorithms.A256CBC_HS512_ALG_ID);
-        asymEnc("p384", ContentEncryptionAlgorithms.A128CBC_HS256_ALG_ID);
-        asymEnc("p521", ContentEncryptionAlgorithms.A128GCM_ALG_ID);
-        asymEnc("p521", ContentEncryptionAlgorithms.A128CBC_HS256_ALG_ID);
-        asymEnc("r2048", ContentEncryptionAlgorithms.A256GCM_ALG_ID);
-        asymEnc("x25519", ContentEncryptionAlgorithms.A256GCM_ALG_ID);
-        asymEnc("x448", ContentEncryptionAlgorithms.A256CBC_HS512_ALG_ID);
+        asymEnc("p256", ContentEncryptionAlgorithms.A128CBC_HS256);
+        asymEnc("p256", ContentEncryptionAlgorithms.A256CBC_HS512);
+        asymEnc("p384", ContentEncryptionAlgorithms.A256CBC_HS512);
+        asymEnc("p384", ContentEncryptionAlgorithms.A128CBC_HS256);
+        asymEnc("p521", ContentEncryptionAlgorithms.A128GCM);
+        asymEnc("p521", ContentEncryptionAlgorithms.A128CBC_HS256);
+        asymEnc("r2048", ContentEncryptionAlgorithms.A256GCM);
+        asymEnc("x25519", ContentEncryptionAlgorithms.A256GCM);
+        asymEnc("x448", ContentEncryptionAlgorithms.A256CBC_HS512);
 
-        asymEncNoPublicKeyInfo("p256", ContentEncryptionAlgorithms.A128CBC_HS256_ALG_ID, true);
-        asymEncNoPublicKeyInfo("p256", ContentEncryptionAlgorithms.A128GCM_ALG_ID, true);
-        asymEncNoPublicKeyInfo("r2048", ContentEncryptionAlgorithms.A256GCM_ALG_ID, true);
-        asymEncNoPublicKeyInfo("r2048", ContentEncryptionAlgorithms.A128GCM_ALG_ID, true);
-        asymEncNoPublicKeyInfo("p256", ContentEncryptionAlgorithms.A128GCM_ALG_ID, false);
-        asymEncNoPublicKeyInfo("r2048", ContentEncryptionAlgorithms.A256GCM_ALG_ID, false);
-        asymEncNoPublicKeyInfo("x25519", ContentEncryptionAlgorithms.A128GCM_ALG_ID, false);
-        asymEncNoPublicKeyInfo("x448", ContentEncryptionAlgorithms.A256GCM_ALG_ID, true);
+        asymEncNoPublicKeyInfo("p256", ContentEncryptionAlgorithms.A128CBC_HS256, true);
+        asymEncNoPublicKeyInfo("p256", ContentEncryptionAlgorithms.A128GCM, true);
+        asymEncNoPublicKeyInfo("r2048", ContentEncryptionAlgorithms.A256GCM, true);
+        asymEncNoPublicKeyInfo("r2048", ContentEncryptionAlgorithms.A128GCM, true);
+        asymEncNoPublicKeyInfo("p256", ContentEncryptionAlgorithms.A128GCM, false);
+        asymEncNoPublicKeyInfo("r2048", ContentEncryptionAlgorithms.A256GCM, false);
+        asymEncNoPublicKeyInfo("x25519", ContentEncryptionAlgorithms.A128GCM, false);
+        asymEncNoPublicKeyInfo("x448", ContentEncryptionAlgorithms.A256GCM, true);
         
-        certEnc("p256", ContentEncryptionAlgorithms.A128CBC_HS256_ALG_ID);
-        certEnc("r2048", ContentEncryptionAlgorithms.A256GCM_ALG_ID);
-        certEnc("x25519", ContentEncryptionAlgorithms.A256GCM_ALG_ID);
+        certEnc("p256", ContentEncryptionAlgorithms.A128CBC_HS256);
+        certEnc("r2048", ContentEncryptionAlgorithms.A256GCM);
+        certEnc("x25519", ContentEncryptionAlgorithms.A256GCM);
         
         multipleAsymEnc(new String[]{"p256", "p384"}, 
-                         ContentEncryptionAlgorithms.A128CBC_HS256_ALG_ID, 
+                         ContentEncryptionAlgorithms.A128CBC_HS256, 
                         true);
       
         multipleAsymEnc(new String[]{"p256", "p384"}, 
-                        ContentEncryptionAlgorithms.A128CBC_HS256_ALG_ID, 
+                        ContentEncryptionAlgorithms.A128CBC_HS256, 
                         false);
 
         multipleAsymEnc(new String[]{"p256", "p384"}, 
-                        ContentEncryptionAlgorithms.A256CBC_HS512_ALG_ID, 
+                        ContentEncryptionAlgorithms.A256CBC_HS512, 
                         false);
 
         multipleAsymEnc(new String[]{"p256", "r2048"}, 
-                        ContentEncryptionAlgorithms.A128CBC_HS256_ALG_ID, 
+                        ContentEncryptionAlgorithms.A128CBC_HS256, 
                         true);
 
         multipleAsymEnc(new String[]{"p256", "p256-2"}, 
-                        ContentEncryptionAlgorithms.A128CBC_HS256_ALG_ID, 
+                        ContentEncryptionAlgorithms.A128CBC_HS256, 
                         true);
 
         multipleAsymEnc(new String[]{"p521", "x448"}, 
-                        ContentEncryptionAlgorithms.A256CBC_HS512_ALG_ID, 
+                        ContentEncryptionAlgorithms.A256CBC_HS512, 
                         false);
 
-        symmEnc(256, ContentEncryptionAlgorithms.A128CBC_HS256_ALG_ID);
-        symmEnc(512, ContentEncryptionAlgorithms.A256CBC_HS512_ALG_ID);
-        symmEnc(128, ContentEncryptionAlgorithms.A128GCM_ALG_ID);
-        symmEnc(256, ContentEncryptionAlgorithms.A256GCM_ALG_ID);
+        symmEnc(256, ContentEncryptionAlgorithms.A128CBC_HS256);
+        symmEnc(512, ContentEncryptionAlgorithms.A256CBC_HS512);
+        symmEnc(128, ContentEncryptionAlgorithms.A128GCM);
+        symmEnc(256, ContentEncryptionAlgorithms.A256GCM);
 
-        coreSymmEnc(256, "imp.json", ContentEncryptionAlgorithms.A256GCM_ALG_ID, false);
+        coreSymmEnc(256, "imp.json", ContentEncryptionAlgorithms.A256GCM, false);
         
         coreAsymEnc("p256", 
                     "exts-jwk.json",
-                    ContentEncryptionAlgorithms.A256GCM_ALG_ID,
+                    ContentEncryptionAlgorithms.A256GCM,
                     false,
                     true,
                     new JSONCryptoHelper.ExtensionHolder()
@@ -200,7 +200,7 @@ public class Encryption {
 
         coreAsymEnc("p256", 
                     "jwk+kid.json",
-                    ContentEncryptionAlgorithms.A256GCM_ALG_ID,
+                    ContentEncryptionAlgorithms.A256GCM,
                     true,
                     true,
                     null,
@@ -215,23 +215,23 @@ public class Encryption {
     static void certEnc(String keyType, 
                         ContentEncryptionAlgorithms contentEncryptionAlgorithm) throws Exception {
         KeyPair keyPair = readJwk(keyType);
-        KeyEncryptionAlgorithms keyEncryptionAlgorithm = KeyEncryptionAlgorithms.RSA_OAEP_256_ALG_ID;
+        KeyEncryptionAlgorithms keyEncryptionAlgorithm = KeyEncryptionAlgorithms.RSA_OAEP_256;
         if (!(keyPair.getPublic() instanceof RSAKey)) {
             switch (contentEncryptionAlgorithm.getKeyLength()) {
             case 16: 
-                keyEncryptionAlgorithm = KeyEncryptionAlgorithms.ECDH_ES_A128KW_ALG_ID;
+                keyEncryptionAlgorithm = KeyEncryptionAlgorithms.ECDH_ES_A128KW;
                 break;
             case 32: 
-                keyEncryptionAlgorithm = KeyEncryptionAlgorithms.ECDH_ES_A256KW_ALG_ID;
+                keyEncryptionAlgorithm = KeyEncryptionAlgorithms.ECDH_ES_A256KW;
                 break;
             default: 
-                keyEncryptionAlgorithm = KeyEncryptionAlgorithms.ECDH_ES_ALG_ID;
+                keyEncryptionAlgorithm = KeyEncryptionAlgorithms.ECDH_ES;
                 break;
             }
         }
-        if (keyEncryptionAlgorithm == KeyEncryptionAlgorithms.RSA_OAEP_256_ALG_ID &&
-            contentEncryptionAlgorithm == ContentEncryptionAlgorithms.A128GCM_ALG_ID) {
-            keyEncryptionAlgorithm = KeyEncryptionAlgorithms.RSA_OAEP_ALG_ID;
+        if (keyEncryptionAlgorithm == KeyEncryptionAlgorithms.RSA_OAEP_256 &&
+            contentEncryptionAlgorithm == ContentEncryptionAlgorithms.A128GCM) {
+            keyEncryptionAlgorithm = KeyEncryptionAlgorithms.RSA_OAEP;
         }
         JSONX509Encrypter encrypter = new JSONX509Encrypter(getCertificatePath(keyType),
                                                             keyEncryptionAlgorithm);
@@ -307,23 +307,23 @@ public class Encryption {
                             JSONCryptoHelper.ExtensionHolder extensionHolder,
                             JSONObjectWriter extensions) throws Exception {
         KeyPair keyPair = readJwk(keyType);
-        KeyEncryptionAlgorithms keyEncryptionAlgorithm = KeyEncryptionAlgorithms.RSA_OAEP_256_ALG_ID;
+        KeyEncryptionAlgorithms keyEncryptionAlgorithm = KeyEncryptionAlgorithms.RSA_OAEP_256;
         if (!(keyPair.getPublic() instanceof RSAKey)) {
             switch (contentEncryptionAlgorithm.getKeyLength()) {
             case 16: 
-                keyEncryptionAlgorithm = KeyEncryptionAlgorithms.ECDH_ES_A128KW_ALG_ID;
+                keyEncryptionAlgorithm = KeyEncryptionAlgorithms.ECDH_ES_A128KW;
                 break;
             case 32: 
-                keyEncryptionAlgorithm = KeyEncryptionAlgorithms.ECDH_ES_A256KW_ALG_ID;
+                keyEncryptionAlgorithm = KeyEncryptionAlgorithms.ECDH_ES_A256KW;
                 break;
             default: 
-                keyEncryptionAlgorithm = KeyEncryptionAlgorithms.ECDH_ES_ALG_ID;
+                keyEncryptionAlgorithm = KeyEncryptionAlgorithms.ECDH_ES;
                 break;
             }
         }
-        if (keyEncryptionAlgorithm == KeyEncryptionAlgorithms.RSA_OAEP_256_ALG_ID &&
-            contentEncryptionAlgorithm == ContentEncryptionAlgorithms.A128GCM_ALG_ID) {
-            keyEncryptionAlgorithm = KeyEncryptionAlgorithms.RSA_OAEP_ALG_ID;
+        if (keyEncryptionAlgorithm == KeyEncryptionAlgorithms.RSA_OAEP_256 &&
+            contentEncryptionAlgorithm == ContentEncryptionAlgorithms.A128GCM) {
+            keyEncryptionAlgorithm = KeyEncryptionAlgorithms.RSA_OAEP;
         }
         JSONAsymKeyEncrypter encrypter = new JSONAsymKeyEncrypter(keyPair.getPublic(),
                                                                   keyEncryptionAlgorithm);
@@ -388,21 +388,21 @@ public class Encryption {
         String algList = "";
         for (String keyType : keyTypes) {
             KeyPair keyPair = readJwk(keyType);
-            KeyEncryptionAlgorithms keyEncryptionAlgorithm = KeyEncryptionAlgorithms.RSA_OAEP_256_ALG_ID;
+            KeyEncryptionAlgorithms keyEncryptionAlgorithm = KeyEncryptionAlgorithms.RSA_OAEP_256;
             if (!(keyPair.getPublic() instanceof RSAKey)) {
                 switch (contentEncryptionAlgorithm.getKeyLength()) {
                 case 16: 
-                    keyEncryptionAlgorithm = KeyEncryptionAlgorithms.ECDH_ES_A128KW_ALG_ID;
+                    keyEncryptionAlgorithm = KeyEncryptionAlgorithms.ECDH_ES_A128KW;
                     break;
                 default: 
                 case 32: 
-                    keyEncryptionAlgorithm = KeyEncryptionAlgorithms.ECDH_ES_A256KW_ALG_ID;
+                    keyEncryptionAlgorithm = KeyEncryptionAlgorithms.ECDH_ES_A256KW;
                     break;
                 }
             }
-            if (keyEncryptionAlgorithm == KeyEncryptionAlgorithms.RSA_OAEP_256_ALG_ID &&
-                contentEncryptionAlgorithm == ContentEncryptionAlgorithms.A128GCM_ALG_ID) {
-                keyEncryptionAlgorithm = KeyEncryptionAlgorithms.RSA_OAEP_ALG_ID;
+            if (keyEncryptionAlgorithm == KeyEncryptionAlgorithms.RSA_OAEP_256 &&
+                contentEncryptionAlgorithm == ContentEncryptionAlgorithms.A128GCM) {
+                keyEncryptionAlgorithm = KeyEncryptionAlgorithms.RSA_OAEP;
             }
             decryptionKeys.add(new JSONDecryptionDecoder.DecryptionKeyHolder(keyPair.getPublic(),
                                                                              keyPair.getPrivate(),

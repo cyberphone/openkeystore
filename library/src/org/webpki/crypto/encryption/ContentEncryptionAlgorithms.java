@@ -16,40 +16,46 @@
  */
 package org.webpki.crypto.encryption;
 
-import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 /**
  * JWE and COSE content encryption algorithms.
  */
 public enum ContentEncryptionAlgorithms {
 
-    A128CBC_HS256_ALG_ID ("A128CBC-HS256", 32, EncryptionCore.AES_CBC_IV_LENGTH, 
-                          16,                                "HMACSHA256", false),
-    A192CBC_HS384_ALG_ID ("A192CBC-HS384", 48, EncryptionCore.AES_CBC_IV_LENGTH, 
-                          24,                                "HMACSHA384", false),
-    A256CBC_HS512_ALG_ID ("A256CBC-HS512", 64, EncryptionCore.AES_CBC_IV_LENGTH,
-                          32,                                "HMACSHA512", false),
-    A128GCM_ALG_ID       ("A128GCM",       16, EncryptionCore.AES_GCM_IV_LENGTH,
-                          EncryptionCore.AES_GCM_TAG_LENGTH,      null,         true),
-    A192GCM_ALG_ID       ("A192GCM",       24, EncryptionCore.AES_GCM_IV_LENGTH,
-                          EncryptionCore.AES_GCM_TAG_LENGTH,      null,         true),
-    A256GCM_ALG_ID       ("A256GCM",       32, EncryptionCore.AES_GCM_IV_LENGTH,
-                          EncryptionCore.AES_GCM_TAG_LENGTH,      null,         true);
+    // Currently only defined by JOSE
+    A128CBC_HS256 ("A128CBC-HS256", 200, 32, EncryptionCore.AES_CBC_IV_LENGTH, 
+                   16,                         "HMACSHA256", false),
+    A192CBC_HS384 ("A192CBC-HS384", 201, 48, EncryptionCore.AES_CBC_IV_LENGTH, 
+                   24,                         "HMACSHA384", false),
+    A256CBC_HS512 ("A256CBC-HS512", 202, 64, EncryptionCore.AES_CBC_IV_LENGTH,
+                   32,                                "HMACSHA512", false),
 
-    String joseName;
+    // JOSE + COSE
+    A128GCM       ("A128GCM",         1, 16, EncryptionCore.AES_GCM_IV_LENGTH,
+                   EncryptionCore.AES_GCM_TAG_LENGTH,      null,         true),
+    A192GCM       ("A192GCM",         2, 24, EncryptionCore.AES_GCM_IV_LENGTH,
+                   EncryptionCore.AES_GCM_TAG_LENGTH,      null,         true),
+    A256GCM       ("A256GCM",         3, 32, EncryptionCore.AES_GCM_IV_LENGTH,
+                   EncryptionCore.AES_GCM_TAG_LENGTH,      null,         true);
+
+    String joseId;
+    int coseId;
     int keyLength;
     int ivLength;
     int tagLength;
     String jceNameOfTagHmac;
     boolean gcm;
 
-    ContentEncryptionAlgorithms(String joseName,
+    ContentEncryptionAlgorithms(String joseId,
+                                int coseId,
                                 int keyLength,
                                 int ivLength,
                                 int tagLength,
                                 String jceNameOfTagHmac, 
                                 boolean gcm) {
-        this.joseName = joseName;
+        this.joseId = joseId;
+        this.coseId = coseId;
         this.keyLength = keyLength;
         this.ivLength = ivLength;
         this.tagLength = tagLength;
@@ -70,15 +76,31 @@ public enum ContentEncryptionAlgorithms {
     }
     
     public String getJoseAlgorithmId() {
-        return joseName;
+        return joseId;
     }
     
-    public static ContentEncryptionAlgorithms getAlgorithmFromId(String algorithmId) throws IOException {
+    public int getCoseAlgorithmId() {
+        return coseId;
+    }
+    
+    public static ContentEncryptionAlgorithms getAlgorithmFromId(String joseAlgorithmId) 
+            throws GeneralSecurityException {
         for (ContentEncryptionAlgorithms algorithm : ContentEncryptionAlgorithms.values()) {
-            if (algorithmId.equals(algorithm.joseName)) {
+            if (joseAlgorithmId.equals(algorithm.joseId)) {
                 return algorithm;
             }
         }
-        throw new IOException("Unexpected algorithm: " + algorithmId);
+        throw new GeneralSecurityException("Unexpected algorithm: " + joseAlgorithmId);
+    }
+
+    public static ContentEncryptionAlgorithms getAlgorithmFromId(int coseAlgorithmId) 
+            throws GeneralSecurityException {
+        for (ContentEncryptionAlgorithms algorithm : ContentEncryptionAlgorithms.values()) {
+            if (coseAlgorithmId == algorithm.coseId) {
+                return algorithm;
+            }
+        }
+        throw new GeneralSecurityException("Unexpected algorithm: " + coseAlgorithmId);
     }
 }
+

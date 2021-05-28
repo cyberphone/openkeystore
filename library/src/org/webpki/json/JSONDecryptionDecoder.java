@@ -63,7 +63,7 @@ public class JSONDecryptionDecoder {
 
         Holder (JSONCryptoHelper.Options options, 
                 JSONObjectReader globalEncryptionObject,
-                boolean keyEncryption) throws IOException {
+                boolean keyEncryption) throws IOException, GeneralSecurityException {
             globalEncryptionObject.clearReadFlags();
             this.options = options;
             this.globalEncryptionObject = globalEncryptionObject;
