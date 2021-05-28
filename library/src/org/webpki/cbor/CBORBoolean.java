@@ -28,6 +28,11 @@ public class CBORBoolean extends CBORObject {
 
     boolean value;
 
+    /**
+     * Create a CBOR <code>boolean</code> object.
+     * 
+     * @param value
+     */
     public CBORBoolean(boolean value) {
         this.value = value;
     }

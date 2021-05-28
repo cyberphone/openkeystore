@@ -25,6 +25,9 @@ import java.security.GeneralSecurityException;
  */
 public class CBORIntegerMap extends CBORMapBase {
 
+    /**
+     * Create a CBOR map <code>{}</code> with integer keys.
+     */
     public CBORIntegerMap() {}
 
     @Override

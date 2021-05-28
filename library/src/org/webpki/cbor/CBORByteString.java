@@ -28,6 +28,11 @@ public class CBORByteString extends CBORObject {
 
     byte[] byteString;
 
+    /**
+     * Create a CBOR <code>byte-string</code> object.
+     * 
+     * @param byteString
+     */
     public CBORByteString(byte[] byteString) {
         this.byteString = byteString;
     }

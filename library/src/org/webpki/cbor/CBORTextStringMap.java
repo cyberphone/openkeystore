@@ -25,6 +25,9 @@ import java.security.GeneralSecurityException;
  */
 public class CBORTextStringMap extends CBORMapBase {
 
+    /**
+     * Create a CBOR map <code>{}</code> with text string keys.
+     */
     public CBORTextStringMap() {}
 
     @Override

@@ -22,22 +22,22 @@ CBOR maps are limited to either use <code>integer</code>
 or <code>text&nbsp;string</code> objects as keys.
 <h3>Deterministic Serialization</h3>
 Since this package is intended for security related
-work, it is (by design) quite picky about serialization
+work, it is (by design) quite picky when decoding CBOR data
 and does not accept:
 <ul>
 <li>Leading zeros.</li>
 <li><code>bignum</code> objects
 that due to their value could equally well be provided in the
 shorter <code>integer</code> format.</li>
+<li>Maps with keys that are not sorted according to the selected canonicalization scheme.</li>
 <li>Map objects mixing <code>integer</code> and <code>text string</code> keys.</li>
 </ul>
-On output (encode) the preferred serialization format is always used.
+On output (encode) the preferred serialization format is always used
+regardless how it was provided.
 <h3>Map Sorting</h3>
-Maps are <i>automatically sorted</i> according to section 4.2.3 (which
+Maps are <i>automatically sorted</i> during encode according to section 4.2.3 (which
 follows RFC 7049) by default, but can (with an option), be set
-to adhere to section 4.2.1.  That is, there are no requirements
-for map sorting on input (decode), while output (encode) always
-uses the currently mandated sorting order.
+to adhere to section 4.2.1.
 <h3 id='csf'>Signature Support</h3>
 The CBOR library also contains support for creating and validating
 signatures using a specific scheme tentatively called

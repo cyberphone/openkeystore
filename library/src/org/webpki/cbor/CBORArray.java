@@ -29,6 +29,10 @@ public class CBORArray extends CBORObject {
 
     ArrayList<CBORObject> elements = new ArrayList<>();
 
+    /**
+     * Create a CBOR array <code>[]</code> object.
+     * 
+     */
     public CBORArray() {}
     
     public CBORObject getElement(int index) throws IOException {

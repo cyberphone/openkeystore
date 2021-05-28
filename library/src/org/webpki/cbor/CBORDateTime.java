@@ -35,16 +35,21 @@ public class CBORDateTime extends CBORObject {
     static final byte[] DATE_TIME_TAG = {MT_DATE_TIME};
 
     /**
-     * Date-time creation
+     * Create a CBOR <code>date-time</code> object.
      * 
-     * @param dateTime
-     * @param format
+     * @param dateTime Java format potentially including fractions of a second.
+     * @param format Controls how it will be presented on the &quot;wire&quot;.
      */
     public CBORDateTime(GregorianCalendar dateTime, EnumSet<ISODateTime.DatePatterns> format) {
         this.dateTime = dateTime;
         this.backingData = ISODateTime.formatDateTime(dateTime, format);
     }
 
+    /**
+     * Create a CBOR <code>date-time</code> object.
+     * 
+     * @param dateTime ISO format potentially including fractions of a second.
+     */
     public CBORDateTime(String dateTimeString) throws IOException {
         this.backingData = dateTimeString;
         this.dateTime = ISODateTime.parseDateTime(dateTimeString, ISODateTime.COMPLETE);

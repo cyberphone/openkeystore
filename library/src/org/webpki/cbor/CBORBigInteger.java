@@ -35,6 +35,11 @@ public class CBORBigInteger extends CBORObject {
     static final byte[] UNSIGNED_BIG_INTEGER_TAG = {MT_BIG_UNSIGNED};
     static final byte[] SIGNED_BIG_INTEGER_TAG   = {MT_BIG_SIGNED};
     
+    /**
+     * Create a CBOR <code>big number</code> object.
+     * 
+     * @param value
+     */
     public CBORBigInteger(BigInteger value) {
         this.value = value;
     }
