@@ -868,15 +868,18 @@ public class CBORTest {
         }
         
     }
-    
+
     @Test
     public void encryptionTest() throws Exception {
         KeyPair p256 = readJwk("p256");
         String keyId = CBORTest.keyId;
-        System.out.println(
-                new CBORAsymKeyEncrypter(p256.getPublic(),
+        CBORObject encrypted = new CBORAsymKeyEncrypter(p256.getPublic(),
                                          KeyEncryptionAlgorithms.ECDH_ES_HK256,
                                          ContentEncryptionAlgorithms.A256GCM)
-                                            .encrypt(dataToEncrypt).toString());
+                                            .encrypt(dataToEncrypt);
+        assertTrue("enc/dec", 
+                ArrayUtil.compare(new CBORAsymKeyDecrypter(
+                        p256.getPrivate()).decrypt(encrypted.encode()),
+                        dataToEncrypt));
     }
 }

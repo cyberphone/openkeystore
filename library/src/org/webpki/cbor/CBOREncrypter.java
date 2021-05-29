@@ -63,22 +63,17 @@ public abstract class CBOREncrypter {
     /**
      * Integer value: 7
      */
-    public static final CBORInteger ENCRYPTED_KEY_LABEL  = new CBORInteger(7);    
-
+    public static final CBORInteger TAG_LABEL            = new CBORInteger(7);
+ 
     /**
      * Integer value: 8
      */
-    public static final CBORInteger TAG_LABEL            = new CBORInteger(8);
- 
+    public static final CBORInteger IV_LABEL             = new CBORInteger(8);
+
     /**
      * Integer value: 9
      */
-    public static final CBORInteger IV_LABEL             = new CBORInteger(9);
-
-    /**
-     * Integer value: 10
-     */
-    public static final CBORInteger CIPHER_TEXT_LABEL    = new CBORInteger(10);
+    public static final CBORInteger CIPHER_TEXT_LABEL    = new CBORInteger(9);
 
     // Actual encryption key
     byte[] contentEncryptionKey;
