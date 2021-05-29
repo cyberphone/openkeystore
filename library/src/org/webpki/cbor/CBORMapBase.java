@@ -117,7 +117,7 @@ abstract class CBORMapBase extends CBORObject {
         signer.sign(key, this);
     }
 
-    void setObject(CBORObject key, CBORObject value) throws IOException {
+    CBORMapBase setObject(CBORObject key, CBORObject value) throws IOException {
         if (keys.put(key, value) != null) {
             throw new IOException("Duplicate key: " + key.toString());
         }
@@ -127,13 +127,15 @@ abstract class CBORMapBase extends CBORObject {
             }
         }
         lastKey = key;
+        return this;
     }
 
-    void removeObject(CBORObject key) throws IOException {
+    CBORMapBase removeObject(CBORObject key) throws IOException {
         if (!keys.containsKey(key)) {
             throw new IOException("No such key: " + key.toString());
         }
         keys.remove(key);
+        return this;
     }
 
     CBORObject getObject(CBORObject key) throws IOException {

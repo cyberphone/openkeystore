@@ -26,6 +26,7 @@ import java.math.BigInteger;
 
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
+import java.security.PrivateKey;
 import java.security.PublicKey;
 
 import java.util.EnumSet;
@@ -883,28 +884,71 @@ public class CBORTest {
                 ArrayUtil.compare(new CBORAsymKeyDecrypter(
                         p256.getPrivate()).decrypt(p256Encrypted),
                         dataToEncrypt));
+        p256Encrypter.setKeyId(keyId);
+        byte[] p256EncryptedKeyId = p256Encrypter.encrypt(dataToEncrypt).encode();
         assertTrue("enc/dec", 
                 ArrayUtil.compare(new CBORAsymKeyDecrypter(
-                        p256_2.getPrivate()).decrypt(p256Encrypted),
+                        p256.getPrivate()).decrypt(p256EncryptedKeyId),
                         dataToEncrypt));
+System.out.println(CBORObject.decode(p256EncryptedKeyId).toString());
+        assertTrue("enc/dec", 
+                ArrayUtil.compare(new CBORAsymKeyDecrypter(
+                    new CBORAsymKeyDecrypter.KeyLocator() {
+                        
+                        @Override
+                        public PrivateKey locate(
+                                PublicKey optionalPublicKey,
+                                String optionalKeyId,
+                                KeyEncryptionAlgorithms keyEncryptionAlgorithm)
+                                throws IOException, GeneralSecurityException {
+                            return keyId.equals(optionalKeyId) ? p256.getPrivate() : null;
+                        }
+
+                    }).decrypt(p256EncryptedKeyId),
+                    dataToEncrypt));
         try {
-            ArrayUtil.compare(new CBORAsymKeyDecrypter(
+            new CBORAsymKeyDecrypter(p256_2.getPrivate()).decrypt(p256Encrypted);
+            fail("must not run");
+        } catch (Exception e) {
+            // No check here becomes it comes from the deep...
+        }
+        try {
+            new CBORAsymKeyDecrypter(
                         p256.getPrivate()).decrypt(
-                                CBORObject.decode(
-                                        p256Encrypted).getIntegerMap().setObject(-2, new CBORInteger(5)).encode()),
-                        dataToEncrypt);
+                            CBORObject.decode(
+                                    p256Encrypted).getIntegerMap().setObject(-2, new CBORInteger(5)).encode());
             fail("must not run");
         } catch (Exception e) {
             checkException(e, "Map key -2 of type=CBORInteger with value=5 was never read");
         }
-        /*        
-        encrypted = new CBORSymKeyEncrypter(symmetricKeys.getValue(256),
+        try {
+            new CBORAsymKeyDecrypter(
+                        p256.getPrivate()).decrypt(
+                            CBORObject.decode(
+                                    p256Encrypted).getIntegerMap()
+                            .getObject(CBOREncrypter.KEY_ENCRYPTION_LABEL)
+                            .getIntegerMap().removeObject(CBOREncrypter.ALGORITHM_LABEL).encode());
+            fail("must not run");
+        } catch (Exception e) {
+            checkException(e, "No such key: 1");
+        }
+        byte[] a256Encrypted = new CBORSymKeyEncrypter(symmetricKeys.getValue(256),
                                             ContentEncryptionAlgorithms.A256GCM)
-                                                .encrypt(dataToEncrypt);
+                                                .encrypt(dataToEncrypt).encode();
+        
+        CBORSymKeyDecrypter a256Decrypter = new CBORSymKeyDecrypter(symmetricKeys.getValue(256));
         assertTrue("enc/dec", 
-                ArrayUtil.compare(new CBORSymKeyDecrypter(
-                        symmetricKeys.getValue(256)).decrypt(encrypted.encode()),
+                ArrayUtil.compare(a256Decrypter.decrypt(a256Encrypted),
                         dataToEncrypt));
-*/
+        
+        try {
+            a256Decrypter.decrypt(CBORObject.decode(
+                a256Encrypted).getIntegerMap().setObject(CBOREncrypter.KEY_ENCRYPTION_LABEL, 
+                        new CBORIntegerMap().setObject(CBOREncrypter.ALGORITHM_LABEL,
+                                new CBORInteger(600))).encode());
+            fail("must not run");
+        } catch (Exception e) {
+            checkException(e, "Unexpected algorithm: 600");
+        }
     }
 }
