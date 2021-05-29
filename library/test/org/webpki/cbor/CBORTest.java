@@ -62,6 +62,7 @@ public class CBORTest {
         baseKey = System.clearProperty("json.keys") + File.separator;
         CustomCryptoProvider.forcedLoad(false);
         dataToEncrypt = "The brown fox jumps over the lazy bear".getBytes("utf-8");
+        symmetricKeys = new SymmetricKeys(baseKey);
     }
 
     static byte[] dataToEncrypt;
@@ -714,8 +715,7 @@ public class CBORTest {
         KeyPair ed448 = readJwk("ed448");
         KeyPair ed25519 = readJwk("ed25519");
         
-        symmetricKeys = new SymmetricKeys(baseKey);
-        
+     
         backAndForth(p256);
         backAndForth(r2048);
         backAndForth(x448);
@@ -873,13 +873,38 @@ public class CBORTest {
     public void encryptionTest() throws Exception {
         KeyPair p256 = readJwk("p256");
         String keyId = CBORTest.keyId;
-        CBORObject encrypted = new CBORAsymKeyEncrypter(p256.getPublic(),
+        KeyPair p256_2 = readJwk("p256-2");
+        CBORAsymKeyEncrypter p256Encrypter = 
+                new CBORAsymKeyEncrypter(p256.getPublic(),
                                          KeyEncryptionAlgorithms.ECDH_ES_HK256,
-                                         ContentEncryptionAlgorithms.A256GCM)
-                                            .encrypt(dataToEncrypt);
+                                         ContentEncryptionAlgorithms.A256GCM);
+        byte[] p256Encrypted = p256Encrypter.encrypt(dataToEncrypt).encode();
         assertTrue("enc/dec", 
                 ArrayUtil.compare(new CBORAsymKeyDecrypter(
-                        p256.getPrivate()).decrypt(encrypted.encode()),
+                        p256.getPrivate()).decrypt(p256Encrypted),
                         dataToEncrypt));
+        assertTrue("enc/dec", 
+                ArrayUtil.compare(new CBORAsymKeyDecrypter(
+                        p256_2.getPrivate()).decrypt(p256Encrypted),
+                        dataToEncrypt));
+        try {
+            ArrayUtil.compare(new CBORAsymKeyDecrypter(
+                        p256.getPrivate()).decrypt(
+                                CBORObject.decode(
+                                        p256Encrypted).getIntegerMap().setObject(-2, new CBORInteger(5)).encode()),
+                        dataToEncrypt);
+            fail("must not run");
+        } catch (Exception e) {
+            checkException(e, "Map key -2 of type=CBORInteger with value=5 was never read");
+        }
+        /*        
+        encrypted = new CBORSymKeyEncrypter(symmetricKeys.getValue(256),
+                                            ContentEncryptionAlgorithms.A256GCM)
+                                                .encrypt(dataToEncrypt);
+        assertTrue("enc/dec", 
+                ArrayUtil.compare(new CBORSymKeyDecrypter(
+                        symmetricKeys.getValue(256)).decrypt(encrypted.encode()),
+                        dataToEncrypt));
+*/
     }
 }

@@ -19,59 +19,55 @@ package org.webpki.cbor;
 import java.io.IOException;
 
 import java.security.GeneralSecurityException;
-import java.security.PrivateKey;
 import java.security.PublicKey;
 
 import org.webpki.crypto.encryption.ContentEncryptionAlgorithms;
-import org.webpki.crypto.encryption.EncryptionCore;
 import org.webpki.crypto.encryption.KeyEncryptionAlgorithms;
 
 /**
- * Class for CBOR asymmetric key decryption.
+ * Class for CBOR symmetric key decryption.
  * 
  * Note that decrypter objects may be used any number of times
  * (assuming that the same parameters are valid).  They are also
  * thread-safe. 
  */
-public class CBORAsymKeyDecrypter extends CBORDecrypter {
+public class CBORSymKeyDecrypter extends CBORDecrypter {
     
     /**
      * For dynamic key retrieval.
      */
     public interface KeyLocator {
 
+
         /**
-         * Lookup private decryption key.
+         * Lookup secret decryption key.
          * 
-         * @param optionalPublicKey Optional public key found in the signature object
-         * @param optionalKeyId KeyId or <code>null</code>
-         * @param keyEncryptionAlgorithm The requested key encryption algorithm
-         * @return Private key for decryption
+         * @param optionalKeyId
+         * @param contentEncryptionAlgorithm
+         * @return
          * @throws IOException
          * @throws GeneralSecurityException
          */
-        PrivateKey locate(PublicKey optionalPublicKey, 
-                          String optionalKeyId, 
-                          KeyEncryptionAlgorithms keyEncryptionAlgorithm)
+        byte[] locate(String optionalKeyId, 
+                      ContentEncryptionAlgorithms contentEncryptionAlgorithm)
             throws IOException, GeneralSecurityException;
     }
     
     KeyLocator keyLocator;
     
     /**
-     * Initialize decrypter with private key.
+     * Initialize decrypter with secret key.
      * 
-     * @param optionalPublicKey The anticipated public key
+     * @param secretKey The anticipated secret key to decrypt with
      */
-    public CBORAsymKeyDecrypter(PrivateKey privateKey) {
+    public CBORSymKeyDecrypter(byte[] secretKey) {
         this(new KeyLocator() {
 
             @Override
-            public PrivateKey locate(PublicKey optionalPublicKey,
-                                     String optionalKeyId,
-                                     KeyEncryptionAlgorithms keyEncryptionAlgorithm)
+            public byte[] locate(String optionalKeyId,
+                                 ContentEncryptionAlgorithms contentEncryptionAlgorithm)
                     throws IOException, GeneralSecurityException {
-                return privateKey;
+                return secretKey;
             }
             
         });
@@ -81,11 +77,11 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
      * Initialize decrypter with a locator.
      * 
      * This option provides full control for the decrypter
-     * regarding in-lined public keys and key identifiers.
+     * regarding key identifiers.
      * 
      * @param keyLocator The call back
      */
-    public CBORAsymKeyDecrypter(KeyLocator keyLocator) {
+    public CBORSymKeyDecrypter(KeyLocator keyLocator) {
         this.keyLocator = keyLocator;
     }
     
@@ -97,18 +93,6 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
                                    String optionalKeyId, 
                                    byte[] encryptedKey) throws IOException,
                                                                GeneralSecurityException {
-        PrivateKey privateKey = keyLocator.locate(optionalPublicKey,
-                                                  optionalKeyId,
-                                                  keyEncryptionAlgorithm);
-        return keyEncryptionAlgorithm.isRsa() ?
-            EncryptionCore.rsaDecryptKey(keyEncryptionAlgorithm, 
-                                         encryptedKey,
-                                         privateKey)
-                                               :
-            EncryptionCore.receiverKeyAgreement(keyEncryptionAlgorithm,
-                                                contentEncryptionAlgorithm,
-                                                ephemeralKey,
-                                                privateKey,
-                                                encryptedKey);
+        return keyLocator.locate(optionalKeyId, contentEncryptionAlgorithm);
     }
 }

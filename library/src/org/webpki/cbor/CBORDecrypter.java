@@ -32,32 +32,15 @@ import org.webpki.crypto.encryption.KeyEncryptionAlgorithms;
  */
 public abstract class CBORDecrypter {
 
-    // Actual deryption key
-    byte[] contentDecryptionKey;
-    
-    // The algorithm to use with the contentEncryptionKey
-    ContentEncryptionAlgorithms contentEncryptionAlgorithm;
-    
-    // For key encryption schemes
-    KeyEncryptionAlgorithms keyEncryptionAlgorithm;
-    
-    // Optional key ID
-    String optionalKeyId;
-    
-    // Optional public key
-    PublicKey optionalPublicKey;
-
-    // Ephemeral key
-    PublicKey ephemeralKey;
-
-    // Optional encrypted key
-    byte[] encryptedKey;
-
     CBORDecrypter() {}
     
-    void keyEncryption(CBORIntegerMap encryptionObject) 
-            throws IOException, GeneralSecurityException {
-    }
+    abstract byte[] getContentEncryptionKey(KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+                                            ContentEncryptionAlgorithms contentEncryptionAlgorithm,
+                                            PublicKey optionalPublicKey,
+                                            PublicKey ephemeralKey,
+                                            String optionalKeyId, 
+                                            byte[] encryptedKey) throws IOException,
+                                                                        GeneralSecurityException;
     
     byte[] readAndRemove(CBORIntegerMap encryptionObject, CBORInteger key) throws IOException {
         byte[] data = encryptionObject.getObject(key).getByteString();
@@ -81,20 +64,23 @@ public abstract class CBORDecrypter {
                 CBORObject.decode(encodedEncryptionObject).getIntegerMap();
         
         // Get the mandatory content encryption algorithm.
-        contentEncryptionAlgorithm =
+        ContentEncryptionAlgorithms contentEncryptionAlgorithm =
                 ContentEncryptionAlgorithms.getAlgorithmFromId(
                         encryptionObject.getObject(CBOREncrypter.ALGORITHM_LABEL).getInt());
 
         // Possible key encryption begins to kick in here.
-        CBORIntegerMap innerObject;
-        boolean keyEncryptionScheme = encryptionObject.hasKey(CBOREncrypter.KEY_ENCRYPTION_LABEL);
-        if (keyEncryptionScheme) {
+        KeyEncryptionAlgorithms keyEncryptionAlgorithm = null;
+        CBORIntegerMap innerObject = encryptionObject;
+        PublicKey ephemeralKey = null;
+        PublicKey optionalPublicKey = null;
+        byte[] encryptedKey = null;
+        if (encryptionObject.hasKey(CBOREncrypter.KEY_ENCRYPTION_LABEL)) {
             innerObject = encryptionObject.getObject(
                     CBOREncrypter.KEY_ENCRYPTION_LABEL).getIntegerMap(); 
  
             // Mandatory algorithm
             keyEncryptionAlgorithm = KeyEncryptionAlgorithms.getAlgorithmFromId(
-                    innerObject.getObject(CBOREncrypter.ALGORITHM_LABEL).getInt());
+                            innerObject.getObject(CBOREncrypter.ALGORITHM_LABEL).getInt());
  
             // Fetch public key if there is one
             if (innerObject.hasKey(CBOREncrypter.PUBLIC_KEY_LABEL)) {
@@ -113,18 +99,19 @@ public abstract class CBORDecrypter {
                 encryptedKey =
                         innerObject.getObject(CBOREncrypter.CIPHER_TEXT_LABEL).getByteString();
             }
-            
-        } else {
-            innerObject = encryptionObject;
         }
              
         // Get the key Id if there is one.
-        if (innerObject.hasKey(CBOREncrypter.KEY_ID_LABEL)) {
-            optionalKeyId = innerObject.getObject(CBOREncrypter.KEY_ID_LABEL).getTextString();
-        }
+        String optionalKeyId = innerObject.hasKey(CBOREncrypter.KEY_ID_LABEL) ?
+            innerObject.getObject(CBOREncrypter.KEY_ID_LABEL).getTextString() : null;
         
-        // If the decrypter is into key encryption it will act.
-        keyEncryption(innerObject);
+        // A little bit too much for symmetric encryption but who cares... 
+        byte[] contentDecryptionKey = getContentEncryptionKey(keyEncryptionAlgorithm,
+                                                              contentEncryptionAlgorithm,
+                                                              optionalPublicKey,
+                                                              ephemeralKey,
+                                                              optionalKeyId,
+                                                              encryptedKey);
         
         // Read and remove the content encryption parameters.
         byte[] iv = readAndRemove(encryptionObject, CBOREncrypter.IV_LABEL);
