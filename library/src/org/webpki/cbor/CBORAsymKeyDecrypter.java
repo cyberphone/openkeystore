@@ -43,7 +43,7 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
         /**
          * Lookup private decryption key.
          * 
-         * @param optionalPublicKey Optional public key found in the signature object
+         * @param optionalPublicKey Optional public key found in the encryption object
          * @param optionalKeyId KeyId or <code>null</code>
          * @param keyEncryptionAlgorithm The requested key encryption algorithm
          * @return Private key for decryption
@@ -61,7 +61,7 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
     /**
      * Initialize decrypter with private key.
      * 
-     * @param optionalPublicKey The anticipated public key
+     * @param privateKey The anticipated private key
      */
     public CBORAsymKeyDecrypter(PrivateKey privateKey) {
         this(new KeyLocator() {

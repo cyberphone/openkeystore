@@ -48,7 +48,7 @@ public class CBORDateTime extends CBORObject {
     /**
      * Create a CBOR <code>date-time</code> object.
      * 
-     * @param dateTime ISO format potentially including fractions of a second.
+     * @param dateTimeString ISO formatted string potentially including fractions of a second.
      */
     public CBORDateTime(String dateTimeString) throws IOException {
         this.backingData = dateTimeString;
