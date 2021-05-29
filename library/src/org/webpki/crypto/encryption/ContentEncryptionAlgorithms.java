@@ -16,8 +16,6 @@
  */
 package org.webpki.crypto.encryption;
 
-import java.security.GeneralSecurityException;
-
 /**
  * JWE and COSE content encryption algorithms.
  */
@@ -83,24 +81,22 @@ public enum ContentEncryptionAlgorithms {
         return coseId;
     }
     
-    public static ContentEncryptionAlgorithms getAlgorithmFromId(String joseAlgorithmId) 
-            throws GeneralSecurityException {
+    public static ContentEncryptionAlgorithms getAlgorithmFromId(String joseAlgorithmId) {
         for (ContentEncryptionAlgorithms algorithm : ContentEncryptionAlgorithms.values()) {
             if (joseAlgorithmId.equals(algorithm.joseId)) {
                 return algorithm;
             }
         }
-        throw new GeneralSecurityException("Unexpected algorithm: " + joseAlgorithmId);
+        throw new IllegalArgumentException("Unexpected algorithm: " + joseAlgorithmId);
     }
 
-    public static ContentEncryptionAlgorithms getAlgorithmFromId(int coseAlgorithmId) 
-            throws GeneralSecurityException {
+    public static ContentEncryptionAlgorithms getAlgorithmFromId(int coseAlgorithmId) {
         for (ContentEncryptionAlgorithms algorithm : ContentEncryptionAlgorithms.values()) {
             if (coseAlgorithmId == algorithm.coseId) {
                 return algorithm;
             }
         }
-        throw new GeneralSecurityException("Unexpected algorithm: " + coseAlgorithmId);
+        throw new IllegalArgumentException("Unexpected algorithm: " + coseAlgorithmId);
     }
 }
 

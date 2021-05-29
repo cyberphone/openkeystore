@@ -82,12 +82,11 @@ public class CBORInteger extends CBORObject {
      * integer values (-2^64 to 2^64-1).
      * 
      * @param value
-     * @throws IOException 
      */
-    public CBORInteger(BigInteger value) throws IOException {
+    public CBORInteger(BigInteger value) {
         if (!CBORBigInteger.fitsAnInteger(value)) {
-                throw new IOException("Value out of range for " +
-                                      CBORInteger.class.getSimpleName());
+                throw new IllegalArgumentException("Value out of range for " +
+                                                   CBORInteger.class.getSimpleName());
         }
         if (value.compareTo(BigInteger.ZERO) >= 0) {
             this.value =  value.longValue();
@@ -112,9 +111,8 @@ public class CBORInteger extends CBORObject {
         BigInteger bigInteger = BigInteger.valueOf(value).and(CBORBigInteger.MAX_INT64);
         if (unsignedMode) {
             return bigInteger;
-        } else {
-            return value == -1 ? CBORBigInteger.MIN_INT64 : bigInteger.add(BigInteger.ONE).negate();
         }
+        return value == -1 ? CBORBigInteger.MIN_INT64 : bigInteger.add(BigInteger.ONE).negate();
     }
 
     @Override

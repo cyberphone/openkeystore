@@ -39,6 +39,8 @@ import org.junit.Test;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.HmacSignerInterface;
+import org.webpki.crypto.encryption.ContentEncryptionAlgorithms;
+import org.webpki.crypto.encryption.KeyEncryptionAlgorithms;
 import org.webpki.crypto.CustomCryptoProvider;
 
 import org.webpki.json.JSONObjectReader;
@@ -59,8 +61,11 @@ public class CBORTest {
         Locale.setDefault(Locale.FRANCE);  // Should create HUGE problems :-)
         baseKey = System.clearProperty("json.keys") + File.separator;
         CustomCryptoProvider.forcedLoad(false);
+        dataToEncrypt = "The brown fox jumps over the lazy bear".getBytes("utf-8");
     }
 
+    static byte[] dataToEncrypt;
+    
     static String baseKey;
     
     static SymmetricKeys symmetricKeys;
@@ -862,5 +867,16 @@ public class CBORTest {
             checkException(e, "KeyId = null");
         }
         
+    }
+    
+    @Test
+    public void encryptionTest() throws Exception {
+        KeyPair p256 = readJwk("p256");
+        String keyId = CBORTest.keyId;
+        System.out.println(
+                new CBORAsymKeyEncrypter(p256.getPublic(),
+                                         KeyEncryptionAlgorithms.ECDH_ES_HK256,
+                                         ContentEncryptionAlgorithms.A256GCM)
+                                            .encrypt(dataToEncrypt).toString());
     }
 }

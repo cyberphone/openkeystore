@@ -23,6 +23,9 @@ import java.security.PublicKey;
 
 /**
  * Base class for creating CBOR signatures.
+ * 
+ * It uses COSE algorithms but not the packaging.
+
  */
 public abstract class CBORSigner {
 
@@ -63,7 +66,7 @@ public abstract class CBORSigner {
 
     CBORSigner() {}
     
-    abstract byte[] signData(byte[] dataToSign) throws GeneralSecurityException, IOException;
+    abstract byte[] signData(byte[] dataToSign) throws IOException, GeneralSecurityException;
     
     /**
      * Set signature key Id.
@@ -82,7 +85,7 @@ public abstract class CBORSigner {
      * the only ways to retrieve the proper secret key.
      * </p>
      * 
-     * @param keyId A keId string
+     * @param keyId A key Id string
      * @return this
      */
     public CBORSigner setKeyId(String keyId) {

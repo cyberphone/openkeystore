@@ -31,6 +31,8 @@ import org.webpki.crypto.signatures.SignatureWrapper;
 /**
  * Class for creating CBOR asymmetric key signatures.
  * 
+ * It uses COSE algorithms but not the packaging.
+ * 
  * Note that signer objects may be used any number of times
  * (assuming that the same parameters are valid).  They are also
  * thread-safe.
@@ -108,7 +110,7 @@ public class CBORAsymKeySigner extends CBORSigner {
     }    
 
     @Override
-    byte[] signData(byte[] dataToBeSigned) throws GeneralSecurityException, IOException {
+    byte[] signData(byte[] dataToBeSigned) throws IOException, GeneralSecurityException {
         return signer.signData(dataToBeSigned);
     }
 }

@@ -16,24 +16,22 @@
  */
 package org.webpki.crypto.encryption;
 
-import java.security.GeneralSecurityException;
-
 /**
  * JWE and COSE key encryption algorithms.
  */
 public enum KeyEncryptionAlgorithms {
 
     // Currently only defined by JOSE
-    ECDH_ES              ("ECDH-ES",               20,  true, false, false, -1),
-    ECDH_ES_A128KW       ("ECDH-ES+A128KW",        21,  true, false, true,  16),
-    ECDH_ES_A192KW       ("ECDH-ES+A192KW",        22,  true, false, true,  24),
-    ECDH_ES_A256KW       ("ECDH-ES+A256KW",        23,  true, false, true,  32),
+    ECDH_ES              ("ECDH-ES",               20, false, false, false, -1),
+    ECDH_ES_A128KW       ("ECDH-ES+A128KW",        21, false, false, true,  16),
+    ECDH_ES_A192KW       ("ECDH-ES+A192KW",        22, false, false, true,  24),
+    ECDH_ES_A256KW       ("ECDH-ES+A256KW",        23, false, false, true,  32),
 
     // Currently only defined by COSE
-    ECDH_ES_HK256        ("ECDH-ES-HK256",        -25, false, false, false, -1),
-    ECDH_ES_HK256_A128KW ("ECDH-ES-HK256+A128KW", -29, false, false, true,  16),
-    ECDH_ES_HK256_A192KW ("ECDH-ES-HK256+A192KW", -30, false, false, true,  24),
-    ECDH_ES_HK256_A256KW ("ECDH-ES-HK256+A256KW", -31, false, false, true,  32),
+    ECDH_ES_HK256        ("ECDH-ES-HK256",        -25,  true, false, false, -1),
+    ECDH_ES_HK256_A128KW ("ECDH-ES-HK256+A128KW", -29,  true, false, true,  16),
+    ECDH_ES_HK256_A192KW ("ECDH-ES-HK256+A192KW", -30,  true, false, true,  24),
+    ECDH_ES_HK256_A256KW ("ECDH-ES-HK256+A256KW", -31,  true, false, true,  32),
 
     // JOSE + COSE
     RSA_OAEP             ("RSA-OAEP",             -40, false, true,  true,  -1),
@@ -41,20 +39,20 @@ public enum KeyEncryptionAlgorithms {
 
     String joseId;
     int coseId;
-    boolean concatKdf;  // false => HKDF-256
+    boolean hmacKdf;  // false => HKDF-256
     boolean rsa;
     boolean keyWrap;
     int keyEncryptionKeyLength;
 
     KeyEncryptionAlgorithms(String joseId,
                             int coseId,
-                            boolean concatKdf,
+                            boolean hmacKdf,
                             boolean rsa, 
                             boolean keyWrap, 
                             int keyEncryptionKeyLength) {
         this.joseId = joseId;
         this.coseId = coseId;
-        this.concatKdf = concatKdf;
+        this.hmacKdf = hmacKdf;
         this.rsa = rsa;
         this.keyWrap = keyWrap;
         this.keyEncryptionKeyLength = keyEncryptionKeyLength;
@@ -76,27 +74,25 @@ public enum KeyEncryptionAlgorithms {
         return coseId;
     }
     
-    public boolean usesConcatKdf() {
-        return concatKdf;
+    public boolean usesHmacKdf() {
+        return hmacKdf;
     }
 
-    public static KeyEncryptionAlgorithms getAlgorithmFromId(String joseAlgorithmId) 
-            throws GeneralSecurityException {
+    public static KeyEncryptionAlgorithms getAlgorithmFromId(String joseAlgorithmId) {
         for (KeyEncryptionAlgorithms algorithm : KeyEncryptionAlgorithms.values()) {
             if (joseAlgorithmId.equals(algorithm.joseId)) {
                 return algorithm;
             }
         }
-        throw new GeneralSecurityException("Unexpected algorithm: " + joseAlgorithmId);
+        throw new IllegalArgumentException("Unexpected algorithm: " + joseAlgorithmId);
     }
 
-    public static KeyEncryptionAlgorithms getAlgorithmFromId(int coseAlgorithmId) 
-            throws GeneralSecurityException {
+    public static KeyEncryptionAlgorithms getAlgorithmFromId(int coseAlgorithmId) {
         for (KeyEncryptionAlgorithms algorithm : KeyEncryptionAlgorithms.values()) {
             if (coseAlgorithmId == algorithm.coseId) {
                 return algorithm;
             }
         }
-        throw new GeneralSecurityException("Unexpected algorithm: " + coseAlgorithmId);
+        throw new IllegalArgumentException("Unexpected algorithm: " + coseAlgorithmId);
     }
 }

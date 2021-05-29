@@ -4245,18 +4245,18 @@ public class JSONTest {
         KeyPair alice = JSONParser.parse(aliceKey).getKeyPair();
         byte[] plainText = jwePlainText.getBytes("UTF-8");
         for (KeyEncryptionAlgorithms kea : KeyEncryptionAlgorithms.values()) {
-// TODO completely wrong
-            if (kea == KeyEncryptionAlgorithms.ECDH_ES_A128KW) {
+            if (kea.usesHmacKdf()) {  // Not JOSE
                 continue;
             }
             for (ContentEncryptionAlgorithms enc : ContentEncryptionAlgorithms.values()) {
                 JSONObjectWriter json = 
                     JSONObjectWriter
-                        .createEncryptionObject(plainText,
-                                                enc,
-                                                new JSONAsymKeyEncrypter((kea.isRsa() ?
-                                                                           malletKeys : alice).getPublic(),
-                                                                         kea));
+                        .createEncryptionObject(
+                                plainText,
+                                enc,
+                                new JSONAsymKeyEncrypter((kea.isRsa() ?
+                                                           malletKeys : alice).getPublic(),
+                                                         kea));
                 if (!ArrayUtil.compare(plainText,
                                   JSONParser
                                       .parse(json.toString())

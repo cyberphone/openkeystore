@@ -414,10 +414,10 @@ public class EncryptionCore {
         }
     }
     
-    public static byte[] hmacKdf(byte[] secret, int algorithmId, int keyLength) 
+    public static byte[] hmacKdf(byte[] secret, byte[] algorithmId, int keyLength) 
             throws IOException, GeneralSecurityException {
-//TODO will use the COSE definition
-        return null;
+//TODO put in the right one :)
+        return concatKdf(secret, algorithmId, keyLength);
     }
 
     public static byte[] concatKdf(byte[] secret, byte[] algorithmId, int keyLength) 
@@ -471,15 +471,22 @@ public class EncryptionCore {
 //#endif
         keyAgreement.init(privateKey);
         keyAgreement.doPhase(receivedPublicKey, true);
-        return concatKdf(keyAgreement.generateSecret(),
-                (keyEncryptionAlgorithm.keyWrap ?
-                     keyEncryptionAlgorithm.getJoseAlgorithmId() 
-                                                : 
-                     contentEncryptionAlgorithm.getJoseAlgorithmId()).getBytes("UTF-8"),
-                keyEncryptionAlgorithm.keyWrap ?
-                    keyEncryptionAlgorithm.keyEncryptionKeyLength 
-                                               : 
-                    contentEncryptionAlgorithm.keyLength);
+        byte[] Z = keyAgreement.generateSecret();
+        int keyLength = keyEncryptionAlgorithm.keyWrap ?
+                keyEncryptionAlgorithm.keyEncryptionKeyLength 
+                                                       : 
+                contentEncryptionAlgorithm.keyLength;
+        if (keyEncryptionAlgorithm.usesHmacKdf()) {
+            return hmacKdf(Z,
+                           new byte[] {(byte)keyEncryptionAlgorithm.getCoseAlgorithmId()},
+                           keyLength);
+        }
+        return concatKdf(Z,
+                         (keyEncryptionAlgorithm.keyWrap ?
+                              keyEncryptionAlgorithm.getJoseAlgorithmId() 
+                                                         : 
+                              contentEncryptionAlgorithm.getJoseAlgorithmId()).getBytes("UTF-8"),
+                         keyLength);
     }
 
     /**

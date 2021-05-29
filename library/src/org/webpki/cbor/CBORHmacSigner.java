@@ -81,8 +81,7 @@ public class CBORHmacSigner extends CBORSigner {
     }  
     
     @Override
-    byte[] signData(byte[] dataToBeSigned) throws IOException,
-                                                  GeneralSecurityException {
+    byte[] signData(byte[] dataToBeSigned) throws IOException, GeneralSecurityException {
         return signer.signData(dataToBeSigned);
     }
 }
