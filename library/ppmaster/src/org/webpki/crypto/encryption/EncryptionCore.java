@@ -134,24 +134,27 @@ public class EncryptionCore {
     private EncryptionCore() {} // Static and final class
     
     // AES CBC static
-    static final int    AES_CBC_IV_LENGTH        = 16; 
-    static final String AES_CBC_JCENAME          = "AES/CBC/PKCS5Padding";
+    static final int    AES_CBC_IV_LENGTH   = 16; 
+    static final String AES_CBC_JCENAME     = "AES/CBC/PKCS5Padding";
 
     // AES GCM static
-    static final int    AES_GCM_IV_LENGTH        = 12;
-    static final int    AES_GCM_TAG_LENGTH       = 16;
-    static final String AES_GCM_JCENAME          = "AES/GCM/NoPadding";
+    static final int    AES_GCM_IV_LENGTH   = 12;
+    static final int    AES_GCM_TAG_LENGTH  = 16;
+    static final String AES_GCM_JCENAME     = "AES/GCM/NoPadding";
 
     // AES Key Wrap static
-    static final String AES_KEY_WRAP_JCENAME      = "AESWrap";
+    static final String AES_KEY_WRAP_JCENAME = "AESWrap";
 
-    // NIST Concat KDF static
-    static final String CONCAT_KDF_DIGEST_JCENAME = "SHA-256";
-    static final int    CONCAT_KDF_DIGEST_LENGTH  = 32;
+    // NIST Concat KDF and HKDF static
+    static final String HASH_DIGEST_JCENAME  = "SHA-256";
+    static final String HMAC_DIGEST_JCENAME  = "HMACSHA256";
+    static final int    KDF_DIGEST_LENGTH    = 32;
+    static final byte[] HKDF_NO_SALT         = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                                                0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     
     // RSA OAEP
-    static final String RSA_OAEP_JCENAME          = "RSA/ECB/OAEPWithSHA-1AndMGF1Padding";
-    static final String RSA_OAEP_256_JCENAME      = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
+    static final String RSA_OAEP_JCENAME     = "RSA/ECB/OAEPWithSHA-1AndMGF1Padding";
+    static final String RSA_OAEP_256_JCENAME = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
 //#if !ANDROID
 
     private static String aesProviderName;
@@ -408,24 +411,51 @@ public class EncryptionCore {
                        keyEncryptionAlgorithm);
     }
 
+    public static byte[] hmacKdf(byte[] ikm, byte[] salt, byte[] info, int keyLength) 
+            throws IOException, GeneralSecurityException {
+        final Mac hmac = Mac.getInstance(HMAC_DIGEST_JCENAME);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        int reps = (keyLength + KDF_DIGEST_LENGTH - 1) / KDF_DIGEST_LENGTH;
+
+        // HKDF according to RFC 5869 but not equivalent to COSE
+        
+        // 1. Extract
+        if (salt == null || salt.length == 0) {
+            salt = HKDF_NO_SALT;
+        }
+        hmac.init(new SecretKeySpec(salt, "RAW"));
+        byte[] prk = hmac.doFinal(ikm);
+        
+        // 2. Expand
+        byte[] t = new byte[0];
+        for (int i = 1; i <= reps; i++) {
+            hmac.reset();
+            hmac.init(new SecretKeySpec(prk, "RAW"));
+            hmac.update(t);
+            hmac.update(info);
+            hmac.update((byte)i);
+            t = hmac.doFinal();
+            baos.write(t);
+        }
+
+        // Only use as much of the digest that is asked for
+        byte[] okm = new byte[keyLength];
+        System.arraycopy(baos.toByteArray(), 0, okm, 0, keyLength);
+        return okm;
+    }
+
     private static void addInt4(MessageDigest messageDigest, int value) {
         for (int i = 24; i >= 0; i -= 8) {
             messageDigest.update((byte) (value >>> i));
         }
     }
-    
-    public static byte[] hmacKdf(byte[] secret, byte[] info, int keyLength) 
-            throws IOException, GeneralSecurityException {
-//TODO put in the right one :)
-        return concatKdf(secret, "blah", keyLength);
-    }
 
     public static byte[] concatKdf(byte[] secret, String joseAlgorithmId, int keyLength) 
             throws IOException, GeneralSecurityException {
         byte[] algorithmId = joseAlgorithmId.getBytes("utf-8");
-        final MessageDigest messageDigest = MessageDigest.getInstance(CONCAT_KDF_DIGEST_JCENAME);
+        final MessageDigest messageDigest = MessageDigest.getInstance(HASH_DIGEST_JCENAME);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        int reps = (keyLength + CONCAT_KDF_DIGEST_LENGTH - 1) / CONCAT_KDF_DIGEST_LENGTH;
+        int reps = (keyLength + KDF_DIGEST_LENGTH - 1) / KDF_DIGEST_LENGTH;
 
         // Concat KDF according to JWA
         for (int i = 1; i <= reps; i++) {
@@ -481,6 +511,7 @@ public class EncryptionCore {
         if (coseMode) {
             int coseAlg = keyEncryptionAlgorithm.getCoseAlgorithmId();
             return hmacKdf(Z,
+                           null,
                            new byte[] {(byte)(coseAlg >> 24),
                                        (byte)(coseAlg >> 16),
                                        (byte)(coseAlg >> 8),
