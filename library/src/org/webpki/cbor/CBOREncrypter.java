@@ -26,52 +26,58 @@ import org.webpki.crypto.encryption.EncryptionCore;
 /**
  * Base class for creating CBOR encryption objects.
  * 
- * It uses COSE algorithms but not the packaging.
+ * It uses COSE algorithms but not COSE packaging.
  */
 public abstract class CBOREncrypter {
 
     /**
-     * Integer value: 1
+     * Integer value: 1.
+     * Note: This label is also used in key encryption sub-maps.
      */
     public static final CBORInteger ALGORITHM_LABEL      = new CBORInteger(1);
     
     /**
-     * Integer value: 2
+     * Integer value: 2.
      */
     public static final CBORInteger KEY_ENCRYPTION_LABEL = new CBORInteger(2);    /**
 
     /**
-     * Integer value: 3
+     * Integer value: 3.
+     * Note: This label is alternatively used in key encryption sub-maps.
      */
     public static final CBORInteger KEY_ID_LABEL         = new CBORInteger(3);
     
     /**
-     * Integer value: 4
+     * Integer value: 4.
+     * Note: This label is only used in key encryption sub-maps.
      */
     public static final CBORInteger PUBLIC_KEY_LABEL     = new CBORInteger(4);
 
     /**
-     * Integer value: 5
+     * Integer value: 5.
+     * Note: This label is only used in key encryption sub-maps.
      */
     public static final CBORInteger EPHEMERAL_KEY_LABEL  = new CBORInteger(5);
 
     /**
-     * Integer value: 6
+     * Integer value: 6.
+     * Note: This label is only used in key encryption sub-maps.
      */
     public static final CBORInteger CERT_PATH_LABEL      = new CBORInteger(6);
  
     /**
-     * Integer value: 7
+     * Integer value: 7.
      */
     public static final CBORInteger TAG_LABEL            = new CBORInteger(7);
  
     /**
-     * Integer value: 8
+     * Integer value: 8.
      */
     public static final CBORInteger IV_LABEL             = new CBORInteger(8);
 
     /**
-     * Integer value: 9
+     * Integer value: 9.
+     * Note: This label is also used in key encryption sub-maps.
      */
     public static final CBORInteger CIPHER_TEXT_LABEL    = new CBORInteger(9);
 
@@ -88,6 +94,7 @@ public abstract class CBOREncrypter {
     abstract byte[] getContentEncryptionKey(CBORIntegerMap encryptionObject)
             throws IOException, GeneralSecurityException;
     
+    // Overridden by key encryption encrypters
     CBORIntegerMap getEncryptionObject(CBORIntegerMap original) throws IOException {
         return original;
     }
@@ -118,8 +125,8 @@ public abstract class CBOREncrypter {
     /**
      * Encrypt data.
      * 
-     * @param dataToEncrypt
-     * @return CBORIntegerMap holding an encryption object
+     * @param dataToEncrypt The data to encrypt
+     * @return CBORIntegerMap CBOR encryption object
      * @throws IOException
      * @throws GeneralSecurityException
      */
