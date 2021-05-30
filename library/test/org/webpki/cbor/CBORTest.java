@@ -883,24 +883,42 @@ public class CBORTest {
                               ContentEncryptionAlgorithms[] ceas,
                               KeyPair[] keyPairs) throws Exception {
         for (KeyEncryptionAlgorithms kea : keas) {
-        for (ContentEncryptionAlgorithms cea : ceas) {
-        for (KeyPair keyPair : keyPairs) {
-            CBORAsymKeyEncrypter encrypter = 
-                    new CBORAsymKeyEncrypter(keyPair.getPublic(),
-                                             kea,
-                                             cea); 
-            byte[] encrypted = encrypter.encrypt(dataToEncrypt).encode();
-            assertTrue("enc/dec", 
-                    ArrayUtil.compare(new CBORAsymKeyDecrypter(
-                            keyPair.getPrivate()).decrypt(encrypted),
-                            dataToEncrypt));
-        }
-        }
+            for (ContentEncryptionAlgorithms cea : ceas) {
+                for (KeyPair keyPair : keyPairs) {
+                    CBORAsymKeyEncrypter encrypter = 
+                            new CBORAsymKeyEncrypter(keyPair.getPublic(),
+                                                     kea,
+                                                     cea); 
+                    byte[] encrypted = encrypter.encrypt(dataToEncrypt).encode();
+                    assertTrue("enc/dec", 
+                            ArrayUtil.compare(new CBORAsymKeyDecrypter(
+                                    keyPair.getPrivate()).decrypt(encrypted),
+                                    dataToEncrypt));
+                }
+            }
         }
     }
-    
+
+    void enumerateEncryptions(ContentEncryptionAlgorithms[] ceas, int[] keys)
+            throws Exception {
+        for (ContentEncryptionAlgorithms cea : ceas) {
+            for (int key : keys) {
+                byte[] secretKey = symmetricKeys.getValue(key);
+                if (cea.getKeyLength() != secretKey.length) continue;
+                CBORSymKeyEncrypter encrypter = new CBORSymKeyEncrypter(secretKey, cea);
+                byte[] encrypted = encrypter.encrypt(dataToEncrypt).encode();
+                assertTrue("enc/dec",
+                        ArrayUtil.compare(
+                                new CBORSymKeyDecrypter(secretKey).decrypt(encrypted),
+                                dataToEncrypt));
+            }
+        }
+    }
+
     @Test
     public void encryptionTest() throws Exception {
+        
+        // ECDH
         enumerateEncryptions(new KeyEncryptionAlgorithms[]
                                 {KeyEncryptionAlgorithms.ECDH_ES,
                                  KeyEncryptionAlgorithms.ECDH_ES_A128KW,
@@ -912,6 +930,25 @@ public class CBORTest {
                                  ContentEncryptionAlgorithms.A192GCM,
                                  ContentEncryptionAlgorithms.A256GCM},
                              new KeyPair[] {p256, p521, x25519, x448});
+        
+        // RSA
+        enumerateEncryptions(new KeyEncryptionAlgorithms[]
+                                {KeyEncryptionAlgorithms.RSA_OAEP,
+                                 KeyEncryptionAlgorithms.RSA_OAEP_256},
+                             new ContentEncryptionAlgorithms[]
+                                {ContentEncryptionAlgorithms.A256CBC_HS512,
+                                 ContentEncryptionAlgorithms.A128GCM,
+                                 ContentEncryptionAlgorithms.A192GCM,
+                                 ContentEncryptionAlgorithms.A256GCM},
+                             new KeyPair[] {r2048});
+        
+        // Symmetric
+        enumerateEncryptions(new ContentEncryptionAlgorithms[]
+                                {ContentEncryptionAlgorithms.A256CBC_HS512,
+                                 ContentEncryptionAlgorithms.A128GCM,
+                                 ContentEncryptionAlgorithms.A192GCM,
+                                 ContentEncryptionAlgorithms.A256GCM},
+                             new int[] {128, 384, 256, 512});
         
         CBORAsymKeyEncrypter p256Encrypter = 
                 new CBORAsymKeyEncrypter(p256.getPublic(),
@@ -1011,6 +1048,10 @@ public class CBORTest {
     
     @Test
     public void hmacKdfTest() throws Exception {
+
+        // From appendix A of RFC 5869
+        
+        // A.1
         hmacKdfRun("0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
                    "000102030405060708090a0b0c",
                    "f0f1f2f3f4f5f6f7f8f9",
@@ -1019,14 +1060,7 @@ public class CBORTest {
                       "2d2d0a90cf1a5a4c5db02d56ecc4c5bf" +
                       "34007208d5b887185865");
 
-        hmacKdfRun("0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
-                   "",
-                   "",
-                   42,
-                   "8da4e775a563c18f715f802a063c5a31" +
-                      "b8a11f5c5ee1879ec3454e5f3c738d2d" +
-                      "9d201395faa4b61a96c8");
-        
+        // A.2
         hmacKdfRun("000102030405060708090a0b0c0d0e0f" +
                      "101112131415161718191a1b1c1d1e1f" +
                      "202122232425262728292a2b2c2d2e2f" +
@@ -1049,5 +1083,14 @@ public class CBORTest {
                      "da3275600c2f09b8367793a9aca3db71" +
                      "cc30c58179ec3e87c14c01d5c1f3434f" +
                      "1d87");
+
+        // A.3
+        hmacKdfRun("0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+                   "",
+                   "",
+                   42,
+                   "8da4e775a563c18f715f802a063c5a31" +
+                      "b8a11f5c5ee1879ec3454e5f3c738d2d" +
+                      "9d201395faa4b61a96c8");       
     }
 }
