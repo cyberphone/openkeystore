@@ -39,7 +39,7 @@ public abstract class CBOREncrypter {
     /**
      * Integer value: 2.
      */
-    public static final CBORInteger KEY_ENCRYPTION_LABEL = new CBORInteger(2);    /**
+    public static final CBORInteger KEY_ENCRYPTION_LABEL = new CBORInteger(2);
 
     /**
      * Integer value: 3.
