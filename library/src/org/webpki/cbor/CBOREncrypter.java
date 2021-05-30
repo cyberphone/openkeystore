@@ -97,13 +97,13 @@ public abstract class CBOREncrypter {
      * 
      * In the case the public key is not provided in the 
      * object, the encryption key may be tied to an identifier
-     * known by the relying party.  How such an identifier
+     * known by the recipient.  How such an identifier
      * is used to retrieve the proper private key is up to a
      * convention between the parties using
      * a specific message scheme.  A keyId may be a database
      * index or a hash of the public key.
      * <p>
-     * For symmetric-algorithms, a keyId or implicit key are
+     * For symmetric key-algorithms, a keyId or implicit key are
      * the only ways to retrieve the proper secret key.
      * </p>
      * 
