@@ -105,7 +105,8 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
                                          encryptedKey,
                                          privateKey)
                                                :
-            EncryptionCore.receiverKeyAgreement(keyEncryptionAlgorithm,
+            EncryptionCore.receiverKeyAgreement(true,
+                                                keyEncryptionAlgorithm,
                                                 contentEncryptionAlgorithm,
                                                 ephemeralKey,
                                                 privateKey,

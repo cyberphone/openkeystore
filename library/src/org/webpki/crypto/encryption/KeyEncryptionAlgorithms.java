@@ -18,41 +18,34 @@ package org.webpki.crypto.encryption;
 
 /**
  * JWE and COSE key encryption algorithms.
+ * 
+ * Note that JOSE and COSE use different KDFs.
  */
 public enum KeyEncryptionAlgorithms {
 
-    // Currently only defined by JOSE
-    ECDH_ES              ("ECDH-ES",               20, false, false, false, -1),
-    ECDH_ES_A128KW       ("ECDH-ES+A128KW",        21, false, false, true,  16),
-    ECDH_ES_A192KW       ("ECDH-ES+A192KW",        22, false, false, true,  24),
-    ECDH_ES_A256KW       ("ECDH-ES+A256KW",        23, false, false, true,  32),
+    // ECDH
+    ECDH_ES        ("ECDH-ES",        -25, false, false, -1),
+    ECDH_ES_A128KW ("ECDH-ES+A128KW", -29, false, true,  16),
+    ECDH_ES_A192KW ("ECDH-ES+A192KW", -30, false, true,  24),
+    ECDH_ES_A256KW ("ECDH-ES+A256KW", -31, false, true,  32),
 
-    // Currently only defined by COSE
-    ECDH_ES_HK256        ("ECDH-ES-HK256",        -25,  true, false, false, -1),
-    ECDH_ES_HK256_A128KW ("ECDH-ES-HK256+A128KW", -29,  true, false, true,  16),
-    ECDH_ES_HK256_A192KW ("ECDH-ES-HK256+A192KW", -30,  true, false, true,  24),
-    ECDH_ES_HK256_A256KW ("ECDH-ES-HK256+A256KW", -31,  true, false, true,  32),
-
-    // JOSE + COSE
-    RSA_OAEP             ("RSA-OAEP",             -40, false, true,  true,  -1),
-    RSA_OAEP_256         ("RSA-OAEP-256",         -41, false, true,  true,  -1);
+    // RSA
+    RSA_OAEP       ("RSA-OAEP",       -40,  true, true,  -1),
+    RSA_OAEP_256   ("RSA-OAEP-256",   -41,  true, true,  -1);
 
     String joseId;
     int coseId;
-    boolean hmacKdf;  // false => HKDF-256
     boolean rsa;
     boolean keyWrap;
     int keyEncryptionKeyLength;
 
     KeyEncryptionAlgorithms(String joseId,
                             int coseId,
-                            boolean hmacKdf,
                             boolean rsa, 
                             boolean keyWrap, 
                             int keyEncryptionKeyLength) {
         this.joseId = joseId;
         this.coseId = coseId;
-        this.hmacKdf = hmacKdf;
         this.rsa = rsa;
         this.keyWrap = keyWrap;
         this.keyEncryptionKeyLength = keyEncryptionKeyLength;
@@ -74,10 +67,6 @@ public enum KeyEncryptionAlgorithms {
         return coseId;
     }
     
-    public boolean usesHmacKdf() {
-        return hmacKdf;
-    }
-
     public static KeyEncryptionAlgorithms getAlgorithmFromId(String joseAlgorithmId) {
         for (KeyEncryptionAlgorithms algorithm : KeyEncryptionAlgorithms.values()) {
             if (joseAlgorithmId.equals(algorithm.joseId)) {

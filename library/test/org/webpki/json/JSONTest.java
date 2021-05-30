@@ -4081,7 +4081,8 @@ public class JSONTest {
                 "generated" : "encrypting_key").getBinary("cek");
         byte[] kek = keyEncryptionAlgorithm.isKeyWrap() ?
                 test.getObject("encrypting_key").getBinary("encrypted_key") : null;
-        byte[] cek2 = EncryptionCore.receiverKeyAgreement(keyEncryptionAlgorithm, 
+        byte[] cek2 = EncryptionCore.receiverKeyAgreement(false,
+                                                          keyEncryptionAlgorithm, 
                                                           contentEncryptionAlgorithm,
                                                           (ECPublicKey)ephemeralKey.getPublic(),
                                                           staticKey.getPrivate(),
@@ -4245,9 +4246,6 @@ public class JSONTest {
         KeyPair alice = JSONParser.parse(aliceKey).getKeyPair();
         byte[] plainText = jwePlainText.getBytes("UTF-8");
         for (KeyEncryptionAlgorithms kea : KeyEncryptionAlgorithms.values()) {
-            if (kea.usesHmacKdf()) {  // Not JOSE
-                continue;
-            }
             for (ContentEncryptionAlgorithms enc : ContentEncryptionAlgorithms.values()) {
                 JSONObjectWriter json = 
                     JSONObjectWriter
@@ -4450,20 +4448,23 @@ public class JSONTest {
         KeyPair alice = getKeyPairFromJwk(aliceKey);
         assertTrue("Bad ECDH",
                 Base64URL.encode(
-                        EncryptionCore.receiverKeyAgreement(KeyEncryptionAlgorithms.ECDH_ES,
+                        EncryptionCore.receiverKeyAgreement(false,
+                                                            KeyEncryptionAlgorithms.ECDH_ES,
                                                             ContentEncryptionAlgorithms.A128CBC_HS256,
                                                             (ECPublicKey) bob.getPublic(),
                                                             alice.getPrivate(),
                                                             null)).equals(ECDH_RESULT_WITH_KDF));
 
         EncryptionCore.AsymmetricEncryptionResult asymmetricEncryptionResult =
-                EncryptionCore.senderKeyAgreement(null,
+                EncryptionCore.senderKeyAgreement(false,
+                                                  null,
                                                   KeyEncryptionAlgorithms.ECDH_ES,
                                                   ContentEncryptionAlgorithms.A128CBC_HS256,
                                                   alice.getPublic());
         assertTrue("Bad ECDH",
                 ArrayUtil.compare(asymmetricEncryptionResult.getContentEncryptionKey(),
-                        EncryptionCore.receiverKeyAgreement(KeyEncryptionAlgorithms.ECDH_ES,
+                        EncryptionCore.receiverKeyAgreement(false,
+                                                            KeyEncryptionAlgorithms.ECDH_ES,
                                                             ContentEncryptionAlgorithms.A128CBC_HS256,
                                                             asymmetricEncryptionResult.getEphemeralKey(),
                                                             alice.getPrivate(),
@@ -4646,7 +4647,7 @@ public class JSONTest {
         String derivedKey = "pgs50IOZ6BxfqvTSie4t9OjWxGr4whiHo1v9Dti93CRiJE2PP60FojLatVVrcjg3BxpuFjnlQxL97GOwAfcwLA";
         String kdfed = Base64URL.encode(EncryptionCore.concatKdf(
                 Base64URL.decode("Sq8rGLm4rEtzScmnSsY5r1n-AqBl_iBU8FxN80Uc0S0"),
-                ContentEncryptionAlgorithms.A256CBC_HS512.getJoseAlgorithmId().getBytes("utf-8"), 
+                ContentEncryptionAlgorithms.A256CBC_HS512.getJoseAlgorithmId(), 
                 64));
         assertTrue("kdf", derivedKey.equals(kdfed));
     }

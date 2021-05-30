@@ -91,7 +91,8 @@ public class CBORAsymKeyEncrypter extends CBOREncrypter {
                                                  keyEncryptionAlgorithm,
                                                  publicKey)
                                                :
-                    EncryptionCore.senderKeyAgreement(contentEncryptionKey,
+                    EncryptionCore.senderKeyAgreement(true,
+                                                      contentEncryptionKey,
                                                       keyEncryptionAlgorithm,
                                                       contentEncryptionAlgorithm,
                                                       publicKey);

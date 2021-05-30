@@ -383,14 +383,15 @@ public class EncryptionCore {
         }
     }
     
-    public static byte[] hmacKdf(byte[] secret, byte[] algorithmId, int keyLength) 
+    public static byte[] hmacKdf(byte[] secret, byte[] info, int keyLength) 
             throws IOException, GeneralSecurityException {
 //TODO put in the right one :)
-        return concatKdf(secret, algorithmId, keyLength);
+        return concatKdf(secret, "blah", keyLength);
     }
 
-    public static byte[] concatKdf(byte[] secret, byte[] algorithmId, int keyLength) 
+    public static byte[] concatKdf(byte[] secret, String joseAlgorithmId, int keyLength) 
             throws IOException, GeneralSecurityException {
+        byte[] algorithmId = joseAlgorithmId.getBytes("utf-8");
         final MessageDigest messageDigest = MessageDigest.getInstance(CONCAT_KDF_DIGEST_JCENAME);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int reps = (keyLength + CONCAT_KDF_DIGEST_LENGTH - 1) / CONCAT_KDF_DIGEST_LENGTH;
@@ -419,7 +420,8 @@ public class EncryptionCore {
         return result;
     }    
 
-    private static byte[] coreKeyAgreement(KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+    private static byte[] coreKeyAgreement(boolean coseMode,
+                                           KeyEncryptionAlgorithms keyEncryptionAlgorithm,
                                            ContentEncryptionAlgorithms contentEncryptionAlgorithm,
                                            PublicKey receivedPublicKey,
                                            PrivateKey privateKey)
@@ -437,21 +439,27 @@ public class EncryptionCore {
                 keyEncryptionAlgorithm.keyEncryptionKeyLength 
                                                        : 
                 contentEncryptionAlgorithm.keyLength;
-        if (keyEncryptionAlgorithm.usesHmacKdf()) {
+        if (coseMode) {
+            int coseAlg = keyEncryptionAlgorithm.getCoseAlgorithmId();
             return hmacKdf(Z,
-                           new byte[] {(byte)keyEncryptionAlgorithm.getCoseAlgorithmId()},
+                           new byte[] {(byte)(coseAlg >> 24),
+                                       (byte)(coseAlg >> 16),
+                                       (byte)(coseAlg >> 8),
+                                       (byte)coseAlg},
                            keyLength);
         }
         return concatKdf(Z,
                          (keyEncryptionAlgorithm.keyWrap ?
                               keyEncryptionAlgorithm.getJoseAlgorithmId() 
                                                          : 
-                              contentEncryptionAlgorithm.getJoseAlgorithmId()).getBytes("UTF-8"),
+                              contentEncryptionAlgorithm.getJoseAlgorithmId()),
                          keyLength);
     }
 
     /**
      * Perform a receiver side ECDH operation.
+
+     * @param coseMode True => hmacKdf, else concatKdf
      * @param keyEncryptionAlgorithm The ECDH algorithm
      * @param contentEncryptionAlgorithm The designated content encryption algorithm
      * @param receivedPublicKey The sender's (usually ephemeral) public key
@@ -461,7 +469,8 @@ public class EncryptionCore {
      * @throws GeneralSecurityException
      * @throws IOException
      */
-    public static byte[] receiverKeyAgreement(KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+    public static byte[] receiverKeyAgreement(boolean coseMode,
+                                              KeyEncryptionAlgorithms keyEncryptionAlgorithm,
                                               ContentEncryptionAlgorithms contentEncryptionAlgorithm,
                                               PublicKey receivedPublicKey,
                                               PrivateKey privateKey,
@@ -473,7 +482,8 @@ public class EncryptionCore {
                     (encryptedKeyData == null ? "not be null" : "be null") + " for algorithm: " +
                     keyEncryptionAlgorithm.toString());
         }
-        byte[] derivedKey = coreKeyAgreement(keyEncryptionAlgorithm,
+        byte[] derivedKey = coreKeyAgreement(coseMode,
+                                             keyEncryptionAlgorithm,
                                              contentEncryptionAlgorithm,
                                              receivedPublicKey,
                                              privateKey);
@@ -487,6 +497,8 @@ public class EncryptionCore {
 
     /**
      * Perform a sender side ECDH operation.
+     * 
+     * @param coseMode True => hmacKdf, else concatKdf
      * @param contentEncryptionKey Also known as CEK
      * @param keyEncryptionAlgorithm The ECDH algorithm
      * @param contentEncryptionAlgorithm The designated content encryption algorithm
@@ -496,7 +508,8 @@ public class EncryptionCore {
      * @throws IOException
      */
     public static AsymmetricEncryptionResult
-            senderKeyAgreement(byte[] contentEncryptionKey,
+            senderKeyAgreement(boolean coseMode,
+                               byte[] contentEncryptionKey,
                                KeyEncryptionAlgorithms keyEncryptionAlgorithm,
                                ContentEncryptionAlgorithms contentEncryptionAlgorithm,
                                PublicKey staticKey) 
@@ -520,7 +533,8 @@ public class EncryptionCore {
         }
         generator.initialize(paramSpec, new SecureRandom());
         KeyPair keyPair = generator.generateKeyPair();
-        byte[] derivedKey = coreKeyAgreement(keyEncryptionAlgorithm,
+        byte[] derivedKey = coreKeyAgreement(coseMode,
+                                             keyEncryptionAlgorithm,
                                              contentEncryptionAlgorithm,
                                              staticKey,
                                              keyPair.getPrivate());

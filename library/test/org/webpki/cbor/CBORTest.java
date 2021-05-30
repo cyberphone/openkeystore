@@ -877,7 +877,7 @@ public class CBORTest {
         KeyPair p256_2 = readJwk("p256-2");
         CBORAsymKeyEncrypter p256Encrypter = 
                 new CBORAsymKeyEncrypter(p256.getPublic(),
-                                         KeyEncryptionAlgorithms.ECDH_ES_HK256,
+                                         KeyEncryptionAlgorithms.ECDH_ES,
                                          ContentEncryptionAlgorithms.A256GCM);
         byte[] p256Encrypted = p256Encrypter.encrypt(dataToEncrypt).encode();
         assertTrue("enc/dec", 
