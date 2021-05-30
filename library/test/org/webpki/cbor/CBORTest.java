@@ -899,9 +899,9 @@ public class CBORTest {
         }
     }
 
-    void enumerateEncryptions(ContentEncryptionAlgorithms[] ceas, int[] keys)
+    void enumerateEncryptions(int[] keys)
             throws Exception {
-        for (ContentEncryptionAlgorithms cea : ceas) {
+        for (ContentEncryptionAlgorithms cea : ContentEncryptionAlgorithms.values()) {
             for (int key : keys) {
                 byte[] secretKey = symmetricKeys.getValue(key);
                 if (cea.getKeyLength() != secretKey.length) continue;
@@ -943,12 +943,7 @@ public class CBORTest {
                              new KeyPair[] {r2048});
         
         // Symmetric
-        enumerateEncryptions(new ContentEncryptionAlgorithms[]
-                                {ContentEncryptionAlgorithms.A256CBC_HS512,
-                                 ContentEncryptionAlgorithms.A128GCM,
-                                 ContentEncryptionAlgorithms.A192GCM,
-                                 ContentEncryptionAlgorithms.A256GCM},
-                             new int[] {128, 384, 256, 512});
+        enumerateEncryptions(new int[] {128, 384, 256, 512});
         
         CBORAsymKeyEncrypter p256Encrypter = 
                 new CBORAsymKeyEncrypter(p256.getPublic(),
