@@ -38,6 +38,7 @@ public abstract class CBOREncrypter {
     
     /**
      * Integer value: 2.
+     * This label holds a key encryption sub-map.
      */
     public static final CBORInteger KEY_ENCRYPTION_LABEL = new CBORInteger(2);
 
@@ -77,7 +78,7 @@ public abstract class CBOREncrypter {
 
     /**
      * Integer value: 9.
-     * Note: This label is also used in key encryption sub-maps.
+     * Note: This label is also used in key encryption sub-maps using key-wrapping.
      */
     public static final CBORInteger CIPHER_TEXT_LABEL    = new CBORInteger(9);
 
