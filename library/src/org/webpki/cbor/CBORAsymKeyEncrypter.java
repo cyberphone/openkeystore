@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 
+import org.webpki.crypto.CryptoRandom;
 import org.webpki.crypto.encryption.ContentEncryptionAlgorithms;
 import org.webpki.crypto.encryption.EncryptionCore;
 import org.webpki.crypto.encryption.KeyEncryptionAlgorithms;
@@ -71,10 +72,8 @@ public class CBORAsymKeyEncrypter extends CBOREncrypter {
     }
  
     @Override
-    CBORIntegerMap keyEncryption(CBORIntegerMap encryptionObject)
+    byte[] getContentEncryptionKey(CBORIntegerMap keyEncryption)
             throws IOException, GeneralSecurityException {
-        CBORIntegerMap keyEncryption = new CBORIntegerMap();
-        encryptionObject.setObject(KEY_ENCRYPTION_LABEL, keyEncryption);
         
         // The mandatory key encryption algorithm
         keyEncryption.setObject(ALGORITHM_LABEL,
@@ -85,6 +84,12 @@ public class CBORAsymKeyEncrypter extends CBOREncrypter {
             keyEncryption.setObject(PUBLIC_KEY_LABEL,
                                     CBORPublicKey.encode(publicKey));
         }
+        
+        // Key wrapping algorithms need a key to wrap
+        byte[] contentEncryptionKey = keyEncryptionAlgorithm.isKeyWrap() ?
+            CryptoRandom.generateRandom(contentEncryptionAlgorithm.getKeyLength()) : null;
+                                                                         
+        // The real stuff...
         EncryptionCore.AsymmetricEncryptionResult asymmetricEncryptionResult =
                 keyEncryptionAlgorithm.isRsa() ?
                     EncryptionCore.rsaEncryptKey(contentEncryptionKey,
@@ -109,6 +114,13 @@ public class CBORAsymKeyEncrypter extends CBOREncrypter {
                                     new CBORByteString(
                                         asymmetricEncryptionResult.getEncryptedKeyData()));
         }
+        return contentEncryptionKey;
+    }
+    
+    @Override
+    CBORIntegerMap getEncryptionObject(CBORIntegerMap original) throws IOException {
+        CBORIntegerMap keyEncryption = new CBORIntegerMap();
+        original.setObject(KEY_ENCRYPTION_LABEL, keyEncryption);
         return keyEncryption;
     }
 }

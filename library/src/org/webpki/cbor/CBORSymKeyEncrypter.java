@@ -33,6 +33,8 @@ import org.webpki.crypto.encryption.ContentEncryptionAlgorithms;
  */
 public class CBORSymKeyEncrypter extends CBOREncrypter {
 
+    private byte[] contentEncryptionKey;
+    
     /**
      * Initialize symmetric key encrypter.
      * 
@@ -46,5 +48,11 @@ public class CBORSymKeyEncrypter extends CBOREncrypter {
             throws IOException, GeneralSecurityException {
         super(encryptionAlgorithm);
         contentEncryptionKey = secretKey;
+    }
+
+    @Override
+    byte[] getContentEncryptionKey(CBORIntegerMap encryptionObject)
+            throws IOException, GeneralSecurityException {
+        return contentEncryptionKey;
     }
 }

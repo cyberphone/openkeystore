@@ -64,6 +64,15 @@ public class CBORTest {
         CustomCryptoProvider.forcedLoad(false);
         dataToEncrypt = "The brown fox jumps over the lazy bear".getBytes("utf-8");
         symmetricKeys = new SymmetricKeys(baseKey);
+        p256 = readJwk("p256");
+        keyIdP256 = keyId;
+        p256_2 = readJwk("p256-2");
+        p521 = readJwk("p521");
+        r2048 = readJwk("r2048");
+        x448 = readJwk("x448");
+        x25519 = readJwk("x25519");
+        ed448 = readJwk("ed448");
+        ed25519 = readJwk("ed25519");
     }
 
     static byte[] dataToEncrypt;
@@ -71,7 +80,16 @@ public class CBORTest {
     static String baseKey;
     
     static SymmetricKeys symmetricKeys;
-    
+
+    static KeyPair p256;
+    static String keyIdP256;
+    static KeyPair p256_2;
+    static KeyPair p521;
+    static KeyPair r2048;
+    static KeyPair x448;
+    static KeyPair x25519;
+    static KeyPair ed448;
+    static KeyPair ed25519;
     static String keyId;
     
     static KeyPair readJwk(String keyType) throws Exception {
@@ -706,17 +724,7 @@ public class CBORTest {
 
     @Test
     public void signatureTest() throws Exception {
-        KeyPair p256 = readJwk("p256");
-        String keyIdP256 = keyId;
-        KeyPair p256_2 = readJwk("p256-2");
-        KeyPair p521 = readJwk("p521");
-        KeyPair r2048 = readJwk("r2048");
-        KeyPair x448 = readJwk("x448");
-        KeyPair x25519 = readJwk("x25519");
-        KeyPair ed448 = readJwk("ed448");
-        KeyPair ed25519 = readJwk("ed25519");
-        
-     
+  
         backAndForth(p256);
         backAndForth(r2048);
         backAndForth(x448);
@@ -870,11 +878,40 @@ public class CBORTest {
         
     }
 
+    void enumerateEncryptions(KeyEncryptionAlgorithms[] keas,
+                              ContentEncryptionAlgorithms[] ceas,
+                              KeyPair[] keyPairs) throws Exception {
+        for (KeyEncryptionAlgorithms kea : keas) {
+        for (ContentEncryptionAlgorithms cea : ceas) {
+        for (KeyPair keyPair : keyPairs) {
+            CBORAsymKeyEncrypter encrypter = 
+                    new CBORAsymKeyEncrypter(keyPair.getPublic(),
+                                             kea,
+                                             cea); 
+            byte[] encrypted = encrypter.encrypt(dataToEncrypt).encode();
+            assertTrue("enc/dec", 
+                    ArrayUtil.compare(new CBORAsymKeyDecrypter(
+                            keyPair.getPrivate()).decrypt(encrypted),
+                            dataToEncrypt));
+        }
+        }
+        }
+    }
+    
     @Test
     public void encryptionTest() throws Exception {
-        KeyPair p256 = readJwk("p256");
-        String keyId = CBORTest.keyId;
-        KeyPair p256_2 = readJwk("p256-2");
+        enumerateEncryptions(new KeyEncryptionAlgorithms[]
+                                {KeyEncryptionAlgorithms.ECDH_ES,
+                                 KeyEncryptionAlgorithms.ECDH_ES_A128KW,
+                                 KeyEncryptionAlgorithms.ECDH_ES_A192KW,
+                                 KeyEncryptionAlgorithms.ECDH_ES_A256KW},
+                             new ContentEncryptionAlgorithms[]
+                                {ContentEncryptionAlgorithms.A256CBC_HS512,
+                                 ContentEncryptionAlgorithms.A128GCM,
+                                 ContentEncryptionAlgorithms.A192GCM,
+                                 ContentEncryptionAlgorithms.A256GCM},
+                             new KeyPair[] {p256, p521, x25519, x448});
+        
         CBORAsymKeyEncrypter p256Encrypter = 
                 new CBORAsymKeyEncrypter(p256.getPublic(),
                                          KeyEncryptionAlgorithms.ECDH_ES,

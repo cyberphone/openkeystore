@@ -27,7 +27,7 @@ public enum ContentEncryptionAlgorithms {
     A192CBC_HS384 ("A192CBC-HS384", 201, 48, EncryptionCore.AES_CBC_IV_LENGTH, 
                    24,                         "HMACSHA384", false),
     A256CBC_HS512 ("A256CBC-HS512", 202, 64, EncryptionCore.AES_CBC_IV_LENGTH,
-                   32,                                "HMACSHA512", false),
+                   32,                         "HMACSHA512", false),
 
     // JOSE + COSE
     A128GCM       ("A128GCM",         1, 16, EncryptionCore.AES_GCM_IV_LENGTH,

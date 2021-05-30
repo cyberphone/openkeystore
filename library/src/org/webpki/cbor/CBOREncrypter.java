@@ -75,9 +75,6 @@ public abstract class CBOREncrypter {
      */
     public static final CBORInteger CIPHER_TEXT_LABEL    = new CBORInteger(9);
 
-    // Actual encryption key
-    byte[] contentEncryptionKey;
-    
     // The algorithm to use with the contentEncryptionKey
     ContentEncryptionAlgorithms contentEncryptionAlgorithm;
     
@@ -88,9 +85,11 @@ public abstract class CBOREncrypter {
         this.contentEncryptionAlgorithm = contentEncryptionAlgorithm;
     }
     
-    CBORIntegerMap keyEncryption(CBORIntegerMap encryptionObject) 
-            throws IOException, GeneralSecurityException {
-        return encryptionObject;
+    abstract byte[] getContentEncryptionKey(CBORIntegerMap encryptionObject)
+            throws IOException, GeneralSecurityException;
+    
+    CBORIntegerMap getEncryptionObject(CBORIntegerMap original) throws IOException {
+        return original;
     }
     
     /**
@@ -135,7 +134,8 @@ public abstract class CBOREncrypter {
                                            contentEncryptionAlgorithm.getCoseAlgorithmId()));
 
         // Possible key encryption kicks in here.
-        CBORIntegerMap innerObject = keyEncryption(encryptionObject);
+        CBORIntegerMap innerObject = getEncryptionObject(encryptionObject);
+        byte[] contentEncryptionKey = getContentEncryptionKey(innerObject);
 
         // Add a key Id if there is one.
         if (keyId != null) {
