@@ -151,7 +151,12 @@ public abstract class CBOREncrypter {
         }
         
         // Now we should have everything for encrypting the actual data.
-        // Use all current CBOR data as "authData".
+        // Use current CBOR data as "authData".
+        
+        // Note that the following operation depends on that the actual
+        // CBOR implementation supports fully canonical (deterministic)
+        // parsing and code generation! This implementation shows that
+        // this is quite simple.
         byte[] authData = encryptionObject.encode();
         
         // Create an initialization vector.
@@ -164,6 +169,8 @@ public abstract class CBOREncrypter {
                                                  iv, 
                                                  dataToEncrypt, 
                                                  authData);
+
+        // Complement the encryption object with the result of the content encryption.
         
         // Authentication Data (tag).
         encryptionObject.setObject(TAG_LABEL, new CBORByteString(result.getTag()));
@@ -171,9 +178,10 @@ public abstract class CBOREncrypter {
         // Initialization Vector.
         encryptionObject.setObject(IV_LABEL, new CBORByteString(iv));
 
-        // Finally, the thing we all longed(?) for!
+        // The encrypted data.
         encryptionObject.setObject(CIPHER_TEXT_LABEL, new CBORByteString(result.getCipherText()));
 
+        // Finally, the thing we all longed(?) for!
         return encryptionObject;
     }
 }

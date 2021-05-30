@@ -105,7 +105,7 @@ public abstract class CBORDecrypter {
         String optionalKeyId = innerObject.hasKey(CBOREncrypter.KEY_ID_LABEL) ?
             innerObject.getObject(CBOREncrypter.KEY_ID_LABEL).getTextString() : null;
         
-        // A little bit too much for symmetric encryption but who cares... 
+        // A bit over the top for symmetric encryption but who cares... 
         byte[] contentDecryptionKey = getContentEncryptionKey(keyEncryptionAlgorithm,
                                                               contentEncryptionAlgorithm,
                                                               optionalPublicKey,
@@ -113,16 +113,23 @@ public abstract class CBORDecrypter {
                                                               optionalKeyId,
                                                               encryptedKey);
         
-        // Read and remove the content encryption parameters.
+        // Read and remove the encryption object parameters that
+        // do not participate (because they cannot) in "authData".
         byte[] iv = readAndRemove(encryptionObject, CBOREncrypter.IV_LABEL);
         byte[] tag = readAndRemove(encryptionObject, CBOREncrypter.TAG_LABEL);
         byte[] cipherText = readAndRemove(encryptionObject, CBOREncrypter.CIPHER_TEXT_LABEL);
         
-        // Check that there is no unread (illegal) data.
+        // Check that there is no unread (illegal) data like public 
+        // keys in symmetric encryption or just plain unknown elements.
         encryptionObject.checkObjectForUnread();
         
         // Now we should have everything for decrypting the actual data.
-        // Use all current CBOR data as "authData".
+        // Use the remaining CBOR data as "authData".
+        
+        // Note that the following operation depends on that the actual
+        // CBOR implementation supports fully canonical (deterministic)
+        // parsing and code generation! This implementation shows that
+        // this is quite simple.
         byte[] authData = encryptionObject.encode();
          
         // Perform the actual decryption.
