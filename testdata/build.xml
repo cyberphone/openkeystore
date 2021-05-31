@@ -4,7 +4,8 @@
   <property name="temp.dir" location=".tmp"/>
   <property name="keyBase" location="keys"/>
   <property name="dataBase" location="data"/>
-  <property name="signatureBase" location="json-signatures"/>
+  <property name="jsonSignatureBase" location="json-signatures"/>
+  <property name="cborSignatureBase" location="cbor-signatures"/>
   <property name="encryptionBase" location="json-encryption"/>
   <property name="normalizationBase" location="normalization"/>
 
@@ -41,24 +42,35 @@
 
   </target>
 
-  <target name="signatures" depends="_compile">
-  	<!-- Run target -->
- 	<mkdir dir="${signatureBase}"/>
+  <target name="_signatures">
+    <!-- Run target -->
+    <mkdir dir="${signatureBase}"/>
     <java fork="yes"
-          classname="org.webpki.testdata.JsonSignatures"
-    	  dir="${temp.dir}"
+          classname="${class}"
+          dir="${temp.dir}"
           failonerror="true">
-    	<classpath>
+        <classpath>
             <pathelement path="${temp.dir}"/>
-       	    <path refid="lib.classpath"/>
-    	</classpath>
+            <path refid="lib.classpath"/>
+        </classpath>
         <arg value="${keyBase}"/>
         <arg value="${dataBase}"/>
         <arg value="${signatureBase}"/>
-       	<sysproperty key="bc.prov" value="${bc.prov}"/>
-       	<sysproperty key="bc.first" value="${bc.first}"/>
+        <sysproperty key="bc.prov" value="${bc.prov}"/>
+        <sysproperty key="bc.first" value="${bc.first}"/>
         <jvmarg value="-Dfile.encoding=UTF8"/>
     </java>
+  </target>
+
+  <target name="signatures" depends="_compile">
+    <antcall target="_signatures">
+      <param name="class" value="org.webpki.testdata.JsonSignatures"/>
+      <param name="signatureBase" value="${jsonSignatureBase}"/>
+    </antcall>
+    <antcall target="_signatures">
+      <param name="class" value="org.webpki.testdata.CborSignatures"/>
+      <param name="signatureBase" value="${cborSignatureBase}"/>
+    </antcall>
   </target>
 
   <target name="encryption" depends="_compile">
