@@ -422,7 +422,7 @@ public class CBORTest {
     @Test
     public void mapperTest() throws Exception {
         sortingTest(RFC7049_SORTING);
-        CBORMapBase.setRfc7049SortingMode(false);
+        CBORObject.setRfc7049SortingMode(false);
         sortingTest(RFC8949_SORTING);
         try {
             parseCborHex("A20706636B657906");

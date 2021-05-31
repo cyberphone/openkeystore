@@ -98,6 +98,21 @@ public class CBORTextStringMap extends CBORMapBase {
     }
 
     /**
+     * Enumerate all keys in a map.
+     * 
+     * @return Array of keys
+     * @throws IOException 
+     */
+    public String[] getKeys() throws IOException {
+        String[] keysArray = new String[keys.size()];
+        int q = 0;
+        for (CBORObject key : keys.keySet()) {
+            keysArray[q++] = key.getTextString();
+        }
+        return keysArray;
+    }
+
+    /**
      * Get map value.
      * 
      * @param key Key in string format

@@ -98,6 +98,21 @@ public class CBORIntegerMap extends CBORMapBase {
     }
 
     /**
+     * Enumerate all keys in a map.
+     * 
+     * @return Array of keys
+     * @throws IOException 
+     */
+    public int[] getKeys() throws IOException {
+        int[] keysArray = new int[keys.size()];
+        int q = 0;
+        for (CBORObject key : keys.keySet()) {
+            keysArray[q++] = key.getInt();
+        }
+        return keysArray;
+    }
+
+    /**
      * Get map value.
      * 
      * @param key Key in integer format

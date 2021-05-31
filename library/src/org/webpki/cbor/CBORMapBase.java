@@ -33,19 +33,8 @@ import org.webpki.util.ArrayUtil;
  */
 abstract class CBORMapBase extends CBORObject {
 
-    private static boolean rfc7049Sorting = true;
-    
     boolean parsingMode;
     CBORObject lastKey;
-
-    /**
-     * Set RFC7049 key sorting.
-     * Default: true
-     * @param flag true for RFC7049, false for RFC 8949
-     */
-    static public void setRfc7049SortingMode(boolean flag) {
-        rfc7049Sorting = flag;
-    }
 
     private static Comparator<CBORObject> comparator = new Comparator<CBORObject>() {
 
@@ -145,22 +134,13 @@ abstract class CBORMapBase extends CBORObject {
      * @return
      * @throws IOException
      */
-    public CBORObject getObject(CBORObject key) throws IOException {
+    CBORObject getObject(CBORObject key) throws IOException {
         readFlag = true;
         CBORObject cborObject = keys.get(key);
         if (cborObject == null) {
             throw new IOException("No such key: " + key.toString());
         }
         return cborObject;
-    }
-
-    /**
-     * Enumerate all keys in a map.
-     * 
-     * @return Array of keys in CBOR notation
-     */
-    public CBORObject[] getKeys() {
-        return keys.keySet().toArray(new CBORObject[0]);
     }
 
     @Override
