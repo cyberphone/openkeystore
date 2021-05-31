@@ -230,7 +230,9 @@ public class EncryptionCore {
     throws GeneralSecurityException {
         Cipher cipher = getAesCipher(AES_CBC_JCENAME);
         int aesKeyLength = contentEncryptionAlgorithm.keyLength / 2;
-        cipher.init(mode, new SecretKeySpec(key, aesKeyLength, aesKeyLength, "AES"), new IvParameterSpec(iv));
+        cipher.init(mode,
+                    new SecretKeySpec(key, aesKeyLength, aesKeyLength, "AES"),
+                    new IvParameterSpec(iv));
         return cipher.doFinal(data);
     }
 
@@ -238,7 +240,9 @@ public class EncryptionCore {
     throws GeneralSecurityException {
         Cipher cipher = getAesCipher(AES_GCM_JCENAME);
         GCMParameterSpec gcmSpec = new GCMParameterSpec(AES_GCM_TAG_LENGTH * 8, iv);
-        cipher.init(mode, new SecretKeySpec(key, "AES"), gcmSpec);
+        cipher.init(mode,
+                    new SecretKeySpec(key, "AES"),
+                    gcmSpec);
         cipher.updateAAD(authData);
         return cipher.doFinal(data);
     }
@@ -539,13 +543,13 @@ public class EncryptionCore {
      * @throws GeneralSecurityException
      * @throws IOException
      */
-    public static byte[] receiverKeyAgreement(boolean coseMode,
-                                              KeyEncryptionAlgorithms keyEncryptionAlgorithm,
-                                              ContentEncryptionAlgorithms contentEncryptionAlgorithm,
-                                              PublicKey receivedPublicKey,
-                                              PrivateKey privateKey,
-                                              byte[] encryptedKeyData)
-    throws GeneralSecurityException, IOException {
+    public static byte[] receiverKeyAgreement(
+            boolean coseMode,
+            KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+            ContentEncryptionAlgorithms contentEncryptionAlgorithm,
+            PublicKey receivedPublicKey,
+            PrivateKey privateKey,
+            byte[] encryptedKeyData) throws GeneralSecurityException, IOException {
         // Sanity check
         if (keyEncryptionAlgorithm.keyWrap ^ (encryptedKeyData != null)) {
             throw new GeneralSecurityException("\"encryptedKeyData\" must " + 
