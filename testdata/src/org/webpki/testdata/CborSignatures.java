@@ -119,8 +119,9 @@ public class CborSignatures {
     
     static void asymKeyAllVariations(String key, AsymSignatureAlgorithms pssAlg) throws Exception {
         asymSignCore(key, false, false, pssAlg);
-        asymSignCore(key, false, true, pssAlg);
-        asymSignCore(key, true, true, pssAlg);
+        asymSignCore(key, false, true,  pssAlg);
+        asymSignCore(key, true,  false, pssAlg);
+        asymSignCore(key, true,  true,  pssAlg);
    }
 
     static String prefix(String keyType) {
