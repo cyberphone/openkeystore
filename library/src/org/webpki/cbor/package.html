@@ -39,8 +39,8 @@ Maps are <i>automatically sorted</i> during encode according to section 4.2.3 (w
 follows RFC 7049) by default, but can (with an option), be set
 to adhere to section 4.2.1.
 <h3 id='csf'>Signature Support</h3>
-The CBOR library also contains support for creating and validating
-signatures using a specific scheme tentatively called
+The CBOR library contains support for creating and validating
+signatures using a specific scheme called
 &quot;CBOR Signature Format&quot; (CSF). 
 <p>
 Note that unlike COSE (RFC 8152), CSF
@@ -88,10 +88,10 @@ be provided as a CBOR <code>map</code> having a fixed set of labels
 according to the following table:
 <table>
 <tr><th>Label</th><th>&nbsp;&nbsp;</th><th>Function</th></tr>
-<tr><td>1</td><td></td><td>Algorithm</td></tr>
-<tr><td>2</td><td></td><td>Public key (<i>optional</i>)</td></tr>
-<tr><td>3</td><td></td><td>Key Id (<i>optional</i>)</td></tr>
-<tr><td>4</td><td></td><td>Certificate path (<i>optional</i>)</td></tr>
+<tr><td>1</td><td></td><td>Algorithm using COSE identifiers</td></tr>
+<tr><td>2</td><td></td><td><i>Optional</i> public key in COSE format</td></tr>
+<tr><td>3</td><td></td><td><i>Optional</i> key Id supplied as a <code>text string</code></td></tr>
+<tr><td>4</td><td></td><td><i>Optional</i> certificate path supplied as an array of <code>byte string</code> objects</td></tr>
 <tr><td>5</td><td></td><td>Signature value</td></tr>
 </table>
 &nbsp;<br>
@@ -100,4 +100,11 @@ algorithm over the complete CBOR binary representation, with the signature label
 its associated value as the sole exception. Note that the length
 of the <code>map</code> object holding the signature value must
 be updated (to reflect the removal of an element) during validation.
+<h3 id='csf'>Encryption Support</h3>
+The CBOR library contains support for encrypting and decrypting
+arbitrary binary data using a specific scheme called
+&quot;CBOR Encryption Format&quot; (CEF).
+In similarity to CSF, CEF also depends on <i>deterministic serialization</i>
+which is used to create authentication data to content encryption
+algorithms like GCM.
 </body>

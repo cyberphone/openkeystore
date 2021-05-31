@@ -4,8 +4,8 @@
   <property name="temp.dir" location=".tmp"/>
   <property name="keyBase" location="keys"/>
   <property name="dataBase" location="data"/>
-  <property name="signatureBase" location="signatures"/>
-  <property name="encryptionBase" location="encryption"/>
+  <property name="signatureBase" location="json-signatures"/>
+  <property name="encryptionBase" location="json-encryption"/>
   <property name="normalizationBase" location="normalization"/>
 
   <!-- Set to something else if you need it -->
@@ -45,7 +45,7 @@
   	<!-- Run target -->
  	<mkdir dir="${signatureBase}"/>
     <java fork="yes"
-          classname="org.webpki.testdata.Signatures"
+          classname="org.webpki.testdata.JsonSignatures"
     	  dir="${temp.dir}"
           failonerror="true">
     	<classpath>
@@ -65,7 +65,7 @@
   	<!-- Run target -->
   	<mkdir dir="${encryptionBase}"/>
     <java fork="yes"
-          classname="org.webpki.testdata.Encryption"
+          classname="org.webpki.testdata.JsonEncryption"
     	  dir="${temp.dir}"
           failonerror="true">
     	<classpath>

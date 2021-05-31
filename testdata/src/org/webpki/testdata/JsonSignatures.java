@@ -61,7 +61,7 @@ import org.webpki.util.PEMDecoder;
 /*
  * Create JSF test vectors
  */
-public class Signatures {
+public class JsonSignatures {
     static String baseKey;
     static String baseData;
     static String baseSignatures;

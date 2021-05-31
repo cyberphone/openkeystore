@@ -56,7 +56,7 @@ import org.webpki.util.PEMDecoder;
 /*
  * Create JEF test vectors
  */
-public class Encryption {
+public class JsonEncryption {
     static String baseKey;
     static String baseEncryption;
     static String baseData;

@@ -904,13 +904,18 @@ public class CBORTest {
         for (ContentEncryptionAlgorithms cea : ContentEncryptionAlgorithms.values()) {
             for (int key : keys) {
                 byte[] secretKey = symmetricKeys.getValue(key);
-                if (cea.getKeyLength() != secretKey.length) continue;
-                CBORSymKeyEncrypter encrypter = new CBORSymKeyEncrypter(secretKey, cea);
-                byte[] encrypted = encrypter.encrypt(dataToEncrypt).encode();
-                assertTrue("enc/dec",
-                        ArrayUtil.compare(
-                                new CBORSymKeyDecrypter(secretKey).decrypt(encrypted),
-                                dataToEncrypt));
+                boolean ok = cea.getKeyLength() == secretKey.length;
+                try {
+                    CBORSymKeyEncrypter encrypter = new CBORSymKeyEncrypter(secretKey, cea);
+                    byte[] encrypted = encrypter.encrypt(dataToEncrypt).encode();
+                    assertTrue("enc/dec",
+                            ArrayUtil.compare(
+                                    new CBORSymKeyDecrypter(secretKey).decrypt(encrypted),
+                                    dataToEncrypt));
+                    assertTrue("Keysize1", ok);
+                } catch (Exception e) {
+                    assertTrue("Keysize2", !ok);
+                }
             }
         }
     }

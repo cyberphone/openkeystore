@@ -247,7 +247,7 @@
        <param name="doc.class" value="org.webpki.json.JSONSignatureHTMLReference"/>
        <param name="doc.file" value="${public_doc_dir}/jsf.html"/>
        <param name="file.base1" value="${testdata_dir}/keys"/>
-       <param name="file.base2" value="${testdata_dir}/signatures"/>
+       <param name="file.base2" value="${testdata_dir}/json-signatures"/>
        <param name="file.base3" value="${testdata_dir}/data"/>
      </antcall>
      <!-- HTML Doc task for JEF -->
@@ -255,7 +255,7 @@
        <param name="doc.class" value="org.webpki.json.JSONEncryptionHTMLReference"/>
        <param name="doc.file" value="${public_doc_dir}/jef.html"/>
        <param name="file.base1" value="${testdata_dir}/keys"/>
-       <param name="file.base2" value="${testdata_dir}/encryption"/>
+       <param name="file.base2" value="${testdata_dir}/json-encryption"/>
        <param name="file.base3" value="${testdata_dir}/data"/>
      </antcall>
   </target>
