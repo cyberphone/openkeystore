@@ -34,9 +34,6 @@ public abstract class CBORObject {
     
     CBORObject() {}
     
-    // for maps
-    static boolean rfc7049Sorting = true;
-    
     // For checking if object was read
     boolean readFlag;
 
@@ -92,6 +89,20 @@ public abstract class CBORObject {
         } 
         encoded[0] |= majorType;
         return encoded;
+    }
+
+
+    // for maps
+    static boolean rfc7049Sorting = true;
+    
+    /**
+     * Set RFC 8949/7049 key sorting.
+     * 
+     * Default: false => RFC 8949 key sorting
+     * @param flag true for RFC 8949, false for RFC 7049
+     */
+    public static void setRfc8949SortingMode(boolean flag) {
+        rfc7049Sorting = !flag;
     }
 
     void checkTypeAndMarkAsRead(CBORTypes requestedCborType) throws IOException {
@@ -325,15 +336,6 @@ public abstract class CBORObject {
                 throw new IOException("Unexpected data found after CBOR object");
             }
         }
-    }
-
-    /**
-     * Set RFC7049 key sorting.
-     * Default: true
-     * @param flag true for RFC7049, false for RFC 8949
-     */
-    public static void setRfc7049SortingMode(boolean flag) {
-        rfc7049Sorting = flag;
     }
 
     /**
