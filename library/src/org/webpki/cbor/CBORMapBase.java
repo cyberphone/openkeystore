@@ -138,13 +138,29 @@ abstract class CBORMapBase extends CBORObject {
         return this;
     }
 
-    CBORObject getObject(CBORObject key) throws IOException {
+    /**
+     * Get map value.
+     * 
+     * @param key Key in CBOR notation
+     * @return
+     * @throws IOException
+     */
+    public CBORObject getObject(CBORObject key) throws IOException {
         readFlag = true;
         CBORObject cborObject = keys.get(key);
         if (cborObject == null) {
             throw new IOException("No such key: " + key.toString());
         }
         return cborObject;
+    }
+
+    /**
+     * Enumerate all keys in a map.
+     * 
+     * @return Array of keys in CBOR notation
+     */
+    public CBORObject[] getKeys() {
+        return keys.keySet().toArray(new CBORObject[0]);
     }
 
     @Override

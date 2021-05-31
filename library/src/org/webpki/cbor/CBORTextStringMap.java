@@ -38,7 +38,7 @@ public class CBORTextStringMap extends CBORMapBase {
     /**
      * Remove object from map.
      * 
-     * @param key The key
+     * @param key Key in string format
      * @return The CBORTextStringMap
      * @throws IOException
      */
@@ -50,8 +50,8 @@ public class CBORTextStringMap extends CBORMapBase {
     /**
      * Set map value.
      * 
-     * @param key The key
-     * @param value The value expressed as a CBOR object
+     * @param key Key in string format
+     * @param value Value in CBOR notation
      * @return The CBORIntegerMap
      * @throws IOException
      */
@@ -90,7 +90,7 @@ public class CBORTextStringMap extends CBORMapBase {
     /**
      * Check map for key presence.
      * 
-     * @param key The key
+     * @param key Key in string format
      * @return <code>true</code> if the key is present
      */
     public boolean hasKey(String key) {
@@ -100,8 +100,8 @@ public class CBORTextStringMap extends CBORMapBase {
     /**
      * Get map value.
      * 
-     * @param key The key
-     * @return The value expressed as a CBOR object
+     * @param key Key in string format
+     * @return Value in CBOR notation
      * @throws IOException
      */
     public CBORObject getObject(String key) throws IOException {

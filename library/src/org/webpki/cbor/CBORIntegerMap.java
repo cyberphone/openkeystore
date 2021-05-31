@@ -38,7 +38,7 @@ public class CBORIntegerMap extends CBORMapBase {
     /**
      * Remove object from map.
      * 
-     * @param key The key
+     * @param key Key in integer format.
      * @return The CBORIntegerMap
      * @throws IOException
      */
@@ -50,8 +50,8 @@ public class CBORIntegerMap extends CBORMapBase {
     /**
      * Set map value.
      * 
-     * @param key The key
-     * @param value The value expressed as a CBOR object
+     * @param key Key in integer format
+     * @param value Value expressed as a CBOR object
      * @return The CBORIntegerMap
      * @throws IOException
      */
@@ -90,7 +90,7 @@ public class CBORIntegerMap extends CBORMapBase {
     /**
      * Check map for key presence.
      * 
-     * @param key The key
+     * @param key Key in integer format
      * @return <code>true</code> if the key is present
      */
     public boolean hasKey(int key) {
@@ -100,8 +100,8 @@ public class CBORIntegerMap extends CBORMapBase {
     /**
      * Get map value.
      * 
-     * @param key
-     * @return The CBORObject
+     * @param key Key in integer format
+     * @return Value in CBOR notation
      * @throws IOException
      */
     public CBORObject getObject(int key) throws IOException {
