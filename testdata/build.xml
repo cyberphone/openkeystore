@@ -6,7 +6,8 @@
   <property name="dataBase" location="data"/>
   <property name="jsonSignatureBase" location="json-signatures"/>
   <property name="cborSignatureBase" location="cbor-signatures"/>
-  <property name="encryptionBase" location="json-encryption"/>
+  <property name="jsonEncryptionBase" location="json-encryption"/>
+  <property name="cborEncryptionBase" location="cbor-encryption"/>
   <property name="normalizationBase" location="normalization"/>
 
   <!-- Set to something else if you need it -->
@@ -73,11 +74,11 @@
     </antcall>
   </target>
 
-  <target name="encryption" depends="_compile">
+  <target name="_encryption">
   	<!-- Run target -->
   	<mkdir dir="${encryptionBase}"/>
     <java fork="yes"
-          classname="org.webpki.testdata.JsonEncryption"
+          classname="${class}"
     	  dir="${temp.dir}"
           failonerror="true">
     	<classpath>
@@ -93,6 +94,17 @@
     </java>
   </target>
 
+  <target name="encryption" depends="_compile">
+    <antcall target="_encryption">
+      <param name="class" value="org.webpki.testdata.JsonEncryption"/>
+      <param name="encryptionBase" value="${jsonEncryptionBase}"/>
+    </antcall>
+    <antcall target="_encryption">
+      <param name="class" value="org.webpki.testdata.CborEncryption"/>
+      <param name="encryptionBase" value="${cborEncryptionBase}"/>
+    </antcall>
+  </target>
+	
   <target name="_createtestcert">      
    	<antcall target="_createcert">
       <param name="subject" value="Test certificate matching ${keyprefix}privatekey.pem"/>

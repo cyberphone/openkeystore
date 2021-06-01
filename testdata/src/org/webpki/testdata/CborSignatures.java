@@ -29,6 +29,7 @@ import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORSigner;
 import org.webpki.cbor.CBORTextString;
 import org.webpki.cbor.CBORTypes;
+import org.webpki.cbor.CBORValidator;
 import org.webpki.cbor.CBORTextStringMap;
 import org.webpki.cbor.CBORAsymKeySigner;
 import org.webpki.cbor.CBORAsymSignatureValidator;
@@ -111,9 +112,9 @@ public class CborSignatures {
         }
       
         for (int i = 0; i < 2; i++) {
-            symmSign(256, HmacAlgorithms.HMAC_SHA256, i == 0);
-            symmSign(384, HmacAlgorithms.HMAC_SHA384, i == 0);
-            symmSign(512, HmacAlgorithms.HMAC_SHA512, i == 0);
+            symKeySign(256, HmacAlgorithms.HMAC_SHA256, i == 0);
+            symKeySign(384, HmacAlgorithms.HMAC_SHA384, i == 0);
+            symKeySign(512, HmacAlgorithms.HMAC_SHA512, i == 0);
         }
     }
     
@@ -153,21 +154,32 @@ public class CborSignatures {
         throw new IOException("Signature not found");
     }
     
-    static void optionalUpdate(String fileName, byte[] updatedSignature, boolean cleanFlag) throws IOException {
+    static void optionalUpdate(CBORValidator validator,
+                               String fileName, 
+                               byte[] updatedSignature, 
+                               boolean cleanFlag) throws Exception {
         boolean changed = true;
+        byte[] oldSignature = null;
         try {
+            oldSignature = ArrayUtil.readFile(fileName);
+            try {
+                CBORObject.decode(oldSignature).getTextStringMap().validate(SIGNATURE_LABEL, validator);
+            } catch (Exception e) {
+                throw new GeneralSecurityException("ERROR - Old signature '" + fileName + "' did not validate");
+            }
+        } catch (IOException e) {
+            changed = false;  // New file
+        }
+        if (oldSignature != null) {
             if (cleanFlag) {
-                if (cleanSignature(ArrayUtil.readFile(fileName)).equals(cleanSignature(updatedSignature))) {
+                if (cleanSignature(oldSignature).equals(cleanSignature(updatedSignature))) {
                     return;
                 }
             } else {
-                if (ArrayUtil.compare(ArrayUtil.readFile(fileName), updatedSignature)) {
+                if (ArrayUtil.compare(oldSignature, updatedSignature)) {
                     return;
                 }
             }
-        } catch (Exception e) {
-            // New I guess.
-            changed = false;
         }
         ArrayUtil.writeFile(fileName, updatedSignature);
         if (changed) {
@@ -176,7 +188,7 @@ public class CborSignatures {
         return;
     }
 
-    static void symmSign(int keyBits, HmacAlgorithms algorithm, boolean wantKeyId) throws Exception {
+    static void symKeySign(int keyBits, HmacAlgorithms algorithm, boolean wantKeyId) throws Exception {
         byte[] key = symmetricKeys.getValue(keyBits);
         String keyName = symmetricKeys.getName(keyBits);
         CBORHmacSigner signer = new CBORHmacSigner(key, algorithm);
@@ -187,25 +199,26 @@ public class CborSignatures {
         CBORHmacValidator validator = new CBORHmacValidator(key);
         CBORTextStringMap decoded = CBORObject.decode(signedData).getTextStringMap();
         decoded.validate(SIGNATURE_LABEL, validator);
-        if (wantKeyId) {
-            decoded.validate(SIGNATURE_LABEL, new CBORHmacValidator(
-                    new CBORHmacValidator.KeyLocator() {
-                
-                @Override
-                public byte[] locate(String arg0, HmacAlgorithms arg1)
-                        throws IOException, GeneralSecurityException {
-                    if (wantKeyId && !keyName.equals(arg0)) {
-                        throw new GeneralSecurityException("No id");
-                    }
-                    if (!algorithm.equals(arg1)) {
-                        throw new GeneralSecurityException("Bad algorithm");
-                    }
-                    return key;
+        decoded.validate(SIGNATURE_LABEL, new CBORHmacValidator(new CBORHmacValidator.KeyLocator() {
+            
+            @Override
+            public byte[] locate(String arg0, HmacAlgorithms arg1)
+                    throws IOException, GeneralSecurityException {
+                if (wantKeyId && !keyName.equals(arg0)) {
+                    throw new GeneralSecurityException("No id");
                 }
-            }));
-        }
-        optionalUpdate(baseSignatures + prefix("a" + keyBits) + 
-                getAlgorithm(algorithm) + '@' + keyIndicator(wantKeyId, false), signedData, false);
+                if (!algorithm.equals(arg1)) {
+                    throw new GeneralSecurityException("Bad algorithm");
+                }
+                return key;
+            }
+
+        }));
+        optionalUpdate(validator, 
+                       baseSignatures + prefix("a" + keyBits) + 
+                           getAlgorithm(algorithm) + '@' + keyIndicator(wantKeyId, false),
+                       signedData,
+                       false);
     }
 
     static byte[] getDataToSign() throws Exception {
@@ -286,7 +299,7 @@ public class CborSignatures {
                 return keyPair.getPublic();
             }
         }));
-        optionalUpdate(fileName, signedData, 
+        optionalUpdate(validator, fileName, signedData, 
                 algorithm.getMGF1ParameterSpec() != null ||
                 algorithm.getKeyType() == KeyTypes.EC);
     }

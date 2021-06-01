@@ -178,12 +178,12 @@ public class JsonEncryption {
                         ContentEncryptionAlgorithms.A256CBC_HS512, 
                         false);
 
-        symmEnc(256, ContentEncryptionAlgorithms.A128CBC_HS256);
-        symmEnc(512, ContentEncryptionAlgorithms.A256CBC_HS512);
-        symmEnc(128, ContentEncryptionAlgorithms.A128GCM);
-        symmEnc(256, ContentEncryptionAlgorithms.A256GCM);
+        symKeyEnc(256, ContentEncryptionAlgorithms.A128CBC_HS256);
+        symKeyEnc(512, ContentEncryptionAlgorithms.A256CBC_HS512);
+        symKeyEnc(128, ContentEncryptionAlgorithms.A128GCM);
+        symKeyEnc(256, ContentEncryptionAlgorithms.A256GCM);
 
-        coreSymmEnc(256, "imp.json", ContentEncryptionAlgorithms.A256GCM, false);
+        coreSymKeyEnc(256, "imp.json", ContentEncryptionAlgorithms.A256GCM, false);
         
         coreAsymEnc("p256", 
                     "exts-jwk.json",
@@ -256,7 +256,7 @@ public class JsonEncryption {
                        });
     }
 
-    static void coreSymmEnc(int keyBits, 
+    static void coreSymKeyEnc(int keyBits, 
                             String fileSuffix, 
                             ContentEncryptionAlgorithms contentEncryptionAlgorithm, 
                             boolean wantKeyId) throws Exception {
@@ -286,8 +286,8 @@ public class JsonEncryption {
                        });
     }
 
-    static void symmEnc(int keyBits, ContentEncryptionAlgorithms contentEncryptionAlgorithm) throws Exception {
-        coreSymmEnc(keyBits, "kid.json", contentEncryptionAlgorithm, true);
+    static void symKeyEnc(int keyBits, ContentEncryptionAlgorithms contentEncryptionAlgorithm) throws Exception {
+        coreSymKeyEnc(keyBits, "kid.json", contentEncryptionAlgorithm, true);
     }
     
     static KeyPair readJwk(String keyType) throws Exception {

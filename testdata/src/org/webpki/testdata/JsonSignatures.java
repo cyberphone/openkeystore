@@ -141,9 +141,9 @@ public class JsonSignatures {
         }
       
         for (int i = 0; i < 2; i++) {
-            symmSign(256, HmacAlgorithms.HMAC_SHA256, i == 0);
-            symmSign(384, HmacAlgorithms.HMAC_SHA384, i == 0);
-            symmSign(512, HmacAlgorithms.HMAC_SHA512, i == 0);
+            symKeySign(256, HmacAlgorithms.HMAC_SHA256, i == 0);
+            symKeySign(384, HmacAlgorithms.HMAC_SHA384, i == 0);
+            symKeySign(512, HmacAlgorithms.HMAC_SHA512, i == 0);
         }
         
         for (boolean chained : new boolean[]{false,true}) {
@@ -303,7 +303,7 @@ public class JsonSignatures {
         return;
     }
 
-    static void symmSign(int keyBits, HmacAlgorithms algorithm, boolean wantKeyId) throws Exception {
+    static void symKeySign(int keyBits, HmacAlgorithms algorithm, boolean wantKeyId) throws Exception {
         byte[] key = symmetricKeys.getValue(keyBits);
         String keyName = symmetricKeys.getName(keyBits);
         JSONHmacSigner signer = new JSONHmacSigner(key, algorithm);
