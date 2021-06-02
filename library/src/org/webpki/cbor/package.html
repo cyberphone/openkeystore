@@ -38,6 +38,7 @@ regardless how it was provided.
 Maps are <i>automatically sorted</i> during encode according to section 4.2.3 (which
 follows RFC 7049) by default, but can (with an option), be set
 to adhere to section 4.2.1.
+
 <h3 id='csf'>Signature Support</h3>
 The CBOR library contains support for creating and validating
 signatures using a specific scheme called
@@ -61,9 +62,9 @@ enabling constructs like the following:
    6: 0("2021-05-03T09:50:08Z"),
    <span style='color:grey'>// signature object</span>
    7: {
-     <span style='color:grey'>// alg = ES256</span>
+     <span style='color:grey'>// Signature algorithm = COSE/ES256</span>
      1: -7,
-     <span style='color:grey'>// public key descriptor</span>
+     <span style='color:grey'>// Public key descriptor in COSE format</span>
      2: {
        <span style='color:grey'>// kty = EC</span>
        1: 2,
@@ -74,7 +75,7 @@ enabling constructs like the following:
        <span style='color:grey'>// y</span>
        -3: h'9826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d8'
      },
-     <span style='color:grey'>// signature value</span>
+     <span style='color:grey'>// Signature value</span>
      5: h'71994b13d48eeb8e9a5cd2801e11af93af92bb1acfcbd92ef0a4f1bb317faf94ae61e
 80443763cf212b9fd28f3c91c92ade64558b4382623320f58dfd785606e'
    }
@@ -100,11 +101,70 @@ algorithm over the complete CBOR binary representation, with the signature label
 its associated value as the sole exception. Note that the length
 of the <code>map</code> object holding the signature value must
 be updated (to reflect the removal of an element) during validation.
-<h3 id='csf'>Encryption Support</h3>
+
+<h3 id='cef'>Encryption Support</h3>
 The CBOR library contains support for encrypting and decrypting
 arbitrary binary data using a specific scheme called
 &quot;CBOR Encryption Format&quot; (CEF).
 In similarity to CSF, CEF also depends on <i>deterministic serialization</i>
 which is used to create authentication data to content encryption
 algorithms like GCM.
+The following shows a printout of a CEF object using an X25519 key
+and the algorithms A256GCM and ECDH-ES+A256KW for content respectively key-wrapping:
+<pre>
+{
+  <span style='color:grey'>// Content encryption algorithm = COSE/A256GCM</span>
+  1: 3,
+  <span style='color:grey'>// Key encryption object</span>
+  2: {
+    <span style='color:grey'>// Key encryption algorithm = COSE/ECDH-ES+A256KW</span>
+    1: -31,
+    <span style='color:grey'>// Key Id</span>
+    3: "example.com:x25519",
+    <span style='color:grey'>// Ephemeral key descriptor in COSE format</span>
+    5: {
+      <span style='color:grey'>// kty = OKP</span>
+      1: 1,
+      <span style='color:grey'>// crv = X25519</span>
+      -1: 4,
+       <span style='color:grey'>// x</span>
+      -2: h'6b073a97a9bc95e68800f0814a7cd02f2446d6cca8581e3a27bfd490fdaaf631'
+    },
+    <span style='color:grey'>// Encrypted key</span>
+    9: h'27c9c0b68841044368ddb3d41ae04bb1ee9535563f90aaaa519c560217b63aa5d578047b3341c697'
+  },
+  <span style='color:grey'>// Tag</span>
+  7: h'6f97609e63b9e99a806e432de4c71d77',
+  <span style='color:grey'>// Initialization Vector (IV)</span>
+  8: h'ecb5e6a6291eb5c746dd88b0',
+  <span style='color:grey'>// Ciphertext</span>
+  9: h'debbe59a33066c7436c6b9ce67e1634e80edbaf4b2f0'
+}
+</pre>
+Decryption using the private key (here in JWK format)
+<pre>
+{
+  "kid": "example.com:x25519",
+  "kty": "OKP",
+  "crv": "X25519",
+  "x": "o16U773QQYaQB4eegNCldg6huoIZLsOQIYkFWvbZ5lA",
+  "d": "8AMLEwmHm83XsNZ-ZfMxqa4mrPzIuIXOZfQshTJrX2g"
+}
+</pre>
+should return the UTF-8 encoded string &quot;Hello encrypted world!&quot;.
+The CEF decryption process is as follows:
+<ul>
+<li>Read and save the content encryption parameters <code>Tag</code>,
+<code>IV</code>, and <code>Ciphertext</code>.</li>
+<li>Remove the <code>Tag</code>,
+<code>IV</code>, and <code>Ciphertext</code> elements from the
+encryption object.
+<li>Serialize the remaining encryption object and set the result to 
+Additional Authentication Data (<code>AAD</code>).</li>
+<li>Recover the content encryption key using the elements in the
+key encryption object (featured in label 2).</li>
+<li>Apply the content encryption algorithm (featured in label 1) to the recovered content encryption key,
+using the input parameters read in the first step together with <code>AAD</code>.
+The result is the decrypted data.</li>
+</ul>
 </body>
