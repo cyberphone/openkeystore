@@ -225,11 +225,10 @@
       <doctitle><![CDATA[<h1>WebPKI.org Support</h1>]]></doctitle>
       <bottom><![CDATA[<i>2005-2021 WebPKI.org.</i>]]></bottom>
     </javadoc>
-  	<!--
-    <delete dir="${doc_dir}">
-      <include name="*.zip"/>
-    </delete>
-    -->
+  	
+  	<concat destfile="${doc_dir}/stylesheet.css" append="true">
+  	  <filelist dir="." files="javadoc-extrastyles.css"/>
+  	</concat>
   	<!-- Windows... -->
     <fixcrlf srcdir="${doc_dir}"
        eol="lf"

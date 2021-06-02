@@ -87,20 +87,43 @@ label 7 holds an associated <i>enveloped</i> signature.  A CBOR signature must
 (for compatibility with CSF),
 be provided as a CBOR <code>map</code> having a fixed set of labels 
 according to the following table:
-<table>
-<tr><th>Label</th><th>&nbsp;&nbsp;</th><th>Function</th></tr>
-<tr><td>1</td><td></td><td>Algorithm using COSE identifiers</td></tr>
-<tr><td>2</td><td></td><td><i>Optional</i> public key in COSE format</td></tr>
-<tr><td>3</td><td></td><td><i>Optional</i> key Id supplied as a <code>text string</code></td></tr>
-<tr><td>4</td><td></td><td><i>Optional</i> certificate path supplied as an array of <code>byte string</code> objects</td></tr>
-<tr><td>5</td><td></td><td>Signature value</td></tr>
+<table class='webpkitable'>
+<tr><th>Label</th><th>Function</th></tr>
+<tr><td style='text-align:center'>1</td><td>Signature algorithm using COSE identifiers</td></tr>
+<tr><td style='text-align:center'>2</td><td><i>Optional</i> public key in COSE format</td></tr>
+<tr><td style='text-align:center'>3</td><td><i>Optional</i> key Id supplied as a <code>text string</code></td></tr>
+<tr><td style='text-align:center'>4</td><td><i>Optional</i> certificate path supplied as an array of <code>byte string</code> objects</td></tr>
+<tr><td style='text-align:center'>5</td><td>Signature value</td></tr>
 </table>
-&nbsp;<br>
+<p>
 CSF signatures are validated by running the signature validation 
 algorithm over the complete CBOR binary representation, with the signature label (5) and
 its associated value as the sole exception. Note that the length
-of the <code>map</code> object holding the signature value must
-be updated (to reflect the removal of an element) during validation.
+of the <code>map</code> object holding the signature value <b>must</b>
+be updated (to reflect the removal of an element) during validation.</p>
+<p id='csf-algorithms'>
+Currently supported signature algorithms:
+</p>
+<table class='webpkitable'>
+<tr><th>Name</th><th>Identifier</th><th>Compatibility</th></tr>
+<tr style='text-align:center'><td><code>Ed25519</code></td><td>-8</td><td>FIDO, PKIX [1]</td></tr>
+<tr style='text-align:center'><td><code>Ed448</code></td><td>-9</td><td>PKIX [2]</td></tr>
+<tr style='text-align:center'><td><code>ES256</code></td><td>-7</td><td>COSE, JOSE</td></tr>
+<tr style='text-align:center'><td><code>ES384</code></td><td>-35</td><td>COSE, JOSE</td></tr>
+<tr style='text-align:center'><td><code>ES512</code></td><td>-36</td><td>COSE, JOSE</td></tr>
+<tr style='text-align:center'><td><code>PS256</code></td><td>-37</td><td>COSE, JOSE</td></tr>
+<tr style='text-align:center'><td><code>PS384</code></td><td>-38</td><td>COSE, JOSE</td></tr>
+<tr style='text-align:center'><td><code>PS512</code></td><td>-39</td><td>COSE, JOSE</td></tr>
+<tr style='text-align:center'><td><code>RS256</code></td><td>-257</td><td>COSE, JOSE</td></tr>
+<tr style='text-align:center'><td><code>RS384</code></td><td>-258</td><td>JOSE</td></tr>
+<tr style='text-align:center'><td><code>RS512</code></td><td>-259</td><td>JOSE</td></tr>
+</table>
+<p>[1] Unfortunately, different standards groups did not in due time realize that
+existing cryptographic APIs only rarely accept &quot;EdDSA&quot; as a valid signature algorithm.
+In current FIDO alliance specifications the COSE <code>EdDSA</code> algorithm identifier has
+therefore been redefined to rather mean EdDSA with an Ed25519 key which is also what CSF follows.
+PKIX' RFC&nbsp;8410 makes the same distinction.</p>
+<p>[2] CSF extends the scheme used for <code>Ed25519</code> to <code>Ed448</code> as well.</p>
 
 <h3 id='cef'>Encryption Support</h3>
 The CBOR library contains support for encrypting and decrypting
@@ -159,7 +182,9 @@ The CEF decryption process is as follows:
 <li>Remove the <code>Tag</code>,
 <code>IV</code>, and <code>Ciphertext</code> elements from the
 encryption object.
-<li>Serialize the remaining encryption object and set the result to 
+Note that the top level <code>map</code> object <b>must</b> be updated
+as well to reflect the changed number of elements.
+<li>Serialize the remaining CBOR encryption object and set the result to 
 Additional Authentication Data (<code>AAD</code>).</li>
 <li>Recover the content encryption key using the elements in the
 key encryption object (featured in label 2).</li>
@@ -167,4 +192,45 @@ key encryption object (featured in label 2).</li>
 using the input parameters read in the first step together with <code>AAD</code>.
 The result is the decrypted data.</li>
 </ul>
+Symmetric key encryption objects are decrypted as above with the following differences:
+<ul>
+<li>Since there are no key encryption objects, content encryption 
+keys <b>must</b> be known in advance by recipients.</li>
+<li>Possible key Ids <b>must</b> be supplied in the top-level map.</li>
+</ul>
+For ECDH-ES key encryption schemes, HKDF-256 according to RFC&nbsp;5869
+is profiled as follows:
+<ul>
+<li><code>salt</code>: N/A. Default extract mode handling <b>must</b> be implemented.</li>
+<li><code>info</code>: COSE key encryption algorithms <b>must</b> be expressed as
+32-bit (4 byte) signed big-endian integers.</li>
+</ul>
+<p id='cef-content-encryption-algorithms'>
+Currently supported content encryption algorithms:
+</p>
+
+<table class='webpkitable' style='margin-bottom:1em'>
+<tr><th>Name</th><th>Identifier</th><th>Compatibility</th></tr>
+<tr style='text-align:center'><td><code>A128GCM</code></td><td>1</td><td>COSE, JOSE</td></tr>
+<tr style='text-align:center'><td><code>A192GCM</code></td><td>2</td><td>COSE, JOSE</td></tr>
+<tr style='text-align:center'><td><code>A256GCM</code></td><td>3</td><td>COSE, JOSE</td></tr>
+<tr style='text-align:center'><td><code>A128CBC-HS256</code></td><td>200</td><td>JOSE</td></tr>
+<tr style='text-align:center'><td><code>A192CBC-HS384</code></td><td>201</td><td>JOSE</td></tr>
+<tr style='text-align:center'><td><code>A256CBC-HS512</code></td><td>202</td><td>JOSE</td></tr>
+</table>
+<p id='cef-key-encryption-algorithms' style='padding-top:1em'>
+Currently supported key encryption algorithms:
+</p>
+<table class='webpkitable'>
+<tr><th>Name</th><th>Identifier</th><th>Compatibility</th></tr>
+<tr style='text-align:center'><td><code>ECDH-ES</code></td><td>-25</td><td>COSE, JOSE [1]</td></tr>
+<tr style='text-align:center'><td><code>ECDH-ES+A128KW</code></td><td>-29</td><td>COSE, JOSE [1]</td></tr>
+<tr style='text-align:center'><td><code>ECDH-ES+A192KW</code></td><td>-30</td><td>COSE, JOSE [1]</td></tr>
+<tr style='text-align:center'><td><code>ECDH-ES+A256KW</code></td><td>-31</td><td>COSE, JOSE [1]</td></tr>
+<tr style='text-align:center'><td><code>RSA-OAEP</code></td><td>-40</td><td>COSE, JOSE</td></tr>
+<tr style='text-align:center'><td><code>RSA-OAEP-256</code></td><td>-41</td><td>COSE, JOSE</td></tr>
+</table>
+<p>
+[1] Note that COSE and JOSE do no use the same Key Derivation Function (KDF).
+</p>
 </body>
