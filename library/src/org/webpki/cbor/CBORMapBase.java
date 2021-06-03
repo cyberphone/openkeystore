@@ -108,11 +108,11 @@ abstract class CBORMapBase extends CBORObject {
 
     CBORMapBase setObject(CBORObject key, CBORObject value) throws IOException {
         if (keys.put(key, value) != null) {
-            throw new IOException("Duplicate key: " + key.toString());
+            bad("Duplicate key: " + key.toString());
         }
         if (parsingMode) {
             if (comparator.compare(lastKey, key) > 0) {
-                throw new IOException("Improperly canonicalized key: " + key);
+                bad("Improperly canonicalized key: " + key);
             }
         }
         lastKey = key;
@@ -121,7 +121,7 @@ abstract class CBORMapBase extends CBORObject {
 
     CBORMapBase removeObject(CBORObject key) throws IOException {
         if (!keys.containsKey(key)) {
-            throw new IOException("No such key: " + key.toString());
+            bad("No such key: " + key.toString());
         }
         keys.remove(key);
         return this;
@@ -138,7 +138,7 @@ abstract class CBORMapBase extends CBORObject {
         readFlag = true;
         CBORObject cborObject = keys.get(key);
         if (cborObject == null) {
-            throw new IOException("No such key: " + key.toString());
+            bad("No such key: " + key.toString());
         }
         return cborObject;
     }

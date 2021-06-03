@@ -67,6 +67,11 @@ public abstract class CBORObject {
     public abstract byte[] encode() throws IOException;
     
     abstract void internalToString(PrettyPrinter prettyPrinter);
+
+    
+    static void bad(String error) throws IOException {
+        throw new IOException(error);
+    }
     
     byte[] getEncodedCore(byte majorType, long value) {
         byte[] encoded;
@@ -107,8 +112,7 @@ public abstract class CBORObject {
 
     void checkTypeAndMarkAsRead(CBORTypes requestedCborType) throws IOException {
         if (getType() != requestedCborType) {
-            throw new IOException("Is type: " + getType() +
-                    ", requested: " + requestedCborType);
+            bad("Is type: " + getType() + ", requested: " + requestedCborType);
         }
         readFlag = true;
     }
@@ -189,21 +193,21 @@ public abstract class CBORObject {
             this.checkKeySortingOrder = !ignoreKeySortingOrder;
         }
         
-        private void bad() throws IOException {
-            throw new IOException("Malformed CBOR, trying to read past EOF");
+        private void eofError() throws IOException {
+            bad("Malformed CBOR, trying to read past EOF");
         }
         
         private int readByte() throws IOException {
             int i = input.read();
             if (i < 0) {
-                bad();
+                eofError();
             }
             return i;
         }
         
         private long checkLength(long length) throws IOException {
             if (length < 0) {
-                throw new IOException("Length < 0");
+                bad("Length < 0");
             }
             return length;
         }
@@ -214,7 +218,7 @@ public abstract class CBORObject {
             int bytes = (int) (length > BUFFER_SIZE ? length % BUFFER_SIZE : length);
             while (length != 0) {
                 if (input.read(buffer, 0, bytes) == -1) {
-                    bad();
+                    eofError();
                 }
                 baos.write(buffer, 0, bytes);
                 length -= bytes;
@@ -237,7 +241,7 @@ public abstract class CBORObject {
                 if (byteArray.length == 0) {
                     byteArray = ZERO_BYTE;  // Zero length byte string => n == 0
                 } else if (byteArray[0] == 0) {
-                    throw new IOException("Non-deterministic encoding: leading zero byte");
+                    bad("Non-deterministic encoding: leading zero byte");
                 }
                 BigInteger bigInteger = 
                     ((byte)first == MT_BIG_SIGNED) ?
@@ -245,7 +249,7 @@ public abstract class CBORObject {
                                                    :
                     new BigInteger(1, byteArray);
                 if (CBORBigInteger.fitsAnInteger(bigInteger)) {
-                    throw new IOException("Non-deterministic encoding: bignum fits integer");
+                    bad("Non-deterministic encoding: bignum fits integer");
                 }
                 return new CBORBigInteger(bigInteger);
 
@@ -263,7 +267,7 @@ public abstract class CBORObject {
             long length = first & 0x1f;
             byte majorType = (byte)(first & 0xe0);
             if (length > 0x1b) {
-                throw new IOException("Not implemented: 0x1c-0x1f");
+                bad("Not implemented: 0x1c-0x1f");
             }
             if (length > 0x17) {
                 int q = 1 << (length - 0x18);
@@ -273,8 +277,7 @@ public abstract class CBORObject {
                     length |= readByte();
                 }
                 if (length == 0) {
-                    throw new IOException(
-                        "Non-deterministic encoding: additional bytes form a zero value");
+                    bad("Non-deterministic encoding: additional bytes form a zero value");
                 }
             }
             switch (majorType) {
@@ -304,24 +307,22 @@ public abstract class CBORObject {
                     // Empty map, special case
                     return new CBORTextStringMap();
                 }
-                CBORMapBase cborMapBase;
+                CBORMapBase cborMapBase = null;
                 CBORObject key1 = getObject();
                 if (key1.getType() == CBORTypes.INTEGER) {
                     cborMapBase = new CBORIntegerMap();
                 } else if (key1.getType() == CBORTypes.TEXT_STRING) {
                     cborMapBase = new CBORTextStringMap();
                 } else {
-                    throw new IOException(
-                        "Only integer and text string map keys supported, found: " +
-                         key1.getType());
+                    bad("Only integer and text string map keys supported, found: " +
+                        key1.getType());
                 }
                 cborMapBase.setObject(key1, getObject());
                 cborMapBase.parsingMode = checkKeySortingOrder;
                 while (--length > 0) {
                     CBORObject key = getObject();
                     if (key.getType() != key1.getType()) {
-                        throw new IOException(
-                            "Mixing key types in the same map is not supported: " +
+                        bad("Mixing key types in the same map is not supported: " +
                             key1.getType() + " versus " + key.getType());
                     }
                     cborMapBase.setObject(key, getObject());
@@ -330,13 +331,14 @@ public abstract class CBORObject {
                 return cborMapBase;
 
             default:
-                throw new IOException("Unsupported tag: " + first);
+                bad("Unsupported tag: " + first);
             }
+            return null;  // For the compiler only...
         }
 
         private void checkForUnexpectedInput() throws IOException {
             if (input.read() != -1) {
-                throw new IOException("Unexpected data found after CBOR object");
+                bad("Unexpected data found after CBOR object");
             }
         }
     }
@@ -403,7 +405,7 @@ public abstract class CBORObject {
         default:
         }
         if (!readFlag) {
-            throw new IOException((holderObject == null ? "Data" : 
+            bad((holderObject == null ? "Data" : 
                         holderObject instanceof CBORArray ?
                                 "Array element" :
                                 "Map key " + holderObject.toString()) +                    
