@@ -181,9 +181,12 @@ public abstract class CBORObject {
         static final int BUFFER_SIZE = 10000;
         private static final byte[] ZERO_BYTE = {0};
         private ByteArrayInputStream input;
+        private boolean checkKeySortingOrder;
          
-        private CBORDecoder(byte[] encodedCborData) {
+        private CBORDecoder(byte[] encodedCborData,
+                           boolean ignoreKeySortingOrder) {
             input = new ByteArrayInputStream(encodedCborData);
+            this.checkKeySortingOrder = !ignoreKeySortingOrder;
         }
         
         private void bad() throws IOException {
@@ -313,7 +316,7 @@ public abstract class CBORObject {
                          key1.getType());
                 }
                 cborMapBase.setObject(key1, getObject());
-                cborMapBase.parsingMode = true;
+                cborMapBase.parsingMode = checkKeySortingOrder;
                 while (--length > 0) {
                     CBORObject key = getObject();
                     if (key.getType() != key1.getType()) {
@@ -339,6 +342,27 @@ public abstract class CBORObject {
     }
 
     /**
+     * Decode CBOR data with options.
+     * 
+     * @param encodedCborData
+     * @param ignoreAdditionalData Stop reading after parsing a valid CBOR object
+     * @param ignoreKeySortingOrder Do not enforce any particular sorting order
+     * @return CBOBObject
+     * @throws IOException
+     */
+    public static CBORObject decodeWithOptions(byte[] encodedCborData,
+                                               boolean ignoreAdditionalData,
+                                               boolean ignoreKeySortingOrder) throws IOException {
+        CBORDecoder cborDecoder = new CBORDecoder(encodedCborData, ignoreKeySortingOrder);
+        CBORObject cborObject = cborDecoder.getObject();
+        // https://github.com/w3c/webauthn/issues/1614
+        if (!ignoreAdditionalData) {
+            cborDecoder.checkForUnexpectedInput();
+        }
+        return cborObject;
+    }
+
+    /**
      * Decode CBOR data.
      * 
      * @param encodedCborData
@@ -346,10 +370,7 @@ public abstract class CBORObject {
      * @throws IOException
      */
     public static CBORObject decode(byte[] encodedCborData) throws IOException {
-        CBORDecoder cborDecoder = new CBORDecoder(encodedCborData);
-        CBORObject cborObject = cborDecoder.getObject();
-        cborDecoder.checkForUnexpectedInput();
-        return cborObject;
+        return decodeWithOptions(encodedCborData, false, false);
     }
 
     /**

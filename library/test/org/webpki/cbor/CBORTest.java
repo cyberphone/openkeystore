@@ -1084,4 +1084,21 @@ public class CBORTest {
                       "b8a11f5c5ee1879ec3454e5f3c738d2d" +
                       "9d201395faa4b61a96c8");       
     }
+
+    void parseStrangeCborHex(String hexInput,
+                             String hexExpectedResult,
+                             boolean ignoreAdditionalData, 
+                             boolean ignoreKeySortingOrder) throws IOException {
+        String result = DebugFormatter.getHexString(
+                CBORObject.decodeWithOptions(DebugFormatter.getByteArrayFromHex(hexInput),
+                                             ignoreAdditionalData,
+                                             ignoreKeySortingOrder).encode()).toUpperCase();
+        assertTrue("Strange=" + result, hexExpectedResult.equals(result));
+    }
+
+    @Test
+    public void decodeWithOptions() throws Exception {
+        parseStrangeCborHex("A204616B026166", "A202616604616B", false, true);
+        parseStrangeCborHex("A202616604616B01", "A202616604616B", true, false);
+    }
 }
