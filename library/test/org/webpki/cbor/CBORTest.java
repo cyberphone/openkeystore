@@ -109,7 +109,7 @@ public class CBORTest {
             m = m.substring(0, compareMessage.length());
         }
         if (!m.equals(compareMessage)) {
-            fail("Exception: " + full);
+            fail("Exception: " + full + "\ncompare: " + compareMessage);
         }
     }
     
@@ -223,7 +223,7 @@ public class CBORTest {
 
         cborArray = new CBORArray()
             .addElement(new CBORInteger(1))
-            .addElement(new CBORTextStringMap()
+            .addElement(new CBORMap()
                 .setObject("best", new CBORInteger(2))
                 .setObject("best2", new CBORInteger(3))
                 .setObject("another", new CBORInteger(4)))
@@ -238,7 +238,7 @@ public class CBORTest {
 
         cborArray = new CBORArray()
             .addElement(new CBORInteger(1))
-            .addElement(new CBORIntegerMap()
+            .addElement(new CBORMap()
                 .setObject(8, new CBORInteger(2))
                 .setObject(58, new CBORInteger(3))
                 .setObject(-90, new CBORNull())
@@ -346,17 +346,12 @@ public class CBORTest {
 
     }
     
-    class MapTest extends CBORMapBase {
+    class MapTest extends CBORMap {
         
         int objectNumber;
         MapTest insert(CBORObject key) throws IOException {
             setObject(key, new CBORInteger(objectNumber++));
             return this;
-        }
-
-        @Override
-        public CBORTypes getType() {
-            return CBORTypes.INTEGER_MAP;
         }
     }
     
@@ -426,20 +421,6 @@ public class CBORTest {
         sortingTest(RFC8949_SORTING);
         CBORObject.setRfc8949SortingMode(false);
         sortingTest(RFC7049_SORTING);
-        try {
-            parseCborHex("A20706636B657906");
-            fail("must not execute");
-        } catch (Exception e) {
-            checkException(e, 
-                "Mixing key types in the same map is not supported: INTEGER versus TEXT_STRING");
-        }
-        try {
-            parseCborHex("A2F404F507");
-            fail("must not execute");
-        } catch (Exception e) {
-            checkException(e, 
-                "Only integer and text string map keys supported, found: BOOLEAN");
-        }
     }
 
     @Test
@@ -466,20 +447,20 @@ public class CBORTest {
     public void accessTest() throws Exception {
         CBORObject cbor = parseCborHex("8301a408022382f5f4183a033859f6820405");
         try {
-            ((CBORArray) cbor).getElement(0).getIntegerMap();
+            ((CBORArray) cbor).getElement(0).getMap();
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, "Is type: INTEGER, requested: INTEGER_MAP");
+            checkException(e, "Is type: INTEGER, requested: MAP");
         }
 
         try {
-            ((CBORArray) cbor).getElement(1).getIntegerMap().getObject(-91).getInt();
+            ((CBORArray) cbor).getElement(1).getMap().getObject(-91).getInt();
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, "No such key: -91");
         }
         
-        assertTrue("v1", ((CBORArray) cbor).getElement(1).getIntegerMap().getObject(58).getInt() == 3);
+        assertTrue("v1", ((CBORArray) cbor).getElement(1).getMap().getObject(58).getInt() == 3);
 
         try {
             CBORObject unread = parseCborHex("17");
@@ -505,9 +486,9 @@ public class CBORTest {
 
         try {
             CBORObject unread = parseCborHex("8301a408022382f5f4183a033859f6820405");
-            unread = ((CBORArray) unread).getElement(1).getIntegerMap();
-            ((CBORIntegerMap)unread).getObject(8).getInt();
-            ((CBORArray)((CBORIntegerMap)unread).getObject(-4)).getElement(0).getBoolean();
+            unread = ((CBORArray) unread).getElement(1).getMap();
+            ((CBORMap)unread).getObject(8).getInt();
+            ((CBORArray)((CBORMap)unread).getObject(-4)).getElement(0).getBoolean();
             unread.checkObjectForUnread();
             fail("must not execute");
         } catch (Exception e) {
@@ -518,9 +499,9 @@ public class CBORTest {
         // If you just want to mark an item as "read" you can use scan();
         try {
             CBORObject unread = parseCborHex("8301a408022382f5f4183a033859f6820405");
-            unread = ((CBORArray) unread).getElement(1).getIntegerMap();
-            ((CBORIntegerMap)unread).getObject(8).getInt();
-            ((CBORArray)((CBORIntegerMap)unread).getObject(-4)).getElement(0).scan();
+            unread = ((CBORArray) unread).getElement(1).getMap();
+            ((CBORMap)unread).getObject(8).getInt();
+            ((CBORArray)((CBORMap)unread).getObject(-4)).getElement(0).scan();
             unread.checkObjectForUnread();
             fail("must not execute");
         } catch (Exception e) {
@@ -531,9 +512,9 @@ public class CBORTest {
         // Getting an object without reading the value is considered as "unread".
         try {
             CBORObject unread = parseCborHex("8301a408022382f5f4183a033859f6820405");
-            unread = ((CBORArray) unread).getElement(1).getIntegerMap();
-            ((CBORIntegerMap)unread).getObject(8).getInt();
-            ((CBORArray)((CBORIntegerMap)unread).getObject(-4)).getElement(0);
+            unread = ((CBORArray) unread).getElement(1).getMap();
+            ((CBORMap)unread).getObject(8).getInt();
+            ((CBORArray)((CBORMap)unread).getObject(-4)).getElement(0);
             unread.checkObjectForUnread();
             fail("must not execute");
         } catch (Exception e) {
@@ -565,7 +546,7 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Data of type=CBORTextStringMap with value={\n} was never read");
+                "Data of type=CBORMap with value={\n} was never read");
         }
 
         try {
@@ -645,8 +626,8 @@ public class CBORTest {
     }
     
     CBORObject createDataToBeSigned() throws IOException {
-        return new CBORIntegerMap()
-        .setObject(1, new CBORIntegerMap()
+        return new CBORMap()
+        .setObject(1, new CBORMap()
                 .setObject(1, new CBORTextString("Space Shop"))
                 .setObject(2, new CBORTextString("100.00"))
                 .setObject(3, new CBORTextString("EUR")))
@@ -666,23 +647,23 @@ public class CBORTest {
     CBORObject signAndVerify(CBORSigner signer, CBORValidator validator) 
             throws IOException, GeneralSecurityException {
         CBORObject tbs = createDataToBeSigned();
-        tbs.getIntegerMap().sign(7, signer);
+        tbs.getMap().sign(7, signer);
         byte[] sd = tbs.encode();
         CBORObject cborSd = CBORObject.decode(sd);
-        cborSd.getIntegerMap().validate(7, validator);
+        cborSd.getMap().validate(7, validator);
         return tbs;
     }
 
     void hmacTest(final int size, final HmacAlgorithms algorithm) throws IOException, GeneralSecurityException {
         CBORObject tbs = createDataToBeSigned();
-        tbs.getIntegerMap().sign(7, 
+        tbs.getMap().sign(7, 
                 new CBORHmacSigner(symmetricKeys.getValue(size), algorithm));
         byte[] sd = tbs.encode();
         CBORObject cborSd = CBORObject.decode(sd);
-        cborSd.getIntegerMap().validate(7, new CBORHmacValidator(symmetricKeys.getValue(size)));
+        cborSd.getMap().validate(7, new CBORHmacValidator(symmetricKeys.getValue(size)));
         
         tbs = createDataToBeSigned();
-        tbs.getIntegerMap().sign(7, 
+        tbs.getMap().sign(7, 
             new CBORHmacSigner(new HmacSignerInterface() {
 
                 @Override
@@ -698,15 +679,15 @@ public class CBORTest {
             }));
         sd = tbs.encode();
         cborSd = CBORObject.decode(sd);
-        cborSd.getIntegerMap().validate(7, new CBORHmacValidator(symmetricKeys.getValue(size)));
+        cborSd.getMap().validate(7, new CBORHmacValidator(symmetricKeys.getValue(size)));
 
         tbs = createDataToBeSigned();
         final String keyId = symmetricKeys.getName(size);
-        tbs.getIntegerMap().sign(7, 
+        tbs.getMap().sign(7, 
                 new CBORHmacSigner(symmetricKeys.getValue(size), algorithm).setKeyId(keyId));
         sd = tbs.encode();
         cborSd = CBORObject.decode(sd);
-        cborSd.getIntegerMap().validate(7, new CBORHmacValidator(
+        cborSd.getMap().validate(7, new CBORHmacValidator(
             new CBORHmacValidator.KeyLocator() {
 
                 @Override
@@ -981,7 +962,7 @@ public class CBORTest {
             new CBORAsymKeyDecrypter(
                         p256.getPrivate()).decrypt(
                             CBORObject.decode(
-                                    p256Encrypted).getIntegerMap().setObject(-2, new CBORInteger(5)).encode());
+                                    p256Encrypted).getMap().setObject(-2, new CBORInteger(5)).encode());
             fail("must not run");
         } catch (Exception e) {
             checkException(e, "Map key -2 of type=CBORInteger with value=5 was never read");
@@ -990,9 +971,9 @@ public class CBORTest {
             new CBORAsymKeyDecrypter(
                         p256.getPrivate()).decrypt(
                             CBORObject.decode(
-                                    p256Encrypted).getIntegerMap()
+                                    p256Encrypted).getMap()
                             .getObject(CBOREncrypter.KEY_ENCRYPTION_LABEL)
-                            .getIntegerMap().removeObject(CBOREncrypter.ALGORITHM_LABEL).encode());
+                            .getMap().removeObject(CBOREncrypter.ALGORITHM_LABEL).encode());
             fail("must not run");
         } catch (Exception e) {
             checkException(e, "No such key: 1");
@@ -1008,8 +989,8 @@ public class CBORTest {
         
         try {
             a256Decrypter.decrypt(CBORObject.decode(
-                a256Encrypted).getIntegerMap().setObject(CBOREncrypter.KEY_ENCRYPTION_LABEL, 
-                        new CBORIntegerMap().setObject(CBOREncrypter.ALGORITHM_LABEL,
+                a256Encrypted).getMap().setObject(CBOREncrypter.KEY_ENCRYPTION_LABEL, 
+                        new CBORMap().setObject(CBOREncrypter.ALGORITHM_LABEL,
                                 new CBORInteger(600))).encode());
             fail("must not run");
         } catch (Exception e) {

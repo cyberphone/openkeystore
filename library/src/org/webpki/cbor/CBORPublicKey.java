@@ -118,9 +118,9 @@ public class CBORPublicKey {
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public static CBORIntegerMap encode(PublicKey publicKey) 
+    public static CBORMap encode(PublicKey publicKey) 
             throws IOException, GeneralSecurityException {
-        CBORIntegerMap cborPublicKey = new CBORIntegerMap();
+        CBORMap cborPublicKey = new CBORMap();
         KeyAlgorithms keyAlg = KeyAlgorithms.getKeyAlgorithm(publicKey);
         switch (keyAlg.getKeyType()) {
         case RSA:
@@ -175,7 +175,7 @@ public class CBORPublicKey {
      */
     public static PublicKey decode(CBORObject cborPublicKey) 
     throws IOException, GeneralSecurityException {
-        CBORIntegerMap publicKeyMap = cborPublicKey.getIntegerMap();
+        CBORMap publicKeyMap = cborPublicKey.getMap();
         KeyAlgorithms keyAlgorithm;
         int kty = publicKeyMap.getObject(KTY).getInt();
         PublicKey publicKey;

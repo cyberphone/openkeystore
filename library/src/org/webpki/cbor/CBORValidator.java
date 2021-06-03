@@ -28,7 +28,7 @@ public abstract class CBORValidator {
     
     CBORValidator() {}
 
-    abstract void validate(CBORIntegerMap signatureObject, 
+    abstract void validate(CBORMap signatureObject, 
                            int coseAlgorithmId,
                            String optionalKeyId,
                            byte[] signatureValue,

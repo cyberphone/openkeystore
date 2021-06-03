@@ -51,7 +51,7 @@ public class CBORSymKeyEncrypter extends CBOREncrypter {
     }
 
     @Override
-    byte[] getContentEncryptionKey(CBORIntegerMap encryptionObject)
+    byte[] getContentEncryptionKey(CBORMap encryptionObject)
             throws IOException, GeneralSecurityException {
         return contentEncryptionKey;
     }

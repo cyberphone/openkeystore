@@ -92,11 +92,11 @@ public abstract class CBOREncrypter {
         this.contentEncryptionAlgorithm = contentEncryptionAlgorithm;
     }
     
-    abstract byte[] getContentEncryptionKey(CBORIntegerMap encryptionObject)
+    abstract byte[] getContentEncryptionKey(CBORMap encryptionObject)
             throws IOException, GeneralSecurityException;
     
     // Overridden by key encryption encrypters
-    CBORIntegerMap getEncryptionObject(CBORIntegerMap original) throws IOException {
+    CBORMap getEncryptionObject(CBORMap original) throws IOException {
         return original;
     }
     
@@ -127,14 +127,14 @@ public abstract class CBOREncrypter {
      * Encrypt data.
      * 
      * @param dataToEncrypt The data to encrypt
-     * @return CBORIntegerMap CBOR encryption object
+     * @return CBORMap CBOR encryption object
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public CBORIntegerMap encrypt(byte[] dataToEncrypt) throws IOException,
+    public CBORMap encrypt(byte[] dataToEncrypt) throws IOException,
                                                                GeneralSecurityException {
         // Create an empty encryption object.
-        CBORIntegerMap encryptionObject = new CBORIntegerMap();
+        CBORMap encryptionObject = new CBORMap();
         
         // Add the mandatory content encryption algorithm.
         encryptionObject.setObject(ALGORITHM_LABEL,
@@ -142,7 +142,7 @@ public abstract class CBOREncrypter {
                                            contentEncryptionAlgorithm.getCoseAlgorithmId()));
 
         // Possible key encryption kicks in here.
-        CBORIntegerMap innerObject = getEncryptionObject(encryptionObject);
+        CBORMap innerObject = getEncryptionObject(encryptionObject);
         byte[] contentEncryptionKey = getContentEncryptionKey(innerObject);
 
         // Add a key Id if there is one.

@@ -72,7 +72,7 @@ public class CBORAsymKeyEncrypter extends CBOREncrypter {
     }
  
     @Override
-    byte[] getContentEncryptionKey(CBORIntegerMap keyEncryption)
+    byte[] getContentEncryptionKey(CBORMap keyEncryption)
             throws IOException, GeneralSecurityException {
         
         // The mandatory key encryption algorithm
@@ -118,8 +118,8 @@ public class CBORAsymKeyEncrypter extends CBOREncrypter {
     }
     
     @Override
-    CBORIntegerMap getEncryptionObject(CBORIntegerMap original) throws IOException {
-        CBORIntegerMap keyEncryption = new CBORIntegerMap();
+    CBORMap getEncryptionObject(CBORMap original) throws IOException {
+        CBORMap keyEncryption = new CBORMap();
         original.setObject(KEY_ENCRYPTION_LABEL, keyEncryption);
         return keyEncryption;
     }

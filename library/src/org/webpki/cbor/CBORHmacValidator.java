@@ -80,7 +80,7 @@ public class CBORHmacValidator extends CBORValidator {
     }
 
     @Override
-    void validate(CBORIntegerMap signatureObject, 
+    void validate(CBORMap signatureObject, 
                   int coseAlgorithmId,
                   String optionalKeyId,
                   byte[] signatureValue,

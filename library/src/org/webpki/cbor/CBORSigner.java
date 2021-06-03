@@ -104,10 +104,10 @@ public abstract class CBORSigner {
         return this;
     }
 
-    void sign(CBORObject key, CBORMapBase objectToSign) throws IOException, 
+    void sign(CBORObject key, CBORMap objectToSign) throws IOException, 
                                                                GeneralSecurityException {
         // Create empty signature object.
-        CBORMapBase signatureObject = new CBORIntegerMap();
+        CBORMap signatureObject = new CBORMap();
         
         // Add the mandatory signature algorithm.
         signatureObject.setObject(ALGORITHM_LABEL, new CBORInteger(coseAlgorithmId));

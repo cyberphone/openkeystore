@@ -24,6 +24,7 @@ import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+
 import java.security.interfaces.RSAKey;
 
 import org.webpki.cbor.CBORObject;
@@ -33,7 +34,7 @@ import org.webpki.cbor.CBORAsymKeyDecrypter;
 import org.webpki.cbor.CBORAsymKeyEncrypter;
 import org.webpki.cbor.CBORDecrypter;
 import org.webpki.cbor.CBOREncrypter;
-import org.webpki.cbor.CBORIntegerMap;
+import org.webpki.cbor.CBORMap;
 
 import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.encryption.ContentEncryptionAlgorithms;
@@ -133,18 +134,18 @@ public class CborEncryption {
     }
     
     static String cleanEncryption(byte[] cefData) throws IOException {
-        CBORIntegerMap decoded = CBORObject.decode(cefData).getIntegerMap();
-        decoded.removeObject(CBOREncrypter.IV_LABEL.getInt());
-        decoded.removeObject(CBOREncrypter.TAG_LABEL.getInt());
-        decoded.removeObject(CBOREncrypter.CIPHER_TEXT_LABEL.getInt());
-        if (decoded.hasKey(CBOREncrypter.KEY_ENCRYPTION_LABEL.getInt())) {
-            CBORIntegerMap keyEncryption =
-                    decoded.getObject(CBOREncrypter.KEY_ENCRYPTION_LABEL.getInt()).getIntegerMap();
-            if (keyEncryption.hasKey(CBOREncrypter.CIPHER_TEXT_LABEL.getInt())) {
-                keyEncryption.removeObject(CBOREncrypter.CIPHER_TEXT_LABEL.getInt());
+        CBORMap decoded = CBORObject.decode(cefData).getMap();
+        decoded.removeObject(CBOREncrypter.IV_LABEL);
+        decoded.removeObject(CBOREncrypter.TAG_LABEL);
+        decoded.removeObject(CBOREncrypter.CIPHER_TEXT_LABEL);
+        if (decoded.hasKey(CBOREncrypter.KEY_ENCRYPTION_LABEL)) {
+            CBORMap keyEncryption =
+                    decoded.getObject(CBOREncrypter.KEY_ENCRYPTION_LABEL).getMap();
+            if (keyEncryption.hasKey(CBOREncrypter.CIPHER_TEXT_LABEL)) {
+                keyEncryption.removeObject(CBOREncrypter.CIPHER_TEXT_LABEL);
             }
-            if (keyEncryption.hasKey(CBOREncrypter.EPHEMERAL_KEY_LABEL.getInt())) {
-                keyEncryption.removeObject(CBOREncrypter.EPHEMERAL_KEY_LABEL.getInt());
+            if (keyEncryption.hasKey(CBOREncrypter.EPHEMERAL_KEY_LABEL)) {
+                keyEncryption.removeObject(CBOREncrypter.EPHEMERAL_KEY_LABEL);
             }
         }
         return decoded.toString();

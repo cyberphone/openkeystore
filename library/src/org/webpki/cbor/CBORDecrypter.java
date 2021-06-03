@@ -42,7 +42,7 @@ public abstract class CBORDecrypter {
                                             byte[] encryptedKey) throws IOException,
                                                                         GeneralSecurityException;
     
-    byte[] readAndRemove(CBORIntegerMap encryptionObject, CBORInteger key) throws IOException {
+    byte[] readAndRemove(CBORMap encryptionObject, CBORInteger key) throws IOException {
         byte[] data = encryptionObject.getObject(key).getByteString();
         encryptionObject.removeObject(key);
         return data;
@@ -60,8 +60,8 @@ public abstract class CBORDecrypter {
             throws IOException, GeneralSecurityException {
 
         // Decode encryption object.
-        CBORIntegerMap encryptionObject = 
-                CBORObject.decode(encodedEncryptionObject).getIntegerMap();
+        CBORMap encryptionObject = 
+                CBORObject.decode(encodedEncryptionObject).getMap();
         
         // Get the mandatory content encryption algorithm.
         ContentEncryptionAlgorithms contentEncryptionAlgorithm =
@@ -70,13 +70,13 @@ public abstract class CBORDecrypter {
 
         // Possible key encryption begins to kick in here.
         KeyEncryptionAlgorithms keyEncryptionAlgorithm = null;
-        CBORIntegerMap innerObject = encryptionObject;
+        CBORMap innerObject = encryptionObject;
         PublicKey ephemeralKey = null;
         PublicKey optionalPublicKey = null;
         byte[] encryptedKey = null;
         if (encryptionObject.hasKey(CBOREncrypter.KEY_ENCRYPTION_LABEL)) {
             innerObject = encryptionObject.getObject(
-                    CBOREncrypter.KEY_ENCRYPTION_LABEL).getIntegerMap(); 
+                    CBOREncrypter.KEY_ENCRYPTION_LABEL).getMap(); 
  
             // Mandatory algorithm
             keyEncryptionAlgorithm = KeyEncryptionAlgorithms.getAlgorithmFromId(

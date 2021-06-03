@@ -30,14 +30,13 @@ import org.webpki.cbor.CBORSigner;
 import org.webpki.cbor.CBORTextString;
 import org.webpki.cbor.CBORTypes;
 import org.webpki.cbor.CBORValidator;
-import org.webpki.cbor.CBORTextStringMap;
 import org.webpki.cbor.CBORAsymKeySigner;
 import org.webpki.cbor.CBORAsymSignatureValidator;
 import org.webpki.cbor.CBORDateTime;
 import org.webpki.cbor.CBORHmacSigner;
 import org.webpki.cbor.CBORHmacValidator;
 import org.webpki.cbor.CBORInteger;
-import org.webpki.cbor.CBORIntegerMap;
+import org.webpki.cbor.CBORMap;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.CustomCryptoProvider;
@@ -131,23 +130,23 @@ public class CborSignatures {
     
     static String cleanSignature(byte[] csfData) throws IOException {
         CBORObject decoded = CBORObject.decode(csfData);
-        String[] keys = decoded.getTextStringMap().getKeys();
-        for (String key : keys) {
-            CBORObject value = decoded.getTextStringMap().getObject(key);
-            if (value.getType() == CBORTypes.INTEGER_MAP) {
-                CBORIntegerMap possibleSignature = value.getIntegerMap();
-                if (possibleSignature.hasKey(CBORSigner.ALGORITHM_LABEL.getInt())) {
+        CBORObject[] keys = decoded.getMap().getKeys();
+        for (CBORObject key : keys) {
+            CBORObject value = decoded.getMap().getObject(key);
+            if (value.getType() == CBORTypes.MAP) {
+                CBORMap possibleSignature = value.getMap();
+                if (possibleSignature.hasKey(CBORSigner.ALGORITHM_LABEL)) {
                     CBORObject alg =
-                            possibleSignature.getObject(CBORSigner.ALGORITHM_LABEL.getInt());
+                            possibleSignature.getObject(CBORSigner.ALGORITHM_LABEL);
                     if (alg.getType() != CBORTypes.INTEGER) continue;
                 }
-                if (possibleSignature.hasKey(CBORSigner.SIGNATURE_LABEL.getInt())) {
+                if (possibleSignature.hasKey(CBORSigner.SIGNATURE_LABEL)) {
                     CBORObject sig =
-                            possibleSignature.getObject(CBORSigner.SIGNATURE_LABEL.getInt());
+                            possibleSignature.getObject(CBORSigner.SIGNATURE_LABEL);
                     if (sig.getType() != CBORTypes.BYTE_STRING) continue;
                 }
                 // This is with 99% certainty a CSF signature.  Bump the signature value.
-                possibleSignature.removeObject(CBORSigner.SIGNATURE_LABEL.getInt());
+                possibleSignature.removeObject(CBORSigner.SIGNATURE_LABEL);
                 return decoded.toString();
             }
         }
@@ -163,7 +162,7 @@ public class CborSignatures {
         try {
             oldSignature = ArrayUtil.readFile(fileName);
             try {
-                CBORObject.decode(oldSignature).getTextStringMap().validate(SIGNATURE_LABEL, validator);
+                CBORObject.decode(oldSignature).getMap().validate(SIGNATURE_LABEL, validator);
             } catch (Exception e) {
                 throw new GeneralSecurityException("ERROR - Old signature '" + fileName + "' did not validate");
             }
@@ -197,7 +196,7 @@ public class CborSignatures {
         }
         byte[] signedData = createSignature(signer);
         CBORHmacValidator validator = new CBORHmacValidator(key);
-        CBORTextStringMap decoded = CBORObject.decode(signedData).getTextStringMap();
+        CBORMap decoded = CBORObject.decode(signedData).getMap();
         decoded.validate(SIGNATURE_LABEL, validator);
         decoded.validate(SIGNATURE_LABEL, new CBORHmacValidator(new CBORHmacValidator.KeyLocator() {
             
@@ -222,15 +221,15 @@ public class CborSignatures {
     }
 
     static byte[] getDataToSign() throws Exception {
-        return new CBORTextStringMap()
+        return new CBORMap()
             .setObject("instant", new CBORDateTime("2021-06-10T11:23:06Z"))
             .setObject("name", new CBORTextString("John Doe"))
             .setObject("id", new CBORInteger(123456))
             .encode();
     }
     
-    static CBORTextStringMap parseDataToSign() throws Exception {
-        return CBORObject.decode(getDataToSign()).getTextStringMap();
+    static CBORMap parseDataToSign() throws Exception {
+        return CBORObject.decode(getDataToSign()).getMap();
     }
 
     static byte[] createSignature(CBORSigner signer) throws Exception {
@@ -276,7 +275,7 @@ public class CborSignatures {
         }
         byte[] signedData = createSignature(signer);
         CBORAsymSignatureValidator validator = new CBORAsymSignatureValidator(keyPair.getPublic());
-        CBORTextStringMap decoded = CBORObject.decode(signedData).getTextStringMap();
+        CBORMap decoded = CBORObject.decode(signedData).getMap();
         decoded.validate(SIGNATURE_LABEL, validator);
         String fileName = baseSignatures + prefix(keyType) +
                 getAlgorithm(algorithm) + '@' +  

@@ -158,14 +158,9 @@ public abstract class CBORObject {
         return ((CBORByteString) this).byteString;
     }
 
-    public CBORTextStringMap getTextStringMap() throws IOException {
-        checkTypeAndMarkAsRead(CBORTypes.TEXT_STRING_MAP);
-        return (CBORTextStringMap) this;
-    }
-
-    public CBORIntegerMap getIntegerMap() throws IOException {
-        checkTypeAndMarkAsRead(CBORTypes.INTEGER_MAP);
-        return (CBORIntegerMap) this;
+    public CBORMap getMap() throws IOException {
+        checkTypeAndMarkAsRead(CBORTypes.MAP);
+        return (CBORMap) this;
     }
 
     public CBORArray getArray() throws IOException {
@@ -301,32 +296,13 @@ public abstract class CBORObject {
 
             case MT_MAP:
                 length = checkLength(length);
-                if (length == 0) {
-                    // Empty map, special case
-                    return new CBORTextStringMap();
+                CBORMap cborMap = new CBORMap();
+                while (--length >= 0) {
+                    cborMap.setObject(getObject(), getObject());
+                    cborMap.parsingMode = checkKeySortingOrder;
                 }
-                CBORMapBase cborMapBase = null;
-                CBORObject key1 = getObject();
-                if (key1.getType() == CBORTypes.INTEGER) {
-                    cborMapBase = new CBORIntegerMap();
-                } else if (key1.getType() == CBORTypes.TEXT_STRING) {
-                    cborMapBase = new CBORTextStringMap();
-                } else {
-                    bad("Only integer and text string map keys supported, found: " +
-                        key1.getType());
-                }
-                cborMapBase.setObject(key1, getObject());
-                cborMapBase.parsingMode = checkKeySortingOrder;
-                while (--length > 0) {
-                    CBORObject key = getObject();
-                    if (key.getType() != key1.getType()) {
-                        bad("Mixing key types in the same map is not supported: " +
-                            key1.getType() + " versus " + key.getType());
-                    }
-                    cborMapBase.setObject(key, getObject());
-                }
-                cborMapBase.parsingMode = false;
-                return cborMapBase;
+                cborMap.parsingMode = false;
+                return cborMap;
 
             default:
                 bad("Unsupported tag: " + first);
@@ -385,9 +361,8 @@ public abstract class CBORObject {
 
     private void checkObjectForUnread(CBORObject holderObject) throws IOException {
         switch (getType()) {
-        case TEXT_STRING_MAP:
-        case INTEGER_MAP:
-            CBORMapBase cborMap = (CBORMapBase) this;
+        case MAP:
+            CBORMap cborMap = (CBORMap) this;
             for (CBORObject key : cborMap.keys.keySet()) {
                  cborMap.keys.get(key).checkObjectForUnread(key);
             }
