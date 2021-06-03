@@ -71,48 +71,45 @@ public class CBORMap extends CBORObject {
     public CBORTypes getType() {
         return CBORTypes.MAP;
     }
-    
+
+    /**
+     * Check map for key presence.
+     * 
+     * @param key Key
+     * @return <code>true</code> if the key is present
+     */
     public boolean hasKey(CBORObject key) {
         return keys.containsKey(key);
     }
 
-    public void validate(CBORObject key, CBORValidator validator) throws IOException, 
-                                                                         GeneralSecurityException {
-        // Fetch signature object
-        CBORMap signatureObject = getObject(key).getMap();
-        
-        // Get the signature value.
-        byte[] signatureValue = 
-                signatureObject.getObject(CBORSigner.SIGNATURE_LABEL).getByteString();
-        
-        // Remove the signature value label and its argument.
-        // The remaining object is used for signature calculation.
-        signatureObject.keys.remove(CBORSigner.SIGNATURE_LABEL);
-        
-        // Fetch optional keyId.
-        String optionalKeyId =
-                signatureObject.hasKey(CBORSigner.KEY_ID_LABEL) ?
-            signatureObject.getObject(CBORSigner.KEY_ID_LABEL).getTextString() : null;
-        
-        // Call specific validator.
-        validator.validate(signatureObject, 
-                           signatureObject.getObject(CBORSigner.ALGORITHM_LABEL).getInt(),
-                           optionalKeyId,
-                           signatureValue,
-                           encode());
-        
-        // Check that nothing "extra" was supplied.
-        signatureObject.checkObjectForUnread();
-
-        // Restore object.
-        signatureObject.keys.put(CBORSigner.SIGNATURE_LABEL, new CBORByteString(signatureValue));
+    /**
+     * Check map for key presence.
+     * 
+     * @param key Key
+     * @return <code>true</code> if the key is present
+     */
+    public boolean hasKey(int key) {
+        return hasKey(new CBORInteger(key));
     }
-
-    public CBORMap sign(CBORObject key, CBORSigner signer) throws IOException, GeneralSecurityException {
-        signer.sign(key, this);
-        return this;
+    
+    /**
+     * Check map for key presence.
+     * 
+     * @param key Key
+     * @return <code>true</code> if the key is present
+     */
+    public boolean hasKey(String key) {
+        return hasKey(new CBORTextString(key));
     }
+    
+    /**
+     * Set map value.
 
+     * @param key Key
+     * @param value Value
+     * @return <code>this</code>
+     * @throws IOException
+     */
     public CBORMap setObject(CBORObject key, CBORObject value) throws IOException {
         if (keys.put(key, value) != null) {
             bad("Duplicate key: " + key.toString());
@@ -126,19 +123,37 @@ public class CBORMap extends CBORObject {
         return this;
     }
 
-    public CBORMap removeObject(CBORObject key) throws IOException {
-        if (!keys.containsKey(key)) {
-            bad("No such key: " + key.toString());
-        }
-        keys.remove(key);
+    /**
+     * Set map value.
+
+     * @param key Key
+     * @param value Value
+     * @return <code>this</code>
+     * @throws IOException
+     */
+    public CBORMap setObject(int key, CBORObject value) throws IOException {
+        setObject(new CBORInteger(key), value);
         return this;
     }
 
     /**
+     * Set map value.
+
+     * @param key Key
+     * @param value Value
+     * @return <code>this</code>
+     * @throws IOException
+     */
+    public CBORMap setObject(String key, CBORObject value) throws IOException {
+        setObject(new CBORTextString(key), value);
+        return this;
+    }
+    
+     /**
      * Get map value.
      * 
-     * @param key Key in CBOR notation
-     * @return
+     * @param key Key
+     * @return Value
      * @throws IOException
      */
     public CBORObject getObject(CBORObject key) throws IOException {
@@ -151,10 +166,47 @@ public class CBORMap extends CBORObject {
     }
 
     /**
+     * Get map value.
+     * 
+     * @param key Key
+     * @return Value
+     * @throws IOException
+     */
+    public CBORObject getObject(int key) throws IOException {
+        return getObject(new CBORInteger(key));
+    }
+    
+    /**
+     * Get map value.
+     * 
+     * @param key Key
+     * @return Value
+     * @throws IOException
+     */
+    public CBORObject getObject(String key) throws IOException {
+        return getObject(new CBORTextString(key));
+    }
+    
+    /**
      * Remove object from map.
      * 
-     * @param key Key in integer format.
-     * @return this
+     * @param key Key
+     * @return <code>this</code>
+     * @throws IOException
+     */
+    public CBORMap removeObject(CBORObject key) throws IOException {
+        if (!keys.containsKey(key)) {
+            bad("No such key: " + key.toString());
+        }
+        keys.remove(key);
+        return this;
+    }
+
+    /**
+     * Remove object from map.
+     * 
+     * @param key Key
+     * @return <code>this</code>
      * @throws IOException
      */
     public CBORMap removeObject(int key) throws IOException {
@@ -165,8 +217,8 @@ public class CBORMap extends CBORObject {
     /**
      * Remove object from map.
      * 
-     * @param key Key in string format
-     * @return this
+     * @param key Key
+     * @return <code>this</code>
      * @throws IOException
      */
     public CBORMap removeObject(String key) throws IOException {
@@ -175,36 +227,50 @@ public class CBORMap extends CBORObject {
     }
 
     /**
-     * Set map value.
+     * Validate signed CBOR map.
      * 
-     * @param key Key in integer format
-     * @param value Value expressed as a CBOR object
-     * @return this
+     * @param key Key in map holding signature
+     * @param validator Validator
      * @throws IOException
+     * @throws GeneralSecurityException
      */
-    public CBORMap setObject(int key, CBORObject value) throws IOException {
-        setObject(new CBORInteger(key), value);
-        return this;
-    }
-    
-    /**
-     * Set map value.
-     * 
-     * @param key Key in string format
-     * @param value Value in CBOR notation
-     * @return this
-     * @throws IOException
-     */
-    public CBORMap setObject(String key, CBORObject value) throws IOException {
-        setObject(new CBORTextString(key), value);
-        return this;
+    public void validate(CBORObject key, CBORValidator validator) throws IOException, 
+                                                                         GeneralSecurityException {
+        // Fetch signature object
+        CBORMap signatureObject = getObject(key).getMap();
+
+        // Get the signature value.
+        byte[] signatureValue = signatureObject
+                .getObject(CBORSigner.SIGNATURE_LABEL).getByteString();
+
+        // Remove the signature value label and its argument.
+        // The remaining object is used for signature calculation.
+        signatureObject.keys.remove(CBORSigner.SIGNATURE_LABEL);
+
+        // Fetch optional keyId.
+        String optionalKeyId = signatureObject.hasKey(CBORSigner.KEY_ID_LABEL)
+                ? signatureObject.getObject(CBORSigner.KEY_ID_LABEL)
+                        .getTextString()
+                : null;
+
+        // Call specific validator.
+        validator.validate(signatureObject,
+                signatureObject.getObject(CBORSigner.ALGORITHM_LABEL).getInt(),
+                optionalKeyId, signatureValue, encode());
+
+        // Check that nothing "extra" was supplied.
+        signatureObject.checkObjectForUnread();
+
+        // Restore object.
+        signatureObject.keys.put(CBORSigner.SIGNATURE_LABEL,
+                new CBORByteString(signatureValue));
     }
 
     /**
-     * Validate signed CBOR object.
+     * Validate signed CBOR map.
      * 
-     * @param key Of map to validate
-     * @param validator Holds the validation method
+     * @param key Key in map holding signature
+     * @param validator Validator
      * @throws IOException
      * @throws GeneralSecurityException
      */
@@ -214,10 +280,10 @@ public class CBORMap extends CBORObject {
     }
     
     /**
-     * Validate signed CBOR object.
+     * Validate signed CBOR map.
      * 
-     * @param key Of map to validate
-     * @param validator Holds the validation method
+     * @param key Key in map holding signature
+     * @param validator Validator
      * @throws IOException
      * @throws GeneralSecurityException
      */
@@ -229,9 +295,23 @@ public class CBORMap extends CBORObject {
     /**
      * Sign CBOR object.
      * 
-     * @param key Of the map to sign
+     * @param key Key holding the signature in the map to sign
      * @param signer Holder of signature method and key
-     * @return this
+     * @return <code>this</code>
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
+    public CBORMap sign(CBORObject key, CBORSigner signer) throws IOException, GeneralSecurityException {
+        signer.sign(key, this);
+        return this;
+    }
+
+    /**
+     * Sign CBOR object.
+     * 
+     * @param key Key holding the signature in the map to sign
+     * @param signer Holder of signature method and key
+     * @return <code>this</code>
      * @throws IOException
      * @throws GeneralSecurityException
      */
@@ -243,35 +323,15 @@ public class CBORMap extends CBORObject {
     /**
      * Sign CBOR object.
      * 
-     * @param key Of the map to sign
+     * @param key Key holding the signature in the map to sign
      * @param signer Holder of signature method and key
-     * @return this
+     * @return <code>this</code>
      * @throws IOException
      * @throws GeneralSecurityException
      */
     public CBORMap sign(String key, CBORSigner signer) 
             throws IOException, GeneralSecurityException {
         return sign(new CBORTextString(key), signer);
-    }
-
-    /**
-     * Check map for key presence.
-     * 
-     * @param key Key in integer format
-     * @return <code>true</code> if the key is present
-     */
-    public boolean hasKey(int key) {
-        return hasKey(new CBORInteger(key));
-    }
-    
-    /**
-     * Check map for key presence.
-     * 
-     * @param key Key in string format
-     * @return <code>true</code> if the key is present
-     */
-    public boolean hasKey(String key) {
-        return hasKey(new CBORTextString(key));
     }
 
     /**
@@ -282,28 +342,6 @@ public class CBORMap extends CBORObject {
      */
     public CBORObject[] getKeys() throws IOException {
         return keys.keySet().toArray(new CBORObject[0]);
-    }
-
-    /**
-     * Get map value.
-     * 
-     * @param key Key in integer format
-     * @return Value in CBOR notation
-     * @throws IOException
-     */
-    public CBORObject getObject(int key) throws IOException {
-        return getObject(new CBORInteger(key));
-    }
-    
-    /**
-     * Get map value.
-     * 
-     * @param key Key in string format
-     * @return Value in CBOR notation
-     * @throws IOException
-     */
-    public CBORObject getObject(String key) throws IOException {
-        return getObject(new CBORTextString(key));
     }
 
     @Override
