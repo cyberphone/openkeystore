@@ -68,7 +68,6 @@ public abstract class CBORObject {
     
     abstract void internalToString(PrettyPrinter prettyPrinter);
 
-    
     static void bad(String error) throws IOException {
         throw new IOException(error);
     }
@@ -95,7 +94,6 @@ public abstract class CBORObject {
         encoded[0] |= majorType;
         return encoded;
     }
-
 
     // for maps
     static boolean rfc7049Sorting = true;
