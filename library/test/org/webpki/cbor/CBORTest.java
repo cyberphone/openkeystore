@@ -1082,4 +1082,98 @@ public class CBORTest {
         parseStrangeCborHex("A204616B026166", "A202616604616B", false, true);
         parseStrangeCborHex("A202616604616B01", "A202616604616B", true, false);
     }
+
+
+    private String serializeJson(String[] jsonTokens, boolean addWhiteSpace) {
+        StringBuilder s = new StringBuilder();
+        for (String jsonToken : jsonTokens) {
+            if (addWhiteSpace) {
+                s.append(' ');
+            }
+            s.append(jsonToken);
+        }
+        if (addWhiteSpace) {
+            s.append(' ');
+        }
+        return s.toString();
+    }
+    
+    private CBORObject serializeJson(String[] jsonTokens) throws Exception {
+        CBORObject one = JSONReader.convert(serializeJson(jsonTokens, false));
+        assertTrue("jsonCompp", one.equals(JSONReader.convert(serializeJson(jsonTokens, true))));
+        return one;
+    }
+    
+    private CBORObject serializeJson(String jsonToken) throws Exception {
+        return serializeJson(new String[] {jsonToken});
+    }
+    
+    private void converionError(String badJson) throws Exception {
+        try {
+            JSONReader.convert(badJson);
+            fail("Should not" + badJson);
+        } catch (Exception e) {
+            
+        }
+    }
+    
+    @Test
+    public void json2CborConversions() throws Exception {
+        String[] jsonTokens = new String[] {
+                "{", "\"lab\"", ":", "true", "}"
+        };
+        CBORMap cborMap = new CBORMap()
+            .setObject("lab", new CBORBoolean(true));
+        assertTrue("json", cborMap.equals(serializeJson(jsonTokens)));
+        
+        assertTrue("json", new CBORMap().equals(serializeJson(new String[] {"{","}"})));
+        
+        jsonTokens = new String[] {
+                "{", "\"lab\"", ":", "true", "," ,"\"j\"",":", "2000", "}"
+        };
+        cborMap = new CBORMap()
+            .setObject("lab", new CBORBoolean(true))
+            .setObject("j", new CBORInteger(2000));
+        assertTrue("json", cborMap.equals(serializeJson(jsonTokens)));
+        
+        assertTrue("json", new CBORArray().equals(serializeJson(new String[] {"[","]"})));
+               
+        assertTrue("json", new CBORTextString("hi").equals(serializeJson("\"hi\"")));
+        assertTrue("json", new CBORTextString("").equals(serializeJson("\"\"")));
+        assertTrue("json", new CBORTextString("\u20ac$\n\b\r\t\"\\ ").equals(serializeJson(
+                                              "\"\\u20ac$\\u000a\\b\\r\\t\\\"\\\\ \"")));
+        assertTrue("json", new CBORTextString("\u0123\u4567\u89ab\ucdef\uABCD\uEF00").equals(serializeJson(
+                                              "\"\\u0123\\u4567\\u89ab\\ucdef\\uABCD\\uEF00\"")));
+        assertTrue("json", new CBORBoolean(true).equals(serializeJson("true")));
+        assertTrue("json", new CBORBoolean(false).equals(serializeJson("false")));
+        assertTrue("json", new CBORNull().equals(serializeJson("null")));
+        assertTrue("json", new CBORInteger(-234).equals(serializeJson("-234")));
+        assertTrue("json", new CBORInteger(234).equals(serializeJson("234")));
+        assertTrue("json", new CBORInteger(1).equals(serializeJson("1")));
+        assertTrue("json", new CBORInteger(987654321).equals(serializeJson("0987654321")));
+        assertTrue("json", new CBORBigInteger(new BigInteger("9007199254740992")).equals(serializeJson(
+                                                             "9007199254740992")));
+        
+        CBORArray cborArray = new CBORArray()
+            .addElement(new CBORTextString("hi"));
+        assertTrue("json", cborArray.equals(serializeJson(new String[] {"[","\"hi\"","]"})));
+        cborArray.addElement(new CBORMap())
+                 .addElement(new CBORInteger(4));
+        assertTrue("json", cborArray.equals(serializeJson(new String[] {"[","\"hi\"",",","{","}",",","4","]"})));
+        
+        converionError("k");
+        converionError("\"k");
+        converionError("\"\\k\"");
+        converionError("0y");
+        converionError("8.0");
+        converionError("0 8");
+        converionError("[");
+        converionError("[] 6");
+        converionError("9007199254740993");
+        converionError("[6,]");
+        converionError("{6:8}");
+        converionError("{\"6\":8,}");
+        converionError("{\"6\",8}");
+        converionError("{} 6");
+    }
 }
