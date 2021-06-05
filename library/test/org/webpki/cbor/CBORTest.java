@@ -1111,7 +1111,7 @@ public class CBORTest {
     private void conversionError(String badJson) throws Exception {
         try {
             JSONReader.convert(badJson);
-            fail("Should not" + badJson);
+            fail("Should fail on: " + badJson);
         } catch (Exception e) {
         }
     }
@@ -1160,9 +1160,11 @@ public class CBORTest {
                  .addElement(new CBORInteger(4));
         assertTrue("json", cborArray.equals(serializeJson(new String[] {"[","\"hi\"",",","{","}",",","4","]"})));
         
+        conversionError("");
         conversionError("k");
         conversionError("\"k");
         conversionError("\"\\k\"");
+        conversionError("\"\\ufffl\"");
         conversionError("0y");
         conversionError("8.0");
         conversionError("0 8");
