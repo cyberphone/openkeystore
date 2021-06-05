@@ -27,7 +27,7 @@ import org.webpki.util.ArrayUtil;
  */
 public class CBORArray extends CBORObject {
 
-    ArrayList<CBORObject> elements = new ArrayList<>();
+    ArrayList<CBORObject> objectList = new ArrayList<>();
 
     /**
      * Create a CBOR array <code>[]</code> object.
@@ -35,18 +35,45 @@ public class CBORArray extends CBORObject {
      */
     public CBORArray() {}
     
-    public CBORObject getElement(int index) throws IOException {
-        readFlag = true;
-        return elements.get(index);
+    /**
+     * Get the size of the array.
+     * 
+     * @return The number of elements in the array
+     */
+    public int size() {
+        return objectList.size();
     }
     
-    public CBORArray addElement(CBORObject cborObject) {
-        elements.add(cborObject);
+    /**
+     * Get object at a specific position.
+     * 
+     * @param index The position (0 - size-1)
+     * @return CBOR object
+     * @throws IOException
+     */
+    public CBORObject getObject(int index) throws IOException {
+        readFlag = true;
+        return objectList.get(index);
+    }
+    
+    /**
+     * Append object to the list.
+     * 
+     * @param cborObject
+     * @return <code>this</code>
+     */
+    public CBORArray addObject(CBORObject cborObject) {
+        objectList.add(cborObject);
         return this;
     }
     
-    public CBORObject[] getElements() {
-        return elements.toArray(new CBORObject[0]);
+    /**
+     * Return the entire array.
+     * 
+     * @return Array of CBOR objects
+     */
+    public CBORObject[] getObjects() {
+        return objectList.toArray(new CBORObject[0]);
     }
  
     @Override
@@ -56,9 +83,9 @@ public class CBORArray extends CBORObject {
 
     @Override
     public byte[] encode() throws IOException {
-        byte[] encoded = getEncodedCore(MT_ARRAY, elements.size());
-        for (CBORObject element : getElements()) {
-            encoded = ArrayUtil.add(encoded, element.encode());
+        byte[] encoded = getEncodedCore(MT_ARRAY, objectList.size());
+        for (CBORObject cborObject : getObjects()) {
+            encoded = ArrayUtil.add(encoded, cborObject.encode());
         }
         return encoded;
     }
@@ -67,13 +94,13 @@ public class CBORArray extends CBORObject {
     void internalToString(CBORObject.PrettyPrinter prettyPrinter) {
         prettyPrinter.beginStructure("[\n");
         boolean notFirst = false;
-        for (CBORObject element : getElements()) {
+        for (CBORObject cborObject : getObjects()) {
             if (notFirst) {
                 prettyPrinter.insertComma();
             }
             notFirst = true;
             prettyPrinter.indent();
-            element.internalToString(prettyPrinter);
+            cborObject.internalToString(prettyPrinter);
             prettyPrinter.appendText("\n");
         }
         prettyPrinter.endStructure("]");

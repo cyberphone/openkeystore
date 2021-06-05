@@ -225,35 +225,35 @@ public abstract class CBORObject {
 
             // Begin with the types uniquely defined by the initial byte
             switch ((byte)first) {
-            case MT_DATE_TIME:
-                return new CBORDateTime(getObject().getTextString()); 
- 
-            case MT_BIG_SIGNED:
-            case MT_BIG_UNSIGNED:
-                byte[] byteArray = getObject().getByteString();
-                if (byteArray.length == 0) {
-                    byteArray = ZERO_BYTE;  // Zero length byte string => n == 0
-                } else if (byteArray[0] == 0) {
-                    bad("Non-deterministic encoding: leading zero byte");
-                }
-                BigInteger bigInteger = 
-                    ((byte)first == MT_BIG_SIGNED) ?
-                        new BigInteger(-1, byteArray).subtract(BigInteger.ONE)
-                                                   :
-                    new BigInteger(1, byteArray);
-                if (CBORBigInteger.fitsAnInteger(bigInteger)) {
-                    bad("Non-deterministic encoding: bignum fits integer");
-                }
-                return new CBORBigInteger(bigInteger);
-
-            case MT_NULL:
-                return new CBORNull();
-                
-            case MT_TRUE:
-            case MT_FALSE:
-                return new CBORBoolean((byte)first == MT_TRUE);
-                
-            default:
+                case MT_DATE_TIME:
+                    return new CBORDateTime(getObject().getTextString()); 
+     
+                case MT_BIG_SIGNED:
+                case MT_BIG_UNSIGNED:
+                    byte[] byteArray = getObject().getByteString();
+                    if (byteArray.length == 0) {
+                        byteArray = ZERO_BYTE;  // Zero length byte string => n == 0
+                    } else if (byteArray[0] == 0) {
+                        bad("Non-deterministic encoding: leading zero byte");
+                    }
+                    BigInteger bigInteger = 
+                        ((byte)first == MT_BIG_SIGNED) ?
+                            new BigInteger(-1, byteArray).subtract(BigInteger.ONE)
+                                                       :
+                        new BigInteger(1, byteArray);
+                    if (CBORBigInteger.fitsAnInteger(bigInteger)) {
+                        bad("Non-deterministic encoding: bignum fits integer");
+                    }
+                    return new CBORBigInteger(bigInteger);
+    
+                case MT_NULL:
+                    return new CBORNull();
+                    
+                case MT_TRUE:
+                case MT_FALSE:
+                    return new CBORBoolean((byte)first == MT_TRUE);
+                    
+                default:
             }
 
             // Then decode the types blending length data in the initial byte as well
@@ -274,38 +274,38 @@ public abstract class CBORObject {
                 }
             }
             switch (majorType) {
-            case MT_UNSIGNED:
-                return new CBORInteger(length, true);
-
-            case MT_NEGATIVE:
-                return new CBORInteger(length + 1, false);
-
-            case MT_BYTE_STRING:
-                return new CBORByteString(readBytes(checkLength(length)));
-
-            case MT_TEXT_STRING:
-                return new CBORTextString(new String(readBytes(checkLength(length)), "utf-8"));
-
-            case MT_ARRAY:
-                length = checkLength(length);
-                CBORArray cborArray = new CBORArray();
-                while (--length >= 0) {
-                    cborArray.addElement(getObject());
-                }
-                return cborArray;
-
-            case MT_MAP:
-                length = checkLength(length);
-                CBORMap cborMap = new CBORMap();
-                while (--length >= 0) {
-                    cborMap.setObject(getObject(), getObject());
-                    cborMap.parsingMode = checkKeySortingOrder;
-                }
-                cborMap.parsingMode = false;
-                return cborMap;
-
-            default:
-                bad("Unsupported tag: " + first);
+                case MT_UNSIGNED:
+                    return new CBORInteger(length, true);
+    
+                case MT_NEGATIVE:
+                    return new CBORInteger(length + 1, false);
+    
+                case MT_BYTE_STRING:
+                    return new CBORByteString(readBytes(checkLength(length)));
+    
+                case MT_TEXT_STRING:
+                    return new CBORTextString(new String(readBytes(checkLength(length)), "utf-8"));
+    
+                case MT_ARRAY:
+                    length = checkLength(length);
+                    CBORArray cborArray = new CBORArray();
+                    while (--length >= 0) {
+                        cborArray.addObject(getObject());
+                    }
+                    return cborArray;
+    
+                case MT_MAP:
+                    length = checkLength(length);
+                    CBORMap cborMap = new CBORMap();
+                    while (--length >= 0) {
+                        cborMap.setObject(getObject(), getObject());
+                        cborMap.parsingMode = checkKeySortingOrder;
+                    }
+                    cborMap.parsingMode = false;
+                    return cborMap;
+    
+                default:
+                    bad("Unsupported tag: " + first);
             }
             return null;  // For the compiler only...
         }
@@ -361,21 +361,21 @@ public abstract class CBORObject {
 
     private void checkObjectForUnread(CBORObject holderObject) throws IOException {
         switch (getType()) {
-        case MAP:
-            CBORMap cborMap = (CBORMap) this;
-            for (CBORObject key : cborMap.keys.keySet()) {
-                 cborMap.keys.get(key).checkObjectForUnread(key);
-            }
-            break;
-    
-        case ARRAY:
-            CBORArray cborArray = (CBORArray) this;
-            for (CBORObject element : cborArray.getElements()) {
-                element.checkObjectForUnread(cborArray);
-            }
-            break;
-    
-        default:
+            case MAP:
+                CBORMap cborMap = (CBORMap) this;
+                for (CBORObject key : cborMap.keys.keySet()) {
+                     cborMap.keys.get(key).checkObjectForUnread(key);
+                }
+                break;
+        
+            case ARRAY:
+                CBORArray cborArray = (CBORArray) this;
+                for (CBORObject object : cborArray.getObjects()) {
+                    object.checkObjectForUnread(cborArray);
+                }
+                break;
+        
+            default:
         }
         if (!readFlag) {
             bad((holderObject == null ? "Data" : 

@@ -86,7 +86,7 @@ public class JSONReader {
                 while (readChar() != ']') {
                     index--;
                     do {
-                        array.addElement(getObject());
+                        array.addObject(getObject());
                     } while (continueList(']'));
                 }
                 return array;

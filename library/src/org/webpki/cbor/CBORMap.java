@@ -71,6 +71,15 @@ public class CBORMap extends CBORObject {
     public CBORTypes getType() {
         return CBORTypes.MAP;
     }
+    
+    /**
+     * Get the size of the map.
+     * 
+     * @return The number of entries (keys) in the map
+     */
+    public int size() {
+        return keys.size();
+    }
 
     /**
      * Check map for key presence.
