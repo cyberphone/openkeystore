@@ -18,8 +18,6 @@ package org.webpki.cbor;
 
 import java.io.IOException;
 
-import java.math.BigInteger;
-
 /**
  * Class for converting JSON to CBOR.
  */
@@ -29,7 +27,7 @@ public class JSONReader {
     int index;
     
     // 2^53 ("53-bit precision")
-    static final BigInteger MAX_JSON_INTEGER = new BigInteger("9007199254740992");
+    static final long MAX_JSON_INTEGER = 9007199254740992l;
 
     JSONReader(String jsonString) {
         this.json = jsonString.toCharArray();
@@ -142,9 +140,9 @@ public class JSONReader {
         do  {
             token.append(readChar());
         } while (((c = nextChar()) >= '0' && c <= '9') || c == '.');
-        BigInteger value = new BigInteger(token.toString());
-        if (value.abs().compareTo(MAX_JSON_INTEGER) > 0) {
-            throw new IOException("JSON integers MUST NOT exceed 2^53");
+        long value = Long.valueOf(token.toString());
+        if (Math.abs(value) > MAX_JSON_INTEGER) {
+            throw new IOException("JSON integer exceeded 2^53");
         }
         return new CBORInteger(value);
     }
