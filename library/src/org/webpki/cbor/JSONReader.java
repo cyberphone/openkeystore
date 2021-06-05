@@ -47,11 +47,15 @@ public class JSONReader {
     public static CBORObject convert(String jsonString) throws IOException {
         return new JSONReader(jsonString).readToEOF();
     }
+
+    private void syntaxError() throws IOException {
+        throw new IOException("Syntax error around position: " + index);
+    }
     
     private CBORObject readToEOF() throws IOException {
         CBORObject cborObject = getObject();
         if (index < json.length) {
-            throw new IOException("Unexpected data");
+            throw new IOException("Unexpected data after token");
         }
         return cborObject;
     }
@@ -137,7 +141,7 @@ public class JSONReader {
         char c;
         do  {
             token.append(readChar());
-        } while ((c = nextChar()) >= '0' && c <= '9');
+        } while (((c = nextChar()) >= '0' && c <= '9') || c == '.');
         BigInteger value = new BigInteger(token.toString());
         if (value.abs().compareTo(MAX_JSON_INTEGER) > 0) {
             throw new IOException("JSON integers MUST NOT exceed 2^53");
@@ -158,10 +162,6 @@ public class JSONReader {
                 syntaxError();
             }
         }
-    }
-
-    private void syntaxError() throws IOException {
-        throw new IOException("syntax");
     }
 
     private CBORTextString getString() throws IOException {

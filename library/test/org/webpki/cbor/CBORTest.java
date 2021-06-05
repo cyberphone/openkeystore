@@ -1108,12 +1108,11 @@ public class CBORTest {
         return serializeJson(new String[] {jsonToken});
     }
     
-    private void converionError(String badJson) throws Exception {
+    private void conversionError(String badJson) throws Exception {
         try {
             JSONReader.convert(badJson);
             fail("Should not" + badJson);
         } catch (Exception e) {
-            
         }
     }
     
@@ -1161,19 +1160,19 @@ public class CBORTest {
                  .addElement(new CBORInteger(4));
         assertTrue("json", cborArray.equals(serializeJson(new String[] {"[","\"hi\"",",","{","}",",","4","]"})));
         
-        converionError("k");
-        converionError("\"k");
-        converionError("\"\\k\"");
-        converionError("0y");
-        converionError("8.0");
-        converionError("0 8");
-        converionError("[");
-        converionError("[] 6");
-        converionError("9007199254740993");
-        converionError("[6,]");
-        converionError("{6:8}");
-        converionError("{\"6\":8,}");
-        converionError("{\"6\",8}");
-        converionError("{} 6");
+        conversionError("k");
+        conversionError("\"k");
+        conversionError("\"\\k\"");
+        conversionError("0y");
+        conversionError("8.0");
+        conversionError("0 8");
+        conversionError("[");
+        conversionError("[] 6");
+        conversionError("9007199254740993");
+        conversionError("[6,]");
+        conversionError("{6:8}");
+        conversionError("{\"6\":8,}");
+        conversionError("{\"6\",8}");
+        conversionError("{} 6");
     }
 }
