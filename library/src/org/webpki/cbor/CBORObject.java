@@ -34,7 +34,7 @@ public abstract class CBORObject {
     
     CBORObject() {}
     
-    // For checking if object was read
+    // True if object has been read
     boolean readFlag;
 
     // Major CBOR types
@@ -115,25 +115,74 @@ public abstract class CBORObject {
         readFlag = true;
     }
     
+    /**
+     * Get <code>long</code> value.
+      * <p>
+     * This method requires that the object is a
+     * {@link CBORInteger}, otherwise an exception will be thrown.
+     * </p>
+     * 
+     * @return Value
+     * @throws IOException
+     */
     public long getLong() throws IOException {
         checkTypeAndMarkAsRead(CBORTypes.INTEGER);
         return ((CBORInteger) this).getValueAsBigInteger().longValue();
     }
 
+    /**
+     * Get <code>integer</code> value.
+     * <p>
+     * This method requires that the object is a
+     * {@link CBORInteger}, otherwise an exception will be thrown.
+     * </p>
+     * 
+     * @return Value
+     * @throws IOException
+     */
     public int getInt() throws IOException {
         return (int) getLong();
     }
     
+    /**
+     * Get <code>boolean</code> value.
+     * <p>
+     * This method requires that the object is a
+     * {@link CBORBoolean}, otherwise an exception will be thrown.
+     * </p>
+     * 
+     * @return Value
+     * @throws IOException
+     */
     public boolean getBoolean() throws IOException {
         checkTypeAndMarkAsRead(CBORTypes.BOOLEAN);
         return ((CBORBoolean) this).value;
     }
 
+    /**
+     * Check for <code>null</code>.
+     * <p>
+     * If the object is a {@link CBORNull} the call will return
+     * <code>true</code>, else it will return <code>false></code>.
+     * </p>
+     * @return Status
+     * @throws IOException
+     */
     public boolean isNull() throws IOException {
         checkTypeAndMarkAsRead(getType());
         return getType() == CBORTypes.NULL;
     }
     
+    /**
+     * Get <code>big number</code> value.
+     * <p>
+     * This method requires that the object is either a
+     * {@link CBORInteger} or a {@link CBORBigInteger}, otherwise an exception will be thrown.
+     * </p>
+     * 
+     * @return Value
+     * @throws IOException
+     */
     public BigInteger getBigInteger() throws IOException {
         if (getType() == CBORTypes.INTEGER) {
             checkTypeAndMarkAsRead(CBORTypes.INTEGER);
@@ -143,34 +192,114 @@ public abstract class CBORObject {
         return ((CBORBigInteger) this).value;
     }
 
+    /**
+     * Get <code>text string</code> value.
+     * <p>
+     * This method requires that the object is a
+     * {@link CBORTextString}, otherwise an exception will be thrown.
+     * </p>
+     * 
+     * @return Value
+     * @throws IOException
+     */
     public String getTextString() throws IOException {
         checkTypeAndMarkAsRead(CBORTypes.TEXT_STRING);
         return ((CBORTextString) this).textString;
     }
 
+    /**
+     * Get <code>date time</code> value.
+     * <p>
+     * This method requires that the object is a
+     * {@link CBORDateTime}, otherwise an exception will be thrown.
+     * </p>
+     * 
+     * @return Value
+     * @throws IOException
+     */
     public GregorianCalendar getDateTime() throws IOException {
         checkTypeAndMarkAsRead(CBORTypes.DATE_TIME);
         return ((CBORDateTime) this).dateTime;
     }
 
+    /**
+     * Get <code>byte string</code> value.
+     * <p>
+     * This method requires that the object is a
+     * {@link CBORByteString}, otherwise an exception will be thrown.
+     * </p>
+     * 
+     * @return Value
+     * @throws IOException
+     */
     public byte[] getByteString() throws IOException {
         checkTypeAndMarkAsRead(CBORTypes.BYTE_STRING);
         return ((CBORByteString) this).byteString;
     }
 
+    /**
+     * Get <code>map</code> object.
+     * <p>
+     * This method requires that the object is a
+     * {@link CBORMap}, otherwise an exception will be thrown.
+     * </p>
+     * 
+     * @return Map object
+     * @throws IOException
+     */
     public CBORMap getMap() throws IOException {
         checkTypeAndMarkAsRead(CBORTypes.MAP);
         return (CBORMap) this;
     }
 
+    /**
+     * Get <code>array</code> object.
+     * <p>
+     * This method requires that the object is a
+     * {@link CBORArray}, otherwise an exception will be thrown.
+     * </p>
+     * 
+     * @return Array object
+     * @throws IOException
+     */
     public CBORArray getArray() throws IOException {
         checkTypeAndMarkAsRead(CBORTypes.ARRAY);
         return (CBORArray) this;
     }
     
-    public CBORObject scan() throws IOException {
-        checkTypeAndMarkAsRead(getType());
+    /**
+     * Scan object.
+     * <p>
+     * This method sets the status of this object as well as to possible
+     * child objects to &quot;read&quot;.
+     * </p>
+     * 
+     * @return <code>this</code>
+     */
+    public CBORObject scan() {
+        scan(this);
         return this;
+    }
+    
+    private void scan(CBORObject holderObject) {
+        switch (getType()) {
+            case MAP:
+                CBORMap cborMap = (CBORMap) this;
+                for (CBORObject key : cborMap.keys.keySet()) {
+                     scan(cborMap.keys.get(key));
+                }
+                break;
+        
+            case ARRAY:
+                CBORArray cborArray = (CBORArray) this;
+                for (CBORObject object : cborArray.getObjects()) {
+                    scan(object);
+                }
+                break;
+        
+            default:
+        }
+        holderObject.readFlag = true;
     }
     
     static class CBORDecoder {
@@ -323,7 +452,7 @@ public abstract class CBORObject {
      * @param encodedCborData
      * @param ignoreAdditionalData Stop reading after parsing a valid CBOR object
      * @param ignoreKeySortingOrder Do not enforce any particular sorting order
-     * @return CBOBObject
+     * @return CBORObject
      * @throws IOException
      */
     public static CBORObject decodeWithOptions(byte[] encodedCborData,
@@ -342,7 +471,7 @@ public abstract class CBORObject {
      * Decode CBOR data.
      * 
      * @param encodedCborData
-     * @return CBOBObject
+     * @return CBORObject
      * @throws IOException
      */
     public static CBORObject decode(byte[] encodedCborData) throws IOException {
@@ -432,6 +561,9 @@ public abstract class CBORObject {
         }
     }
 
+    /**
+     * Check CBOR objects for equality.
+     */
     @Override
     public boolean equals(Object object) {
         try {
@@ -441,6 +573,9 @@ public abstract class CBORObject {
         }
     }
 
+    /**
+     * Return CBOR object as a string in diagnostic notation.
+     */
     @Override
     public String toString() {
         PrettyPrinter prettyPrinter = new PrettyPrinter();

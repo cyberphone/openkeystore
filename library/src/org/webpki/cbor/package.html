@@ -89,7 +89,7 @@ according to the following table:
 <tr><td style='text-align:center'>2</td><td><i>Optional</i> public key in COSE format</td></tr>
 <tr><td style='text-align:center'>3</td><td><i>Optional</i> key Id supplied as a <code>text string</code></td></tr>
 <tr><td style='text-align:center'>4</td><td><i>Optional</i> certificate path supplied as an array of <code>byte string</code> objects</td></tr>
-<tr><td style='text-align:center'>5</td><td>Signature value</td></tr>
+<tr><td style='text-align:center'>5</td><td>Signature value supplied as a <code>byte string</code></td></tr>
 </table>
 <p>
 CSF signatures are validated by running the signature validation 
@@ -128,8 +128,8 @@ arbitrary binary data using a specific scheme called
 In similarity to CSF, CEF also depends on <i>deterministic serialization</i>
 which is used to create authentication data to content encryption
 algorithms like GCM.
-The following shows a printout of a CEF object using an X25519 key
-and the algorithms A256GCM and ECDH-ES+A256KW for content respectively key-wrapping:
+The following shows a printout of a CEF object using the algorithms
+A256GCM and ECDH-ES+A256KW for content- respectively key-wrapping:
 <pre>
 {
   <span style='color:grey'>// Content encryption algorithm = COSE/A256GCM</span>
@@ -138,25 +138,25 @@ and the algorithms A256GCM and ECDH-ES+A256KW for content respectively key-wrapp
   2: {
     <span style='color:grey'>// Key encryption algorithm = COSE/ECDH-ES+A256KW</span>
     1: -31,
-    <span style='color:grey'>// Key Id</span>
+    <span style='color:grey'>// Key Id to a static X25519 key</span>
     3: "example.com:x25519",
-    <span style='color:grey'>// Ephemeral key descriptor in COSE format</span>
+    <span style='color:grey'>// Ephemeral public key descriptor in COSE format</span>
     5: {
       <span style='color:grey'>// kty = OKP</span>
       1: 1,
       <span style='color:grey'>// crv = X25519</span>
       -1: 4,
-       <span style='color:grey'>// x</span>
+      <span style='color:grey'>// x</span>
       -2: h'6b073a97a9bc95e68800f0814a7cd02f2446d6cca8581e3a27bfd490fdaaf631'
     },
-    <span style='color:grey'>// Encrypted key</span>
+    <span style='color:grey'>// CipherText (Encrypted key)</span>
     9: h'27c9c0b68841044368ddb3d41ae04bb1ee9535563f90aaaa519c560217b63aa5d578047b3341c697'
   },
   <span style='color:grey'>// Tag</span>
   7: h'6f97609e63b9e99a806e432de4c71d77',
   <span style='color:grey'>// Initialization Vector (IV)</span>
   8: h'ecb5e6a6291eb5c746dd88b0',
-  <span style='color:grey'>// Ciphertext</span>
+  <span style='color:grey'>// Ciphertext (Encrypted Content)</span>
   9: h'debbe59a33066c7436c6b9ce67e1634e80edbaf4b2f0'
 }
 </pre>
@@ -193,6 +193,25 @@ Symmetric key encryption objects are decrypted as above with the following diffe
 <li>Since there are no key encryption objects, content encryption 
 keys <b>must</b> be known in advance by recipients.</li>
 <li>Possible key Ids <b>must</b> be supplied in the top-level map.</li>
+</ul>
+<p id='cef-layout'>
+The following figure shows the layout of CEF objects:
+</p>
+<div class='webpkicef'>
+<img src='doc-files/cbor-crypto.svg' style='height:22em'/>
+</div>
+<p>
+The numbers in paranthesis denote the actual label value.
+The elements <b>must</b> be used as follows:
+</p>
+<ul>
+<li>If a <code>KeyId</code> is used it must be supplied in the main map for
+symmetric encryption schemes, whereas key encryption schemes require
+that a <code>KeyId</code> is supplied in the sub map.</li>
+<li>All supported key encryption algorithms except for <code>ECDH-ES</code>
+require an encrypted key supplied in the <code>ChipherText</code>
+element in the sub map.</li>
+<li>All ECDH variants require that the <code>EphemeralKey</code> element is defined.</li>
 </ul>
 For ECDH-ES key encryption schemes, HKDF-256 according to RFC&nbsp;5869
 is profiled as follows:
