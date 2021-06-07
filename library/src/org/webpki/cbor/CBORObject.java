@@ -80,6 +80,12 @@ public abstract class CBORObject {
         throw new IOException(error);
     }
     
+    void nullCheck(Object object) {
+        if (object == null) {
+            throw new IllegalArgumentException("Null argument");
+        }
+    }
+    
     byte[] getEncodedCore(byte majorType, long value) {
         byte[] encoded;
         if (value < 0 || value > 4294967295L) {

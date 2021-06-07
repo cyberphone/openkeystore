@@ -35,7 +35,8 @@ public class CBORByteString extends CBORObject {
      */
     public CBORByteString(byte[] byteString) {
         this.byteString = byteString;
-    }
+        nullCheck(byteString);
+   }
     
     @Override
     CBORTypes internalGetType() {

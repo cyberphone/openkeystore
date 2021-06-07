@@ -42,6 +42,7 @@ public class CBORBigInteger extends CBORObject {
      */
     public CBORBigInteger(BigInteger value) {
         this.value = value;
+        nullCheck(value);
     }
 
     @Override

@@ -32,6 +32,7 @@ public class CBORTextString extends CBORObject {
      */
     public CBORTextString(String textString) {
         this.textString = textString;
+        nullCheck(textString);
     }
 
     @Override
