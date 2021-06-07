@@ -129,6 +129,6 @@ public abstract class CBORSigner {
         // Finally, sign all but the signature label and associated value.
         // encode() is supposed to produce a deterministic representation.
         signatureObject.keys.put(SIGNATURE_LABEL, 
-                                 new CBORByteString(signData(objectToSign.encode())));
+                                 new CBORByteString(signData(objectToSign.internalEncode())));
     }
 }

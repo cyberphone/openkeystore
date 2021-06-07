@@ -77,15 +77,15 @@ public class CBORArray extends CBORObject {
     }
  
     @Override
-    public CBORTypes getType() {
+    CBORTypes internalGetType() {
         return CBORTypes.ARRAY;
     }
 
     @Override
-    public byte[] encode() throws IOException {
+    byte[] internalEncode() throws IOException {
         byte[] encoded = getEncodedCore(MT_ARRAY, objectList.size());
         for (CBORObject cborObject : getObjects()) {
-            encoded = ArrayUtil.add(encoded, cborObject.encode());
+            encoded = ArrayUtil.add(encoded, cborObject.internalEncode());
         }
         return encoded;
     }

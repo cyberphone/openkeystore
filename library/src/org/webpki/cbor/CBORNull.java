@@ -31,12 +31,12 @@ public class CBORNull extends CBORObject {
     public CBORNull() {}
 
     @Override
-    public CBORTypes getType() {
+    CBORTypes internalGetType() {
         return CBORTypes.NULL;
     }
 
     @Override
-    public byte[] encode() throws IOException {
+    byte[] internalEncode() throws IOException {
         return NULL_TAG;
     }
 

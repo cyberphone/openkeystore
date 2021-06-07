@@ -41,8 +41,8 @@ public class CBORMap extends CBORObject {
         @Override
         public int compare(CBORObject o1, CBORObject o2) {
             try {
-                byte[] key1 = o1.encode();
-                byte[] key2 = o2.encode();
+                byte[] key1 = o1.internalEncode();
+                byte[] key2 = o2.internalEncode();
                 if (rfc7049Sorting && key1.length != key2.length) {
                     return key1.length - key2.length;
                 }
@@ -68,7 +68,7 @@ public class CBORMap extends CBORObject {
     
 
     @Override
-    public CBORTypes getType() {
+    CBORTypes internalGetType() {
         return CBORTypes.MAP;
     }
     
@@ -265,7 +265,7 @@ public class CBORMap extends CBORObject {
         // Call specific validator.
         validator.validate(signatureObject,
                 signatureObject.getObject(CBORSigner.ALGORITHM_LABEL).getInt(),
-                optionalKeyId, signatureValue, encode());
+                optionalKeyId, signatureValue, internalEncode());
 
         // Check that nothing "extra" was supplied.
         signatureObject.checkObjectForUnread();
@@ -354,12 +354,12 @@ public class CBORMap extends CBORObject {
     }
 
     @Override
-    public byte[] encode() throws IOException {
+    byte[] internalEncode() throws IOException {
         byte[] encoded = getEncodedCore(MT_MAP, keys.size());
         for (CBORObject key : keys.keySet()) {
             encoded = ArrayUtil.add(encoded,
-                                    ArrayUtil.add(key.encode(), 
-                                                  keys.get(key).encode()));
+                                    ArrayUtil.add(key.internalEncode(), 
+                                                  keys.get(key).internalEncode()));
         }
         return encoded;
     }

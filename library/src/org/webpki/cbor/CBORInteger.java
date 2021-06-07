@@ -59,12 +59,12 @@ public class CBORInteger extends CBORObject {
      * from 1 to 2^64.  Examples:
      * <table>
      * <tr><th>Long&nbsp;Value</th><th>Unsigned&nbsp;Mode</th><th>Actual Value</th></tr>
-     * <tr><td>0</td><td>true</td><td>0</td></tr>
-     * <tr><td>0</td><td>false</td><td>-0x10000000000000000 (-2^64)</td></tr>
-     * <tr><td>1</td><td>true</td><td>1</td></tr>
-     * <tr><td>1</td><td>false</td><td>-1</td></tr>
-     * <tr><td>0xffffffffffffffff</td><td>true</td><td>0xffffffffffffffff</td></tr>
-     * <tr><td>0xffffffffffffffff</td><td>false</td><td>-0xffffffffffffffff</td></tr>
+     * <tr><td><code>0</code></td><td><code>true</code></td><td><code>0</code></td></tr>
+     * <tr><td><code>0</code></td><td><code>false</code></td><td><code>-0x10000000000000000 (-2^64)</code></td></tr>
+     * <tr><td><code>1</code></td><td><code>true</code></td><td><code>1</code></td></tr>
+     * <tr><td><code>1</code></td><td><code>false</code></td><td><code>-1</code></td></tr>
+     * <tr><td><code>0xffffffffffffffff</code></td><td><code>true</code></td><td><code>0xffffffffffffffff</code></td></tr>
+     * <tr><td><code>0xffffffffffffffff</code></td><td><code>false</code></td><td><code>-0xffffffffffffffff</code></td></tr>
      * </table>
      *
      * @param value long value
@@ -97,12 +97,12 @@ public class CBORInteger extends CBORObject {
     }
 
     @Override
-    public CBORTypes getType() {
+    CBORTypes internalGetType() {
         return CBORTypes.INTEGER;
     }
 
     @Override
-    public byte[] encode() throws IOException {
+    byte[] internalEncode() throws IOException {
         return getEncodedCore(unsignedMode ? MT_UNSIGNED : MT_NEGATIVE, value);
     }
 

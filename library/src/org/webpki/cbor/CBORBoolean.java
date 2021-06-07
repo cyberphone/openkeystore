@@ -38,12 +38,12 @@ public class CBORBoolean extends CBORObject {
     }
 
     @Override
-    public CBORTypes getType() {
+    CBORTypes internalGetType() {
         return CBORTypes.BOOLEAN;
     }
 
     @Override
-    public byte[] encode() throws IOException {
+    byte[] internalEncode() throws IOException {
         return value ? TRUE : FALSE;
     }
 

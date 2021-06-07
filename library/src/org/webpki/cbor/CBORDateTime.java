@@ -56,13 +56,13 @@ public class CBORDateTime extends CBORObject {
     }
 
     @Override
-    public CBORTypes getType() {
+    CBORTypes internalGetType() {
         return CBORTypes.DATE_TIME;
     }
 
     @Override
-    public byte[] encode() throws IOException {
-        return ArrayUtil.add(DATE_TIME_TAG, new CBORTextString(backingData).encode());
+    byte[] internalEncode() throws IOException {
+        return ArrayUtil.add(DATE_TIME_TAG, new CBORTextString(backingData).internalEncode());
     }
 
     @Override

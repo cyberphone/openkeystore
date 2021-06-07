@@ -51,12 +51,18 @@ public abstract class CBORObject {
     static final byte MT_TRUE          = (byte) 0xf5;
     static final byte MT_NULL          = (byte) 0xf6;
 
+    abstract CBORTypes internalGetType();
+
     /**
      * Get core CBOR type.
      * 
      * @return The CBOR core type
      */
-    public abstract CBORTypes getType();
+    public CBORTypes getType() {
+        return internalGetType();
+    }
+ 
+    abstract byte[] internalEncode() throws IOException;
 
     /**
      * Encode CBOR object.
@@ -64,7 +70,9 @@ public abstract class CBORObject {
      * @return Byte data
      * @throws IOException
      */
-    public abstract byte[] encode() throws IOException;
+    public byte[] encode() throws IOException {
+        return internalEncode();
+    }
     
     abstract void internalToString(PrettyPrinter prettyPrinter);
 
@@ -109,8 +117,8 @@ public abstract class CBORObject {
     }
 
     void checkTypeAndMarkAsRead(CBORTypes requestedCborType) throws IOException {
-        if (getType() != requestedCborType) {
-            bad("Is type: " + getType() + ", requested: " + requestedCborType);
+        if (internalGetType() != requestedCborType) {
+            bad("Is type: " + internalGetType() + ", requested: " + requestedCborType);
         }
         readFlag = true;
     }
@@ -169,8 +177,8 @@ public abstract class CBORObject {
      * @throws IOException
      */
     public boolean isNull() throws IOException {
-        checkTypeAndMarkAsRead(getType());
-        return getType() == CBORTypes.NULL;
+        checkTypeAndMarkAsRead(internalGetType());
+        return internalGetType() == CBORTypes.NULL;
     }
     
     /**
@@ -184,7 +192,7 @@ public abstract class CBORObject {
      * @throws IOException
      */
     public BigInteger getBigInteger() throws IOException {
-        if (getType() == CBORTypes.INTEGER) {
+        if (internalGetType() == CBORTypes.INTEGER) {
             checkTypeAndMarkAsRead(CBORTypes.INTEGER);
             return ((CBORInteger) this).getValueAsBigInteger();
         }
@@ -282,7 +290,7 @@ public abstract class CBORObject {
     }
     
     private void scan(CBORObject holderObject) {
-        switch (getType()) {
+        switch (internalGetType()) {
             case MAP:
                 CBORMap cborMap = (CBORMap) this;
                 for (CBORObject key : cborMap.keys.keySet()) {
@@ -489,7 +497,7 @@ public abstract class CBORObject {
     }
 
     private void checkObjectForUnread(CBORObject holderObject) throws IOException {
-        switch (getType()) {
+        switch (internalGetType()) {
             case MAP:
                 CBORMap cborMap = (CBORMap) this;
                 for (CBORObject key : cborMap.keys.keySet()) {
@@ -567,7 +575,7 @@ public abstract class CBORObject {
     @Override
     public boolean equals(Object object) {
         try {
-            return ArrayUtil.compare(((CBORObject) object).encode(), encode());
+            return ArrayUtil.compare(((CBORObject) object).internalEncode(), internalEncode());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

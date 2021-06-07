@@ -45,7 +45,7 @@ public class CBORBigInteger extends CBORObject {
     }
 
     @Override
-    public CBORTypes getType() {
+    CBORTypes internalGetType() {
         return CBORTypes.BIG_INTEGER;
     }
     
@@ -54,10 +54,10 @@ public class CBORBigInteger extends CBORObject {
     }
 
     @Override
-    public byte[] encode() throws IOException {
+    byte[] internalEncode() throws IOException {
         if (fitsAnInteger(value)) {
             // Fits in "int65" decoding
-            return new CBORInteger(value).encode();
+            return new CBORInteger(value).internalEncode();
         }
         // Didn't fit "int65" so we must use big number decoding
         byte[] encoded;
@@ -75,7 +75,7 @@ public class CBORBigInteger extends CBORObject {
             System.arraycopy(encoded, 1, temp, 0, temp.length);
             encoded = temp;
         }
-        return ArrayUtil.add(headerTag, new CBORByteString(encoded).encode());
+        return ArrayUtil.add(headerTag, new CBORByteString(encoded).internalEncode());
     }
     
     @Override

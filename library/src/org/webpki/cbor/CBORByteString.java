@@ -38,12 +38,12 @@ public class CBORByteString extends CBORObject {
     }
     
     @Override
-    public CBORTypes getType() {
+    CBORTypes internalGetType() {
         return CBORTypes.BYTE_STRING;
     }
 
     @Override
-    public byte[] encode() throws IOException {
+    byte[] internalEncode() throws IOException {
         return ArrayUtil.add(getEncodedCore(MT_BYTE_STRING, byteString.length), byteString);
     }
 
