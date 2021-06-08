@@ -295,17 +295,17 @@ public abstract class CBORObject {
         return this;
     }
     
-    private void scan(CBORObject holderObject) {
-        switch (holderObject.internalGetType()) {
+    private void scan(CBORObject currentObject) {
+        switch (currentObject.internalGetType()) {
             case MAP:
-                CBORMap cborMap = (CBORMap) holderObject;
+                CBORMap cborMap = (CBORMap) currentObject;
                 for (CBORObject key : cborMap.keys.keySet()) {
                      scan(cborMap.keys.get(key));
                 }
                 break;
         
             case ARRAY:
-                CBORArray cborArray = (CBORArray) holderObject;
+                CBORArray cborArray = (CBORArray) currentObject;
                 for (CBORObject object : cborArray.getObjects()) {
                     scan(object);
                 }
@@ -313,7 +313,7 @@ public abstract class CBORObject {
         
             default:
         }
-        holderObject.readFlag = true;
+        currentObject.readFlag = true;
     }
     
     static class CBORDecoder {
