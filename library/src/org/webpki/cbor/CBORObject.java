@@ -296,16 +296,16 @@ public abstract class CBORObject {
     }
     
     private void scan(CBORObject holderObject) {
-        switch (internalGetType()) {
+        switch (holderObject.internalGetType()) {
             case MAP:
-                CBORMap cborMap = (CBORMap) this;
+                CBORMap cborMap = (CBORMap) holderObject;
                 for (CBORObject key : cborMap.keys.keySet()) {
                      scan(cborMap.keys.get(key));
                 }
                 break;
         
             case ARRAY:
-                CBORArray cborArray = (CBORArray) this;
+                CBORArray cborArray = (CBORArray) holderObject;
                 for (CBORObject object : cborArray.getObjects()) {
                     scan(object);
                 }
