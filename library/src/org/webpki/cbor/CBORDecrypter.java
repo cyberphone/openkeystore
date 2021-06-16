@@ -121,7 +121,7 @@ public abstract class CBORDecrypter {
         
         // Check that there is no unread (illegal) data like public 
         // keys in symmetric encryption or just plain unknown elements.
-        encryptionObject.checkObjectForUnread();
+        encryptionObject.checkForUnread();
         
         // Now we should have everything for decrypting the actual data.
         // Use the remaining CBOR data as "authData".

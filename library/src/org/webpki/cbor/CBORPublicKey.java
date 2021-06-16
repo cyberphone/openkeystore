@@ -208,7 +208,7 @@ public class CBORPublicKey {
         } else {
             throw new GeneralSecurityException("Unrecognized key type: " + kty);
         }
-        publicKeyMap.checkObjectForUnread();
+        publicKeyMap.checkForUnread();
         return publicKey;
     }
 }

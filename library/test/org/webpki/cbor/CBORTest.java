@@ -249,10 +249,10 @@ public class CBORTest {
                 .addObject(new CBORInteger(4))
                 .addObject(new CBORInteger(5)));
         textCompare(cborArray,
-                "[\n  1,\n  {\n    8: 2,\n    -4: [\n" +
-                "      true,\n      false\n    ],\n    58: 3,\n    -90: null\n  }," +
+                "[\n  1,\n  {\n    8: 2,\n    58: 3,\n    -4: [\n" +
+                "      true,\n      false\n    ],\n    -90: null\n  }," +
                 "\n  [\n    4,\n    5\n  ]\n]");
-        binaryCompare(cborArray,"8301a408022382f5f4183a033859f6820405");
+        binaryCompare(cborArray,"8301a40802183a032382f5f43859f6820405");
         
         integerTest(0, "00" );
         integerTest(1, "01");
@@ -416,11 +416,11 @@ public class CBORTest {
     
     @Test
     public void mapperTest() throws Exception {
-        sortingTest(RFC7049_SORTING);
-        CBORObject.setRfc8949SortingMode(true);
         sortingTest(RFC8949_SORTING);
-        CBORObject.setRfc8949SortingMode(false);
+        CBORObject.setRfc7049SortingMode(true);
         sortingTest(RFC7049_SORTING);
+        CBORObject.setRfc7049SortingMode(false);
+        sortingTest(RFC8949_SORTING);
     }
 
     @Test
@@ -445,7 +445,7 @@ public class CBORTest {
  
     @Test
     public void accessTest() throws Exception {
-        CBORObject cbor = parseCborHex("8301a408022382f5f4183a033859f6820405");
+        CBORObject cbor = parseCborHex("8301a40802183a032382f5f43859f6820405");
         try {
             ((CBORArray) cbor).getObject(0).getMap();
             fail("must not execute");
@@ -464,7 +464,7 @@ public class CBORTest {
 
         try {
             CBORObject unread = parseCborHex("17");
-            unread.checkObjectForUnread();  
+            unread.checkForUnread();  
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
@@ -475,9 +475,9 @@ public class CBORTest {
     @Test
     public void unreadElementTest() throws Exception {
         try {
-            CBORObject unread = parseCborHex("8301a408022382f5f4183a033859f6820405");
+            CBORObject unread = parseCborHex("8301a40802183a032382f5f43859f6820405");
             ((CBORArray) unread).getObject(0).getInt();
-            unread.checkObjectForUnread();
+            unread.checkForUnread();
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
@@ -485,24 +485,37 @@ public class CBORTest {
         }
 
         try {
-            CBORObject unread = parseCborHex("8301a408022382f5f4183a033859f6820405");
+            CBORObject unread = parseCborHex("8301a40802183a032382f5f43859f6820405");
             unread = ((CBORArray) unread).getObject(1).getMap();
             ((CBORMap)unread).getObject(8).getInt();
+            ((CBORMap)unread).getObject(58).getInt();
             ((CBORArray)((CBORMap)unread).getObject(-4)).getObject(0).getBoolean();
-            unread.checkObjectForUnread();
+            unread.checkForUnread();
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
                 "Array element of type=CBORBoolean with value=false was never read");
         }
+        
+/*
+             .addObject(new CBORInteger(1))
+            .addObject(new CBORMap()
+                .setObject(8, new CBORInteger(2))
+                .setObject(58, new CBORInteger(3))
+                .setObject(-90, new CBORNull())
+                .setObject(-4, new CBORArray()
+                    .addObject(new CBORBoolean(true))
+                    .addObject(new CBORBoolean(false))))
+ */
 
         // If you just want to mark an item as "read" you can use scan();
         try {
-            CBORObject unread = parseCborHex("8301a408022382f5f4183a033859f6820405");
+            CBORObject unread = parseCborHex("8301a40802183a032382f5f43859f6820405");
             unread = ((CBORArray) unread).getObject(1).getMap();
             ((CBORMap)unread).getObject(8).getInt();
+            ((CBORMap)unread).getObject(58).getInt();
             ((CBORArray)((CBORMap)unread).getObject(-4)).getObject(0).scan();
-            unread.checkObjectForUnread();
+            unread.checkForUnread();
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
@@ -511,11 +524,12 @@ public class CBORTest {
 
         // Getting an object without reading the value is considered as "unread".
         try {
-            CBORObject unread = parseCborHex("8301a408022382f5f4183a033859f6820405");
+            CBORObject unread = parseCborHex("8301a40802183a032382f5f43859f6820405");
             unread = ((CBORArray) unread).getObject(1).getMap();
             ((CBORMap)unread).getObject(8).getInt();
+            ((CBORMap)unread).getObject(58).getInt();
             ((CBORArray)((CBORMap)unread).getObject(-4)).getObject(0);
-            unread.checkObjectForUnread();
+            unread.checkForUnread();
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
@@ -524,7 +538,7 @@ public class CBORTest {
         
         try {
             CBORObject unread = parseCborHex("17");
-            unread.checkObjectForUnread();  
+            unread.checkForUnread();  
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
@@ -533,7 +547,7 @@ public class CBORTest {
 
         try {
             CBORObject unread = parseCborHex("A107666D7964617461");
-            unread.checkObjectForUnread();  
+            unread.checkForUnread();  
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
@@ -542,7 +556,7 @@ public class CBORTest {
 
         try {
             CBORObject unread = parseCborHex("A0");
-            unread.checkObjectForUnread();  
+            unread.checkForUnread();  
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
@@ -551,7 +565,7 @@ public class CBORTest {
 
         try {
             CBORObject unread = parseCborHex("80");
-            unread.checkObjectForUnread();  
+            unread.checkForUnread();  
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 

@@ -110,16 +110,16 @@ public abstract class CBORObject {
     }
 
     // for maps
-    static boolean rfc7049Sorting = true;
+    static boolean rfc7049Sorting;
     
     /**
      * Set RFC 8949/7049 key sorting.
      * 
-     * Default: false => RFC 7049 key sorting
-     * @param flag true for RFC 8949, false for RFC 7049
+     * Default: false => RFC 8949 key sorting
+     * @param flag true for RFC 7049, false for RFC 8949
      */
-    public static void setRfc8949SortingMode(boolean flag) {
-        rfc7049Sorting = !flag;
+    public static void setRfc7049SortingMode(boolean flag) {
+        rfc7049Sorting = flag;
     }
 
     void checkTypeAndMarkAsRead(CBORTypes requestedCborType) throws IOException {
@@ -498,23 +498,23 @@ public abstract class CBORObject {
      * Check if all data from the current node and downwards have been read.
      * @throws IOException
      */
-    public void checkObjectForUnread() throws IOException {
-        checkObjectForUnread(null);
+    public void checkForUnread() throws IOException {
+        checkForUnread(null);
     }
 
-    private void checkObjectForUnread(CBORObject holderObject) throws IOException {
+    private void checkForUnread(CBORObject holderObject) throws IOException {
         switch (internalGetType()) {
             case MAP:
                 CBORMap cborMap = (CBORMap) this;
                 for (CBORObject key : cborMap.keys.keySet()) {
-                     cborMap.keys.get(key).checkObjectForUnread(key);
+                     cborMap.keys.get(key).checkForUnread(key);
                 }
                 break;
         
             case ARRAY:
                 CBORArray cborArray = (CBORArray) this;
                 for (CBORObject object : cborArray.getObjects()) {
-                    object.checkObjectForUnread(cborArray);
+                    object.checkForUnread(cborArray);
                 }
                 break;
         

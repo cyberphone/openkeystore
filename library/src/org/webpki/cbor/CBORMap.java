@@ -268,7 +268,7 @@ public class CBORMap extends CBORObject {
                 optionalKeyId, signatureValue, internalEncode());
 
         // Check that nothing "extra" was supplied.
-        signatureObject.checkObjectForUnread();
+        signatureObject.checkForUnread();
 
         // Restore object.
         signatureObject.keys.put(CBORSigner.SIGNATURE_LABEL,
