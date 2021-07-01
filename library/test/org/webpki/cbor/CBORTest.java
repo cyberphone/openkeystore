@@ -427,8 +427,8 @@ public class CBORTest {
     public void bufferTest() throws Exception {
         // To not "accidently" allocate potentially GBs of memory the
         // decoder uses a buffer scheme.
-        // The assumption is that receive have already checked
-        // that the CBOR code itself is within reason.
+        // The assumption is that the receiver has already checked
+        // that the CBOR code itself is within reason size-wise.
         int length = CBORObject.CBORDecoder.BUFFER_SIZE - 2;
         while (length < CBORObject.CBORDecoder.BUFFER_SIZE + 2) {
             byte[] byteString = new byte[length];
@@ -594,8 +594,17 @@ public class CBORTest {
 
     @Test
     public void endOfFileTest() throws Exception {
-         try {
+        try {
             parseCborHex("83");
+            fail("must not execute");
+        } catch (Exception e) {
+            checkException(e, 
+                "Malformed CBOR, trying to read past EOF");
+        }
+        try {
+            parseCborHex("a363666d74646e6f6e656761747453746d74a0686175746844617461590" +
+                         "104292aad5fe5a8dc9a56429b2b0864f69124d11d9616ba8372e0c00215" +
+                         "337be5bd410000000000000000000000000000000000000202d4db1c");
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 

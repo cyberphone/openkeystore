@@ -351,14 +351,14 @@ public abstract class CBORObject {
         private byte[] readBytes(long length) throws IOException {
             ByteArrayOutputStream baos = new ByteArrayOutputStream(BUFFER_SIZE);
             byte[] buffer = new byte[BUFFER_SIZE];
-            int bytes = (int) (length > BUFFER_SIZE ? length % BUFFER_SIZE : length);
             while (length != 0) {
-                if (input.read(buffer, 0, bytes) == -1) {
+                int returnedBytes =
+                        input.read(buffer, 0, length < BUFFER_SIZE ? (int)length : BUFFER_SIZE);
+                if (returnedBytes == -1) {
                     eofError();
                 }
-                baos.write(buffer, 0, bytes);
-                length -= bytes;
-                bytes = BUFFER_SIZE;
+                baos.write(buffer, 0, returnedBytes);
+                length -= returnedBytes;
             }
             return baos.toByteArray();
         }
