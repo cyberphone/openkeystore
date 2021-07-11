@@ -383,7 +383,7 @@ public abstract class CBORObject {
                         ((byte)first == MT_BIG_SIGNED) ?
                             new BigInteger(-1, byteArray).subtract(BigInteger.ONE)
                                                        :
-                        new BigInteger(1, byteArray);
+                            new BigInteger(1, byteArray);
                     if (CBORBigInteger.fitsAnInteger(bigInteger)) {
                         bad("Non-deterministic encoding: bignum fits integer");
                     }
