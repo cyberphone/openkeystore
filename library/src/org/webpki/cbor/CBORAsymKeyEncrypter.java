@@ -101,7 +101,6 @@ public class CBORAsymKeyEncrypter extends CBOREncrypter {
                                                       keyEncryptionAlgorithm,
                                                       contentEncryptionAlgorithm,
                                                       publicKey);
-        contentEncryptionKey = asymmetricEncryptionResult.getContentEncryptionKey();
         if (!keyEncryptionAlgorithm.isRsa()) {
             // ECDH-ES requires the ephemeral public key
             keyEncryption.setObject(EPHEMERAL_KEY_LABEL,
@@ -114,7 +113,7 @@ public class CBORAsymKeyEncrypter extends CBOREncrypter {
                                     new CBORByteString(
                                         asymmetricEncryptionResult.getEncryptedKeyData()));
         }
-        return contentEncryptionKey;
+        return asymmetricEncryptionResult.getContentEncryptionKey();
     }
     
     @Override
