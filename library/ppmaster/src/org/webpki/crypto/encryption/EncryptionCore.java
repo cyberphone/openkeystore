@@ -513,7 +513,7 @@ public class EncryptionCore {
                                                        : 
                 contentEncryptionAlgorithm.keyLength;
         if (coseMode) {
-            int coseAlg = keyEncryptionAlgorithm.getCoseAlgorithmId();
+            int coseAlg = keyEncryptionAlgorithm.coseId;
             return hmacKdf(Z,
                            null,
                            new byte[] {(byte)(coseAlg >> 24),
@@ -524,9 +524,9 @@ public class EncryptionCore {
         }
         return concatKdf(Z,
                          (keyEncryptionAlgorithm.keyWrap ?
-                              keyEncryptionAlgorithm.getJoseAlgorithmId() 
+                              keyEncryptionAlgorithm.joseId 
                                                          : 
-                              contentEncryptionAlgorithm.getJoseAlgorithmId()),
+                              contentEncryptionAlgorithm.joseId),
                          keyLength);
     }
 

@@ -18,19 +18,19 @@
 <g font-size='40' font-family='Roboto,sans-serif'>
 <text x='284' y='70' font-size='50' text-anchor='middle'>Main Map</text>
 <text x='284' y='120' text-anchor='middle'>(Content Encryption)</text>
-<text x='44' y='234'><tspan>Algorithm (1)</tspan></text>
-<text x='44' y='334'><tspan font-style='italic'>Optional</tspan><tspan>: KeyEncryption (2)</tspan></text>
-<text x='44' y='434'><tspan font-style='italic'>Optional</tspan><tspan>: KeyId (3)</tspan></text>
-<text x='44' y='534'><tspan>Tag (7)</tspan></text>
-<text x='44' y='634'><tspan>IV (8)</tspan></text>
-<text x='44' y='734'><tspan>CipherText (9)</tspan></text>
+<text x='44' y='234'><tspan>algorithm (1)</tspan></text>
+<text x='44' y='334'><tspan font-style='italic'>Optional</tspan><tspan>: keyEncryption (2)</tspan></text>
+<text x='44' y='434'><tspan font-style='italic'>Optional</tspan><tspan>: keyId (3)</tspan></text>
+<text x='44' y='534'><tspan>tag (7)</tspan></text>
+<text x='44' y='634'><tspan>iv (8)</tspan></text>
+<text x='44' y='734'><tspan>cipherText (9)</tspan></text>
 <text x='937' y='70' font-size='50' text-anchor='middle'>Optional Sub Map</text>
 <text x='937' y='120' text-anchor='middle'>(Key Encryption)</text>
-<text x='697' y='234'><tspan>Algorithm (1)</tspan></text>
-<text x='697' y='334'><tspan font-style='italic'>Optional</tspan><tspan>: KeyId (3)</tspan></text>
-<text x='697' y='434'><tspan font-style='italic'>Optional</tspan><tspan>: PublicKey (4)</tspan></text>
-<text x='697' y='534'><tspan font-style='italic'>Optional</tspan><tspan>: EphemeralKey (5)</tspan></text>
-<text x='697' y='634'><tspan font-style='italic'>Optional</tspan><tspan>: CipherText (9)</tspan></text>
+<text x='697' y='234'><tspan>algorithm (1)</tspan></text>
+<text x='697' y='334'><tspan font-style='italic'>Optional</tspan><tspan>: keyId (3)</tspan></text>
+<text x='697' y='434'><tspan font-style='italic'>Optional</tspan><tspan>: publicKey (4)</tspan></text>
+<text x='697' y='534'><tspan font-style='italic'>Optional</tspan><tspan>: ephemeralKey (5)</tspan></text>
+<text x='697' y='634'><tspan font-style='italic'>Optional</tspan><tspan>: cipherText (9)</tspan></text>
 </g>
 <path fill='none' stroke='#aa0000' stroke-width='3' stroke-linecap='round' d='M568,180  m 85,0 c -33,0 -35,68 -35,68 0,30 -18,68 -48,72 30,8 48,35 48,80 v 186 c 0,0 0,74 36,74'/>
 </svg>

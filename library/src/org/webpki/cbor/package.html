@@ -182,10 +182,10 @@ should return the UTF-8 encoded string <code>&quot;Hello encrypted world!&quot;<
 The CEF decryption process is as follows:
 </p>
 <ul>
-<li>Read and save the content encryption parameters <code>Tag</code>,
-<code>IV</code>, and <code>Ciphertext</code>.</li>
-<li>Remove the <code>Tag</code>,
-<code>IV</code>, and <code>Ciphertext</code> elements from the
+<li>Read and save the content encryption parameters <code class='webpkicode'>tag</code>,
+<code class='webpkicode'>iv</code>, and <code class='webpkicode'>ciphertext</code>.</li>
+<li>Remove the <code class='webpkicode'>tag</code>,
+<code class='webpkicode'>iv</code>, and <code class='webpkicode'>ciphertext</code> elements from the
 encryption object.
 Note that the top level <code>map</code> object <b>must</b> be updated
 as well to reflect the changed number of elements.
@@ -211,17 +211,18 @@ The numbers in paranthesis denote the actual label (map key) value.
 Properly designed CEF objects <b>must</b> adhere to the following rules:
 </p>
 <ul>
-<li><code>PublicKey</code> and <code>EphemeralKey</code> elements
+<li><code class='webpkicode'>publicKey</code> and <code class='webpkicode'>ephemeralKey</code> elements
 <b>must</b> be compliant with COSE, but <b>must not</b> contain
 any other information than the public key itself
 and associated parameters.</li>
-<li>If a <code>KeyId</code> is used it <b>must</b> be supplied in the main map for
+<li>If a <code class='webpkicode'>keyId</code> is used it <b>must</b> be supplied in the main map for
 symmetric encryption schemes, whereas key encryption schemes <b>require</b>
-that a <code>KeyId</code> is supplied in the sub map.</li>
+that a <code class='webpkicode'>keyId</code> is supplied in the sub map.</li>
 <li>The currently supported key encryption algorithms except for <code>ECDH-ES</code>
-<b>require</b> that the encrypted key is provided in the <code>ChipherText</code>
+<b>require</b> that the encrypted key is provided in the <code class='webpkicode'>chipherText</code>
 element in the sub map.</li>
-<li>All ECDH-ES variants <b>require</b> that the <code>EphemeralKey</code> element is included.</li>
+<li>All ECDH-ES variants <b>require</b> that the <code class='webpkicode'>ephemeralKey</code>
+element is included.</li>
 </ul>
 ECDH based key encryption schemes <b>must</b> use a Key Derivation Function (KDF)
 according to HKDF (RFC&nbsp;5869), profiled as follows:
