@@ -257,9 +257,9 @@ public class CBORMap extends CBORObject {
         signatureObject.keys.remove(CBORSigner.SIGNATURE_LABEL);
 
         // Fetch optional keyId.
-        String optionalKeyId = signatureObject.hasKey(CBORSigner.KEY_ID_LABEL)
+        byte[] optionalKeyId = signatureObject.hasKey(CBORSigner.KEY_ID_LABEL)
                 ? signatureObject.getObject(CBORSigner.KEY_ID_LABEL)
-                        .getTextString()
+                        .getByteString()
                 : null;
 
         // Call specific validator.

@@ -83,7 +83,7 @@ public class CBORTest {
     static SymmetricKeys symmetricKeys;
 
     static KeyPair p256;
-    static String keyIdP256;
+    static byte[] keyIdP256;
     static KeyPair p256_2;
     static KeyPair p521;
     static KeyPair r2048;
@@ -91,14 +91,13 @@ public class CBORTest {
     static KeyPair x25519;
     static KeyPair ed448;
     static KeyPair ed25519;
-    static String keyId;
+    static byte[] keyId;
     
     static KeyPair readJwk(String keyType) throws Exception {
         JSONObjectReader jwkPlus = JSONParser.parse(ArrayUtil.readFile(baseKey + keyType + "privatekey.jwk"));
         // Note: The built-in JWK decoder does not accept "kid" since it doesn't have a meaning in JSF or JEF. 
-        if ((keyId = jwkPlus.getStringConditional("kid")) != null) {
-            jwkPlus.removeProperty("kid");
-        }
+        keyId = jwkPlus.getString("kid").getBytes("utf-8");
+        jwkPlus.removeProperty("kid");
         return jwkPlus.getKeyPair();
     }
 
@@ -344,6 +343,13 @@ public class CBORTest {
            checkException(e, "DateTime syntax error: 2021-05-03T09:50:08");
        }
 
+    }
+    
+    public static boolean compareKeyId(byte[] keyId, byte[] optionalKeyId) {
+        if (optionalKeyId == null) {
+            return false;
+        }
+        return ArrayUtil.compare(keyId, optionalKeyId);
     }
     
     class MapTest extends CBORMap {
@@ -705,7 +711,7 @@ public class CBORTest {
         cborSd.getMap().validate(7, new CBORHmacValidator(symmetricKeys.getValue(size)));
 
         tbs = createDataToBeSigned();
-        final String keyId = symmetricKeys.getName(size);
+        final byte[] keyId = symmetricKeys.getName(size).getBytes("utf-8");
         tbs.getMap().sign(7, 
                 new CBORHmacSigner(symmetricKeys.getValue(size), algorithm).setKeyId(keyId));
         sd = tbs.encode();
@@ -714,10 +720,10 @@ public class CBORTest {
             new CBORHmacValidator.KeyLocator() {
 
                 @Override
-                public byte[] locate(String optionalKeyId,
+                public byte[] locate(byte[] optionalKeyId,
                         HmacAlgorithms hmacAlgorithm)
                         throws IOException, GeneralSecurityException {
-                    if (!keyId.equals(optionalKeyId)) {
+                    if (!compareKeyId(keyId, optionalKeyId)) {
                         throw new IOException("Unknown keyId");
                     }
                     if (!algorithm.equals(hmacAlgorithm)) {
@@ -756,7 +762,7 @@ public class CBORTest {
                 
                 @Override
                 public PublicKey locate(PublicKey optionalPublicKey, 
-                                        String optionalKeyId,
+                                        byte[] optionalKeyId,
                                         AsymSignatureAlgorithms signatureAlgorithm)
                         throws IOException, GeneralSecurityException {
                     return p256.getPublic();
@@ -768,7 +774,7 @@ public class CBORTest {
                 
                 @Override
                 public PublicKey locate(PublicKey optionalPublicKey, 
-                                        String optionalKeyId,
+                                        byte[] optionalKeyId,
                                         AsymSignatureAlgorithms signatureAlgorithm)
                         throws IOException, GeneralSecurityException {
                     assertTrue("public", optionalPublicKey == null);
@@ -784,12 +790,13 @@ public class CBORTest {
                 
                 @Override
                 public PublicKey locate(PublicKey optionalPublicKey, 
-                                        String optionalKeyId,
+                                        byte[] optionalKeyId,
                                         AsymSignatureAlgorithms signatureAlgorithm)
                         throws IOException, GeneralSecurityException {
-                    return keyIdP256.equals(optionalKeyId) ? 
-                                          p256.getPublic() : p256_2.getPublic();
+                    return compareKeyId(keyIdP256, optionalKeyId) ? 
+                                                 p256.getPublic() : p256_2.getPublic();
                 }
+
             }));
         
         
@@ -798,7 +805,7 @@ public class CBORTest {
                 
                 @Override
                 public PublicKey locate(PublicKey optionalPublicKey, 
-                                        String optionalKeyId,
+                                        byte[] optionalKeyId,
                                         AsymSignatureAlgorithms signatureAlgorithm)
                         throws IOException, GeneralSecurityException {
                     assertTrue("pk", p256.getPublic().equals(optionalPublicKey));
@@ -812,7 +819,7 @@ public class CBORTest {
                     
                     @Override
                     public PublicKey locate(PublicKey optionalPublicKey, 
-                                            String optionalKeyId,
+                                            byte[] optionalKeyId,
                                             AsymSignatureAlgorithms signatureAlgorithm)
                             throws IOException, GeneralSecurityException {
                         return p256_2.getPublic();
@@ -869,10 +876,10 @@ public class CBORTest {
                     
                     @Override
                     public PublicKey locate(PublicKey optionalPublicKey, 
-                                            String optionalKeyId,
+                                            byte[] optionalKeyId,
                                             AsymSignatureAlgorithms signatureAlgorithm)
                             throws IOException, GeneralSecurityException {
-                        if ("otherkey".equals(optionalKeyId)) {
+                        if (compareKeyId("otherkey".getBytes("utf-8"), optionalKeyId)) {
                             return p256_2.getPublic();
                         }
                         throw new IOException("KeyId = " + optionalKeyId);
@@ -967,10 +974,10 @@ public class CBORTest {
                         @Override
                         public PrivateKey locate(
                                 PublicKey optionalPublicKey,
-                                String optionalKeyId,
+                                byte[] optionalKeyId,
                                 KeyEncryptionAlgorithms keyEncryptionAlgorithm)
                                 throws IOException, GeneralSecurityException {
-                            return keyId.equals(optionalKeyId) ? p256.getPrivate() : null;
+                            return compareKeyId(keyId, optionalKeyId) ? p256.getPrivate() : null;
                         }
 
                     }).decrypt(p256EncryptedKeyId),
@@ -979,7 +986,7 @@ public class CBORTest {
             new CBORAsymKeyDecrypter(p256_2.getPrivate()).decrypt(p256Encrypted);
             fail("must not run");
         } catch (Exception e) {
-            // No check here becomes it comes from the deep...
+            // No check here because it comes from the deep...
         }
         try {
             new CBORAsymKeyDecrypter(

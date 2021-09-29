@@ -47,7 +47,7 @@ public class CBORHmacValidator extends CBORValidator {
          * @throws IOException
          * @throws GeneralSecurityException
          */
-        byte[] locate(String optionalKeyId, HmacAlgorithms hmacAlgorithm)
+        byte[] locate(byte[] optionalKeyId, HmacAlgorithms hmacAlgorithm)
             throws IOException, GeneralSecurityException;
     }
     
@@ -82,7 +82,7 @@ public class CBORHmacValidator extends CBORValidator {
     @Override
     void validate(CBORMap signatureObject, 
                   int coseAlgorithmId,
-                  String optionalKeyId,
+                  byte[] optionalKeyId,
                   byte[] signatureValue,
                   byte[] signedData) throws IOException, GeneralSecurityException {
         // Get algorithm from the signature object.

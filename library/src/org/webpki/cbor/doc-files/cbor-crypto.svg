@@ -1,36 +1,38 @@
 <?xml version='1.0' encoding='utf-8'?>
-<svg viewBox='0 0 1221 780' xmlns='http://www.w3.org/2000/svg'>
+<svg viewBox='0 0 1065 780' xmlns='http://www.w3.org/2000/svg'>
 <title>CBOR Encryption Format</title>
 <!-- Anders Rundgren 2021 -->
 <g stroke='#4366bf' stroke-width='3' fill='none'>
-<rect x='20' y='180' width='528' height='80' rx='8'/>
-<rect x='20' y='280' width='528' height='80' stroke-dasharray='8' rx='8'/>
-<rect x='20' y='380' width='528' height='80' stroke-dasharray='8' rx='8'/>
-<rect x='20' y='480' width='528' height='80' rx='8'/>
-<rect x='20' y='580' width='528' height='80' rx='8'/>
-<rect x='20' y='680' width='528' height='80' rx='8'/>
-<rect x='673' y='180' width='528' height='80' rx='8'/>
-<rect x='673' y='280' width='528' height='80' stroke-dasharray='8' rx='8'/>
-<rect x='673' y='380' width='528' height='80' stroke-dasharray='8' rx='8'/>
-<rect x='673' y='480' width='528' height='80' stroke-dasharray='8' rx='8'/>
-<rect x='673' y='580' width='528' height='80' stroke-dasharray='8' rx='8'/>
+<rect x='20' y='180' width='460' height='80' rx='8'/>
+<rect x='20' y='280' width='460' height='80' stroke-dasharray='8' rx='8'/>
+<rect x='20' y='380' width='460' height='80' stroke-dasharray='8' rx='8'/>
+<rect x='20' y='480' width='460' height='80' rx='8'/>
+<rect x='20' y='580' width='460' height='80' rx='8'/>
+<rect x='20' y='680' width='460' height='80' rx='8'/>
+<rect x='605' y='180' width='440' height='80' rx='8'/>
+<rect x='605' y='280' width='440' height='80' stroke-dasharray='8' rx='8'/>
+<rect x='605' y='380' width='440' height='80' stroke-dasharray='8' rx='8'/>
+<rect x='605' y='480' width='440' height='80' stroke-dasharray='8' rx='8'/>
+<rect x='605' y='580' width='440' height='80' stroke-dasharray='8' rx='8'/>
 </g>
 <g font-size='40' font-family='Roboto,sans-serif'>
-<text x='284' y='70' font-size='50' text-anchor='middle'>Main Map</text>
-<text x='284' y='120' text-anchor='middle'>(Content Encryption)</text>
-<text x='44' y='234'><tspan>algorithm (1)</tspan></text>
-<text x='44' y='334'><tspan font-style='italic'>Optional</tspan><tspan>: keyEncryption (2)</tspan></text>
-<text x='44' y='434'><tspan font-style='italic'>Optional</tspan><tspan>: keyId (3)</tspan></text>
-<text x='44' y='534'><tspan>tag (7)</tspan></text>
-<text x='44' y='634'><tspan>iv (8)</tspan></text>
-<text x='44' y='734'><tspan>cipherText (9)</tspan></text>
-<text x='937' y='70' font-size='50' text-anchor='middle'>Optional Sub Map</text>
-<text x='937' y='120' text-anchor='middle'>(Key Encryption)</text>
-<text x='697' y='234'><tspan>algorithm (1)</tspan></text>
-<text x='697' y='334'><tspan font-style='italic'>Optional</tspan><tspan>: keyId (3)</tspan></text>
-<text x='697' y='434'><tspan font-style='italic'>Optional</tspan><tspan>: publicKey (4)</tspan></text>
-<text x='697' y='534'><tspan font-style='italic'>Optional</tspan><tspan>: ephemeralKey (5)</tspan></text>
-<text x='697' y='634'><tspan font-style='italic'>Optional</tspan><tspan>: cipherText (9)</tspan></text>
+<text x='250' y='70' font-size='50' text-anchor='middle'>Main Map</text>
+<text x='250' y='120' text-anchor='middle'>(Content Encryption)</text>
+<text x='825' y='70' font-size='50' text-anchor='middle'>Optional Sub Map</text>
+<text x='825' y='120' text-anchor='middle'>(Key Encryption)</text>
 </g>
-<path fill='none' stroke='#aa0000' stroke-width='3' stroke-linecap='round' d='M568,180  m 85,0 c -33,0 -35,68 -35,68 0,30 -18,68 -48,72 30,8 48,35 48,80 v 186 c 0,0 0,74 36,74'/>
+<g font-size='40' font-family='Noto Mono,monospace' fill='maroon'>
+<text x='44' y='234'>algorithm<tspan fill='black'> (1)</tspan></text>
+<text x='44' y='334'>keyEncryption<tspan fill='black'> (2)</tspan></text>
+<text x='44' y='434'>keyId<tspan fill='black'> (3)</tspan></text>
+<text x='44' y='534'>tag<tspan fill='black'> (7)</tspan></text>
+<text x='44' y='634'>iv<tspan fill='black'> (8)</tspan></text>
+<text x='44' y='734'>cipherText<tspan fill='black'> (9)</tspan></text>
+<text x='629' y='234'>algorithm<tspan fill='black'> (1)</tspan></text>
+<text x='629' y='334'>keyId<tspan fill='black'> (3)</tspan></text>
+<text x='629' y='434'>publicKey<tspan fill='black'> (4)</tspan></text>
+<text x='629' y='534'>ephemeralKey<tspan fill='black'> (5)</tspan></text>
+<text x='629' y='634'>cipherText<tspan fill='black'> (9)</tspan></text>
+</g>
+<path fill='none' stroke='#4366bf' stroke-width='3' stroke-linecap='round' d='M500,180  m 85,0 c -33,0 -35,68 -35,68 0,30 -18,68 -48,72 30,8 48,35 48,80 v 186 c 0,0 0,74 36,74'/>
 </svg>

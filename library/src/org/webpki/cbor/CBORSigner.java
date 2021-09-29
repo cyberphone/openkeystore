@@ -62,7 +62,7 @@ public abstract class CBORSigner {
     int coseAlgorithmId;
     
     // Optional key ID
-    String keyId;
+    byte[] keyId;
 
     CBORSigner() {}
     
@@ -77,18 +77,18 @@ public abstract class CBORSigner {
      * is used to retrieve the proper public key is up to a
      * convention between the parties using
      * a specific message scheme.  A keyId may be a database
-     * index or a hash of the public key.  It may also be a
-     * URL pointing to a Web server holding a public key in
-     * PEM format.
+     * index, a hash of the public key, a text string,
+     * or a URL pointing to a Web server holding a public key
+     * in PEM format.
      * <p>
      * For HMAC-signatures, a keyId or implicit key are
      * the only ways to retrieve the proper secret key.
      * </p>
      * 
-     * @param keyId A key Id string
+     * @param keyId A key Id byte array
      * @return this
      */
-    public CBORSigner setKeyId(String keyId) {
+    public CBORSigner setKeyId(byte[] keyId) {
         this.keyId = keyId;
         return this;
     }
@@ -120,7 +120,7 @@ public abstract class CBORSigner {
 
         // Add a keyId if there is one.
         if (keyId != null) {
-            signatureObject.setObject(KEY_ID_LABEL, new CBORTextString(keyId));
+            signatureObject.setObject(KEY_ID_LABEL, new CBORByteString(keyId));
         }
 
         // Add the prepared signature object to the object we want to sign. 

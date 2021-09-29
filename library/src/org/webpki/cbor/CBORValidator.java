@@ -30,8 +30,8 @@ public abstract class CBORValidator {
 
     abstract void validate(CBORMap signatureObject, 
                            int coseAlgorithmId,
-                           String optionalKeyId,
+                           byte[] optionalKeyId,
                            byte[] signatureValue,
                            byte[] signedData) throws IOException, GeneralSecurityException;
-    
+
 }

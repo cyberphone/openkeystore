@@ -86,7 +86,7 @@ public abstract class CBOREncrypter {
     ContentEncryptionAlgorithms contentEncryptionAlgorithm;
     
     // Optional key ID
-    String keyId;
+    byte[] keyId;
 
     CBOREncrypter(ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
         this.contentEncryptionAlgorithm = contentEncryptionAlgorithm;
@@ -109,16 +109,16 @@ public abstract class CBOREncrypter {
      * is used to retrieve the proper private key is up to a
      * convention between the parties using
      * a specific message scheme.  A keyId may be a database
-     * index or a hash of the public key.
+     * index, a hash of the public key, or a text string.
      * <p>
      * For symmetric key-algorithms, a keyId or implicit key are
      * the only ways to retrieve the proper secret key.
      * </p>
      * 
-     * @param keyId A key Id string
+     * @param keyId A key Id byte array
      * @return this
      */
-    public CBOREncrypter setKeyId(String keyId) {
+    public CBOREncrypter setKeyId(byte[] keyId) {
         this.keyId = keyId;
         return this;
     }
@@ -132,7 +132,7 @@ public abstract class CBOREncrypter {
      * @throws GeneralSecurityException
      */
     public CBORMap encrypt(byte[] dataToEncrypt) throws IOException,
-                                                               GeneralSecurityException {
+                                                        GeneralSecurityException {
         // Create an empty encryption object.
         CBORMap encryptionObject = new CBORMap();
         
@@ -147,7 +147,7 @@ public abstract class CBOREncrypter {
 
         // Add a key Id if there is one.
         if (keyId != null) {
-            innerObject.setObject(KEY_ID_LABEL, new CBORTextString(keyId));
+            innerObject.setObject(KEY_ID_LABEL, new CBORByteString(keyId));
         }
         
         // Now we should have everything for encrypting the actual data.

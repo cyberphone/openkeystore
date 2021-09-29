@@ -88,7 +88,7 @@ according to the following table:
 <tr><th>Label</th><th>Function</th></tr>
 <tr><td style='text-align:center'>1</td><td>Signature algorithm using COSE identifiers</td></tr>
 <tr><td style='text-align:center'>2</td><td><i>Optional</i> public key in COSE format</td></tr>
-<tr><td style='text-align:center'>3</td><td><i>Optional</i> key Id supplied as a <code>text string</code></td></tr>
+<tr><td style='text-align:center'>3</td><td><i>Optional</i> key Id supplied as a <code>byte string</code></td></tr>
 <tr><td style='text-align:center'>4</td><td><i>Optional</i> certificate path supplied as an array of <code>byte string</code> objects</td></tr>
 <tr><td style='text-align:center'>5</td><td>Signature value supplied as a <code>byte string</code></td></tr>
 </table>
@@ -139,8 +139,8 @@ The following is a CEF object (here expressed in CBOR diagnostic notation), usin
   2: {
     <span style='color:grey'>// Key encryption algorithm = COSE/ECDH-ES+A256KW</span>
     1: -31,
-    <span style='color:grey'>// Key Id to a static X25519 key</span>
-    3: "example.com:x25519",
+    <span style='color:grey'>// Key Id = Binary("example.com:x25519")</span>
+    3: h'6578616d706c652e636f6d3a783235353139',
     <span style='color:grey'>// Ephemeral public key descriptor in COSE format</span>
     5: {
       <span style='color:grey'>// kty = OKP</span>
@@ -148,17 +148,17 @@ The following is a CEF object (here expressed in CBOR diagnostic notation), usin
       <span style='color:grey'>// crv = X25519</span>
       -1: 4,
       <span style='color:grey'>// x</span>
-      -2: h'6b073a97a9bc95e68800f0814a7cd02f2446d6cca8581e3a27bfd490fdaaf631'
+      -2: h'8408a35087d42a4c7d7e1abb9d2683e10c7df5e3156fd3ea7f26a97a58dba55b'
     },
     <span style='color:grey'>// CipherText (Encrypted key)</span>
-    9: h'27c9c0b68841044368ddb3d41ae04bb1ee9535563f90aaaa519c560217b63aa5d578047b3341c697'
+    9: h'2635a284865da9463ae8359966eb64ab7d0d614eb02cda34a2ffe31a7ec4882d1f573b72a4cb17a8'
   },
   <span style='color:grey'>// Tag</span>
-  7: h'6f97609e63b9e99a806e432de4c71d77',
+  7: h'bd0542bb8bdab81db87676e9f45f8a60',
   <span style='color:grey'>// Initialization Vector (IV)</span>
-  8: h'ecb5e6a6291eb5c746dd88b0',
+  8: h'35cabaf21e6dfd788f0d5e40',
   <span style='color:grey'>// Ciphertext (Encrypted Content)</span>
-  9: h'debbe59a33066c7436c6b9ce67e1634e80edbaf4b2f0'
+  9: h'577be37fb9c69c970f619190939f2e1910a0d1d004fc'
 }
 </pre>
 <p>

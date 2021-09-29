@@ -38,7 +38,7 @@ public abstract class CBORDecrypter {
                                             ContentEncryptionAlgorithms contentEncryptionAlgorithm,
                                             PublicKey optionalPublicKey,
                                             PublicKey ephemeralKey,
-                                            String optionalKeyId, 
+                                            byte[] optionalKeyId, 
                                             byte[] encryptedKey) throws IOException,
                                                                         GeneralSecurityException;
     
@@ -102,8 +102,8 @@ public abstract class CBORDecrypter {
         }
              
         // Get the key Id if there is one.
-        String optionalKeyId = innerObject.hasKey(CBOREncrypter.KEY_ID_LABEL) ?
-            innerObject.getObject(CBOREncrypter.KEY_ID_LABEL).getTextString() : null;
+        byte[] optionalKeyId = innerObject.hasKey(CBOREncrypter.KEY_ID_LABEL) ?
+            innerObject.getObject(CBOREncrypter.KEY_ID_LABEL).getByteString() : null;
         
         // A bit over the top for symmetric encryption but who cares... 
         byte[] contentDecryptionKey = getContentEncryptionKey(keyEncryptionAlgorithm,

@@ -51,7 +51,7 @@ public class CBORAsymSignatureValidator extends CBORValidator {
          * @throws GeneralSecurityException
          */
         PublicKey locate(PublicKey optionalPublicKey, 
-                         String optionalKeyId, 
+                         byte[] optionalKeyId, 
                          AsymSignatureAlgorithms signatureAlgorithm)
             throws IOException, GeneralSecurityException;
     }
@@ -99,7 +99,7 @@ public class CBORAsymSignatureValidator extends CBORValidator {
     @Override
     void validate(CBORMap signatureObject, 
                   int coseAlgorithmId,
-                  String optionalKeyId,
+                  byte[] optionalKeyId,
                   byte[] signatureValue,
                   byte[] signedData) throws IOException, GeneralSecurityException {
         

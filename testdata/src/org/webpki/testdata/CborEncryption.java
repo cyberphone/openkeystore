@@ -30,6 +30,7 @@ import java.security.interfaces.RSAKey;
 import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORSymKeyDecrypter;
 import org.webpki.cbor.CBORSymKeyEncrypter;
+import org.webpki.cbor.CBORTest;
 import org.webpki.cbor.CBORAsymKeyDecrypter;
 import org.webpki.cbor.CBORAsymKeyEncrypter;
 import org.webpki.cbor.CBORDecrypter;
@@ -57,7 +58,7 @@ public class CborEncryption {
     static String baseData;
     static String baseEncryption;
     static SymmetricKeys symmetricKeys;
-    static String keyId;
+    static byte[] keyId;
     static byte[] dataToBeEncrypted;
    
 
@@ -185,7 +186,7 @@ public class CborEncryption {
 
     static void symKeyEncrypt(int keyBits, ContentEncryptionAlgorithms algorithm, boolean wantKeyId) throws Exception {
         byte[] key = symmetricKeys.getValue(keyBits);
-        String keyName = symmetricKeys.getName(keyBits);
+        byte[] keyName = symmetricKeys.getName(keyBits).getBytes("utf-8");
         CBORSymKeyEncrypter encrypter = new CBORSymKeyEncrypter(key, algorithm);
         if (wantKeyId) {
             encrypter.setKeyId(keyName);
@@ -196,9 +197,10 @@ public class CborEncryption {
         decrypter = new CBORSymKeyDecrypter(new CBORSymKeyDecrypter.KeyLocator() {
 
             @Override
-            public byte[] locate(String arg0, ContentEncryptionAlgorithms arg1)
+            public byte[] locate(byte[] optionalKeyId, ContentEncryptionAlgorithms arg1)
                     throws IOException, GeneralSecurityException {
-                if (wantKeyId && !keyName.equals(arg0)) {
+//TODO
+                if (wantKeyId && !CBORTest.compareKeyId(keyName, optionalKeyId)) {
                     throw new GeneralSecurityException("missing key");
                 }
                 if (algorithm != arg1) {
@@ -219,9 +221,8 @@ public class CborEncryption {
     static KeyPair readJwk(String keyType) throws Exception {
         JSONObjectReader jwkPlus = JSONParser.parse(ArrayUtil.readFile(baseKey + keyType + "privatekey.jwk"));
         // Note: The built-in JWK decoder does not accept "kid" since it doesn't have a meaning in JSF or JEF. 
-        if ((keyId = jwkPlus.getStringConditional("kid")) != null) {
-            jwkPlus.removeProperty("kid");
-        }
+        keyId = jwkPlus.getString("kid").getBytes("utf-8");
+        jwkPlus.removeProperty("kid");
         return jwkPlus.getKeyPair();
     }
     
@@ -250,9 +251,9 @@ public class CborEncryption {
         decrypter = new CBORAsymKeyDecrypter(new CBORAsymKeyDecrypter.KeyLocator() {
 
             @Override
-            public PrivateKey locate(PublicKey arg0, String arg1, KeyEncryptionAlgorithms arg2)
+            public PrivateKey locate(PublicKey arg0, byte[] optionalKeyId, KeyEncryptionAlgorithms arg2)
                     throws IOException, GeneralSecurityException {
-                if (wantKeyId && !keyId.equals(arg1)) {
+                if (wantKeyId && !CBORTest.compareKeyId(keyId, optionalKeyId)) {
                     throw new GeneralSecurityException("missing key");
                 }
                 if (keyEncryptionAlgorithm != arg2) {
