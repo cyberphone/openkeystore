@@ -151,7 +151,7 @@ public abstract class CBOREncrypter {
         }
         
         // Now we should have everything for encrypting the actual data.
-        // Use current CBOR data as "authData".
+        // Use current CBOR data as "AAD".
         
         // Note that the following operation depends on that the actual
         // CBOR implementation supports fully canonical (deterministic)
