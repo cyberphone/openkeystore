@@ -104,8 +104,8 @@ public abstract class CBORSigner {
         return this;
     }
 
-    void sign(CBORObject key, CBORMap objectToSign) throws IOException, 
-                                                               GeneralSecurityException {
+    void sign(CBORObject key, CBORMap objectToSign) throws IOException, GeneralSecurityException {
+
         // Create empty signature object.
         CBORMap signatureObject = new CBORMap();
         
@@ -114,8 +114,7 @@ public abstract class CBORSigner {
         
         // If a public key has been defined, add it to the signature object.
         if (publicKey != null) {
-            signatureObject.setObject(PUBLIC_KEY_LABEL, 
-                                      CBORPublicKey.encode(publicKey));
+            signatureObject.setObject(PUBLIC_KEY_LABEL, CBORPublicKey.encode(publicKey));
         }
 
         // Add a keyId if there is one.
