@@ -131,8 +131,8 @@ public abstract class CBOREncrypter {
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public CBORMap encrypt(byte[] dataToEncrypt) throws IOException,
-                                                        GeneralSecurityException {
+    public CBORMap encrypt(byte[] dataToEncrypt) throws IOException, GeneralSecurityException {
+
         // Create an empty encryption object.
         CBORMap encryptionObject = new CBORMap();
         
