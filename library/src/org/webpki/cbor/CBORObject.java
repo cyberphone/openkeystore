@@ -51,6 +51,12 @@ public abstract class CBORObject {
     static final byte MT_TRUE          = (byte) 0xf5;
     static final byte MT_NULL          = (byte) 0xf6;
 
+    static final BigInteger MIN_INT  = BigInteger.valueOf(Integer.MIN_VALUE);
+    static final BigInteger MAX_INT  = BigInteger.valueOf(Integer.MAX_VALUE);
+    
+    static final BigInteger MIN_LONG = BigInteger.valueOf(Long.MIN_VALUE);
+    static final BigInteger MAX_LONG = BigInteger.valueOf(Long.MAX_VALUE);
+    
     abstract CBORTypes internalGetType();
 
     /**
@@ -129,33 +135,79 @@ public abstract class CBORObject {
         readFlag = true;
     }
     
+    private long getConstrainedInteger(BigInteger min, 
+                                       BigInteger max, 
+                                       String dataType) throws IOException {
+        BigInteger value = getIntegerAsBigInteger();
+        if (value.compareTo(max) > 0 || value.compareTo(min) < 0) {
+            bad("Value out of range for '" + dataType + "' (" + value.toString() + ")");
+        }
+        return value.longValue();
+    }
+    
+    /**
+     * Get CBOR integer as a BigInteger value.
+      * <p>
+     * This method requires that the object is a
+     * {@link CBORInteger}, 
+     * otherwise an exception will be thrown.
+     * </p>
+     * This method supports the full (65-bit) CBOR integer range.
+     * 
+     * @return Value
+     * @throws IOException
+     */
+    public BigInteger getIntegerAsBigInteger() throws IOException {
+        checkTypeAndMarkAsRead(CBORTypes.INTEGER);
+        return ((CBORInteger) this).returnAsBigInteger();
+    }
+
     /**
      * Get <code>long</code> value.
       * <p>
      * This method requires that the object is a
-     * {@link CBORInteger}, otherwise an exception will be thrown.
+     * {@link CBORInteger} and fits a Java (<i>signed</i>) long, 
+     * otherwise an exception will be thrown.
      * </p>
+     * Also see {@link #getIntegerAsBigInteger()}.
      * 
      * @return Value
      * @throws IOException
      */
     public long getLong() throws IOException {
-        checkTypeAndMarkAsRead(CBORTypes.INTEGER);
-        return ((CBORInteger) this).getValueAsBigInteger().longValue();
+        return getConstrainedInteger(MIN_LONG, MAX_LONG, "long");
+    }
+
+    /**
+     * Get <i>unsigned</i> <code>long</code> value.
+      * <p>
+     * This method requires that the object is a positive
+     * {@link CBORInteger} and fits a Java long (sign bit is used as well),
+     * otherwise an exception will be thrown.
+     * </p>
+     * Also see {@link #getIntegerAsBigInteger()}.
+     * 
+     * @return Value
+     * @throws IOException
+     */
+    public long getUnsignedLong() throws IOException {
+        return getConstrainedInteger(BigInteger.ZERO, CBORBigInteger.MAX_INT64, "unsigned long");
     }
 
     /**
      * Get <code>integer</code> value.
      * <p>
      * This method requires that the object is a
-     * {@link CBORInteger}, otherwise an exception will be thrown.
+     * {@link CBORInteger} and fits a Java (<i>signed</i>) int, 
+     * otherwise an exception will be thrown.
      * </p>
+     * Also see {@link #getIntegerAsBigInteger()}.
      * 
      * @return Value
      * @throws IOException
      */
     public int getInt() throws IOException {
-        return (int) getLong();
+        return (int) getConstrainedInteger(MIN_INT, MAX_INT, "int");
     }
     
     /**
@@ -179,6 +231,7 @@ public abstract class CBORObject {
      * If the object is a {@link CBORNull} the call will return
      * <code>true</code>, else it will return <code>false></code>.
      * </p>
+     * 
      * @return Status
      * @throws IOException
      */
@@ -191,7 +244,8 @@ public abstract class CBORObject {
      * Get <code>big number</code> value.
      * <p>
      * This method requires that the object is either a
-     * {@link CBORInteger} or a {@link CBORBigInteger}, otherwise an exception will be thrown.
+     * {@link CBORInteger} or a {@link CBORBigInteger}, 
+     * otherwise an exception will be thrown.
      * </p>
      * 
      * @return Value
@@ -199,8 +253,7 @@ public abstract class CBORObject {
      */
     public BigInteger getBigInteger() throws IOException {
         if (internalGetType() == CBORTypes.INTEGER) {
-            checkTypeAndMarkAsRead(CBORTypes.INTEGER);
-            return ((CBORInteger) this).getValueAsBigInteger();
+            return getIntegerAsBigInteger();
         }
         checkTypeAndMarkAsRead(CBORTypes.BIG_INTEGER);
         return ((CBORBigInteger) this).value;

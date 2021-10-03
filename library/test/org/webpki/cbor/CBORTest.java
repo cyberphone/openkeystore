@@ -93,6 +93,8 @@ public class CBORTest {
     static KeyPair ed25519;
     static byte[] keyId;
     
+    enum IntegerVariations {LONG, ULONG, INT};
+    
     static KeyPair readJwk(String keyType) throws Exception {
         JSONObjectReader jwkPlus = JSONParser.parse(ArrayUtil.readFile(baseKey + keyType + "privatekey.jwk"));
         // Note: The built-in JWK decoder does not accept "kid" since it doesn't have a meaning in JSF or JEF. 
@@ -139,8 +141,10 @@ public class CBORTest {
         String calc = DebugFormatter.getHexString(cbor);
         assertTrue("int=" + value + " c=" + calc + " h=" + hex, hex.equals(calc));
         CBORObject decodedInteger = CBORObject.decode(cbor);
-        long dv = decodedInteger.getLong();
-        assertTrue("Decoded value dv=" + dv + " v=" + value, decodedInteger.getLong() == value);
+        if (value != 0 || forceUnsigned) {
+            long dv = forceUnsigned ? decodedInteger.getUnsignedLong() : decodedInteger.getLong();
+            assertTrue("Decoded value dv=" + dv + " v=" + value, dv == value);
+        }
         String decString = decodedInteger.toString();
         String cString = cborObject.toString();
         assertTrue("Decoded string d=" + decString + 
@@ -155,11 +159,51 @@ public class CBORTest {
         integerTest(value, false, false, hex);
     }
     
-    void integerTest(String value) throws Exception {
-        CBORObject integer = new CBORInteger(new BigInteger(value));
-        byte[] cbor = integer.encode();
+    void integerTest(String value, IntegerVariations variation, boolean mustFail)
+            throws Exception {
+        CBORObject bigInteger = new CBORInteger(new BigInteger(value));
+        byte[] cbor = bigInteger.encode();
         CBORInteger res = (CBORInteger)CBORObject.decode(cbor);
         assertTrue("intBig", res.toString().equals(value));
+        if (mustFail) {
+            try {
+                switch (variation) {
+                case LONG:
+                    res.getLong();
+                    break;
+                    
+                case ULONG:
+                    res.getUnsignedLong();
+                    break;
+                    
+                default:
+                    res.getInt();
+                    break;
+                }
+                fail("Must not execute");
+            } catch (Exception e) {
+                checkException(e, "Value out of range for '" + 
+                                  (variation == IntegerVariations.ULONG ? "unsigned " :"") +
+                                  (variation == IntegerVariations.INT ? "int" : "long") + "'"); 
+            }
+            assertTrue("cbor65", res.getIntegerAsBigInteger().toString().equals(value));
+        } else {
+            long v;
+            switch (variation) {
+            case LONG:
+                v = res.getLong();
+                break;
+                
+            case ULONG:
+                v = res.getUnsignedLong();
+                break;
+                
+            default:
+                v = res.getInt();
+                break;
+            }
+            assertTrue("Variations", v == new BigInteger(value).longValue());
+        }
     }
 
     void bigIntegerTest(String value, String hex) throws Exception {
@@ -280,16 +324,29 @@ public class CBORTest {
         integerTest(0xfffffffffffffffeL, true, true,      "1bfffffffffffffffe");
         integerTest(0,                  false, true,      "3bffffffffffffffff");
         
-        integerTest("18446744073709551615");
-        integerTest("-18446744073709551616");
+        integerTest("18446744073709551615", IntegerVariations.ULONG, false);
+        integerTest("0", IntegerVariations.ULONG, false);
+        integerTest("-1", IntegerVariations.ULONG, true);
+
+        integerTest("-2147483648", IntegerVariations.INT, false);
+        integerTest("-2147483649", IntegerVariations.INT, true);
+        integerTest("2147483647", IntegerVariations.INT, false);
+        integerTest("2147483648", IntegerVariations.INT, true);
+
+        integerTest("-9223372036854775808", IntegerVariations.LONG, false);
+        integerTest("-9223372036854775809", IntegerVariations.LONG, true);
+        integerTest("9223372036854775807", IntegerVariations.LONG, false);
+        integerTest("9223372036854775808", IntegerVariations.LONG, true);
+        integerTest("-18446744073709551616", IntegerVariations.LONG, true);
+
         try {
-            integerTest("-18446744073709551617");
+            integerTest("-18446744073709551617", IntegerVariations.LONG, true);
             fail("must not execute");
         } catch (Exception e) {
            checkException(e, "Value out of range for CBORInteger"); 
         }
         try {
-            integerTest("18446744073709551616");
+            integerTest("18446744073709551616", IntegerVariations.LONG, true);
             fail("must not execute");
         } catch (Exception e) {
            checkException(e, "Value out of range for CBORInteger"); 

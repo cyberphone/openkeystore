@@ -35,11 +35,13 @@ public class CBORInteger extends CBORObject {
 
     /**
      * Standard integer handling.
+     * <p>
+     * Note: this constructor assumes that value is a <i>signed</i> long.
+     * </p>
+     * See {@link CBORInteger(long, boolean)}.
      * 
-     * Note: this constructor only yields correct results
-     * if value remains in the valid range for a signed long.
-     * @param value
-     */
+     * @param value Integer in long format
+      */
     public CBORInteger(long value) {
         if (value < 0) {
             // Convert to magnitude mode
@@ -81,7 +83,8 @@ public class CBORInteger extends CBORObject {
      * This constructor permits using the full range of applicable
      * integer values (-2^64 to 2^64-1).
      * 
-     * @param value
+     * @param value Integer in BigInteger format
+     * @throws IllegalArgumentException If value does not fit a CBOR integer
      */
     public CBORInteger(BigInteger value) {
         if (!CBORBigInteger.fitsAnInteger(value)) {
@@ -105,9 +108,8 @@ public class CBORInteger extends CBORObject {
     byte[] internalEncode() throws IOException {
         return getEncodedCore(unsignedMode ? MT_UNSIGNED : MT_NEGATIVE, value);
     }
-
     
-    BigInteger getValueAsBigInteger() {
+    BigInteger returnAsBigInteger() {
         BigInteger bigInteger = BigInteger.valueOf(value).and(CBORBigInteger.MAX_INT64);
         if (unsignedMode) {
             return bigInteger;
@@ -117,6 +119,6 @@ public class CBORInteger extends CBORObject {
 
     @Override
     void internalToString(CBORObject.PrettyPrinter prettyPrinter) {
-        prettyPrinter.appendText(getValueAsBigInteger().toString());
+        prettyPrinter.appendText(returnAsBigInteger().toString());
     }
 }
