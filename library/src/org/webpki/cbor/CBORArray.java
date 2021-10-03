@@ -52,7 +52,6 @@ public class CBORArray extends CBORObject {
      * @throws IOException
      */
     public CBORObject getObject(int index) throws IOException {
-        readFlag = true;
         return objectList.get(index);
     }
     

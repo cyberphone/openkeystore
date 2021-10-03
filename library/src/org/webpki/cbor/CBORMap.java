@@ -166,7 +166,6 @@ public class CBORMap extends CBORObject {
      * @throws IOException
      */
     public CBORObject getObject(CBORObject key) throws IOException {
-        readFlag = true;
         CBORObject cborObject = keys.get(key);
         if (cborObject == null) {
             bad("No such key: " + key.toString());

@@ -35,7 +35,7 @@ public abstract class CBORObject {
     CBORObject() {}
     
     // True if object has been read
-    boolean readFlag;
+    private boolean readFlag;
 
     // Major CBOR types
     static final byte MT_UNSIGNED      = (byte) 0x00;
