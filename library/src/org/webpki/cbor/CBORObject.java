@@ -358,7 +358,13 @@ public abstract class CBORObject {
     
     static class CBORDecoder {
 
+         // The point with BUFFER_SIZE is to protect against
+         // allocating huge amounts of memory due to malformed
+         // CBOR data. That is, even if you verified that the CBOR
+         // input data is < 100kbytes, individual objects could ask
+         // for megabytes.
         static final int BUFFER_SIZE = 10000;
+
         private static final byte[] ZERO_BYTE = {0};
         private ByteArrayInputStream input;
         private boolean checkKeySortingOrder;
