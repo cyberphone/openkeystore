@@ -36,7 +36,7 @@ public class CBORMap extends CBORObject {
     boolean parsingMode;
     CBORObject lastKey;
 
-    private static Comparator<CBORObject> comparator = new Comparator<>() {
+    private static Comparator<CBORObject> comparator = new Comparator<CBORObject>() {
 
         @Override
         public int compare(CBORObject o1, CBORObject o2) {

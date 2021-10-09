@@ -84,7 +84,7 @@ import org.webpki.util.DebugFormatter;
  * Note that JDK and BouncyCastle are incompatible with respect to "OKP" keys
  * and that this module only forces BouncyCastle for OKP keys.
 #else
- * Source configured for the [currently] buggy JDK 15 provider.
+ * Source configured for the JDK 17+ provider.
 #endif
  */
 public class OkpSupport {
@@ -112,20 +112,6 @@ public class OkpSupport {
                           DebugFormatter.getByteArrayFromHex("302a300506032b656e032100"));
             okpPrefix.put(KeyAlgorithms.X448,
                           DebugFormatter.getByteArrayFromHex("3042300506032b656f033900"));
-//#if !BOUNCYCASTLE
-// https://bugs.openjdk.java.net/browse/JDK-8252377
-// This code should work even after Oracle gets it right :)
-            if (java.security.KeyPairGenerator
-                    .getInstance("X25519")
-                        .generateKeyPair()
-                            .getPublic()
-                                .getEncoded().length == 46) {
-                okpPrefix.put(KeyAlgorithms.X25519,
-                              DebugFormatter.getByteArrayFromHex("302c300706032b656e0500032100"));
-                okpPrefix.put(KeyAlgorithms.X448,
-                              DebugFormatter.getByteArrayFromHex("3044300706032b656f0500033900"));
-            }
-//#endif
         } catch (Exception e) {
         }
     }
