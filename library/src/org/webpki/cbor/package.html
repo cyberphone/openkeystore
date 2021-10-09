@@ -20,18 +20,16 @@ like COSE and FIDO/CTAP2.
 <h3>Deterministic Serialization</h3>
 Since this package is intended for security related
 work, it is (by design) quite picky when decoding CBOR data
-and does not accept:
+and does (by default) not accept:
 <ul>
 <li>Leading zeros.</li>
 <li><code>bignum</code> objects
 that due to their value could equally well be provided in the
 shorter <code>integer</code> format.</li>
-<li>Maps with keys that are not sorted according to the selected canonicalization scheme.</li>
+<li>Maps with keys that are not sorted according to section 4.2.1 of RFC 8949.</li>
 </ul>
 On output (encode) the preferred serialization format is always used
 regardless how it was provided.
-<h3>Map Sorting</h3>
-Maps are <i>automatically sorted</i> during encode according to section 4.2.1 of RFC 8949.
 
 <h3 id='csf'>Signature Support</h3>
 The CBOR library contains support for creating and validating
