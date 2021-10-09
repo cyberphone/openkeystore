@@ -430,18 +430,6 @@ public class CBORTest {
             "false"
     };
     
-    static String[] RFC7049_SORTING = {
-            "10", 
-            "-1",
-            "false",
-            "100",
-            "\"z\"",
-            "[-1]",
-            "\"aa\"",
-            "[100]",
-            "\"aaa\""
-    };
-    
     void sortingTest(String[] expectedOrder) throws Exception{
         MapTest m = new MapTest();
         m.insert(new CBORInteger(10))
@@ -479,10 +467,6 @@ public class CBORTest {
     
     @Test
     public void mapperTest() throws Exception {
-        sortingTest(RFC8949_SORTING);
-        CBORObject.setRfc7049SortingMode(true);
-        sortingTest(RFC7049_SORTING);
-        CBORObject.setRfc7049SortingMode(false);
         sortingTest(RFC8949_SORTING);
     }
 

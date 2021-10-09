@@ -36,16 +36,13 @@ public class CBORMap extends CBORObject {
     boolean parsingMode;
     CBORObject lastKey;
 
-    private static Comparator<CBORObject> comparator = new Comparator<CBORObject>() {
+    private static Comparator<CBORObject> comparator = new Comparator<>() {
 
         @Override
         public int compare(CBORObject o1, CBORObject o2) {
             try {
                 byte[] key1 = o1.internalEncode();
                 byte[] key2 = o2.internalEncode();
-                if (rfc7049Sorting && key1.length != key2.length) {
-                    return key1.length - key2.length;
-                }
                 int minIndex = Math.min(key1.length, key2.length);
                 for (int i = 0; i < minIndex; i++) {
                     int diff = (key1[i] & 0xff) - (key2[i] & 0xff);

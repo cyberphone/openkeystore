@@ -115,19 +115,6 @@ public abstract class CBORObject {
         return encoded;
     }
 
-    // for maps
-    static boolean rfc7049Sorting;
-    
-    /**
-     * Set RFC 8949/7049 key sorting.
-     * 
-     * Default: false => RFC 8949 key sorting
-     * @param flag true for RFC 7049, false for RFC 8949
-     */
-    public static void setRfc7049SortingMode(boolean flag) {
-        rfc7049Sorting = flag;
-    }
-
     void checkTypeAndMarkAsRead(CBORTypes requestedCborType) throws IOException {
         if (internalGetType() != requestedCborType) {
             bad("Is type: " + internalGetType() + ", requested: " + requestedCborType);
