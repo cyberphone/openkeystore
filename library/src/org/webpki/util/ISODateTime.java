@@ -19,6 +19,7 @@ package org.webpki.util;
 import java.io.IOException;
 
 import java.text.SimpleDateFormat;
+
 import java.util.Calendar;
 import java.util.EnumSet;
 import java.util.GregorianCalendar;
@@ -56,11 +57,13 @@ public class ISODateTime {
      * <i>Finally:</i> 'Z' for UTC or an UTC time-zone difference expressed as <code>+hh:mm</code> or <code>-hh:mm</code></p>
      *
      * @param dateTime String to be parsed
-     * @param format Permitted format
+     * @param constraints Permitted format(s)
      * @return GregorianCalendar
      * @throws IOException If anything unexpected is found...
      */
-    public static GregorianCalendar parseDateTime(String dateTime, EnumSet<DatePatterns> format) throws IOException {
+    public static GregorianCalendar parseDateTime(String dateTime, 
+                                                  EnumSet<DatePatterns> constraints) 
+            throws IOException {
 
         if (!DATE_PATTERN.matcher(dateTime).matches()) {
             throw new IOException("DateTime syntax error: " + dateTime);
@@ -85,13 +88,13 @@ public class ISODateTime {
 
         // Find time zone info.
         if (dateTime.endsWith("Z")) {
-            if (!format.contains(DatePatterns.UTC)) {
+            if (!constraints.contains(DatePatterns.UTC)) {
                 bad(dateTime);
             }
             gc.setTimeZone(TimeZone.getTimeZone("UTC"));
             milliSeconds = dateTime.substring(19, dateTime.length() - 1);
         } else {
-            if (!format.contains(DatePatterns.LOCAL)) {
+            if (!constraints.contains(DatePatterns.LOCAL)) {
                 bad(dateTime);
             }
             int factor = 60 * 1000;
@@ -106,16 +109,16 @@ public class ISODateTime {
             gc.setTimeZone(new SimpleTimeZone(((60 * tzHour) + tzMinute) * factor, ""));
         }
         if (milliSeconds.length() > 0) {
-            if (!format.contains(DatePatterns.ANYFRACTION)) {
-                if (format.contains(DatePatterns.MILLISECONDS)) {
+            if (!constraints.contains(DatePatterns.ANYFRACTION)) {
+                if (constraints.contains(DatePatterns.MILLISECONDS)) {
                     if (milliSeconds.length() != 4) {
                         bad(dateTime);
                     }
-                } else if (format.contains(DatePatterns.MICROSECONDS)) {
+                } else if (constraints.contains(DatePatterns.MICROSECONDS)) {
                     if (milliSeconds.length() != 7) {
                         bad(dateTime);
                     }
-                } else if (format.contains(DatePatterns.NANOSECONDS)) {
+                } else if (constraints.contains(DatePatterns.NANOSECONDS)) {
                     if (milliSeconds.length() != 10) {
                         bad(dateTime);
                     }
@@ -130,8 +133,8 @@ public class ISODateTime {
                 fraction /= 10;
             }
             gc.set(GregorianCalendar.MILLISECOND, fraction);
-        } else if (format.contains(DatePatterns.MILLISECONDS) && 
-                   !format.contains(DatePatterns.ANYFRACTION)) {
+        } else if (constraints.contains(DatePatterns.MILLISECONDS) && 
+                   !constraints.contains(DatePatterns.ANYFRACTION)) {
             bad(dateTime);
         }
         return gc;

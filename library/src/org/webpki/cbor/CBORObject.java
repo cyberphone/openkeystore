@@ -22,9 +22,11 @@ import java.io.IOException;
 
 import java.math.BigInteger;
 
+import java.util.EnumSet;
 import java.util.GregorianCalendar;
 
 import org.webpki.util.ArrayUtil;
+import org.webpki.util.ISODateTime;
 
 /**
  * Base class for all CBOR objects.
@@ -141,7 +143,7 @@ public abstract class CBORObject {
      * </p>
      * This method supports the full (65-bit) CBOR integer range.
      * 
-     * @return Value
+     * @return BigInteger
      * @throws IOException
      */
     public BigInteger getIntegerAsBigInteger() throws IOException {
@@ -158,7 +160,7 @@ public abstract class CBORObject {
      * </p>
      * Also see {@link #getIntegerAsBigInteger()}.
      * 
-     * @return Value
+     * @return Long
      * @throws IOException
      */
     public long getLong() throws IOException {
@@ -174,7 +176,7 @@ public abstract class CBORObject {
      * </p>
      * Also see {@link #getIntegerAsBigInteger()}.
      * 
-     * @return Value
+     * @return Long
      * @throws IOException
      */
     public long getUnsignedLong() throws IOException {
@@ -190,7 +192,7 @@ public abstract class CBORObject {
      * </p>
      * Also see {@link #getIntegerAsBigInteger()}.
      * 
-     * @return Value
+     * @return Integer
      * @throws IOException
      */
     public int getInt() throws IOException {
@@ -204,7 +206,7 @@ public abstract class CBORObject {
      * {@link CBORBoolean}, otherwise an exception will be thrown.
      * </p>
      * 
-     * @return Value
+     * @return Boolean
      * @throws IOException
      */
     public boolean getBoolean() throws IOException {
@@ -235,7 +237,7 @@ public abstract class CBORObject {
      * otherwise an exception will be thrown.
      * </p>
      * 
-     * @return Value
+     * @return BigInteger
      * @throws IOException
      */
     public BigInteger getBigInteger() throws IOException {
@@ -253,7 +255,7 @@ public abstract class CBORObject {
      * {@link CBORTextString}, otherwise an exception will be thrown.
      * </p>
      * 
-     * @return Value
+     * @return String
      * @throws IOException
      */
     public String getTextString() throws IOException {
@@ -268,12 +270,29 @@ public abstract class CBORObject {
      * {@link CBORDateTime}, otherwise an exception will be thrown.
      * </p>
      * 
-     * @return Value
+     * @return Date time
      * @throws IOException
      */
     public GregorianCalendar getDateTime() throws IOException {
         checkTypeAndMarkAsRead(CBORTypes.DATE_TIME);
         return ((CBORDateTime) this).dateTime;
+    }
+
+    /**
+     * Get <i>constrained</i> <code>date time</code> value.
+     * <p>
+     * This method requires that the object is a
+     * {@link CBORDateTime}, otherwise an exception will be thrown.
+     * </p>
+     * 
+     * @param constraints Permitted format(s)
+     * @return Date time
+     * @throws IOException
+     */
+    public GregorianCalendar getDateTime(EnumSet<ISODateTime.DatePatterns> constraints) 
+            throws IOException {
+        checkTypeAndMarkAsRead(CBORTypes.DATE_TIME);
+        return ((CBORDateTime) this).parseDateTime(constraints);
     }
 
     /**
@@ -283,7 +302,7 @@ public abstract class CBORObject {
      * {@link CBORByteString}, otherwise an exception will be thrown.
      * </p>
      * 
-     * @return Value
+     * @return Byte array
      * @throws IOException
      */
     public byte[] getByteString() throws IOException {

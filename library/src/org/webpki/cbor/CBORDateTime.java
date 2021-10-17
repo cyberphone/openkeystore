@@ -30,7 +30,7 @@ import org.webpki.util.ISODateTime;
 public class CBORDateTime extends CBORObject {
 
     GregorianCalendar dateTime;
-    String backingData;  // For canonicalization
+    String dateTimeString;  // For canonicalization
 
     static final byte[] DATE_TIME_TAG = {MT_DATE_TIME};
 
@@ -42,7 +42,12 @@ public class CBORDateTime extends CBORObject {
      */
     public CBORDateTime(GregorianCalendar dateTime, EnumSet<ISODateTime.DatePatterns> format) {
         this.dateTime = dateTime;
-        this.backingData = ISODateTime.formatDateTime(dateTime, format);
+        this.dateTimeString = ISODateTime.formatDateTime(dateTime, format);
+    }
+    
+    GregorianCalendar parseDateTime(EnumSet<ISODateTime.DatePatterns> constraints) 
+            throws IOException {
+        return ISODateTime.parseDateTime(dateTimeString, constraints);
     }
 
     /**
@@ -51,8 +56,8 @@ public class CBORDateTime extends CBORObject {
      * @param dateTimeString ISO formatted string potentially including fractions of a second.
      */
     public CBORDateTime(String dateTimeString) throws IOException {
-        this.backingData = dateTimeString;
-        this.dateTime = ISODateTime.parseDateTime(dateTimeString, ISODateTime.COMPLETE);
+        this.dateTimeString = dateTimeString;
+        this.dateTime = parseDateTime(ISODateTime.COMPLETE);
     }
 
     @Override
@@ -62,11 +67,11 @@ public class CBORDateTime extends CBORObject {
 
     @Override
     byte[] internalEncode() throws IOException {
-        return ArrayUtil.add(DATE_TIME_TAG, new CBORTextString(backingData).internalEncode());
+        return ArrayUtil.add(DATE_TIME_TAG, new CBORTextString(dateTimeString).internalEncode());
     }
 
     @Override
     void internalToString(CBORObject.PrettyPrinter prettyPrinter) {
-        prettyPrinter.appendText("0(\"").appendText(backingData).appendText("\")");
+        prettyPrinter.appendText("0(\"").appendText(dateTimeString).appendText("\")");
     }
 }
