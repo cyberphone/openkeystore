@@ -117,8 +117,8 @@ public class JSONArrayReader {
         return JSONObjectReader.parseBigDecimal(getString());
     }
 
-    public GregorianCalendar getDateTime(EnumSet<ISODateTime.DatePatterns> format) throws IOException {
-        return ISODateTime.parseDateTime(getString(), format);
+    public GregorianCalendar getDateTime(EnumSet<ISODateTime.DatePatterns> constraints) throws IOException {
+        return ISODateTime.parseDateTime(getString(), constraints);
     }
 
     public byte[] getBinary() throws IOException {

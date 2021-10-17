@@ -231,16 +231,16 @@ public class JSONObjectReader implements Cloneable {
      * Note: Since JSON does not support a native dateTime 
      * type, this method builds on <i>mapping</i>.</p>
      * @param name Property
-     * @param format Required input format
+     * @param constraints Required input format
      * @return Java <code>GregorianCalendar</code>
      * @throws IOException
      * @see org.webpki.util.ISODateTime#parseDateTime(String, EnumSet)
      * @see JSONObjectWriter#setDateTime(String, GregorianCalendar, EnumSet)
      */
     public GregorianCalendar getDateTime(String name, 
-                                         EnumSet<ISODateTime.DatePatterns> format) 
+                                         EnumSet<ISODateTime.DatePatterns> constraints) 
     throws IOException {
-        return ISODateTime.parseDateTime(getString(name), format);
+        return ISODateTime.parseDateTime(getString(name), constraints);
     }
 
     /**
