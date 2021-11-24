@@ -686,7 +686,7 @@ public class CommandLineCA {
                     kpg = KeyPairGenerator.getInstance("EC");
                     kpg.initialize(new ECGenParameterSpec(keyAlgorithm.getJceName()));
                 } else {
-                    kpg = KeyPairGenerator.getInstance(keyAlgorithm.getJceName(), "BC");
+                    kpg = KeyPairGenerator.getInstance(keyAlgorithm.getJceName());
                 }
             } else {
                 kpg = KeyPairGenerator.getInstance("RSA");
