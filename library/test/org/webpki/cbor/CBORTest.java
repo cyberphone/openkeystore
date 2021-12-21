@@ -131,7 +131,10 @@ public class CBORTest {
     }
 
     CBORObject parseCborHex(String hex) throws IOException {
-        return CBORObject.decode(DebugFormatter.getByteArrayFromHex(hex));
+        byte[] cbor = DebugFormatter.getByteArrayFromHex(hex);
+        CBORObject cborObject = CBORObject.decode(cbor);
+        assertTrue("phex: " + hex, ArrayUtil.compare(cbor, cborObject.encode()));
+        return cborObject;
     }
 
     void integerTest(long value, boolean forceUnsigned, boolean set, String hex) throws Exception {
@@ -670,7 +673,7 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Non-deterministic encoding: additional bytes form a zero value");
+                "Non-deterministic encoding of N");
         }
 
         try {
@@ -678,7 +681,7 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                 "Non-deterministic encoding: leading zero byte");
+                "Non-deterministic encoding: leading zero byte");
         }
 
         try {
@@ -686,7 +689,7 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                 "Non-deterministic encoding: bignum fits integer");
+                "Non-deterministic encoding: bignum fits integer");
         }
         
         try {
@@ -694,7 +697,47 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                 "Improperly canonicalized key: 2");
+                "Improperly canonicalized key: 2");
+        }
+        
+        for (String value : new String[]{"1B8000000000000000", 
+                                         "1B0001000000000000",
+                                         "1A80000000",
+                                         "1A00010000",
+                                         "198000",
+                                         "190100",
+                                         "390100",
+                                         "1880",
+                                         "1818",
+                                         "3818",
+                                         "38FF",
+                                         "17",
+                                         "01",
+                                         "00",
+                                         "20",
+                                         "37"}) {
+            parseCborHex(value);
+        }
+        for (String value : new String[]{"1B00000000FFFFFFFF",
+                                         "1B0000000080000000",
+                                         "1A0000FFFF",
+                                         "1A00008000",
+                                         "1900FF",
+                                         "190080",
+                                         "3900FF",
+                                         "390080",
+                                         "1800",
+                                         "1801",
+                                         "1817",
+                                         "3801",
+                                         "3817"}) {
+            try {
+                parseCborHex(value);
+                fail("must not execute");
+            } catch (Exception e) {
+                checkException(e, 
+                    "Non-deterministic encoding of N");
+            }
         }
     }
     

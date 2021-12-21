@@ -465,47 +465,48 @@ public abstract class CBORObject {
             }
 
             // Then decode the types blending length data in the initial byte as well
-            long length = first & 0x1f;
+            long n = first & 0x1f;
             byte majorType = (byte)(first & 0xe0);
-            if (length > 0x1b) {
+            if (n > 0x1b) {
                 bad("Not implemented: 0x1c-0x1f");
             }
-            if (length > 0x17) {
-                int q = 1 << (length - 0x18);
-                length = 0;
+            if (n > 0x17) {
+                int q = 1 << (n - 0x18);
+                long mask = 0xffffffffl << (q / 2) * 8;
+                n = 0;
                 while (--q >= 0) {
-                    length <<= 8;
-                    length |= readByte();
+                    n <<= 8;
+                    n |= readByte();
                 }
-                if (length == 0) {
-                    bad("Non-deterministic encoding: additional bytes form a zero value");
+                if ((n & mask) == 0 || (n > 0 && n < 24)) {
+                    bad("Non-deterministic encoding of N");
                 }
             }
             switch (majorType) {
                 case MT_UNSIGNED:
-                    return new CBORInteger(length, true);
+                    return new CBORInteger(n, true);
     
                 case MT_NEGATIVE:
-                    return new CBORInteger(length + 1, false);
+                    return new CBORInteger(n + 1, false);
     
                 case MT_BYTE_STRING:
-                    return new CBORByteString(readBytes(checkLength(length)));
+                    return new CBORByteString(readBytes(checkLength(n)));
     
                 case MT_TEXT_STRING:
-                    return new CBORTextString(new String(readBytes(checkLength(length)), "utf-8"));
+                    return new CBORTextString(new String(readBytes(checkLength(n)), "utf-8"));
     
                 case MT_ARRAY:
-                    length = checkLength(length);
+                    n = checkLength(n);
                     CBORArray cborArray = new CBORArray();
-                    while (--length >= 0) {
+                    while (--n >= 0) {
                         cborArray.addObject(getObject());
                     }
                     return cborArray;
     
                 case MT_MAP:
-                    length = checkLength(length);
+                    n = checkLength(n);
                     CBORMap cborMap = new CBORMap();
-                    while (--length >= 0) {
+                    while (--n >= 0) {
                         cborMap.setObject(getObject(), getObject());
                         cborMap.parsingMode = checkKeySortingOrder;
                     }
