@@ -220,7 +220,7 @@
         <exclude name="org/**/webutil/certview/**"/>
         <exclude name="org/**/webutil/xmlview/**"/>
       </packageset>
-      <link offline="false" href="https://docs.oracle.com/en/java/javase/11/docs/api/"/>
+      <link offline="false" href="https://docs.oracle.com/en/java/javase/17/docs/api/index.html"/>
       <link offline="false" href="https://javaee.github.io/javaee-spec/javadocs/"/>
       <doctitle><![CDATA[<h1>WebPKI.org Support</h1>]]></doctitle>
       <bottom><![CDATA[<i>2005-2021 WebPKI.org.</i>]]></bottom>

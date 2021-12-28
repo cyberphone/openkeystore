@@ -9,6 +9,8 @@
   <property name="class_war_path" value="WEB-INF/classes/org/webpki/webapps/jsf_lab"/>
 
   <property name="logging" value="false"/>
+    
+  <property name="webroot" value="webapps"/>
   
   <property name="appcorename" value="jsf-lab"/>
   <property name="application" value="${appcorename}.war"/>
@@ -47,7 +49,7 @@
   <target name="tomcat">
     <fail message="CATALINA_HOME must be set to environment!" unless="catalina.home"/>
     <antcall target="build"/>
-    <copy file="${dist.dir}/${application}" todir="${catalina.home}/webapps" overwrite="true" preservelastmodified="true"/>
+    <copy file="${dist.dir}/${application}" todir="${catalina.home}/${webroot}" overwrite="true" preservelastmodified="true"/>
   </target>
 
   <target name="build">
