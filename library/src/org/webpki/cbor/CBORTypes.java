@@ -28,5 +28,4 @@ public enum CBORTypes {ARRAY,
                        TEXT_STRING, 
                        BOOLEAN, 
                        NULL, 
-                       BIG_INTEGER, 
-                       DATE_TIME};
+                       BIG_INTEGER};

@@ -12,7 +12,6 @@ like COSE and FIDO/CTAP2.
 <tr><td><code>text string</code></td><td></td><td><code>String</code></td></tr>
 <tr><td><code>unsigned bignum</code></td><td></td><td><code>BigInteger</code></td></tr>
 <tr><td><code>negative bignum</code></td><td></td><td><code>BigInteger</code></td></tr>
-<tr><td><code>date-time</code></td><td></td><td><code>GregorianCalendar</code></td></tr>
 <tr><td><code>true</code></td><td></td><td><code>boolean</code></td></tr>
 <tr><td><code>false</code></td><td></td><td><code>boolean</code></td></tr>
 <tr><td><code>null</code></td><td></td><td><code>null</code></td></tr>
@@ -51,7 +50,7 @@ enabling constructs like the following:
    3: "FR7630002111110020050014382",
    4: "https://europeanpaymentsinitiative.eu/fwp",
    5: "62932",
-   6: 0("2021-05-03T09:50:08Z"),
+   6: "2021-05-03T09:50:08Z",
    <span style='color:grey'>// signature object</span>
    7: {
      <span style='color:grey'>// Signature algorithm = COSE/ES256</span>
@@ -68,8 +67,8 @@ enabling constructs like the following:
        -3: h'9826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d8'
      },
      <span style='color:grey'>// Signature value</span>
-     5: h'71994b13d48eeb8e9a5cd2801e11af93af92bb1acfcbd92ef0a4f1bb317faf94ae61e
-80443763cf212b9fd28f3c91c92ade64558b4382623320f58dfd785606e'
+     5: h'9afd236f8c9e7d2f27480570df11983a36dec25950a97d6fe66136839065
+93e755d266b2a2adbd562739d7bcfa1c20ea7770f6677bfde34a310101f445c32712'
    }
 }
 </pre>
@@ -80,12 +79,13 @@ label 7 holds an associated <i>enveloped</i> signature.  A CBOR signature must
 be provided as a CBOR <code>map</code> having a fixed set of labels 
 according to the following table:
 <table class='webpkitable'>
-<tr><th>Label</th><th>Function</th></tr>
-<tr><td style='text-align:center'>1</td><td>Signature algorithm using COSE identifiers</td></tr>
-<tr><td style='text-align:center'>2</td><td><i>Optional</i> public key in COSE format</td></tr>
-<tr><td style='text-align:center'>3</td><td><i>Optional</i> key Id supplied as a <code>byte string</code></td></tr>
-<tr><td style='text-align:center'>4</td><td><i>Optional</i> certificate path supplied as an array of <code>byte string</code> objects</td></tr>
-<tr><td style='text-align:center'>5</td><td>Signature value supplied as a <code>byte string</code></td></tr>
+<tr><th>Label</th><th>Argument</th><th>Function</th></tr>
+<tr><td style='text-align:center'>1</td><td><code>integer</code></td><td>Signature algorithm using COSE identifiers</td></tr>
+<tr><td style='text-align:center'>2</td><td><code>map</code></td><td><i>Optional</i> public key in COSE format</td></tr>
+<tr><td style='text-align:center'>3</td><td><code>byte string</code></td><td><i>Optional</i> key Id</td></tr>
+<tr><td style='text-align:center'>4</td><td><code>byte string</code></td><td><i>Optional</i> certificate path supplied 
+as an array of X.509 objects in DER format, where the first object <b>must</b> be the signature certificate</td></tr>
+<tr><td style='text-align:center'>5</td><td><code>byte string</code></td><td>Signature value</td></tr>
 </table>
 <p>
 CSF signatures are validated by running the signature validation 

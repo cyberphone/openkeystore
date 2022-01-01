@@ -22,11 +22,7 @@ import java.io.IOException;
 
 import java.math.BigInteger;
 
-import java.util.EnumSet;
-import java.util.GregorianCalendar;
-
 import org.webpki.util.ArrayUtil;
-import org.webpki.util.ISODateTime;
 
 /**
  * Base class for all CBOR objects.
@@ -46,7 +42,6 @@ public abstract class CBORObject {
     static final byte MT_TEXT_STRING   = (byte) 0x60;
     static final byte MT_ARRAY         = (byte) 0x80;
     static final byte MT_MAP           = (byte) 0xa0;
-    static final byte MT_DATE_TIME     = (byte) 0xc0;
     static final byte MT_BIG_UNSIGNED  = (byte) 0xc2;
     static final byte MT_BIG_SIGNED    = (byte) 0xc3;
     static final byte MT_FALSE         = (byte) 0xf4;
@@ -87,7 +82,11 @@ public abstract class CBORObject {
     static void bad(String error) throws IOException {
         throw new IOException(error);
     }
-    
+
+    static void unsupportedTag(int tag) throws IOException {
+        bad(String.format("Unsupported tag: %2x", tag));
+    }
+
     void nullCheck(Object object) {
         if (object == null) {
             throw new IllegalArgumentException("Null argument");
@@ -264,38 +263,6 @@ public abstract class CBORObject {
     }
 
     /**
-     * Get <code>date time</code> value.
-     * <p>
-     * This method requires that the object is a
-     * {@link CBORDateTime}, otherwise an exception will be thrown.
-     * </p>
-     * 
-     * @return Date time
-     * @throws IOException
-     */
-    public GregorianCalendar getDateTime() throws IOException {
-        checkTypeAndMarkAsRead(CBORTypes.DATE_TIME);
-        return ((CBORDateTime) this).dateTime;
-    }
-
-    /**
-     * Get <i>constrained</i> <code>date time</code> value.
-     * <p>
-     * This method requires that the object is a
-     * {@link CBORDateTime}, otherwise an exception will be thrown.
-     * </p>
-     * 
-     * @param constraints Permitted format(s)
-     * @return Date time
-     * @throws IOException
-     */
-    public GregorianCalendar getDateTime(EnumSet<ISODateTime.DatePatterns> constraints) 
-            throws IOException {
-        checkTypeAndMarkAsRead(CBORTypes.DATE_TIME);
-        return ((CBORDateTime) this).parseDateTime(constraints);
-    }
-
-    /**
      * Get <code>byte string</code> value.
      * <p>
      * This method requires that the object is a
@@ -433,9 +400,6 @@ public abstract class CBORObject {
 
             // Begin with the types uniquely defined by the initial byte
             switch ((byte)first) {
-                case MT_DATE_TIME:
-                    return new CBORDateTime(getObject().getTextString()); 
-     
                 case MT_BIG_SIGNED:
                 case MT_BIG_UNSIGNED:
                     byte[] byteArray = getObject().getByteString();
@@ -468,7 +432,7 @@ public abstract class CBORObject {
             long n = first & 0x1f;
             byte majorType = (byte)(first & 0xe0);
             if (n > 0x1b) {
-                bad("Not implemented: 0x1c-0x1f");
+                unsupportedTag(first);
             }
             if (n > 0x17) {
                 int q = 1 << (n - 0x18);
@@ -514,7 +478,7 @@ public abstract class CBORObject {
                     return cborMap;
     
                 default:
-                    bad("Unsupported tag: " + first);
+                    unsupportedTag(first);
             }
             return null;  // For the compiler only...
         }
