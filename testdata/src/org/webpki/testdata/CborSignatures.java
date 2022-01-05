@@ -33,7 +33,6 @@ import org.webpki.cbor.CBORTypes;
 import org.webpki.cbor.CBORValidator;
 import org.webpki.cbor.CBORAsymKeySigner;
 import org.webpki.cbor.CBORAsymSignatureValidator;
-import org.webpki.cbor.CBORDateTime;
 import org.webpki.cbor.CBORHmacSigner;
 import org.webpki.cbor.CBORHmacValidator;
 import org.webpki.cbor.CBORInteger;
@@ -223,7 +222,7 @@ public class CborSignatures {
 
     static byte[] getDataToSign() throws Exception {
         return new CBORMap()
-            .setObject("instant", new CBORDateTime("2021-06-10T11:23:06Z"))
+            .setObject("instant", new CBORTextString("2021-06-10T11:23:06Z"))
             .setObject("name", new CBORTextString("John Doe"))
             .setObject("id", new CBORInteger(123456))
             .encode();

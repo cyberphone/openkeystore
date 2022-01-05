@@ -332,13 +332,13 @@ public class CBORTest {
             integerTest("-18446744073709551617", IntegerVariations.LONG, true);
             fail("must not execute");
         } catch (Exception e) {
-           checkException(e, "Value out of range for CBORInteger"); 
+            checkException(e, "Value out of range for CBORInteger"); 
         }
         try {
             integerTest("18446744073709551616", IntegerVariations.LONG, true);
             fail("must not execute");
         } catch (Exception e) {
-           checkException(e, "Value out of range for CBORInteger"); 
+            checkException(e, "Value out of range for CBORInteger"); 
         }
         
         bigIntegerTest("18446744073709551615", "1bffffffffffffffff");
@@ -811,14 +811,14 @@ public class CBORTest {
         signAndVerify(new CBORAsymKeySigner(p256.getPrivate()).setPublicKey(p256.getPublic()), 
                       new CBORAsymSignatureValidator(p256.getPublic()));
 
-         signAndVerify(new CBORAsymKeySigner(ed25519.getPrivate()).setPublicKey(ed25519.getPublic()), 
-                new CBORAsymSignatureValidator(ed25519.getPublic()));
+        signAndVerify(new CBORAsymKeySigner(ed25519.getPrivate()).setPublicKey(ed25519.getPublic()), 
+                      new CBORAsymSignatureValidator(ed25519.getPublic()));
 
         signAndVerify(new CBORAsymKeySigner(r2048.getPrivate()).setPublicKey(r2048.getPublic()), 
-                new CBORAsymSignatureValidator(r2048.getPublic()));
+                      new CBORAsymSignatureValidator(r2048.getPublic()));
 
         signAndVerify(new CBORAsymKeySigner(p256.getPrivate()), 
-            new CBORAsymSignatureValidator(new CBORAsymSignatureValidator.KeyLocator() {
+                      new CBORAsymSignatureValidator(new CBORAsymSignatureValidator.KeyLocator() {
                 
                 @Override
                 public PublicKey locate(PublicKey optionalPublicKey, 
