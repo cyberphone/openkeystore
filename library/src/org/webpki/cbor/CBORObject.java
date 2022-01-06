@@ -47,12 +47,29 @@ public abstract class CBORObject {
     static final byte MT_FALSE         = (byte) 0xf4;
     static final byte MT_TRUE          = (byte) 0xf5;
     static final byte MT_NULL          = (byte) 0xf6;
+    static final byte MT_FLOAT16       = (byte) 0xf9;
+    static final byte MT_FLOAT32       = (byte) 0xfa;
+    static final byte MT_FLOAT64       = (byte) 0xfb;
 
     static final BigInteger MIN_INT  = BigInteger.valueOf(Integer.MIN_VALUE);
     static final BigInteger MAX_INT  = BigInteger.valueOf(Integer.MAX_VALUE);
     
     static final BigInteger MIN_LONG = BigInteger.valueOf(Long.MIN_VALUE);
     static final BigInteger MAX_LONG = BigInteger.valueOf(Long.MAX_VALUE);
+    
+    static final int FLOAT16_FRACTION_SIZE = 10;
+    static final int FLOAT32_FRACTION_SIZE = 23;
+    static final int FLOAT64_FRACTION_SIZE = 52;
+
+    static final int FLOAT16_EXPONENT_SIZE = 5;
+    static final int FLOAT32_EXPONENT_SIZE = 8;
+    static final int FLOAT64_EXPONENT_SIZE = 11;
+
+    static final int FLOAT16_EXPONENT_BIAS = 15;
+    static final int FLOAT32_EXPONENT_BIAS = 127;
+    static final int FLOAT64_EXPONENT_BIAS = 1023;
+
+
     
     abstract CBORTypes internalGetType();
 
@@ -197,7 +214,22 @@ public abstract class CBORObject {
     public int getInt() throws IOException {
         return (int) getConstrainedInteger(MIN_INT, MAX_INT, "int");
     }
-    
+
+    /**
+     * Get <code>double</code> value.
+     * <p>
+     * This method requires that the object is a
+     * {@link CBORDouble}, otherwise an exception will be thrown.
+     * </p>
+     * 
+     * @return Double
+     * @throws IOException
+     */
+    public double getDouble() throws IOException {
+        checkTypeAndMarkAsRead(CBORTypes.DOUBLE);
+        return ((CBORDouble) this).value;
+    }
+ 
     /**
      * Get <code>boolean</code> value.
      * <p>
@@ -352,6 +384,7 @@ public abstract class CBORObject {
         static final int BUFFER_SIZE = 10000;
 
         private static final byte[] ZERO_BYTE = {0};
+
         private ByteArrayInputStream input;
         private boolean checkKeySortingOrder;
          
@@ -394,7 +427,24 @@ public abstract class CBORObject {
             }
             return baos.toByteArray();
         }
-        
+
+        private long getLongFromBytes(int length) throws IOException {
+            long value = 0;
+            for (int q = 0; q < length; q++) {
+                value <<= 8;
+                value += readByte();
+            }
+            return value;
+        }
+
+        private CBORDouble doubleWithCheck(int headerTag, long rawDouble) throws IOException {
+            CBORDouble value = new CBORDouble(Double.longBitsToDouble(rawDouble));
+            if (value.headerTag != headerTag || value.bitFormat != rawDouble) {
+                bad("Non-deterministic encoding of double value, tag: " + headerTag);
+            }
+            return value;
+        }
+
         private CBORObject getObject() throws IOException {
             int first = readByte();
 
@@ -417,7 +467,37 @@ public abstract class CBORObject {
                         bad("Non-deterministic encoding: bignum fits integer");
                     }
                     return new CBORBigInteger(bigInteger);
-    
+
+                case MT_FLOAT16:
+                    long float16 = getLongFromBytes(2);
+                    long float16Mid = 
+                            (float16 << (FLOAT64_FRACTION_SIZE - FLOAT16_FRACTION_SIZE));
+                    return doubleWithCheck(first,
+            // Sign bit
+            ((float16 & 0x8000l) << 48) +
+            // Exponent
+            ((float16Mid & 
+                ((1 << (FLOAT64_FRACTION_SIZE + FLOAT16_EXPONENT_SIZE)) - 1)) +
+                (FLOAT64_EXPONENT_BIAS - FLOAT16_EXPONENT_BIAS) << FLOAT64_FRACTION_SIZE) +
+            // Fraction bits
+            (float16Mid & ((1 << (FLOAT64_FRACTION_SIZE - FLOAT16_FRACTION_SIZE)) - 1)));
+
+                case MT_FLOAT32:
+                    long float32 = getLongFromBytes(4);
+                    long float32Mid = (float32 << (FLOAT64_FRACTION_SIZE - FLOAT32_FRACTION_SIZE));
+                    return doubleWithCheck(first, 
+            // Sign bit
+            ((float32 & 0x80000000l) << 32) +
+            // Exponent
+            ((float32 & 
+                ((1 << (FLOAT64_FRACTION_SIZE + FLOAT32_EXPONENT_SIZE)) - 1)) +
+                (FLOAT64_EXPONENT_BIAS - FLOAT32_EXPONENT_BIAS) << FLOAT64_FRACTION_SIZE) +
+            // Fraction bits
+            (float32Mid & ((1 << (FLOAT64_FRACTION_SIZE - FLOAT32_FRACTION_SIZE)) - 1)));
+
+                case MT_FLOAT64:
+                    return doubleWithCheck(first, getLongFromBytes(8));
+
                 case MT_NULL:
                     return new CBORNull();
                     

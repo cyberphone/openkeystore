@@ -374,7 +374,6 @@ public class CBORTest {
                 .addObject(new CBORInteger(3)), "83010203");
         
         unsupportedTag("C07819323032312D30352D30315430363A33373A35352B30313A3030");
-        unsupportedTag("F94100");
         unsupportedTag("1C");
     }
  
