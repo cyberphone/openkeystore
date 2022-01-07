@@ -28,14 +28,8 @@ public class CBORDouble extends CBORObject {
 
     double value;
     
-    int headerTag = MT_FLOAT16;
+    byte headerTag = MT_FLOAT16;
     long bitFormat;
-    
-    static final int NOT_A_NUMBER      = 0x7e00;
-    static final int NEGATIVE_INFINITY = 0xfc00;
-    static final int POSITIVE_INFINITY = 0x7c00;
-    static final int NEGATIVE_ZERO     = 0xfc00;
-    static final int POSITIVE_ZERO     = 0x7c00;
     
     static final double MAX_HALF_FLOAT = 65504.0;
     
@@ -48,34 +42,39 @@ public class CBORDouble extends CBORObject {
         this.value = value;
         bitFormat = Double.doubleToLongBits(value);
         double positiveValue = Math.abs(value);
-        if (bitFormat == 0x7ff8000000000000l) {
-            bitFormat = NOT_A_NUMBER;
-        } else if (bitFormat == 0x7ff0000000000000l) {
-            bitFormat = POSITIVE_INFINITY;
-        } else if (bitFormat == 0xfff0000000000000l) {
-            bitFormat = NEGATIVE_INFINITY;
-        } else if (bitFormat == 0x0000000000000000l) {
-            bitFormat = POSITIVE_ZERO;
-        } else if (bitFormat == 0x8000000000000000l) {
-            bitFormat = NEGATIVE_ZERO;
+        if (bitFormat == FLOAT64_POS_ZERO) {
+            bitFormat = FLOAT16_POS_ZERO;
+        } else if (bitFormat == FLOAT64_NEG_ZERO) {
+            bitFormat = FLOAT16_NEG_ZERO;
+        } else if (bitFormat == FLOAT64_NOT_A_NUMBER) {
+            bitFormat = FLOAT16_NOT_A_NUMBER;
+        } else if (bitFormat == FLOAT64_POS_INFINITY) {
+            bitFormat = FLOAT16_POS_INFINITY;
+        } else if (bitFormat == FLOAT64_NEG_INFINITY) {
+            bitFormat = FLOAT16_NEG_INFINITY;
         } else if (positiveValue > Float.MAX_VALUE || 
-                   (bitFormat & ((1 << (FLOAT64_FRACTION_SIZE - FLOAT32_FRACTION_SIZE)) - 1)) != 0) {
+                   (bitFormat & ((1l << (FLOAT64_FRACTION_SIZE - FLOAT32_FRACTION_SIZE)) - 1)) != 0) {
             headerTag = MT_FLOAT64; 
         } else if (positiveValue > MAX_HALF_FLOAT ||
-                   (bitFormat & ((1 << (FLOAT64_FRACTION_SIZE - FLOAT16_FRACTION_SIZE)) - 1)) != 0) {
+                   (bitFormat & ((1l << (FLOAT64_FRACTION_SIZE - FLOAT16_FRACTION_SIZE)) - 1)) != 0) {
             headerTag = MT_FLOAT32;
             bitFormat = Float.floatToIntBits((float)value);
         } else {
+ System.out.println("Sig=" + Long.toString(((bitFormat >>> 48) & 0x8000),16));
+ System.out.println("Exp=" + Long.toString((((bitFormat >>> FLOAT64_FRACTION_SIZE) +
+         (FLOAT16_EXPONENT_BIAS - FLOAT64_EXPONENT_BIAS)) << FLOAT16_FRACTION_SIZE),16));
+  System.out.println("Fra=" + Long.toString(((bitFormat >>> (FLOAT64_FRACTION_SIZE - FLOAT16_FRACTION_SIZE)) & 
+         ((1l << FLOAT16_FRACTION_SIZE) - 1)),16));
             bitFormat = 
                 // Sign bit
                 ((bitFormat >>> 48) & 0x8000) +
                 // Exponent
-                (((bitFormat >>> (FLOAT64_FRACTION_SIZE - FLOAT16_FRACTION_SIZE)) &
-                   ((1 << FLOAT16_FRACTION_SIZE + FLOAT64_EXPONENT_SIZE) - 1)) +
-                   (FLOAT16_EXPONENT_BIAS - FLOAT64_EXPONENT_BIAS) << FLOAT16_FRACTION_SIZE) +
+                (((bitFormat >>> FLOAT64_FRACTION_SIZE) +
+                   (FLOAT16_EXPONENT_BIAS - FLOAT64_EXPONENT_BIAS)) << FLOAT16_FRACTION_SIZE) +
                 // Fraction
                 ((bitFormat >>> (FLOAT64_FRACTION_SIZE - FLOAT16_FRACTION_SIZE)) & 
-                   ((1 << FLOAT16_FRACTION_SIZE) - 1));
+                   ((1l << FLOAT16_FRACTION_SIZE) - 1));
+System.out.println("Tot=" + Long.toString(bitFormat,16));
         }
     }
 
@@ -86,7 +85,7 @@ public class CBORDouble extends CBORObject {
     
     @Override
     byte[] internalEncode() throws IOException {
-        int length = 2 << (headerTag - (MT_FLOAT16 & 0xff));
+        int length = 2 << (headerTag - MT_FLOAT16) ;
         byte[] encoded = new byte[length];
         long integerRepresentation = bitFormat;
         int q = length;
@@ -94,7 +93,7 @@ public class CBORDouble extends CBORObject {
             encoded[q] = (byte) integerRepresentation;
             integerRepresentation >>>= 8;
         }
-        return ArrayUtil.add(new byte[]{(byte)headerTag}, encoded);
+        return ArrayUtil.add(new byte[]{headerTag}, encoded);
     }
     
     @Override

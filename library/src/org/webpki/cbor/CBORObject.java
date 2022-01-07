@@ -69,8 +69,18 @@ public abstract class CBORObject {
     static final int FLOAT32_EXPONENT_BIAS = 127;
     static final int FLOAT64_EXPONENT_BIAS = 1023;
 
+    static final int FLOAT16_NOT_A_NUMBER  = 0x7e00;
+    static final int FLOAT16_POS_INFINITY  = 0x7c00;
+    static final int FLOAT16_NEG_INFINITY  = 0xfc00;
+    static final int FLOAT16_POS_ZERO      = 0x0000;
+    static final int FLOAT16_NEG_ZERO      = 0x8000;
+     
+    static final long FLOAT64_NOT_A_NUMBER = 0x7ff8000000000000l;
+    static final long FLOAT64_POS_INFINITY = 0x7ff0000000000000l;
+    static final long FLOAT64_NEG_INFINITY = 0xfff0000000000000l;
+    static final long FLOAT64_POS_ZERO     = 0x0000000000000000l;
+    static final long FLOAT64_NEG_ZERO     = 0x8000000000000000l;
 
-    
     abstract CBORTypes internalGetType();
 
     /**
@@ -437,10 +447,18 @@ public abstract class CBORObject {
             return value;
         }
 
-        private CBORDouble doubleWithCheck(int headerTag, long rawDouble) throws IOException {
+        private CBORDouble doubleWithCheck(int headerTag, long readBits, long rawDouble)
+                throws IOException {
+System.out.println("D="+ Double.longBitsToDouble(rawDouble));
+System.out.println("R=" + Long.toString(readBits,16));
+System.out.println("L=" + Long.toString(rawDouble,16));
             CBORDouble value = new CBORDouble(Double.longBitsToDouble(rawDouble));
-            if (value.headerTag != headerTag || value.bitFormat != rawDouble) {
-                bad("Non-deterministic encoding of double value, tag: " + headerTag);
+            if (value.headerTag != (byte)headerTag || value.bitFormat != readBits) {
+ //               bad("Non-deterministic encoding of double value, tag: " + headerTag);
+              bad("Non-deterministic encoding of double value, tag: " + (byte)headerTag +
+                      " dec: " + value.headerTag + " val: " + rawDouble + " decv: " +
+                      value.bitFormat);
+                               
             }
             return value;
         }
@@ -469,34 +487,46 @@ public abstract class CBORObject {
                     return new CBORBigInteger(bigInteger);
 
                 case MT_FLOAT16:
+                    long rawDouble;
                     long float16 = getLongFromBytes(2);
-                    long float16Mid = 
-                            (float16 << (FLOAT64_FRACTION_SIZE - FLOAT16_FRACTION_SIZE));
-                    return doubleWithCheck(first,
+                    if (float16 == FLOAT16_POS_ZERO) {
+                        rawDouble = FLOAT64_POS_ZERO;
+                    } else if (float16 == FLOAT16_NEG_ZERO) {
+                        rawDouble = FLOAT64_NEG_ZERO;
+                    } else  if (float16 == FLOAT16_NOT_A_NUMBER) {
+                        rawDouble = FLOAT64_NOT_A_NUMBER;
+                    } else if (float16 == FLOAT16_POS_INFINITY) {
+                        rawDouble = FLOAT64_POS_INFINITY;
+                    } else if (float16 == FLOAT16_NEG_INFINITY) {
+                        rawDouble = FLOAT64_NEG_INFINITY;
+                    } else {
+            rawDouble = 
             // Sign bit
             ((float16 & 0x8000l) << 48) +
             // Exponent
-            ((float16Mid & 
-                ((1 << (FLOAT64_FRACTION_SIZE + FLOAT16_EXPONENT_SIZE)) - 1)) +
-                (FLOAT64_EXPONENT_BIAS - FLOAT16_EXPONENT_BIAS) << FLOAT64_FRACTION_SIZE) +
+            (((float16 >>> FLOAT16_FRACTION_SIZE) + 
+                (FLOAT64_EXPONENT_BIAS - FLOAT16_EXPONENT_BIAS)) << FLOAT64_FRACTION_SIZE) +
             // Fraction bits
-            (float16Mid & ((1 << (FLOAT64_FRACTION_SIZE - FLOAT16_FRACTION_SIZE)) - 1)));
+            ((float16 << (FLOAT64_FRACTION_SIZE - FLOAT16_FRACTION_SIZE)) & 
+                ((1l << FLOAT64_FRACTION_SIZE) - 1));
+                    }
+                    return doubleWithCheck(first, float16, rawDouble);
 
                 case MT_FLOAT32:
                     long float32 = getLongFromBytes(4);
-                    long float32Mid = (float32 << (FLOAT64_FRACTION_SIZE - FLOAT32_FRACTION_SIZE));
-                    return doubleWithCheck(first, 
+                    return doubleWithCheck(first, float32,
             // Sign bit
             ((float32 & 0x80000000l) << 32) +
             // Exponent
-            ((float32 & 
-                ((1 << (FLOAT64_FRACTION_SIZE + FLOAT32_EXPONENT_SIZE)) - 1)) +
-                (FLOAT64_EXPONENT_BIAS - FLOAT32_EXPONENT_BIAS) << FLOAT64_FRACTION_SIZE) +
+            (((float32 >>> FLOAT32_FRACTION_SIZE) +
+                (FLOAT64_EXPONENT_BIAS - FLOAT32_EXPONENT_BIAS)) << FLOAT64_FRACTION_SIZE) +
             // Fraction bits
-            (float32Mid & ((1 << (FLOAT64_FRACTION_SIZE - FLOAT32_FRACTION_SIZE)) - 1)));
+            ((float32 << (FLOAT64_FRACTION_SIZE - FLOAT32_FRACTION_SIZE)) & 
+                ((1l << FLOAT64_FRACTION_SIZE) - 1)));
 
                 case MT_FLOAT64:
-                    return doubleWithCheck(first, getLongFromBytes(8));
+                    long float64 = getLongFromBytes(8);
+                    return doubleWithCheck(first, float64, float64);
 
                 case MT_NULL:
                     return new CBORNull();
