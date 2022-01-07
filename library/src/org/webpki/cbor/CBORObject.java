@@ -449,16 +449,14 @@ public abstract class CBORObject {
 
         private CBORDouble doubleWithCheck(int headerTag, long readBits, long rawDouble)
                 throws IOException {
-System.out.println("D="+ Double.longBitsToDouble(rawDouble));
-System.out.println("R=" + Long.toString(readBits,16));
-System.out.println("L=" + Long.toString(rawDouble,16));
+// System.out.println("D="+ Double.longBitsToDouble(rawDouble));
+// System.out.println("R=" + Long.toString(readBits,16));
+// System.out.println("L=" + Long.toString(rawDouble,16));
             CBORDouble value = new CBORDouble(Double.longBitsToDouble(rawDouble));
             if (value.headerTag != (byte)headerTag || value.bitFormat != readBits) {
- //               bad("Non-deterministic encoding of double value, tag: " + headerTag);
-              bad("Non-deterministic encoding of double value, tag: " + (byte)headerTag +
-                      " dec: " + value.headerTag + " val: " + rawDouble + " decv: " +
-                      value.bitFormat);
-                               
+                bad("Non-deterministic encoding of double value, tag: " + headerTag);
+/* bad("Non-deterministic encoding of double value, tag: " + (byte)headerTag +
+   " dec: " + value.headerTag + " val: " + rawDouble + " decv: " + value.bitFormat); */
             }
             return value;
         }
@@ -500,15 +498,28 @@ System.out.println("L=" + Long.toString(rawDouble,16));
                     } else if (float16 == FLOAT16_NEG_INFINITY) {
                         rawDouble = FLOAT64_NEG_INFINITY;
                     } else {
-            rawDouble = 
-            // Sign bit
-            ((float16 & 0x8000l) << 48) +
-            // Exponent
-            (((float16 >>> FLOAT16_FRACTION_SIZE) + 
-                (FLOAT64_EXPONENT_BIAS - FLOAT16_EXPONENT_BIAS)) << FLOAT64_FRACTION_SIZE) +
-            // Fraction bits
-            ((float16 << (FLOAT64_FRACTION_SIZE - FLOAT16_FRACTION_SIZE)) & 
-                ((1l << FLOAT64_FRACTION_SIZE) - 1));
+                        long exp16 = (float16 >>> FLOAT16_FRACTION_SIZE) &
+                                       ((1l << FLOAT16_EXPONENT_SIZE) - 1);
+                        long frac16 = (float16 << (FLOAT64_FRACTION_SIZE - FLOAT16_FRACTION_SIZE));
+                        if (exp16 == 0) {
+// System.out.println("U=" + Long.toString(frac16,16));
+                            // Unnormalized
+                            exp16++;
+                            do {
+                                exp16--;
+                                frac16 <<= 1;
+                            } while ((frac16 & (1l << FLOAT64_FRACTION_SIZE)) == 0);
+// System.out.println("T=" + Long.toString(exp16,16));
+// System.out.println("T2=" + Long.toString(frac16 & ((1l << FLOAT64_FRACTION_SIZE) - 1),16));
+                        }
+                        rawDouble = 
+                        // Sign bit
+                        ((float16 & 0x8000l) << 48) +
+                        // Exponent
+                        ((exp16 + (FLOAT64_EXPONENT_BIAS - FLOAT16_EXPONENT_BIAS)) 
+                           << FLOAT64_FRACTION_SIZE) +
+                        // Fraction bits
+                        (frac16 & ((1l << FLOAT64_FRACTION_SIZE) - 1));
                     }
                     return doubleWithCheck(first, float16, rawDouble);
 

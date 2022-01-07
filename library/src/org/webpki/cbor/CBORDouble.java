@@ -60,21 +60,34 @@ public class CBORDouble extends CBORObject {
             headerTag = MT_FLOAT32;
             bitFormat = Float.floatToIntBits((float)value);
         } else {
- System.out.println("Sig=" + Long.toString(((bitFormat >>> 48) & 0x8000),16));
- System.out.println("Exp=" + Long.toString((((bitFormat >>> FLOAT64_FRACTION_SIZE) +
-         (FLOAT16_EXPONENT_BIAS - FLOAT64_EXPONENT_BIAS)) << FLOAT16_FRACTION_SIZE),16));
-  System.out.println("Fra=" + Long.toString(((bitFormat >>> (FLOAT64_FRACTION_SIZE - FLOAT16_FRACTION_SIZE)) & 
-         ((1l << FLOAT16_FRACTION_SIZE) - 1)),16));
+/* System.out.println("Exp16l=" + Long.toString(((bitFormat >>> FLOAT64_FRACTION_SIZE) & 
+ ((1l << FLOAT64_EXPONENT_SIZE) - 1)),16)); */
+            long exp16 = ((bitFormat >>> FLOAT64_FRACTION_SIZE) & 
+                           ((1l << FLOAT64_EXPONENT_SIZE) - 1)) + 
+                         (FLOAT16_EXPONENT_BIAS - FLOAT64_EXPONENT_BIAS);
+            long frac16 = (bitFormat >>> (FLOAT64_FRACTION_SIZE - FLOAT16_FRACTION_SIZE)) & 
+                    ((1l << FLOAT16_FRACTION_SIZE) - 1);
+// System.out.println("Exp16i=" + Long.toString(exp16,16));
+// System.out.println("Fra16i=" + Long.toString(frac16,16));
+            if (exp16 <= 0) {
+                // Unnormalized
+                frac16 +=(1l << FLOAT16_FRACTION_SIZE);
+                frac16 >>= 1;
+                while (exp16 < 0) {
+                    frac16 >>= 1;
+                    exp16++;
+                }
+            }
+ //System.out.println("Exp16=" + Long.toString(exp16,16));
+ // System.out.println("Fra16=" + Long.toString(frac16,16));
             bitFormat = 
                 // Sign bit
                 ((bitFormat >>> 48) & 0x8000) +
                 // Exponent
-                (((bitFormat >>> FLOAT64_FRACTION_SIZE) +
-                   (FLOAT16_EXPONENT_BIAS - FLOAT64_EXPONENT_BIAS)) << FLOAT16_FRACTION_SIZE) +
+                (exp16 << FLOAT16_FRACTION_SIZE) +
                 // Fraction
-                ((bitFormat >>> (FLOAT64_FRACTION_SIZE - FLOAT16_FRACTION_SIZE)) & 
-                   ((1l << FLOAT16_FRACTION_SIZE) - 1));
-System.out.println("Tot=" + Long.toString(bitFormat,16));
+                frac16;
+//System.out.println("Tot=" + Long.toString(bitFormat,16));
         }
     }
 
