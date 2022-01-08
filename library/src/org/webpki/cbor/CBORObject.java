@@ -449,14 +449,13 @@ public abstract class CBORObject {
 
         private CBORDouble doubleWithCheck(int headerTag, long readBits, long rawDouble)
                 throws IOException {
-// System.out.println("D="+ Double.longBitsToDouble(rawDouble));
-// System.out.println("R=" + Long.toString(readBits,16));
-// System.out.println("L=" + Long.toString(rawDouble,16));
             CBORDouble value = new CBORDouble(Double.longBitsToDouble(rawDouble));
             if (value.headerTag != (byte)headerTag || value.bitFormat != readBits) {
+System.out.println("D="+ Double.longBitsToDouble(rawDouble));
+System.out.println("B=" + Long.toUnsignedString(value.bitFormat,16));
+System.out.println("R=" + Long.toUnsignedString(readBits,16));
+System.out.println("L=" + Long.toUnsignedString(rawDouble,16));
                 bad("Non-deterministic encoding of double value, tag: " + headerTag);
-/* bad("Non-deterministic encoding of double value, tag: " + (byte)headerTag +
-   " dec: " + value.headerTag + " val: " + rawDouble + " decv: " + value.bitFormat); */
             }
             return value;
         }
@@ -525,16 +524,10 @@ public abstract class CBORObject {
 
                 case MT_FLOAT32:
                     long float32 = getLongFromBytes(4);
-                    return doubleWithCheck(first, float32,
-            // Sign bit
-            ((float32 & 0x80000000l) << 32) +
-            // Exponent
-            (((float32 >>> FLOAT32_FRACTION_SIZE) +
-                (FLOAT64_EXPONENT_BIAS - FLOAT32_EXPONENT_BIAS)) << FLOAT64_FRACTION_SIZE) +
-            // Fraction bits
-            ((float32 << (FLOAT64_FRACTION_SIZE - FLOAT32_FRACTION_SIZE)) & 
-                ((1l << FLOAT64_FRACTION_SIZE) - 1)));
-
+                    return doubleWithCheck(first, 
+                                           float32,
+                                           Double.doubleToLongBits(Float.intBitsToFloat((int)float32)));
+ 
                 case MT_FLOAT64:
                     long float64 = getLongFromBytes(8);
                     return doubleWithCheck(first, float64, float64);

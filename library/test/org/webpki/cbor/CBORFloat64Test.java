@@ -15,6 +15,9 @@ public class CBORFloat64Test {
             CBORDouble cbor = new CBORDouble(d);
             switch (cbor.headerTag) {
                 case CBORObject.MT_FLOAT16:
+                    if (Double.isNaN(d)) break;
+                    if (Double.isInfinite(d)) break;
+                    System.out.println("F16=" + d); System.exit(3);
                     float16++;
                     break;
                 case CBORObject.MT_FLOAT32:
@@ -31,7 +34,7 @@ public class CBORFloat64Test {
                 System.out.println("V=" + d + " 16=" + float16 + " 32=" + float32 + " 64=" + float64);
             }
         } catch (Exception e) {
-            System.out.println("**********=" + l);
+            System.out.println("**********=" + Long.toUnsignedString(l, 16));
             System.exit(3);
         }
     }

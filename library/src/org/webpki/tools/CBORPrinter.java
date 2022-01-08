@@ -50,7 +50,10 @@ public class CBORPrinter {
         byte[] readCbor = ArrayUtil.readFile(args[1]);
         String format = args[0];
         if (format.equals("hex")) {
-            readCbor = DebugFormatter.getByteArrayFromHex(new String(readCbor, "utf-8"));
+            String hex = new String(readCbor, "utf-8")
+                    .replaceAll("#.*(\r|\n|$)", "")
+                    .replaceAll("( |\n|\r)", "");
+            readCbor = DebugFormatter.getByteArrayFromHex(hex);
         } else if (format.equals("b64u")) {
             readCbor = Base64URL.decode(new String(readCbor, "utf-8"));
         } else if (!format.equals("bin")) {
