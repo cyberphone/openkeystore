@@ -39,7 +39,6 @@ public class CBORDouble extends CBORObject {
     public CBORDouble(double value) {
         this.value = value;
         bitFormat = Double.doubleToLongBits(value);
-        double positiveValue = Math.abs(value);
         if (bitFormat == FLOAT64_POS_ZERO) {
             bitFormat = FLOAT16_POS_ZERO;
         } else if (bitFormat == FLOAT64_NEG_ZERO) {
@@ -50,8 +49,7 @@ public class CBORDouble extends CBORObject {
             bitFormat = FLOAT16_POS_INFINITY;
         } else if (bitFormat == FLOAT64_NEG_INFINITY) {
             bitFormat = FLOAT16_NEG_INFINITY;
-        } else if (positiveValue > Float.MAX_VALUE || 
-                   positiveValue != (double)((float) positiveValue)) {
+        } else if (Math.abs(value) > Float.MAX_VALUE ||  value != (double)((float) value)) {
             // Too big or would lose precision unless we stick to 64 bits.
             headerTag = MT_FLOAT64; 
         } else { 
