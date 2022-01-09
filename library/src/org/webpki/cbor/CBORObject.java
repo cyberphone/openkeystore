@@ -451,10 +451,10 @@ public abstract class CBORObject {
                 throws IOException {
             CBORDouble value = new CBORDouble(Double.longBitsToDouble(rawDouble));
             if (value.headerTag != (byte)headerTag || value.bitFormat != readBits) {
-System.out.println("D="+ Double.longBitsToDouble(rawDouble));
-System.out.println("B=" + Long.toUnsignedString(value.bitFormat,16));
-System.out.println("R=" + Long.toUnsignedString(readBits,16));
-System.out.println("L=" + Long.toUnsignedString(rawDouble,16));
+//ystem.out.println("D="+ Double.longBitsToDouble(rawDouble));
+//System.out.println("B=" + Long.toUnsignedString(value.bitFormat,16));
+//System.out.println("R=" + Long.toUnsignedString(readBits,16));
+//System.out.println("L=" + Long.toUnsignedString(rawDouble,16));
                 bad("Non-deterministic encoding of double value, tag: " + headerTag);
             }
             return value;

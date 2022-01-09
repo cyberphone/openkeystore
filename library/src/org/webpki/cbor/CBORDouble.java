@@ -31,8 +31,6 @@ public class CBORDouble extends CBORObject {
     byte headerTag = MT_FLOAT16;
     long bitFormat;
     
-    static final double MAX_HALF_FLOAT = 65504.0;
-    
     /**
      * Create a CBOR <code>double</code> object.
      * 
@@ -57,53 +55,61 @@ public class CBORDouble extends CBORObject {
             // Too big or would lose precision unless we stick to 64 bits.
             headerTag = MT_FLOAT64; 
         } else { 
-            // Assumption: we go for float32 unless proven wrong :)
+            // Assumption: we go for float32 until proven wrong :)
             int float32 = Float.floatToIntBits((float)value);
-            int exp16 = ((float32 >>> FLOAT32_FRACTION_SIZE) & 
-                ((1 << FLOAT32_EXPONENT_SIZE) - 1)) + 
-                    (FLOAT16_EXPONENT_BIAS - FLOAT32_EXPONENT_BIAS);
-            // Complex test - would we lose precision using float16?
-            int copyFloat = float32;
-            int q = exp16;
-            while (q++ < 0) {
-                if ((copyFloat & 1) != 0) {
-                    positiveValue = Float.MAX_VALUE;
-                    break;
-                }
-                copyFloat >>= 1;
-            }
-            // Our assumption was correct!
-            if (positiveValue > MAX_HALF_FLOAT) {
-                headerTag = MT_FLOAT32;
-                bitFormat = float32;
+            headerTag = MT_FLOAT32;
+            bitFormat = float32 & 0xffffffffl;
+//System.out.println("float32=" + Long.toUnsignedString(bitFormat,16));
+
+            int actualExponent = ((float32 >>> FLOAT32_FRACTION_SIZE) & 
+                ((1 << FLOAT32_EXPONENT_SIZE) - 1)) - FLOAT32_EXPONENT_BIAS;
+//System.out.println("ExpAct=" + Long.toString(actualExponent));
+            if (actualExponent == -FLOAT32_EXPONENT_BIAS) {
+//System.out.println("F32 due to unnormalized");
                 return;
             }
+            if (actualExponent > (FLOAT16_EXPONENT_BIAS + 1)) {
+//System.out.println("F32 due to large exponent");
+                return;
+            }
+            int frac16 = (float32 >> (FLOAT32_FRACTION_SIZE - FLOAT16_FRACTION_SIZE)) & 
+                    ((1 << FLOAT16_FRACTION_SIZE) - 1);
+//System.out.println("frac16=" + Long.toUnsignedString(frac16,2));
+            if ((float32 & ((1 << FLOAT32_FRACTION_SIZE) - 1)) != 
+                    (frac16 << (FLOAT32_FRACTION_SIZE - FLOAT16_FRACTION_SIZE))) {
+//System.out.println("F32 due to lost precision");
+                return;
+            }
+//System.out.println("ExpAct1=" + Long.toString(actualExponent));
+
+            int exp16 = actualExponent + FLOAT16_EXPONENT_BIAS;
+            if (exp16 <= 0) {
+
+                // Complex test - would unnormalized data create lost precision
+                frac16 += 1 << FLOAT16_FRACTION_SIZE;
+//System.out.println("Exp16u=" + Long.toString(exp16,16) + "fran16u=" + Long.toUnsignedString(frac16,2));
+                exp16--;
+                do {
+//System.out.println("frac16=" + Long.toUnsignedString(frac16,2) + " exp=" + exp16);
+                    if ((frac16 & 1) != 0) {
+//System.out.println("F32 due to lost precision during unnormalization");
+                        return;
+                    }
+                    frac16 >>= 1;
+                } while (++exp16 < 0);
+            }
+
             // Seems like float16 will work!
-/* System.out.println("Exp16l=" + Long.toString(((bitFormat >>> FLOAT64_FRACTION_SIZE) & 
-   ((1l << FLOAT64_EXPONENT_SIZE) - 1)),16)); */
-           int frac16 = (float32 >>> (FLOAT32_FRACTION_SIZE - FLOAT16_FRACTION_SIZE)) & 
-                   ((1 << FLOAT16_FRACTION_SIZE) - 1);
- System.out.println("Exp16i=" + Long.toString(exp16,16));
- System.out.println("Fra16i=" + Long.toUnsignedString(frac16,16));
-           if (exp16 <= 0) {
-               // Legal but unnormalized result
-               frac16 +=(1 << FLOAT16_FRACTION_SIZE);
-               frac16 >>= 1;
-               while (exp16 < 0) {
-                   frac16 >>= 1;
-                   exp16++;
-               }
-           }
-System.out.println("Exp16=" + Long.toString(exp16,16));
-System.out.println("Fra16=" + Long.toUnsignedString(frac16,16));
-           bitFormat = 
+            headerTag = MT_FLOAT16;
+//System.out.println("Exp16=" + Long.toString(exp16,16));
+            bitFormat = 
                // Sign bit
                ((float32 >>> 16) & 0x8000) +
                // Exponent
                (exp16 << FLOAT16_FRACTION_SIZE) +
                // Fraction
                frac16;
-System.out.println("Tot=" + Long.toUnsignedString(bitFormat,16));
+//System.out.println("Tot16=" + Long.toUnsignedString(bitFormat,16));
         }
     }
 
