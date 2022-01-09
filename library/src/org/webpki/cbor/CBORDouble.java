@@ -73,7 +73,7 @@ public class CBORDouble extends CBORObject {
                     ((1 << FLOAT16_FRACTION_SIZE) - 1);
             if ((float32 & ((1 << FLOAT32_FRACTION_SIZE) - 1)) != 
                     (frac16 << (FLOAT32_FRACTION_SIZE - FLOAT16_FRACTION_SIZE))) {
-                // Losing fraction bit is not an option
+                // Losing fraction bits is not an option
                 return;
             }
             int exp16 = actualExponent + FLOAT16_EXPONENT_BIAS;

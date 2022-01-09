@@ -8,14 +8,16 @@ like COSE and FIDO/CTAP2.
 <tr><th>CBOR Data Type</th><th>&nbsp;&nbsp;</th><th>Java Counterpart</th></tr>
 <tr><td><code>unsigned integer</code></td><td></td><td><code>long</code></td></tr>
 <tr><td><code>negative integer</code></td><td></td><td><code>long</code></td></tr>
-<tr><td><code>byte string</code></td><td></td><td><code>byte[]</code></td></tr>
-<tr><td><code>text string</code></td><td></td><td><code>String</code></td></tr>
 <tr><td><code>unsigned bignum</code></td><td></td><td><code>BigInteger</code></td></tr>
 <tr><td><code>negative bignum</code></td><td></td><td><code>BigInteger</code></td></tr>
+<tr><td><code>floating point</code> *</td><td></td><td><code>double</code></td></tr>
+<tr><td><code>byte string</code></td><td></td><td><code>byte[]</code></td></tr>
+<tr><td><code>text string</code></td><td></td><td><code>String</code></td></tr>
 <tr><td><code>true</code></td><td></td><td><code>boolean</code></td></tr>
 <tr><td><code>false</code></td><td></td><td><code>boolean</code></td></tr>
 <tr><td><code>null</code></td><td></td><td><code>null</code></td></tr>
 </table>
+<p>*) Note that floating point data covers the 16, 32, and 64-bit IEEE 754 variants.</p>
 <h3>Deterministic Serialization</h3>
 Since this package is intended for security related
 work, it is (by design) quite picky when decoding CBOR data
@@ -25,6 +27,8 @@ and does (by default) not accept:
 <li><code>bignum</code> objects
 that due to their value could equally well be provided in the
 shorter <code>integer</code> format.</li>
+<li>Floating point data that could equally well be properly represented by a
+shorter variant.  As an example <code>0.0</code> must be encoded as a 16-bit floating point type. </li>
 <li>Maps with keys that are not sorted according to section 4.2.1 of RFC 8949.</li>
 </ul>
 On output (encode) the preferred serialization format is always used
