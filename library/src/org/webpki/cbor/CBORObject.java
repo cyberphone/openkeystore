@@ -451,10 +451,6 @@ public abstract class CBORObject {
                 throws IOException {
             CBORDouble value = new CBORDouble(Double.longBitsToDouble(rawDouble));
             if (value.headerTag != (byte)headerTag || value.bitFormat != readBits) {
-//ystem.out.println("D="+ Double.longBitsToDouble(rawDouble));
-//System.out.println("B=" + Long.toUnsignedString(value.bitFormat,16));
-//System.out.println("R=" + Long.toUnsignedString(readBits,16));
-//System.out.println("L=" + Long.toUnsignedString(rawDouble,16));
                 bad("Non-deterministic encoding of double value, tag: " + headerTag);
             }
             return value;
@@ -501,15 +497,12 @@ public abstract class CBORObject {
                                        ((1l << FLOAT16_EXPONENT_SIZE) - 1);
                         long frac16 = (float16 << (FLOAT64_FRACTION_SIZE - FLOAT16_FRACTION_SIZE));
                         if (exp16 == 0) {
-// System.out.println("U=" + Long.toString(frac16,16));
                             // Unnormalized
                             exp16++;
                             do {
                                 exp16--;
                                 frac16 <<= 1;
                             } while ((frac16 & (1l << FLOAT64_FRACTION_SIZE)) == 0);
-// System.out.println("T=" + Long.toString(exp16,16));
-// System.out.println("T2=" + Long.toString(frac16 & ((1l << FLOAT64_FRACTION_SIZE) - 1),16));
                         }
                         rawDouble = 
                         // Sign bit

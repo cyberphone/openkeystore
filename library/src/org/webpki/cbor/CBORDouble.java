@@ -55,53 +55,46 @@ public class CBORDouble extends CBORObject {
             // Too big or would lose precision unless we stick to 64 bits.
             headerTag = MT_FLOAT64; 
         } else { 
-            // Assumption: we go for float32 until proven wrong :)
+            // Assumption: we go for 32 bits until proven wrong :)
             int float32 = Float.floatToIntBits((float)value);
             headerTag = MT_FLOAT32;
             bitFormat = float32 & 0xffffffffl;
-//System.out.println("float32=" + Long.toUnsignedString(bitFormat,16));
-
             int actualExponent = ((float32 >>> FLOAT32_FRACTION_SIZE) & 
                 ((1 << FLOAT32_EXPONENT_SIZE) - 1)) - FLOAT32_EXPONENT_BIAS;
-//System.out.println("ExpAct=" + Long.toString(actualExponent));
             if (actualExponent == -FLOAT32_EXPONENT_BIAS) {
-//System.out.println("F32 due to unnormalized");
+                // Unnormalized float32 will not translate to float16
                 return;
             }
             if (actualExponent > (FLOAT16_EXPONENT_BIAS + 1)) {
-//System.out.println("F32 due to large exponent");
+                // To big for float16
                 return;
             }
             int frac16 = (float32 >> (FLOAT32_FRACTION_SIZE - FLOAT16_FRACTION_SIZE)) & 
                     ((1 << FLOAT16_FRACTION_SIZE) - 1);
-//System.out.println("frac16=" + Long.toUnsignedString(frac16,2));
             if ((float32 & ((1 << FLOAT32_FRACTION_SIZE) - 1)) != 
                     (frac16 << (FLOAT32_FRACTION_SIZE - FLOAT16_FRACTION_SIZE))) {
-//System.out.println("F32 due to lost precision");
+                // Losing fraction bit is not an option
                 return;
             }
-//System.out.println("ExpAct1=" + Long.toString(actualExponent));
-
             int exp16 = actualExponent + FLOAT16_EXPONENT_BIAS;
-            if (exp16 <= 0) {
 
-                // Complex test - would unnormalized data create lost precision
+            // Check if we need to unnormalize data
+            if (exp16 <= 0) {
+                // The implicit bit becomes explicit using unnormalized representation
                 frac16 += 1 << FLOAT16_FRACTION_SIZE;
-//System.out.println("Exp16u=" + Long.toString(exp16,16) + "fran16u=" + Long.toUnsignedString(frac16,2));
                 exp16--;
+                // Always do at least one turn
                 do {
-//System.out.println("frac16=" + Long.toUnsignedString(frac16,2) + " exp=" + exp16);
                     if ((frac16 & 1) != 0) {
-//System.out.println("F32 due to lost precision during unnormalization");
+                        // Too off scale for float16
                         return;
                     }
                     frac16 >>= 1;
                 } while (++exp16 < 0);
             }
 
-            // Seems like float16 will work!
+            // Seems like 16 bits indeed are sufficient!
             headerTag = MT_FLOAT16;
-//System.out.println("Exp16=" + Long.toString(exp16,16));
             bitFormat = 
                // Sign bit
                ((float32 >>> 16) & 0x8000) +
@@ -109,7 +102,6 @@ public class CBORDouble extends CBORObject {
                (exp16 << FLOAT16_FRACTION_SIZE) +
                // Fraction
                frac16;
-//System.out.println("Tot16=" + Long.toUnsignedString(bitFormat,16));
         }
     }
 
@@ -133,6 +125,6 @@ public class CBORDouble extends CBORObject {
     
     @Override
     void internalToString(CBORObject.PrettyPrinter prettyPrinter) {
-        prettyPrinter.appendText(Double.toString(value));
+         prettyPrinter.appendText(Double.toString(value));
     }
 }

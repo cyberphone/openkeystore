@@ -1,7 +1,5 @@
 package org.webpki.cbor;
 
-import java.util.Random;
-
 public class CBORFloat32Test {
     
     static int float32;
@@ -14,9 +12,9 @@ public class CBORFloat32Test {
             CBORDouble cbor = new CBORDouble(d);
             switch (cbor.headerTag) {
                 case CBORObject.MT_FLOAT16:
+                    float16++;
                     if (Double.isNaN(d)) break;
                     if (Double.isInfinite(d)) break;
-                    float16++;
                     break;
                 case CBORObject.MT_FLOAT32:
                     float32++;
@@ -35,10 +33,15 @@ public class CBORFloat32Test {
     }
     
     public static void main(String[] argv)  {
-        Random random = new Random();
-        while (true) {
-            int i = random.nextInt();
-            convert(i);
+        int f = 0;
+        while (f < (1 << CBORObject.FLOAT32_FRACTION_SIZE)) {
+            int e = 0;
+            while (e < (1 << CBORObject.FLOAT32_EXPONENT_SIZE)) {
+                convert((e << CBORObject.FLOAT32_FRACTION_SIZE) + f);
+                e++;
+            }
+            f++;
         }
+        System.out.println("Runs=" + Long.toString(runs));
     }
 }
