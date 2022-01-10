@@ -539,11 +539,11 @@ public abstract class CBORObject {
             // Then decode the types blending length data in the initial byte as well
             long n = tag & 0x1fl;
             byte majorType = (byte)(tag & 0xe0);
-            if (n > 0x1b) {
+            if (n > 27) {
                 unsupportedTag(tag);
             }
-            if (n > 0x17) {
-                int q = 1 << (n - 0x18);
+            if (n > 23) {
+                int q = 1 << (n - 24);
                 long mask = 0xffffffffl << (q / 2) * 8;
                 n = 0;
                 while (--q >= 0) {
