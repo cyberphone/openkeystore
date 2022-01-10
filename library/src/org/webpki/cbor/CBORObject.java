@@ -35,7 +35,7 @@ public abstract class CBORObject {
     // True if object has been read
     private boolean readFlag;
 
-    // Major CBOR types
+    // Supported CBOR types
     static final byte MT_UNSIGNED      = (byte) 0x00;
     static final byte MT_NEGATIVE      = (byte) 0x20;
     static final byte MT_BYTE_STRING   = (byte) 0x40;
@@ -110,8 +110,8 @@ public abstract class CBORObject {
         throw new IOException(error);
     }
 
-    static void unsupportedTag(int tag) throws IOException {
-        bad(String.format("Unsupported tag: %2x", tag));
+    static void unsupportedTag(byte tag) throws IOException {
+        bad(String.format("Unsupported tag: %2x", tag & 0xff));
     }
 
     void nullCheck(Object object) {
@@ -408,12 +408,12 @@ public abstract class CBORObject {
             bad("Malformed CBOR, trying to read past EOF");
         }
         
-        private int readByte() throws IOException {
+        private byte readByte() throws IOException {
             int i = input.read();
             if (i < 0) {
                 eofError();
             }
-            return i;
+            return (byte)i;
         }
         
         private long checkLength(long length) throws IOException {
@@ -440,27 +440,28 @@ public abstract class CBORObject {
 
         private long getLongFromBytes(int length) throws IOException {
             long value = 0;
-            for (int q = 0; q < length; q++) {
+            while (--length >= 0) {
                 value <<= 8;
-                value += readByte();
+                value += readByte() & 0xffl;
             }
             return value;
         }
 
-        private CBORDouble doubleWithCheck(int headerTag, long readBits, long rawDouble)
+        private CBORDouble doubleWithCheck(byte tag, long bitFormat, long rawDouble)
                 throws IOException {
             CBORDouble value = new CBORDouble(Double.longBitsToDouble(rawDouble));
-            if (value.headerTag != (byte)headerTag || value.bitFormat != readBits) {
-                bad("Non-deterministic encoding of double value, tag: " + headerTag);
+            if (value.tag != tag || value.bitFormat != bitFormat) {
+                bad(String.format(
+                        "Non-deterministic encoding of floating point value, tag:  %2x", tag & 0xff));
             }
             return value;
         }
 
         private CBORObject getObject() throws IOException {
-            int first = readByte();
+            byte tag = readByte();
 
             // Begin with the types uniquely defined by the initial byte
-            switch ((byte)first) {
+            switch (tag) {
                 case MT_BIG_SIGNED:
                 case MT_BIG_UNSIGNED:
                     byte[] byteArray = getObject().getByteString();
@@ -470,7 +471,7 @@ public abstract class CBORObject {
                         bad("Non-deterministic encoding: leading zero byte");
                     }
                     BigInteger bigInteger = 
-                        ((byte)first == MT_BIG_SIGNED) ?
+                        (tag == MT_BIG_SIGNED) ?
                             new BigInteger(-1, byteArray).subtract(BigInteger.ONE)
                                                        :
                             new BigInteger(1, byteArray);
@@ -513,33 +514,33 @@ public abstract class CBORObject {
                         // Fraction bits
                         (frac16 & ((1l << FLOAT64_FRACTION_SIZE) - 1));
                     }
-                    return doubleWithCheck(first, float16, rawDouble);
+                    return doubleWithCheck(tag, float16, rawDouble);
 
                 case MT_FLOAT32:
                     long float32 = getLongFromBytes(4);
-                    return doubleWithCheck(first, 
+                    return doubleWithCheck(tag, 
                                            float32,
                                            Double.doubleToLongBits(Float.intBitsToFloat((int)float32)));
  
                 case MT_FLOAT64:
                     long float64 = getLongFromBytes(8);
-                    return doubleWithCheck(first, float64, float64);
+                    return doubleWithCheck(tag, float64, float64);
 
                 case MT_NULL:
                     return new CBORNull();
                     
                 case MT_TRUE:
                 case MT_FALSE:
-                    return new CBORBoolean((byte)first == MT_TRUE);
+                    return new CBORBoolean(tag == MT_TRUE);
                     
                 default:
             }
 
             // Then decode the types blending length data in the initial byte as well
-            long n = first & 0x1f;
-            byte majorType = (byte)(first & 0xe0);
+            long n = tag & 0x1fl;
+            byte majorType = (byte)(tag & 0xe0);
             if (n > 0x1b) {
-                unsupportedTag(first);
+                unsupportedTag(tag);
             }
             if (n > 0x17) {
                 int q = 1 << (n - 0x18);
@@ -547,7 +548,7 @@ public abstract class CBORObject {
                 n = 0;
                 while (--q >= 0) {
                     n <<= 8;
-                    n |= readByte();
+                    n |= readByte() & 0xffl;
                 }
                 if ((n & mask) == 0 || (n > 0 && n < 24)) {
                     bad("Non-deterministic encoding of N");
@@ -585,7 +586,7 @@ public abstract class CBORObject {
                     return cborMap;
     
                 default:
-                    unsupportedTag(first);
+                    unsupportedTag(tag);
             }
             return null;  // For the compiler only...
         }

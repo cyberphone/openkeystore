@@ -28,7 +28,7 @@ public class CBORDouble extends CBORObject {
 
     double value;
     
-    byte headerTag = MT_FLOAT16;
+    byte tag = MT_FLOAT16;
     long bitFormat;
     
     /**
@@ -51,11 +51,11 @@ public class CBORDouble extends CBORObject {
             bitFormat = FLOAT16_NEG_INFINITY;
         } else if (Math.abs(value) > Float.MAX_VALUE ||  value != (double)((float) value)) {
             // Too big or would lose precision unless we stick to 64 bits.
-            headerTag = MT_FLOAT64; 
+            tag = MT_FLOAT64; 
         } else { 
             // Assumption: we go for 32 bits until proven wrong :)
             int float32 = Float.floatToIntBits((float)value);
-            headerTag = MT_FLOAT32;
+            tag = MT_FLOAT32;
             bitFormat = float32 & 0xffffffffl;
             int actualExponent = ((float32 >>> FLOAT32_FRACTION_SIZE) & 
                 ((1 << FLOAT32_EXPONENT_SIZE) - 1)) - FLOAT32_EXPONENT_BIAS;
@@ -92,7 +92,7 @@ public class CBORDouble extends CBORObject {
             }
 
             // Seems like 16 bits indeed are sufficient!
-            headerTag = MT_FLOAT16;
+            tag = MT_FLOAT16;
             bitFormat = 
                // Sign bit
                ((float32 >>> 16) & 0x8000) +
@@ -120,7 +120,7 @@ public class CBORDouble extends CBORObject {
     
     @Override
     byte[] internalEncode() throws IOException {
-        int length = 2 << (headerTag - MT_FLOAT16) ;
+        int length = 2 << (tag - MT_FLOAT16) ;
         byte[] encoded = new byte[length];
         long integerRepresentation = bitFormat;
         int q = length;
@@ -128,7 +128,7 @@ public class CBORDouble extends CBORObject {
             encoded[q] = (byte) integerRepresentation;
             integerRepresentation >>>= 8;
         }
-        return ArrayUtil.add(new byte[]{headerTag}, encoded);
+        return ArrayUtil.add(new byte[]{tag}, encoded);
     }
     
     @Override

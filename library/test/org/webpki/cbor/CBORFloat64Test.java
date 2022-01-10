@@ -13,7 +13,7 @@ public class CBORFloat64Test {
         try {
             double d = Double.longBitsToDouble(l);
             CBORDouble cbor = new CBORDouble(d);
-            switch (cbor.headerTag) {
+            switch (cbor.tag) {
                 case CBORObject.MT_FLOAT16:
                     if (Double.isNaN(d)) break;
                     if (Double.isInfinite(d)) break;

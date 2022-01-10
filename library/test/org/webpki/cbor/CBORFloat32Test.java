@@ -10,7 +10,7 @@ public class CBORFloat32Test {
         try {
             float d = Float.intBitsToFloat(i);
             CBORDouble cbor = new CBORDouble(d);
-            switch (cbor.headerTag) {
+            switch (cbor.tag) {
                 case CBORObject.MT_FLOAT16:
                     float16++;
                     if (Double.isNaN(d)) break;
