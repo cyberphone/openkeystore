@@ -103,6 +103,16 @@ public class CBORDouble extends CBORObject {
         }
     }
 
+    /**
+     * A slightly nicer formatter than Java's original
+     * 
+     * @param value The double
+     * @return The double in string format
+     */
+    public static String formatDouble(double value) {
+        return Double.toString(value).replace('E', 'e').replaceAll("e(\\d)", "e+$1");
+    }
+
     @Override
     CBORTypes internalGetType() {
         return CBORTypes.DOUBLE;
@@ -123,6 +133,6 @@ public class CBORDouble extends CBORObject {
     
     @Override
     void internalToString(CBORObject.PrettyPrinter prettyPrinter) {
-         prettyPrinter.appendText(Double.toString(value));
+         prettyPrinter.appendText(formatDouble(value));
     }
 }
