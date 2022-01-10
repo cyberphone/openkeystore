@@ -49,7 +49,7 @@ public class CBORDouble extends CBORObject {
             bitFormat = FLOAT16_POS_INFINITY;
         } else if (bitFormat == FLOAT64_NEG_INFINITY) {
             bitFormat = FLOAT16_NEG_INFINITY;
-        } else if (Math.abs(value) > Float.MAX_VALUE ||  value != (double)((float) value)) {
+        } else if (Math.abs(value) > Float.MAX_VALUE || value != (double)((float) value)) {
             // Too big or would lose precision unless we stick to 64 bits.
             tag = MT_FLOAT64; 
         } else { 
@@ -122,11 +122,11 @@ public class CBORDouble extends CBORObject {
     byte[] internalEncode() throws IOException {
         int length = 2 << (tag - MT_FLOAT16) ;
         byte[] encoded = new byte[length];
-        long integerRepresentation = bitFormat;
+        long bits = bitFormat;
         int q = length;
         while (--q >= 0) {
-            encoded[q] = (byte) integerRepresentation;
-            integerRepresentation >>>= 8;
+            encoded[q] = (byte) bits;
+            bits >>>= 8;
         }
         return ArrayUtil.add(new byte[]{tag}, encoded);
     }
