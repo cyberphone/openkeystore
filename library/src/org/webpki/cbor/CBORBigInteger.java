@@ -62,13 +62,13 @@ public class CBORBigInteger extends CBORObject {
         }
         // Didn't fit "int65" so we must use big number decoding
         byte[] encoded;
-        byte[] headerTag;
+        byte[] tag;
         if (value.compareTo(BigInteger.ZERO) >= 0) {
             encoded = value.toByteArray();
-            headerTag = UNSIGNED_BIG_INTEGER_TAG;
+            tag = UNSIGNED_BIG_INTEGER_TAG;
         } else {
             encoded = value.negate().subtract(BigInteger.ONE).toByteArray();
-            headerTag = SIGNED_BIG_INTEGER_TAG;
+            tag = SIGNED_BIG_INTEGER_TAG;
         }
         if (encoded[0] == 0) {
             // No leading zeroes please
@@ -76,7 +76,7 @@ public class CBORBigInteger extends CBORObject {
             System.arraycopy(encoded, 1, temp, 0, temp.length);
             encoded = temp;
         }
-        return ArrayUtil.add(headerTag, new CBORByteString(encoded).internalEncode());
+        return ArrayUtil.add(tag, new CBORByteString(encoded).internalEncode());
     }
     
     @Override

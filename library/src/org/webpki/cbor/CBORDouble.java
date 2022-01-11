@@ -18,8 +18,6 @@ package org.webpki.cbor;
 
 import java.io.IOException;
 
-import org.webpki.util.ArrayUtil;
-
 /**
  * Class for holding CBOR floating point numbers.
  * Numbers are constrained to the IEEE 754 notation.
@@ -78,6 +76,8 @@ public class CBORDouble extends CBORObject {
                 // Losing fraction bits is not an option
                 return;
             }
+
+            // Add proper float16 exponent bias
             int exp16 = actualExponent + FLOAT16_EXPONENT_BIAS;
 
             // Check if we need to unnormalize data
@@ -100,7 +100,7 @@ public class CBORDouble extends CBORObject {
             bitFormat = 
                // Sign bit
                ((float32 >>> 16) & 0x8000) +
-               // Exponent
+               // Exponent.  Put it in front of fraction.
                (exp16 << FLOAT16_FRACTION_SIZE) +
                // Fraction
                frac16;
@@ -124,15 +124,15 @@ public class CBORDouble extends CBORObject {
     
     @Override
     byte[] internalEncode() throws IOException {
-        int length = 2 << (tag - MT_FLOAT16) ;
+        int length = (2 << (tag - MT_FLOAT16)) + 1;
         byte[] encoded = new byte[length];
-        long bits = bitFormat;
-        int q = length;
-        while (--q >= 0) {
-            encoded[q] = (byte) bits;
-            bits >>>= 8;
+        encoded[0] = tag;
+        long copy = bitFormat;
+        while (--length > 0) {
+            encoded[length] = (byte) copy;
+            copy >>>= 8;
         }
-        return ArrayUtil.add(new byte[]{tag}, encoded);
+        return encoded;
     }
     
     @Override
