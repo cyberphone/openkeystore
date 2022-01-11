@@ -69,11 +69,11 @@ public abstract class CBORObject {
     static final int FLOAT32_EXPONENT_BIAS = 127;
     static final int FLOAT64_EXPONENT_BIAS = 1023;
 
-    static final int FLOAT16_NOT_A_NUMBER  = 0x7e00;
-    static final int FLOAT16_POS_INFINITY  = 0x7c00;
-    static final int FLOAT16_NEG_INFINITY  = 0xfc00;
-    static final int FLOAT16_POS_ZERO      = 0x0000;
-    static final int FLOAT16_NEG_ZERO      = 0x8000;
+    static final long FLOAT16_NOT_A_NUMBER = 0x0000000000007e00l;
+    static final long FLOAT16_POS_INFINITY = 0x0000000000007c00l;
+    static final long FLOAT16_NEG_INFINITY = 0x000000000000fc00l;
+    static final long FLOAT16_POS_ZERO     = 0x0000000000000000l;
+    static final long FLOAT16_NEG_ZERO     = 0x0000000000008000l;
      
     static final long FLOAT64_NOT_A_NUMBER = 0x7ff8000000000000l;
     static final long FLOAT64_POS_INFINITY = 0x7ff0000000000000l;
@@ -487,15 +487,16 @@ public abstract class CBORObject {
                         rawDouble = FLOAT64_POS_ZERO;
                     } else if (float16 == FLOAT16_NEG_ZERO) {
                         rawDouble = FLOAT64_NEG_ZERO;
-                    } else  if (float16 == FLOAT16_NOT_A_NUMBER) {
-                        rawDouble = FLOAT64_NOT_A_NUMBER;
-                    } else if (float16 == FLOAT16_POS_INFINITY) {
-                        rawDouble = FLOAT64_POS_INFINITY;
-                    } else if (float16 == FLOAT16_NEG_INFINITY) {
-                        rawDouble = FLOAT64_NEG_INFINITY;
                     } else if ((float16 & FLOAT16_POS_INFINITY) == FLOAT16_POS_INFINITY) {
-                        // Non-deterministic representations of NaN will be flagged
-                        rawDouble = FLOAT16_NOT_A_NUMBER;
+                        // Special "number"
+                        if (float16 == FLOAT16_POS_INFINITY) {
+                            rawDouble = FLOAT64_POS_INFINITY;
+                        } else if (float16 == FLOAT16_NEG_INFINITY) {
+                            rawDouble = FLOAT64_NEG_INFINITY;
+                        } else {
+                            // Non-deterministic representations of NaN will be flagged later
+                            rawDouble = FLOAT64_NOT_A_NUMBER;
+                        }
                     } else {
                         long exp16 = (float16 >>> FLOAT16_FRACTION_SIZE) &
                                        ((1l << FLOAT16_EXPONENT_SIZE) - 1);
