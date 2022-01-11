@@ -63,8 +63,8 @@ public class CBORDouble extends CBORObject {
                 // Unnormalized float32 will not translate to float16
                 return;
             }
-            if (actualExponent > (FLOAT16_EXPONENT_BIAS + 1)) {
-                // To big for float16
+            if (actualExponent > FLOAT16_EXPONENT_BIAS) {
+                // To big for float16 and all bits set are reserved for NaN and Infinity
                 return;
             }
             int frac16 = (float32 >> (FLOAT32_FRACTION_SIZE - FLOAT16_FRACTION_SIZE)) & 

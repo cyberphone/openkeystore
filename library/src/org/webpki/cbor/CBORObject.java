@@ -493,6 +493,9 @@ public abstract class CBORObject {
                         rawDouble = FLOAT64_POS_INFINITY;
                     } else if (float16 == FLOAT16_NEG_INFINITY) {
                         rawDouble = FLOAT64_NEG_INFINITY;
+                    } else if ((float16 & FLOAT16_POS_INFINITY) == FLOAT16_POS_INFINITY) {
+                        // Non-deterministic representations of NaN will be flagged
+                        rawDouble = FLOAT16_NOT_A_NUMBER;
                     } else {
                         long exp16 = (float16 >>> FLOAT16_FRACTION_SIZE) &
                                        ((1l << FLOAT16_EXPONENT_SIZE) - 1);
