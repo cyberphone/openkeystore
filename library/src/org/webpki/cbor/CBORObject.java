@@ -498,8 +498,10 @@ public abstract class CBORObject {
                             rawDouble = FLOAT64_NOT_A_NUMBER;
                         }
                     } else {
+                        // Get the bare (but still biased) float16 exponent
                         long exp16 = (float16 >>> FLOAT16_FRACTION_SIZE) &
                                        ((1l << FLOAT16_EXPONENT_SIZE) - 1);
+                        // Relocate the float16 fraction bits to their proper float64 position
                         long frac16 = (float16 << (FLOAT64_FRACTION_SIZE - FLOAT16_FRACTION_SIZE));
                         if (exp16 == 0) {
                             // Unnormalized float16 - In float64 that must translate to normalized 
@@ -513,7 +515,7 @@ public abstract class CBORObject {
                         rawDouble = 
                         // Sign bit
                         ((float16 & 0x8000l) << 48) +
-                        // Exponent.  Put it in front of the fraction
+                        // Exponent.  Set the proper bias and put the result in front of fraction
                         ((exp16 + (FLOAT64_EXPONENT_BIAS - FLOAT16_EXPONENT_BIAS)) 
                            << FLOAT64_FRACTION_SIZE) +
                         // Fraction.  Remove everything above
