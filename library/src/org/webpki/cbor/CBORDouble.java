@@ -43,12 +43,16 @@ public class CBORDouble extends CBORObject {
             bitFormat = FLOAT16_POS_ZERO;
         } else if (bitFormat == FLOAT64_NEG_ZERO) {
             bitFormat = FLOAT16_NEG_ZERO;
-        } else if (bitFormat == FLOAT64_NOT_A_NUMBER) {
-            bitFormat = FLOAT16_NOT_A_NUMBER;
-        } else if (bitFormat == FLOAT64_POS_INFINITY) {
-            bitFormat = FLOAT16_POS_INFINITY;
-        } else if (bitFormat == FLOAT64_NEG_INFINITY) {
-            bitFormat = FLOAT16_NEG_INFINITY;
+        } else if ((bitFormat & FLOAT64_POS_INFINITY) == FLOAT64_POS_INFINITY) {
+            // Special "number"
+            if (bitFormat == FLOAT64_POS_INFINITY) {
+                bitFormat = FLOAT16_POS_INFINITY;
+            } else if (bitFormat == FLOAT64_NEG_INFINITY) {
+                bitFormat = FLOAT16_NEG_INFINITY;
+            } else {
+                // Due to the deterministic encoding there is no support for "signaling"
+                bitFormat = FLOAT16_NOT_A_NUMBER;
+            }
         } else if (Math.abs(value) > Float.MAX_VALUE || value != (double)((float) value)) {
             // Too big or would lose precision unless we stick to 64 bits.
             tag = MT_FLOAT64; 
