@@ -17,6 +17,7 @@
 package org.webpki.json;
 
 import java.io.IOException;
+
 import java.security.GeneralSecurityException;
 
 import org.webpki.crypto.X509VerifierInterface;

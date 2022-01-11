@@ -18,7 +18,12 @@ package org.webpki.cbor;
 
 import java.io.IOException;
 
+import java.security.GeneralSecurityException;
+import java.security.cert.X509Certificate;
+
 import java.util.ArrayList;
+
+import org.webpki.crypto.CertificateUtil;
 
 import org.webpki.util.ArrayUtil;
 
@@ -73,6 +78,22 @@ public class CBORArray extends CBORObject {
      */
     public CBORObject[] getObjects() {
         return objectList.toArray(new CBORObject[0]);
+    }
+    
+    /**
+     * Get certificate path from array.
+     * 
+     * @return Certificate path
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
+    public X509Certificate[] getCertificatePath() throws IOException, GeneralSecurityException {
+        ArrayList<byte[]> blobs = new ArrayList<>();
+        int index = 0;
+        do {
+            blobs.add(objectList.get(index).getByteString());
+        } while (index++ < objectList.size());
+        return CertificateUtil.makeCertificatePath(blobs);
     }
  
     @Override

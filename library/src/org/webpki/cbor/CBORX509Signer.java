@@ -20,16 +20,17 @@ import java.io.IOException;
 
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
-import java.security.PublicKey;
 
-import org.webpki.crypto.AsymKeySignerInterface;
+import java.security.cert.X509Certificate;
+
+import org.webpki.crypto.X509SignerInterface;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.KeyAlgorithms;
 
 import org.webpki.crypto.signatures.SignatureWrapper;
 
 /**
- * Class for creating CBOR asymmetric key signatures.
+ * Class for creating CBOR X509 signatures.
  * 
  * It uses COSE algorithms but not the packaging.
  * 
@@ -37,11 +38,11 @@ import org.webpki.crypto.signatures.SignatureWrapper;
  * (assuming that the same parameters are valid).  They are also
  * thread-safe.
  */
-public class CBORAsymKeySigner extends CBORSigner {
+public class CBORX509Signer extends CBORSigner {
 
     AsymSignatureAlgorithms algorithm;
     
-    AsymKeySignerInterface signer;
+    X509SignerInterface signer;
 
     /**
      * Initialize signer.
@@ -50,10 +51,11 @@ public class CBORAsymKeySigner extends CBORSigner {
      * @throws GeneralSecurityException 
      * @throws IOException 
      */
-    public CBORAsymKeySigner(AsymKeySignerInterface signer) throws IOException,
-                                                                   GeneralSecurityException {
+    public CBORX509Signer(X509SignerInterface signer) throws IOException,
+                                                             GeneralSecurityException {
         this.signer = signer;
         setAlgorithm(signer.getAlgorithm());
+        this.certificatePath = signer.getCertificatePath();
     }
     
     /**
@@ -63,12 +65,14 @@ public class CBORAsymKeySigner extends CBORSigner {
      * in RFC 7518.
      * 
      * @param privateKey The key to sign with
+     * @param certificatePath A matching non-null certificate path
      * @throws IOException 
      * @throws GeneralSecurityException 
      */
-    public CBORAsymKeySigner(PrivateKey privateKey) throws IOException, GeneralSecurityException {
-        
-        signer = new AsymKeySignerInterface() {
+    public CBORX509Signer(PrivateKey privateKey, X509Certificate[] certificatePath) 
+            throws IOException, GeneralSecurityException {
+        this.certificatePath = certificatePath;
+        signer = new X509SignerInterface() {
 
             @Override
             public byte[] signData(byte[] dataToBeSigned) throws IOException,
@@ -77,23 +81,19 @@ public class CBORAsymKeySigner extends CBORSigner {
                         .update(dataToBeSigned)
                         .sign();            
             }
+
+            @Override
+            public X509Certificate[] getCertificatePath()
+                    throws IOException, GeneralSecurityException {
+                // TODO Auto-generated method stub
+                return null;
+            }
             
         };
         setAlgorithm(KeyAlgorithms.getKeyAlgorithm(privateKey).getRecommendedSignatureAlgorithm());
     }
 
-    /**
-     * Put a public into the signature container.
-     * 
-     * @param publicKey The public key
-     * @return this
-     */
-    public CBORAsymKeySigner setPublicKey(PublicKey publicKey) {
-        this.publicKey = publicKey;
-        return this;
-    }
-    
-    /**
+     /**
      * Set signature algorithm.
      * 
      * @param algorithm The algorithm
@@ -101,7 +101,7 @@ public class CBORAsymKeySigner extends CBORSigner {
      * @throws GeneralSecurityException 
      * @throws IOException 
      */
-    public CBORAsymKeySigner setAlgorithm(AsymSignatureAlgorithms algorithm) throws IOException {
+    public CBORX509Signer setAlgorithm(AsymSignatureAlgorithms algorithm) throws IOException {
         this.algorithm = algorithm;
         this.coseAlgorithmId = algorithm.getCoseAlgorithmId();
         return this;

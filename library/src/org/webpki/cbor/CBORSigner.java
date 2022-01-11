@@ -21,6 +21,10 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 
+import java.security.cert.X509Certificate;
+
+import org.webpki.crypto.CertificateUtil;
+
 /**
  * Base class for creating CBOR signatures.
  * 
@@ -59,6 +63,8 @@ public abstract class CBORSigner {
     
     PublicKey publicKey;
     
+    X509Certificate[] certificatePath;
+    
     int coseAlgorithmId;
     
     // Optional key ID
@@ -83,6 +89,10 @@ public abstract class CBORSigner {
      * <p>
      * For HMAC-signatures, a keyId or implicit key are
      * the only ways to retrieve the proper secret key.
+     * </p>
+     * <p>
+     * For certificate based signatures, keyId doesn't make sense but it
+     * is still permitted.
      * </p>
      * 
      * @param keyId A key Id byte array
@@ -115,6 +125,13 @@ public abstract class CBORSigner {
         // If a public key has been defined, add it to the signature object.
         if (publicKey != null) {
             signatureObject.setObject(PUBLIC_KEY_LABEL, CBORPublicKey.encode(publicKey));
+        // Certificate signatures always carry a certificate(path).
+        } else if (certificatePath != null) {
+            CBORArray arrayWriter = new CBORArray();
+            for (X509Certificate certificate : CertificateUtil.checkCertificatePath(certificatePath)) {
+                arrayWriter.addObject(new CBORByteString(certificate.getEncoded()));
+            }
+            signatureObject.setObject(CERT_PATH_LABEL, arrayWriter);
         }
 
         // Add a keyId if there is one.

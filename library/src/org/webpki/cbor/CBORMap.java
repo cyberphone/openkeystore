@@ -260,15 +260,17 @@ public class CBORMap extends CBORObject {
 
         // Call specific validator.
         validator.validate(signatureObject,
-                signatureObject.getObject(CBORSigner.ALGORITHM_LABEL).getInt(),
-                optionalKeyId, signatureValue, internalEncode());
+                           signatureObject.getObject(CBORSigner.ALGORITHM_LABEL).getInt(),
+                           optionalKeyId, 
+                           signatureValue,
+                           internalEncode());
 
         // Check that nothing "extra" was supplied.
         signatureObject.checkForUnread();
 
         // Restore object.
         signatureObject.keys.put(CBORSigner.SIGNATURE_LABEL,
-                new CBORByteString(signatureValue));
+                                 new CBORByteString(signatureValue));
     }
 
     /**
