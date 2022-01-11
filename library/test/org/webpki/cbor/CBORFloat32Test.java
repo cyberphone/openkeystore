@@ -8,7 +8,7 @@ public class CBORFloat32Test {
     
     static void convert (int i) {
         try {
-            float d = Float.intBitsToFloat(i);
+            double d = Float.intBitsToFloat(i);
             CBORDouble cbor = new CBORDouble(d);
             switch (cbor.tag) {
                 case CBORObject.MT_FLOAT16:
@@ -20,15 +20,15 @@ public class CBORFloat32Test {
                 default:
                     throw new RuntimeException("BUG");
             }
-            float v = (float)CBORObject.decode(cbor.encode()).getDouble();
-            if (v != d) {
-                throw new RuntimeException ("Bad");
+            Double v = CBORObject.decode(cbor.encode()).getDouble();
+            if (v.compareTo(d) != 0) {
+                throw new RuntimeException ("Fail");
             }
             if ((++runs % 1000000) == 0) {
                 System.out.println(" 16=" + float16 + " 32=" + float32);
             }
         } catch (Exception e) {
-            System.out.println("**********=" + Long.toUnsignedString(i, 16));
+            System.out.println("**********=" + Long.toUnsignedString(i, 16) + " e=" + e.getMessage());
             System.exit(3);
         }
     }
@@ -37,7 +37,7 @@ public class CBORFloat32Test {
         int f = 0;
         while (f < (1 << CBORObject.FLOAT32_FRACTION_SIZE)) {
             int e = 0;
-            while (e < ((1 << CBORObject.FLOAT32_EXPONENT_SIZE) -1)) {
+            while (e < (1 << CBORObject.FLOAT32_EXPONENT_SIZE)) {
                 convert((e << CBORObject.FLOAT32_FRACTION_SIZE) + f);
                 e++;
             }

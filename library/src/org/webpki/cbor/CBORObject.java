@@ -502,20 +502,21 @@ public abstract class CBORObject {
                                        ((1l << FLOAT16_EXPONENT_SIZE) - 1);
                         long frac16 = (float16 << (FLOAT64_FRACTION_SIZE - FLOAT16_FRACTION_SIZE));
                         if (exp16 == 0) {
-                            // Unnormalized
+                            // Unnormalized float16 - In float64 that must translate to normalized 
                             exp16++;
                             do {
                                 exp16--;
                                 frac16 <<= 1;
+                                // Continue until the implicit "1" is in place
                             } while ((frac16 & (1l << FLOAT64_FRACTION_SIZE)) == 0);
                         }
                         rawDouble = 
                         // Sign bit
                         ((float16 & 0x8000l) << 48) +
-                        // Exponent
+                        // Exponent.  Put it in front of the fraction
                         ((exp16 + (FLOAT64_EXPONENT_BIAS - FLOAT16_EXPONENT_BIAS)) 
                            << FLOAT64_FRACTION_SIZE) +
-                        // Fraction bits
+                        // Fraction.  Remove everything above
                         (frac16 & ((1l << FLOAT64_FRACTION_SIZE) - 1));
                     }
                     return doubleWithCheck(tag, float16, rawDouble);

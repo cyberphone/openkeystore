@@ -82,7 +82,7 @@ public class CBORDouble extends CBORObject {
 
             // Check if we need to unnormalize data
             if (exp16 <= 0) {
-                // The implicit bit becomes explicit using unnormalized representation
+                // The implicit "1" becomes explicit using unnormalized representation
                 frac16 += 1 << FLOAT16_FRACTION_SIZE;
                 exp16--;
                 // Always do at least one turn
