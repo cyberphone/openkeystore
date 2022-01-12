@@ -29,6 +29,8 @@ import org.webpki.crypto.encryption.KeyEncryptionAlgorithms;
 /**
  * Class for CBOR asymmetric key decryption.
  * 
+ * It uses COSE algorithms but relies on CEF for the packaging.
+ * 
  * Note that decrypter objects may be used any number of times
  * (assuming that the same parameters are valid).  They are also
  * thread-safe. 
@@ -97,9 +99,15 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
                                    byte[] optionalKeyId, 
                                    byte[] encryptedKey) throws IOException,
                                                                GeneralSecurityException {
+        if (optionalPublicKey != null) {
+            // Please select ONE method for identifying the decryption key.
+            CBORSigner.checkKeyId(optionalKeyId);
+        }
+
         PrivateKey privateKey = keyLocator.locate(optionalPublicKey,
                                                   optionalKeyId,
                                                   keyEncryptionAlgorithm);
+
         return keyEncryptionAlgorithm.isRsa() ?
             EncryptionCore.rsaDecryptKey(keyEncryptionAlgorithm, 
                                          encryptedKey,

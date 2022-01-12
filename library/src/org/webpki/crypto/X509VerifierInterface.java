@@ -29,19 +29,10 @@ import java.security.cert.X509Certificate;
 public interface X509VerifierInterface {
 
     /**
-     * Set if trusted path is required.
-     * 
-     * @param flag
-     * @throws IOException
-     * @throws GeneralSecurityException
-     */
-    void setTrustedRequired(boolean flag) throws IOException, GeneralSecurityException;
-
-    /**
      * Verify certificate path.
      * 
-     * @param certificatePath
-     * @return
+     * @param certificatePath The path to be validated
+     * @return <code>true</code> if the path is verified and trusted
      * @throws IOException
      * @throws GeneralSecurityException
      */

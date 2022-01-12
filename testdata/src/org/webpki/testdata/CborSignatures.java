@@ -32,7 +32,7 @@ import org.webpki.cbor.CBORTextString;
 import org.webpki.cbor.CBORTypes;
 import org.webpki.cbor.CBORValidator;
 import org.webpki.cbor.CBORAsymKeySigner;
-import org.webpki.cbor.CBORAsymSignatureValidator;
+import org.webpki.cbor.CBORAsymKeyValidator;
 import org.webpki.cbor.CBORHmacSigner;
 import org.webpki.cbor.CBORHmacValidator;
 import org.webpki.cbor.CBORInteger;
@@ -121,7 +121,6 @@ public class CborSignatures {
         asymSignCore(key, false, false, pssAlg);
         asymSignCore(key, false, true,  pssAlg);
         asymSignCore(key, true,  false, pssAlg);
-        asymSignCore(key, true,  true,  pssAlg);
    }
 
     static String prefix(String keyType) {
@@ -273,14 +272,14 @@ public class CborSignatures {
             signer.setPublicKey(keyPair.getPublic());
         }
         byte[] signedData = createSignature(signer);
-        CBORAsymSignatureValidator validator = new CBORAsymSignatureValidator(keyPair.getPublic());
+        CBORAsymKeyValidator validator = new CBORAsymKeyValidator(keyPair.getPublic());
         CBORMap decoded = CBORObject.decode(signedData).getMap();
         decoded.validate(SIGNATURE_LABEL, validator);
         String fileName = baseSignatures + prefix(keyType) +
                 getAlgorithm(algorithm) + '@' +  
                 keyIndicator(wantKeyId, wantPublicKey);
-        decoded.validate(SIGNATURE_LABEL, new CBORAsymSignatureValidator(
-                new CBORAsymSignatureValidator.KeyLocator() {
+        decoded.validate(SIGNATURE_LABEL, new CBORAsymKeyValidator(
+                new CBORAsymKeyValidator.KeyLocator() {
             
             @Override
             public PublicKey locate(PublicKey arg0, 

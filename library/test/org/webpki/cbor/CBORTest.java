@@ -28,6 +28,7 @@ import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.cert.X509Certificate;
 
 import java.util.Locale;
 import java.util.Vector;
@@ -38,6 +39,7 @@ import org.junit.Test;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.HmacSignerInterface;
+import org.webpki.crypto.X509VerifierInterface;
 import org.webpki.crypto.encryption.ContentEncryptionAlgorithms;
 import org.webpki.crypto.encryption.EncryptionCore;
 import org.webpki.crypto.encryption.KeyEncryptionAlgorithms;
@@ -49,6 +51,7 @@ import org.webpki.json.SymmetricKeys;
 
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.DebugFormatter;
+import org.webpki.util.PEMDecoder;
 
 /**
  * CBOR JUnit suite
@@ -71,8 +74,9 @@ public class CBORTest {
         x25519 = readJwk("x25519");
         ed448 = readJwk("ed448");
         ed25519 = readJwk("ed25519");
+        p256CertPath = PEMDecoder.getCertificatePath(ArrayUtil.readFile(baseKey + "p256certpath.pem"));
     }
-
+    
     static byte[] dataToEncrypt;
     
     static String baseKey;
@@ -81,6 +85,7 @@ public class CBORTest {
 
     static KeyPair p256;
     static byte[] keyIdP256;
+    static X509Certificate[] p256CertPath;
     static KeyPair p256_2;
     static KeyPair p521;
     static KeyPair r2048;
@@ -615,6 +620,13 @@ public class CBORTest {
             checkException(e, 
                 "Is type: INTEGER, requested: BYTE_STRING");
         }
+        try {
+            cborObject.getDouble();  
+            fail("must not execute");
+        } catch (Exception e) {
+            checkException(e, 
+                "Is type: INTEGER, requested: DOUBLE");
+        }
     }
 
     @Test
@@ -741,8 +753,9 @@ public class CBORTest {
         cborSd.getMap().validate(7, validator);
         return tbs;
     }
-
-    void hmacTest(final int size, final HmacAlgorithms algorithm) throws IOException, GeneralSecurityException {
+  
+    void hmacTest(final int size, final HmacAlgorithms algorithm) throws IOException,
+                                                                         GeneralSecurityException {
         CBORObject tbs = createDataToBeSigned();
         tbs.getMap().sign(7, 
                 new CBORHmacSigner(symmetricKeys.getValue(size), algorithm));
@@ -805,19 +818,19 @@ public class CBORTest {
         backAndForth(ed25519);
         
         signAndVerify(new CBORAsymKeySigner(p256.getPrivate()), 
-                      new CBORAsymSignatureValidator(p256.getPublic()));
+                      new CBORAsymKeyValidator(p256.getPublic()));
 
         signAndVerify(new CBORAsymKeySigner(p256.getPrivate()).setPublicKey(p256.getPublic()), 
-                      new CBORAsymSignatureValidator(p256.getPublic()));
+                      new CBORAsymKeyValidator(p256.getPublic()));
 
         signAndVerify(new CBORAsymKeySigner(ed25519.getPrivate()).setPublicKey(ed25519.getPublic()), 
-                      new CBORAsymSignatureValidator(ed25519.getPublic()));
+                      new CBORAsymKeyValidator(ed25519.getPublic()));
 
         signAndVerify(new CBORAsymKeySigner(r2048.getPrivate()).setPublicKey(r2048.getPublic()), 
-                      new CBORAsymSignatureValidator(r2048.getPublic()));
+                      new CBORAsymKeyValidator(r2048.getPublic()));
 
         signAndVerify(new CBORAsymKeySigner(p256.getPrivate()), 
-                      new CBORAsymSignatureValidator(new CBORAsymSignatureValidator.KeyLocator() {
+                      new CBORAsymKeyValidator(new CBORAsymKeyValidator.KeyLocator() {
                 
                 @Override
                 public PublicKey locate(PublicKey optionalPublicKey, 
@@ -829,7 +842,7 @@ public class CBORTest {
             }));
 
         signAndVerify(new CBORAsymKeySigner(p256.getPrivate()), 
-            new CBORAsymSignatureValidator(new CBORAsymSignatureValidator.KeyLocator() {
+            new CBORAsymKeyValidator(new CBORAsymKeyValidator.KeyLocator() {
                 
                 @Override
                 public PublicKey locate(PublicKey optionalPublicKey, 
@@ -845,7 +858,7 @@ public class CBORTest {
             }));
 
         signAndVerify(new CBORAsymKeySigner(p256.getPrivate()).setKeyId(keyIdP256), 
-            new CBORAsymSignatureValidator(new CBORAsymSignatureValidator.KeyLocator() {
+            new CBORAsymKeyValidator(new CBORAsymKeyValidator.KeyLocator() {
                 
                 @Override
                 public PublicKey locate(PublicKey optionalPublicKey, 
@@ -857,10 +870,68 @@ public class CBORTest {
                 }
 
             }));
+
+        signAndVerify(new CBORX509Signer(p256.getPrivate(), p256CertPath),
+            new CBORX509Validator(new X509VerifierInterface() {
+
+                @Override
+                public boolean verifyCertificatePath(X509Certificate[] certificatePath)
+                        throws IOException, GeneralSecurityException {
+                     return true;
+                }
+
+            }));
         
+        try {
+            signAndVerify(new CBORX509Signer(p256.getPrivate(), p256CertPath),
+                new CBORX509Validator(new X509VerifierInterface() {
+
+                    @Override
+                    public boolean verifyCertificatePath(X509Certificate[] certificatePath)
+                            throws IOException, GeneralSecurityException {
+                         return false;
+                    }
+
+                }));
+            fail("Must not execute");
+        } catch (Exception e) {
+            checkException(e, CBORX509Validator.STDERR_UNTRUSTED);
+        }
+
+        try {
+            signAndVerify(new CBORX509Signer(p256.getPrivate(), p256CertPath).setKeyId(keyId),
+                new CBORX509Validator(new X509VerifierInterface() {
+
+                    @Override
+                    public boolean verifyCertificatePath(X509Certificate[] certificatePath)
+                            throws IOException, GeneralSecurityException {
+                         return true;
+                    }
+
+                }));
+            fail("Must not execute");
+        } catch (Exception e) {
+            checkException(e, CBORSigner.STDERR_KEY_ID_PUBLIC);
+        }
+        
+        try {
+            signAndVerify(new CBORX509Signer(p256_2.getPrivate(), p256CertPath),
+                new CBORX509Validator(new X509VerifierInterface() {
+
+                    @Override
+                    public boolean verifyCertificatePath(X509Certificate[] certificatePath)
+                            throws IOException, GeneralSecurityException {
+                         return true;
+                    }
+
+                }));
+            fail("Must not execute");
+        } catch (Exception e) {
+            // Deep errors are not checked for exact text
+        }
         
         signAndVerify(new CBORAsymKeySigner(p256.getPrivate()).setPublicKey(p256.getPublic()), 
-            new CBORAsymSignatureValidator(new CBORAsymSignatureValidator.KeyLocator() {
+            new CBORAsymKeyValidator(new CBORAsymKeyValidator.KeyLocator() {
                 
                 @Override
                 public PublicKey locate(PublicKey optionalPublicKey, 
@@ -874,7 +945,7 @@ public class CBORTest {
 
         try {
             signAndVerify(new CBORAsymKeySigner(p256.getPrivate()), 
-                new CBORAsymSignatureValidator(new CBORAsymSignatureValidator.KeyLocator() {
+                new CBORAsymKeyValidator(new CBORAsymKeyValidator.KeyLocator() {
                     
                     @Override
                     public PublicKey locate(PublicKey optionalPublicKey, 
@@ -893,7 +964,7 @@ public class CBORTest {
             signAndVerify(new CBORAsymKeySigner(p256.getPrivate())
                     .setAlgorithm(AsymSignatureAlgorithms.ED25519)
                     .setPublicKey(p256.getPublic()), 
-                    new CBORAsymSignatureValidator(p256.getPublic()));
+                    new CBORAsymKeyValidator(p256.getPublic()));
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
@@ -902,10 +973,20 @@ public class CBORTest {
         
         try {
             signAndVerify(new CBORAsymKeySigner(p256.getPrivate()).setPublicKey(p256.getPublic()), 
-                    new CBORAsymSignatureValidator(p256_2.getPublic()));
+                    new CBORAsymKeyValidator(p256_2.getPublic()));
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, "Public keys not identical");
+        }
+
+        try {
+            createDataToBeSigned().getMap().sign(7, 
+                    new CBORAsymKeySigner(p256.getPrivate())
+                        .setPublicKey(p256.getPublic())
+                        .setKeyId(keyId));
+            fail("must not execute");
+        } catch (Exception e) {
+            checkException(e, CBORSigner.STDERR_KEY_ID_PUBLIC);
         }
 
         // HMAC signatures
@@ -923,7 +1004,7 @@ public class CBORTest {
         
         try {
             signAndVerify(new CBORAsymKeySigner(p256.getPrivate()), 
-                    new CBORAsymSignatureValidator(ed25519.getPublic()));
+                    new CBORAsymKeyValidator(ed25519.getPublic()));
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, "Algorithm ECDSA_SHA256 does not match key type ED25519");
@@ -931,7 +1012,7 @@ public class CBORTest {
         
         try {
             signAndVerify(new CBORAsymKeySigner(p256.getPrivate()), 
-                new CBORAsymSignatureValidator(new CBORAsymSignatureValidator.KeyLocator() {
+                new CBORAsymKeyValidator(new CBORAsymKeyValidator.KeyLocator() {
                     
                     @Override
                     public PublicKey locate(PublicKey optionalPublicKey, 
@@ -1041,6 +1122,16 @@ public class CBORTest {
 
                     }).decrypt(p256EncryptedKeyId),
                     dataToEncrypt));
+        try {
+            new CBORAsymKeyEncrypter(p256.getPublic(),
+                                     KeyEncryptionAlgorithms.ECDH_ES,
+                                     ContentEncryptionAlgorithms.A256GCM)
+                                         .setPublicKeyOption(true)
+                                         .setKeyId(keyId).encrypt(dataToEncrypt);
+            fail("must not run");
+        } catch (Exception e) {
+            checkException(e, CBORSigner.STDERR_KEY_ID_PUBLIC);
+        }
         try {
             new CBORAsymKeyDecrypter(p256_2.getPrivate()).decrypt(p256Encrypted);
             fail("must not run");

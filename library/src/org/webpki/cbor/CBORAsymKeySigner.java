@@ -31,7 +31,7 @@ import org.webpki.crypto.signatures.SignatureWrapper;
 /**
  * Class for creating CBOR asymmetric key signatures.
  * 
- * It uses COSE algorithms but not the packaging.
+ * It uses COSE algorithms but relies on CSF for the packaging.
  * 
  * Note that signer objects may be used any number of times
  * (assuming that the same parameters are valid).  They are also
@@ -40,6 +40,8 @@ import org.webpki.crypto.signatures.SignatureWrapper;
 public class CBORAsymKeySigner extends CBORSigner {
 
     AsymSignatureAlgorithms algorithm;
+    
+    PublicKey optionalPublicKey;
     
     AsymKeySignerInterface signer;
 
@@ -89,7 +91,7 @@ public class CBORAsymKeySigner extends CBORSigner {
      * @return this
      */
     public CBORAsymKeySigner setPublicKey(PublicKey publicKey) {
-        this.publicKey = publicKey;
+        optionalPublicKey = publicKey;
         return this;
     }
     
@@ -110,5 +112,14 @@ public class CBORAsymKeySigner extends CBORSigner {
     @Override
     byte[] signData(byte[] dataToBeSigned) throws IOException, GeneralSecurityException {
         return signer.signData(dataToBeSigned);
+    }
+
+    @Override
+    void additionalItems(CBORMap signatureObject, byte[] optionalKeyId) 
+            throws IOException, GeneralSecurityException {
+        if (optionalPublicKey != null) {
+            signatureObject.setObject(PUBLIC_KEY_LABEL, CBORPublicKey.encode(optionalPublicKey));
+            CBORSigner.checkKeyId(optionalKeyId);
+        }
     }
 }

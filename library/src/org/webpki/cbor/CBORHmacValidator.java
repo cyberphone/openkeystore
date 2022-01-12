@@ -26,6 +26,8 @@ import org.webpki.util.ArrayUtil;
 
 /**
  * Class for CBOR HMAC signature validation.
+ *
+ * It uses COSE algorithms but relies on CSF for the packaging.
  * 
  * Note that validator objects may be used any number of times
  * (assuming that the same parameters are valid).  They are also
@@ -51,7 +53,6 @@ public class CBORHmacValidator extends CBORValidator {
             throws IOException, GeneralSecurityException;
     }
     
-    byte[] secretKey;
     KeyLocator keyLocator;
 
     /**
@@ -64,7 +65,14 @@ public class CBORHmacValidator extends CBORValidator {
      * @param secretKey The anticipated public key
      */
     public CBORHmacValidator(byte[] secretKey) {
-        this.secretKey = secretKey;
+        this(new KeyLocator() {
+
+            @Override
+            public byte[] locate(byte[] optionalKeyId, HmacAlgorithms hmacAlgorithm) {
+                 return secretKey;
+            }
+            
+        });
     }
 
     /**
@@ -88,13 +96,9 @@ public class CBORHmacValidator extends CBORValidator {
         // Get algorithm from the signature object.
         HmacAlgorithms hmacAlgorithm = HmacAlgorithms.getAlgorithmFromId(coseAlgorithmId);
 
-        // If there is a locator, call it.
-        if (keyLocator != null) {
-            secretKey = keyLocator.locate(optionalKeyId, hmacAlgorithm);
-        }
-
         // Finally, verify the HMAC.
-        if (!ArrayUtil.compare(hmacAlgorithm.digest(secretKey, signedData), signatureValue)) {
+        if (!ArrayUtil.compare(hmacAlgorithm.digest(
+                keyLocator.locate(optionalKeyId, hmacAlgorithm), signedData), signatureValue)) {
              throw new GeneralSecurityException("HMAC signature validation error");
         }
     }

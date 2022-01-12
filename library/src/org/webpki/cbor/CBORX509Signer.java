@@ -25,6 +25,7 @@ import java.security.cert.X509Certificate;
 
 import org.webpki.crypto.X509SignerInterface;
 import org.webpki.crypto.AsymSignatureAlgorithms;
+import org.webpki.crypto.CertificateUtil;
 import org.webpki.crypto.KeyAlgorithms;
 
 import org.webpki.crypto.signatures.SignatureWrapper;
@@ -32,17 +33,21 @@ import org.webpki.crypto.signatures.SignatureWrapper;
 /**
  * Class for creating CBOR X509 signatures.
  * 
- * It uses COSE algorithms but not the packaging.
+ * It uses COSE algorithms but relies on CSF for the packaging.
  * 
  * Note that signer objects may be used any number of times
  * (assuming that the same parameters are valid).  They are also
  * thread-safe.
+ * 
+ * X509 signatures do not permit the use of a keyId.
  */
 public class CBORX509Signer extends CBORSigner {
 
     AsymSignatureAlgorithms algorithm;
     
     X509SignerInterface signer;
+    
+    X509Certificate[] certificatePath;
 
     /**
      * Initialize signer.
@@ -110,5 +115,37 @@ public class CBORX509Signer extends CBORSigner {
     @Override
     byte[] signData(byte[] dataToBeSigned) throws IOException, GeneralSecurityException {
         return signer.signData(dataToBeSigned);
+    }
+    
+    /**
+     * Encode certificate path into a CBOR array.
+ 
+     * Note that the certificates must be in ascending
+     * order with respect to parenthood.  That is,
+     * the first certificate would typically be
+     * an end-entity certificate.
+     * 
+     * See  {@link CBORX509Validator#decodeCertificateArray(CBORArray)}.
+     * 
+     * @param certificatePath The certificate path to be converted to CBOR 
+     * 
+     * @return CBORArray
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
+    public static CBORArray encodeCertificateArray(X509Certificate[] certificatePath) 
+            throws IOException, GeneralSecurityException {
+        CBORArray array = new CBORArray();
+        for (X509Certificate certificate : CertificateUtil.checkCertificatePath(certificatePath)) {
+            array.addObject(new CBORByteString(certificate.getEncoded()));
+        }
+        return array;
+    }
+
+    @Override
+    void additionalItems(CBORMap signatureObject, byte[] optionalKeyId) 
+            throws IOException, GeneralSecurityException {
+        signatureObject.setObject(CERT_PATH_LABEL, encodeCertificateArray(certificatePath));
+        CBORSigner.checkKeyId(optionalKeyId);
     }
 }

@@ -26,6 +26,8 @@ import org.webpki.crypto.HmacSignerInterface;
 /**
  * Class for creating CBOR HMAC signatures.
  * 
+ * It uses COSE algorithms but relies on CSF for the packaging.
+ * 
  * Note that signer objects may be used any number of times
  * (assuming that the same parameters are valid).  They are also
  * thread-safe.
@@ -83,5 +85,11 @@ public class CBORHmacSigner extends CBORSigner {
     @Override
     byte[] signData(byte[] dataToBeSigned) throws IOException, GeneralSecurityException {
         return signer.signData(dataToBeSigned);
+    }
+
+    @Override
+    void additionalItems(CBORMap signatureObject, byte[] optionalKeyId)
+            throws IOException, GeneralSecurityException {
+        // No additional items needed.
     }
 }

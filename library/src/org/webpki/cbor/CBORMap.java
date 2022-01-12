@@ -258,7 +258,8 @@ public class CBORMap extends CBORObject {
                         .getByteString()
                 : null;
 
-        // Call specific validator.
+        // Call specific validator. This code presumes that internalEncode() 
+        // returns a deterministic representation of CBOR items.
         validator.validate(signatureObject,
                            signatureObject.getObject(CBORSigner.ALGORITHM_LABEL).getInt(),
                            optionalKeyId, 
@@ -269,8 +270,7 @@ public class CBORMap extends CBORObject {
         signatureObject.checkForUnread();
 
         // Restore object.
-        signatureObject.keys.put(CBORSigner.SIGNATURE_LABEL,
-                                 new CBORByteString(signatureValue));
+        signatureObject.keys.put(CBORSigner.SIGNATURE_LABEL, new CBORByteString(signatureValue));
     }
 
     /**

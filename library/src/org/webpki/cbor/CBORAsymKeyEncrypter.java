@@ -29,7 +29,7 @@ import org.webpki.crypto.encryption.KeyEncryptionAlgorithms;
 /**
  * Class for creating CBOR asymmetric key encryptions.
  * 
- * It uses COSE algorithms but not the packaging.
+ * It uses COSE algorithms but relies on CEF for the packaging.
  * 
  * Note that encrypters may be used any number of times
  * (assuming that the same parameters are valid).  They are also
@@ -83,6 +83,8 @@ public class CBORAsymKeyEncrypter extends CBOREncrypter {
         if (wantPublicKey) {
             keyEncryption.setObject(PUBLIC_KEY_LABEL,
                                     CBORPublicKey.encode(publicKey));
+            // Which does not go together with a keyId
+            CBORSigner.checkKeyId(keyId);
         }
         
         // Key wrapping algorithms need a key to wrap

@@ -19,17 +19,12 @@ package org.webpki.cbor;
 import java.io.IOException;
 
 import java.security.GeneralSecurityException;
-import java.security.PublicKey;
-
-import java.security.cert.X509Certificate;
-
-import org.webpki.crypto.CertificateUtil;
 
 /**
  * Base class for creating CBOR signatures.
  * 
- * It uses COSE algorithms but not the packaging.
-
+ * It uses COSE algorithms but relies on CSF for the packaging.
+ * 
  */
 public abstract class CBORSigner {
 
@@ -61,10 +56,6 @@ public abstract class CBORSigner {
     // Set by implementing classes
     String provider;
     
-    PublicKey publicKey;
-    
-    X509Certificate[] certificatePath;
-    
     int coseAlgorithmId;
     
     // Optional key ID
@@ -73,6 +64,17 @@ public abstract class CBORSigner {
     CBORSigner() {}
     
     abstract byte[] signData(byte[] dataToSign) throws IOException, GeneralSecurityException;
+    
+    abstract void additionalItems(CBORMap signatureObject, byte[] optionalKeyId) 
+            throws IOException, GeneralSecurityException;
+    
+    static void checkKeyId(byte[] keyId) throws GeneralSecurityException {
+        if (keyId != null) {
+            throw new GeneralSecurityException(STDERR_KEY_ID_PUBLIC);
+        }
+    }
+ 
+
     
     /**
      * Set signature key Id.
@@ -91,8 +93,7 @@ public abstract class CBORSigner {
      * the only ways to retrieve the proper secret key.
      * </p>
      * <p>
-     * For certificate based signatures, keyId doesn't make sense but it
-     * is still permitted.
+     * Note that keyId is not permitted for X509 based signatures.
      * </p>
      * 
      * @param keyId A key Id byte array
@@ -122,17 +123,8 @@ public abstract class CBORSigner {
         // Add the mandatory signature algorithm.
         signatureObject.setObject(ALGORITHM_LABEL, new CBORInteger(coseAlgorithmId));
         
-        // If a public key has been defined, add it to the signature object.
-        if (publicKey != null) {
-            signatureObject.setObject(PUBLIC_KEY_LABEL, CBORPublicKey.encode(publicKey));
-        // Certificate signatures always carry a certificate(path).
-        } else if (certificatePath != null) {
-            CBORArray arrayWriter = new CBORArray();
-            for (X509Certificate certificate : CertificateUtil.checkCertificatePath(certificatePath)) {
-                arrayWriter.addObject(new CBORByteString(certificate.getEncoded()));
-            }
-            signatureObject.setObject(CERT_PATH_LABEL, arrayWriter);
-        }
+        // Asymmetric key signatures add specific items to the signature container.
+        additionalItems(signatureObject, keyId);
 
         // Add a keyId if there is one.
         if (keyId != null) {
@@ -143,8 +135,14 @@ public abstract class CBORSigner {
         objectToSign.setObject(key, signatureObject);
 
         // Finally, sign all but the signature label and associated value.
-        // encode() is supposed to produce a deterministic representation.
+        // internalEncode() is supposed to produce a deterministic representation.
         signatureObject.keys.put(SIGNATURE_LABEL, 
                                  new CBORByteString(signData(objectToSign.internalEncode())));
     }
+    /**
+     * For internal use only
+     */
+    static final String STDERR_KEY_ID_PUBLIC = 
+            "\"keyId\" cannot be combined with public key objects";
+
 }

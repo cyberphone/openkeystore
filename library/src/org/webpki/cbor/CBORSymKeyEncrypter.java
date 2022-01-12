@@ -25,8 +25,8 @@ import org.webpki.crypto.encryption.ContentEncryptionAlgorithms;
 /**
  * Class for creating CBOR symmetric key encryptions.
  * 
- * It uses COSE algorithms but not the packaging.
- *
+ * It uses COSE algorithms but relies on CEF for the packaging.
+ * 
  * Note that encrypters may be used any number of times
  * (assuming that the same parameters are valid).  They are also
  * thread-safe.

@@ -127,7 +127,6 @@ public class CborEncryption {
         asymEncCore(key, false, false, cea, kea);
         asymEncCore(key, false, true,  cea, kea);
         asymEncCore(key, true,  false, cea, kea);
-        asymEncCore(key, true,  true,  cea, kea);
     }
 
     static String prefix(String keyType) {

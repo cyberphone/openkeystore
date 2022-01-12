@@ -19,18 +19,19 @@ package org.webpki.cbor;
 import java.io.IOException;
 
 import java.security.GeneralSecurityException;
-import java.security.PublicKey;
 
 import java.security.cert.X509Certificate;
 
-import org.webpki.crypto.AsymSignatureAlgorithms;
-import org.webpki.crypto.KeyAlgorithms;
-import org.webpki.crypto.X509VerifierInterface;
+import java.util.ArrayList;
 
-import org.webpki.crypto.signatures.SignatureWrapper;
+import org.webpki.crypto.AsymSignatureAlgorithms;
+import org.webpki.crypto.CertificateUtil;
+import org.webpki.crypto.X509VerifierInterface;
 
 /**
  * Class for CBOR X509 signature validation.
+ * 
+ * It uses COSE algorithms but relies on CSF for the packaging.
  * 
  * Note that validator objects may be used any number of times
  * (assuming that the same parameters are valid).  They are also
@@ -39,8 +40,8 @@ import org.webpki.crypto.signatures.SignatureWrapper;
 public class CBORX509Validator extends CBORValidator {
     
     X509VerifierInterface verifier;
-    
-    /**
+
+     /**
      * Initialize validator with a verifier.
      * 
      * @param verifier The verifier interface
@@ -48,42 +49,66 @@ public class CBORX509Validator extends CBORValidator {
     public CBORX509Validator(X509VerifierInterface verifier) {
         this.verifier = verifier;
     }
-
+    
+    /**
+     * Get certificate path from a CBOR array.
+ 
+     * Note that the array must only contain a
+     * list of X509 certificates in DER format.
+     * The certificates must be in ascending
+     * order with respect to parenthood.  That is,
+     * the first certificate would typically be
+     * an end-entity certificate.
+     * 
+     * See {@link CBORX509Signer#encodeCertificateArray(X509Certificate[])}.
+     * 
+     * @return Certificate path
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
+    public static X509Certificate[] decodeCertificateArray(CBORArray array) 
+            throws IOException, GeneralSecurityException {
+        ArrayList<byte[]> blobs = new ArrayList<>();
+        int index = 0;
+        do {
+            blobs.add(array.objectList.get(index).getByteString());
+        } while (++index < array.objectList.size());
+        return CertificateUtil.makeCertificatePath(blobs);
+    }
+ 
     @Override
     void validate(CBORMap signatureObject, 
                   int coseAlgorithmId,
                   byte[] optionalKeyId,
                   byte[] signatureValue,
                   byte[] signedData) throws IOException, GeneralSecurityException {
+
+        // keyId and certificates?
+        CBORSigner.checkKeyId(optionalKeyId);
         
         // Get signature algorithm.
         AsymSignatureAlgorithms signatureAlgorithm =
                 AsymSignatureAlgorithms.getAlgorithmFromId(coseAlgorithmId);
         
-        // Acquire certificate(path).
-        X509Certificate[] certificatePath = signatureObject.getObject(
-                CBORSigner.CERT_PATH_LABEL).getArray().getCertificatePath();
+        // Fetch certificate(path).
+        X509Certificate[] certificatePath = decodeCertificateArray(
+                signatureObject.getObject(CBORSigner.CERT_PATH_LABEL).getArray());
         
-        // Read the public key of the signature certificate.
-        PublicKey publicKey = certificatePath[0].getPublicKey();
-        
-        // Verify that the public key matches the signature algorithm.
-        KeyAlgorithms keyAlgorithm = KeyAlgorithms.getKeyAlgorithm(publicKey);
-        if (signatureAlgorithm.getKeyType() != keyAlgorithm.getKeyType()) {
-            throw new GeneralSecurityException("Algorithm " + signatureAlgorithm + 
-                                  " does not match key type " + keyAlgorithm);
-        }
-        
-        // Finally, verify the signature.
-        if (!new SignatureWrapper(signatureAlgorithm, publicKey)
-                 .update(signedData)
-                 .verify(signatureValue)) {
-            throw new GeneralSecurityException("Bad signature for key: " + publicKey.toString());
-        }
-
+        // Now we have everything needed for validating the signature.
+        CBORAsymKeyValidator.asymKeySignatureValidation(certificatePath[0].getPublicKey(),
+                                                        signatureAlgorithm, 
+                                                        signedData, 
+                                                        signatureValue);
+ 
         // Lookup and validate certificatePath.
         if (!verifier.verifyCertificatePath(certificatePath)) {
-            throw new GeneralSecurityException("Untrusted cert path");
+            throw new GeneralSecurityException(STDERR_UNTRUSTED);
         }
     }
+    
+    /**
+     * For internal use only
+     */
+    static final String STDERR_UNTRUSTED = "Untrusted cert path";
+
 }

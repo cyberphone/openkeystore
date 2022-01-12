@@ -28,12 +28,14 @@ import org.webpki.crypto.signatures.SignatureWrapper;
 
 /**
  * Class for CBOR asymmetric key signature validation.
+ *
+ * It uses COSE algorithms but relies on CSF for the packaging.
  * 
  * Note that validator objects may be used any number of times
  * (assuming that the same parameters are valid).  They are also
  * thread-safe. 
  */
-public class CBORAsymSignatureValidator extends CBORValidator {
+public class CBORAsymKeyValidator extends CBORValidator {
     
     /**
      * For dynamic key retrieval.
@@ -64,7 +66,7 @@ public class CBORAsymSignatureValidator extends CBORValidator {
      * 
      * @param publicKey The anticipated public key
      */
-    public CBORAsymSignatureValidator(PublicKey publicKey) {
+    public CBORAsymKeyValidator(PublicKey publicKey) {
         this.publicKey = publicKey;
     }
 
@@ -92,8 +94,29 @@ public class CBORAsymSignatureValidator extends CBORValidator {
      * 
      * @param keyLocator The call back
      */
-    public CBORAsymSignatureValidator(KeyLocator keyLocator) {
+    public CBORAsymKeyValidator(KeyLocator keyLocator) {
         this.keyLocator = keyLocator;
+    }
+
+    static void asymKeySignatureValidation(PublicKey publicKey,
+                                           AsymSignatureAlgorithms signatureAlgorithm,
+                                           byte[] signedData,
+                                           byte[] signatureValue) 
+            throws GeneralSecurityException, IOException {
+
+        // Verify that the public key matches the signature algorithm.
+        KeyAlgorithms keyAlgorithm = KeyAlgorithms.getKeyAlgorithm(publicKey);
+        if (signatureAlgorithm.getKeyType() != keyAlgorithm.getKeyType()) {
+            throw new GeneralSecurityException("Algorithm " + signatureAlgorithm + 
+                                  " does not match key type " + keyAlgorithm);
+        }
+        
+        // Finally, verify the signature.
+        if (!new SignatureWrapper(signatureAlgorithm, publicKey)
+                 .update(signedData)
+                 .verify(signatureValue)) {
+            throw new GeneralSecurityException("Bad signature for key: " + publicKey.toString());
+        }
     }
 
     @Override
@@ -107,9 +130,10 @@ public class CBORAsymSignatureValidator extends CBORValidator {
         AsymSignatureAlgorithms signatureAlgorithm =
                 AsymSignatureAlgorithms.getAlgorithmFromId(coseAlgorithmId);
         
-        // Acquire public key if there is one. 
+        // Fetch public key if there is one.
         PublicKey inLinePublicKey = null;
         if (signatureObject.hasKey(CBORSigner.PUBLIC_KEY_LABEL)) {
+            CBORSigner.checkKeyId(optionalKeyId);
             inLinePublicKey = CBORPublicKey.decode(
                     signatureObject.getObject(CBORSigner.PUBLIC_KEY_LABEL));
         }
@@ -130,20 +154,8 @@ public class CBORAsymSignatureValidator extends CBORValidator {
             }
         }
         
-        // By now, we should have a public key.
-        // Verify that the public key matches the signature algorithm.
-        KeyAlgorithms keyAlgorithm = KeyAlgorithms.getKeyAlgorithm(publicKey);
-        if (signatureAlgorithm.getKeyType() != keyAlgorithm.getKeyType()) {
-            throw new GeneralSecurityException("Algorithm " + signatureAlgorithm + 
-                                  " does not match key type " + keyAlgorithm);
-        }
-        
-        // Finally, verify the signature.
-        if (!new SignatureWrapper(signatureAlgorithm, publicKey)
-                 .update(signedData)
-                 .verify(signatureValue)) {
-            throw new GeneralSecurityException("Bad signature for key: " + publicKey.toString());
-        }
+        // Now we have everything needed for validating the signature.
+        asymKeySignatureValidation(publicKey, signatureAlgorithm, signedData, signatureValue);
 
         // There is a locator, call it only if we already have gotten a
         // public key object (for verifying that the received key (that

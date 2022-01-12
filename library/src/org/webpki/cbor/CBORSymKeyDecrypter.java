@@ -27,6 +27,8 @@ import org.webpki.crypto.encryption.KeyEncryptionAlgorithms;
 /**
  * Class for CBOR symmetric key decryption.
  * 
+ * It uses COSE algorithms but relies on CEF for the packaging.
+ *
  * Note that decrypter objects may be used any number of times
  * (assuming that the same parameters are valid).  They are also
  * thread-safe. 
