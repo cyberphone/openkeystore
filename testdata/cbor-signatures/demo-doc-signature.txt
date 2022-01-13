@@ -1,0 +1,34 @@
+{<br>
+&nbsp;&nbsp;1: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;1: "Space Shop",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;2: "435.00",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;3: "USD"<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;2: "spaceshop.com",<br>
+&nbsp;&nbsp;3: "FR7630002111110020050014382",<br>
+&nbsp;&nbsp;4: "https://bankdirect.org",<br>
+&nbsp;&nbsp;5: "05768401",<br>
+&nbsp;&nbsp;6: "2022-01-14T09:34:08-05:00",<br>
+&nbsp;&nbsp;7: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;1: 38.8882,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;2: 77.0199<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;<span style='color:grey'>// Signature object</span><br>
+&nbsp;&nbsp;8: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// Signature algorithm = COSE/ES256</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;1: -7,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// Public key descriptor in COSE format</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;3: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// kty = EC</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: 2,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// crv = P-256</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-1: 1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// x</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-2: h'e812b1a6dcbc708f9ec43cc2921fa0a14e9d5eadcc6dc63471dd4b680c6236b5',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// y</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-3: h'9826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d8'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// Signature value</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;5: h'771b9cc536ccb3a68d59adffb7bb4dacf7cf0fd5a1a3f52837ba37e508010c2fe438236fdc713ece9df2f0f5ef2181c3f8963beb1c6f119de6fdd5e5c72548c1'<br>
+&nbsp;&nbsp;}<br>
+}

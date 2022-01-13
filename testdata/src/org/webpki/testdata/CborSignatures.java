@@ -36,6 +36,7 @@ import org.webpki.cbor.CBORX509Signer;
 import org.webpki.cbor.CBORX509Validator;
 import org.webpki.cbor.CBORAsymKeySigner;
 import org.webpki.cbor.CBORAsymKeyValidator;
+import org.webpki.cbor.CBORDouble;
 import org.webpki.cbor.CBORHmacSigner;
 import org.webpki.cbor.CBORHmacValidator;
 import org.webpki.cbor.CBORInteger;
@@ -55,6 +56,7 @@ import org.webpki.json.JSONParser;
 import org.webpki.json.SymmetricKeys;
 
 import org.webpki.util.ArrayUtil;
+import org.webpki.util.DebugFormatter;
 import org.webpki.util.PEMDecoder;
 
 /*
@@ -121,6 +123,8 @@ public class CborSignatures {
             symKeySign(384, HmacAlgorithms.HMAC_SHA384, i == 0);
             symKeySign(512, HmacAlgorithms.HMAC_SHA512, i == 0);
         }
+        
+        demoDocSignature(baseSignatures + "demo-doc-signature.cbor");
     }
     
     static void asymKeyAllVariations(String key, AsymSignatureAlgorithms pssAlg) throws Exception {
@@ -346,4 +350,89 @@ public class CborSignatures {
                 algorithm.getMGF1ParameterSpec() != null ||
                 algorithm.getKeyType() == KeyTypes.EC);
     }
+
+    static void demoDocSignature(String fileName) throws Exception {
+        KeyPair keyPair = readJwk("p256");
+        CBORAsymKeySigner signer = 
+                new CBORAsymKeySigner(keyPair.getPrivate()).setPublicKey(keyPair.getPublic());
+        byte[] signedData =
+                new CBORMap().setObject(1, 
+                                        new CBORMap()
+                                            .setObject(1, new CBORTextString("Space Shop"))
+                                            .setObject(2, new CBORTextString("435.00"))
+                                            .setObject(3, new CBORTextString("USD")))
+                             .setObject(2, new CBORTextString("spaceshop.com"))
+                             .setObject(3, new CBORTextString("FR7630002111110020050014382"))
+                             .setObject(4, new CBORTextString("https://bankdirect.org"))
+                             .setObject(5, new CBORTextString("05768401"))
+                             .setObject(6, new CBORTextString("2022-01-14T09:34:08-05:00"))
+                             .setObject(7,
+                                        new CBORMap()
+                                            .setObject(1, new CBORDouble(38.8882))
+                                            .setObject(2, new CBORDouble(77.0199)))
+                .sign(8, signer).encode();
+        CBORAsymKeyValidator validator = new CBORAsymKeyValidator(keyPair.getPublic());
+        boolean changed = true;
+        byte[] oldSignature = null;
+        try {
+            oldSignature = ArrayUtil.readFile(fileName);
+            try {
+                CBORObject.decode(oldSignature).getMap().validate(8, validator);
+            } catch (Exception e) {
+                throw new GeneralSecurityException("ERROR - Old signature '" + fileName + "' did not validate");
+            }
+        } catch (IOException e) {
+            changed = false;  // New file
+        }
+        if (oldSignature != null) {
+            if (cleanSignature(oldSignature).equals(cleanSignature(signedData))) {
+                additionalFiles(fileName, oldSignature);
+                return;
+            }
+
+        }
+        ArrayUtil.writeFile(fileName, signedData);
+        additionalFiles(fileName, signedData);
+        if (changed) {
+            System.out.println("WARNING '" + fileName + "' was UPDATED");
+        }
+    }
+
+    private static void additionalFiles(String fileName, byte[] signature) throws IOException {
+        ArrayUtil.writeFile(fileName.replace(".cbor", ".hex"), 
+                            DebugFormatter.getHexString(signature).getBytes("utf-8"));
+        StringBuilder text = new StringBuilder(CBORObject.decode(signature).toString());
+        int i = text.indexOf("\n  8:");
+        for (String comment : new String[]{"Signature object",
+                                           "Signature algorithm = COSE/ES256",
+                                           "Public key descriptor in COSE format",
+                                           "kty = EC",
+                                           "crv = P-256",
+                                           "x",
+                                           "y",
+                                           "Signature value"}) {
+            while (true) {
+                int spaces = 0;
+                while (text.charAt(++i) == ' ') {
+                    spaces++;
+                };
+                if (text.charAt(i) == '}') {
+                    i = text.indexOf("\n", i);
+                    continue;
+                }
+                for (int q = 0; q < spaces; q++) {
+                    text.insert(i - spaces, ' ');
+                }
+                String added = "<span style='color:grey'>// " + comment + "</span>\n";
+                text.insert(i, added);
+                i = text.indexOf("\n", i + added.length() + spaces);
+                break;
+            }
+        }
+        ArrayUtil.writeFile(fileName.replace(".cbor", ".txt"), 
+                            text.toString()
+                                .replace("\n", "<br>\n")
+                                .replace("  ", "&nbsp;&nbsp;").getBytes("utf-8"));
+    }
+
 }

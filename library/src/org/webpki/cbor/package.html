@@ -23,12 +23,13 @@ Since this package is intended for security related
 work, it is (by design) quite picky when decoding CBOR data
 and does (by default) not accept:
 <ul>
-<li>Leading zeros.</li>
+<li>Integer data with <i>leading zeros</i>.</li>
 <li><code>bignum</code> objects
 that due to their value could equally well be provided in the
 shorter <code>integer</code> format.</li>
 <li>Floating point data that could equally well be properly represented by a
-shorter variant.  As an example <code>0.0</code> must be encoded as a 16-bit floating point type. </li>
+shorter variant.
+As an example <code>0.0</code> must be encoded as a 16-bit floating point type.</li>
 <li>Maps with keys that are not sorted according to section 4.2.1 of RFC 8949.</li>
 </ul>
 On output (encode) the preferred serialization format is always used
@@ -43,45 +44,59 @@ Note that unlike COSE (RFC 8152), CSF
 leverages <i>deterministic serialization</i>,
 enabling constructs like the following:
 </p>
-<pre>
-{
-   1: {
-     1: "Space Shop",
-     2: "100.00",
-     3: "EUR"
-   },
-   2: "spaceshop.com",
-   3: "FR7630002111110020050014382",
-   4: "https://europeanpaymentsinitiative.eu/fwp",
-   5: "62932",
-   6: "2021-05-03T09:50:08Z",
-   <span style='color:grey'>// signature object</span>
-   7: {
-     <span style='color:grey'>// Signature algorithm = COSE/ES256</span>
-     1: -7,
-     <span style='color:grey'>// Public key descriptor in COSE format</span>
-     2: {
-       <span style='color:grey'>// kty = EC</span>
-       1: 2,
-       <span style='color:grey'>// crv = P-256</span>
-       -1: 1,
-       <span style='color:grey'>// x</span>
-       -2: h'e812b1a6dcbc708f9ec43cc2921fa0a14e9d5eadcc6dc63471dd4b680c6236b5',
-       <span style='color:grey'>// y</span>
-       -3: h'9826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d8'
-     },
-     <span style='color:grey'>// Signature value</span>
-     5: h'9afd236f8c9e7d2f27480570df11983a36dec25950a97d6fe66136839065
-93e755d266b2a2adbd562739d7bcfa1c20ea7770f6677bfde34a310101f445c32712'
-   }
+<div style='word-break:break-all'><code>
+{<br>
+&nbsp;&nbsp;1: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;1: "Space Shop",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;2: "435.00",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;3: "USD"<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;2: "spaceshop.com",<br>
+&nbsp;&nbsp;3: "FR7630002111110020050014382",<br>
+&nbsp;&nbsp;4: "https://bankdirect.org",<br>
+&nbsp;&nbsp;5: "05768401",<br>
+&nbsp;&nbsp;6: "2022-01-14T09:34:08-05:00",<br>
+&nbsp;&nbsp;7: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;1: 38.8882,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;2: 77.0199<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;<span style='color:grey'>// Signature object</span><br>
+&nbsp;&nbsp;8: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// Signature algorithm = COSE/ES256</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;1: -7,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// Public key descriptor in COSE format</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;3: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// kty = EC</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: 2,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// crv = P-256</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-1: 1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// x</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-2: h'e812b1a6dcbc708f9ec43cc2921fa0a14e9d5eadcc6dc63471dd4b680c6236b5',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// y</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-3: h'9826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d8'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// Signature value</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;5: h'771b9cc536ccb3a68d59adffb7bb4dacf7cf0fd5a1a3f52837ba37e508010c2fe438236fdc713ece9df2f0f5ef2181c3f8963beb1c6f119de6fdd5e5c72548c1'<br>
+&nbsp;&nbsp;}<br>
 }
-</pre>
+</code></div>
+<p>
+The same object expressed as hex-encoded CBOR:
+</p>
+<p>
+<div style='word-break:break-all'><code>
+a801a3016a53706163652053686f7002663433352e30300363555344026d737061636573686f702e636f6d03781b465237363330303032313131313130303230303530303134333832047668747470733a2f2f62616e6b6469726563742e6f726705683035373638343031067819323032322d30312d31345430393a33343a30382d30353a303007a201fb404371b089a0275202fb405341460aa64c3008a3012603a401022001215820e812b1a6dcbc708f9ec43cc2921fa0a14e9d5eadcc6dc63471dd4b680c6236b52258209826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d8055840771b9cc536ccb3a68d59adffb7bb4dacf7cf0fd5a1a3f52837ba37e508010c2fe438236fdc713ece9df2f0f5ef2181c3f8963beb1c6f119de6fdd5e5c72548c1
+</code></div>
+
+</p>
+<p>
 <i>Explanation: </i>
-Labels 1-6 represent application data while the <i>application-specific</i>
-label 7 holds an associated <i>enveloped</i> signature.  A CBOR signature must
+Labels 1-7 represent application data while the <i>application-specific</i>
+label 8 holds an associated <i>enveloped</i> signature.  A CBOR signature must
 (for compatibility with CSF),
 be provided as a CBOR <code>map</code> having a fixed set of labels 
 according to the following table:
+</p>
 <table class='webpkitable'>
 <tr><th>Label</th><th>Name</th><th>Argument</th><th>Function</th></tr>
 
