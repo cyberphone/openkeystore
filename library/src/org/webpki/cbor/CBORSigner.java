@@ -36,12 +36,12 @@ public abstract class CBORSigner {
     /**
      * Integer value: 2
      */
-    public static final CBORInteger PUBLIC_KEY_LABEL = new CBORInteger(2);
-    
+    public static final CBORInteger KEY_ID_LABEL     = new CBORInteger(2);
+
     /**
      * Integer value: 3
      */
-    public static final CBORInteger KEY_ID_LABEL     = new CBORInteger(3);
+    public static final CBORInteger PUBLIC_KEY_LABEL = new CBORInteger(3);
     
     /**
      * Integer value: 4
