@@ -23,6 +23,7 @@ import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.PublicKey;
+import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAKey;
 
 import org.webpki.cbor.CBORObject;
@@ -31,6 +32,8 @@ import org.webpki.cbor.CBORTest;
 import org.webpki.cbor.CBORTextString;
 import org.webpki.cbor.CBORTypes;
 import org.webpki.cbor.CBORValidator;
+import org.webpki.cbor.CBORX509Signer;
+import org.webpki.cbor.CBORX509Validator;
 import org.webpki.cbor.CBORAsymKeySigner;
 import org.webpki.cbor.CBORAsymKeyValidator;
 import org.webpki.cbor.CBORHmacSigner;
@@ -80,9 +83,11 @@ public class CborSignatures {
 
         for (String key : new String[]{"p256", "p384", "p521", "r2048", "ed25519", "ed448"}) {
             // Check the PEM reader
-            KeyPair keyPairPem = 
-                    new KeyPair(PEMDecoder.getPublicKey(ArrayUtil.readFile(baseKey + key + "publickey.pem")),
-                                PEMDecoder.getPrivateKey(ArrayUtil.readFile(baseKey + key + "privatekey.pem")));
+            KeyPair keyPairPem = new KeyPair(
+                PEMDecoder.getPublicKey(ArrayUtil.readFile(baseKey + key + "publickey.pem")),
+                PEMDecoder.getPrivateKey(ArrayUtil.readFile(baseKey + key + "privatekey.pem")));
+            X509Certificate[] certificatePath = 
+                PEMDecoder.getCertificatePath(ArrayUtil.readFile(baseKey + key + "certpath.pem"));
             KeyPair keyPairJwk = readJwk(key);
             if (!keyPairJwk.getPublic().equals(keyPairPem.getPublic())) {
                 throw new IOException("PEM fail at public " + key);
@@ -108,6 +113,7 @@ public class CborSignatures {
                     }
                 }
             }
+            certSignCore(key, keyPairPem, certificatePath);
         }
       
         for (int i = 0; i < 2; i++) {
@@ -252,6 +258,44 @@ public class CborSignatures {
         return algorithm.getJoseAlgorithmId().toLowerCase();
     }
     
+    static class SaveAlgorithm {
+        AsymSignatureAlgorithms algorithm;
+    }
+ 
+    static void certSignCore(String keyType, KeyPair keyPair, X509Certificate[] certificatePath)
+            throws Exception {
+        CBORX509Signer signer = new CBORX509Signer(keyPair.getPrivate(), certificatePath);
+        byte[] signedData = createSignature(signer);
+        final SaveAlgorithm saveAlgorithm = new SaveAlgorithm();
+        CBORX509Validator validator = new CBORX509Validator(
+            new CBORX509Validator.SignatureParameters() {
+
+                @Override
+                public void check(X509Certificate[] certificatePath,
+                                  AsymSignatureAlgorithms asymSignatureAlgorithm)
+                        throws IOException, GeneralSecurityException {
+                    saveAlgorithm.algorithm = asymSignatureAlgorithm;
+                }
+                
+            });
+        CBORMap decoded = CBORObject.decode(signedData).getMap();
+        decoded.validate(SIGNATURE_LABEL, validator);
+        String fileName = baseSignatures + prefix(keyType)
+                + getAlgorithm(saveAlgorithm.algorithm) + "@cer.cbor";
+        decoded.validate(SIGNATURE_LABEL, new CBORX509Validator(
+                new CBORX509Validator.SignatureParameters() {
+
+            @Override
+            public void check(X509Certificate[] certificatePath,
+                              AsymSignatureAlgorithms asymSignatureAlgorithm)
+                    throws IOException, GeneralSecurityException {
+            }
+            
+        }));
+        optionalUpdate(validator, fileName, signedData, 
+                saveAlgorithm.algorithm.getKeyType() == KeyTypes.EC);
+    }
+
     static void asymSignCore(String keyType, 
                              boolean wantKeyId,
                              boolean wantPublicKey,

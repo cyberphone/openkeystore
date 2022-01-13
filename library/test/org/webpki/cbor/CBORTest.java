@@ -39,11 +39,11 @@ import org.junit.Test;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.HmacSignerInterface;
-import org.webpki.crypto.X509VerifierInterface;
+import org.webpki.crypto.CustomCryptoProvider;
+
 import org.webpki.crypto.encryption.ContentEncryptionAlgorithms;
 import org.webpki.crypto.encryption.EncryptionCore;
 import org.webpki.crypto.encryption.KeyEncryptionAlgorithms;
-import org.webpki.crypto.CustomCryptoProvider;
 
 import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONParser;
@@ -872,42 +872,26 @@ public class CBORTest {
             }));
 
         signAndVerify(new CBORX509Signer(p256.getPrivate(), p256CertPath),
-            new CBORX509Validator(new X509VerifierInterface() {
+            new CBORX509Validator(new CBORX509Validator.SignatureParameters() {
 
                 @Override
-                public boolean verifyCertificatePath(X509Certificate[] certificatePath)
+                public void check(X509Certificate[] certificatePath,
+                                  AsymSignatureAlgorithms signatureAlgorithm)
                         throws IOException, GeneralSecurityException {
-                     return true;
                 }
 
             }));
         
         try {
-            signAndVerify(new CBORX509Signer(p256.getPrivate(), p256CertPath),
-                new CBORX509Validator(new X509VerifierInterface() {
-
-                    @Override
-                    public boolean verifyCertificatePath(X509Certificate[] certificatePath)
-                            throws IOException, GeneralSecurityException {
-                         return false;
-                    }
-
-                }));
-            fail("Must not execute");
-        } catch (Exception e) {
-            checkException(e, CBORX509Validator.STDERR_UNTRUSTED);
-        }
-
-        try {
             signAndVerify(new CBORX509Signer(p256.getPrivate(), p256CertPath).setKeyId(keyId),
-                new CBORX509Validator(new X509VerifierInterface() {
-
+                new CBORX509Validator(new CBORX509Validator.SignatureParameters() {
+    
                     @Override
-                    public boolean verifyCertificatePath(X509Certificate[] certificatePath)
+                    public void check(X509Certificate[] certificatePath,
+                                      AsymSignatureAlgorithms signatureAlgorithm)
                             throws IOException, GeneralSecurityException {
-                         return true;
                     }
-
+    
                 }));
             fail("Must not execute");
         } catch (Exception e) {
@@ -916,12 +900,12 @@ public class CBORTest {
         
         try {
             signAndVerify(new CBORX509Signer(p256_2.getPrivate(), p256CertPath),
-                new CBORX509Validator(new X509VerifierInterface() {
+                new CBORX509Validator(new CBORX509Validator.SignatureParameters() {
 
                     @Override
-                    public boolean verifyCertificatePath(X509Certificate[] certificatePath)
+                    public void check(X509Certificate[] certificatePath,
+                                      AsymSignatureAlgorithms signatureAlgorithm)
                             throws IOException, GeneralSecurityException {
-                         return true;
                     }
 
                 }));
