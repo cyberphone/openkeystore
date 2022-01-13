@@ -250,12 +250,18 @@ public class CborEncryption {
         decrypter = new CBORAsymKeyDecrypter(new CBORAsymKeyDecrypter.KeyLocator() {
 
             @Override
-            public PrivateKey locate(PublicKey arg0, byte[] optionalKeyId, KeyEncryptionAlgorithms arg2)
+            public PrivateKey locate(PublicKey optionalPublicKey,
+                                     byte[] optionalKeyId, 
+                                     ContentEncryptionAlgorithms cea,
+                                     KeyEncryptionAlgorithms kea)
                     throws IOException, GeneralSecurityException {
                 if (wantKeyId && !CBORTest.compareKeyId(keyId, optionalKeyId)) {
                     throw new GeneralSecurityException("missing key");
                 }
-                if (keyEncryptionAlgorithm != arg2) {
+                if (keyEncryptionAlgorithm != kea) {
+                    throw new GeneralSecurityException("alg mismatch");
+                }
+                if (contentEncryptionAlgorithm != cea) {
                     throw new GeneralSecurityException("alg mismatch");
                 }
                 return keyPair.getPrivate();

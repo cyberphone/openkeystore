@@ -88,13 +88,10 @@ public class CBORSymKeyDecrypter extends CBORDecrypter {
     }
     
     @Override
-    byte[] getContentEncryptionKey(KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+    byte[] getContentEncryptionKey(CBORMap innerObject,
                                    ContentEncryptionAlgorithms contentEncryptionAlgorithm,
-                                   PublicKey optionalPublicKey,
-                                   PublicKey ephemeralKey,
-                                   byte[] optionalKeyId, 
-                                   byte[] encryptedKey) throws IOException,
-                                                               GeneralSecurityException {
+                                   byte[] optionalKeyId) throws IOException,
+                                                                GeneralSecurityException {
         return keyLocator.locate(optionalKeyId, contentEncryptionAlgorithm);
     }
 }

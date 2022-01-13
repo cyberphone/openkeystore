@@ -26,7 +26,7 @@ import org.webpki.crypto.encryption.EncryptionCore;
 /**
  * Base class for creating CBOR encryption objects.
  * 
- * It uses COSE algorithms but not COSE packaging.
+ * It uses COSE algorithms but relies on CEF for the packaging.
  */
 public abstract class CBOREncrypter {
 

@@ -244,13 +244,9 @@ public class CBORMap extends CBORObject {
         // Fetch signature object
         CBORMap signatureObject = getObject(key).getMap();
 
-        // Get the signature value.
-        byte[] signatureValue = signatureObject
-                .getObject(CBORSigner.SIGNATURE_LABEL).getByteString();
-
-        // Remove the signature value label and its argument.
-        // The remaining object is used for signature calculation.
-        signatureObject.keys.remove(CBORSigner.SIGNATURE_LABEL);
+        // Get the signature value and remove it from the (map) object.
+        byte[] signatureValue = CBORValidator.readAndRemove(signatureObject, 
+                                                            CBORSigner.SIGNATURE_LABEL);
 
         // Fetch optional keyId.
         byte[] optionalKeyId = signatureObject.hasKey(CBORSigner.KEY_ID_LABEL)

@@ -1099,6 +1099,7 @@ public class CBORTest {
                         public PrivateKey locate(
                                 PublicKey optionalPublicKey,
                                 byte[] optionalKeyId,
+                                ContentEncryptionAlgorithms contentEncryptionAlgorithm,
                                 KeyEncryptionAlgorithms keyEncryptionAlgorithm)
                                 throws IOException, GeneralSecurityException {
                             return compareKeyId(keyId, optionalKeyId) ? p256.getPrivate() : null;
@@ -1158,7 +1159,7 @@ public class CBORTest {
                                 new CBORInteger(600))).encode());
             fail("must not run");
         } catch (Exception e) {
-            checkException(e, "Unexpected algorithm: 600");
+            checkException(e, "Map key 1 of type=CBORInteger with value=600 was never read");
         }
     }
     

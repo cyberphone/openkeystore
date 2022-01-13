@@ -47,11 +47,11 @@ public class CBORX509Validator extends CBORValidator {
          * Check signature data.
          * 
          * A relying party is supposed to verify that the
-         * certificate(path) and signature algorithm are valid.
+         * certificate(path) is trusted and that the
+         * signature algorithm meets their policy requirements.
          * 
          * @param certificatePath Path to be verified
          * @param signatureAlgorithm The specified signature algorithm
-         * @return Public validation key or <code>null</code> if signature was already validated
          * @throws IOException
          * @throws GeneralSecurityException
          */
@@ -64,7 +64,7 @@ public class CBORX509Validator extends CBORValidator {
     /**
      * Initialize validator with a parameter checker.
      * 
-     * @param verifier The verifier interface
+     * @param checker The checker interface
      */
     public CBORX509Validator(SignatureParameters checker) {
         this.checker = checker;

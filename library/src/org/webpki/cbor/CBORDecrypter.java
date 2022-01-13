@@ -19,33 +19,26 @@ package org.webpki.cbor;
 import java.io.IOException;
 
 import java.security.GeneralSecurityException;
-import java.security.PublicKey;
 
 import org.webpki.crypto.encryption.ContentEncryptionAlgorithms;
 import org.webpki.crypto.encryption.EncryptionCore;
-import org.webpki.crypto.encryption.KeyEncryptionAlgorithms;
 
 /**
  * Base class for creating CBOR decryption objects.
  * 
- * It uses COSE algorithms but not the packaging.
+ * It uses COSE algorithms but relies on CEF for the packaging.
  */
 public abstract class CBORDecrypter {
 
     CBORDecrypter() {}
     
-    abstract byte[] getContentEncryptionKey(KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+    abstract byte[] getContentEncryptionKey(CBORMap innerObject,
                                             ContentEncryptionAlgorithms contentEncryptionAlgorithm,
-                                            PublicKey optionalPublicKey,
-                                            PublicKey ephemeralKey,
-                                            byte[] optionalKeyId, 
-                                            byte[] encryptedKey) throws IOException,
-                                                                        GeneralSecurityException;
+                                            byte[] optionalKeyId) throws IOException,
+                                                                         GeneralSecurityException;
     
-    byte[] readAndRemove(CBORMap encryptionObject, CBORInteger key) throws IOException {
-        byte[] data = encryptionObject.getObject(key).getByteString();
-        encryptionObject.removeObject(key);
-        return data;
+    CBORMap getOptionalKeyEncryptionObject(CBORMap encryptionObject) throws IOException {
+        return encryptionObject;
     }
     
     /**
@@ -69,55 +62,23 @@ public abstract class CBORDecrypter {
                         encryptionObject.getObject(CBOREncrypter.ALGORITHM_LABEL).getInt());
 
         // Possible key encryption begins to kick in here.
-        KeyEncryptionAlgorithms keyEncryptionAlgorithm = null;
-        CBORMap innerObject = encryptionObject;
-        PublicKey ephemeralKey = null;
-        PublicKey optionalPublicKey = null;
-        byte[] encryptedKey = null;
-        if (encryptionObject.hasKey(CBOREncrypter.KEY_ENCRYPTION_LABEL)) {
-            innerObject = encryptionObject.getObject(
-                    CBOREncrypter.KEY_ENCRYPTION_LABEL).getMap(); 
- 
-            // Mandatory algorithm
-            keyEncryptionAlgorithm = KeyEncryptionAlgorithms.getAlgorithmFromId(
-                            innerObject.getObject(CBOREncrypter.ALGORITHM_LABEL).getInt());
- 
-            // Fetch public key if there is one
-            if (innerObject.hasKey(CBOREncrypter.PUBLIC_KEY_LABEL)) {
-                optionalPublicKey = CBORPublicKey.decode(
-                        innerObject.getObject(CBOREncrypter.PUBLIC_KEY_LABEL));
-            }
-            
-            // Fetch ephemeral key if applicable
-            if (!keyEncryptionAlgorithm.isRsa()) {
-                ephemeralKey = CBORPublicKey.decode(
-                        innerObject.getObject(CBOREncrypter.EPHEMERAL_KEY_LABEL));
-            }
-            
-            // Fetch encrypted key if applicable
-            if (keyEncryptionAlgorithm.isKeyWrap()) {
-                encryptedKey =
-                        innerObject.getObject(CBOREncrypter.CIPHER_TEXT_LABEL).getByteString();
-            }
-        }
+        CBORMap innerObject = getOptionalKeyEncryptionObject(encryptionObject);
              
         // Get the key Id if there is one.
         byte[] optionalKeyId = innerObject.hasKey(CBOREncrypter.KEY_ID_LABEL) ?
             innerObject.getObject(CBOREncrypter.KEY_ID_LABEL).getByteString() : null;
         
-        // A bit over the top for symmetric encryption but who cares... 
-        byte[] contentDecryptionKey = getContentEncryptionKey(keyEncryptionAlgorithm,
+        // Get the content encryption key which also may be encrypted 
+        byte[] contentDecryptionKey = getContentEncryptionKey(innerObject,
                                                               contentEncryptionAlgorithm,
-                                                              optionalPublicKey,
-                                                              ephemeralKey,
-                                                              optionalKeyId,
-                                                              encryptedKey);
+                                                              optionalKeyId);
         
-        // Read and remove the encryption object parameters that
+        // Read and remove the encryption object (map) parameters that
         // do not participate (because they cannot) in "authData".
-        byte[] iv = readAndRemove(encryptionObject, CBOREncrypter.IV_LABEL);
-        byte[] tag = readAndRemove(encryptionObject, CBOREncrypter.TAG_LABEL);
-        byte[] cipherText = readAndRemove(encryptionObject, CBOREncrypter.CIPHER_TEXT_LABEL);
+        byte[] iv = CBORValidator.readAndRemove(encryptionObject, CBOREncrypter.IV_LABEL);
+        byte[] tag = CBORValidator.readAndRemove(encryptionObject, CBOREncrypter.TAG_LABEL);
+        byte[] cipherText = CBORValidator.readAndRemove(encryptionObject, 
+                                                        CBOREncrypter.CIPHER_TEXT_LABEL);
         
         // Check that there is no unread (illegal) data like public 
         // keys in symmetric encryption or just plain unknown elements.

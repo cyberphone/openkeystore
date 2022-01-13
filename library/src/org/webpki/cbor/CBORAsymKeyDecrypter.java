@@ -44,16 +44,20 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
 
         /**
          * Lookup private decryption key.
+
+         * This interface also enables parameter validation.
          * 
          * @param optionalPublicKey Optional public key found in the encryption object
          * @param optionalKeyId KeyId or <code>null</code>
+         * @param contentEncryptionAlgorithm The requested content encryption algorithm
          * @param keyEncryptionAlgorithm The requested key encryption algorithm
          * @return Private key for decryption
          * @throws IOException
          * @throws GeneralSecurityException
          */
         PrivateKey locate(PublicKey optionalPublicKey, 
-                          byte[] optionalKeyId, 
+                          byte[] optionalKeyId,
+                          ContentEncryptionAlgorithms contentEncryptionAlgorithm,
                           KeyEncryptionAlgorithms keyEncryptionAlgorithm)
             throws IOException, GeneralSecurityException;
     }
@@ -71,6 +75,7 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
             @Override
             public PrivateKey locate(PublicKey optionalPublicKey,
                                      byte[] optionalKeyId,
+                                     ContentEncryptionAlgorithms contentEncryptionAlgorithm,
                                      KeyEncryptionAlgorithms keyEncryptionAlgorithm)
                     throws IOException, GeneralSecurityException {
                 return privateKey;
@@ -92,27 +97,52 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
     }
     
     @Override
-    byte[] getContentEncryptionKey(KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+    CBORMap getOptionalKeyEncryptionObject(CBORMap encryptionObject) throws IOException {
+        return encryptionObject.getObject(CBOREncrypter.KEY_ENCRYPTION_LABEL).getMap(); 
+     }
+ 
+    @Override
+    byte[] getContentEncryptionKey(CBORMap innerObject,
                                    ContentEncryptionAlgorithms contentEncryptionAlgorithm,
-                                   PublicKey optionalPublicKey,
-                                   PublicKey ephemeralKey,
-                                   byte[] optionalKeyId, 
-                                   byte[] encryptedKey) throws IOException,
-                                                               GeneralSecurityException {
-        if (optionalPublicKey != null) {
+                                   byte[] optionalKeyId) throws IOException,
+                                                                GeneralSecurityException {
+        // Mandatory algorithm
+        KeyEncryptionAlgorithms keyEncryptionAlgorithm =
+                KeyEncryptionAlgorithms.getAlgorithmFromId(
+                        innerObject.getObject(CBOREncrypter.ALGORITHM_LABEL).getInt());
+ 
+        // Fetch public key if there is one
+        PublicKey optionalPublicKey = null;
+        if (innerObject.hasKey(CBOREncrypter.PUBLIC_KEY_LABEL)) {
+            optionalPublicKey = CBORPublicKey.decode(
+                    innerObject.getObject(CBOREncrypter.PUBLIC_KEY_LABEL));
             // Please select ONE method for identifying the decryption key.
             CBORSigner.checkKeyId(optionalKeyId);
         }
 
+        // Now we have what it takes for finding the proper private key
         PrivateKey privateKey = keyLocator.locate(optionalPublicKey,
                                                   optionalKeyId,
+                                                  contentEncryptionAlgorithm,
                                                   keyEncryptionAlgorithm);
 
+        // Fetch ephemeral key if applicable
+        PublicKey ephemeralKey = null;
+        if (!keyEncryptionAlgorithm.isRsa()) {
+            ephemeralKey = CBORPublicKey.decode(
+                    innerObject.getObject(CBOREncrypter.EPHEMERAL_KEY_LABEL));
+        }
+        
+        // Fetch encrypted key if applicable
+        byte[] encryptedKey = null;
+        if (keyEncryptionAlgorithm.isKeyWrap()) {
+            encryptedKey = innerObject.getObject(CBOREncrypter.CIPHER_TEXT_LABEL).getByteString();
+        }
         return keyEncryptionAlgorithm.isRsa() ?
             EncryptionCore.rsaDecryptKey(keyEncryptionAlgorithm, 
                                          encryptedKey,
                                          privateKey)
-                                               :
+                                              :
             EncryptionCore.receiverKeyAgreement(true,
                                                 keyEncryptionAlgorithm,
                                                 contentEncryptionAlgorithm,

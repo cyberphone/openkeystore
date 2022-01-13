@@ -33,5 +33,10 @@ public abstract class CBORValidator {
                            byte[] optionalKeyId,
                            byte[] signatureValue,
                            byte[] signedData) throws IOException, GeneralSecurityException;
-
+ 
+    static byte[] readAndRemove(CBORMap object, CBORInteger key) throws IOException {
+        byte[] data = object.getObject(key).getByteString();
+        object.removeObject(key);
+        return data;
+    }
 }
