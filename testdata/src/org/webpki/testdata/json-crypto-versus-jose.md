@@ -38,3 +38,9 @@ That is, JEF only allows _key wrapping algorithms_ for multi encryption.
 ### Dropped: Support for Partial Success
 How many signatures that must be valid in a multi-signature scheme is a _policy_.
 In this specific implementation _all_ signatures must be valid. 
+
+### Dropped: Polymorphic EdDSA Algorithms
+JOSE EdDSA support departs from that of ECDSA by introducing a
+polymorphic ("EdDSA") algorithm which doesn't have much (if any) support
+in standard cryptographic libraries.  JSF uses "Ed25518" and "Ed448" as
+signature algorithms.  This is also conformant with PKIX.
