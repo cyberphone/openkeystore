@@ -106,7 +106,10 @@ according to the following table:
 <tr><td style='text-align:center'><code>2</code></td><td><code>keyId</code></td>
 <td><code>byte&nbsp;string</code></td><td><i>Optional</i> key identifier. Note that <code>keyId</code> <b>must not</b> be used together with <code>publicKey</code> or <code>certificatePath</code>.
 
-<tr><td style='text-align:center'><code>3</code></td><td><code>publicKey</code></td><td><code>map</code></td><td><i>Optional</i> public key in COSE format.</td></tr>
+<tr><td style='text-align:center'><code>3</code></td><td><code>publicKey</code></td>
+<td><code>map</code></td>
+<td><i>Optional</i> public key in COSE format.  
+Note that ECDSA public keys <b>must</b> be supplied with a <i>value parameter</i> for the y-coordinate as well.</td></tr>
 </td></tr>
 
 <tr><td style='text-align:center'><code>4</code></td><td><code>certificatePath</code></td><td><code>array</code></td><td><i>Optional</i> certificate path supplied 
@@ -242,14 +245,16 @@ Properly designed CEF objects <b>must</b> adhere to the following rules:
 <b>must</b> be compliant with COSE, but <b>must not</b> contain
 any other information than the public key itself
 and associated parameters.</li>
+<li>ECDSA public keys <b>must</b> be supplied with a <i>value parameter</i> for the y-coordinate as well.</li>
+<li><code class='webpkicode'>publicKey</code> and <code class='webpkicode'>keyId</code>
+<b>must not</b> be combined.</li>
 <li>If a <code class='webpkicode'>keyId</code> is used it <b>must</b> be supplied in the main map for
-symmetric encryption schemes, whereas key encryption schemes <b>require</b>
-that a <code class='webpkicode'>keyId</code> is supplied in the sub map.</li>
+symmetric encryption schemes, and in the sub map for schemes using key encryption.</li>
 <li>The currently supported key encryption algorithms except for <code>ECDH-ES</code>
 <b>require</b> that the encrypted key is provided in the <code class='webpkicode'>chipherText</code>
 element in the sub map.</li>
-<li>All ECDH-ES variants <b>require</b> that the <code class='webpkicode'>ephemeralKey</code>
-element is included.</li>
+<li>All ECDH-ES variants <b>must</b> include an <code class='webpkicode'>ephemeralKey</code>
+element.</li>
 </ul>
 ECDH based key encryption schemes <b>must</b> use a Key Derivation Function (KDF)
 according to HKDF (RFC&nbsp;5869), profiled as follows:
