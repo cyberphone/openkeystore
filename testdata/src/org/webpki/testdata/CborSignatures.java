@@ -404,7 +404,7 @@ public class CborSignatures {
         StringBuilder text = new StringBuilder(CBORObject.decode(signature).toString());
         int i = text.indexOf("\n  8:");
         for (String comment : new String[]{"Signature object",
-                                           "Signature algorithm = COSE/ES256",
+                                           "Signature algorithm = ES256",
                                            "Public key descriptor in COSE format",
                                            "kty = EC",
                                            "crv = P-256",
@@ -420,6 +420,8 @@ public class CborSignatures {
                     i = text.indexOf("\n", i);
                     continue;
                 }
+                text.insert(i - spaces, "<div style='height:0.5em'></div>");
+                i += 32;
                 for (int q = 0; q < spaces; q++) {
                     text.insert(i - spaces, ' ');
                 }

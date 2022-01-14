@@ -48,6 +48,7 @@ import org.webpki.json.JSONParser;
 import org.webpki.json.SymmetricKeys;
 
 import org.webpki.util.ArrayUtil;
+import org.webpki.util.DebugFormatter;
 import org.webpki.util.PEMDecoder;
 
 /*
@@ -119,6 +120,8 @@ public class CborEncryption {
                 }
             }
         }
+        
+        demoDocEncryption("demo-doc-encryption");
     }
  
     static void asymKeyAllVariations(String key,
@@ -274,4 +277,50 @@ public class CborEncryption {
                                "@" + contentEncryptionAlgorithm.getJoseAlgorithmId().toLowerCase() + '@' +
                        keyIndicator(wantKeyId, wantPublicKey), encryptedData);
     }
+    
+    static void demoDocEncryption(String fileName) throws IOException {
+        fileName = baseEncryption + fileName;
+        byte[] encryption = ArrayUtil.readFile(baseEncryption + "x25519#ecdh-es+a256kw@a256gcm@kid.cbor"); 
+        ArrayUtil.writeFile(fileName + ".hex", 
+                            DebugFormatter.getHexString(encryption).getBytes("utf-8"));
+        StringBuilder text = new StringBuilder(CBORObject.decode(encryption).toString());
+        int i = text.indexOf("\n  1:");
+        for (String comment : new String[]{"Content encryption algorithm = A256GCM",
+                                           "Key encryption object",
+                                           "Key encryption algorithm = ECDH-ES+A256KW",
+                                           "Key Id = Binary(&quot;example.com:x25519&quot;)",
+                                           "Ephemeral public key descriptor in COSE format",
+                                           "kty = OKP",
+                                           "crv = X25519",
+                                           "x",
+                                           "CipherText (Encrypted key)",
+                                           "Tag",
+                                           "Initialization Vector (IV)",
+                                           "Ciphertext (Encrypted Content)"}) {
+            while (true) {
+                int spaces = 0;
+                while (text.charAt(++i) == ' ') {
+                    spaces++;
+                };
+                if (text.charAt(i) == '}') {
+                    i = text.indexOf("\n", i);
+                    continue;
+                }
+                text.insert(i - spaces, "<div style='height:0.5em'></div>");
+                i += 32;
+                for (int q = 0; q < spaces; q++) {
+                    text.insert(i - spaces, ' ');
+                }
+                String added = "<span style='color:grey'>// " + comment + "</span>\n";
+                text.insert(i, added);
+                i = text.indexOf("\n", i + added.length() + spaces);
+                break;
+            }
+        }
+        ArrayUtil.writeFile(fileName + ".txt", 
+                            text.toString()
+                                .replace("\n", "<br>\n")
+                                .replace("  ", "&nbsp;&nbsp;").getBytes("utf-8"));
+    }
+
 }

@@ -46,8 +46,33 @@ public class CBORTextString extends CBORObject {
         return ArrayUtil.add(getEncodedCore(MT_TEXT_STRING, utf8.length), utf8);
     }
 
+    // JavaScript/JSON compatible escape character support
+    static final char[] SPECIAL_CHARACTERS = {
+    //  00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
+        01 , 01 , 01 , 01 , 01 , 01 , 01,  01 , 'b', 't', 'n', 01 , 'f', 'r', 01 , 01 ,
+        01 , 01 , 01 , 01 , 01 , 01 , 01,  01 , 01 , 01 , 01 , 01 , 01 , 01 , 01 , 01 ,
+         0 ,  0 , '"',  0 ,  0 ,  0 ,  0,   0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,
+         0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0,   0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,
+         0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0,   0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,
+         0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0,   0 ,  0 ,  0 ,  0 ,  0 , '\\'};
+    
     @Override
     void internalToString(CBORObject.PrettyPrinter prettyPrinter) {
-        prettyPrinter.appendText("\"").appendText(textString).appendText("\"");
+        StringBuilder buffer = new StringBuilder("\"");
+        for (char c : textString.toCharArray()) {
+            if (c <= '\\') {
+                char convertedCharacter;
+                if ((convertedCharacter = SPECIAL_CHARACTERS[c]) != 0) {
+                    if (convertedCharacter == 1) {
+                        buffer.append(String.format("\\u%04x", (int)c));
+                    } else {
+                        buffer.append('\\').append(convertedCharacter);
+                    }
+                    continue;
+                }
+            }
+            buffer.append(c);
+        }
+        prettyPrinter.appendText(buffer.append('"').toString());
     }
 }

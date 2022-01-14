@@ -39,12 +39,13 @@ import org.junit.Test;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.HmacSignerInterface;
+import org.webpki.crypto.X509SignerInterface;
 import org.webpki.crypto.CustomCryptoProvider;
 
 import org.webpki.crypto.encryption.ContentEncryptionAlgorithms;
 import org.webpki.crypto.encryption.EncryptionCore;
 import org.webpki.crypto.encryption.KeyEncryptionAlgorithms;
-
+import org.webpki.crypto.signatures.SignatureWrapper;
 import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONParser;
 import org.webpki.json.SymmetricKeys;
@@ -881,7 +882,69 @@ public class CBORTest {
                 }
 
             }));
+
+        signAndVerify(new CBORX509Signer(new X509SignerInterface() {
+
+                @Override
+                public byte[] signData(byte[] data)  throws IOException, GeneralSecurityException {
+                    return new SignatureWrapper(AsymSignatureAlgorithms.ECDSA_SHA256, p256.getPrivate())
+                            .update(data)
+                            .sign();                    }
+                
+                @Override
+                public AsymSignatureAlgorithms getAlgorithm() {
+                    return AsymSignatureAlgorithms.ECDSA_SHA256;
+                }
+    
+                @Override
+                public X509Certificate[] getCertificatePath()
+                        throws IOException, GeneralSecurityException {
+                    return p256CertPath;
+                }
+                
+            }), new CBORX509Validator(new CBORX509Validator.SignatureParameters() {
+
+                @Override
+                public void check(X509Certificate[] certificatePath,
+                                  AsymSignatureAlgorithms signatureAlgorithm)
+                        throws IOException, GeneralSecurityException {
+                }
+
+            }));
         
+        try {
+            signAndVerify(new CBORX509Signer(new X509SignerInterface() {
+    
+                    @Override
+                    public byte[] signData(byte[] data)  throws IOException, GeneralSecurityException {
+                        return new SignatureWrapper(AsymSignatureAlgorithms.ECDSA_SHA256, p256.getPrivate())
+                                .update(data)
+                                .sign();                    }
+                    
+                    @Override
+                    public AsymSignatureAlgorithms getAlgorithm() {
+                        return AsymSignatureAlgorithms.ECDSA_SHA384;
+                    }
+        
+                    @Override
+                    public X509Certificate[] getCertificatePath()
+                            throws IOException, GeneralSecurityException {
+                        return p256CertPath;
+                    }
+                    
+                }), new CBORX509Validator(new CBORX509Validator.SignatureParameters() {
+    
+                    @Override
+                    public void check(X509Certificate[] certificatePath,
+                                      AsymSignatureAlgorithms signatureAlgorithm)
+                            throws IOException, GeneralSecurityException {
+                    }
+    
+                }));
+            fail("Must not execute");
+        } catch (Exception e) {
+        }
+
         try {
             signAndVerify(new CBORX509Signer(p256.getPrivate(), p256CertPath).setKeyId(keyId),
                 new CBORX509Validator(new CBORX509Validator.SignatureParameters() {
