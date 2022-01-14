@@ -20,9 +20,15 @@ import java.io.IOException;
 
 /**
  * Class for holding CBOR floating point numbers.
- * Numbers are constrained to the IEEE 754 notation.
+ * 
+ * Numbers are constrained to the IEEE 754 notation
+ * using the length 16, 32, and 64 bit on "wire".  Which
+ * length to use is governed by the size and precision 
+ * required to (minimally) correctly represent a number.
+ * API-wise numbers are only communicated as
+ * 64-bit items (Java double).
  */
-public class CBORDouble extends CBORObject {
+public class CBORFloatingPoint extends CBORObject {
 
     double value;
     
@@ -30,11 +36,11 @@ public class CBORDouble extends CBORObject {
     long bitFormat;
     
     /**
-     * Create a CBOR <code>double</code> object.
+     * Create a CBOR <code>floating point</code> object.
      * 
      * @param value
      */
-    public CBORDouble(double value) {
+    public CBORFloatingPoint(double value) {
         this.value = value;
         bitFormat = Double.doubleToLongBits(value);
         if (bitFormat == FLOAT64_POS_ZERO) {
@@ -119,7 +125,7 @@ public class CBORDouble extends CBORObject {
 
     @Override
     CBORTypes internalGetType() {
-        return CBORTypes.DOUBLE;
+        return CBORTypes.FLOATING_POINT;
     }
     
     @Override

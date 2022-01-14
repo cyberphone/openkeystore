@@ -226,18 +226,18 @@ public abstract class CBORObject {
     }
 
     /**
-     * Get <code>double</code> value.
+     * Get <code>floating point</code> value.
      * <p>
      * This method requires that the object is a
-     * {@link CBORDouble}, otherwise an exception will be thrown.
+     * {@link CBORFloatingPoint}, otherwise an exception will be thrown.
      * </p>
      * 
      * @return Double
      * @throws IOException
      */
-    public double getDouble() throws IOException {
-        checkTypeAndMarkAsRead(CBORTypes.DOUBLE);
-        return ((CBORDouble) this).value;
+    public double getFloatingPoint() throws IOException {
+        checkTypeAndMarkAsRead(CBORTypes.FLOATING_POINT);
+        return ((CBORFloatingPoint) this).value;
     }
  
     /**
@@ -447,9 +447,9 @@ public abstract class CBORObject {
             return value;
         }
 
-        private CBORDouble doubleWithCheck(byte tag, long bitFormat, long rawDouble)
+        private CBORFloatingPoint checkDoubleConversion(byte tag, long bitFormat, long rawDouble)
                 throws IOException {
-            CBORDouble value = new CBORDouble(Double.longBitsToDouble(rawDouble));
+            CBORFloatingPoint value = new CBORFloatingPoint(Double.longBitsToDouble(rawDouble));
             if (value.tag != tag || value.bitFormat != bitFormat) {
                 bad(String.format(
                         "Non-deterministic encoding of floating point value, tag:  %2x", tag & 0xff));
@@ -521,17 +521,18 @@ public abstract class CBORObject {
                         // Fraction.  Remove everything above
                         (frac16 & ((1l << FLOAT64_FRACTION_SIZE) - 1));
                     }
-                    return doubleWithCheck(tag, float16, rawDouble);
+                    return checkDoubleConversion(tag, float16, rawDouble);
 
                 case MT_FLOAT32:
                     long float32 = getLongFromBytes(4);
-                    return doubleWithCheck(tag, 
-                                           float32,
-                                           Double.doubleToLongBits(Float.intBitsToFloat((int)float32)));
+                    return checkDoubleConversion(tag, 
+                                                 float32,
+                                                 Double.doubleToLongBits(
+                                                         Float.intBitsToFloat((int)float32)));
  
                 case MT_FLOAT64:
                     long float64 = getLongFromBytes(8);
-                    return doubleWithCheck(tag, float64, float64);
+                    return checkDoubleConversion(tag, float64, float64);
 
                 case MT_NULL:
                     return new CBORNull();

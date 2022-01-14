@@ -622,11 +622,11 @@ public class CBORTest {
                 "Is type: INTEGER, requested: BYTE_STRING");
         }
         try {
-            cborObject.getDouble();  
+            cborObject.getFloatingPoint();  
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Is type: INTEGER, requested: DOUBLE");
+                "Is type: INTEGER, requested: FLOATING_POINT");
         }
     }
 

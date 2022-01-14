@@ -9,7 +9,7 @@ public class CBORFloat32Test {
     static void convert (int i) {
         try {
             double d = Float.intBitsToFloat(i);
-            CBORDouble cbor = new CBORDouble(d);
+            CBORFloatingPoint cbor = new CBORFloatingPoint(d);
             switch (cbor.tag) {
                 case CBORObject.MT_FLOAT16:
                     float16++;
@@ -20,7 +20,7 @@ public class CBORFloat32Test {
                 default:
                     throw new RuntimeException("BUG");
             }
-            Double v = CBORObject.decode(cbor.encode()).getDouble();
+            Double v = CBORObject.decode(cbor.encode()).getFloatingPoint();
             if (v.compareTo(d) != 0) {
                 throw new RuntimeException ("Fail");
             }
