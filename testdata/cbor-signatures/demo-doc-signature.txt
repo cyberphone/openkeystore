@@ -13,7 +13,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;1: 38.8882,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;2: 77.0199<br>
 &nbsp;&nbsp;},<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>// Signature object</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>// Enveloped signature object</span><br>
 &nbsp;&nbsp;8: {<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// Signature algorithm = ES256</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;1: -7,<br>

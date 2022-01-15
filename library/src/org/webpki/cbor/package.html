@@ -1,8 +1,8 @@
 <body>
 <h2>Basic CBOR support</h2>
 This package contains java support for CBOR (RFC 8949).
-It is mainly intended for low-level security constructs
-like COSE and FIDO/CTAP2.
+It is mainly intended for low-level security related
+applications.
 <h3>Currently Supported Primitives</h3>
 <table>
 <tr><th>CBOR Data Type</th><th>&nbsp;&nbsp;</th><th>Java Counterpart</th></tr>
@@ -60,7 +60,7 @@ enabling constructs like the following:
 &nbsp;&nbsp;&nbsp;&nbsp;1: 38.8882,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;2: 77.0199<br>
 &nbsp;&nbsp;},<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>// Signature object</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>// Enveloped signature object</span><br>
 &nbsp;&nbsp;8: {<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// Signature algorithm = ES256</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;1: -7,<br>
@@ -91,9 +91,11 @@ a801a3016a53706163652053686f7002663433352e30300363555344026d737061636573686f702e
 </p>
 <p>
 <i>Explanation: </i>
-Labels 1-7 represent application data while the <i>application-specific</i>
-label 8 holds an associated <i>enveloped</i> signature.  A CBOR signature must
-(for compatibility with CSF),
+Labels <code>1</code>-<code>7</code> represent application data
+(which <b>must</b> be supplied in a CBOR <code>map</code>),
+while the <i>application-specific</i> label <code>8</code>
+holds an associated <i>enveloped</i> signature.
+Signatures <b>must</b> for compatibility with CSF,
 be provided as a CBOR <code>map</code> having a fixed set of labels 
 according to the following table:
 </p>
@@ -104,7 +106,9 @@ according to the following table:
 <td><code>integer</code></td><td>Signature algorithm using COSE identifiers.</td></tr>
 
 <tr><td style='text-align:center'><code>2</code></td><td><code>keyId</code></td>
-<td><code>byte&nbsp;string</code></td><td><i>Optional</i> key identifier. Note that <code>keyId</code> <b>must not</b> be used together with <code>publicKey</code> or <code>certificatePath</code>.
+<td><code>byte&nbsp;string</code></td><td><i>Optional</i> key identifier. 
+Note that <code>keyId</code> <b>must not</b> be used together with 
+<code>publicKey</code> or <code>certificatePath</code>.
 
 <tr><td style='text-align:center'><code>3</code></td><td><code>publicKey</code></td>
 <td><code>map</code></td>
@@ -113,16 +117,33 @@ Note that ECDSA public keys <b>must</b> be supplied with a <i>value parameter</i
 </td></tr>
 
 <tr><td style='text-align:center'><code>4</code></td><td><code>certificatePath</code></td><td><code>array</code></td><td><i>Optional</i> certificate path supplied 
-as an array of <code>byte&nbsp;string</code> objects holding X.509 certificates in DER format, where the first object <b>must</b> be the signature certificate.</td></tr>
+as an array of <code>byte&nbsp;string</code> objects holding X.509 certificates in DER format, 
+where the first object <b>must</b> be the signature certificate.
+Signature objects <b>must not</b> contain both <code>certificatePath</code> and <code>publicKey</code> elements.
+</td></tr>
 
-<tr><td style='text-align:center'><code>5</code></td><td><code>signatureValue</code></td><td><code>byte&nbsp;string</code></td><td>Signature value.</td></tr>
+<tr><td style='text-align:center'><code>5</code></td><td><code>signature</code></td><td><code>byte&nbsp;string</code></td><td>Signature value.</td></tr>
 </table>
 <p>
 CSF signatures are validated by running the signature validation 
-algorithm over the complete CBOR binary representation, with the signature label (<code>5</code>) and
-its associated <code>signatureValue</code> as the sole exception. Note that the length
-of the <code>map</code> object holding the <code>signatureValue</code> <b>must</b>
+algorithm over the CBOR binary representation of
+the <code>map</code> holding the application data including the enveloped signature object,
+with the <code>signature</code> (label <code>5</code>) and
+its associated argument as the sole exception. Note that the length
+of the signature object <code>map</code> <b>must</b>
 be updated (to reflect the removal of an element) during validation.</p>
+<p>
+The sample was signed using the following private key (here in JWK format)
+</p>
+<pre>
+{
+  "kty": "EC",
+  "crv": "P-256",
+  "x": "6BKxpty8cI-exDzCkh-goU6dXq3MbcY0cd1LaAxiNrU",
+  "y": "mCbcvUzm44j3Lt2b5BPyQloQ91tf2D2V-gzeUxWaUdg",
+  "d": "6XxMFXhcYT5QN9w5TIg2aSKsbcj-pj4BnZkK7ZOt4B8"
+}
+</pre>
 <p id='csf-algorithms'>
 Currently supported signature algorithms:
 </p>
@@ -200,7 +221,6 @@ Decryption of this object using the private key (here in JWK format)
 </p>
 <pre>
 {
-  "kid": "example.com:x25519",
   "kty": "OKP",
   "crv": "X25519",
   "x": "o16U773QQYaQB4eegNCldg6huoIZLsOQIYkFWvbZ5lA",

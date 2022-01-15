@@ -403,7 +403,7 @@ public class CborSignatures {
                             DebugFormatter.getHexString(signature).getBytes("utf-8"));
         StringBuilder text = new StringBuilder(CBORObject.decode(signature).toString());
         int i = text.indexOf("\n  8:");
-        for (String comment : new String[]{"Signature object",
+        for (String comment : new String[]{"Enveloped signature object",
                                            "Signature algorithm = ES256",
                                            "Public key descriptor in COSE format",
                                            "kty = EC",
