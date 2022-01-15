@@ -986,7 +986,7 @@ public class CBORTest {
                                         AsymSignatureAlgorithms signatureAlgorithm)
                         throws IOException, GeneralSecurityException {
                     assertTrue("pk", p256.getPublic().equals(optionalPublicKey));
-                    return null;
+                    return optionalPublicKey;
                 }
             }));
 

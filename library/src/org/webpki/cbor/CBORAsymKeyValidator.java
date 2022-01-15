@@ -43,12 +43,12 @@ public class CBORAsymKeyValidator extends CBORValidator {
     public interface KeyLocator {
 
         /**
-         * Check signature data and optional retrieve validation key.
+         * Check signature data and retrieve validation key.
          * 
          * @param optionalPublicKey Optional public key found in the signature object
          * @param optionalKeyId KeyId or <code>null</code>
          * @param signatureAlgorithm The specified signature algorithm
-         * @return Public validation key or <code>null</code> if signature was already validated
+         * @return Public validation key
          * @throws IOException
          * @throws GeneralSecurityException
          */
@@ -58,7 +58,6 @@ public class CBORAsymKeyValidator extends CBORValidator {
             throws IOException, GeneralSecurityException;
     }
     
-    PublicKey publicKey;
     KeyLocator keyLocator;
 
     /**
@@ -67,7 +66,17 @@ public class CBORAsymKeyValidator extends CBORValidator {
      * @param publicKey The anticipated public key
      */
     public CBORAsymKeyValidator(PublicKey publicKey) {
-        this.publicKey = publicKey;
+        this(new KeyLocator() {
+
+            @Override
+            public PublicKey locate(PublicKey optionalPublicKey,
+                                    byte[] optionalKeyId,
+                                    AsymSignatureAlgorithms signatureAlgorithm)
+                    throws IOException, GeneralSecurityException {
+                return publicKey;
+            }
+            
+        });
     }
 
     /**
@@ -138,30 +147,21 @@ public class CBORAsymKeyValidator extends CBORValidator {
                     signatureObject.getObject(CBORSigner.PUBLIC_KEY_LABEL));
         }
 
-        // If there is a locator, call it unless we already have gotten a
-        // public key object.
-        if (keyLocator != null) {
-            publicKey = inLinePublicKey == null ?
-                 keyLocator.locate(inLinePublicKey, optionalKeyId, signatureAlgorithm) 
-                                                : 
+        // If we have no in-line public key we need to call the key locator.
+        PublicKey publicKey = inLinePublicKey == null ?
+                 keyLocator.locate(null, optionalKeyId, signatureAlgorithm) 
+                                                      : 
                  inLinePublicKey;
-        }
-        
-        // Check if a supplied public matches the one [optionally] found in the signature object.
-        if (inLinePublicKey != null) {
-            if (!publicKey.equals(inLinePublicKey)) {
-                throw new GeneralSecurityException("Public keys not identical");
-            }
-        }
         
         // Now we have everything needed for validating the signature.
         asymKeySignatureValidation(publicKey, signatureAlgorithm, signedData, signatureValue);
 
-        // There is a locator, call it only if we already have gotten a
-        // public key object (for verifying that the received key (that
-        // apparently matched the signature), also belongs to a known entity).
-        if (keyLocator != null && inLinePublicKey != null) {
-            keyLocator.locate(inLinePublicKey, optionalKeyId, signatureAlgorithm);
+        // If we have an in-line public key, check that it matches the expected one.
+        if (inLinePublicKey != null && 
+            !inLinePublicKey.equals(keyLocator.locate(inLinePublicKey, 
+                                                      optionalKeyId, 
+                                                      signatureAlgorithm))) {
+            throw new GeneralSecurityException("Public keys not identical");
         }
     }
 }
