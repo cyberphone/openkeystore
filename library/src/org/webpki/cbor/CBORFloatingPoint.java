@@ -62,36 +62,36 @@ public class CBORFloatingPoint extends CBORObject {
             tag = MT_FLOAT64; 
         } else { 
             // Assumption: we go for 32 bits until proven wrong...
-            int float32 = Float.floatToIntBits((float)value);
             tag = MT_FLOAT32;
-            bitFormat = float32 & 0xffffffffl;
+            bitFormat = Float.floatToIntBits((float)value) & 0xffffffffl;
 
             // Warning: slightly complex code ahead :)
-            int actualExponent = ((float32 >>> FLOAT32_FRACTION_SIZE) & 
-                ((1 << FLOAT32_EXPONENT_SIZE) - 1)) - FLOAT32_EXPONENT_BIAS;
-            if (actualExponent == -FLOAT32_EXPONENT_BIAS) {
-                // Subnormal float32 numbers does not translate to float16
-                return;
-            }
-            if (actualExponent > FLOAT16_EXPONENT_BIAS) {
-                // Too big for float16 and all bits set are reserved for NaN and Infinity
-                return;
-            }
-            int frac16 = (float32 >> (FLOAT32_FRACTION_SIZE - FLOAT16_FRACTION_SIZE)) & 
-                    ((1 << FLOAT16_FRACTION_SIZE) - 1);
-            if ((float32 & ((1 << FLOAT32_FRACTION_SIZE) - 1)) != 
-                    (frac16 << (FLOAT32_FRACTION_SIZE - FLOAT16_FRACTION_SIZE))) {
-                // Losing fraction bits is not an option
+            long exp16 = ((bitFormat >>> FLOAT32_FRACTION_SIZE) & 
+                ((1l << FLOAT32_EXPONENT_SIZE) - 1))
+                    - (FLOAT32_EXPONENT_BIAS - FLOAT16_EXPONENT_BIAS);
+            long frac16 = (bitFormat >> (FLOAT32_FRACTION_SIZE - FLOAT16_FRACTION_SIZE)) & 
+                    ((1l << FLOAT16_FRACTION_SIZE) - 1);
+
+            // Subnormal float32 numbers does not translate to float16
+            if (exp16 == (FLOAT16_EXPONENT_BIAS - FLOAT32_EXPONENT_BIAS)) {
                 return;
             }
 
-            // Add proper float16 exponent bias
-            int exp16 = actualExponent + FLOAT16_EXPONENT_BIAS;
+            // Too big for float16 or into the space reserved for NaN and Infinity
+            if (exp16 > (FLOAT16_EXPONENT_BIAS << 1)) {
+                return;
+            }
+
+            // Losing fraction bits is not an option
+            if ((bitFormat & ((1l << FLOAT32_FRACTION_SIZE) - 1)) != 
+                (frac16 << (FLOAT32_FRACTION_SIZE - FLOAT16_FRACTION_SIZE))) {
+                return;
+            }
 
             // Check if we need to denormalize data
             if (exp16 <= 0) {
                 // The implicit "1" becomes explicit using subnormal representation
-                frac16 += 1 << FLOAT16_FRACTION_SIZE;
+                frac16 += 1l << FLOAT16_FRACTION_SIZE;
                 exp16--;
                 // Always do at least one turn
                 do {
@@ -107,7 +107,7 @@ public class CBORFloatingPoint extends CBORObject {
             tag = MT_FLOAT16;
             bitFormat = 
                // Sign bit
-               ((float32 >>> 16) & 0x8000) +
+               ((bitFormat >>> 16) & 0x8000l) +
                // Exponent.  Put it in front of fraction.
                (exp16 << FLOAT16_FRACTION_SIZE) +
                // Fraction
