@@ -54,25 +54,27 @@ public class CBORFloatingPoint extends CBORObject {
             } else if (bitFormat == FLOAT64_NEG_INFINITY) {
                 bitFormat = FLOAT16_NEG_INFINITY;
             } else {
-                // Due to the deterministic encoding there is no support for "signaling"
+                // Due to the deterministic encoding there is no support for NaN "signaling"
                 bitFormat = FLOAT16_NOT_A_NUMBER;
             }
         } else if (Math.abs(value) > Float.MAX_VALUE || value != (double)((float) value)) {
             // Too big or would lose precision unless we stick to 64 bits.
             tag = MT_FLOAT64; 
         } else { 
-            // Assumption: we go for 32 bits until proven wrong :)
+            // Assumption: we go for 32 bits until proven wrong...
             int float32 = Float.floatToIntBits((float)value);
             tag = MT_FLOAT32;
             bitFormat = float32 & 0xffffffffl;
+
+            // Warning: slightly complex code ahead :)
             int actualExponent = ((float32 >>> FLOAT32_FRACTION_SIZE) & 
                 ((1 << FLOAT32_EXPONENT_SIZE) - 1)) - FLOAT32_EXPONENT_BIAS;
             if (actualExponent == -FLOAT32_EXPONENT_BIAS) {
-                // Unnormalized float32 will not translate to float16
+                // Subnormal float32 numbers does not translate to float16
                 return;
             }
             if (actualExponent > FLOAT16_EXPONENT_BIAS) {
-                // To big for float16 and all bits set are reserved for NaN and Infinity
+                // Too big for float16 and all bits set are reserved for NaN and Infinity
                 return;
             }
             int frac16 = (float32 >> (FLOAT32_FRACTION_SIZE - FLOAT16_FRACTION_SIZE)) & 
@@ -86,9 +88,9 @@ public class CBORFloatingPoint extends CBORObject {
             // Add proper float16 exponent bias
             int exp16 = actualExponent + FLOAT16_EXPONENT_BIAS;
 
-            // Check if we need to unnormalize data
+            // Check if we need to denormalize data
             if (exp16 <= 0) {
-                // The implicit "1" becomes explicit using unnormalized representation
+                // The implicit "1" becomes explicit using subnormal representation
                 frac16 += 1 << FLOAT16_FRACTION_SIZE;
                 exp16--;
                 // Always do at least one turn

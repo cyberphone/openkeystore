@@ -504,7 +504,7 @@ public abstract class CBORObject {
                         // Relocate the float16 fraction bits to their proper float64 position
                         long frac16 = (float16 << (FLOAT64_FRACTION_SIZE - FLOAT16_FRACTION_SIZE));
                         if (exp16 == 0) {
-                            // Unnormalized float16 - In float64 that must translate to normalized 
+                            // Subnormal float16 - In float64 that must translate to normalized 
                             exp16++;
                             do {
                                 exp16--;
