@@ -32,7 +32,10 @@ public class CBORFloatingPoint extends CBORObject {
 
     double value;
     
-    byte tag = MT_FLOAT16;
+    /**
+     * CBOR representation of value
+     */
+    byte tag;
     long bitFormat;
     
     /**
@@ -42,7 +45,11 @@ public class CBORFloatingPoint extends CBORObject {
      */
     public CBORFloatingPoint(double value) {
         this.value = value;
+        
+        // Initial assumption
+        tag = MT_FLOAT16;
         bitFormat = Double.doubleToLongBits(value);
+
         if (bitFormat == FLOAT64_POS_ZERO) {
             bitFormat = FLOAT16_POS_ZERO;
         } else if (bitFormat == FLOAT64_NEG_ZERO) {
@@ -61,7 +68,7 @@ public class CBORFloatingPoint extends CBORObject {
             // Too big or would lose precision unless we stick to 64 bits.
             tag = MT_FLOAT64; 
         } else { 
-            // Assumption: we go for 32 bits until proven wrong...
+            // Revised assumption: we go for 32 bits until proven wrong...
             tag = MT_FLOAT32;
             bitFormat = Float.floatToIntBits((float)value) & 0xffffffffl;
 
@@ -92,6 +99,7 @@ public class CBORFloatingPoint extends CBORObject {
                 do {
                     if ((frac16 & 1) != 0) {
                         // Too off scale for float16
+                        // This test also catches subnormal float32 numbers
                         return;
                     }
                     frac16 >>= 1;
