@@ -1,0 +1,130 @@
+body {
+  margin:10pt;
+  font-size:8pt;
+  font-family:Verdana,'Bitstream Vera Sans','DejaVu Sans',Arial,'Liberation Sans';
+}
+
+a {
+  color:#007fff;
+  text-decoration:none;
+  outline:none;
+}
+
+li {
+  padding-top:5pt
+}
+
+.staticbox, .textbox {
+  box-sizing:border-box;
+  width:100%;word-break:break-all;
+  border-width:1px;
+  border-style:solid;
+  border-color:grey;
+  padding:10pt;
+}
+
+.staticbox {
+  background:#f8f8f8;
+}
+
+.textbox {
+  background:#ffffea;
+}
+
+.header {
+  text-align:center;
+  font-weight:bolder;
+  font-size:12pt;
+  font-family:arial,verdana;
+}
+
+.sitefooter {
+  display:flex;
+  align-items:center;
+  border-width:1px 0 0 0;
+  border-style:solid;
+  position:absolute;
+  z-index:5;
+  left:0px;
+  bottom:0px;
+  right:0px;
+  padding:0.5em 0.7em;
+}
+
+.stdbtn, .multibtn {
+  cursor:pointer;
+  background:linear-gradient(to bottom, #eaeaea 14%,#fcfcfc 52%,#e5e5e5 89%);
+  border-width:1px;
+  border-style:solid;
+  border-color:#a9a9a9;
+  border-radius:5pt;
+  padding:3pt 10pt;
+}
+
+.sigparmbox {
+  border-radius:5pt;
+  padding:0 5pt 5pt 5pt;
+}
+
+.sigparmhead {
+  border-radius:3pt;
+  padding:3pt 5pt;
+  z-index:5;
+  position:relative;
+  top:-10pt;
+  margin-bottom:-3pt;
+}
+
+.defbtn {
+  border-radius:2pt;
+  display:inline-block;
+  cursor:pointer;
+  padding:1pt 3pt;
+  background-color:#f0f5fd;
+  border-color:#2a53ea;
+}
+
+.sigparmbox, .sigparmhead, .defbtn {
+  border-width:1px;
+  border-style:solid;
+}
+
+.sigparmhead, .sitefooter {
+  border-color:#c85000;
+  background-color:#fffcfc;
+}
+
+.sigparmbox {
+  border-color:#008040;
+  background-color:#fbfff7;
+}
+
+.stdbtn, .multibtn, .sigparmhead {
+  font-family:Arial,'Liberation Sans',Verdana,'Bitstream Vera Sans','DejaVu Sans';
+  font-size:10pt;
+}
+
+.stdbtn, .multibtn, .sigparmbox, .staticbox, .textbox {
+  box-shadow:3pt 3pt 3pt #d0d0d0;
+}
+
+.stdbtn {
+  display:inline-block;
+}
+
+.stdbtn {
+  margin-top:15pt;
+}
+
+.multibtn {
+  margin-top:12pt;
+  text-align:center;
+}
+
+@media (max-width:768px) {
+
+  .stdbtn, .multibtn, .sigparmbox, .staticbox, .textbox {
+    box-shadow:2pt 2pt 2pt #d0d0d0;
+  }
+
+}

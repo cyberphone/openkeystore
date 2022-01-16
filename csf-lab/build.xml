@@ -1,0 +1,112 @@
+<project name="CSF Lab" default="help">
+
+  <!-- set properties for this build -->
+  <property file="csf-lab.properties"/>
+  <property name="openkeystore.dir" location="${openkeystore}"/>
+  <property name="src.dir" value="src"/>
+  <property name="temp.dir" value=".tmp"/>
+  <property name="dist.dir" value="dist"/>
+  <property name="class_war_path" value="WEB-INF/classes/org/webpki/webapps/csf_lab"/>
+
+  <property name="logging" value="false"/>
+    
+  <property name="webroot" value="webapps"/>
+  
+  <property name="appcorename" value="csf-lab"/>
+  <property name="application" value="${appcorename}.war"/>
+  
+  <property name="keypassword" value="foo123"/>
+  <property name="webpki.lib.dir" value="${openkeystore.dir}/library/dist"/>
+  <condition property="zip.webpki.lib.dir" value="${webpki.lib.dir}" else="empty.lib">
+    <isset property="include.webpki.in.war"/>
+  </condition>
+  <property name="third.party.lib.dir" location="${openkeystore.dir}/resources/third-party-jars"/>
+  
+  <property name="javaversion" value="${ant.java.version}"/>
+  <condition property="tested.version" else="false">
+    <equals arg1="17" arg2="${javaversion}"/>
+  </condition>
+
+  <target name="_jdktest" unless="${tested.version}">
+    <echo message="&#10;
+***************************************************************&#10;
+    WARNING - This package has only been tested with Java 17!&#10;
+***************************************************************&#10;&#10;"/>
+  </target>
+    
+  <property name="debug" value="on"/>
+
+  <property environment="env"/>
+  <condition property="catalina.home" value="${env.CATALINA_HOME}">
+    <isset property="env.CATALINA_HOME"/>
+  </condition>
+
+  <target name="help">
+    <echo message="build tomcat"/>
+  </target>
+
+
+  <target name="tomcat">
+    <fail message="CATALINA_HOME must be set to environment!" unless="catalina.home"/>
+    <antcall target="build"/>
+    <copy file="${dist.dir}/${application}" todir="${catalina.home}/${webroot}" overwrite="true" preservelastmodified="true"/>
+  </target>
+
+  <target name="build">
+    <antcall target="_jdktest"/>
+    <mkdir dir="${dist.dir}"/>
+    <delete dir="${temp.dir}"/>
+    <mkdir dir="${temp.dir}"/>
+    <fixcrlf srcdir="."
+       tab="remove"
+       tablength="4"
+       eol="lf"
+       eof="remove"
+       includes="**/*.java, **/*.css, **/*.svg, **/*.xml"/>
+    <copy file="web.xml" todir="${temp.dir}"/>
+    <javac debug="${debug}"
+           srcdir="${src.dir}"
+           destdir="${temp.dir}"
+           includeAntRuntime="false">
+        <classpath>
+              <fileset dir="${webpki.lib.dir}">
+                <include name="*.jar"/>
+             </fileset>
+            <fileset dir="${third.party.lib.dir}">
+               <include name="*.jar"/>
+             </fileset>
+        </classpath>
+    </javac>
+    <replace file="${temp.dir}/web.xml">
+      <replacefilter token="@logging@" value="${logging}"/>
+    </replace>
+    <war destfile="${dist.dir}/${application}" webxml="${temp.dir}/web.xml">
+      <classes dir="${temp.dir}">
+         <exclude name="web.xml"/>
+      </classes>
+      <lib dir="${zip.webpki.lib.dir}">
+         <include name="webpki.org-libext*.jar"/>
+         <include name="webpki.org-webutil*.jar"/>
+      </lib>
+      <fileset dir="web"/>
+      <fileset dir="${openkeystore.dir}/resources/images">
+        <include name="csf.svg"/>
+        <include name="thelab.svg"/>
+      </fileset>
+      <zipfileset dir="${openkeystore.dir}/testdata/keys" prefix="${class_war_path}">
+        <include name="a*.hex"/>
+        <exclude name="*128*"/>
+        <include name="ed25519*.pem"/>
+        <include name="ed448*.pem"/>
+        <include name="p256*.pem"/>
+        <include name="p384*.pem"/>
+        <include name="p521*.pem"/>
+        <include name="r2048*.pem"/>
+        <exclude name="*-key.pem"/>
+        <exclude name="*-2*"/>
+      </zipfileset>
+      <zipfileset file="sample-data-to-sign.json" prefix="${class_war_path}"/>
+    </war>
+  </target>
+  
+</project>
