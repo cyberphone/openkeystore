@@ -402,6 +402,14 @@ public class CBORTest {
         // These numbers are supposed to be tie-breakers...
         floatTest("10.55999755859375",          "FA4128F5C0");
         floatTest("-1.401298464324817e-45",     "FA80000001");
+        floatTest("-9.183549615799121e-41",     "FA80010000");
+        floatTest("-1.8367099231598242e-40",    "FA80020000");
+        floatTest("-3.6734198463196485e-40",    "FA80040000");
+        floatTest("-7.346839692639297e-40",     "FA80080000");
+        floatTest("-1.4693679385278594e-39",    "FA80100000");
+        floatTest("-2.938735877055719e-39",     "FA80200000");
+        floatTest("-5.877471754111438e-39",     "FA80400000");
+        floatTest("-1.1754943508222875e-38",    "FA80800000");
         floatTest("-5.9604644775390625e-8",     "F98001");
 
         floatTest("-2.9387358770557184e-39",    "FBB7EFFFFFFFFFFFFF");
