@@ -473,7 +473,7 @@ public abstract class CBORObject {
                     BigInteger bigInteger = 
                         (tag == MT_BIG_SIGNED) ?
                             new BigInteger(-1, byteArray).subtract(BigInteger.ONE)
-                                                       :
+                                               :
                             new BigInteger(1, byteArray);
                     if (CBORBigInteger.fitsAnInteger(bigInteger)) {
                         bad("Non-deterministic encoding: bignum fits integer");
@@ -509,7 +509,7 @@ public abstract class CBORObject {
                             do {
                                 exp16--;
                                 frac16 <<= 1;
-                                // Continue until the implicit "1" is in place
+                                // Continue until the implicit "1" is in the proper position
                             } while ((frac16 & (1l << FLOAT64_FRACTION_SIZE)) == 0);
                         }
                         rawDouble = 

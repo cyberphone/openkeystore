@@ -311,7 +311,7 @@ public class CborEncryption {
                 for (int q = 0; q < spaces; q++) {
                     text.insert(i - spaces, ' ');
                 }
-                String added = "<span style='color:grey'>// " + comment + "</span>\n";
+                String added = "<span style='color:grey'>/ " + comment + " /</span>\n";
                 text.insert(i, added);
                 i = text.indexOf("\n", i + added.length() + spaces);
                 break;

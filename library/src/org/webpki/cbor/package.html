@@ -60,22 +60,22 @@ enabling constructs like the following:
 &nbsp;&nbsp;&nbsp;&nbsp;1: 38.8882,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;2: 77.0199<br>
 &nbsp;&nbsp;},<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>// Enveloped signature object</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Enveloped signature object /</span><br>
 &nbsp;&nbsp;8: {<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// Signature algorithm = ES256</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Signature algorithm = ES256 /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;1: -7,<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// Public key descriptor in COSE format</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Public key descriptor in COSE format /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;3: {<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// kty = EC</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ kty = EC /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: 2,<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// crv = P-256</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ crv = P-256 /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-1: 1,<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// x</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ x /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-2: h'e812b1a6dcbc708f9ec43cc2921fa0a14e9d5eadcc6dc63471dd4b680c6236b5',<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// y</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ y /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-3: h'9826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d8'<br>
 &nbsp;&nbsp;&nbsp;&nbsp;},<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// Signature value</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Signature value /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;5: h'771b9cc536ccb3a68d59adffb7bb4dacf7cf0fd5a1a3f52837ba37e508010c2fe438236fdc713ece9df2f0f5ef2181c3f8963beb1c6f119de6fdd5e5c72548c1'<br>
 &nbsp;&nbsp;}<br>
 }
@@ -184,31 +184,31 @@ The following is a CEF object (here expressed in CBOR diagnostic notation), usin
 </p>
 <div style='word-break:break-all'><code>
 {<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>// Content encryption algorithm = A256GCM</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Content encryption algorithm = A256GCM /</span><br>
 &nbsp;&nbsp;1: 3,<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>// Key encryption object</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Key encryption object /</span><br>
 &nbsp;&nbsp;2: {<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// Key encryption algorithm = ECDH-ES+A256KW</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Key encryption algorithm = ECDH-ES+A256KW /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;1: -31,<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// Key Id = Binary(&quot;example.com:x25519&quot;)</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Key Id = Binary(&quot;example.com:x25519&quot;) /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;3: h'6578616d706c652e636f6d3a783235353139',<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// Ephemeral public key descriptor in COSE format</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Ephemeral public key descriptor in COSE format /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;5: {<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// kty = OKP</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ kty = OKP /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: 1,<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// crv = X25519</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ crv = X25519 /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-1: 4,<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// x</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ x /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-2: h'8408a35087d42a4c7d7e1abb9d2683e10c7df5e3156fd3ea7f26a97a58dba55b'<br>
 &nbsp;&nbsp;&nbsp;&nbsp;},<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// CipherText (Encrypted key)</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ CipherText (Encrypted key) /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;9: h'2635a284865da9463ae8359966eb64ab7d0d614eb02cda34a2ffe31a7ec4882d1f573b72a4cb17a8'<br>
 &nbsp;&nbsp;},<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>// Tag</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Tag /</span><br>
 &nbsp;&nbsp;7: h'bd0542bb8bdab81db87676e9f45f8a60',<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>// Initialization Vector (IV)</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Initialization Vector (IV) /</span><br>
 &nbsp;&nbsp;8: h'35cabaf21e6dfd788f0d5e40',<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>// Ciphertext (Encrypted Content)</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Ciphertext (Encrypted Content) /</span><br>
 &nbsp;&nbsp;9: h'577be37fb9c69c970f619190939f2e1910a0d1d004fc'<br>
 }
 </code></div>
@@ -243,11 +243,12 @@ as well to reflect the changed number of elements.
 Additional Authentication Data (<code>AAD</code>).</li>
 <li>Recover the content encryption key using the elements in the
 key encryption object (featured in label 2).</li>
-<li>Apply the content encryption algorithm (featured in label 1) to the recovered content encryption key,
-using the input parameters read in the first step together with <code>AAD</code>.
-The result is the decrypted data.</li>
+<li>Apply the content encryption algorithm (featured in label 1)
+to the recovered content encryption key,
+the input parameters read in the first step, and <code>AAD</code>.
+The result is the decrypted content.</li>
 </ul>
-Symmetric key encryption CEF objects are decrypted as above, but
+Symmetric key encryption CEF objects are processed as above, but
 since they do not have a key encryption component, content encryption 
 keys must be known by recipients.
 <p id='cef-layout'>

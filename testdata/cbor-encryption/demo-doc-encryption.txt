@@ -1,28 +1,28 @@
 {<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>// Content encryption algorithm = A256GCM</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Content encryption algorithm = A256GCM /</span><br>
 &nbsp;&nbsp;1: 3,<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>// Key encryption object</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Key encryption object /</span><br>
 &nbsp;&nbsp;2: {<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// Key encryption algorithm = ECDH-ES+A256KW</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Key encryption algorithm = ECDH-ES+A256KW /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;1: -31,<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// Key Id = Binary(&quot;example.com:x25519&quot;)</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Key Id = Binary(&quot;example.com:x25519&quot;) /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;3: h'6578616d706c652e636f6d3a783235353139',<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// Ephemeral public key descriptor in COSE format</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Ephemeral public key descriptor in COSE format /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;5: {<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// kty = OKP</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ kty = OKP /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: 1,<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// crv = X25519</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ crv = X25519 /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-1: 4,<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// x</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ x /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-2: h'8408a35087d42a4c7d7e1abb9d2683e10c7df5e3156fd3ea7f26a97a58dba55b'<br>
 &nbsp;&nbsp;&nbsp;&nbsp;},<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>// CipherText (Encrypted key)</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ CipherText (Encrypted key) /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;9: h'2635a284865da9463ae8359966eb64ab7d0d614eb02cda34a2ffe31a7ec4882d1f573b72a4cb17a8'<br>
 &nbsp;&nbsp;},<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>// Tag</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Tag /</span><br>
 &nbsp;&nbsp;7: h'bd0542bb8bdab81db87676e9f45f8a60',<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>// Initialization Vector (IV)</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Initialization Vector (IV) /</span><br>
 &nbsp;&nbsp;8: h'35cabaf21e6dfd788f0d5e40',<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>// Ciphertext (Encrypted Content)</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Ciphertext (Encrypted Content) /</span><br>
 &nbsp;&nbsp;9: h'577be37fb9c69c970f619190939f2e1910a0d1d004fc'<br>
 }
