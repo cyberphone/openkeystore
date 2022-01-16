@@ -72,11 +72,6 @@ public class CBORFloatingPoint extends CBORObject {
             long frac16 = (bitFormat >> (FLOAT32_FRACTION_SIZE - FLOAT16_FRACTION_SIZE)) & 
                     ((1l << FLOAT16_FRACTION_SIZE) - 1);
 
-            // Subnormal float32 numbers does not translate to float16
-            if (exp16 == (FLOAT16_EXPONENT_BIAS - FLOAT32_EXPONENT_BIAS)) {
-                return;
-            }
-
             // Too big for float16 or into the space reserved for NaN and Infinity
             if (exp16 > (FLOAT16_EXPONENT_BIAS << 1)) {
                 return;
