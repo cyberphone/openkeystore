@@ -30,6 +30,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.webpki.cbor.CBORObject;
+
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.HmacAlgorithms;
@@ -69,11 +71,10 @@ public class CreateServlet extends HttpServlet {
     static final String PRM_SIG_LABEL    = "siglbl";
 
     static final String FLG_CERT_PATH    = "cerflg";
-    static final String FLG_JAVASCRIPT   = "jsflg";
-    static final String FLG_JWK_INLINE   = "jwkflg";
+    static final String FLG_PUB_INLINE   = "pubflg";
     
     static final String DEFAULT_ALG      = "ES256";
-    static final String DEFAULT_SIG_LBL  = "signature";
+    static final String DEFAULT_SIG_LBL  = "8";
     
     class SelectAlg {
 
@@ -131,13 +132,24 @@ public class CreateServlet extends HttpServlet {
             .append(CSFService.keyDeclarations);
         StringBuilder html = new StringBuilder(
                 "<form name='shoot' method='POST' action='create'>" +
-                "<div class='header'>JSON Signature Creation</div>" +
+                "<div class='header'>CBOR Signature Creation</div>" +
                 HTML.fancyText(
                         true,
                         PRM_JSON_DATA,
                         10,
                         "",
-                        "Paste an unsigned JSON object in the text box or try with the default") +
+                        "<table style='margin-bottom:0.3em;border-spacing:0'>" +
+                        "<tr><td><input type='radio' name='mode' checked onchange='setMode(this.checked)'></td>" +
+                        "<td>Step-by-step technical demo</td>" +
+                        "<td><input type='radio' name='mode' onchange='setMode(this.checked)'></td> " +
+                        "<td>Binary</td></tr>" +
+                        "</table>" +
+                        "Paste an unsigned CBOR object in the text box or try with the default") +
+                 "<div style='margin-top:0.5em'>Note that this implementation only supports a " +
+                 "subset of CBOR primitives: " +
+                 "<i>text&nbsp;string</i>, <i>byte&nbsp;string</i>, " +
+                 "<i>integer</i>, <i>big&nbsp;number</i>, <i>floating&nbsp;point</i>, " +
+                 "<code>true</code>, <code>false</code>, and <code>null</code></div>" +
                  "<div style='display:flex;justify-content:center;margin-top:20pt'>" +
                  "<div class='sigparmbox'>" +
                  "<div style='display:flex;justify-content:center'>" +
@@ -161,26 +173,25 @@ public class CreateServlet extends HttpServlet {
                  .toString())
             .append(
                 "<div style='display:inline-block;padding:0 10pt 0 5pt'>Algorithm</div>" +
-                "<div class='defbtn' onclick=\"restoreDefaults()\">Restore&nbsp;defaults</div></div>")
-            .append(checkBox(FLG_JWK_INLINE, "Include public key (JWK)", false, "jwkFlagChange(this.checked)"))
+                "<div style='margin-left:auto' class='defbtn' onclick=\"restoreDefaults()\">Restore&nbsp;defaults</div></div>")
+            .append(checkBox(FLG_PUB_INLINE, "Include public key", false, "pubFlagChange(this.checked)"))
             .append(checkBox(FLG_CERT_PATH, "Include provided certificate path", false, "certFlagChange(this.checked)"))
-            .append(checkBox(FLG_JAVASCRIPT, "Serialize as JavaScript (but do not verify)", false, null))
             .append(
                 "<div style='display:flex;align-items:center'>" +
                 "<input type='text' name='" + PRM_SIG_LABEL + "' id='" + PRM_SIG_LABEL + "' " +
                 "style='padding:0 3pt;width:7em;font-family:monospace' " +
                 "maxlength='100' value='" + DEFAULT_SIG_LBL + "'>" +
-                "<div style='display:inline-block'>&nbsp;Signature label</div></div>" +
+                "<div style='display:inline-block'>&nbsp;Signature label (in CBOR diag.)</div></div>" +
                 "<div style='margin-top:0.3em;display:flex;align-items:center'>" +
                 "<input type='text' name='" + PRM_KEY_ID + "' id='" + PRM_KEY_ID + "' " +
                 "style='padding:0 3pt;width:7em;font-family:monospace' " +
                 "maxlength='100' value=''>" +
-                "<div style='display:inline-block'>&nbsp;Optional key Id</div></div>" +
+                "<div style='display:inline-block'>&nbsp;Optional key Id (in hexadecimal)</div></div>" +
                 "</div>" +
                 "</div>" +
                 "<div style='display:flex;justify-content:center'>" +
                 "<div class='stdbtn' onclick=\"document.forms.shoot.submit()\">" +
-                "Create JSON Signature" +
+                "Create CBOR Signature" +
                 "</div>" +
                 "</div>")
             .append(
@@ -228,14 +239,14 @@ public class CreateServlet extends HttpServlet {
             "    showCert(false);\n" +
             "    showPriv(false);\n" +
             "    disableAndClearCheckBox('" + FLG_CERT_PATH + "');\n" +
-            "    disableAndClearCheckBox('" + FLG_JWK_INLINE + "');\n" +
+            "    disableAndClearCheckBox('" + FLG_PUB_INLINE + "');\n" +
             "    fill('" + PRM_SECRET_KEY + "', alg, " + 
                  CSFService.KeyDeclaration.SECRET_KEYS + ", unconditionally);\n" +
             "    showSec(true)\n" +
             "  } else {\n" +
             "    showSec(false)\n" +
             "    enableCheckBox('" + FLG_CERT_PATH + "');\n" +
-            "    enableCheckBox('" + FLG_JWK_INLINE + "');\n" +
+            "    enableCheckBox('" + FLG_PUB_INLINE + "');\n" +
             "    fill('" + PRM_PRIVATE_KEY + "', alg, " + 
             CSFService.KeyDeclaration.PRIVATE_KEYS + ", unconditionally);\n" +
             "    showPriv(true);\n" +
@@ -244,7 +255,7 @@ public class CreateServlet extends HttpServlet {
             "    showCert(document.getElementById('" + FLG_CERT_PATH + "').checked);\n" +
             "  }\n" +
             "}\n" +
-            "function jwkFlagChange(flag) {\n" +
+            "function pubFlagChange(flag) {\n" +
             "  if (flag) {\n" +
             "    document.getElementById('" + FLG_CERT_PATH + "').checked = false;\n" +
             "    showCert(false);\n" +
@@ -253,7 +264,7 @@ public class CreateServlet extends HttpServlet {
             "function certFlagChange(flag) {\n" +
             "  showCert(flag);\n" +
             "  if (flag) {\n" +
-            "    document.getElementById('" + FLG_JWK_INLINE + "').checked = false;\n" +
+            "    document.getElementById('" + FLG_PUB_INLINE + "').checked = false;\n" +
             "  }\n" +
             "}\n" +
             "function restoreDefaults() {\n" +
@@ -266,8 +277,7 @@ public class CreateServlet extends HttpServlet {
             "  }\n" +
             "  setParameters('" + DEFAULT_ALG + "', true);\n" +
             "  document.getElementById('" + FLG_CERT_PATH + "').checked = false;\n" +
-            "  document.getElementById('" + FLG_JAVASCRIPT + "').checked = false;\n" +
-            "  document.getElementById('" + FLG_JWK_INLINE + "').checked = false;\n" +
+            "  document.getElementById('" + FLG_PUB_INLINE + "').checked = false;\n" +
             "  document.getElementById('" + PRM_SIG_LABEL + "').value = '" + DEFAULT_SIG_LBL + "';\n" +
             "  document.getElementById('" + PRM_KEY_ID + "').value = '';\n" +
             "  showCert(false);\n" +
@@ -327,16 +337,32 @@ public class CreateServlet extends HttpServlet {
             throws IOException, ServletException {
          try {
             request.setCharacterEncoding("utf-8");
-            JSONObjectReader reader = JSONParser.parse(getTextArea(request, PRM_JSON_DATA));
+            CBORObject cbor = CBORDiagnosticParser.parse(getTextArea(request, PRM_JSON_DATA));
+            System.out.println("\n" + cbor + "\n");
+            JSONObjectReader reader = JSONParser.parse("{}");
             String signatureLabel = getParameter(request, PRM_SIG_LABEL);
+            CBORObject signatureLabelCbor = null;
+            try {
+                signatureLabelCbor = CBORDiagnosticParser.parse(signatureLabel);
+            } catch (IOException e) {
+                throw new IOException("Signature labels must be in CBOR diagnostic " +
+                        "notation like \"sig\" or 8");
+            }
             if (reader.getJSONArrayReader() != null) {
                 throw new IOException("The demo does not support signed arrays");
             }
-            boolean jsFlag = request.getParameter(FLG_JAVASCRIPT) != null;
-            boolean keyInlining = request.getParameter(FLG_JWK_INLINE) != null;
+            boolean keyInlining = request.getParameter(FLG_PUB_INLINE) != null;
             boolean certOption = request.getParameter(FLG_CERT_PATH) != null;
             String algorithmString = getParameter(request, PRM_ALGORITHM);
             String optionalKeyId = getParameter(request, PRM_KEY_ID);
+            byte[] optionalKeyIdBytes = null;
+            if (optionalKeyId.length() != 0) {
+                try {
+                    optionalKeyIdBytes = DebugFormatter.getByteArrayFromHex(optionalKeyId.trim());
+                } catch (IOException e) {
+                    throw new IOException("keyId must be a hex string");
+                }
+            }
 
             // Get the signature key
             JSONSigner signer;
@@ -393,7 +419,7 @@ public class CreateServlet extends HttpServlet {
                     .serializeToString(JSONOutputFormats.NORMALIZED);
 
             // We terminate by validating the signature as well
-            request.getRequestDispatcher((jsFlag ? "jssignature?" : "validate?") +
+            request.getRequestDispatcher("validate?" +
                 ValidateServlet.JSF_OBJECT + 
                 "=" +
                 URLEncoder.encode(signedJsonObject, "utf-8") +

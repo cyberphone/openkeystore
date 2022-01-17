@@ -122,7 +122,7 @@ public class CBORMap extends CBORObject {
         }
         if (parsingMode) {
             if (comparator.compare(lastKey, key) > 0) {
-                bad("Improperly canonicalized key: " + key);
+                bad("Non-deterministic sort order for map key: " + key);
             }
         }
         lastKey = key;

@@ -755,7 +755,7 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Improperly canonicalized key: 2");
+                "Non-deterministic sort order for map key: 2");
         }
         
         for (String value : new String[]{"1B8000000000000000", 
