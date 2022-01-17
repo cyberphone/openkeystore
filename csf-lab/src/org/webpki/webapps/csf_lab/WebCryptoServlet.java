@@ -39,13 +39,13 @@ public class WebCryptoServlet extends HttpServlet {
         StringBuilder html = new StringBuilder(
                 "<form name=\"shoot\" method=\"POST\" action=\"validate\">" +
                 "<input type=\"hidden\" " + 
-                "id=\"" + ValidateServlet.JSF_OBJECT + "\" " +
-                "name=\"" + ValidateServlet.JSF_OBJECT + "\">" +
+                "id=\"" + ValidateServlet.CSF_OBJECT + "\" " +
+                "name=\"" + ValidateServlet.CSF_OBJECT + "\">" +
                 "<input type=\"hidden\" " +
-                "id=\"" + ValidateServlet.JSF_VALIDATION_KEY + "\" " +
-                "name=\"" + ValidateServlet.JSF_VALIDATION_KEY + "\">" +
+                "id=\"" + ValidateServlet.CSF_VALIDATION_KEY + "\" " +
+                "name=\"" + ValidateServlet.CSF_VALIDATION_KEY + "\">" +
                 "<input type=\"hidden\" " +
-                "name=\"" + ValidateServlet.JSF_SIGN_LABL + "\" " +
+                "name=\"" + ValidateServlet.CSF_SIGN_LABL + "\" " +
                 "value=\"" + CreateServlet.DEFAULT_SIG_LBL + "\">" +
                 "</form>" +
                 "<div class=\"header\">WebCrypto / JWS-JCS Demo</div>" +
@@ -264,12 +264,12 @@ public class WebCryptoServlet extends HttpServlet {
                 "                     convertToUTF8(canonicalize(jsonObject))).then(function(signature) {\n" + 
                 "    console.log('Sign with RSASSA-PKCS1-v1_5 - SHA-256: PASS');\n" + 
                 "    document.getElementById('" + 
-                   ValidateServlet.JSF_VALIDATION_KEY + 
+                   ValidateServlet.CSF_VALIDATION_KEY + 
                 "').value = JSON.stringify(publicKeyObject);\n" +
                 "    jsfSignature." + 
                 JSONCryptoHelper.VALUE_JSON + 
                 " = convertToBase64URL(new Uint8Array(signature));\n" + 
-                "    document.getElementById('" + ValidateServlet.JSF_OBJECT +
+                "    document.getElementById('" + ValidateServlet.CSF_OBJECT +
                 "').value = JSON.stringify(jsonObject);\n" +
                 "    document.getElementById('sign.res').innerHTML = fancyJSONBox('Signed data in JSF format', jsonObject) + '" + 
                 "<div style=\"display:flex;justify-content:center\">" +

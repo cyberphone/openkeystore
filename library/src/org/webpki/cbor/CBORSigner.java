@@ -77,26 +77,30 @@ public abstract class CBORSigner {
 
     
     /**
-     * Set signature key Id.
+     * Set signature <code>keyId</code>.
      * 
      * In the case the public key is not provided in the signature
      * object, the signature key may be tied to an identifier
      * known by the relying party.  How such an identifier
      * is used to retrieve the proper public key is up to a
      * convention between the parties using
-     * a specific message scheme.  A keyId may be a database
+     * a specific message scheme.  A <code>keyId</code> may be a database
      * index, a hash of the public key, a text string,
      * or a URL pointing to a Web server holding a public key
      * in PEM format.
      * <p>
-     * For HMAC-signatures, a keyId or implicit key are
+     * For HMAC-signatures, a <code>keyId</code> or implicit key are
      * the only ways to retrieve the proper secret key.
      * </p>
      * <p>
-     * Note that keyId is not permitted for X509 based signatures.
+     * Note that <code>keyId</code> is not permitted for X509 based signatures.
+     * </p>
+     * <p>
+     * A <code>keyId</code> argument of <code>null</code> 
+     * is equivalent to the default (= no <code>keyId</code>).
      * </p>
      * 
-     * @param keyId A key Id byte array
+     * @param keyId A key Id byte array or <code>null</code>
      * @return this
      */
     public CBORSigner setKeyId(byte[] keyId) {

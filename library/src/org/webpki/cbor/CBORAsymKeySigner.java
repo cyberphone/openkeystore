@@ -85,9 +85,15 @@ public class CBORAsymKeySigner extends CBORSigner {
     }
 
     /**
-     * Put a public into the signature container.
+     * Put a public key into the signature container.
      * 
-     * @param publicKey The public key
+     * <p>
+     * Note that a public key value of <code>null</code> 
+     * is equivalent to the default (=no public key).
+     * </p>
+     * 
+     * 
+     * @param publicKey The public key or <code>null</code>
      * @return this
      */
     public CBORAsymKeySigner setPublicKey(PublicKey publicKey) {

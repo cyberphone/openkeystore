@@ -30,21 +30,20 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.webpki.cbor.CBORAsymKeySigner;
+import org.webpki.cbor.CBORHmacSigner;
 import org.webpki.cbor.CBORObject;
+import org.webpki.cbor.CBORSigner;
+import org.webpki.cbor.CBORTypes;
+import org.webpki.cbor.CBORX509Signer;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.SignatureAlgorithms;
 
-import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONObjectWriter;
-import org.webpki.json.JSONOutputFormats;
 import org.webpki.json.JSONParser;
-import org.webpki.json.JSONSigner;
-import org.webpki.json.JSONHmacSigner;
-import org.webpki.json.JSONAsymKeySigner;
-import org.webpki.json.JSONX509Signer;
 
 import org.webpki.util.Base64;
 import org.webpki.util.DebugFormatter;
@@ -338,43 +337,41 @@ public class CreateServlet extends HttpServlet {
          try {
             request.setCharacterEncoding("utf-8");
             CBORObject cbor = CBORDiagnosticParser.parse(getTextArea(request, PRM_JSON_DATA));
-            System.out.println("\n" + cbor + "\n");
-            JSONObjectReader reader = JSONParser.parse("{}");
-            String signatureLabel = getParameter(request, PRM_SIG_LABEL);
-            CBORObject signatureLabelCbor = null;
+            if (cbor.getType() != CBORTypes.MAP) {
+                throw new IOException("Only CBOR \"map\" can be signed");
+            }
+            CBORObject signatureLabel = null;
             try {
-                signatureLabelCbor = CBORDiagnosticParser.parse(signatureLabel);
+                signatureLabel =
+                        CBORDiagnosticParser.parse(getParameter(request, PRM_SIG_LABEL));
             } catch (IOException e) {
                 throw new IOException("Signature labels must be in CBOR diagnostic " +
                         "notation like \"sig\" or 8");
             }
-            if (reader.getJSONArrayReader() != null) {
-                throw new IOException("The demo does not support signed arrays");
-            }
             boolean keyInlining = request.getParameter(FLG_PUB_INLINE) != null;
             boolean certOption = request.getParameter(FLG_CERT_PATH) != null;
             String algorithmString = getParameter(request, PRM_ALGORITHM);
-            String optionalKeyId = getParameter(request, PRM_KEY_ID);
-            byte[] optionalKeyIdBytes = null;
-            if (optionalKeyId.length() != 0) {
+            String optionalKeyIdString = getParameter(request, PRM_KEY_ID);
+            byte[] optionalKeyId = null;
+            if (optionalKeyIdString.length() != 0) {
                 try {
-                    optionalKeyIdBytes = DebugFormatter.getByteArrayFromHex(optionalKeyId.trim());
+                    optionalKeyId = DebugFormatter.getByteArrayFromHex(optionalKeyIdString.trim());
                 } catch (IOException e) {
                     throw new IOException("keyId must be a hex string");
                 }
             }
 
             // Get the signature key
-            JSONSigner signer;
+            CBORSigner signer;
             String validationKey;
             
             // Symmetric or asymmetric?
             if (isSymmetric(algorithmString)) {
                 validationKey = getParameter(request, PRM_SECRET_KEY);
-                signer = new JSONHmacSigner(
+                signer = new CBORHmacSigner(
                         DebugFormatter.getByteArrayFromHex(validationKey),
                         HmacAlgorithms.getAlgorithmFromId(algorithmString, 
-                                                         AlgorithmPreferences.JOSE));
+                                                          AlgorithmPreferences.JOSE));
             } else {
                 // To simplify UI we require PKCS #8 with the public key embedded
                 // but we also support JWK which also has the public key
@@ -398,39 +395,33 @@ public class CreateServlet extends HttpServlet {
                         AsymSignatureAlgorithms.getAlgorithmFromId(algorithmString,
                                                                    AlgorithmPreferences.JOSE);
                 if (certOption) {
-                    signer = new JSONX509Signer(
+                    signer = new CBORX509Signer(
                             keyPair.getPrivate(),
                             PEMDecoder.getCertificatePath(getBinaryParameter(request, PRM_CERT_PATH)))
                                 .setAlgorithm(asymSignatureAlgorithm);
                 } else {
-                    signer = new JSONAsymKeySigner(keyPair.getPrivate())
-                                .setAlgorithm(asymSignatureAlgorithm);
-                            if (keyInlining) {
-                                ((JSONAsymKeySigner)signer).setPublicKey(keyPair.getPublic());
-                            }
+                    signer = new CBORAsymKeySigner(keyPair.getPrivate())
+                                .setAlgorithm(asymSignatureAlgorithm)
+                                .setPublicKey(keyInlining ? keyPair.getPublic() : null);
                 }
             }
 
-            JSONObjectWriter writer = new JSONObjectWriter(reader);
-            if (!optionalKeyId.isEmpty()) {
-                signer.setKeyId(optionalKeyId);
-            }
-            String signedJsonObject = writer.setSignature(signatureLabel, signer)
-                    .serializeToString(JSONOutputFormats.NORMALIZED);
+            signer.setKeyId(optionalKeyId);
+            CBORObject signedCborObject = cbor.getMap().sign(signatureLabel, signer);
 
             // We terminate by validating the signature as well
             request.getRequestDispatcher("validate?" +
-                ValidateServlet.JSF_OBJECT + 
+                ValidateServlet.CSF_OBJECT + 
                 "=" +
-                URLEncoder.encode(signedJsonObject, "utf-8") +
+                DebugFormatter.getHexString(signedCborObject.encode()) +
                 "&" +
-                ValidateServlet.JSF_VALIDATION_KEY + 
+                ValidateServlet.CSF_VALIDATION_KEY + 
                 "=" +
                 URLEncoder.encode(validationKey, "utf-8") +
                 "&" +
-                ValidateServlet.JSF_SIGN_LABL + 
+                ValidateServlet.CSF_SIGN_LABL + 
                 "=" +
-                URLEncoder.encode(signatureLabel, "utf-8"))
+                DebugFormatter.getHexString(signatureLabel.encode()))
                     .forward(request, response);
         } catch (Exception e) {
             HTML.errorPage(response, e);
