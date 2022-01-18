@@ -114,13 +114,13 @@ public class CBORX509Validator extends CBORValidator {
         X509Certificate[] certificatePath = decodeCertificateArray(
                 signatureObject.getObject(CBORSigner.CERT_PATH_LABEL).getArray());
         
-        // Check certificate(path) and signature algorithm.
-        checker.check(certificatePath, signatureAlgorithm);
-        
         // Now we have everything needed for validating the signature.
         CBORAsymKeyValidator.asymKeySignatureValidation(certificatePath[0].getPublicKey(),
                                                         signatureAlgorithm, 
                                                         signedData, 
                                                         signatureValue);
+
+        // Finally, check certificate(path) and signature algorithm.
+        checker.check(certificatePath, signatureAlgorithm);
     }
 }

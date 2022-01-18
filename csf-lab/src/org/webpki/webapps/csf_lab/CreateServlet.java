@@ -73,7 +73,7 @@ public class CreateServlet extends HttpServlet {
     static final String FLG_PUB_INLINE   = "pubflg";
     
     static final String DEFAULT_ALG      = "ES256";
-    static final String DEFAULT_SIG_LBL  = "8";
+    static final String DEFAULT_SIG_LBL  = "3";
     
     class SelectAlg {
 
@@ -139,16 +139,11 @@ public class CreateServlet extends HttpServlet {
                         "",
                         "<table style='margin-bottom:0.3em;border-spacing:0'>" +
                         "<tr><td><input type='radio' name='mode' checked onchange='setMode(this.checked)'></td>" +
-                        "<td>Step-by-step technical demo</td>" +
+                        "<td>Diagnostic notation</td>" +
                         "<td><input type='radio' name='mode' onchange='setMode(this.checked)'></td> " +
-                        "<td>Binary</td></tr>" +
+                        "<td>Hexadecimal notation</td></tr>" +
                         "</table>" +
                         "Paste an unsigned CBOR object in the text box or try with the default") +
-                 "<div style='margin-top:0.5em'>Note that this implementation only supports a " +
-                 "subset of CBOR primitives: " +
-                 "<i>text&nbsp;string</i>, <i>byte&nbsp;string</i>, " +
-                 "<i>integer</i>, <i>big&nbsp;number</i>, <i>floating&nbsp;point</i>, " +
-                 "<code>true</code>, <code>false</code>, and <code>null</code></div>" +
                  "<div style='display:flex;justify-content:center;margin-top:20pt'>" +
                  "<div class='sigparmbox'>" +
                  "<div style='display:flex;justify-content:center'>" +
@@ -230,8 +225,10 @@ public class CreateServlet extends HttpServlet {
             "function setUserData(unconditionally) {\n" +
             "  let element = document.getElementById('" + PRM_JSON_DATA + "').children[1];\n" +
             "  if (unconditionally || element.value == '') element.value = '{\\n" +
-            "  \"statement\": \"Hello signed \\\\u0077orld!\",\\n" +
-            "  \"otherProperties\": [2e+3, true]\\n}';\n" +
+            "  / just a string /\\n" +
+            "  1: \"Hello signed world!\",\\n" +
+            "  / some other data /\\n" +
+            "  2: [2.0, true]\\n}';\n" +
             "}\n" +
             "function setParameters(alg, unconditionally) {\n" +
             "  if (alg.startsWith('HS')) {\n" +

@@ -70,9 +70,9 @@ public class ValidateServlet extends HttpServlet {
             }
             logger.info("CBOR Signature Verification Entered");
             // Get the two input data items
+            String signedCborHex = CreateServlet.getParameter(request, CSF_OBJECT);
             CBORMap signedCborObject = 
-                    CBORObject.decode(DebugFormatter.getByteArrayFromHex(
-                            CreateServlet.getParameter(request, CSF_OBJECT))).getMap();
+                    CBORObject.decode(DebugFormatter.getByteArrayFromHex(signedCborHex)).getMap();
             String validationKey = CreateServlet.getParameter(request, CSF_VALIDATION_KEY);
             CBORObject signatureLabel =
                     CBORObject.decode(DebugFormatter.getByteArrayFromHex(
@@ -129,7 +129,10 @@ public class ValidateServlet extends HttpServlet {
                                       HTML.encode(signedCborObject.toString())
                                           .replace("\n", "<br>")
                                           .replace(" ", "&nbsp;"), 
-                                      "Signed CBOR object"))           
+                                      "Signed CBOR object in diagnostic notation"))           
+                .append(HTML.fancyBox("inhex",
+                                      signedCborHex, 
+                                      "Signed CBOR object in hexadecimal notation"))           
                 .append(HTML.fancyBox("vkey",
                                       jwkValidationKey ? 
                                           JSONParser.parse(validationKey)
