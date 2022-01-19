@@ -22,11 +22,8 @@ import java.net.URLEncoder;
 
 import java.security.KeyPair;
 
-import java.util.logging.Logger;
-
 import javax.servlet.ServletException;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -49,30 +46,17 @@ import org.webpki.util.Base64;
 import org.webpki.util.DebugFormatter;
 import org.webpki.util.PEMDecoder;
 
-public class CreateServlet extends HttpServlet {
+public class CreateServlet extends CoreRequestServlet {
     
-    static Logger logger = Logger.getLogger(CreateServlet.class.getName());
-
     private static final long serialVersionUID = 1L;
 
-    // HTML form arguments
-    static final String PRM_JSON_DATA    = "json";
-    
-    static final String PRM_SECRET_KEY   = "sec";
-
-    static final String PRM_PRIVATE_KEY  = "priv";
-
-    static final String PRM_CERT_PATH    = "cert";
-
-    static final String PRM_KEY_ID       = "kid";
-
-    static final String PRM_ALGORITHM    = "alg";
-    static final String PRM_SIG_LABEL    = "siglbl";
-
-    static final String FLG_CERT_PATH    = "cerflg";
-    static final String FLG_PUB_INLINE   = "pubflg";
-    
     static final String DEFAULT_ALG      = "ES256";
+    static final String DEFAULT_CBOR     = "{\\n" +
+                                           "  / just a string /\\n" +
+                                           "  1: \"Hello signed world!\",\\n" +
+                                           "  / some other data /\\n" +
+                                           "  2: [2.0, true]\\n" +
+                                           "}";
     static final String DEFAULT_SIG_LBL  = "3";
     
     class SelectAlg {
@@ -126,30 +110,22 @@ public class CreateServlet extends HttpServlet {
 
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-        String selected = "ES256";
-        StringBuilder js = new StringBuilder("'use strict';\n")
-            .append(CSFService.keyDeclarations);
         StringBuilder html = new StringBuilder(
-                "<form name='shoot' method='POST' action='create'>" +
-                "<div class='header'>CBOR Signature Creation</div>" +
-                HTML.fancyText(
-                        true,
-                        PRM_JSON_DATA,
-                        10,
-                        "",
-                        "<table style='margin-bottom:0.3em;border-spacing:0'>" +
-                        "<tr><td><input type='radio' name='mode' checked onchange='setMode(this.checked)'></td>" +
-                        "<td>Diagnostic notation</td>" +
-                        "<td><input type='radio' name='mode' onchange='setMode(this.checked)'></td> " +
-                        "<td>Hexadecimal notation</td></tr>" +
-                        "</table>" +
-                        "Paste an unsigned CBOR object in the text box or try with the default") +
-                 "<div style='display:flex;justify-content:center;margin-top:20pt'>" +
-                 "<div class='sigparmbox'>" +
-                 "<div style='display:flex;justify-content:center'>" +
-                   "<div class='sigparmhead'>Signature Parameters</div>" +
-                 "</div><div style='display:flex;align-items:center'>")
-            .append(new SelectAlg(selected)
+            "<form name='shoot' method='POST' action='create'>" +
+            "<div class='header'>CBOR Signature Creation</div>" +
+            HTML.fancyText(
+                    true,
+                    PRM_CBOR_DATA,
+                    10,
+                    "",
+                    DIAG_OR_HEX +
+                    "Paste an unsigned CBOR object in the text box or try with the default") +
+             "<div style='display:flex;justify-content:center;margin-top:20pt'>" +
+             "<div class='sigparmbox'>" +
+             "<div style='display:flex;justify-content:center'>" +
+               "<div class='sigparmhead'>Signature Parameters</div>" +
+             "</div><div style='display:flex;align-items:center'>")
+        .append(new SelectAlg(DEFAULT_ALG)
                  .add(HmacAlgorithms.HMAC_SHA256)
                  .add(HmacAlgorithms.HMAC_SHA384)
                  .add(HmacAlgorithms.HMAC_SHA512)
@@ -165,51 +141,54 @@ public class CreateServlet extends HttpServlet {
                  .add(AsymSignatureAlgorithms.RSAPSS_SHA384)
                  .add(AsymSignatureAlgorithms.RSAPSS_SHA512)
                  .toString())
-            .append(
-                "<div style='display:inline-block;padding:0 10pt 0 5pt'>Algorithm</div>" +
-                "<div style='margin-left:auto' class='defbtn' onclick=\"restoreDefaults()\">Restore&nbsp;defaults</div></div>")
-            .append(checkBox(FLG_PUB_INLINE, "Include public key", false, "pubFlagChange(this.checked)"))
-            .append(checkBox(FLG_CERT_PATH, "Include provided certificate path", false, "certFlagChange(this.checked)"))
-            .append(
-                "<div style='display:flex;align-items:center'>" +
-                "<input type='text' name='" + PRM_SIG_LABEL + "' id='" + PRM_SIG_LABEL + "' " +
-                "style='padding:0 3pt;width:7em;font-family:monospace' " +
-                "maxlength='100' value='" + DEFAULT_SIG_LBL + "'>" +
-                "<div style='display:inline-block'>&nbsp;Signature label (in CBOR diag.)</div></div>" +
-                "<div style='margin-top:0.3em;display:flex;align-items:center'>" +
-                "<input type='text' name='" + PRM_KEY_ID + "' id='" + PRM_KEY_ID + "' " +
-                "style='padding:0 3pt;width:7em;font-family:monospace' " +
-                "maxlength='100' value=''>" +
-                "<div style='display:inline-block'>&nbsp;Optional key Id (in hexadecimal)</div></div>" +
-                "</div>" +
-                "</div>" +
-                "<div style='display:flex;justify-content:center'>" +
-                "<div class='stdbtn' onclick=\"document.forms.shoot.submit()\">" +
-                "Create CBOR Signature" +
-                "</div>" +
-                "</div>")
-            .append(
-                HTML.fancyText(false,
-                          PRM_SECRET_KEY,
-                          1,
-                          "",
-                          "Secret key in hexadecimal format"))
-            .append(
-                HTML.fancyText(false,
-                          PRM_PRIVATE_KEY,
-                          4,
-                          "",
-                          "Private key in PEM/PKCS #8 or &quot;plain&quot; JWK format"))
-            .append(
-                HTML.fancyText(false,
-                          PRM_CERT_PATH,
-                          4,
-                          "",
-                          "Certificate path in PEM format"))
-            .append(
-                "</form>" +
-                "<div>&nbsp;</div>");
-        js.append(
+        .append(
+            "<div style='display:inline-block;padding:0 10pt 0 5pt'>Algorithm</div>" +
+            "<div style='margin-left:auto' class='defbtn' onclick=\"restoreDefaults()\">Restore&nbsp;defaults</div></div>")
+        .append(checkBox(FLG_PUB_INLINE, "Include public key", false, "pubFlagChange(this.checked)"))
+        .append(checkBox(FLG_CERT_PATH, "Include provided certificate path", false, "certFlagChange(this.checked)"))
+        .append(
+            "<div style='display:flex;align-items:center'>" +
+            "<input type='text' name='" + CSF_SIGN_LABEL + 
+              "' id='" + CSF_SIGN_LABEL + "' " +
+            "style='padding:0 3pt;width:7em;font-family:monospace' " +
+            "maxlength='100' value='" + DEFAULT_SIG_LBL + "'>" +
+            "<div style='display:inline-block'>&nbsp;Signature label (in CBOR diag.)</div></div>" +
+            "<div style='margin-top:0.3em;display:flex;align-items:center'>" +
+            "<input type='text' name='" + PRM_KEY_ID + "' id='" + PRM_KEY_ID + "' " +
+            "style='padding:0 3pt;width:7em;font-family:monospace' " +
+            "maxlength='100' value=''>" +
+            "<div style='display:inline-block'>&nbsp;Optional key Id (in hexadecimal)</div></div>" +
+            "</div>" +
+            "</div>" +
+            "<div style='display:flex;justify-content:center'>" +
+            "<div class='stdbtn' onclick=\"document.forms.shoot.submit()\">" +
+            "Create CBOR Signature" +
+            "</div>" +
+            "</div>")
+        .append(HTML.fancyText(
+                    false,
+                    PRM_SECRET_KEY,
+                    1,
+                    "",
+                    "Secret key in hexadecimal format"))
+        .append(HTML.fancyText(
+                    false,
+                    PRM_PRIVATE_KEY,
+                    4,
+                    "",
+                    "Private key in PEM/PKCS #8 or &quot;plain&quot; JWK format"))
+        .append(HTML.fancyText(false,
+                    PRM_CERT_PATH,
+                    4,
+                    "",
+                    "Certificate path in PEM format"))
+        .append(
+            "</form>" +
+            "<div>&nbsp;</div>");
+
+        StringBuilder js = new StringBuilder("'use strict';\n")
+        .append(CSFService.keyDeclarations)
+        .append(
             "function fill(id, alg, keyHolder, unconditionally) {\n" +
             "  let element = document.getElementById(id).children[1];\n" +
             "  if (unconditionally || element.value == '') element.value = keyHolder[alg];\n" +
@@ -223,12 +202,8 @@ public class CreateServlet extends HttpServlet {
             "  document.getElementById(id).disabled = false;\n" +
             "}\n" +
             "function setUserData(unconditionally) {\n" +
-            "  let element = document.getElementById('" + PRM_JSON_DATA + "').children[1];\n" +
-            "  if (unconditionally || element.value == '') element.value = '{\\n" +
-            "  / just a string /\\n" +
-            "  1: \"Hello signed world!\",\\n" +
-            "  / some other data /\\n" +
-            "  2: [2.0, true]\\n}';\n" +
+            "  let element = document.getElementById('" + PRM_CBOR_DATA + "').children[1];\n" +
+            "  if (unconditionally || element.value == '') element.value = '" + DEFAULT_CBOR + "';\n" +
             "}\n" +
             "function setParameters(alg, unconditionally) {\n" +
             "  if (alg.startsWith('HS')) {\n" +
@@ -263,6 +238,11 @@ public class CreateServlet extends HttpServlet {
             "    document.getElementById('" + FLG_PUB_INLINE + "').checked = false;\n" +
             "  }\n" +
             "}\n" +
+            "function setInputMode(flag) {\n" +
+            "  console.log('mode=' + flag);\n" +
+            "  document.getElementById('" + PRM_CBOR_DATA + "').children[1].placeholder = flag ? " +
+              "'Diagnostic notation' : 'Hexadecimal data';\n" +
+            "}\n" +
             "function restoreDefaults() {\n" +
             "  let s = document.getElementById('" + PRM_ALGORITHM + "');\n" +
             "  for (let i = 0; i < s.options.length; i++) {\n" +
@@ -272,9 +252,10 @@ public class CreateServlet extends HttpServlet {
             "    }\n" +
             "  }\n" +
             "  setParameters('" + DEFAULT_ALG + "', true);\n" +
+            "  document.getElementById('" + FLG_DIAGNOSTIC + "').checked = true;\n" +
             "  document.getElementById('" + FLG_CERT_PATH + "').checked = false;\n" +
             "  document.getElementById('" + FLG_PUB_INLINE + "').checked = false;\n" +
-            "  document.getElementById('" + PRM_SIG_LABEL + "').value = '" + DEFAULT_SIG_LBL + "';\n" +
+            "  document.getElementById('" + CSF_SIGN_LABEL + "').value = '" + DEFAULT_SIG_LBL + "';\n" +
             "  document.getElementById('" + PRM_KEY_ID + "').value = '';\n" +
             "  showCert(false);\n" +
             "  setUserData(true);\n" +
@@ -294,57 +275,26 @@ public class CreateServlet extends HttpServlet {
             "window.addEventListener('load', function(event) {\n" +
             "  setParameters(document.getElementById('" + PRM_ALGORITHM + "').value, false);\n" +
             "  setUserData(false);\n" +
+            "  setInputMode(true);\n" +
             "});\n");
-        HTML.standardPage(response, 
-                         js.toString(),
-                         html);
-    }
-    
-    static boolean isSymmetric(String algorithmString) {
-        return algorithmString.startsWith("HS");
-    }
-    
-    static String getParameter(HttpServletRequest request, String parameter) throws IOException {
-        String string = request.getParameter(parameter);
-        if (string == null) {
-            throw new IOException("Missing data for: "+ parameter);
-        }
-        return string.trim();
-    }
-    
-    static byte[] getBinaryParameter(HttpServletRequest request, String parameter) throws IOException {
-        return getParameter(request, parameter).getBytes("utf-8");
-    }
 
-    static String getTextArea(HttpServletRequest request, String name)
-            throws IOException {
-        String string = getParameter(request, name);
-        StringBuilder s = new StringBuilder();
-        for (char c : string.toCharArray()) {
-            if (c != '\r') {
-                s.append(c);
-            }
-        }
-        return s.toString();
+        HTML.standardPage(response, js.toString(), html);
     }
-
-   
+    
     public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
          try {
             request.setCharacterEncoding("utf-8");
-            CBORObject cbor = CBORDiagnosticParser.parse(getTextArea(request, PRM_JSON_DATA));
+            String rawText = getTextArea(request, PRM_CBOR_DATA);
+            CBORObject cbor = Boolean.valueOf(getParameter(request, PRM_INPUT_TYPE)) 
+                                        ? 
+                    CBORDiagnosticParser.parse(rawText) 
+                                        :
+                    CBORObject.decode(DebugFormatter.getByteArrayFromHex(rawText));
             if (cbor.getType() != CBORTypes.MAP) {
                 throw new IOException("Only CBOR \"map\" can be signed");
             }
-            CBORObject signatureLabel = null;
-            try {
-                signatureLabel =
-                        CBORDiagnosticParser.parse(getParameter(request, PRM_SIG_LABEL));
-            } catch (IOException e) {
-                throw new IOException("Signature labels must be in CBOR diagnostic " +
-                        "notation like \"sig\" or 8");
-            }
+            CBORObject signatureLabel = getSignatureLabel(request);
             boolean keyInlining = request.getParameter(FLG_PUB_INLINE) != null;
             boolean certOption = request.getParameter(FLG_CERT_PATH) != null;
             String algorithmString = getParameter(request, PRM_ALGORITHM);
@@ -363,7 +313,7 @@ public class CreateServlet extends HttpServlet {
             String validationKey;
             
             // Symmetric or asymmetric?
-            if (isSymmetric(algorithmString)) {
+            if (algorithmString.startsWith("HS")) {
                 validationKey = getParameter(request, PRM_SECRET_KEY);
                 signer = new CBORHmacSigner(
                         DebugFormatter.getByteArrayFromHex(validationKey),
@@ -408,17 +358,13 @@ public class CreateServlet extends HttpServlet {
 
             // We terminate by validating the signature as well
             request.getRequestDispatcher("validate?" +
-                ValidateServlet.CSF_OBJECT + 
+                CSF_OBJECT + 
                 "=" +
                 DebugFormatter.getHexString(signedCborObject.encode()) +
                 "&" +
-                ValidateServlet.CSF_VALIDATION_KEY + 
+                CSF_VALIDATION_KEY + 
                 "=" +
-                URLEncoder.encode(validationKey, "utf-8") +
-                "&" +
-                ValidateServlet.CSF_SIGN_LABL + 
-                "=" +
-                DebugFormatter.getHexString(signatureLabel.encode()))
+                URLEncoder.encode(validationKey, "utf-8"))
                     .forward(request, response);
         } catch (Exception e) {
             HTML.errorPage(response, e);

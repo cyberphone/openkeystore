@@ -27,7 +27,6 @@ import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -48,19 +47,13 @@ import org.webpki.json.JSONParser;
 import org.webpki.util.DebugFormatter;
 import org.webpki.util.PEMDecoder;
 
-public class ValidateServlet extends HttpServlet {
+public class ValidateServlet extends CoreRequestServlet {
 
     private static final long serialVersionUID = 1L;
 
     static Logger logger = Logger.getLogger(ValidateServlet.class.getName());
 
-    // HTML form arguments
-    static final String CSF_OBJECT         = "jsf";
-
-    static final String CSF_VALIDATION_KEY = "vkey";
-    
-    static final String CSF_SIGN_LABL      = "siglbl";
-    
+  
     public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         try {
@@ -69,14 +62,13 @@ public class ValidateServlet extends HttpServlet {
                 throw new IOException("Unexpected MIME type:" + request.getContentType());
             }
             logger.info("CBOR Signature Verification Entered");
-            // Get the two input data items
-            String signedCborHex = CreateServlet.getParameter(request, CSF_OBJECT);
+            System.out.println("intyp=" + request.getParameter("intyp"));
+            // Get the input data items
+            String signedCborHex = getParameter(request, CSF_OBJECT);
             CBORMap signedCborObject = 
                     CBORObject.decode(DebugFormatter.getByteArrayFromHex(signedCborHex)).getMap();
-            String validationKey = CreateServlet.getParameter(request, CSF_VALIDATION_KEY);
-            CBORObject signatureLabel =
-                    CBORObject.decode(DebugFormatter.getByteArrayFromHex(
-                            CreateServlet.getParameter(request, CSF_SIGN_LABL)));
+            String validationKey = getParameter(request, CSF_VALIDATION_KEY).trim();
+            CBORObject signatureLabel = getSignatureLabel(request);
             
             // This is not how you would do in an application...
             CBORMap signatureObject = signedCborObject.getObject(signatureLabel).getMap();
@@ -128,7 +120,7 @@ public class ValidateServlet extends HttpServlet {
                 .append(HTML.fancyBox("signed",
                                       HTML.encode(signedCborObject.toString())
                                           .replace("\n", "<br>")
-                                          .replace(" ", "&nbsp;"), 
+                                          .replace(" ", "&nbsp;"),
                                       "Signed CBOR object in diagnostic notation"))           
                 .append(HTML.fancyBox("inhex",
                                       signedCborHex, 
@@ -160,32 +152,47 @@ public class ValidateServlet extends HttpServlet {
 
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
+        StringBuilder js = new StringBuilder(
+                "'use strict';\n" +
+                "function setInputMode(flag) {\n" +
+                "  console.log('mode=' + flag);\n" +
+                "  document.getElementById('" + PRM_CBOR_DATA + "').children[1].placeholder = flag ? " +
+                  "'Diagnostic notation' : 'Hexadecimal data';\n" +
+                "}\n" +
+                "window.addEventListener('load', function(event) {\n" +
+                "  setInputMode(true);\n" +
+                "});\n");
 
-        HTML.standardPage(response, null, new StringBuilder(
+        StringBuilder html = new StringBuilder(
                 "<form name='shoot' method='POST' action='validate'>" +
-                "<div class='header'>JSON Signature Validation</div>")
-            .append(HTML.fancyText(true,
-                CSF_OBJECT,
-                10, 
-                HTML.encode(CSFService.sampleSignature),
-                "Paste a signed JSON object in the text box or try with the default"))
-            .append(HTML.fancyText(true,
-                CSF_VALIDATION_KEY,
-                4, 
-                HTML.encode(CSFService.samplePublicKey),
+                "<div class='header'>CBOR Signature Validation</div>")
+            .append(HTML.fancyText(
+                        true,
+                        PRM_CBOR_DATA,
+                        10, 
+                        HTML.encode(CSFService.sampleSignature),
+                        DIAG_OR_HEX +
+                        "Paste a signed CBOR object in the text box or try with the default"))
+            .append(HTML.fancyText(
+                        true,
+                        CSF_VALIDATION_KEY,
+                        4, 
+                        HTML.encode(CSFService.samplePublicKey),
 "Validation key (secret key in hexadecimal or public key in PEM or &quot;plain&quot; JWK format)"))
-            .append(HTML.fancyText(true,
-                CSF_SIGN_LABL,
-                1, 
-                HTML.encode(CreateServlet.DEFAULT_SIG_LBL),
-                "Anticipated signature label"))
+            .append(HTML.fancyText(
+                        true,
+                        CSF_SIGN_LABEL,
+                        1, 
+                        HTML.encode(CreateServlet.DEFAULT_SIG_LBL),
+                        "Anticipated signature label"))
             .append(
                 "<div style='display:flex;justify-content:center'>" +
                 "<div class='stdbtn' onclick=\"document.forms.shoot.submit()\">" +
-                "Validate JSON Signature" +
+                "Validate CBOR Signature" +
                 "</div>" +
                 "</div>" +
                 "</form>" +
-                "<div>&nbsp;</div>"));
+                "<div>&nbsp;</div>");
+        HTML.standardPage(response, null, html);
     }
 }

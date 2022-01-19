@@ -29,21 +29,6 @@
         <servlet-class>org.webpki.webapps.csf_lab.ValidateServlet</servlet-class>
     </servlet>
 
-    <servlet>
-        <servlet-name>WebCryptoServlet</servlet-name>
-        <servlet-class>org.webpki.webapps.csf_lab.WebCryptoServlet</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>NoWebCryptoServlet</servlet-name>
-        <servlet-class>org.webpki.webapps.csf_lab.NoWebCryptoServlet</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>JavaScriptSignatureServlet</servlet-name>
-        <servlet-class>org.webpki.webapps.csf_lab.JavaScriptSignatureServlet</servlet-class>
-    </servlet>
-
     <servlet-mapping>
         <servlet-name>HomeServlet</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -57,21 +42,6 @@
     <servlet-mapping>
         <servlet-name>ValidateServlet</servlet-name>
         <url-pattern>/validate</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>WebCryptoServlet</servlet-name>
-        <url-pattern>/webcrypto</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>NoWebCryptoServlet</servlet-name>
-        <url-pattern>/nowebcrypto</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>JavaScriptSignatureServlet</servlet-name>
-        <url-pattern>/jssignature</url-pattern>
     </servlet-mapping>
 
 </web-app>
