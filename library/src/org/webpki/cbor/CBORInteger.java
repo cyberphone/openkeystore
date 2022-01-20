@@ -57,16 +57,19 @@ public class CBORInteger extends CBORObject {
      * Force magnitude mode integer.
      * 
      * To cope with the entire 65-bit integer span supported by CBOR
-     * you must use this constructor.  For unsigned integers values
-     * from 0 to 2^64-1 can be specified while negative values range
-     * from 1 to 2^64.
+     * you must use this constructor.  Unsigned integers
+     * range from <code>0</code> to <code>2^64-1</code>,
+     * while negative integers range from <code>-1</code> to <code>-2^64</code>.
      * <p>
-     * If <code>unsigned</code> is set to <code>false</code>, this constructor
+     * If the <code>unsigned</code> flag is set to <code>false</code>, this constructor
      * assumes CBOR native encoding mode.  That is, <code>value</code> is treated as
-     * an unsigned magnitude offset by -1.  This means that the value 43 effectively
-     * represents -44.  A special case is the value <code>0xffffffffffffffff</code>
-     * (long -1), which corresponds to to -2^64.
+     * a magnitude which is subsequently negated and subtracted by <code>1</code>.
+     * This means that the input values <code>0</code> and <code>43</code>,
+     * actually represent <code>-1</code> and <code>-44</code> respectively.
+     * A special case is the value <code>0xffffffffffffffffL</code>
+     * (long <code>-1</code>), which corresponds to <code>-2^64</code>.
      * </p>
+     * See {@link CBORInteger(long)} and {@link CBORInteger(BigInteger)}.
      *
      * @param value long value
      * @param unsigned <code>true</code> if value should be considered as unsigned
