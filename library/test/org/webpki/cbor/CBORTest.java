@@ -811,48 +811,45 @@ public class CBORTest {
     CBORObject signAndVerify(CBORSigner signer, CBORValidator validator) 
             throws IOException, GeneralSecurityException {
         CBORObject tbs = createDataToBeSigned();
-        tbs.getMap().sign(7, signer);
+        signer.sign(7, tbs.getMap());
         byte[] sd = tbs.encode();
         CBORObject cborSd = CBORObject.decode(sd);
-        cborSd.getMap().validate(7, validator);
-        return tbs;
-    }
+        return validator.validate(7, cborSd.getMap());
+     }
   
     void hmacTest(final int size, final HmacAlgorithms algorithm) throws IOException,
                                                                          GeneralSecurityException {
         CBORObject tbs = createDataToBeSigned();
-        tbs.getMap().sign(7, 
-                new CBORHmacSigner(symmetricKeys.getValue(size), algorithm));
+        new CBORHmacSigner(symmetricKeys.getValue(size), algorithm).sign(7, tbs.getMap());
         byte[] sd = tbs.encode();
         CBORObject cborSd = CBORObject.decode(sd);
-        cborSd.getMap().validate(7, new CBORHmacValidator(symmetricKeys.getValue(size)));
+        new CBORHmacValidator(symmetricKeys.getValue(size)).validate(7, cborSd.getMap());
         
         tbs = createDataToBeSigned();
-        tbs.getMap().sign(7, 
-            new CBORHmacSigner(new HmacSignerInterface() {
+         new CBORHmacSigner(new HmacSignerInterface() {
 
-                @Override
-                public byte[] signData(byte[] data) throws IOException, GeneralSecurityException {
-                    return algorithm.digest(symmetricKeys.getValue(size), data);
-                }
+            @Override
+            public byte[] signData(byte[] data) throws IOException, GeneralSecurityException {
+                return algorithm.digest(symmetricKeys.getValue(size), data);
+            }
 
-                @Override
-                public HmacAlgorithms getAlgorithm() throws IOException, GeneralSecurityException {
-                    return algorithm;
-                }
-                
-            }));
+            @Override
+            public HmacAlgorithms getAlgorithm() throws IOException, GeneralSecurityException {
+                return algorithm;
+            }
+            
+        }).sign(7, tbs.getMap());
         sd = tbs.encode();
         cborSd = CBORObject.decode(sd);
-        cborSd.getMap().validate(7, new CBORHmacValidator(symmetricKeys.getValue(size)));
+        new CBORHmacValidator(symmetricKeys.getValue(size)).validate(7, cborSd.getMap());
 
         tbs = createDataToBeSigned();
         final byte[] keyId = symmetricKeys.getName(size).getBytes("utf-8");
-        tbs.getMap().sign(7, 
-                new CBORHmacSigner(symmetricKeys.getValue(size), algorithm).setKeyId(keyId));
+        new CBORHmacSigner(symmetricKeys.getValue(size), algorithm).setKeyId(keyId)
+            .sign(7, tbs.getMap()); 
         sd = tbs.encode();
         cborSd = CBORObject.decode(sd);
-        cborSd.getMap().validate(7, new CBORHmacValidator(
+        new CBORHmacValidator(
             new CBORHmacValidator.KeyLocator() {
 
                 @Override
@@ -868,7 +865,7 @@ public class CBORTest {
                     return symmetricKeys.getValue(size);
                 }
                 
-            }));
+            }).validate(7, cborSd.getMap());
     }
 
     @Test
@@ -1090,10 +1087,10 @@ public class CBORTest {
         }
 
         try {
-            createDataToBeSigned().getMap().sign(7, 
-                    new CBORAsymKeySigner(p256.getPrivate())
-                        .setPublicKey(p256.getPublic())
-                        .setKeyId(keyId));
+            new CBORAsymKeySigner(p256.getPrivate())
+                .setPublicKey(p256.getPublic())
+                .setKeyId(keyId)
+                .sign(7, createDataToBeSigned().getMap()); 
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, CBORSigner.STDERR_KEY_ID_PUBLIC);

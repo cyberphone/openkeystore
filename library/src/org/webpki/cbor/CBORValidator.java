@@ -34,6 +34,76 @@ public abstract class CBORValidator {
                            byte[] signatureValue,
                            byte[] signedData) throws IOException, GeneralSecurityException;
  
+    /**
+     * Validate signed CBOR map.
+     * 
+     * @param key Key in map holding signature
+     * @param signedObject Signed CBOR map object
+     * @return The signed object
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
+    public CBORMap validate(CBORObject key, CBORMap signedObject) throws IOException, 
+                                                                         GeneralSecurityException {
+        // Fetch signature object
+        CBORMap signatureObject = signedObject.getObject(key).getMap();
+
+        // Get the signature value and remove it from the (map) object.
+        byte[] signatureValue = CBORValidator.readAndRemove(signatureObject, 
+                                                            CBORSigner.SIGNATURE_LABEL);
+
+        // Fetch optional keyId.
+        byte[] optionalKeyId = signatureObject.hasKey(CBORSigner.KEY_ID_LABEL)
+                ? signatureObject.getObject(CBORSigner.KEY_ID_LABEL)
+                        .getByteString()
+                : null;
+
+        // Call specific validator. This code presumes that internalEncode() 
+        // returns a deterministic representation of CBOR items.
+        validate(signatureObject,
+                 signatureObject.getObject(CBORSigner.ALGORITHM_LABEL).getInt(),
+                 optionalKeyId, 
+                 signatureValue,
+                 signedObject.internalEncode());
+
+        // Check that nothing "extra" was supplied.
+        signatureObject.checkForUnread();
+
+        // Restore object.
+        signatureObject.keys.put(CBORSigner.SIGNATURE_LABEL, new CBORByteString(signatureValue));
+        
+        // Return it as well.
+        return signedObject;
+    }
+
+    /**
+     * Validate signed CBOR map.
+     * 
+     * @param key Key in map holding signature
+     * @param signedObject Signed CBOR map object
+     * @return The signed object
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
+    public CBORMap validate(int key, CBORMap signedObject) throws IOException, 
+                                                                  GeneralSecurityException {
+        return validate(new CBORInteger(key), signedObject);
+    }
+    
+    /**
+     * Validate signed CBOR map.
+     * 
+     * @param key Key in map holding signature
+     * @param signedObject Signed CBOR map object
+     * @return The signed object
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
+    public CBORMap validate(String key, CBORMap signedObject) throws IOException, 
+                                                                     GeneralSecurityException {
+        return validate(new CBORTextString(key), signedObject);
+    }
+
     static byte[] readAndRemove(CBORMap object, CBORInteger key) throws IOException {
         byte[] data = object.getObject(key).getByteString();
         object.removeObject(key);

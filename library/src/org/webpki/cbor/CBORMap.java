@@ -18,8 +18,6 @@ package org.webpki.cbor;
 
 import java.io.IOException;
 
-import java.security.GeneralSecurityException;
-
 import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeMap;
@@ -229,112 +227,6 @@ public class CBORMap extends CBORObject {
     public CBORMap removeObject(String key) throws IOException {
         removeObject(new CBORTextString(key));
         return this;
-    }
-
-    /**
-     * Validate signed CBOR map.
-     * 
-     * @param key Key in map holding signature
-     * @param validator Validator
-     * @throws IOException
-     * @throws GeneralSecurityException
-     */
-    public void validate(CBORObject key, CBORValidator validator) throws IOException, 
-                                                                         GeneralSecurityException {
-        // Fetch signature object
-        CBORMap signatureObject = getObject(key).getMap();
-
-        // Get the signature value and remove it from the (map) object.
-        byte[] signatureValue = CBORValidator.readAndRemove(signatureObject, 
-                                                            CBORSigner.SIGNATURE_LABEL);
-
-        // Fetch optional keyId.
-        byte[] optionalKeyId = signatureObject.hasKey(CBORSigner.KEY_ID_LABEL)
-                ? signatureObject.getObject(CBORSigner.KEY_ID_LABEL)
-                        .getByteString()
-                : null;
-
-        // Call specific validator. This code presumes that internalEncode() 
-        // returns a deterministic representation of CBOR items.
-        validator.validate(signatureObject,
-                           signatureObject.getObject(CBORSigner.ALGORITHM_LABEL).getInt(),
-                           optionalKeyId, 
-                           signatureValue,
-                           internalEncode());
-
-        // Check that nothing "extra" was supplied.
-        signatureObject.checkForUnread();
-
-        // Restore object.
-        signatureObject.keys.put(CBORSigner.SIGNATURE_LABEL, new CBORByteString(signatureValue));
-    }
-
-    /**
-     * Validate signed CBOR map.
-     * 
-     * @param key Key in map holding signature
-     * @param validator Validator
-     * @throws IOException
-     * @throws GeneralSecurityException
-     */
-    public void validate(int key, CBORValidator validator) throws IOException, 
-                                                                  GeneralSecurityException {
-        validate(new CBORInteger(key), validator);
-    }
-    
-    /**
-     * Validate signed CBOR map.
-     * 
-     * @param key Key in map holding signature
-     * @param validator Validator
-     * @throws IOException
-     * @throws GeneralSecurityException
-     */
-    public void validate(String key, CBORValidator validator) throws IOException, 
-                                                                     GeneralSecurityException {
-        validate(new CBORTextString(key), validator);
-    }
-
-    /**
-     * Sign CBOR object.
-     * 
-     * @param key Key holding the signature in the map to sign
-     * @param signer Holder of signature method and key
-     * @return <code>this</code>
-     * @throws IOException
-     * @throws GeneralSecurityException
-     */
-    public CBORMap sign(CBORObject key, CBORSigner signer) throws IOException, GeneralSecurityException {
-        signer.sign(key, this);
-        return this;
-    }
-
-    /**
-     * Sign CBOR object.
-     * 
-     * @param key Key holding the signature in the map to sign
-     * @param signer Holder of signature method and key
-     * @return <code>this</code>
-     * @throws IOException
-     * @throws GeneralSecurityException
-     */
-    public CBORMap sign(int key, CBORSigner signer) throws IOException, 
-                                                                  GeneralSecurityException {
-        return sign(new CBORInteger(key), signer);
-    }
-
-    /**
-     * Sign CBOR object.
-     * 
-     * @param key Key holding the signature in the map to sign
-     * @param signer Holder of signature method and key
-     * @return <code>this</code>
-     * @throws IOException
-     * @throws GeneralSecurityException
-     */
-    public CBORMap sign(String key, CBORSigner signer) 
-            throws IOException, GeneralSecurityException {
-        return sign(new CBORTextString(key), signer);
     }
 
     /**

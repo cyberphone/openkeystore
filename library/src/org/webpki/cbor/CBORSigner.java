@@ -73,9 +73,7 @@ public abstract class CBORSigner {
             throw new GeneralSecurityException(STDERR_KEY_ID_PUBLIC);
         }
     }
- 
-
-    
+     
     /**
      * Set signature <code>keyId</code>.
      * 
@@ -119,7 +117,17 @@ public abstract class CBORSigner {
         return this;
     }
 
-    void sign(CBORObject key, CBORMap objectToSign) throws IOException, GeneralSecurityException {
+    /**
+     * Sign CBOR object.
+     * 
+     * @param key Key holding the signature in the CBOR map to sign
+     * @param objectToSign CBOR map to be signed
+     * @return Signed object
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
+    public CBORMap sign(CBORObject key, CBORMap objectToSign) 
+            throws IOException, GeneralSecurityException {
 
         // Create empty signature object.
         CBORMap signatureObject = new CBORMap();
@@ -142,7 +150,39 @@ public abstract class CBORSigner {
         // internalEncode() is supposed to produce a deterministic representation.
         signatureObject.keys.put(SIGNATURE_LABEL, 
                                  new CBORByteString(signData(objectToSign.internalEncode())));
+
+        // Return the now signed object.
+        return objectToSign;
     }
+
+    /**
+     * Sign CBOR object.
+     * 
+     * @param key Key holding the signature in the CBOR map to sign
+     * @param objectToSign CBOR map to be signed
+     * @return Signed object
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
+    public CBORMap sign(int key, CBORMap objectToSign) 
+            throws IOException, GeneralSecurityException {
+        return sign(new CBORInteger(key), objectToSign);
+    }
+
+    /**
+     * Sign CBOR object.
+     * 
+     * @param key Key holding the signature in the CBOR map to sign
+     * @param objectToSign CBOR map to be signed
+     * @return Signed object
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
+    public CBORMap sign(String key, CBORMap objectToSign) 
+            throws IOException, GeneralSecurityException {
+        return sign(new CBORTextString(key), objectToSign);
+    }
+
     /**
      * For internal use only
      */

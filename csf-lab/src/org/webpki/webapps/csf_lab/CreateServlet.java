@@ -354,7 +354,7 @@ public class CreateServlet extends CoreRequestServlet {
             }
 
             signer.setKeyId(optionalKeyId);
-            CBORObject signedCborObject = cbor.getMap().sign(signatureLabel, signer);
+            CBORObject signedCborObject = signer.sign(signatureLabel, cbor.getMap());
 
             // We terminate by validating the signature as well
             request.getRequestDispatcher("validate?" +

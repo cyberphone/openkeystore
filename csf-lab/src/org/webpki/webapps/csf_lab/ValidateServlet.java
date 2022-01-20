@@ -80,16 +80,15 @@ public class ValidateServlet extends CoreRequestServlet {
             // Validation
             boolean jwkValidationKey = validationKey.startsWith("{");
             if (hmacSignature) {
-                signedCborObject.validate(signatureLabel,
-                        new CBORHmacValidator(DebugFormatter.getByteArrayFromHex(validationKey)));
+                new CBORHmacValidator(DebugFormatter.getByteArrayFromHex(validationKey))
+                    .validate(signatureLabel, signedCborObject);
             } else {
                 PublicKey externalPublicKey =  jwkValidationKey ? 
                     JSONParser.parse(validationKey).getCorePublicKey(AlgorithmPreferences.JOSE)
                                                                 :
                     PEMDecoder.getPublicKey(validationKey.getBytes("utf-8"));
                 if (x509flag) {
-                    signedCborObject.validate(signatureLabel, new CBORX509Validator(
-                        new CBORX509Validator.SignatureParameters() {
+                    new CBORX509Validator(new CBORX509Validator.SignatureParameters() {
 
                     @Override
                     public void check(X509Certificate[] certificatePath,
@@ -109,10 +108,11 @@ public class ValidateServlet extends CoreRequestServlet {
                         }
                     }
 
-                }));
+                }).validate(signatureLabel, signatureObject);
                         
                 } else {
-                    signedCborObject.validate(signatureLabel, new CBORAsymKeyValidator(externalPublicKey));
+                    new CBORAsymKeyValidator(externalPublicKey).validate(signatureLabel, 
+                                                                         signedCborObject);
                 }
             }
             StringBuilder html = new StringBuilder(
