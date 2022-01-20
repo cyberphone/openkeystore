@@ -161,6 +161,21 @@ public abstract class CBORObject {
     }
     
     /**
+     * Get <code>big number</code> value.
+     * <p>
+     * This method requires that the object is a
+     * {@link CBORInteger}, otherwise an exception will be thrown.
+     * </p>
+     * 
+     * @return BigInteger
+     * @throws IOException
+     */
+    public BigInteger getBigInteger() throws IOException {
+        checkTypeAndMarkAsRead(CBORTypes.INTEGER);
+        return ((CBORInteger) this).value;
+    }
+
+    /**
      * Get <code>long</code> value.
       * <p>
      * This method requires that the object is a
@@ -241,7 +256,7 @@ public abstract class CBORObject {
      * Check for <code>null</code>.
      * <p>
      * If the object is a {@link CBORNull} the call will return
-     * <code>true</code>, else it will return <code>false></code>.
+     * <code>true</code>, else it will return <code>false</code>.
      * </p>
      * 
      * @return Status
@@ -252,21 +267,6 @@ public abstract class CBORObject {
         return internalGetType() == CBORTypes.NULL;
     }
     
-    /**
-     * Get <code>big number</code> value.
-     * <p>
-     * This method requires that the object is either a
-     * {@link CBORInteger}, otherwise an exception will be thrown.
-     * </p>
-     * 
-     * @return BigInteger
-     * @throws IOException
-     */
-    public BigInteger getBigInteger() throws IOException {
-        checkTypeAndMarkAsRead(CBORTypes.INTEGER);
-        return ((CBORInteger) this).value;
-    }
-
     /**
      * Get <code>text string</code> value.
      * <p>

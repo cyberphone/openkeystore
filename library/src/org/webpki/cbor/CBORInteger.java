@@ -64,8 +64,8 @@ public class CBORInteger extends CBORObject {
      * If <code>unsigned</code> is set to <code>false</code>, this constructor
      * assumes CBOR native encoding mode.  That is, <code>value</code> is treated as
      * an unsigned magnitude offset by -1.  This means that the value 43 effectively
-     * represents -44.  A special case is the value 0xffffffffffffffff (long -1),
-     * which corresponds to to -2^64.
+     * represents -44.  A special case is the value <code>0xffffffffffffffff</code>
+     * (long -1), which corresponds to to -2^64.
      * </p>
      *
      * @param value long value

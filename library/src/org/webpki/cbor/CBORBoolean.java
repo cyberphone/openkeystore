@@ -31,7 +31,7 @@ public class CBORBoolean extends CBORObject {
     /**
      * Create a CBOR <code>boolean</code> object.
      * 
-     * @param value
+     * @param value <code>true</code> or <code>false</code>
      */
     public CBORBoolean(boolean value) {
         this.value = value;
