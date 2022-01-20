@@ -47,6 +47,7 @@ import org.webpki.crypto.encryption.ContentEncryptionAlgorithms;
 import org.webpki.crypto.encryption.EncryptionCore;
 import org.webpki.crypto.encryption.KeyEncryptionAlgorithms;
 import org.webpki.crypto.signatures.SignatureWrapper;
+
 import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONParser;
 import org.webpki.json.SymmetricKeys;
@@ -148,7 +149,7 @@ public class CBORTest {
         String calc = DebugFormatter.getHexString(cbor);
         assertTrue("int=" + value + " c=" + calc + " h=" + hex, hex.equals(calc));
         CBORObject decodedInteger = CBORObject.decode(cbor);
-        if (value != 0 || forceUnsigned) {
+        if (value != -1 || forceUnsigned) {
             long dv = forceUnsigned ? decodedInteger.getUnsignedLong() : decodedInteger.getLong();
             assertTrue("Decoded value dv=" + dv + " v=" + value, dv == value);
         }
@@ -193,7 +194,7 @@ public class CBORTest {
                                   (variation == IntegerVariations.ULONG ? "unsigned " :"") +
                                   (variation == IntegerVariations.INT ? "int" : "long") + "'"); 
             }
-            assertTrue("cbor65", res.getIntegerAsBigInteger().toString().equals(value));
+            assertTrue("cbor65", res.getBigInteger().toString().equals(value));
         } else {
             long v;
             switch (variation) {
@@ -214,7 +215,7 @@ public class CBORTest {
     }
 
     void bigIntegerTest(String value, String hex) throws Exception {
-        byte[] cbor = new CBORBigInteger(new BigInteger(value)).encode();
+        byte[] cbor = new CBORInteger(new BigInteger(value)).encode();
         String calc = DebugFormatter.getHexString(cbor);
         assertTrue("big int=" + value + " c=" + calc + " h=" + hex,
                 hex.equals(DebugFormatter.getHexString(cbor)));
@@ -334,7 +335,7 @@ public class CBORTest {
         integerTest(0x8000000000000000L, true, true,      "1b8000000000000000");
         integerTest(0xffffffffffffffffL, true, true,      "1bffffffffffffffff");
         integerTest(0xfffffffffffffffeL, true, true,      "1bfffffffffffffffe");
-        integerTest(0,                  false, true,      "3bffffffffffffffff");
+        integerTest(-1,                  false, true,     "3bffffffffffffffff");
         
         integerTest("18446744073709551615", IntegerVariations.ULONG, false);
         integerTest("0", IntegerVariations.ULONG, false);
@@ -350,19 +351,8 @@ public class CBORTest {
         integerTest("9223372036854775807", IntegerVariations.LONG, false);
         integerTest("9223372036854775808", IntegerVariations.LONG, true);
         integerTest("-18446744073709551616", IntegerVariations.LONG, true);
-
-        try {
-            integerTest("-18446744073709551617", IntegerVariations.LONG, true);
-            fail("must not execute");
-        } catch (Exception e) {
-            checkException(e, "Value out of range for CBORInteger"); 
-        }
-        try {
-            integerTest("18446744073709551616", IntegerVariations.LONG, true);
-            fail("must not execute");
-        } catch (Exception e) {
-            checkException(e, "Value out of range for CBORInteger"); 
-        }
+        integerTest("-18446744073709551617", IntegerVariations.LONG, true);
+        integerTest("18446744073709551616", IntegerVariations.LONG, true);
         
         bigIntegerTest("18446744073709551615", "1bffffffffffffffff");
         bigIntegerTest("18446744073709551614", "1bfffffffffffffffe");
@@ -1451,8 +1441,8 @@ public class CBORTest {
         assertTrue("json", new CBORInteger(234).equals(serializeJson("234")));
         assertTrue("json", new CBORInteger(1).equals(serializeJson("1")));
         assertTrue("json", new CBORInteger(987654321).equals(serializeJson("0987654321")));
-        assertTrue("json", new CBORBigInteger(new BigInteger("9007199254740992")).equals(serializeJson(
-                                                             "9007199254740992")));
+        assertTrue("json", new CBORInteger(new BigInteger("9007199254740992")).equals(serializeJson(
+                                                          "9007199254740992")));
         
         CBORArray cborArray = new CBORArray()
             .addObject(new CBORTextString("hi"));

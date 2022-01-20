@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 
 import org.webpki.cbor.CBORArray;
-import org.webpki.cbor.CBORBigInteger;
+import org.webpki.cbor.CBORInteger;
 import org.webpki.cbor.CBORBoolean;
 import org.webpki.cbor.CBORByteString;
 import org.webpki.cbor.CBORFloatingPoint;
@@ -188,7 +188,7 @@ public class CBORDiagnosticParser {
         return floatingPoint ? 
                 new CBORFloatingPoint(Double.valueOf(token.toString())) 
                              : 
-                new CBORBigInteger(new BigInteger(token.toString()));
+                new CBORInteger(new BigInteger(token.toString()));
     }
 
     private char nextChar() throws IOException {

@@ -61,12 +61,12 @@ public class ValidateServlet extends CoreRequestServlet {
             if (!request.getContentType().startsWith("application/x-www-form-urlencoded")) {
                 throw new IOException("Unexpected MIME type:" + request.getContentType());
             }
-            logger.info("CBOR Signature Verification Entered");
-            System.out.println("intyp=" + request.getParameter("intyp"));
-            // Get the input data items
-            String signedCborHex = getParameter(request, CSF_OBJECT);
-            CBORMap signedCborObject = 
-                    CBORObject.decode(DebugFormatter.getByteArrayFromHex(signedCborHex)).getMap();
+             // Get the input data items
+            String signedCborString = getParameter(request, CSF_OBJECT);
+            CBORMap signedCborObject = (Boolean.valueOf(getParameter(request, CSF_OBJECT_IN_HEX)) ?
+                    CBORObject.decode(DebugFormatter.getByteArrayFromHex(signedCborString))
+                                                :
+                    CBORDiagnosticParser.parse(signedCborString)).getMap();
             String validationKey = getParameter(request, CSF_VALIDATION_KEY).trim();
             CBORObject signatureLabel = getSignatureLabel(request);
             
@@ -117,15 +117,15 @@ public class ValidateServlet extends CoreRequestServlet {
             }
             StringBuilder html = new StringBuilder(
                     "<div class='header'> Signature Successfully Validated</div>")
-                .append(HTML.fancyBox("signed",
+                .append(HTML.fancyBox(CSF_OBJECT,
                                       HTML.encode(signedCborObject.toString())
                                           .replace("\n", "<br>")
                                           .replace(" ", "&nbsp;"),
                                       "Signed CBOR object in diagnostic notation"))           
                 .append(HTML.fancyBox("inhex",
-                                      signedCborHex, 
+                                      DebugFormatter.getHexString(signedCborObject.encode()), 
                                       "Signed CBOR object in hexadecimal notation"))           
-                .append(HTML.fancyBox("vkey",
+                .append(HTML.fancyBox(CSF_VALIDATION_KEY,
                                       jwkValidationKey ? 
                                           JSONParser.parse(validationKey)
                                               .serializeToString(JSONOutputFormats.PRETTY_HTML)
@@ -158,6 +158,7 @@ public class ValidateServlet extends CoreRequestServlet {
                 "  console.log('mode=' + flag);\n" +
                 "  document.getElementById('" + PRM_CBOR_DATA + "').children[1].placeholder = flag ? " +
                   "'Diagnostic notation' : 'Hexadecimal data';\n" +
+                "  document.getElementById('" + CSF_OBJECT_IN_HEX + "').value = flag;\n" +
                 "}\n" +
                 "window.addEventListener('load', function(event) {\n" +
                 "  setInputMode(true);\n" +
@@ -165,10 +166,11 @@ public class ValidateServlet extends CoreRequestServlet {
 
         StringBuilder html = new StringBuilder(
                 "<form name='shoot' method='POST' action='validate'>" +
+                "<input type='hidden' name='" + CSF_OBJECT_IN_HEX + "' id='" + CSF_OBJECT_IN_HEX + "'>" +
                 "<div class='header'>CBOR Signature Validation</div>")
             .append(HTML.fancyText(
                         true,
-                        PRM_CBOR_DATA,
+                        CSF_OBJECT,
                         10, 
                         HTML.encode(CSFService.sampleSignature),
                         DIAG_OR_HEX +
@@ -193,6 +195,6 @@ public class ValidateServlet extends CoreRequestServlet {
                 "</div>" +
                 "</form>" +
                 "<div>&nbsp;</div>");
-        HTML.standardPage(response, null, html);
+        HTML.standardPage(response, js.toString(), html);
     }
 }

@@ -39,6 +39,8 @@ public class CoreRequestServlet extends HttpServlet {
     
     static final String CSF_SIGN_LABEL     = "siglbl";
 
+    static final String CSF_OBJECT_IN_HEX  = "inhex";
+
     static final String PRM_CBOR_DATA      = "cbor";
     
     static final String PRM_INPUT_TYPE     = "intyp";
@@ -64,7 +66,7 @@ public class CoreRequestServlet extends HttpServlet {
             "' name='" + PRM_INPUT_TYPE + "' " +
             "checked onchange='setInputMode(true)' value='true'></td>" +
             "<td>Diagnostic notation</td>" +
-            "<td><input type='radio' if name='" + PRM_INPUT_TYPE + "' " +
+            "<td><input type='radio' name='" + PRM_INPUT_TYPE + "' " +
             "onchange='setInputMode(false)' value='false'></td> " +
             "<td>Hexadecimal notation</td></tr>" +
             "</table>";
@@ -79,7 +81,7 @@ public class CoreRequestServlet extends HttpServlet {
     }
     
     byte[] getBinaryParameter(HttpServletRequest request, String parameter) throws IOException {
-        return getParameter(request, parameter).trim().getBytes("utf-8");
+        return getParameter(request, parameter).getBytes("utf-8");
     }
 
     String getTextArea(HttpServletRequest request, String name)

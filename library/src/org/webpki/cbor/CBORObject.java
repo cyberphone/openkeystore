@@ -153,7 +153,7 @@ public abstract class CBORObject {
     private long getConstrainedInteger(BigInteger min, 
                                        BigInteger max, 
                                        String dataType) throws IOException {
-        BigInteger value = getIntegerAsBigInteger();
+        BigInteger value = getBigInteger();
         if (value.compareTo(max) > 0 || value.compareTo(min) < 0) {
             bad("Value out of range for '" + dataType + "' (" + value.toString() + ")");
         }
@@ -161,30 +161,13 @@ public abstract class CBORObject {
     }
     
     /**
-     * Get CBOR integer as a BigInteger value.
-      * <p>
-     * This method requires that the object is a
-     * {@link CBORInteger}, 
-     * otherwise an exception will be thrown.
-     * </p>
-     * This method supports the full (65-bit) CBOR integer range.
-     * 
-     * @return BigInteger
-     * @throws IOException
-     */
-    public BigInteger getIntegerAsBigInteger() throws IOException {
-        checkTypeAndMarkAsRead(CBORTypes.INTEGER);
-        return ((CBORInteger) this).returnAsBigInteger();
-    }
-
-    /**
      * Get <code>long</code> value.
       * <p>
      * This method requires that the object is a
      * {@link CBORInteger} and fits a Java (<i>signed</i>) long, 
      * otherwise an exception will be thrown.
      * </p>
-     * Also see {@link #getIntegerAsBigInteger()}.
+     * Also see {@link #getBigInteger()}.
      * 
      * @return Long
      * @throws IOException
@@ -200,13 +183,12 @@ public abstract class CBORObject {
      * {@link CBORInteger} and fits a Java long (sign bit is used as well),
      * otherwise an exception will be thrown.
      * </p>
-     * Also see {@link #getIntegerAsBigInteger()}.
      * 
      * @return Long
      * @throws IOException
      */
     public long getUnsignedLong() throws IOException {
-        return getConstrainedInteger(BigInteger.ZERO, CBORBigInteger.MAX_INT64, "unsigned long");
+        return getConstrainedInteger(BigInteger.ZERO, CBORInteger.MAX_INT64, "unsigned long");
     }
 
     /**
@@ -216,7 +198,7 @@ public abstract class CBORObject {
      * {@link CBORInteger} and fits a Java (<i>signed</i>) int, 
      * otherwise an exception will be thrown.
      * </p>
-     * Also see {@link #getIntegerAsBigInteger()}.
+     * Also see {@link #getBigInteger()}.
      * 
      * @return Integer
      * @throws IOException
@@ -274,19 +256,15 @@ public abstract class CBORObject {
      * Get <code>big number</code> value.
      * <p>
      * This method requires that the object is either a
-     * {@link CBORInteger} or a {@link CBORBigInteger}, 
-     * otherwise an exception will be thrown.
+     * {@link CBORInteger}, otherwise an exception will be thrown.
      * </p>
      * 
      * @return BigInteger
      * @throws IOException
      */
     public BigInteger getBigInteger() throws IOException {
-        if (internalGetType() == CBORTypes.INTEGER) {
-            return getIntegerAsBigInteger();
-        }
-        checkTypeAndMarkAsRead(CBORTypes.BIG_INTEGER);
-        return ((CBORBigInteger) this).value;
+        checkTypeAndMarkAsRead(CBORTypes.INTEGER);
+        return ((CBORInteger) this).value;
     }
 
     /**
@@ -475,10 +453,10 @@ public abstract class CBORObject {
                             new BigInteger(-1, byteArray).subtract(BigInteger.ONE)
                                                :
                             new BigInteger(1, byteArray);
-                    if (CBORBigInteger.fitsAnInteger(bigInteger)) {
+                    if (CBORInteger.fitsAnInteger(bigInteger)) {
                         bad("Non-deterministic encoding: bignum fits integer");
                     }
-                    return new CBORBigInteger(bigInteger);
+                    return new CBORInteger(bigInteger);
 
                 case MT_FLOAT16:
                     long rawDouble;
@@ -567,7 +545,7 @@ public abstract class CBORObject {
                     return new CBORInteger(n, true);
     
                 case MT_NEGATIVE:
-                    return new CBORInteger(n + 1, false);
+                    return new CBORInteger(n, false);
     
                 case MT_BYTE_STRING:
                     return new CBORByteString(readBytes(checkLength(n)));

@@ -24,7 +24,6 @@ package org.webpki.cbor;
 public enum CBORTypes {ARRAY, 
                        MAP,
                        INTEGER, 
-                       BIG_INTEGER,
                        FLOATING_POINT, 
                        BYTE_STRING,
                        TEXT_STRING, 

@@ -20,8 +20,10 @@ import java.io.IOException;
 
 import java.math.BigInteger;
 
+import org.webpki.util.ArrayUtil;
+
 /**
- * Class for holding CBOR integers.
+ * Class for holding CBOR integer and big number.
  * 
  * Note that unsigned integers outside of the signed range MUST
  * use the {@link CBORInteger(long, boolean)} or 
@@ -30,9 +32,14 @@ import java.math.BigInteger;
  */
 public class CBORInteger extends CBORObject {
 
-    long value;
-    boolean unsignedMode;
+    static final BigInteger MAX_INT64 = new BigInteger("18446744073709551615");
+    static final BigInteger MIN_INT64 = new BigInteger("-18446744073709551616");
+    
+    static final byte[] UNSIGNED_BIG_INTEGER_TAG = {MT_BIG_UNSIGNED};
+    static final byte[] SIGNED_BIG_INTEGER_TAG   = {MT_BIG_SIGNED};
 
+    BigInteger value;
+ 
     /**
      * Standard integer handling.
      * <p>
@@ -43,13 +50,7 @@ public class CBORInteger extends CBORObject {
      * @param value Integer in long format
       */
     public CBORInteger(long value) {
-        if (value < 0) {
-            // Convert to magnitude mode
-            this.value = ~value;
-        } else {
-            this.value = value;
-            unsignedMode = true;
-        }
+        this(BigInteger.valueOf(value));
     }
     
     /**
@@ -58,47 +59,44 @@ public class CBORInteger extends CBORObject {
      * To cope with the entire 65-bit integer span supported by CBOR
      * you must use this constructor.  For unsigned integers values
      * from 0 to 2^64-1 can be specified while negative values range
-     * from 1 to 2^64.  Examples:
-     * <table>
-     * <tr><th>Long&nbsp;Value</th><th>Unsigned&nbsp;Mode</th><th>Actual Value</th></tr>
-     * <tr><td><code>0</code></td><td><code>true</code></td><td><code>0</code></td></tr>
-     * <tr><td><code>0</code></td><td><code>false</code></td><td><code>-0x10000000000000000 (-2^64)</code></td></tr>
-     * <tr><td><code>1</code></td><td><code>true</code></td><td><code>1</code></td></tr>
-     * <tr><td><code>1</code></td><td><code>false</code></td><td><code>-1</code></td></tr>
-     * <tr><td><code>0xffffffffffffffff</code></td><td><code>true</code></td><td><code>0xffffffffffffffff</code></td></tr>
-     * <tr><td><code>0xffffffffffffffff</code></td><td><code>false</code></td><td><code>-0xffffffffffffffff</code></td></tr>
-     * </table>
+     * from 1 to 2^64.
+     * <p>
+     * If <code>unsigned</code> is set to <code>false</code>, this constructor
+     * assumes CBOR native encoding mode.  That is, <code>value</code> is treated as
+     * an unsigned magnitude offset by -1.  This means that the value 43 effectively
+     * represents -44.  A special case is the value 0xffffffffffffffff (long -1),
+     * which corresponds to to -2^64.
+     * </p>
      *
      * @param value long value
-     * @param unsignedMode <code>true</code> if value should be considered as unsigned
+     * @param unsigned <code>true</code> if value should be considered as unsigned
      */
-    public CBORInteger(long value, boolean unsignedMode) {
-        this.value = unsignedMode ? value : value - 1;
-        this.unsignedMode = unsignedMode;
+    public CBORInteger(long value, boolean unsigned) {
+        this(unsigned ? 
+            BigInteger.valueOf(value).and(MAX_INT64) 
+                      : 
+            value == -1 ? MIN_INT64 : BigInteger.valueOf(value)
+                                          .and(MAX_INT64)
+                                          .add(BigInteger.ONE)
+                                          .negate());
     }
 
     /**
      * Using BigInteger as input.
      * 
      * This constructor permits using the full range of applicable
-     * integer values (-2^64 to 2^64-1).
+     * integer values.
      * 
      * @param value Integer in BigInteger format
-     * @throws IllegalArgumentException If value does not fit a CBOR integer
      */
     public CBORInteger(BigInteger value) {
-        if (!CBORBigInteger.fitsAnInteger(value)) {
-                throw new IllegalArgumentException("Value out of range for " +
-                                                   CBORInteger.class.getSimpleName());
-        }
-        if (value.compareTo(BigInteger.ZERO) >= 0) {
-            this.value =  value.longValue();
-            this.unsignedMode = true;
-        } else {
-            this.value =  value.add(BigInteger.ONE).negate().longValue();
-        }
+        this.value = value;
     }
 
+    static boolean fitsAnInteger(BigInteger value) {
+        return value.compareTo(MAX_INT64) <= 0 && value.compareTo(MIN_INT64) >= 0;
+    }
+    
     @Override
     CBORTypes internalGetType() {
         return CBORTypes.INTEGER;
@@ -106,19 +104,26 @@ public class CBORInteger extends CBORObject {
 
     @Override
     byte[] internalEncode() throws IOException {
-        return getEncodedCore(unsignedMode ? MT_UNSIGNED : MT_NEGATIVE, value);
+        boolean unsigned = value.compareTo(BigInteger.ZERO) >= 0;
+        BigInteger cborAdjusted = unsigned ? value : value.negate().subtract(BigInteger.ONE);
+        if (fitsAnInteger(value)) {
+            // Fits in "int65" decoding
+            return getEncodedCore(unsigned ? MT_UNSIGNED : MT_NEGATIVE, cborAdjusted.longValue());
+        }
+        // Does not fit "int65" so we must use big number decoding
+        byte[] encoded = cborAdjusted.toByteArray();
+        if (encoded[0] == 0) {
+            // No leading zeroes please
+            byte[] temp = new byte[encoded.length - 1];
+            System.arraycopy(encoded, 1, temp, 0, temp.length);
+            encoded = temp;
+        }
+        return ArrayUtil.add(unsigned ? UNSIGNED_BIG_INTEGER_TAG : SIGNED_BIG_INTEGER_TAG, 
+                             new CBORByteString(encoded).internalEncode());
     }
     
-    BigInteger returnAsBigInteger() {
-        BigInteger bigInteger = BigInteger.valueOf(value).and(CBORBigInteger.MAX_INT64);
-        if (unsignedMode) {
-            return bigInteger;
-        }
-        return value == -1 ? CBORBigInteger.MIN_INT64 : bigInteger.add(BigInteger.ONE).negate();
-    }
-
     @Override
     void internalToString(CBORObject.PrettyPrinter prettyPrinter) {
-        prettyPrinter.appendText(returnAsBigInteger().toString());
+        prettyPrinter.appendText(value.toString());
     }
 }

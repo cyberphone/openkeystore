@@ -358,6 +358,8 @@ public class CreateServlet extends CoreRequestServlet {
 
             // We terminate by validating the signature as well
             request.getRequestDispatcher("validate?" +
+                CSF_OBJECT_IN_HEX +
+                "=true&" +
                 CSF_OBJECT + 
                 "=" +
                 DebugFormatter.getHexString(signedCborObject.encode()) +
