@@ -50,7 +50,7 @@ public class CBORSymKeyDecrypter extends CBORDecrypter {
          * @throws IOException
          * @throws GeneralSecurityException
          */
-        byte[] locate(byte[] optionalKeyId, 
+        byte[] locate(CBORObject optionalKeyId, 
                       ContentEncryptionAlgorithms contentEncryptionAlgorithm)
             throws IOException, GeneralSecurityException;
     }
@@ -66,7 +66,7 @@ public class CBORSymKeyDecrypter extends CBORDecrypter {
         this(new KeyLocator() {
 
             @Override
-            public byte[] locate(byte[] optionalKeyId,
+            public byte[] locate(CBORObject optionalKeyId,
                                  ContentEncryptionAlgorithms contentEncryptionAlgorithm)
                     throws IOException, GeneralSecurityException {
                 return secretKey;
@@ -87,8 +87,8 @@ public class CBORSymKeyDecrypter extends CBORDecrypter {
     @Override
     byte[] getContentEncryptionKey(CBORMap innerObject,
                                    ContentEncryptionAlgorithms contentEncryptionAlgorithm,
-                                   byte[] optionalKeyId) throws IOException,
-                                                                GeneralSecurityException {
+                                   CBORObject optionalKeyId) throws IOException,
+                                                                     GeneralSecurityException {
         return keyLocator.locate(optionalKeyId, contentEncryptionAlgorithm);
     }
 }

@@ -86,7 +86,7 @@ public abstract class CBOREncrypter {
     ContentEncryptionAlgorithms contentEncryptionAlgorithm;
     
     // Optional key ID
-    byte[] keyId;
+    CBORObject optionalKeyId;
 
     CBOREncrypter(ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
         this.contentEncryptionAlgorithm = contentEncryptionAlgorithm;
@@ -114,13 +114,37 @@ public abstract class CBOREncrypter {
      * For symmetric key-algorithms, a keyId or implicit key are
      * the only ways to retrieve the proper secret key.
      * </p>
+     * <p>
+     * Note that a <code>keyId</code> argument of <code>null</code> 
+     * is equivalent to the default (= no <code>keyId</code>).
+     * </p>
      * 
-     * @param keyId A key Id byte array
+     * @param keyId A CBOR key Id or <code>null</code>
      * @return this
      */
-    public CBOREncrypter setKeyId(byte[] keyId) {
-        this.keyId = keyId;
+    public CBOREncrypter setKeyId(CBORObject keyId) {
+        this.optionalKeyId = keyId;
         return this;
+    }
+
+    /**
+     * Sets optional key Id.
+     * 
+     * @param keyId A CBOR key Id
+     * @return this
+     */
+    public CBOREncrypter setKeyId(int keyId) {
+        return setKeyId(new CBORInteger(keyId));
+    }
+
+    /**
+     * Sets optional key Id.
+     * 
+     * @param keyId A CBOR key Id
+     * @return this
+     */
+    public CBOREncrypter setKeyId(String keyId) {
+        return setKeyId(new CBORTextString(keyId));
     }
 
     /**
@@ -146,8 +170,8 @@ public abstract class CBOREncrypter {
         byte[] contentEncryptionKey = getContentEncryptionKey(innerObject);
 
         // Add a key Id if there is one.
-        if (keyId != null) {
-            innerObject.setObject(KEY_ID_LABEL, new CBORByteString(keyId));
+        if (optionalKeyId != null) {
+            innerObject.setObject(KEY_ID_LABEL, optionalKeyId);
         }
         
         // Now we should have everything for encrypting the actual data.

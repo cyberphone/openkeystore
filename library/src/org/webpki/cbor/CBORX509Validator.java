@@ -99,11 +99,11 @@ public class CBORX509Validator extends CBORValidator {
     @Override
     void validate(CBORMap signatureObject, 
                   int coseAlgorithmId,
-                  byte[] optionalKeyId,
+                  CBORObject optionalKeyId,
                   byte[] signatureValue,
                   byte[] signedData) throws IOException, GeneralSecurityException {
 
-        // keyId and certificates?
+        // keyId and certificates? Never!
         CBORSigner.checkKeyId(optionalKeyId);
         
         // Get signature algorithm.

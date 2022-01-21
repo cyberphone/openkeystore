@@ -143,9 +143,9 @@ public class CBORX509Signer extends CBORSigner {
     }
 
     @Override
-    void additionalItems(CBORMap signatureObject, byte[] optionalKeyId) 
+    void additionalItems(CBORMap signatureObject) 
             throws IOException, GeneralSecurityException {
         signatureObject.setObject(CERT_PATH_LABEL, encodeCertificateArray(certificatePath));
-        CBORSigner.checkKeyId(optionalKeyId);
+        checkKeyId(optionalKeyId);
     }
 }

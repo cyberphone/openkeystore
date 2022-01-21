@@ -121,11 +121,10 @@ public class CBORAsymKeySigner extends CBORSigner {
     }
 
     @Override
-    void additionalItems(CBORMap signatureObject, byte[] optionalKeyId) 
-            throws IOException, GeneralSecurityException {
+    void additionalItems(CBORMap signatureObject) throws IOException, GeneralSecurityException {
         if (optionalPublicKey != null) {
             signatureObject.setObject(PUBLIC_KEY_LABEL, CBORPublicKey.encode(optionalPublicKey));
-            CBORSigner.checkKeyId(optionalKeyId);
+            checkKeyId(optionalKeyId);
         }
     }
 }

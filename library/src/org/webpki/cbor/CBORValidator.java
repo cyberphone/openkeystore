@@ -30,7 +30,7 @@ public abstract class CBORValidator {
 
     abstract void validate(CBORMap signatureObject, 
                            int coseAlgorithmId,
-                           byte[] optionalKeyId,
+                           CBORObject optionalKeyId,
                            byte[] signatureValue,
                            byte[] signedData) throws IOException, GeneralSecurityException;
  
@@ -53,10 +53,8 @@ public abstract class CBORValidator {
                                                             CBORSigner.SIGNATURE_LABEL);
 
         // Fetch optional keyId.
-        byte[] optionalKeyId = signatureObject.hasKey(CBORSigner.KEY_ID_LABEL)
-                ? signatureObject.getObject(CBORSigner.KEY_ID_LABEL)
-                        .getByteString()
-                : null;
+        CBORObject optionalKeyId = signatureObject.hasKey(CBORSigner.KEY_ID_LABEL) ?
+                signatureObject.getObject(CBORSigner.KEY_ID_LABEL).scan() : null;
 
         // Call specific validator. This code presumes that internalEncode() 
         // returns a deterministic representation of CBOR items.

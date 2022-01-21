@@ -67,7 +67,7 @@ public class CborSignatures {
     static String baseData;
     static String baseSignatures;
     static SymmetricKeys symmetricKeys;
-    static byte[] keyId;
+    static CBORObject keyId;
     
     static final String SIGNATURE_LABEL = "signature";
     
@@ -198,7 +198,7 @@ public class CborSignatures {
 
     static void symKeySign(int keyBits, HmacAlgorithms algorithm, boolean wantKeyId) throws Exception {
         byte[] key = symmetricKeys.getValue(keyBits);
-        byte[] keyName = symmetricKeys.getName(keyBits).getBytes("utf-8");
+        CBORObject keyName = new CBORTextString(symmetricKeys.getName(keyBits));
         CBORHmacSigner signer = new CBORHmacSigner(key, algorithm);
         if (wantKeyId) {
             signer.setKeyId(keyName);
@@ -210,7 +210,7 @@ public class CborSignatures {
         new CBORHmacValidator(new CBORHmacValidator.KeyLocator() {
             
             @Override
-            public byte[] locate(byte[] optionalKeyId, HmacAlgorithms hmacAlgorithm)
+            public byte[] locate(CBORObject optionalKeyId, HmacAlgorithms hmacAlgorithm)
                     throws IOException, GeneralSecurityException {
                 if (wantKeyId && !CBORTest.compareKeyId(keyName, optionalKeyId)) {
                     throw new GeneralSecurityException("No id");
@@ -248,7 +248,7 @@ public class CborSignatures {
     static KeyPair readJwk(String keyType) throws Exception {
         JSONObjectReader jwkPlus = JSONParser.parse(ArrayUtil.readFile(baseKey + keyType + "privatekey.jwk"));
         // Note: The built-in JWK decoder does not accept "kid" since it doesn't have a meaning in JSF or JEF. 
-        keyId = jwkPlus.getString("kid").getBytes("utf-8");
+        keyId = new CBORTextString(jwkPlus.getString("kid"));
         jwkPlus.removeProperty("kid");
         return jwkPlus.getKeyPair();
     }
@@ -329,7 +329,7 @@ public class CborSignatures {
             
             @Override
             public PublicKey locate(PublicKey arg0, 
-                                    byte[] optionalKeyId, 
+                                    CBORObject optionalKeyId, 
                                     AsymSignatureAlgorithms arg2)
                     throws IOException, GeneralSecurityException {
                 if (wantPublicKey && !keyPair.getPublic().equals(arg0)) {

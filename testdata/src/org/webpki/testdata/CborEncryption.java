@@ -31,6 +31,7 @@ import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORSymKeyDecrypter;
 import org.webpki.cbor.CBORSymKeyEncrypter;
 import org.webpki.cbor.CBORTest;
+import org.webpki.cbor.CBORTextString;
 import org.webpki.cbor.CBORAsymKeyDecrypter;
 import org.webpki.cbor.CBORAsymKeyEncrypter;
 import org.webpki.cbor.CBORDecrypter;
@@ -59,7 +60,7 @@ public class CborEncryption {
     static String baseData;
     static String baseEncryption;
     static SymmetricKeys symmetricKeys;
-    static byte[] keyId;
+    static CBORObject keyId;
     static byte[] dataToBeEncrypted;
    
 
@@ -188,7 +189,7 @@ public class CborEncryption {
 
     static void symKeyEncrypt(int keyBits, ContentEncryptionAlgorithms algorithm, boolean wantKeyId) throws Exception {
         byte[] key = symmetricKeys.getValue(keyBits);
-        byte[] keyName = symmetricKeys.getName(keyBits).getBytes("utf-8");
+        CBORObject keyName = new CBORTextString(symmetricKeys.getName(keyBits));
         CBORSymKeyEncrypter encrypter = new CBORSymKeyEncrypter(key, algorithm);
         if (wantKeyId) {
             encrypter.setKeyId(keyName);
@@ -199,7 +200,7 @@ public class CborEncryption {
         decrypter = new CBORSymKeyDecrypter(new CBORSymKeyDecrypter.KeyLocator() {
 
             @Override
-            public byte[] locate(byte[] optionalKeyId, ContentEncryptionAlgorithms arg1)
+            public byte[] locate(CBORObject optionalKeyId, ContentEncryptionAlgorithms arg1)
                     throws IOException, GeneralSecurityException {
 //TODO
                 if (wantKeyId && !CBORTest.compareKeyId(keyName, optionalKeyId)) {
@@ -223,7 +224,7 @@ public class CborEncryption {
     static KeyPair readJwk(String keyType) throws Exception {
         JSONObjectReader jwkPlus = JSONParser.parse(ArrayUtil.readFile(baseKey + keyType + "privatekey.jwk"));
         // Note: The built-in JWK decoder does not accept "kid" since it doesn't have a meaning in JSF or JEF. 
-        keyId = jwkPlus.getString("kid").getBytes("utf-8");
+        keyId = new CBORTextString(jwkPlus.getString("kid"));
         jwkPlus.removeProperty("kid");
         return jwkPlus.getKeyPair();
     }
@@ -254,7 +255,7 @@ public class CborEncryption {
 
             @Override
             public PrivateKey locate(PublicKey optionalPublicKey,
-                                     byte[] optionalKeyId, 
+                                     CBORObject optionalKeyId, 
                                      ContentEncryptionAlgorithms cea,
                                      KeyEncryptionAlgorithms kea)
                     throws IOException, GeneralSecurityException {
@@ -288,7 +289,7 @@ public class CborEncryption {
         for (String comment : new String[]{"Content encryption algorithm = A256GCM",
                                            "Key encryption object",
                                            "Key encryption algorithm = ECDH-ES+A256KW",
-                                           "Key Id = Binary(&quot;example.com:x25519&quot;)",
+                                           "Key Id",
                                            "Ephemeral public key descriptor in COSE format",
                                            "kty = OKP",
                                            "crv = X25519",

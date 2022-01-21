@@ -59,31 +59,25 @@ public abstract class CBORSigner {
     int coseAlgorithmId;
     
     // Optional key ID
-    byte[] keyId;
+    CBORObject optionalKeyId;
 
     CBORSigner() {}
     
     abstract byte[] signData(byte[] dataToSign) throws IOException, GeneralSecurityException;
     
-    abstract void additionalItems(CBORMap signatureObject, byte[] optionalKeyId) 
+    abstract void additionalItems(CBORMap signatureObject)
             throws IOException, GeneralSecurityException;
     
-    static void checkKeyId(byte[] keyId) throws GeneralSecurityException {
-        if (keyId != null) {
-            throw new GeneralSecurityException(STDERR_KEY_ID_PUBLIC);
-        }
-    }
-     
     /**
-     * Set signature <code>keyId</code>.
+     * Sets signature <code>keyId</code>.
      * 
      * In the case the public key is not provided in the signature
      * object, the signature key may be tied to an identifier
      * known by the relying party.  How such an identifier
      * is used to retrieve the proper public key is up to a
      * convention between the parties using
-     * a specific message scheme.  A <code>keyId</code> may be a database
-     * index, a hash of the public key, a text string,
+     * a specific message scheme.  A <code>keyId</code> may be a
+     * database index, a hash of the public key, a text string,
      * or a URL pointing to a Web server holding a public key
      * in PEM format.
      * <p>
@@ -94,20 +88,45 @@ public abstract class CBORSigner {
      * Note that <code>keyId</code> is not permitted for X509 based signatures.
      * </p>
      * <p>
-     * A <code>keyId</code> argument of <code>null</code> 
+     * <p>
+     * Note that a <code>keyId</code> argument of <code>null</code> 
      * is equivalent to the default (= no <code>keyId</code>).
      * </p>
      * 
-     * @param keyId A key Id byte array or <code>null</code>
+     * @param keyId A CBOR key Id or <code>null</code>
      * @return this
      */
-    public CBORSigner setKeyId(byte[] keyId) {
-        this.keyId = keyId;
+    public CBORSigner setKeyId(CBORObject keyId) {
+        this.optionalKeyId = keyId;
         return this;
     }
 
     /**
-     * Set cryptographic provider.
+     * Sets signature <code>keyId</code>.
+     * 
+     * @param keyId A CBOR key Id
+     * @return this
+     * 
+     * @see {@link setKeyId(CBORObject)}.
+     */
+    public CBORSigner setKeyId(String keyId) {
+        return setKeyId(new CBORTextString(keyId));
+    }
+
+    /**
+     * Sets signature <code>keyId</code>.
+     * 
+     * @param keyId A CBOR key Id
+     * @return this
+     *
+     * @see {@link setKeyId(CBORObject)}.
+     */
+    public CBORSigner setKeyId(int keyId) {
+        return setKeyId(new CBORInteger(keyId));
+    }
+
+    /**
+     * Sets cryptographic provider.
      * 
      * @param provider Name of provider like "BC"
      * @return CBORSigner
@@ -126,8 +145,8 @@ public abstract class CBORSigner {
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public CBORMap sign(CBORObject key, CBORMap objectToSign) 
-            throws IOException, GeneralSecurityException {
+    public CBORMap sign(CBORObject key, CBORMap objectToSign) throws IOException,
+                                                                     GeneralSecurityException {
 
         // Create empty signature object.
         CBORMap signatureObject = new CBORMap();
@@ -135,14 +154,14 @@ public abstract class CBORSigner {
         // Add the mandatory signature algorithm.
         signatureObject.setObject(ALGORITHM_LABEL, new CBORInteger(coseAlgorithmId));
         
-        // Asymmetric key signatures add specific items to the signature container.
-        additionalItems(signatureObject, keyId);
-
         // Add a keyId if there is one.
-        if (keyId != null) {
-            signatureObject.setObject(KEY_ID_LABEL, new CBORByteString(keyId));
+        if (optionalKeyId != null) {
+            signatureObject.setObject(KEY_ID_LABEL, optionalKeyId);
         }
-
+        
+        // Asymmetric key signatures add specific items to the signature container.
+        additionalItems(signatureObject);
+        
         // Add the prepared signature object to the object we want to sign. 
         objectToSign.setObject(key, signatureObject);
 
@@ -164,8 +183,8 @@ public abstract class CBORSigner {
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public CBORMap sign(int key, CBORMap objectToSign) 
-            throws IOException, GeneralSecurityException {
+    public CBORMap sign(int key, CBORMap objectToSign) throws IOException,
+                                                              GeneralSecurityException {
         return sign(new CBORInteger(key), objectToSign);
     }
 
@@ -178,15 +197,20 @@ public abstract class CBORSigner {
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public CBORMap sign(String key, CBORMap objectToSign) 
-            throws IOException, GeneralSecurityException {
+    public CBORMap sign(String key, CBORMap objectToSign) throws IOException, 
+                                                                 GeneralSecurityException {
         return sign(new CBORTextString(key), objectToSign);
     }
 
+    static void checkKeyId(CBORObject optionalKeyId) throws GeneralSecurityException {
+        if (optionalKeyId != null) {
+            throw new GeneralSecurityException(STDERR_KEY_ID_PUBLIC);
+        }
+    }
+    
     /**
      * For internal use only
      */
     static final String STDERR_KEY_ID_PUBLIC = 
             "\"keyId\" cannot be combined with public key objects";
-
 }

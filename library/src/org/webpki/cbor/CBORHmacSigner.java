@@ -88,8 +88,7 @@ public class CBORHmacSigner extends CBORSigner {
     }
 
     @Override
-    void additionalItems(CBORMap signatureObject, byte[] optionalKeyId)
-            throws IOException, GeneralSecurityException {
+    void additionalItems(CBORMap signatureObject) throws IOException, GeneralSecurityException {
         // No additional items needed.
     }
 }

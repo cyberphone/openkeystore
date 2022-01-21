@@ -299,12 +299,13 @@ public class CreateServlet extends CoreRequestServlet {
             boolean certOption = request.getParameter(FLG_CERT_PATH) != null;
             String algorithmString = getParameter(request, PRM_ALGORITHM);
             String optionalKeyIdString = getParameter(request, PRM_KEY_ID);
-            byte[] optionalKeyId = null;
+            CBORObject optionalKeyId = null;
             if (optionalKeyIdString.length() != 0) {
                 try {
-                    optionalKeyId = DebugFormatter.getByteArrayFromHex(optionalKeyIdString.trim());
+                    optionalKeyId = CBORDiagnosticParser.parse(optionalKeyIdString.trim());
                 } catch (IOException e) {
-                    throw new IOException("keyId must be a hex string");
+                    throw new IOException("Key Ids must be in CBOR diagnostic " +
+                            "notation like \"mykey\" or 31");
                 }
             }
 

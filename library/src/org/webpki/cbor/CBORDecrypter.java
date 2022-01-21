@@ -34,8 +34,8 @@ public abstract class CBORDecrypter {
     
     abstract byte[] getContentEncryptionKey(CBORMap innerObject,
                                             ContentEncryptionAlgorithms contentEncryptionAlgorithm,
-                                            byte[] optionalKeyId) throws IOException,
-                                                                         GeneralSecurityException;
+                                            CBORObject optionalKeyId) 
+            throws IOException, GeneralSecurityException;
     
     CBORMap getOptionalKeyEncryptionObject(CBORMap encryptionObject) throws IOException {
         return encryptionObject;
@@ -65,8 +65,8 @@ public abstract class CBORDecrypter {
         CBORMap innerObject = getOptionalKeyEncryptionObject(encryptionObject);
              
         // Get the key Id if there is one.
-        byte[] optionalKeyId = innerObject.hasKey(CBOREncrypter.KEY_ID_LABEL) ?
-            innerObject.getObject(CBOREncrypter.KEY_ID_LABEL).getByteString() : null;
+        CBORObject optionalKeyId = innerObject.hasKey(CBOREncrypter.KEY_ID_LABEL) ?
+            innerObject.getObject(CBOREncrypter.KEY_ID_LABEL).scan() : null;
         
         // Get the content encryption key which also may be encrypted 
         byte[] contentDecryptionKey = getContentEncryptionKey(innerObject,

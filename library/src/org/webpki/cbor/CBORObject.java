@@ -707,7 +707,7 @@ public abstract class CBORObject {
         try {
             return ArrayUtil.compare(((CBORObject) object).internalEncode(), internalEncode());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            return false;
         }
     }
 

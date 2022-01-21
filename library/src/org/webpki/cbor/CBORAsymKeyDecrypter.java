@@ -56,7 +56,7 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
          * @throws GeneralSecurityException
          */
         PrivateKey locate(PublicKey optionalPublicKey, 
-                          byte[] optionalKeyId,
+                          CBORObject optionalKeyId,
                           ContentEncryptionAlgorithms contentEncryptionAlgorithm,
                           KeyEncryptionAlgorithms keyEncryptionAlgorithm)
             throws IOException, GeneralSecurityException;
@@ -74,7 +74,7 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
 
             @Override
             public PrivateKey locate(PublicKey optionalPublicKey,
-                                     byte[] optionalKeyId,
+                                     CBORObject optionalKeyId,
                                      ContentEncryptionAlgorithms contentEncryptionAlgorithm,
                                      KeyEncryptionAlgorithms keyEncryptionAlgorithm)
                     throws IOException, GeneralSecurityException {
@@ -101,8 +101,8 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
     @Override
     byte[] getContentEncryptionKey(CBORMap innerObject,
                                    ContentEncryptionAlgorithms contentEncryptionAlgorithm,
-                                   byte[] optionalKeyId) throws IOException,
-                                                                GeneralSecurityException {
+                                   CBORObject optionalKeyId) throws IOException,
+                                                                    GeneralSecurityException {
         // Mandatory algorithm
         KeyEncryptionAlgorithms keyEncryptionAlgorithm =
                 KeyEncryptionAlgorithms.getAlgorithmFromId(
