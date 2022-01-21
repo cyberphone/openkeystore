@@ -61,7 +61,7 @@ public class CBORAsymKeyValidator extends CBORValidator {
     KeyLocator keyLocator;
 
     /**
-     * Initialize validator with public key.
+     * Initializes validator with a public key.
      * 
      * @param publicKey The anticipated public key
      */
@@ -80,7 +80,7 @@ public class CBORAsymKeyValidator extends CBORValidator {
     }
 
     /**
-     * Initialize validator with a locator.
+     * Initializes validator with a locator.
      * 
      * This option provides full control for the verifier
      * regarding in-lined public keys and key identifiers.

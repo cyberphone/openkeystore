@@ -114,7 +114,7 @@ public class CBORPublicKey {
      * Java/JCE to CBOR/COSE conversion.
      * 
      * @param publicKey
-     * @return
+     * @return Public key in CBOR format
      * @throws IOException
      * @throws GeneralSecurityException
      */
@@ -168,8 +168,8 @@ public class CBORPublicKey {
     /**
      * CBOR/COSE to Java/JCE conversion.
      * 
-     * @param cborPublicKey
-     * @return PublicKey
+     * @param cborPublicKey Public key in CBOR format
+     * @return Public key as a Java object 
      * @throws IOException
      * @throws GeneralSecurityException
      */

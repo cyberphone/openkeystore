@@ -39,7 +39,7 @@ public class CBORFloatingPoint extends CBORObject {
     long bitFormat;
     
     /**
-     * Create a CBOR <code>floating point</code> object.
+     * Creates a CBOR <code>floating point</code>.
      * 
      * @param value
      */

@@ -29,7 +29,7 @@ public class CBORBoolean extends CBORObject {
     boolean value;
 
     /**
-     * Create a CBOR <code>boolean</code> object.
+     * Creates a CBOR <code>boolean</code>.
      * 
      * @param value <code>true</code> or <code>false</code>
      */

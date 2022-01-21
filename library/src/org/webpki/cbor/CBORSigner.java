@@ -118,7 +118,7 @@ public abstract class CBORSigner {
     }
 
     /**
-     * Sign CBOR object.
+     * Signs CBOR object.
      * 
      * @param key Key holding the signature in the CBOR map to sign
      * @param objectToSign CBOR map to be signed
@@ -156,7 +156,7 @@ public abstract class CBORSigner {
     }
 
     /**
-     * Sign CBOR object.
+     * Signs CBOR object.
      * 
      * @param key Key holding the signature in the CBOR map to sign
      * @param objectToSign CBOR map to be signed
@@ -170,7 +170,7 @@ public abstract class CBORSigner {
     }
 
     /**
-     * Sign CBOR object.
+     * Signs CBOR object.
      * 
      * @param key Key holding the signature in the CBOR map to sign
      * @param objectToSign CBOR map to be signed

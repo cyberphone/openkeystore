@@ -48,7 +48,7 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
          * This interface also enables encryption parameter validation.
          * 
          * @param optionalPublicKey Optional public key found in the encryption object
-         * @param optionalKeyId KeyId or <code>null</code>
+         * @param optionalKeyId Optional key Id found in the encryption object
          * @param contentEncryptionAlgorithm The requested content encryption algorithm
          * @param keyEncryptionAlgorithm The requested key encryption algorithm
          * @return Private key for decryption
@@ -65,7 +65,7 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
     KeyLocator keyLocator;
     
     /**
-     * Initialize decrypter with a private key.
+     * Initializes decrypter with a private key.
      * 
      * @param privateKey The anticipated private key to decrypt with
      */
@@ -85,7 +85,7 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
     }
 
     /**
-     * Initialize decrypter with a key locator.
+     * Initializes decrypter with a key locator.
      * 
      * @param keyLocator The call back
      */

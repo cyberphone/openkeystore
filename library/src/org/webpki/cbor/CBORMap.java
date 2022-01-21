@@ -57,7 +57,10 @@ public class CBORMap extends CBORObject {
     };
 
     Map<CBORObject, CBORObject> keys = new TreeMap<>(comparator);
-
+    
+    /**
+     * Creates a CBOR <code>map</code>.
+     */
     public CBORMap() {
     }
     

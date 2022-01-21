@@ -28,7 +28,7 @@ public class CBORTextString extends CBORObject {
     String textString;
 
     /**
-     * Create a CBOR <code>text string</code> object.
+     * Creates a CBOR <code>text string</code>.
      */
     public CBORTextString(String textString) {
         this.textString = textString;

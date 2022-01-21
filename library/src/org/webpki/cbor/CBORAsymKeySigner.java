@@ -46,7 +46,7 @@ public class CBORAsymKeySigner extends CBORSigner {
     AsymKeySignerInterface signer;
 
     /**
-     * Initialize signer.
+     * Initializes signer.
      * 
      * @param signer Custom signer
      * @throws GeneralSecurityException 
@@ -59,7 +59,7 @@ public class CBORAsymKeySigner extends CBORSigner {
     }
     
     /**
-     * Initialize signer.
+     * Initialize signer with a private key.
      * 
      * The default signature algorithm to use is based on the recommendations
      * in RFC 7518.
@@ -85,7 +85,7 @@ public class CBORAsymKeySigner extends CBORSigner {
     }
 
     /**
-     * Put a public key into the signature container.
+     * Puts a public key into the signature container.
      * 
      * <p>
      * Note that a public key value of <code>null</code> 
@@ -102,7 +102,7 @@ public class CBORAsymKeySigner extends CBORSigner {
     }
     
     /**
-     * Set signature algorithm.
+     * Sets signature algorithm.
      * 
      * @param algorithm The algorithm
      * @return this

@@ -42,7 +42,7 @@ public abstract class CBORDecrypter {
     }
     
     /**
-     * Encrypt data.
+     * Decrypts data.
      * 
      * @param encodedEncryptionObject CBOR encryption object
      * @return Decrypted data

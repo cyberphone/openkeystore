@@ -37,7 +37,7 @@ public class CBORHmacSigner extends CBORSigner {
     HmacSignerInterface signer;
 
     /**
-     * Initialize internal signer.
+     * Initializes signer.
      * 
      * @param secretKey The key to sign with
      * @param algorithm The algorithm to use
@@ -59,7 +59,7 @@ public class CBORHmacSigner extends CBORSigner {
      }
     
     /**
-     * Initialize external signer.
+     * Initializes signer with an external interface.
      * 
      * @param signer The external signer
      * @throws IOException 
@@ -72,7 +72,7 @@ public class CBORHmacSigner extends CBORSigner {
     }
     
     /**
-     * Set signature algorithm.
+     * Sets signature algorithm.
      * 
      * @param algorithm The algorithm
      * @return this

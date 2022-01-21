@@ -30,7 +30,7 @@ public class CBORArray extends CBORObject {
     ArrayList<CBORObject> objectList = new ArrayList<>();
 
     /**
-     * Create a CBOR array <code>[]</code> object.
+     * Creates a CBOR array <code>[]</code>.
      * 
      */
     public CBORArray() {}

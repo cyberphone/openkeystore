@@ -26,7 +26,7 @@ public class CBORNull extends CBORObject {
     static final byte[] NULL_TAG = {MT_NULL};
 
     /**
-     * Create a CBOR <code>null</code> object.
+     * Creates a CBOR <code>null</code>.
      */
     public CBORNull() {}
 

@@ -23,12 +23,10 @@ import java.math.BigInteger;
 import org.webpki.util.ArrayUtil;
 
 /**
- * Class for holding CBOR integer and big number.
+ * Class for holding CBOR <code>integer</code> and <code>big number</code>.
  * 
- * Note that unsigned integers outside of the signed range MUST
- * use the {@link CBORInteger(long, boolean)} or 
- * {@link CBORInteger(BigInteger)} constructors in order
- * to produce proper deterministic (canonical) encoding.
+ * Note that the encoder is adaptive, selecting the shortest possible
+ * representation in order to produce a fully deterministic result.
  */
 public class CBORInteger extends CBORObject {
 
@@ -41,7 +39,7 @@ public class CBORInteger extends CBORObject {
     BigInteger value;
  
     /**
-     * Standard integer handling.
+     * Create a CBOR <code>integer</code>.
      * <p>
      * Note: this constructor assumes that value is a <i>signed</i> long.
      * </p>
@@ -54,7 +52,7 @@ public class CBORInteger extends CBORObject {
     }
     
     /**
-     * Force magnitude mode integer.
+     * Create a CBOR <code>unsigned</code> or <code>negative integer</code>.
      * 
      * To cope with the entire 65-bit integer span supported by CBOR
      * you must use this constructor.  Unsigned integers
@@ -62,10 +60,10 @@ public class CBORInteger extends CBORObject {
      * while negative integers range from <code>-1</code> to <code>-2^64</code>.
      * <p>
      * If the <code>unsigned</code> flag is set to <code>false</code>, this constructor
-     * assumes CBOR native encoding mode.  That is, <code>value</code> is treated as
-     * a magnitude which is subsequently negated and subtracted by <code>1</code>.
-     * This means that the input values <code>0</code> and <code>43</code>,
-     * actually represent <code>-1</code> and <code>-44</code> respectively.
+     * assumes CBOR native encoding mode for negative integers.  That is, <code>value</code> is treated as
+     * an unsigned magnitude which is subsequently negated and subtracted by <code>1</code>.
+     * This means that the input values <code>0</code>, <code>43</code>, and <code>-9223372036854775808L</code>,
+     * actually represent <code>-1</code>, <code>-44</code>, and <code>-9223372036854775809</code> respectively.
      * A special case is the value <code>0xffffffffffffffffL</code>
      * (long <code>-1</code>), which corresponds to <code>-2^64</code>.
      * </p>
@@ -85,10 +83,10 @@ public class CBORInteger extends CBORObject {
     }
 
     /**
-     * Using BigInteger as input.
+     * Creates a CBOR integer value of any size.
      * 
      * This constructor permits using the full range of applicable
-     * integer values.
+     * <code>integer</code> and <code>big&nbsp;number</code> values.
      * 
      * @param value Integer in BigInteger format
      */
@@ -113,10 +111,10 @@ public class CBORInteger extends CBORObject {
             // Fits in "int65" decoding
             return getEncodedCore(unsigned ? MT_UNSIGNED : MT_NEGATIVE, cborAdjusted.longValue());
         }
-        // Does not fit "int65" so we must use big number decoding
+        // Does not fit "int65" so we must use big number encoding
         byte[] encoded = cborAdjusted.toByteArray();
         if (encoded[0] == 0) {
-            // No leading zeroes please
+            // Drop possible leading zero
             byte[] temp = new byte[encoded.length - 1];
             System.arraycopy(encoded, 1, temp, 0, temp.length);
             encoded = temp;

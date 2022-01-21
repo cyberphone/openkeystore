@@ -43,7 +43,7 @@ public class CBORAsymKeyEncrypter extends CBOREncrypter {
     PublicKey publicKey;
     
     /**
-     * Initialize encrypter.
+     * Initializes an encrypter object.
      * 
      * @param publicKey The key to encrypt with
      * @param keyEncryptionAlgorithm KEK algorithm
@@ -61,7 +61,7 @@ public class CBORAsymKeyEncrypter extends CBOREncrypter {
     }
 
     /**
-     * Define if public key should be included.
+     * Defines if public key should be included.
      * 
      * @param wantPublicKey Flag.  Default: false.
      * @return this

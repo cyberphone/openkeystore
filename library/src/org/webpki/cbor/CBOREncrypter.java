@@ -101,7 +101,7 @@ public abstract class CBOREncrypter {
     }
     
     /**
-     * Set encryption key Id.
+     * Sets optional key Id.
      * 
      * In the case the public key is not provided in the 
      * object, the encryption key may be tied to an identifier
@@ -124,7 +124,7 @@ public abstract class CBOREncrypter {
     }
 
     /**
-     * Encrypt data.
+     * Encrypts data.
      * 
      * @param dataToEncrypt The data to encrypt
      * @return CBORMap CBOR encryption object
