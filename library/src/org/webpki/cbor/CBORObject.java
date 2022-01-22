@@ -84,7 +84,7 @@ public abstract class CBORObject {
     abstract CBORTypes internalGetType();
 
     /**
-     * Get core CBOR type.
+     * Returns core CBOR type.
      * 
      * @return The CBOR core type
      */
@@ -95,7 +95,7 @@ public abstract class CBORObject {
     abstract byte[] internalEncode() throws IOException;
 
     /**
-     * Encode CBOR object.
+     * Encodes CBOR object.
      * 
      * @return Byte data
      * @throws IOException
@@ -161,7 +161,7 @@ public abstract class CBORObject {
     }
     
     /**
-     * Get <code>big number</code> value.
+     * Returns <code>big number</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInteger}, otherwise an exception will be thrown.
@@ -176,7 +176,7 @@ public abstract class CBORObject {
     }
 
     /**
-     * Get <code>long</code> value.
+     * Returns <code>long</code> value.
       * <p>
      * This method requires that the object is a
      * {@link CBORInteger} and fits a Java (<i>signed</i>) long, 
@@ -192,7 +192,7 @@ public abstract class CBORObject {
     }
 
     /**
-     * Get <i>unsigned</i> <code>long</code> value.
+     * Returns <i>unsigned</i> <code>long</code> value.
       * <p>
      * This method requires that the object is a positive
      * {@link CBORInteger} and fits a Java long (sign bit is used as well),
@@ -207,7 +207,7 @@ public abstract class CBORObject {
     }
 
     /**
-     * Get <code>integer</code> value.
+     * Returns <code>integer</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInteger} and fits a Java (<i>signed</i>) int, 
@@ -223,7 +223,7 @@ public abstract class CBORObject {
     }
 
     /**
-     * Get <code>floating point</code> value.
+     * Returns <code>floating point</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORFloatingPoint}, otherwise an exception will be thrown.
@@ -238,7 +238,7 @@ public abstract class CBORObject {
     }
  
     /**
-     * Get <code>boolean</code> value.
+     * Returns <code>boolean</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORBoolean}, otherwise an exception will be thrown.
@@ -253,7 +253,7 @@ public abstract class CBORObject {
     }
 
     /**
-     * Check for <code>null</code>.
+     * Checks for <code>null</code>.
      * <p>
      * If the object is a {@link CBORNull} the call will return
      * <code>true</code>, else it will return <code>false</code>.
@@ -268,7 +268,7 @@ public abstract class CBORObject {
     }
     
     /**
-     * Get <code>text string</code> value.
+     * Returns <code>text string</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORTextString}, otherwise an exception will be thrown.
@@ -283,7 +283,7 @@ public abstract class CBORObject {
     }
 
     /**
-     * Get <code>byte string</code> value.
+     * Returns <code>byte string</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORByteString}, otherwise an exception will be thrown.
@@ -298,7 +298,7 @@ public abstract class CBORObject {
     }
 
     /**
-     * Get <code>map</code> object.
+     * Returns <code>map</code> object.
      * <p>
      * This method requires that the object is a
      * {@link CBORMap}, otherwise an exception will be thrown.
@@ -313,7 +313,7 @@ public abstract class CBORObject {
     }
 
     /**
-     * Get <code>array</code> object.
+     * Returns <code>array</code> object.
      * <p>
      * This method requires that the object is a
      * {@link CBORArray}, otherwise an exception will be thrown.
@@ -328,11 +328,13 @@ public abstract class CBORObject {
     }
     
     /**
-     * Scan object.
+     * Scans object.
      * <p>
      * This method sets the status of this object as well as to possible
      * child objects to &quot;read&quot;.
      * </p>
+     * 
+     * @see #checkForUnread()
      * 
      * @return <code>this</code>
      */
@@ -585,7 +587,7 @@ public abstract class CBORObject {
     }
 
     /**
-     * Decode CBOR data with options.
+     * Decodes CBOR data with options.
      * 
      * @param encodedCborData
      * @param ignoreAdditionalData Stop reading after parsing a valid CBOR object
@@ -606,7 +608,7 @@ public abstract class CBORObject {
     }
 
     /**
-     * Decode CBOR data.
+     * Decodes CBOR data.
      * 
      * @param encodedCborData
      * @return CBORObject
@@ -617,9 +619,14 @@ public abstract class CBORObject {
     }
 
     /**
-     * Check for unread CBOR data.
+     * Checks for unread CBOR data.
      * 
-     * Check if all data from the current node and downwards have been read.
+     * Checks if all data from the current object including
+     * possible child objects have been read
+     * and throws an exception if this is not the case.
+     * 
+     * @see #scan()
+     * 
      * @throws IOException
      */
     public void checkForUnread() throws IOException {
@@ -700,7 +707,7 @@ public abstract class CBORObject {
     }
 
     /**
-     * Check CBOR objects for equality.
+     * Checks CBOR objects for equality.
      */
     @Override
     public boolean equals(Object object) {
@@ -712,7 +719,7 @@ public abstract class CBORObject {
     }
 
     /**
-     * Return CBOR object as a string in diagnostic notation.
+     * Returns CBOR object as a string in diagnostic notation.
      */
     @Override
     public String toString() {
