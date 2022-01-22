@@ -81,6 +81,8 @@ public abstract class CBORSigner {
     /**
      * Sets signature <code>keyId</code>.
      * 
+     * The <code>keyId</code> will be represented as a CBOR <code>text&nbsp;string</code>.
+     * 
      * @param keyId A CBOR key Id
      * @return this
      * 
@@ -92,6 +94,8 @@ public abstract class CBORSigner {
 
     /**
      * Sets signature <code>keyId</code>.
+     * 
+     * The <code>keyId</code> will be represented as a CBOR <code>integer</code>.
      * 
      * @param keyId A CBOR key Id
      * @return this

@@ -27,7 +27,14 @@ import org.webpki.util.ArrayUtil;
 /**
  * Class for holding CBOR maps.
  * 
- * This class also provides support for signature creation and validation.
+ * In addition to supporting the generic {@link CBORObject} type for key identifiers,
+ * there are convenience methods for 
+ * retrieving (<code>getObject</code>), 
+ * adding (<code>setObject</code>),
+ * testing (<code>hasKey</code>), and
+ * removing (<code>removeObject</code>)
+ * objects using the Java <code>String</code> and <code>int</code> types for key identifiers.
+ * The latter maps to the {@link CBORTextString} and {@link CBORInteger} types respectively.
  */
 public class CBORMap extends CBORObject {
 
@@ -71,7 +78,7 @@ public class CBORMap extends CBORObject {
     }
     
     /**
-     * Get the size of the map.
+     * Returns the size of the map.
      * 
      * @return The number of entries (keys) in the map
      */
@@ -80,7 +87,7 @@ public class CBORMap extends CBORObject {
     }
 
     /**
-     * Check map for key presence.
+     * Checks map for key presence.
      * 
      * @param key Key
      * @return <code>true</code> if the key is present
@@ -90,7 +97,7 @@ public class CBORMap extends CBORObject {
     }
 
     /**
-     * Check map for key presence.
+     * Checks map for key presence.
      * 
      * @param key Key
      * @return <code>true</code> if the key is present
@@ -100,7 +107,7 @@ public class CBORMap extends CBORObject {
     }
     
     /**
-     * Check map for key presence.
+     * Checks map for key presence.
      * 
      * @param key Key
      * @return <code>true</code> if the key is present
@@ -110,10 +117,10 @@ public class CBORMap extends CBORObject {
     }
     
     /**
-     * Set map value.
-
+     * Sets map object.
+     * 
      * @param key Key
-     * @param value Value
+     * @param value Object
      * @return <code>this</code>
      * @throws IOException
      */
@@ -131,10 +138,10 @@ public class CBORMap extends CBORObject {
     }
 
     /**
-     * Set map value.
-
+     * Sets map object.
+     * 
      * @param key Key
-     * @param value Value
+     * @param value Object
      * @return <code>this</code>
      * @throws IOException
      */
@@ -144,10 +151,10 @@ public class CBORMap extends CBORObject {
     }
 
     /**
-     * Set map value.
-
+     * Sets map object.
+     * 
      * @param key Key
-     * @param value Value
+     * @param value Object
      * @return <code>this</code>
      * @throws IOException
      */
@@ -157,10 +164,10 @@ public class CBORMap extends CBORObject {
     }
     
      /**
-     * Get map value.
+     * Retrieves map object.
      * 
      * @param key Key
-     * @return Value
+     * @return Object
      * @throws IOException
      */
     public CBORObject getObject(CBORObject key) throws IOException {
@@ -172,10 +179,10 @@ public class CBORMap extends CBORObject {
     }
 
     /**
-     * Get map value.
+     * Retrieves map object.
      * 
      * @param key Key
-     * @return Value
+     * @return Object
      * @throws IOException
      */
     public CBORObject getObject(int key) throws IOException {
@@ -183,10 +190,10 @@ public class CBORMap extends CBORObject {
     }
     
     /**
-     * Get map value.
+     * Retrieves map object.
      * 
      * @param key Key
-     * @return Value
+     * @return Object
      * @throws IOException
      */
     public CBORObject getObject(String key) throws IOException {
@@ -194,7 +201,7 @@ public class CBORMap extends CBORObject {
     }
     
     /**
-     * Remove object from map.
+     * Removes mapped object.
      * 
      * @param key Key
      * @return <code>this</code>
@@ -209,7 +216,7 @@ public class CBORMap extends CBORObject {
     }
 
     /**
-     * Remove object from map.
+     * Removes mapped object.
      * 
      * @param key Key
      * @return <code>this</code>
@@ -221,7 +228,7 @@ public class CBORMap extends CBORObject {
     }
 
     /**
-     * Remove object from map.
+     * Removes mapped object.
      * 
      * @param key Key
      * @return <code>this</code>
@@ -233,12 +240,11 @@ public class CBORMap extends CBORObject {
     }
 
     /**
-     * Enumerate all keys in a map.
+     * Enumerates all keys in a map.
      * 
      * @return Array of keys
-     * @throws IOException 
      */
-    public CBORObject[] getKeys() throws IOException {
+    public CBORObject[] getKeys() {
         return keys.keySet().toArray(new CBORObject[0]);
     }
 

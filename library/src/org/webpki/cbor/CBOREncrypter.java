@@ -80,6 +80,8 @@ public abstract class CBOREncrypter {
     /**
      * Sets optional key Id.
      * 
+     * The <code>keyId</code> will be represented as a CBOR <code>integer</code>.
+     * 
      * @param keyId A CBOR key Id
      * @return this
      */
@@ -89,6 +91,8 @@ public abstract class CBOREncrypter {
 
     /**
      * Sets optional key Id.
+     * 
+     * The <code>keyId</code> will be represented as a CBOR <code>text&nbsp;string</code>.
      * 
      * @param keyId A CBOR key Id
      * @return this
