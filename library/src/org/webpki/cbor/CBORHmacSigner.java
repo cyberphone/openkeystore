@@ -37,7 +37,7 @@ public class CBORHmacSigner extends CBORSigner {
     HmacSignerInterface signer;
 
     /**
-     * Initializes signer.
+     * Initializes a signer with a secret key.
      * 
      * @param secretKey The key to sign with
      * @param algorithm The algorithm to use

@@ -52,7 +52,7 @@ public class CBORX509Signer extends CBORSigner {
     X509Certificate[] certificatePath;
 
     /**
-     * Initialize signer.
+     * Initializes a signer with an external interface.
      * 
      * @param signer Custom signer
      * @throws GeneralSecurityException 
@@ -66,7 +66,7 @@ public class CBORX509Signer extends CBORSigner {
     }
     
     /**
-     * Initialize signer.
+     * Initializes an X509 signer with a private key.
      * 
      * The default signature algorithm to use is based on the recommendations
      * in RFC 7518.
@@ -101,7 +101,7 @@ public class CBORX509Signer extends CBORSigner {
     }
 
      /**
-     * Set signature algorithm.
+     * Sets signature algorithm.
      * 
      * @param algorithm The algorithm
      * @return this

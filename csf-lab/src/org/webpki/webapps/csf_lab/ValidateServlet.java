@@ -156,9 +156,7 @@ public class ValidateServlet extends CoreRequestServlet {
                 "  document.getElementById('" + CSF_OBJECT_IN_HEX + "').value = (!flag).toString();\n" +
                 "}\n" +
                 "window.addEventListener('load', function(event) {\n" +
-                "  if (document.getElementById('" + CSF_OBJECT_IN_HEX + "').value == '') {\n" +
-                "    setInputMode(true);\n" +
-                "  }\n" +
+                "  setInputMode(true);\n" +
                 "});\n");
 
         StringBuilder html = new StringBuilder(

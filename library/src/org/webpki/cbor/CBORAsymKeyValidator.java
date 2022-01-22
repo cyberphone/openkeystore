@@ -45,7 +45,7 @@ public class CBORAsymKeyValidator extends CBORValidator {
     public interface KeyLocator {
 
         /**
-         * Check signature data and retrieve validation key.
+         * Checks signature data and retrieves validation key.
          * 
          * @param optionalPublicKey Optional public key found in the signature object
          * @param optionalKeyId KeyId or <code>null</code>
@@ -63,7 +63,7 @@ public class CBORAsymKeyValidator extends CBORValidator {
     KeyLocator keyLocator;
 
     /**
-     * Initializes validator with a public key.
+     * Initializes a validator with a public key.
      * 
      * @param publicKey The anticipated public key
      */
@@ -82,7 +82,7 @@ public class CBORAsymKeyValidator extends CBORValidator {
     }
 
     /**
-     * Initializes validator with a locator.
+     * Initializes a validator with a key locator.
      * 
      * This option provides full control for the verifier
      * regarding in-lined public keys and key identifiers.
@@ -150,9 +150,7 @@ public class CBORAsymKeyValidator extends CBORValidator {
 
         // If we have no in-line public key we need to call the key locator.
         PublicKey publicKey = inLinePublicKey == null ?
-                 keyLocator.locate(null, optionalKeyId, signatureAlgorithm) 
-                                                      : 
-                 inLinePublicKey;
+                 keyLocator.locate(null, optionalKeyId, signatureAlgorithm) : inLinePublicKey;
         
         // Now we have everything needed for validating the signature.
         asymKeySignatureValidation(publicKey, signatureAlgorithm, signedData, signatureValue);

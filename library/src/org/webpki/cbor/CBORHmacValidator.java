@@ -56,7 +56,7 @@ public class CBORHmacValidator extends CBORValidator {
     KeyLocator keyLocator;
 
     /**
-     * Initializes validator with a secret key.
+     * Initializes a validator with a secret key.
      * 
      * Using this option the algorithm provided by the
      * producer is supposed to be correct.  The alternative
@@ -76,7 +76,7 @@ public class CBORHmacValidator extends CBORValidator {
     }
 
     /**
-     * Initializes validator with a locator.
+     * Initializes a validator with a key locator.
      * 
      * This option provides full control for the verifier
      * regarding key identifiers and HMAC algorithms.

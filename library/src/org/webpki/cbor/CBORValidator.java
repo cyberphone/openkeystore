@@ -37,7 +37,7 @@ public abstract class CBORValidator {
                            byte[] signedData) throws IOException, GeneralSecurityException;
  
     /**
-     * Validate signed CBOR map.
+     * Validates signed CBOR map.
      * 
      * @param key Key in map holding signature
      * @param signedObject Signed CBOR map object
@@ -76,7 +76,7 @@ public abstract class CBORValidator {
     }
 
     /**
-     * Validate signed CBOR map.
+     * Validates signed CBOR map.
      * 
      * @param key Key in map holding signature
      * @param signedObject Signed CBOR map object
@@ -90,7 +90,7 @@ public abstract class CBORValidator {
     }
     
     /**
-     * Validate signed CBOR map.
+     * Validates signed CBOR map.
      * 
      * @param key Key in map holding signature
      * @param signedObject Signed CBOR map object

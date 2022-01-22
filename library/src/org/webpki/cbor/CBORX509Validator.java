@@ -46,7 +46,7 @@ public class CBORX509Validator extends CBORValidator {
     public interface SignatureParameters {
 
         /**
-         * Check signature data.
+         * Checks signature data.
          * 
          * A relying party is supposed to verify that the
          * certificate(path) is trusted and that the
@@ -64,7 +64,7 @@ public class CBORX509Validator extends CBORValidator {
     SignatureParameters checker;
 
     /**
-     * Initialize validator with a parameter checker.
+     * Initializes X509 validator with a parameter checker.
      * 
      * @param checker The checker interface
      */
@@ -73,7 +73,7 @@ public class CBORX509Validator extends CBORValidator {
     }
     
     /**
-     * Get certificate path from a CBOR array.
+     * Decodes a certificate path from a CBOR array.
  
      * Note that the array must only contain a
      * list of X509 certificates in DER format.

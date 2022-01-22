@@ -45,7 +45,7 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
     public interface KeyLocator {
 
         /**
-         * Lookup private decryption key.
+         * Lookup of private decryption key.
 
          * This interface also enables encryption parameter validation.
          * 
@@ -67,7 +67,7 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
     KeyLocator keyLocator;
     
     /**
-     * Initializes decrypter with a private key.
+     * Initializes a decrypter with a private key.
      * 
      * @param privateKey The anticipated private key to decrypt with
      */
@@ -87,7 +87,7 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
     }
 
     /**
-     * Initializes decrypter with a key locator.
+     * Initializes a decrypter with a key locator.
      * 
      * @param keyLocator The call back
      */

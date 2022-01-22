@@ -40,7 +40,7 @@ public class CBORSymKeyDecrypter extends CBORDecrypter {
 
 
         /**
-         * Lookup secret decryption key.
+         * Lookup of secret decryption key.
          * 
          * This interface also enables encryption parameter validation.
          * 
@@ -58,7 +58,7 @@ public class CBORSymKeyDecrypter extends CBORDecrypter {
     KeyLocator keyLocator;
     
     /**
-     * Initializes decrypter with a secret key.
+     * Initializes a decrypter with a secret key.
      * 
      * @param secretKey The anticipated secret key to decrypt with
      */
@@ -76,7 +76,7 @@ public class CBORSymKeyDecrypter extends CBORDecrypter {
     }
 
     /**
-     * Initializes decrypter with a key locator.
+     * Initializes a decrypter with a key locator.
      * 
      * @param keyLocator The call back
      */
