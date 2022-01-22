@@ -50,7 +50,7 @@ public class CBORAsymKeyValidator extends CBORValidator {
          * @param optionalPublicKey Optional public key found in the signature object
          * @param optionalKeyId KeyId or <code>null</code>
          * @param signatureAlgorithm The specified signature algorithm
-         * @return Public validation key
+         * @return Public key for signature validation
          * @throws IOException
          * @throws GeneralSecurityException
          */
