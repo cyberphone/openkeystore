@@ -153,11 +153,13 @@ public class ValidateServlet extends CoreRequestServlet {
                 "  console.log('mode=' + flag);\n" +
                 "  document.getElementById('" + CSF_OBJECT + "').children[1].placeholder = flag ? " +
                   "'Diagnostic notation' : 'Hexadecimal data';\n" +
-                "  document.getElementById('" + CSF_OBJECT_IN_HEX + "').value = (!flag).toString();\n" +
                 "}\n" +
-                "window.addEventListener('load', function(event) {\n" +
-                "  setInputMode(true);\n" +
-                "});\n");
+                "function doVerify() {\n" +
+                "  document.getElementById('" + CSF_OBJECT_IN_HEX + 
+                    "').value = (!document.getElementById('" + FLG_DIAGNOSTIC +
+                    "').checked).toString();\n" +
+                 "  document.forms.shoot.submit();\n" +
+                "}\n");
 
         StringBuilder html = new StringBuilder(
                 "<form name='shoot' method='POST' action='validate'>" +
@@ -184,7 +186,7 @@ public class ValidateServlet extends CoreRequestServlet {
                         "Anticipated signature label"))
             .append(
                 "<div style='display:flex;justify-content:center'>" +
-                "<div class='stdbtn' onclick=\"document.forms.shoot.submit()\">" +
+                "<div class='stdbtn' onclick=\"doVerify()\">" +
                 "Validate CBOR Signature" +
                 "</div>" +
                 "</div>" +
