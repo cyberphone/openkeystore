@@ -18,8 +18,8 @@ package org.webpki.webapps.csf_lab;
 
 import java.io.IOException;
 import java.io.InputStream;
-
-import java.security.KeyPair;
+import java.security.GeneralSecurityException;
+import java.security.PublicKey;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,7 +27,8 @@ import java.util.logging.Logger;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.webpki.cbor.CBORAsymKeySigner;
+import org.webpki.cbor.CBORAsymKeyValidator;
+import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;
 
 import org.webpki.crypto.AlgorithmPreferences;
@@ -37,8 +38,6 @@ import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.SignatureAlgorithms;
 
 import org.webpki.util.ArrayUtil;
-import org.webpki.util.DebugFormatter;
-import org.webpki.util.PEMDecoder;
 
 import org.webpki.webutil.InitPropertyReader;
 
@@ -47,6 +46,8 @@ public class CSFService extends InitPropertyReader implements ServletContextList
     static Logger logger = Logger.getLogger(CSFService.class.getName());
 
     static String sampleSignature;
+    
+    static String sampleLabel;
     
     static String samplePublicKey;
     
@@ -161,23 +162,28 @@ public class CSFService extends InitPropertyReader implements ServletContextList
             /////////////////////////////////////////////////////////////////////////////////////////////
             // Sample signature for verification
             /////////////////////////////////////////////////////////////////////////////////////////////
-/*
-            byte[] sampleDataToSign = DebugFormatter.getByteArrayFromHex(
-                    getEmbeddedResourceString("sample-data-to-sign.hex"));
-            KeyPair sampleKey = PEMDecoder.getKeyPair(getEmbeddedResource("p256privatekey.pem"));
-           
-            CBORObject.decode(sampleDataToSign)
-                .getMap().sign(8, new CBORAsymKeySigner(sampleKey.getPrivate())
-                        .setPublicKey(sampleKey.getPublic()));
-            sampleSignature = sampleDataToSign.substring(0, sampleDataToSign.lastIndexOf('}')) +
-            String signedData =  new JSONObjectWriter(JSONParser.parse(sampleDataToSign))
-                .setSignature(
-                    new JSONAsymKeySigner(sampleKey.getPrivate()))
-                        .serializeToString(JSONOutputFormats.PRETTY_PRINT);
-                               "," +
-                              signedData.substring(signedData.indexOf("\n  \"signature"));
+            CBORMap demoSignature = 
+                    CBORObject.decode(getEmbeddedResource("demo-doc-signature.cbor")).getMap();
+            CBORObject[] keys = demoSignature.getKeys();
+            CBORObject signatureLabel = keys[keys.length - 1];
+            sampleLabel = signatureLabel.toString();
+            sampleSignature = demoSignature.toString();
             samplePublicKey = getEmbeddedResourceString("p256publickey.pem").trim();
-*/
+            new CBORAsymKeyValidator(new CBORAsymKeyValidator.KeyLocator() {
+
+                @Override
+                public PublicKey locate(PublicKey publicKey, 
+                                        CBORObject keyId, 
+                                        AsymSignatureAlgorithms algorithm)
+                        throws IOException, GeneralSecurityException {
+                    if (publicKey == null) {
+                        throw new GeneralSecurityException("No public key");
+                    }
+                    return publicKey;
+                }
+                
+            }).validate(signatureLabel, demoSignature);
+
             /////////////////////////////////////////////////////////////////////////////////////////////
             // Logging?
             /////////////////////////////////////////////////////////////////////////////////////////////

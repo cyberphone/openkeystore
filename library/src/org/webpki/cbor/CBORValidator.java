@@ -20,6 +20,8 @@ import java.io.IOException;
 
 import java.security.GeneralSecurityException;
 
+import static org.webpki.cbor.CBORCryptoConstants.*;
+
 /**
  * Base class for CBOR signature validation
  * 
@@ -49,17 +51,16 @@ public abstract class CBORValidator {
         CBORMap signatureObject = signedObject.getObject(key).getMap();
 
         // Get the signature value and remove it from the (map) object.
-        byte[] signatureValue = CBORValidator.readAndRemove(signatureObject, 
-                                                            CBORSigner.SIGNATURE_LABEL);
+        byte[] signatureValue = CBORValidator.readAndRemove(signatureObject, SIGNATURE_LABEL);
 
         // Fetch optional keyId.
-        CBORObject optionalKeyId = signatureObject.hasKey(CBORSigner.KEY_ID_LABEL) ?
-                signatureObject.getObject(CBORSigner.KEY_ID_LABEL).scan() : null;
+        CBORObject optionalKeyId = signatureObject.hasKey(KEY_ID_LABEL) ?
+                         signatureObject.getObject(KEY_ID_LABEL).scan() : null;
 
         // Call specific validator. This code presumes that internalEncode() 
         // returns a deterministic representation of CBOR items.
         validate(signatureObject,
-                 signatureObject.getObject(CBORSigner.ALGORITHM_LABEL).getInt(),
+                 signatureObject.getObject(ALGORITHM_LABEL).getInt(),
                  optionalKeyId, 
                  signatureValue,
                  signedObject.internalEncode());
@@ -68,7 +69,7 @@ public abstract class CBORValidator {
         signatureObject.checkForUnread();
 
         // Restore object.
-        signatureObject.keys.put(CBORSigner.SIGNATURE_LABEL, new CBORByteString(signatureValue));
+        signatureObject.keys.put(SIGNATURE_LABEL, new CBORByteString(signatureValue));
         
         // Return it as well.
         return signedObject;

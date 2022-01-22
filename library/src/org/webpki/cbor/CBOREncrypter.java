@@ -23,64 +23,14 @@ import java.security.GeneralSecurityException;
 import org.webpki.crypto.encryption.ContentEncryptionAlgorithms;
 import org.webpki.crypto.encryption.EncryptionCore;
 
+import static org.webpki.cbor.CBORCryptoConstants.*;
+
 /**
  * Base class for creating CBOR encryption objects.
  * 
  * It uses COSE algorithms but relies on CEF for the packaging.
  */
 public abstract class CBOREncrypter {
-
-    /**
-     * Integer value: 1.
-     * Note: This label is also used in key encryption sub-maps.
-     */
-    public static final CBORInteger ALGORITHM_LABEL      = new CBORInteger(1);
-    
-    /**
-     * Integer value: 2.
-     * This label holds a key encryption sub-map.
-     */
-    public static final CBORInteger KEY_ENCRYPTION_LABEL = new CBORInteger(2);
-
-    /**
-     * Integer value: 3.
-     * Note: This label is alternatively used in key encryption sub-maps.
-     */
-    public static final CBORInteger KEY_ID_LABEL         = new CBORInteger(3);
-    
-    /**
-     * Integer value: 4.
-     * Note: This label is only used in key encryption sub-maps.
-     */
-    public static final CBORInteger PUBLIC_KEY_LABEL     = new CBORInteger(4);
-
-    /**
-     * Integer value: 5.
-     * Note: This label is only used in key encryption sub-maps.
-     */
-    public static final CBORInteger EPHEMERAL_KEY_LABEL  = new CBORInteger(5);
-
-    /**
-     * Integer value: 6.
-     * Note: This label is only used in key encryption sub-maps.
-     */
-    public static final CBORInteger CERT_PATH_LABEL      = new CBORInteger(6);
- 
-    /**
-     * Integer value: 7.
-     */
-    public static final CBORInteger TAG_LABEL            = new CBORInteger(7);
- 
-    /**
-     * Integer value: 8.
-     */
-    public static final CBORInteger IV_LABEL             = new CBORInteger(8);
-
-    /**
-     * Integer value: 9.
-     * Note: This label is also used in key encryption sub-maps using key-wrapping.
-     */
-    public static final CBORInteger CIPHER_TEXT_LABEL    = new CBORInteger(9);
 
     // The algorithm to use with the contentEncryptionKey
     ContentEncryptionAlgorithms contentEncryptionAlgorithm;

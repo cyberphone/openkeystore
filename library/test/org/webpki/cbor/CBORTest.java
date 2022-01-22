@@ -56,6 +56,8 @@ import org.webpki.util.ArrayUtil;
 import org.webpki.util.DebugFormatter;
 import org.webpki.util.PEMDecoder;
 
+import static org.webpki.cbor.CBORCryptoConstants.*;
+
 /**
  * CBOR JUnit suite
  */
@@ -1259,8 +1261,8 @@ public class CBORTest {
                         p256.getPrivate()).decrypt(
                             CBORObject.decode(
                                     p256Encrypted).getMap()
-                            .getObject(CBOREncrypter.KEY_ENCRYPTION_LABEL)
-                            .getMap().removeObject(CBOREncrypter.ALGORITHM_LABEL).encode());
+                            .getObject(KEY_ENCRYPTION_LABEL)
+                            .getMap().removeObject(ALGORITHM_LABEL).encode());
             fail("must not run");
         } catch (Exception e) {
             checkException(e, "No such key: 1");
@@ -1276,8 +1278,8 @@ public class CBORTest {
         
         try {
             a256Decrypter.decrypt(CBORObject.decode(
-                a256Encrypted).getMap().setObject(CBOREncrypter.KEY_ENCRYPTION_LABEL, 
-                        new CBORMap().setObject(CBOREncrypter.ALGORITHM_LABEL,
+                a256Encrypted).getMap().setObject(KEY_ENCRYPTION_LABEL, 
+                        new CBORMap().setObject(ALGORITHM_LABEL,
                                 new CBORInteger(600))).encode());
             fail("must not run");
         } catch (Exception e) {
@@ -1386,8 +1388,8 @@ public class CBORTest {
     }
     
     private CBORObject serializeJson(String[] jsonTokens) throws Exception {
-        CBORObject one = JSONReader.convert(serializeJson(jsonTokens, false));
-        assertTrue("jsonCompp", one.equals(JSONReader.convert(serializeJson(jsonTokens, true))));
+        CBORObject one = CBORFromJSON.convert(serializeJson(jsonTokens, false));
+        assertTrue("jsonCompp", one.equals(CBORFromJSON.convert(serializeJson(jsonTokens, true))));
         return one;
     }
     
@@ -1397,7 +1399,7 @@ public class CBORTest {
     
     private void conversionError(String badJson) throws Exception {
         try {
-            JSONReader.convert(badJson);
+            CBORFromJSON.convert(badJson);
             fail("Should fail on: " + badJson);
         } catch (Exception e) {
         }

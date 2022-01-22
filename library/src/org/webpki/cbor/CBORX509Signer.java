@@ -30,6 +30,8 @@ import org.webpki.crypto.KeyAlgorithms;
 
 import org.webpki.crypto.signatures.SignatureWrapper;
 
+import static org.webpki.cbor.CBORCryptoConstants.*;
+
 /**
  * Class for creating CBOR X509 signatures.
  * 

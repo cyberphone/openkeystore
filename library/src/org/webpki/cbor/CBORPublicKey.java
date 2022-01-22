@@ -37,42 +37,18 @@ import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.OkpSupport;
 
+import static org.webpki.cbor.CBORCryptoConstants.*;
+
 import org.webpki.util.ArrayUtil;
 
 /**
- * Class for CBOR/COSE public keys
+ * Class for CBOR/COSE public keys.
  * 
  */
 public class CBORPublicKey {
     
     private CBORPublicKey() {}
     
-    ////////////////////////////////
-    // From RFC 8152 and RFC 8230 //
-    ////////////////////////////////
-    static final int COSE_KTY_LABEL          = 1;
-    
-    static final int COSE_OKP_KTY            = 1;
-    static final int COSE_OKP_CRV_LABEL      = -1;
-    static final int COSE_OKP_X_LABEL        = -2;
-     
-    static final int COSE_EC2_KTY            = 2;
-    static final int COSE_EC2_CRV_LABEL      = -1;
-    static final int COSE_EC2_X_LABEL        = -2;
-    static final int COSE_EC2_Y_LABEL        = -3;
-    
-    static final int COSE_RSA_KTY            = 3;
-    static final int COSE_RSA_N_LABEL        = -1;
-    static final int COSE_RSA_E_LABEL        = -2;
-    
-    static final int COSE_CRV_NIST_P_256     = 1;
-    static final int COSE_CRV_NIST_P_384     = 2;
-    static final int COSE_CRV_NIST_P_521     = 3;
-    static final int COSE_CRV_X25519         = 4;
-    static final int COSE_CRV_X448           = 5;
-    static final int COSE_CRV_ED25519        = 6;
-    static final int COSE_CRV_ED448          = 7;
-
     static final HashMap<KeyAlgorithms, Integer> WEBPKI_2_COSE_CRV = new HashMap<>();
 
     static {

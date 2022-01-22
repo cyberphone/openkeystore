@@ -65,7 +65,7 @@ enabling constructs like the following:
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Signature algorithm = ES256 /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;1: -7,<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Public key descriptor in COSE format /</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;3: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;4: {<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ kty = EC /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: 2,<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ crv = P-256 /</span><br>
@@ -76,7 +76,7 @@ enabling constructs like the following:
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-3: h'9826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d8'<br>
 &nbsp;&nbsp;&nbsp;&nbsp;},<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Signature value /</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;5: h'771b9cc536ccb3a68d59adffb7bb4dacf7cf0fd5a1a3f52837ba37e508010c2fe438236fdc713ece9df2f0f5ef2181c3f8963beb1c6f119de6fdd5e5c72548c1'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;7: h'39c9668236007d617afd195886c9a07fdf4b7832539c639843701af33c1e301b76cbfdf2b8965bac0593664fbadaf27211186d6c89fab4ae8bb01bca1fa2e429'<br>
 &nbsp;&nbsp;}<br>
 }
 </code></div>
@@ -85,9 +85,8 @@ The same object expressed as hex-encoded CBOR:
 </p>
 <p>
 <div style='word-break:break-all'><code>
-a801a3016a53706163652053686f7002663433352e30300363555344026d737061636573686f702e636f6d03781b465237363330303032313131313130303230303530303134333832047668747470733a2f2f62616e6b6469726563742e6f726705683035373638343031067819323032322d30312d31345430393a33343a30382d30353a303007a201fb404371b089a0275202fb405341460aa64c3008a3012603a401022001215820e812b1a6dcbc708f9ec43cc2921fa0a14e9d5eadcc6dc63471dd4b680c6236b52258209826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d8055840771b9cc536ccb3a68d59adffb7bb4dacf7cf0fd5a1a3f52837ba37e508010c2fe438236fdc713ece9df2f0f5ef2181c3f8963beb1c6f119de6fdd5e5c72548c1
+a801a3016a53706163652053686f7002663433352e30300363555344026d737061636573686f702e636f6d03781b465237363330303032313131313130303230303530303134333832047668747470733a2f2f62616e6b6469726563742e6f726705683035373638343031067819323032322d30312d31345430393a33343a30382d30353a303007a201fb404371b089a0275202fb405341460aa64c3008a3012604a401022001215820e812b1a6dcbc708f9ec43cc2921fa0a14e9d5eadcc6dc63471dd4b680c6236b52258209826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d807584039c9668236007d617afd195886c9a07fdf4b7832539c639843701af33c1e301b76cbfdf2b8965bac0593664fbadaf27211186d6c89fab4ae8bb01bca1fa2e429
 </code></div>
-
 </p>
 <p>
 <i>Explanation: </i>
@@ -105,31 +104,31 @@ according to the following table:
 <tr><td style='text-align:center'><code>1</code></td><td><code>algorithm</code></td>
 <td><code>integer</code></td><td>Signature algorithm using COSE identifiers.</td></tr>
 
-<tr><td style='text-align:center'><code>2</code></td><td><code>keyId</code></td>
+<tr><td style='text-align:center'><code>3</code></td><td><code>keyId</code></td>
 <td>&quot;Any&quot;</td><td><i>Optional</i> key identifier using any CBOR construct,
 compatible with this implementation. 
 Note that <code>keyId</code> <b>must not</b> be used together with 
 <code>publicKey</code> or <code>certificatePath</code>.
 
-<tr><td style='text-align:center'><code>3</code></td><td><code>publicKey</code></td>
+<tr><td style='text-align:center'><code>4</code></td><td><code>publicKey</code></td>
 <td><code>map</code></td>
 <td><i>Optional</i> public key in COSE format.  
 Note that ECDSA public keys <b>must</b> be supplied with a <i>value parameter</i> for the y-coordinate as well.</td></tr>
 </td></tr>
 
-<tr><td style='text-align:center'><code>4</code></td><td><code>certificatePath</code></td><td><code>array</code></td><td><i>Optional</i> certificate path supplied 
+<tr><td style='text-align:center'><code>6</code></td><td><code>certificatePath</code></td><td><code>array</code></td><td><i>Optional</i> certificate path supplied 
 as an array of <code>byte&nbsp;string</code> objects holding X.509 certificates in DER format, 
 where the first object <b>must</b> be the signature certificate.
 Signature objects <b>must not</b> contain both <code>certificatePath</code> and <code>publicKey</code> elements.
 </td></tr>
 
-<tr><td style='text-align:center'><code>5</code></td><td><code>signature</code></td><td><code>byte&nbsp;string</code></td><td>Signature value.</td></tr>
+<tr><td style='text-align:center'><code>7</code></td><td><code>signature</code></td><td><code>byte&nbsp;string</code></td><td>Signature value.</td></tr>
 </table>
 <p>
 CSF signatures are validated by running the signature validation 
 algorithm over the CBOR binary representation of
 the <code>map</code> holding the application data including the enveloped signature object,
-with the <code>signature</code> (label <code>5</code>) and
+with the <code>signature</code> (label <code>7</code>) and
 its associated argument as the sole exception. Note that the length
 of the signature object <code>map</code> <b>must</b>
 be updated (to reflect the removal of an element) during validation.</p>
@@ -200,28 +199,31 @@ The following is a CEF object (here expressed in CBOR diagnostic notation), usin
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ crv = X25519 /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-1: 4,<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ x /</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-2: h'9fc8bbb1b93ee9ca65acf236b23d60bdade45f5a6799a96e5f1e72c933d37a6c'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-2: h'1aa7ae622561a73c3ec9f23115190a59176f7f1f470adf809ace236616bdb56f'<br>
 &nbsp;&nbsp;&nbsp;&nbsp;},<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ CipherText (Encrypted key) /</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;9: h'089267c8f8e365610c3f52e3654e8d3ad897bd6807cba82cc2de368f351a99282f15e81ead1c46a6'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;10: h'7884c45e4b4576a5663fb27e798c9a55060a775afd47efbb3eb0ed7ddec06252ee508da3cee46b74'<br>
 &nbsp;&nbsp;},<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Tag /</span><br>
-&nbsp;&nbsp;7: h'bde9dfb02e37f3115c96d64466b9df4c',<br>
+&nbsp;&nbsp;8: h'1c0351f2e47c0bafd94e28094fa48718',<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Initialization Vector (IV) /</span><br>
-&nbsp;&nbsp;8: h'3e75436f9b3810c981d76137',<br>
+&nbsp;&nbsp;9: h'981c60c0ba7c5b9fd791b6c8',<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Ciphertext (Encrypted Content) /</span><br>
-&nbsp;&nbsp;9: h'e7818e2541650490561073c0ff98feebab49012d6882'<br>
+&nbsp;&nbsp;10: h'5f0f50e75e1bf6bc31b055522896330f950846a90914'<br>
 }
 </code></div>
 <p>
 The same object expressed as hex-encoded CBOR:
 </p>
-<div style='word-break:break-all'><code>a5010302a401381e03726578616d706c652e636f6d3a78323535313905a3010120042158209fc8bbb1b93ee9ca65acf236b23d60bdade45f5a6799a96e5f1e72c933d37a6c095828089267c8f8e365610c3f52e3654e8d3ad897bd6807cba82cc2de368f351a99282f15e81ead1c46a60750bde9dfb02e37f3115c96d64466b9df4c084c3e75436f9b3810c981d761370956e7818e2541650490561073c0ff98feebab49012d6882</code></div>
+<div style='word-break:break-all'><code>
+a5010302a401381e03726578616d706c652e636f6d3a78323535313905a3010120042158201aa7ae622561a73c3ec9f23115190a59176f7f1f470adf809ace236616bdb56f0a58287884c45e4b4576a5663fb27e798c9a55060a775afd47efbb3eb0ed7ddec06252ee508da3cee46b7408501c0351f2e47c0bafd94e28094fa48718094c981c60c0ba7c5b9fd791b6c80a565f0f50e75e1bf6bc31b055522896330f950846a90914
+</code></div>
 <p>
 Decryption of this object using the private key (here in JWK format)
 </p>
 <pre>
 {
+  "kid": "example.com:x25519",
   "kty": "OKP",
   "crv": "X25519",
   "x": "o16U773QQYaQB4eegNCldg6huoIZLsOQIYkFWvbZ5lA",
@@ -243,8 +245,8 @@ as well to reflect the changed number of elements.
 <li>Serialize the remaining CBOR encryption object and set the result to 
 Additional Authentication Data (<code>AAD</code>).</li>
 <li>Recover the content encryption key using the elements in the
-key encryption object (featured in label 2).</li>
-<li>Apply the content encryption algorithm (featured in label 1)
+key encryption object (featured in label <code>2</code>).</li>
+<li>Apply the content encryption algorithm (featured in label <code>1</code>)
 to the recovered content encryption key,
 the input parameters read in the first step, and <code>AAD</code>.
 The result is the decrypted content.</li>

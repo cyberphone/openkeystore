@@ -20,6 +20,8 @@ import java.io.IOException;
 
 import java.security.GeneralSecurityException;
 
+import static org.webpki.cbor.CBORCryptoConstants.*;
+
 /**
  * Base class for creating CBOR signatures.
  * 
@@ -27,31 +29,6 @@ import java.security.GeneralSecurityException;
  * 
  */
 public abstract class CBORSigner {
-
-    /**
-     * Integer value: 1
-     */
-    public static final CBORInteger ALGORITHM_LABEL  = new CBORInteger(1);
-    
-    /**
-     * Integer value: 2
-     */
-    public static final CBORInteger KEY_ID_LABEL     = new CBORInteger(2);
-
-    /**
-     * Integer value: 3
-     */
-    public static final CBORInteger PUBLIC_KEY_LABEL = new CBORInteger(3);
-    
-    /**
-     * Integer value: 4
-     */
-    public static final CBORInteger CERT_PATH_LABEL  = new CBORInteger(4);
-    
-    /**
-     * Integer value: 5
-     */
-    public static final CBORInteger SIGNATURE_LABEL  = new CBORInteger(5);
  
     // Set by implementing classes
     String provider;

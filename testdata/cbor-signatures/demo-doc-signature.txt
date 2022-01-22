@@ -18,7 +18,7 @@
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Signature algorithm = ES256 /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;1: -7,<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Public key descriptor in COSE format /</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;3: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;4: {<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ kty = EC /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: 2,<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ crv = P-256 /</span><br>
@@ -29,6 +29,6 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-3: h'9826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d8'<br>
 &nbsp;&nbsp;&nbsp;&nbsp;},<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Signature value /</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;5: h'771b9cc536ccb3a68d59adffb7bb4dacf7cf0fd5a1a3f52837ba37e508010c2fe438236fdc713ece9df2f0f5ef2181c3f8963beb1c6f119de6fdd5e5c72548c1'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;7: h'39c9668236007d617afd195886c9a07fdf4b7832539c639843701af33c1e301b76cbfdf2b8965bac0593664fbadaf27211186d6c89fab4ae8bb01bca1fa2e429'<br>
 &nbsp;&nbsp;}<br>
 }

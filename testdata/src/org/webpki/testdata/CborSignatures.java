@@ -41,6 +41,7 @@ import org.webpki.cbor.CBORHmacSigner;
 import org.webpki.cbor.CBORHmacValidator;
 import org.webpki.cbor.CBORInteger;
 import org.webpki.cbor.CBORMap;
+import org.webpki.cbor.CBORCryptoConstants;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.CustomCryptoProvider;
@@ -144,18 +145,18 @@ public class CborSignatures {
             CBORObject value = decoded.getMap().getObject(key);
             if (value.getType() == CBORTypes.MAP) {
                 CBORMap possibleSignature = value.getMap();
-                if (possibleSignature.hasKey(CBORSigner.ALGORITHM_LABEL)) {
+                if (possibleSignature.hasKey(CBORCryptoConstants.ALGORITHM_LABEL)) {
                     CBORObject alg =
-                            possibleSignature.getObject(CBORSigner.ALGORITHM_LABEL);
+                            possibleSignature.getObject(CBORCryptoConstants.ALGORITHM_LABEL);
                     if (alg.getType() != CBORTypes.INTEGER) continue;
                 }
-                if (possibleSignature.hasKey(CBORSigner.SIGNATURE_LABEL)) {
+                if (possibleSignature.hasKey(CBORCryptoConstants.SIGNATURE_LABEL)) {
                     CBORObject sig =
-                            possibleSignature.getObject(CBORSigner.SIGNATURE_LABEL);
+                            possibleSignature.getObject(CBORCryptoConstants.SIGNATURE_LABEL);
                     if (sig.getType() != CBORTypes.BYTE_STRING) continue;
                 }
                 // This is with 99% certainty a CSF signature.  Bump the signature value.
-                possibleSignature.removeObject(CBORSigner.SIGNATURE_LABEL);
+                possibleSignature.removeObject(CBORCryptoConstants.SIGNATURE_LABEL);
                 return decoded.toString();
             }
         }

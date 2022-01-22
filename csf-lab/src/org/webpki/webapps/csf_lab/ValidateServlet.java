@@ -23,8 +23,6 @@ import java.security.PublicKey;
 
 import java.security.cert.X509Certificate;
 
-import java.util.logging.Logger;
-
 import javax.servlet.ServletException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,8 +32,8 @@ import org.webpki.cbor.CBORAsymKeyValidator;
 import org.webpki.cbor.CBORHmacValidator;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;
-import org.webpki.cbor.CBORSigner;
 import org.webpki.cbor.CBORX509Validator;
+import org.webpki.cbor.CBORCryptoConstants;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
@@ -51,9 +49,6 @@ public class ValidateServlet extends CoreRequestServlet {
 
     private static final long serialVersionUID = 1L;
 
-    static Logger logger = Logger.getLogger(ValidateServlet.class.getName());
-
-  
     public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         try {
@@ -61,7 +56,7 @@ public class ValidateServlet extends CoreRequestServlet {
             if (!request.getContentType().startsWith("application/x-www-form-urlencoded")) {
                 throw new IOException("Unexpected MIME type:" + request.getContentType());
             }
-             // Get the input data items
+            // Get the input data items
             String signedCborString = getParameter(request, CSF_OBJECT);
             CBORMap signedCborObject = (Boolean.valueOf(getParameter(request, CSF_OBJECT_IN_HEX)) ?
                     CBORObject.decode(DebugFormatter.getByteArrayFromHex(signedCborString))
@@ -73,8 +68,8 @@ public class ValidateServlet extends CoreRequestServlet {
             // This is not how you would do in an application...
             CBORMap signatureObject = signedCborObject.getObject(signatureLabel).getMap();
             boolean hmacSignature = 
-                    signatureObject.getObject(CBORSigner.ALGORITHM_LABEL).getInt() > 0;
-            boolean x509flag = signatureObject.hasKey(CBORSigner.CERT_PATH_LABEL);
+                    signatureObject.getObject(CBORCryptoConstants.ALGORITHM_LABEL).getInt() > 0;
+            boolean x509flag = signatureObject.hasKey(CBORCryptoConstants.CERT_PATH_LABEL);
             final StringBuilder certificateData = x509flag ? new StringBuilder() : null;
 
             // Validation
@@ -156,12 +151,14 @@ public class ValidateServlet extends CoreRequestServlet {
                 "'use strict';\n" +
                 "function setInputMode(flag) {\n" +
                 "  console.log('mode=' + flag);\n" +
-                "  document.getElementById('" + PRM_CBOR_DATA + "').children[1].placeholder = flag ? " +
+                "  document.getElementById('" + CSF_OBJECT + "').children[1].placeholder = flag ? " +
                   "'Diagnostic notation' : 'Hexadecimal data';\n" +
-                "  document.getElementById('" + CSF_OBJECT_IN_HEX + "').value = flag;\n" +
+                "  document.getElementById('" + CSF_OBJECT_IN_HEX + "').value = (!flag).toString();\n" +
                 "}\n" +
                 "window.addEventListener('load', function(event) {\n" +
-                "  setInputMode(true);\n" +
+                "  if (document.getElementById('" + CSF_OBJECT_IN_HEX + "').value == '') {\n" +
+                "    setInputMode(true);\n" +
+                "  }\n" +
                 "});\n");
 
         StringBuilder html = new StringBuilder(
@@ -185,7 +182,7 @@ public class ValidateServlet extends CoreRequestServlet {
                         true,
                         CSF_SIGN_LABEL,
                         1, 
-                        HTML.encode(CreateServlet.DEFAULT_SIG_LBL),
+                        HTML.encode(CSFService.sampleLabel),
                         "Anticipated signature label"))
             .append(
                 "<div style='display:flex;justify-content:center'>" +

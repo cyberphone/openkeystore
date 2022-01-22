@@ -26,6 +26,8 @@ import org.webpki.crypto.encryption.ContentEncryptionAlgorithms;
 import org.webpki.crypto.encryption.EncryptionCore;
 import org.webpki.crypto.encryption.KeyEncryptionAlgorithms;
 
+import static org.webpki.cbor.CBORCryptoConstants.*;
+
 /**
  * Class for CBOR asymmetric key decryption.
  * 
@@ -95,7 +97,7 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
     
     @Override
     CBORMap getOptionalKeyEncryptionObject(CBORMap encryptionObject) throws IOException {
-        return encryptionObject.getObject(CBOREncrypter.KEY_ENCRYPTION_LABEL).getMap(); 
+        return encryptionObject.getObject(KEY_ENCRYPTION_LABEL).getMap(); 
      }
  
     @Override
@@ -106,13 +108,12 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
         // Mandatory algorithm
         KeyEncryptionAlgorithms keyEncryptionAlgorithm =
                 KeyEncryptionAlgorithms.getAlgorithmFromId(
-                        innerObject.getObject(CBOREncrypter.ALGORITHM_LABEL).getInt());
+                        innerObject.getObject(ALGORITHM_LABEL).getInt());
  
         // Fetch public key if there is one
         PublicKey optionalPublicKey = null;
-        if (innerObject.hasKey(CBOREncrypter.PUBLIC_KEY_LABEL)) {
-            optionalPublicKey = CBORPublicKey.decode(
-                    innerObject.getObject(CBOREncrypter.PUBLIC_KEY_LABEL));
+        if (innerObject.hasKey(PUBLIC_KEY_LABEL)) {
+            optionalPublicKey = CBORPublicKey.decode(innerObject.getObject(PUBLIC_KEY_LABEL));
             // Please select ONE method for identifying the decryption key.
             CBORSigner.checkKeyId(optionalKeyId);
         }
@@ -126,14 +127,13 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
         // Fetch ephemeral key if applicable
         PublicKey ephemeralKey = null;
         if (!keyEncryptionAlgorithm.isRsa()) {
-            ephemeralKey = CBORPublicKey.decode(
-                    innerObject.getObject(CBOREncrypter.EPHEMERAL_KEY_LABEL));
+            ephemeralKey = CBORPublicKey.decode(innerObject.getObject(EPHEMERAL_KEY_LABEL));
         }
         
         // Fetch encrypted key if applicable
         byte[] encryptedKey = null;
         if (keyEncryptionAlgorithm.isKeyWrap()) {
-            encryptedKey = innerObject.getObject(CBOREncrypter.CIPHER_TEXT_LABEL).getByteString();
+            encryptedKey = innerObject.getObject(CIPHER_TEXT_LABEL).getByteString();
         }
         return keyEncryptionAlgorithm.isRsa() ?
             EncryptionCore.rsaDecryptKey(keyEncryptionAlgorithm, 

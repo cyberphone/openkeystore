@@ -25,14 +25,14 @@
 <text x='44' y='234'>algorithm<tspan fill='black'> (1)</tspan></text>
 <text x='44' y='334'>keyEncryption<tspan fill='black'> (2)</tspan></text>
 <text x='44' y='434'>keyId<tspan fill='black'> (3)</tspan></text>
-<text x='44' y='534'>tag<tspan fill='black'> (7)</tspan></text>
-<text x='44' y='634'>iv<tspan fill='black'> (8)</tspan></text>
-<text x='44' y='734'>cipherText<tspan fill='black'> (9)</tspan></text>
+<text x='44' y='534'>tag<tspan fill='black'> (8)</tspan></text>
+<text x='44' y='634'>iv<tspan fill='black'> (9)</tspan></text>
+<text x='44' y='734'>cipherText<tspan fill='black'> (10)</tspan></text>
 <text x='629' y='234'>algorithm<tspan fill='black'> (1)</tspan></text>
 <text x='629' y='334'>keyId<tspan fill='black'> (3)</tspan></text>
 <text x='629' y='434'>publicKey<tspan fill='black'> (4)</tspan></text>
 <text x='629' y='534'>ephemeralKey<tspan fill='black'> (5)</tspan></text>
-<text x='629' y='634'>cipherText<tspan fill='black'> (9)</tspan></text>
+<text x='629' y='634'>cipherText<tspan fill='black'> (10)</tspan></text>
 </g>
 <path fill='none' stroke='#4366bf' stroke-width='3' stroke-linecap='round' d='M500,180  m 85,0 c -33,0 -35,68 -35,68 0,30 -18,68 -48,72 30,8 48,35 48,80 v 186 c 0,0 0,74 36,74'/>
 </svg>

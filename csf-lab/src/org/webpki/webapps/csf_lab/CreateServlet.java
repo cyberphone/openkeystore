@@ -239,7 +239,6 @@ public class CreateServlet extends CoreRequestServlet {
             "  }\n" +
             "}\n" +
             "function setInputMode(flag) {\n" +
-            "  console.log('mode=' + flag);\n" +
             "  document.getElementById('" + PRM_CBOR_DATA + "').children[1].placeholder = flag ? " +
               "'Diagnostic notation' : 'Hexadecimal data';\n" +
             "}\n" +

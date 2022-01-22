@@ -26,6 +26,8 @@ import org.webpki.crypto.KeyAlgorithms;
 
 import org.webpki.crypto.signatures.SignatureWrapper;
 
+import static org.webpki.cbor.CBORCryptoConstants.*;
+
 /**
  * Class for CBOR asymmetric key signature validation.
  *
@@ -141,10 +143,9 @@ public class CBORAsymKeyValidator extends CBORValidator {
         
         // Fetch public key if there is one.
         PublicKey inLinePublicKey = null;
-        if (signatureObject.hasKey(CBORSigner.PUBLIC_KEY_LABEL)) {
+        if (signatureObject.hasKey(PUBLIC_KEY_LABEL)) {
             CBORSigner.checkKeyId(optionalKeyId);
-            inLinePublicKey = CBORPublicKey.decode(
-                    signatureObject.getObject(CBORSigner.PUBLIC_KEY_LABEL));
+            inLinePublicKey = CBORPublicKey.decode(signatureObject.getObject(PUBLIC_KEY_LABEL));
         }
 
         // If we have no in-line public key we need to call the key locator.

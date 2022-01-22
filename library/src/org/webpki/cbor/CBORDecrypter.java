@@ -23,6 +23,8 @@ import java.security.GeneralSecurityException;
 import org.webpki.crypto.encryption.ContentEncryptionAlgorithms;
 import org.webpki.crypto.encryption.EncryptionCore;
 
+import static org.webpki.cbor.CBORCryptoConstants.*;
+
 /**
  * Base class for creating CBOR decryption objects.
  * 
@@ -59,14 +61,14 @@ public abstract class CBORDecrypter {
         // Get the mandatory content encryption algorithm.
         ContentEncryptionAlgorithms contentEncryptionAlgorithm =
                 ContentEncryptionAlgorithms.getAlgorithmFromId(
-                        encryptionObject.getObject(CBOREncrypter.ALGORITHM_LABEL).getInt());
+                        encryptionObject.getObject(ALGORITHM_LABEL).getInt());
 
         // Possible key encryption begins to kick in here.
         CBORMap innerObject = getOptionalKeyEncryptionObject(encryptionObject);
              
         // Get the key Id if there is one.
-        CBORObject optionalKeyId = innerObject.hasKey(CBOREncrypter.KEY_ID_LABEL) ?
-            innerObject.getObject(CBOREncrypter.KEY_ID_LABEL).scan() : null;
+        CBORObject optionalKeyId = innerObject.hasKey(KEY_ID_LABEL) ?
+                         innerObject.getObject(KEY_ID_LABEL).scan() : null;
         
         // Get the content encryption key which also may be encrypted 
         byte[] contentDecryptionKey = getContentEncryptionKey(innerObject,
@@ -75,10 +77,9 @@ public abstract class CBORDecrypter {
         
         // Read and remove the encryption object (map) parameters that
         // do not participate (because they cannot) in "authData".
-        byte[] iv = CBORValidator.readAndRemove(encryptionObject, CBOREncrypter.IV_LABEL);
-        byte[] tag = CBORValidator.readAndRemove(encryptionObject, CBOREncrypter.TAG_LABEL);
-        byte[] cipherText = CBORValidator.readAndRemove(encryptionObject, 
-                                                        CBOREncrypter.CIPHER_TEXT_LABEL);
+        byte[] iv = CBORValidator.readAndRemove(encryptionObject, IV_LABEL);
+        byte[] tag = CBORValidator.readAndRemove(encryptionObject, TAG_LABEL);
+        byte[] cipherText = CBORValidator.readAndRemove(encryptionObject, CIPHER_TEXT_LABEL);
         
         // Check that there is no unread (illegal) data like public 
         // keys in symmetric encryption or just plain unknown elements.

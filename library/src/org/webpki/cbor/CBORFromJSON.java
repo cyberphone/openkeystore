@@ -21,7 +21,7 @@ import java.io.IOException;
 /**
  * Class for converting JSON to CBOR.
  */
-public class JSONReader {
+public class CBORFromJSON {
 
     char[] json;
     int index;
@@ -29,7 +29,7 @@ public class JSONReader {
     // 2^53 ("53-bit precision")
     static final long MAX_JSON_INTEGER = 9007199254740992l;
 
-    JSONReader(String jsonString) {
+    CBORFromJSON(String jsonString) {
         this.json = jsonString.toCharArray();
     }
     
@@ -43,7 +43,7 @@ public class JSONReader {
      * @throws IOException
      */
     public static CBORObject convert(String jsonString) throws IOException {
-        return new JSONReader(jsonString).readToEOF();
+        return new CBORFromJSON(jsonString).readToEOF();
     }
 
     private void syntaxError() throws IOException {

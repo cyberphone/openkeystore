@@ -26,6 +26,8 @@ import org.webpki.crypto.encryption.ContentEncryptionAlgorithms;
 import org.webpki.crypto.encryption.EncryptionCore;
 import org.webpki.crypto.encryption.KeyEncryptionAlgorithms;
 
+import static org.webpki.cbor.CBORCryptoConstants.*;
+
 /**
  * Class for creating CBOR asymmetric key encryptions.
  * 

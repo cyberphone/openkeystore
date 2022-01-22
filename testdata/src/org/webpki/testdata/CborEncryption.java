@@ -35,7 +35,7 @@ import org.webpki.cbor.CBORTextString;
 import org.webpki.cbor.CBORAsymKeyDecrypter;
 import org.webpki.cbor.CBORAsymKeyEncrypter;
 import org.webpki.cbor.CBORDecrypter;
-import org.webpki.cbor.CBOREncrypter;
+import org.webpki.cbor.CBORCryptoConstants;
 import org.webpki.cbor.CBORMap;
 
 import org.webpki.crypto.CustomCryptoProvider;
@@ -139,17 +139,17 @@ public class CborEncryption {
     
     static String cleanEncryption(byte[] cefData) throws IOException {
         CBORMap decoded = CBORObject.decode(cefData).getMap();
-        decoded.removeObject(CBOREncrypter.IV_LABEL);
-        decoded.removeObject(CBOREncrypter.TAG_LABEL);
-        decoded.removeObject(CBOREncrypter.CIPHER_TEXT_LABEL);
-        if (decoded.hasKey(CBOREncrypter.KEY_ENCRYPTION_LABEL)) {
+        decoded.removeObject(CBORCryptoConstants.IV_LABEL);
+        decoded.removeObject(CBORCryptoConstants.TAG_LABEL);
+        decoded.removeObject(CBORCryptoConstants.CIPHER_TEXT_LABEL);
+        if (decoded.hasKey(CBORCryptoConstants.KEY_ENCRYPTION_LABEL)) {
             CBORMap keyEncryption =
-                    decoded.getObject(CBOREncrypter.KEY_ENCRYPTION_LABEL).getMap();
-            if (keyEncryption.hasKey(CBOREncrypter.CIPHER_TEXT_LABEL)) {
-                keyEncryption.removeObject(CBOREncrypter.CIPHER_TEXT_LABEL);
+                    decoded.getObject(CBORCryptoConstants.KEY_ENCRYPTION_LABEL).getMap();
+            if (keyEncryption.hasKey(CBORCryptoConstants.CIPHER_TEXT_LABEL)) {
+                keyEncryption.removeObject(CBORCryptoConstants.CIPHER_TEXT_LABEL);
             }
-            if (keyEncryption.hasKey(CBOREncrypter.EPHEMERAL_KEY_LABEL)) {
-                keyEncryption.removeObject(CBOREncrypter.EPHEMERAL_KEY_LABEL);
+            if (keyEncryption.hasKey(CBORCryptoConstants.EPHEMERAL_KEY_LABEL)) {
+                keyEncryption.removeObject(CBORCryptoConstants.EPHEMERAL_KEY_LABEL);
             }
         }
         return decoded.toString();
@@ -157,7 +157,8 @@ public class CborEncryption {
     
     static void optionalUpdate(CBORDecrypter decrypter,
                                String fileName, 
-                               byte[] updatedEncryption) throws IOException, GeneralSecurityException {
+                               byte[] updatedEncryption) throws IOException, 
+                                                                GeneralSecurityException {
         boolean changed = true;
         byte[] oldEncryption = null;
         try {
@@ -165,7 +166,8 @@ public class CborEncryption {
             try {
                 compareResults(decrypter, oldEncryption);
             } catch (Exception e) {
-                throw new GeneralSecurityException("ERROR - Old encryption '" + fileName + "' did not decrypt");
+                throw new GeneralSecurityException("ERROR - Old encryption '" + 
+                                                   fileName + "' did not decrypt");
             }
         } catch (IOException e) {
             changed = false;  // New file
@@ -181,13 +183,16 @@ public class CborEncryption {
         return;
     }
 
-    static void compareResults(CBORDecrypter decrypter, byte[] encryptedData) throws Exception {
+    static void compareResults(CBORDecrypter decrypter, 
+                               byte[] encryptedData) throws Exception {
         if (!ArrayUtil.compare(decrypter.decrypt(encryptedData), dataToBeEncrypted)) {
             throw new GeneralSecurityException("Failed to decrypt");
         }
     }
 
-    static void symKeyEncrypt(int keyBits, ContentEncryptionAlgorithms algorithm, boolean wantKeyId) throws Exception {
+    static void symKeyEncrypt(int keyBits, 
+                              ContentEncryptionAlgorithms algorithm, 
+                              boolean wantKeyId) throws Exception {
         byte[] key = symmetricKeys.getValue(keyBits);
         CBORObject keyName = new CBORTextString(symmetricKeys.getName(keyBits));
         CBORSymKeyEncrypter encrypter = new CBORSymKeyEncrypter(key, algorithm);
