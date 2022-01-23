@@ -1,5 +1,5 @@
 # openkeystore
-Smart Card/TEE Key Store and Credential Provisioning System
+TEE Key Store and Credential Provisioning System
 
 This project defines SKS (Secure Key Store) which can hold X.509 certificates
 and symmetric keys as well as associated attributes such as logotypes, key ACLs and URLs:<br>
@@ -9,24 +9,33 @@ The project also defines KeyGen2 which is a credential provisioning and manageme
 for SKS:<br>
 https://cyberphone.github.io/doc/security/keygen2.html
 
+## JSON Support
 The JSON library supports a clear text signature system called JSF:<br>
 https://cyberphone.github.io/doc/security/jsf.html<br>
 as well as a "matching" encryption scheme coined JEF:<br>
 https://cyberphone.github.io/doc/security/jef.html
 
+## CBOR Support
+The CBOR library also supports signatures encryption:<br>
+https://cyberphone.github.io/javaapi/org/webpki/cbor/package-summary.html
+
 ## Requirements
-* Java SDK Version 8
-* Ant 1.9.4 or later
+* Java SDK Version 17 or later
+* Ant 1.10.8 or later
 * The projects are being developed using Eclipse but there's no dependence on Eclipse.
 
 Currently only the "library" and "resources" projects are suitable public use.
 To create the openkeystore library, perform the following steps:
 ```
 $ cd library
-$ ant
+$ ant build
+```
+It is recommendable running the following JUnit tests as well:
+```
 $ ant testsks
 $ ant testkeygen2
 $ ant testjson
+$ ant testcbor
 ```
 ## API
 Now you should have a file <code>library/dist/webpki.org-libext-1.00.jar</code> which
