@@ -29,6 +29,11 @@
         <servlet-class>org.webpki.webapps.csf_lab.ValidateServlet</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>ConvertServlet</servlet-name>
+        <servlet-class>org.webpki.webapps.csf_lab.ConvertServlet</servlet-class>
+    </servlet>
+
     <servlet-mapping>
         <servlet-name>HomeServlet</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -42,6 +47,11 @@
     <servlet-mapping>
         <servlet-name>ValidateServlet</servlet-name>
         <url-pattern>/validate</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ConvertServlet</servlet-name>
+        <url-pattern>/convert</url-pattern>
     </servlet-mapping>
 
 </web-app>
