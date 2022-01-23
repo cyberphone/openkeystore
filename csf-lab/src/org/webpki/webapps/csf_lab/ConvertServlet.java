@@ -125,7 +125,6 @@ public class ConvertServlet extends HttpServlet {
                     break;
             }
             jsonResponse.setString(CBOR_OUT, outData);
-            System.out.println(jsonResponse.toString());
         } catch (Exception e) {
             jsonResponse.setString(ERROR, HTML.encode(e.getMessage()));
         }
@@ -145,26 +144,37 @@ public class ConvertServlet extends HttpServlet {
                 "  }\n" +
                 "}\n" +
 
+                "async function delayedConvert() {\n" +
+                "  document.getElementById('" + CBOR_OUT + "').children[1].innerHTML = 'Working...';\n" +
+                "  setTimeout(function() {\n" +
+                "    doConvert();\n" +
+                "  }, 200);\n" +
+                "}\n" +
                 "async function doConvert() {\n" +
-                "  document.getElementById('" + CBOR_OUT + "').children[1].innerHTML = '';\n" +
                 "  let jsonObject = {" +
                    CBOR_IN + ": document.getElementById('" + CBOR_IN + "').children[1].value," +
                    SEL_IN + ": getRadioValue('" + SEL_IN + "')," +
                    SEL_OUT + ": getRadioValue('" + SEL_OUT + "')" +
                    "};\n" +
-                "  const response = await fetch('convert', {\n" +
-                "    headers: {\n" +
-                "      'Content-Type': '" + JSON_CONTENT_TYPE + "'\n" +
-                "    },\n" +
-                "    method: 'POST',\n" +
-                "    body: JSON.stringify(jsonObject)\n" +
-                "  });\n" +
-                "  if (response.ok) {\n" +
-                "    const jsonResult = await response.json();\n" +
-                "    let html = jsonResult." + ERROR + "? '<span style=\"color:red;font-weight:bold\">' + " +
+                "  let html = 'unknown error';\n" +
+                "  try {\n" +
+                "    const response = await fetch('convert', {\n" +
+                "      headers: {\n" +
+                "        'Content-Type': '" + JSON_CONTENT_TYPE + "'\n" +
+                "      },\n" +
+                "      method: 'POST',\n" +
+                "      body: JSON.stringify(jsonObject)\n" +
+                "    });\n" +
+                "    if (response.ok) {\n" +
+                "      const jsonResult = await response.json();\n" +
+                "      html = jsonResult." + ERROR + 
+                    "? '<span style=\"color:red;font-weight:bold\">' + " +
                     "jsonResult." + ERROR + " + '</span>' : jsonResult." + CBOR_OUT + ";\n" +
-                "    document.getElementById('" + CBOR_OUT + "').children[1].innerHTML = html;\n" +
+                "    }\n" +
+                "  } catch (e) {\n" +
+                "    html = '<span style=\"color:red;font-weight:bold\">' + e + '</span>';\n" +
                 "  }\n" +
+                "  document.getElementById('" + CBOR_OUT + "').children[1].innerHTML = html;\n" +
                 "}\n");
 
         StringBuilder html = new StringBuilder(
@@ -182,7 +192,7 @@ public class ConvertServlet extends HttpServlet {
                         "Converted result"))           
             .append(
                 "<div style='display:flex;justify-content:center'>" +
-                "<div class='stdbtn' onclick=\"doConvert()\">" +
+                "<div class='stdbtn' onclick=\"delayedConvert()\">" +
                 "Convert!" +
                 "</div>" +
                 "</div>" +

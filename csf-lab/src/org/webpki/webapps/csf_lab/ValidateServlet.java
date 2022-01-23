@@ -183,7 +183,7 @@ public class ValidateServlet extends CoreRequestServlet {
                         CSF_SIGN_LABEL,
                         1, 
                         HTML.encode(CSFService.sampleLabel),
-                        "Anticipated signature label"))
+                        "Anticipated signature label in <i>diagnostic notation</i>"))
             .append(
                 "<div style='display:flex;justify-content:center'>" +
                 "<div class='stdbtn' onclick=\"doVerify()\">" +
