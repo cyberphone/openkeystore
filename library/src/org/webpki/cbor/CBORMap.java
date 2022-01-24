@@ -261,19 +261,18 @@ public class CBORMap extends CBORObject {
         
     @Override
     void internalToString(CBORObject.PrettyPrinter prettyPrinter) {
-        prettyPrinter.beginStructure("{\n");
+        prettyPrinter.beginStructure("{");
         boolean notFirst = false;
         for (CBORObject key : keys.keySet()) {
             CBORObject member = keys.get(key);
             if (notFirst) {
-                prettyPrinter.insertComma();
+                prettyPrinter.appendText(",");
             }
             notFirst = true;
-            prettyPrinter.indent();
+            prettyPrinter.newlineAndIndent();
             key.internalToString(prettyPrinter);
             prettyPrinter.appendText(": ");
             member.internalToString(prettyPrinter);
-            prettyPrinter.appendText("\n");
         }
         prettyPrinter.endStructure("}");
     }

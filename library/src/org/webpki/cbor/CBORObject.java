@@ -672,7 +672,8 @@ public abstract class CBORObject {
             result = new StringBuilder();
         }
 
-        PrettyPrinter indent() {
+        PrettyPrinter newlineAndIndent() {
+            result.append('\n');
             for (int i = 0; i < indentationLevel; i++) {
                 result.append(INDENT);
             }
@@ -687,7 +688,7 @@ public abstract class CBORObject {
 
         PrettyPrinter endStructure(String text) {
             indentationLevel--;
-            indent();
+            newlineAndIndent();
             appendText(text);
             return this;
         }
@@ -699,10 +700,6 @@ public abstract class CBORObject {
         
         String getTotalText() {
             return result.toString();
-        }
-
-        void insertComma() {
-            result.insert(result.length() - 1, ',');
         }
     }
 
