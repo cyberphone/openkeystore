@@ -261,7 +261,7 @@ public class CBORMap extends CBORObject {
         
     @Override
     void internalToString(CBORObject.PrettyPrinter prettyPrinter) {
-        prettyPrinter.beginStructure("{");
+        prettyPrinter.beginMap();
         boolean notFirst = false;
         for (CBORObject key : keys.keySet()) {
             CBORObject member = keys.get(key);
@@ -274,6 +274,6 @@ public class CBORMap extends CBORObject {
             prettyPrinter.appendText(": ");
             member.internalToString(prettyPrinter);
         }
-        prettyPrinter.endStructure("}");
+        prettyPrinter.endMap(notFirst);
     }
 }

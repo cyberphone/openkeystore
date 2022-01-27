@@ -672,25 +672,24 @@ public abstract class CBORObject {
             result = new StringBuilder();
         }
 
-        PrettyPrinter newlineAndIndent() {
+        void newlineAndIndent() {
             result.append('\n');
             for (int i = 0; i < indentationLevel; i++) {
                 result.append(INDENT);
             }
-            return this;
         }
         
-        PrettyPrinter beginStructure(String text) {
-            appendText(text);
+        void beginMap() {
+            result.append('{');
             indentationLevel++;
-            return this;
         }
 
-        PrettyPrinter endStructure(String text) {
+        void endMap(boolean notFirst) {
             indentationLevel--;
-            newlineAndIndent();
-            appendText(text);
-            return this;
+            if (notFirst) {
+                newlineAndIndent();
+            }
+            appendText("}");
         }
 
         PrettyPrinter appendText(String text) {

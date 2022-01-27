@@ -90,6 +90,12 @@ public class CBORDiagnosticParser {
     
     private CBORObject getRawObject() throws IOException {
         switch (readChar()) {
+        
+            case '<':
+                scanFor("<");
+                CBORObject embedded = getObject();
+                scanFor(">>");
+                return new CBORByteString(embedded.encode());
     
             case '[':
                 CBORArray array = new CBORArray();
