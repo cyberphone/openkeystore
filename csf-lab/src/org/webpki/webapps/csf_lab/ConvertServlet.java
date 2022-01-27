@@ -67,7 +67,8 @@ public class ConvertServlet extends HttpServlet {
               "></td><td>Diagnostic notation</td></tr>" +
             "<tr><td><input type='radio' name='" + name + "' " +
             "value='" + HEXA + "'" + (primary ? "" : " checked") +
-            "></td><td>Hexadecimal notation</td></tr>" +
+            "></td><td>Hexadecimal notation" + (primary ? " (including possible #-comments)" 
+                                                        : "") + "</td></tr>" +
             "<tr><td><input type='radio' name='" + name + "' " +
             "value='" + B64U + "'></td><td>Base64Url notation</td></tr>" +
             "</table>";
