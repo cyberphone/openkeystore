@@ -147,7 +147,7 @@ public class CBORDiagnosticParser {
 
             case '-':
                 if (nextChar() == 'I') {
-                    scanFor("nfinity");
+                    scanFor("Infinity");
                     return new CBORFloatingPoint(Double.NEGATIVE_INFINITY);
                 }
                 return getNumber();
