@@ -57,8 +57,8 @@ public class CBORDiagnosticParser {
         return new CBORDiagnosticParser(cborDiagnostic).readToEOF();
     }
 
-    private void syntaxError() throws IOException {
-        throw new IOException("Syntax error around position: " + index);
+    private void syntaxError(String error) throws IOException {
+        throw new IOException(error);
     }
     
     private CBORObject readToEOF() throws IOException {
@@ -82,9 +82,8 @@ public class CBORDiagnosticParser {
             scanNonSignficantData();
             return true;
         }
-        if (nextChar() != validStop) {
-            syntaxError();
-        }
+        scanFor(String.valueOf(validStop));
+        index--;
         return false;
     }
     
@@ -115,9 +114,7 @@ public class CBORDiagnosticParser {
                     index--;
                     do {
                         CBORObject key = getObject();
-                        if (readChar() != ':') {
-                            syntaxError();
-                        }
+                        scanFor(":");
                         map.setObject(key, getObject());
                     } while (continueList('}'));
                 }
@@ -127,11 +124,7 @@ public class CBORDiagnosticParser {
                 return getTextString();
                 
             case 'h':
-                if (nextChar() == '\'') {
-                    return getByteString();
-                }
-                syntaxError();
-                return null;
+                return getByteString();
                 
             case 't':
                 scanFor("rue");
@@ -173,7 +166,8 @@ public class CBORDiagnosticParser {
                 return new CBORFloatingPoint(Double.POSITIVE_INFINITY);
                 
             default:
-                syntaxError();
+                index--;
+                syntaxError(String.format("Unexpected character: %s", toChar(readChar())));
                 return null;
         }
     }
@@ -204,10 +198,15 @@ public class CBORDiagnosticParser {
         return c;
     }
 
+    private String toChar(char c) {
+        return c < ' ' ? String.format("\\u%04x", (int) c) : String.format("'%c'", c);
+    }
+
     private void scanFor(String string) throws IOException {
         for (char c : string.toCharArray()) {
-            if (c != readChar()) {
-                syntaxError();
+            char actual = readChar(); 
+            if (c != actual) {
+                syntaxError(String.format("Expected: '%c' actual: %s", c, toChar(actual)));
             }
         }
     }
@@ -251,7 +250,7 @@ public class CBORDiagnosticParser {
                             break;
     
                         default:
-                            syntaxError();
+                            syntaxError(String.format("Invalid escape character %s", toChar(c)));
                     }
                     break;
  
@@ -260,7 +259,7 @@ public class CBORDiagnosticParser {
                     
                 default:
                     if (c < ' ') {
-                        syntaxError();
+                        syntaxError(String.format("Unexpected control character: %s", toChar(c)));
                     }
             }
             s.append(c);
@@ -269,7 +268,7 @@ public class CBORDiagnosticParser {
     
     CBORObject getByteString() throws IOException {
         StringBuilder s = new StringBuilder();
-        readChar();
+        scanFor("'");
         char c;
         while ((c = readChar()) != '\'') {
             s.append(c);
@@ -292,7 +291,7 @@ public class CBORDiagnosticParser {
             case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
                 return (char) (c - 'A' + 10);
         }
-        syntaxError();
+        syntaxError(String.format("Bad hex character: %s", toChar(c)));
         return 0; // For the compiler...
     }
 
