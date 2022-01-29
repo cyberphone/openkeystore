@@ -32,7 +32,7 @@ public class DNSReverseLookup {
 
     private DNSReverseLookup() {}
 
-    static String getHostName(String ipAddress) throws IOException, InterruptedException {
+    public static String getHostName(String ipAddress) throws IOException, InterruptedException {
         if (System.getProperty("os.name").startsWith("Windows")) {
             return InetAddress.getByName(ipAddress).getHostName();
         }
