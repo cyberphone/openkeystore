@@ -45,10 +45,8 @@ public class CBORDiagnosticParser {
     /**
      * Parse Diagnostic CBOR to CBOR.
      * 
-     * Note: currently only integer numbers are supported.
-     * 
-     * @param cborDiagnosticString
-     * @return CBOR
+     * @param cborDiagnostic String holding diagnostic (textual) CBOR
+     * @return CBORObject
      * @throws IOException
      */
     public static CBORObject parse(String cborDiagnostic) throws IOException {
@@ -246,8 +244,8 @@ public class CBORDiagnosticParser {
         return c < ' ' ? String.format("\\u%04x", (int) c) : String.format("'%c'", c);
     }
 
-    private void scanFor(String string) throws IOException {
-        for (char c : string.toCharArray()) {
+    private void scanFor(String expected) throws IOException {
+        for (char c : expected.toCharArray()) {
             char actual = readChar(); 
             if (c != actual) {
                 reportError(String.format("Expected: '%c' actual: %s", c, toChar(actual)));
