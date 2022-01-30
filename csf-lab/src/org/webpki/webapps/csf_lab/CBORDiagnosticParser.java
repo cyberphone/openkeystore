@@ -347,7 +347,7 @@ public class CBORDiagnosticParser {
 
     private char readChar() throws IOException {
         if (index >= cborDiagnostic.length) {
-            reportError("EOF error");
+            reportError("Unexpected EOF");
         }
         return cborDiagnostic[index++];
     }
