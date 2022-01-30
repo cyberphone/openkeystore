@@ -114,7 +114,8 @@ public class ConvertServlet extends HttpServlet {
             String outData;
             switch (parsedJson.getString(SEL_OUT)) {
                 case DIAG:
-                    outData = HTML.encode(cbor.toString()).replace("\n", "<br>").replace(" ","&nbsp;");
+                    outData = HTML.encode(cbor.toString()).replace("\n", "<br>")
+                                                          .replace(" ","&nbsp;");
                     break;
     
                 case HEXA:
@@ -127,7 +128,8 @@ public class ConvertServlet extends HttpServlet {
             }
             jsonResponse.setString(CBOR_OUT, outData);
         } catch (Exception e) {
-            jsonResponse.setString(ERROR, HTML.encode(e.getMessage()));
+            jsonResponse.setString(ERROR, HTML.encode(e.getMessage()).replace("\n", "<br>")
+                                                                     .replace(" ","&nbsp;"));
         }
         returnJSON(response, jsonResponse);
     }

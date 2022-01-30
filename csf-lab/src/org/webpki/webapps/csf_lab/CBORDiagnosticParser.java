@@ -30,8 +30,6 @@ import org.webpki.cbor.CBORNull;
 import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORTextString;
 
-import org.webpki.util.DebugFormatter;
-
 /**
  * Class for converting diagnostic CBOR to CBOR.
  */
@@ -57,8 +55,43 @@ public class CBORDiagnosticParser {
         return new CBORDiagnosticParser(cborDiagnostic).readToEOF();
     }
 
-    private void syntaxError(String error) throws IOException {
-        throw new IOException(error);
+    private void reportError(String error) throws IOException {
+        // Unsurprisingly, error handling turned out to be the most complex part...
+        int start = index - 100;
+        if (start < 0) {
+            start = 0;
+        }
+        int linePos = 0;
+        while (start < index - 1) {
+            if (cborDiagnostic[start++] == '\n') {
+                linePos = start;
+            }
+        }
+        StringBuilder complete = new StringBuilder();
+        int endLine = index;
+        while (endLine < cborDiagnostic.length) {
+            if (cborDiagnostic[endLine] == '\n') {
+                break;
+            }
+            endLine++;
+        }
+        for (int q = linePos; q < endLine; q++) {
+            complete.append(cborDiagnostic[q]);
+        }
+        complete.append('\n');
+        for (int q = linePos; q < index; q++) {
+            complete.append('-');
+        }
+        int lineNumber = 1;
+        for (int q = 0; q < index - 1; q++) {
+            if (cborDiagnostic[q] == '\n') {
+                lineNumber++;
+            }
+        }
+        throw new IOException(complete.append("^\n\nError in line ")
+                                      .append(lineNumber)
+                                      .append(". ")
+                                      .append(error).toString());
     }
     
     private CBORObject readToEOF() throws IOException {
@@ -155,6 +188,8 @@ public class CBORDiagnosticParser {
             case '7':
             case '8':
             case '9':
+
+            case '+':
                 return getNumber();
 
             case 'N':
@@ -167,8 +202,8 @@ public class CBORDiagnosticParser {
                 
             default:
                 index--;
-                syntaxError(String.format("Unexpected character: %s", toChar(readChar())));
-                return null;
+                reportError(String.format("Unexpected character: %s", toChar(readChar())));
+                return null;  // For the compiler...
         }
     }
 
@@ -185,10 +220,19 @@ public class CBORDiagnosticParser {
                 c = '0';
             }
         } while ((c >= '0' && c <= '9') || c == '+'  || c == '-');
-        return floatingPoint ? 
-                new CBORFloatingPoint(Double.valueOf(token.toString())) 
-                             : 
-                new CBORInteger(new BigInteger(token.toString()));
+        try {
+            if (floatingPoint) {
+                Double value = Double.valueOf(token.toString());
+                if (value.isInfinite()) {
+                    reportError("Floating point value out of range");
+                }
+                return new CBORFloatingPoint(value);
+            }
+            return new CBORInteger(new BigInteger(token.toString()));
+        } catch (IllegalArgumentException e) {
+            reportError(e.getMessage());
+        }
+        return null; // For the compiler...
     }
 
     private char nextChar() throws IOException {
@@ -206,7 +250,7 @@ public class CBORDiagnosticParser {
         for (char c : string.toCharArray()) {
             char actual = readChar(); 
             if (c != actual) {
-                syntaxError(String.format("Expected: '%c' actual: %s", c, toChar(actual)));
+                reportError(String.format("Expected: '%c' actual: %s", c, toChar(actual)));
             }
         }
     }
@@ -245,12 +289,12 @@ public class CBORDiagnosticParser {
                         case 'u':
                             c = 0;
                             for (int i = 0; i < 4; i++) {
-                                c = (char) ((c << 4) + getHexChar());
+                                c = (char) ((c << 4) + hexCharToChar(readChar()));
                             }
                             break;
     
                         default:
-                            syntaxError(String.format("Invalid escape character %s", toChar(c)));
+                            reportError(String.format("Invalid escape character %s", toChar(c)));
                     }
                     break;
  
@@ -259,7 +303,7 @@ public class CBORDiagnosticParser {
                     
                 default:
                     if (c < ' ') {
-                        syntaxError(String.format("Unexpected control character: %s", toChar(c)));
+                        reportError(String.format("Unexpected control character: %s", toChar(c)));
                     }
             }
             s.append(c);
@@ -271,33 +315,41 @@ public class CBORDiagnosticParser {
         scanFor("'");
         char c;
         while ((c = readChar()) != '\'') {
-            s.append(c);
+            s.append(hexCharToChar(c));
         }
         String hex = s.toString();
-        return new CBORByteString(hex.length() == 0 ? 
-                                        new byte[0] : DebugFormatter.getByteArrayFromHex(hex));
+        int l = hex.length();
+        if ((l & 1) != 0) {
+            reportError("Uneven number of hex characters");
+        }
+        byte[] bytes = new byte[l >> 1];
+        int q = 0;
+        int i = 0;
+        while (q < l) {
+            bytes[i++] = (byte)((hex.charAt(q++) << 4) + hex.charAt(q++));
+        }
+        return new CBORByteString(bytes);
     }
 
-    private char getHexChar() throws IOException {
-        char c;
-        switch (c = readChar()) {
+    private char hexCharToChar(char c) throws IOException {
+        switch (c) {
             case '0': case '1': case '2': case '3': case '4':
             case '5': case '6': case '7': case '8': case '9':
                 return (char) (c - '0');
-
+    
             case 'a': case 'b': case 'c': case 'd': case 'e': case 'f':
                 return (char) (c - 'a' + 10);
-
+    
             case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
                 return (char) (c - 'A' + 10);
         }
-        syntaxError(String.format("Bad hex character: %s", toChar(c)));
+        reportError(String.format("Bad hex character: %s", toChar(c)));
         return 0; // For the compiler...
     }
 
     private char readChar() throws IOException {
         if (index >= cborDiagnostic.length) {
-            throw new IOException("EOF error");
+            reportError("EOF error");
         }
         return cborDiagnostic[index++];
     }
