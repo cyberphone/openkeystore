@@ -95,7 +95,7 @@ public class CBORDiagnosticParser {
     private CBORObject readToEOF() throws IOException {
         CBORObject cborObject = getObject();
         if (index < cborDiagnostic.length) {
-            throw new IOException("Unexpected data after token");
+            reportError("Unexpected data after token");
         }
         return cborObject;
     }
@@ -308,7 +308,7 @@ public class CBORDiagnosticParser {
         }
     }
     
-    CBORObject getByteString() throws IOException {
+    private CBORObject getByteString() throws IOException {
         StringBuilder s = new StringBuilder();
         scanFor("'");
         char c;

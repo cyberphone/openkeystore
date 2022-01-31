@@ -276,7 +276,7 @@ public class CBORTest {
                 .addObject(new CBORInteger(4))
                 .addObject(new CBORInteger(5)));
         textCompare(cborArray,
-                "[\n  1,\n  [\n    2,\n    3\n  ],\n  [\n    4,\n    5\n  ]\n]");
+                "[1, [2, 3], [4, 5]]");
         binaryCompare(cborArray,"8301820203820405");
 
         cborArray = new CBORArray()
@@ -289,8 +289,7 @@ public class CBORTest {
                 .addObject(new CBORInteger(5))
                 .addObject(new CBORInteger(6)));
         textCompare(cborArray,
-                "[\n  1,\n  {\n    \"best\": 2,\n    \"best2\": 3,\n    \"another\": 4\n  }," +
-                "\n  [\n    5,\n    6\n  ]\n]");
+                "[1, {\n  \"best\": 2,\n  \"best2\": 3,\n  \"another\": 4\n}, [5, 6]]");
         binaryCompare(cborArray,
                       "8301a36462657374026562657374320367616e6f7468657204820506");
 
@@ -307,9 +306,7 @@ public class CBORTest {
                 .addObject(new CBORInteger(4))
                 .addObject(new CBORInteger(5)));
         textCompare(cborArray,
-                "[\n  1,\n  {\n    8: 2,\n    58: 3,\n    -4: [\n" +
-                "      true,\n      false\n    ],\n    -90: null\n  }," +
-                "\n  [\n    4,\n    5\n  ]\n]");
+                "[1, {\n  8: 2,\n  58: 3,\n  -4: [true, false],\n  -90: null\n}, [4, 5]]");
         binaryCompare(cborArray,"8301a40802183a032382f5f43859f6820405");
         
         integerTest(0, "00" );
@@ -654,7 +651,7 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Data of type=CBORMap with value={\n} was never read");
+                "Data of type=CBORMap with value={} was never read");
         }
         unread.getMap().checkForUnread();
 
@@ -664,7 +661,7 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Data of type=CBORArray with value=[\n] was never read");
+                "Data of type=CBORArray with value=[] was never read");
         }
         unread.getArray().checkForUnread();
     }

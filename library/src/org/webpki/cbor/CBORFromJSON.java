@@ -20,69 +20,104 @@ import java.io.IOException;
 
 /**
  * Class for converting JSON to CBOR.
+ * 
+ * Note that the JSON Number type is restricted to integers with a magnitude <= 2^53.
+ * 
  */
 public class CBORFromJSON {
 
     char[] json;
     int index;
-    
+
     // 2^53 ("53-bit precision")
     static final long MAX_JSON_INTEGER = 9007199254740992l;
 
-    CBORFromJSON(String jsonString) {
-        this.json = jsonString.toCharArray();
+    CBORFromJSON(String json) {
+        this.json = json.toCharArray();
     }
     
     /**
      * Convert JSON to CBOR.
      * 
-     * Note: currently only integer numbers are supported.
-     * 
-     * @param jsonString
-     * @return CBOR
+     * @param json JSON String
+     * @return CBORObject
      * @throws IOException
      */
-    public static CBORObject convert(String jsonString) throws IOException {
-        return new CBORFromJSON(jsonString).readToEOF();
+    public static CBORObject convert(String json) throws IOException {
+        return new CBORFromJSON(json).readToEOF();
     }
 
-    private void syntaxError() throws IOException {
-        throw new IOException("Syntax error around position: " + index);
+    private void reportError(String error) throws IOException {
+        // Unsurprisingly, error handling turned out to be the most complex part...
+        int start = index - 100;
+        if (start < 0) {
+            start = 0;
+        }
+        int linePos = 0;
+        while (start < index - 1) {
+            if (json[start++] == '\n') {
+                linePos = start;
+            }
+        }
+        StringBuilder complete = new StringBuilder();
+        int endLine = index;
+        while (endLine < json.length) {
+            if (json[endLine] == '\n') {
+                break;
+            }
+            endLine++;
+        }
+        for (int q = linePos; q < endLine; q++) {
+            complete.append(json[q]);
+        }
+        complete.append('\n');
+        for (int q = linePos; q < index; q++) {
+            complete.append('-');
+        }
+        int lineNumber = 1;
+        for (int q = 0; q < index - 1; q++) {
+            if (json[q] == '\n') {
+                lineNumber++;
+            }
+        }
+        throw new IOException(complete.append("^\n\nError in line ")
+                                      .append(lineNumber)
+                                      .append(". ")
+                                      .append(error).toString());
     }
     
     private CBORObject readToEOF() throws IOException {
         CBORObject cborObject = getObject();
         if (index < json.length) {
-            throw new IOException("Unexpected data after token");
+            reportError("Unexpected data after token");
         }
         return cborObject;
     }
 
     private CBORObject getObject() throws IOException {
-        scanWhiteSpace();
+        scanNonSignficantData();
         CBORObject cborObject = getRawObject();
-        scanWhiteSpace();
+        scanNonSignficantData();
         return cborObject;
     }
     
     private boolean continueList(char validStop) throws IOException {
         if (nextChar() == ',') {
             readChar();
-            scanWhiteSpace();
+            scanNonSignficantData();
             return true;
         }
-        if (nextChar() != validStop) {
-            syntaxError();
-        }
+        scanFor(String.valueOf(validStop));
+        index--;
         return false;
     }
     
     private CBORObject getRawObject() throws IOException {
         switch (readChar()) {
-    
+        
             case '[':
                 CBORArray array = new CBORArray();
-                scanWhiteSpace();
+                scanNonSignficantData();
                 while (readChar() != ']') {
                     index--;
                     do {
@@ -93,25 +128,23 @@ public class CBORFromJSON {
      
             case '{':
                 CBORMap map = new CBORMap();
-                scanWhiteSpace();
+                scanNonSignficantData();
                 while (readChar() != '}') {
                     index--;
                     do {
                         if (nextChar() != '"') {
-                            syntaxError();
-                        } 
-                        CBORObject key = getObject();
-                        if (readChar() != ':') {
-                            syntaxError();
+                            reportError("String expected");
                         }
+                        CBORObject key = getObject();
+                        scanFor(":");
                         map.setObject(key, getObject());
                     } while (continueList('}'));
                 }
                 return map;
        
             case '"':
-                return getString();
-      
+                return getTextString();
+                
             case 't':
                 scanFor("rue");
                 return new CBORBoolean(true);
@@ -124,27 +157,46 @@ public class CBORFromJSON {
                 scanFor("ull");
                 return new CBORNull();
 
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+
+            case '+':
             case '-':
-                readChar();
-                return getInteger("-");
-                
+                return getNumber();
+
             default:
-                return getInteger("");
+                index--;
+                reportError(String.format("Unexpected character: %s", toChar(readChar())));
+                return null;  // For the compiler...
         }
     }
 
-    private CBORInteger getInteger(String initial) throws IOException {
-        StringBuilder token = new StringBuilder(initial);
+    private CBORObject getNumber() throws IOException {
+        StringBuilder token = new StringBuilder();
         index--;
         char c;
         do  {
             token.append(readChar());
-        } while (((c = nextChar()) >= '0' && c <= '9') || c == '.');
-        long value = Long.valueOf(token.toString());
-        if (Math.abs(value) > MAX_JSON_INTEGER) {
-            throw new IOException("JSON integer exceeded 2^53");
+            c = nextChar();
+        } while ((c >= '0' && c <= '9') || c == '.');
+        try {
+            long value = Long.valueOf(token.toString());
+            if (Math.abs(value) > MAX_JSON_INTEGER) {
+                reportError("JSON integer exceeded 2^53");
+            }
+            return new CBORInteger(value);
+        } catch (IllegalArgumentException e) {
+            reportError(e.getMessage());
         }
-        return new CBORInteger(value);
+        return null; // For the compiler...
     }
 
     private char nextChar() throws IOException {
@@ -154,15 +206,20 @@ public class CBORFromJSON {
         return c;
     }
 
-    private void scanFor(String string) throws IOException {
-        for (char c : string.toCharArray()) {
-            if (c != readChar()) {
-                syntaxError();
+    private String toChar(char c) {
+        return c < ' ' ? String.format("\\u%04x", (int) c) : String.format("'%c'", c);
+    }
+
+    private void scanFor(String expected) throws IOException {
+        for (char c : expected.toCharArray()) {
+            char actual = readChar(); 
+            if (c != actual) {
+                reportError(String.format("Expected: '%c' actual: %s", c, toChar(actual)));
             }
         }
     }
 
-    private CBORTextString getString() throws IOException {
+    private CBORObject getTextString() throws IOException {
         StringBuilder s = new StringBuilder();
         while (true) {
             char c;
@@ -196,12 +253,12 @@ public class CBORFromJSON {
                         case 'u':
                             c = 0;
                             for (int i = 0; i < 4; i++) {
-                                c = (char) ((c << 4) + getHexChar());
+                                c = (char) ((c << 4) + hexCharToChar(readChar()));
                             }
                             break;
     
                         default:
-                            syntaxError();
+                            reportError(String.format("Invalid escape character %s", toChar(c)));
                     }
                     break;
  
@@ -210,38 +267,37 @@ public class CBORFromJSON {
                     
                 default:
                     if (c < ' ') {
-                        syntaxError();
+                        reportError(String.format("Unexpected control character: %s", toChar(c)));
                     }
             }
             s.append(c);
         }
     }
-
-    private char getHexChar() throws IOException {
-        char c;
-        switch (c = readChar()) {
+    
+    private char hexCharToChar(char c) throws IOException {
+        switch (c) {
             case '0': case '1': case '2': case '3': case '4':
             case '5': case '6': case '7': case '8': case '9':
                 return (char) (c - '0');
-
+    
             case 'a': case 'b': case 'c': case 'd': case 'e': case 'f':
                 return (char) (c - 'a' + 10);
-
+    
             case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
                 return (char) (c - 'A' + 10);
         }
-        syntaxError();
+        reportError(String.format("Bad hex character: %s", toChar(c)));
         return 0; // For the compiler...
     }
 
     private char readChar() throws IOException {
         if (index >= json.length) {
-            throw new IOException("EOF error");
+            reportError("Unexpected EOF");
         }
         return json[index++];
     }
 
-    private void scanWhiteSpace() throws IOException {
+    private void scanNonSignficantData() throws IOException {
         while (index < json.length) {
             switch (nextChar()) {
                 case ' ':
@@ -250,7 +306,8 @@ public class CBORFromJSON {
                 case '\t':
                     readChar();
                     continue;
-                default:
+
+                 default:
                     return;
             }
         }
