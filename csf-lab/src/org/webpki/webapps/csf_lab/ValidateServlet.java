@@ -58,12 +58,10 @@ public class ValidateServlet extends CoreRequestServlet {
             }
             // Get the input data items
             CBORMap signedCborObject = (Boolean.valueOf(getParameter(request, CSF_OBJECT_IN_HEX)) ?
-                    CBORObject.decode(DebugFormatter.getByteArrayFromHex(
-                            getParameter(request, CSF_OBJECT)))
+                    hexDecodedCbor(getParameter(request, CSF_OBJECT))
                                                 :
-                    CBORDiagnosticParser.parse(
-                            getParameterTextarea(request, CSF_OBJECT))).getMap();
-            String validationKey = getParameter(request, CSF_VALIDATION_KEY).trim();
+                    CBORDiagnosticParser.parse(getParameterTextarea(request, CSF_OBJECT))).getMap();
+            String validationKey = getParameter(request, CSF_VALIDATION_KEY);
             CBORObject signatureLabel = getSignatureLabel(request);
             
             // This is not how you would do in an application...

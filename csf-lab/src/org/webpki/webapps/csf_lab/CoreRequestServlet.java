@@ -25,6 +25,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.webpki.cbor.CBORObject;
 
+import org.webpki.util.DebugFormatter;
+
 
 public class CoreRequestServlet extends HttpServlet {
     
@@ -68,7 +70,7 @@ public class CoreRequestServlet extends HttpServlet {
             "<td>Diagnostic notation</td>" +
             "<td><input type='radio' name='" + PRM_INPUT_TYPE + "' " +
             "onchange='setInputMode(false)' value='false'></td> " +
-            "<td>Hexadecimal notation</td></tr>" +
+            "<td>Hexadecimal notation (including possible #-comments)</td></tr>" +
             "</table>";
     
  
@@ -87,6 +89,13 @@ public class CoreRequestServlet extends HttpServlet {
     byte[] getBinaryParameter(HttpServletRequest request, String parameter) throws IOException {
         return getParameter(request, parameter).getBytes("utf-8");
     }
+    
+    CBORObject hexDecodedCbor(String hexAndOptionalComments) throws IOException {
+        return CBORObject.decode(DebugFormatter.getByteArrayFromHex(
+                hexAndOptionalComments.replaceAll("#.*(\r|\n|$)", "")
+                                      .replaceAll("( |\n|\r)", "")));
+    }
+ 
 
     CBORObject getSignatureLabel(HttpServletRequest request) throws IOException {
          try {

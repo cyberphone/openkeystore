@@ -285,11 +285,9 @@ public class CreateServlet extends CoreRequestServlet {
          try {
             request.setCharacterEncoding("utf-8");
             CBORObject cbor = Boolean.valueOf(getParameter(request, PRM_INPUT_TYPE)) ? 
-                    CBORDiagnosticParser.parse(
-                            getParameterTextarea(request, PRM_CBOR_DATA))
+                    CBORDiagnosticParser.parse(getParameterTextarea(request, PRM_CBOR_DATA))
                                         :
-                    CBORObject.decode(DebugFormatter.getByteArrayFromHex(
-                            getParameter(request, PRM_CBOR_DATA)));
+                    hexDecodedCbor(getParameter(request, PRM_CBOR_DATA));
             if (cbor.getType() != CBORTypes.MAP) {
                 throw new IOException("Only CBOR \"map\" can be signed");
             }

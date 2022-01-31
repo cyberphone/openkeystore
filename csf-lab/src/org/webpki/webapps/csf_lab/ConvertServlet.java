@@ -21,7 +21,6 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -37,7 +36,7 @@ import org.webpki.util.DebugFormatter;
 
 import org.webpki.webutil.ServletUtil;
 
-public class ConvertServlet extends HttpServlet {
+public class ConvertServlet extends CoreRequestServlet {
 
     private static final long serialVersionUID = 1L;
     
@@ -103,8 +102,7 @@ public class ConvertServlet extends HttpServlet {
                     break;
     
                 case HEXA:
-                    cbor = CBORObject.decode(DebugFormatter.getByteArrayFromHex(
-                            inData.replaceAll("#.*(\r|\n|$)", "").replaceAll("( |\n|\r)", "")));
+                    cbor = hexDecodedCbor(inData);
                     break;
     
                 default:
