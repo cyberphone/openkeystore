@@ -166,10 +166,11 @@ public class HTML {
 
     public static void errorPage(HttpServletResponse response, Exception e)
             throws IOException, ServletException {
-        StringBuilder error = new StringBuilder("Stack trace:\n")
+        StringBuilder error = new StringBuilder()
+            .append(e.getMessage())
+            .append("\n\n")
             .append(e.getClass().getName())
-            .append(": ")
-            .append(e.getMessage());
+            .append(':');
         StackTraceElement[] st = e.getStackTrace();
         int length = st.length;
         if (length > 20) {

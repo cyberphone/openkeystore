@@ -173,7 +173,7 @@ public class CBORMap extends CBORObject {
     public CBORObject getObject(CBORObject key) throws IOException {
         CBORObject cborObject = keys.get(key);
         if (cborObject == null) {
-            bad("No such key: " + key.toString());
+            bad("Missing key: " + key.toString());
         }
         return cborObject;
     }

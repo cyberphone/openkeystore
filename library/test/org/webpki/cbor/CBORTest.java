@@ -547,7 +547,7 @@ public class CBORTest {
             ((CBORArray) cbor).getObject(1).getMap().getObject(-91).getInt();
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, "No such key: -91");
+            checkException(e, "Missing key: -91");
         }
         
         assertTrue("v1", ((CBORArray) cbor).getObject(1).getMap().getObject(58).getInt() == 3);
@@ -1262,7 +1262,7 @@ public class CBORTest {
                             .getMap().removeObject(ALGORITHM_LABEL).encode());
             fail("must not run");
         } catch (Exception e) {
-            checkException(e, "No such key: 1");
+            checkException(e, "Missing key: 1");
         }
         byte[] a256Encrypted = new CBORSymKeyEncrypter(symmetricKeys.getValue(256),
                                             ContentEncryptionAlgorithms.A256GCM)
