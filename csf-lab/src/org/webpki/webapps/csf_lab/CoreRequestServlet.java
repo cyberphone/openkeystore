@@ -72,28 +72,20 @@ public class CoreRequestServlet extends HttpServlet {
             "</table>";
     
  
-    String getParameter(HttpServletRequest request, String parameter) throws IOException {
+    String getParameterTextarea(HttpServletRequest request, String parameter) throws IOException {
         String string = request.getParameter(parameter);
         if (string == null) {
             throw new IOException("Missing data for: "+ parameter);
         }
-        return string.trim();
+        return string.replace("\r\n", "\n");
+    }
+
+    String getParameter(HttpServletRequest request, String parameter) throws IOException {
+        return getParameterTextarea(request, parameter).trim();
     }
     
     byte[] getBinaryParameter(HttpServletRequest request, String parameter) throws IOException {
         return getParameter(request, parameter).getBytes("utf-8");
-    }
-
-    String getTextArea(HttpServletRequest request, String name)
-            throws IOException {
-        String string = getParameter(request, name);
-        StringBuilder s = new StringBuilder();
-        for (char c : string.toCharArray()) {
-            if (c != '\r') {
-                s.append(c);
-            }
-        }
-        return s.toString();
     }
 
     CBORObject getSignatureLabel(HttpServletRequest request) throws IOException {

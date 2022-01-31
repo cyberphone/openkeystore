@@ -66,6 +66,9 @@ public class CBORDiagnosticParser {
             }
         }
         StringBuilder complete = new StringBuilder();
+        if (index > 0 && cborDiagnostic[index - 1] == '\n') {
+            index--;
+        }
         int endLine = index;
         while (endLine < cborDiagnostic.length) {
             if (cborDiagnostic[endLine] == '\n') {
@@ -95,6 +98,7 @@ public class CBORDiagnosticParser {
     private CBORObject readToEOF() throws IOException {
         CBORObject cborObject = getObject();
         if (index < cborDiagnostic.length) {
+            readChar();
             reportError("Unexpected data after token");
         }
         return cborObject;

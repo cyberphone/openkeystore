@@ -57,11 +57,12 @@ public class ValidateServlet extends CoreRequestServlet {
                 throw new IOException("Unexpected MIME type:" + request.getContentType());
             }
             // Get the input data items
-            String signedCborString = getParameter(request, CSF_OBJECT);
             CBORMap signedCborObject = (Boolean.valueOf(getParameter(request, CSF_OBJECT_IN_HEX)) ?
-                    CBORObject.decode(DebugFormatter.getByteArrayFromHex(signedCborString))
+                    CBORObject.decode(DebugFormatter.getByteArrayFromHex(
+                            getParameter(request, CSF_OBJECT)))
                                                 :
-                    CBORDiagnosticParser.parse(signedCborString)).getMap();
+                    CBORDiagnosticParser.parse(
+                            getParameterTextarea(request, CSF_OBJECT))).getMap();
             String validationKey = getParameter(request, CSF_VALIDATION_KEY).trim();
             CBORObject signatureLabel = getSignatureLabel(request);
             

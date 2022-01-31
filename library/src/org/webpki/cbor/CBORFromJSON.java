@@ -60,6 +60,9 @@ public class CBORFromJSON {
             }
         }
         StringBuilder complete = new StringBuilder();
+        if (index > 0 && json[index - 1] == '\n') {
+            index--;
+        }
         int endLine = index;
         while (endLine < json.length) {
             if (json[endLine] == '\n') {
@@ -89,6 +92,7 @@ public class CBORFromJSON {
     private CBORObject readToEOF() throws IOException {
         CBORObject cborObject = getObject();
         if (index < json.length) {
+            readChar();
             reportError("Unexpected data after token");
         }
         return cborObject;

@@ -95,7 +95,7 @@ public class ConvertServlet extends HttpServlet {
                 throw new IOException("Unexpected MIME type:" + request.getContentType());
             }
             JSONObjectReader parsedJson = JSONParser.parse(ServletUtil.getData(request));
-            String inData = parsedJson.getString(CBOR_IN).trim();
+            String inData = parsedJson.getString(CBOR_IN);
             CBORObject cbor;
             switch (parsedJson.getString(SEL_IN)) {
                 case DIAG:
