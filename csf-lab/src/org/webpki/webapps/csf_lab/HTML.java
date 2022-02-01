@@ -122,7 +122,9 @@ public class HTML {
 
     public static String fancyBox(String id, String content, String header) {
         return boxHeader(id, header, true) +
-            "<div class='staticbox'>" + content + "</div></div>";
+            "<div class='staticbox'>" + 
+                encode(content).replace("\n", "<br>").replace(" ", "&nbsp;") + 
+             "</div></div>";
     }
 
     public static String fancyText(boolean visible,
@@ -134,7 +136,7 @@ public class HTML {
             "<textarea" +
             " rows='" + rows + "' maxlength='100000'" +
             " class='textbox' name='" + id + "'>" + 
-            content +
+            encode(content) +
             "</textarea></div>";
     }
     

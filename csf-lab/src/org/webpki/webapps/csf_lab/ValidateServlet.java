@@ -39,7 +39,6 @@ import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.CertificateInfo;
 
-import org.webpki.json.JSONOutputFormats;
 import org.webpki.json.JSONParser;
 
 import org.webpki.util.DebugFormatter;
@@ -82,6 +81,7 @@ public class ValidateServlet extends CoreRequestServlet {
                                                                 :
                     PEMDecoder.getPublicKey(validationKey.getBytes("utf-8"));
                 if (x509flag) {
+
                     new CBORX509Validator(new CBORX509Validator.SignatureParameters() {
 
                     @Override
@@ -94,15 +94,14 @@ public class ValidateServlet extends CoreRequestServlet {
                                                       "match signature certificate");
                             }
                             if (!certificateData.isEmpty()) {
-                                certificateData.append("<br>&nbsp;<br>");
+                                certificateData.append("\n\n");
                             }
-                            certificateData.append(
-                                    HTML.encode(new CertificateInfo(certificate).toString())
-                                        .replace("\n", "<br>").replace("  ", ""));
+                            certificateData.append(new CertificateInfo(certificate).toString()
+                                                       .replace("  ", ""));
                         }
                     }
 
-                }).validate(signatureLabel, signatureObject);
+                }).validate(signatureLabel, signedCborObject);
                         
                 } else {
                     new CBORAsymKeyValidator(externalPublicKey).validate(signatureLabel, 
@@ -111,30 +110,31 @@ public class ValidateServlet extends CoreRequestServlet {
             }
             StringBuilder html = new StringBuilder(
                     "<div class='header'> Signature Successfully Validated</div>")
-                .append(HTML.fancyBox(CSF_OBJECT,
-                                      HTML.encode(signedCborObject.toString())
-                                          .replace("\n", "<br>")
-                                          .replace(" ", "&nbsp;"),
-                                      "Signed CBOR object in diagnostic notation"))           
-                .append(HTML.fancyBox("inhex",
-                                      DebugFormatter.getHexString(signedCborObject.encode()), 
-                                      "Signed CBOR object in hexadecimal notation"))           
-                .append(HTML.fancyBox(CSF_VALIDATION_KEY,
-                                      jwkValidationKey ? 
-                                          JSONParser.parse(validationKey)
-                                              .serializeToString(JSONOutputFormats.PRETTY_HTML)
-                                                       :
-                                      HTML.encode(validationKey).replace("\n", "<br>"),
-                                      "Signature validation " + 
-                                      (hmacSignature ? 
-                                             "secret key in hexadecimal" :
-                                             "public key in " + 
-                                             (jwkValidationKey ? "JWK" : "PEM") +
-                                             " format")));
+                .append(HTML.fancyBox(
+                            CSF_OBJECT,
+                            signedCborObject.toString(),
+                            "Signed CBOR object in diagnostic notation"))           
+                .append(HTML.fancyBox(
+                            "inhex",
+                            DebugFormatter.getHexString(signedCborObject.encode()), 
+                            "Signed CBOR object in hexadecimal notation"))           
+                .append(HTML.fancyBox(
+                            CSF_VALIDATION_KEY,
+                            jwkValidationKey ? 
+                                JSONParser.parse(validationKey).toString()
+                                             :
+                                validationKey,
+                            "Signature validation " + 
+                            (hmacSignature ? 
+                                   "secret key in hexadecimal" :
+                                   "public key in " + 
+                                   (jwkValidationKey ? "JWK" : "PEM") +
+                                   " format")));
             if (certificateData != null) {
-                html.append(HTML.fancyBox("certpath", 
-                                          certificateData.toString(),
-                                          "Core certificate data"));
+                html.append(HTML.fancyBox(
+                                "certpath", 
+                                certificateData.toString(),
+                                "Core certificate data"));
             }
 
             // Finally, print it out
@@ -168,20 +168,20 @@ public class ValidateServlet extends CoreRequestServlet {
                         true,
                         CSF_OBJECT,
                         10, 
-                        HTML.encode(CSFService.sampleSignature),
+                        CSFService.sampleSignature,
                         DIAG_OR_HEX +
                         "Paste a signed CBOR object in the text box or try with the default"))
             .append(HTML.fancyText(
                         true,
                         CSF_VALIDATION_KEY,
                         4, 
-                        HTML.encode(CSFService.samplePublicKey),
+                        CSFService.samplePublicKey,
 "Validation key (secret key in hexadecimal or public key in PEM or &quot;plain&quot; JWK format)"))
             .append(HTML.fancyText(
                         true,
                         CSF_SIGN_LABEL,
                         1, 
-                        HTML.encode(CSFService.sampleLabel),
+                        CSFService.sampleLabel,
                         "Anticipated signature label in <i>diagnostic notation</i>"))
             .append(
                 "<div style='display:flex;justify-content:center'>" +

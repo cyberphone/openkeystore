@@ -186,11 +186,11 @@ public class ConvertServlet extends CoreRequestServlet {
                         10, 
                         "{\n  5: \"data\"\n}",
                         selector(SEL_IN, true) +
-                        "Paste a CBOR object in the text box or try with the default"))
-            .append(HTML.fancyBox(CBOR_OUT,
+                          "Paste a CBOR object in the text box or try with the default"))
+            .append(HTML.fancyBox(
+                        CBOR_OUT,
                         "",
-                        selector(SEL_OUT, false) +
-                        "Converted result"))           
+                        selector(SEL_OUT, false) + "Converted result"))           
             .append(
                 "<div style='display:flex;justify-content:center'>" +
                 "<div class='stdbtn' onclick=\"delayedConvert()\">" +
