@@ -126,11 +126,11 @@ public class CBORMap extends CBORObject {
      */
     public CBORMap setObject(CBORObject key, CBORObject value) throws IOException {
         if (keys.put(key, value) != null) {
-            bad("Duplicate key: " + key.toString());
+            reportError("Duplicate key: " + key.toString());
         }
         if (parsingMode) {
             if (comparator.compare(lastKey, key) > 0) {
-                bad("Non-deterministic sort order for map key: " + key);
+                reportError("Non-deterministic sort order for map key: " + key);
             }
         }
         lastKey = key;
@@ -173,7 +173,7 @@ public class CBORMap extends CBORObject {
     public CBORObject getObject(CBORObject key) throws IOException {
         CBORObject cborObject = keys.get(key);
         if (cborObject == null) {
-            bad("Missing key: " + key.toString());
+            reportError("Missing key: " + key.toString());
         }
         return cborObject;
     }
@@ -209,7 +209,7 @@ public class CBORMap extends CBORObject {
      */
     public CBORMap removeObject(CBORObject key) throws IOException {
         if (!keys.containsKey(key)) {
-            bad("No such key: " + key.toString());
+            reportError("No such key: " + key.toString());
         }
         keys.remove(key);
         return this;

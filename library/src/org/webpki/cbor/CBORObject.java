@@ -106,12 +106,12 @@ public abstract class CBORObject {
     
     abstract void internalToString(PrettyPrinter prettyPrinter);
 
-    static void bad(String error) throws IOException {
+    static void reportError(String error) throws IOException {
         throw new IOException(error);
     }
 
     static void unsupportedTag(byte tag) throws IOException {
-        bad(String.format("Unsupported tag: %2x", tag & 0xff));
+        reportError(String.format("Unsupported tag: %2x", tag & 0xff));
     }
 
     void nullCheck(Object object) {
@@ -145,7 +145,7 @@ public abstract class CBORObject {
 
     void checkTypeAndMarkAsRead(CBORTypes requestedCborType) throws IOException {
         if (internalGetType() != requestedCborType) {
-            bad("Is type: " + internalGetType() + ", requested: " + requestedCborType);
+            reportError("Is type: " + internalGetType() + ", requested: " + requestedCborType);
         }
         readFlag = true;
     }
@@ -155,7 +155,7 @@ public abstract class CBORObject {
                                        String dataType) throws IOException {
         BigInteger value = getBigInteger();
         if (value.compareTo(max) > 0 || value.compareTo(min) < 0) {
-            bad("Value out of range for '" + dataType + "' (" + value.toString() + ")");
+            reportError("Value out of range for '" + dataType + "' (" + value.toString() + ")");
         }
         return value.longValue();
     }
@@ -385,7 +385,7 @@ public abstract class CBORObject {
         }
         
         private void eofError() throws IOException {
-            bad("Malformed CBOR, trying to read past EOF");
+            reportError("Malformed CBOR, trying to read past EOF");
         }
         
         private byte readByte() throws IOException {
@@ -398,7 +398,7 @@ public abstract class CBORObject {
         
         private long checkLength(long length) throws IOException {
             if (length < 0) {
-                bad("Length < 0");
+                reportError("Length < 0");
             }
             return length;
         }
@@ -431,7 +431,7 @@ public abstract class CBORObject {
                 throws IOException {
             CBORFloatingPoint value = new CBORFloatingPoint(Double.longBitsToDouble(rawDouble));
             if (value.tag != tag || value.bitFormat != bitFormat) {
-                bad(String.format(
+                reportError(String.format(
                         "Non-deterministic encoding of floating point value, tag:  %2x", tag & 0xff));
             }
             return value;
@@ -448,7 +448,7 @@ public abstract class CBORObject {
                     if (byteArray.length == 0) {
                         byteArray = ZERO_BYTE;  // Zero length byte string => n == 0
                     } else if (byteArray[0] == 0) {
-                        bad("Non-deterministic encoding: leading zero byte");
+                        reportError("Non-deterministic encoding: leading zero byte");
                     }
                     BigInteger bigInteger = 
                         (tag == MT_BIG_SIGNED) ?
@@ -456,7 +456,7 @@ public abstract class CBORObject {
                                                :
                             new BigInteger(1, byteArray);
                     if (CBORInteger.fitsAnInteger(bigInteger)) {
-                        bad("Non-deterministic encoding: bignum fits integer");
+                        reportError("Non-deterministic encoding: bignum fits integer");
                     }
                     return new CBORInteger(bigInteger);
 
@@ -539,7 +539,7 @@ public abstract class CBORObject {
                     n |= readByte() & 0xffl;
                 }
                 if ((n & mask) == 0 || (n > 0 && n < 24)) {
-                    bad("Non-deterministic encoding of N");
+                    reportError("Non-deterministic encoding of N");
                 }
             }
             switch (majorType) {
@@ -581,7 +581,7 @@ public abstract class CBORObject {
 
         private void checkForUnexpectedInput() throws IOException {
             if (input.read() != -1) {
-                bad("Unexpected data found after CBOR object");
+                reportError("Unexpected data found after CBOR object");
             }
         }
     }
@@ -652,12 +652,12 @@ public abstract class CBORObject {
             default:
         }
         if (!readFlag) {
-            bad((holderObject == null ? "Data" : 
+            reportError((holderObject == null ? "Data" : 
                         holderObject instanceof CBORArray ?
                                 "Array element" :
                                 "Map key " + holderObject.toString()) +                    
-                    " of type=" + getClass().getSimpleName() + 
-                    " with value=" + toString() + " was never read");
+                        " of type=" + getClass().getSimpleName() + 
+                        " with value=" + toString() + " was never read");
         }
     }
 
