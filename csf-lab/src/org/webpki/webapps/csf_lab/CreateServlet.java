@@ -294,18 +294,16 @@ public class CreateServlet extends CoreRequestServlet {
             CBORObject signatureLabel = getSignatureLabel(request);
             boolean keyInlining = request.getParameter(FLG_PUB_INLINE) != null;
             boolean certOption = request.getParameter(FLG_CERT_PATH) != null;
+            
+            // Mandatory algorithm
             String algorithmString = getParameter(request, PRM_ALGORITHM);
+            
+            // Get optional key Id
             String optionalKeyIdString = getParameter(request, PRM_KEY_ID);
-            CBORObject optionalKeyId = null;
-            if (optionalKeyIdString.length() != 0) {
-                try {
-                    optionalKeyId = CBORDiagnosticParser.parse(optionalKeyIdString.trim());
-                } catch (IOException e) {
-                    throw new IOException("Key Ids must be in CBOR diagnostic " +
-                            "notation like \"mykey\" or 31");
-                }
-            }
-
+            CBORObject optionalKeyId = optionalKeyIdString.length() == 0 ? null :
+                getCborAttribute(optionalKeyIdString,
+                        "Key Ids must be in CBOR diagnostic notation like \"mykey\" or 31");
+ 
             // Get the signature key
             CBORSigner signer;
             String validationKey;

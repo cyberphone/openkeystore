@@ -85,24 +85,27 @@ public class CoreRequestServlet extends HttpServlet {
     String getParameter(HttpServletRequest request, String parameter) throws IOException {
         return getParameterTextarea(request, parameter).trim();
     }
-    
+
     byte[] getBinaryParameter(HttpServletRequest request, String parameter) throws IOException {
         return getParameter(request, parameter).getBytes("utf-8");
     }
-    
+
     CBORObject hexDecodedCbor(String hexAndOptionalComments) throws IOException {
         return CBORObject.decode(DebugFormatter.getByteArrayFromHex(
                 hexAndOptionalComments.replaceAll("#.*(\r|\n|$)", "")
                                       .replaceAll("( |\n|\r)", "")));
     }
- 
+
+    CBORObject getCborAttribute(String attribute, String errorHelpText) throws IOException {
+        try {
+            return CBORDiagnosticParser.parse(attribute);
+        } catch (IOException e) {
+            throw new IOException(e.getMessage() + "\n\n" + errorHelpText);
+        }   
+    }
 
     CBORObject getSignatureLabel(HttpServletRequest request) throws IOException {
-         try {
-            return CBORDiagnosticParser.parse(getParameter(request, CSF_SIGN_LABEL));
-        } catch (IOException e) {
-            throw new IOException("Signature labels must be in CBOR diagnostic " +
-                    "notation like \"sig\" or 8");
-        }        
+        return getCborAttribute(getParameter(request, CSF_SIGN_LABEL),
+                "Signature labels must be in CBOR diagnostic notation like \"sig\" or 8");
     }
 }
