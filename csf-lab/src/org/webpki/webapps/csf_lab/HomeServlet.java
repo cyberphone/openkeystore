@@ -33,14 +33,14 @@ public class HomeServlet extends HttpServlet {
 
         HTML.standardPage(response, null, new StringBuilder(
             "<div class='header'>CBOR Signature Format (CSF)</div>" +
-            "<div style='padding-top:15pt'>This site permits testing and " +
-            "debugging systems utilizing digitally signed COSE " +
+            "<div style='padding-top:15pt'>This service permits testing and " +
+            "debugging CBOR " +
             "[<a href='https://www.rfc-editor.org/rfc/rfc8949.html' " +
-            "target='_blank' title='cbor'>RFC&nbsp;8949</a>] data. " +
-            "Unlike the COSE " +
+            "target='_blank' title='cbor'>RFC&nbsp;8949</a>] based systems " +
+            "using digital signatures. Unlike COSE " +
             "[<a href='https://datatracker.ietf.org/doc/html/rfc8152' " +
-            "target='_blank' title='cose'>RFC&nbsp;8152</a>] standard, " +
-            "CSF builds on <i>deterministic</i> encoding enabling signatures " +
+            "target='_blank' title='cose'>RFC&nbsp;8152</a>], " +
+            "CSF utilizes <i>deterministic</i> encoding enabling signatures " +
             "to become a part of the application data, rather than embedding " +
             "such data in signatures.  For detailed technical information " +
             "click on the CSF logotype.</div>" +
