@@ -43,8 +43,8 @@ public class OkpSupport {
     throws IOException {
         throw new IOException("Feature not yet available in Android");
     }
-    public static KeyAlgorithms getOkpKeyAlgorithm(Key key)  throws IOException {
-        throw new IOException("Feature not yet available in Android");
+    public static KeyAlgorithms getOkpKeyAlgorithm(Key key) {
+        throw new RuntimeException("Feature not yet available in Android");
     }
 }
 //#else

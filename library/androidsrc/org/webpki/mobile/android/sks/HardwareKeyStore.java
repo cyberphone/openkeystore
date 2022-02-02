@@ -123,8 +123,9 @@ public abstract class HardwareKeyStore {
                 for (Certificate certificate : hardwareBacked.getCertificateChain(DEVICE_KEY_NAME)) {
                     // Older Androids are severely broken and have "holes" in the certificate chain...
                     if (!certPath.isEmpty() && !certPath.get(certPath.size() - 1)
-                            .getIssuerDN().toString().equals(
-                                    ((X509Certificate)certificate).getSubjectDN().toString())) {
+                            .getIssuerX500Principal().toString().equals(
+                                    ((X509Certificate)certificate)
+                                            .getSubjectX500Principal().toString())) {
                         break;
                     }
                     certPath.add((X509Certificate)certificate);

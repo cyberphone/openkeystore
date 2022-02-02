@@ -20,6 +20,7 @@
   <property name="testdata_dir" location="../testdata"/>
   <property name="android-saturn" value="android.saturn"/>
   <property name="android-json" value="android.json"/>
+  <property name="android-cbor" value="android.cbor"/>
   <property name="webpki-libext" value="webpki.org-libext-1.00.jar"/>
   <property name="webpki-webutil" value="webpki.org-webutil-1.00.jar"/>
   <property name="debug"  value="on"/>
@@ -68,7 +69,7 @@
   </condition>
 
   <target name="help">
-    <echo message="Targets: help build tomcat doc testkeygen2 testsks testjson testcbor testkeyalgs android-json android-saturn"/>
+    <echo message="Targets: help build tomcat doc testkeygen2 testsks testjson testcbor testkeyalgs android-json android-saturn android-cbor"/>
   </target>
 
   <target name="_preprocess">
@@ -314,6 +315,8 @@
         <include name="**/crypto/AsymSignatureAlgorithms.java"/>
         <include name="**/crypto/SymSignatureAlgorithms.java"/>
         <include name="**/crypto/CryptoRandom.java"/>
+        <include name="**/crypto/encryption/KeyEncryptionAlgorithms.java"/>
+        <include name="**/crypto/encryption/ContentEncryptionAlgorithms.java"/>
         <include name="**/json/*.java"/>
         <include name="**/jose/**/*.java"/>
       </fileset>
@@ -346,6 +349,66 @@
     <delete dir="${bin_dir}"/>
   </target>
 		
+  <target name="android-cbor">    
+    <delete file="${dist_dir}/${android-cbor}.zip"/>
+    <delete dir="${temp_dir}"/>
+    <delete dir="${bin_dir}"/>
+    <mkdir dir="${temp_dir}"/>
+    <mkdir dir="${bin_dir}"/>
+
+    <copy todir="${android_dir}/org/webpki" preservelastmodified="true">
+      <fileset dir="${src_dir}/org/webpki">
+        <include name="**/util/DebugFormatter.java"/>
+        <include name="**/util/ArrayUtil.java"/>
+        <include name="**/crypto/X509VerifierInterface.java"/>
+        <include name="**/crypto/HmacVerifierInterface.java"/>
+        <include name="**/crypto/X509SignerInterface.java"/>
+        <include name="**/crypto/AsymKeySignerInterface.java"/>
+        <include name="**/crypto/HmacSignerInterface.java"/>
+        <include name="**/crypto/CryptoAlgorithms.java"/>
+        <include name="**/crypto/OkpSupport.java"/>
+        <include name="**/crypto/HashAlgorithms.java"/>
+        <include name="**/crypto/KeyAlgorithms.java"/>
+        <include name="**/crypto/KeyTypes.java"/>
+        <include name="**/crypto/HmacAlgorithms.java"/>
+        <include name="**/crypto/SignatureAlgorithms.java"/>
+        <include name="**/crypto/AlgorithmPreferences.java"/>
+        <include name="**/crypto/AsymSignatureAlgorithms.java"/>
+        <include name="**/crypto/SymSignatureAlgorithms.java"/>
+        <include name="**/crypto/CryptoRandom.java"/>
+        <include name="**/crypto/encryption/KeyEncryptionAlgorithms.java"/>
+        <include name="**/crypto/encryption/ContentEncryptionAlgorithms.java"/>
+        <include name="**/cbor/*.java"/>
+      </fileset>
+    </copy>
+    <property name="ANDROID" value="true"/>
+    <property name="ANDROID_PURE" value="true"/>
+    <jpp destdir="${android_dir}" verbose="true" force="true">
+        <fileset dir="ppmaster/src" includes="**/*.java">
+            <exclude name="**/PEMDecoder.java"/>
+            <exclude name="**/CustomCryptoProvider.java"/>
+        </fileset>
+    </jpp>
+
+    <antcall target="_clean_android"/>
+    <javac debug="${debug}" srcdir="${android_dir}:androidrefsrc" 
+        destdir="${bin_dir}" 
+        includeAntRuntime="false">
+        <exclude name="**/android/**/*.java"/>
+        <exclude name="**/androidx/**/*.java"/>
+        <include name="**/*.java"/>
+    </javac>
+    
+    <!-- Create Android CBOR java library -->
+    <zip destfile="${dist_dir}/${android-cbor}.zip">
+      <zipfileset dir="${temp_dir}">
+          <include name="**/*.java"/>
+       </zipfileset>
+    </zip>
+    <delete dir="${temp_dir}"/>
+    <delete dir="${bin_dir}"/>
+  </target>
+
   <target name="android-saturn">    
     <delete file="${dist_dir}/${android-saturn}.zip"/>
     <delete dir="${temp_dir}"/>
@@ -357,6 +420,7 @@
       <fileset dir="${src_dir}/org/webpki">
         <exclude name="**/tools/**"/>
         <exclude name="**/xml/**"/>
+        <exclude name="**/cbor/**"/>
         <exclude name="**/crypto/**"/>
         <exclude name="**/jose/**"/>
         <exclude name="**/util/**"/>
@@ -409,6 +473,8 @@
         <include name="**/crypto/SymSignatureAlgorithms.java"/>
         <include name="**/crypto/SignatureWrapper.java"/>
         <include name="**/crypto/CryptoRandom.java"/>
+        <include name="**/crypto/encryption/KeyEncryptionAlgorithms.java"/>
+        <include name="**/crypto/encryption/ContentEncryptionAlgorithms.java"/>
         <include name="**/net/HTTPSWrapper.java"/>
       </fileset>
     </copy>
@@ -479,9 +545,11 @@
   		   srcdir="${android_dir}:androidrefsrc:${android_test_dir}"
   		   destdir="${bin_dir}"
   		   includeAntRuntime="false"
-  	       classpath="${ext.jar}/junit-4.12.jar"/>
+  	       classpath="${ext.jar}/junit-4.12.jar">
+  	    <compilerarg value="-Xlint:deprecation"/>
+  	</javac>
 
-  	<!-- Create Android java library -->
+  	<!-- Create Android Saturn java library -->
     <zip destfile="${dist_dir}/${android-saturn}.zip">
       <zipfileset dir="${temp_dir}">
           <include name="**/*.java"/>
