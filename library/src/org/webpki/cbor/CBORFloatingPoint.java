@@ -74,8 +74,8 @@ public class CBORFloatingPoint extends CBORObject {
 
             // Warning: slightly complex code ahead :)
             long exp16 = ((bitFormat >>> FLOAT32_FRACTION_SIZE) & 
-                ((1l << FLOAT32_EXPONENT_SIZE) - 1))
-                    - (FLOAT32_EXPONENT_BIAS - FLOAT16_EXPONENT_BIAS);
+                ((1l << FLOAT32_EXPONENT_SIZE) - 1)) -
+                    (FLOAT32_EXPONENT_BIAS - FLOAT16_EXPONENT_BIAS);
             long frac16 = (bitFormat >> (FLOAT32_FRACTION_SIZE - FLOAT16_FRACTION_SIZE)) & 
                     ((1l << FLOAT16_FRACTION_SIZE) - 1);
 
