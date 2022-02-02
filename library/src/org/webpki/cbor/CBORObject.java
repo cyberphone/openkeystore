@@ -111,7 +111,7 @@ public abstract class CBORObject {
     }
 
     static void unsupportedTag(byte tag) throws IOException {
-        reportError(String.format("Unsupported tag: %2x", tag & 0xff));
+        reportError(String.format("Unsupported tag: %02x", tag & 0xff));
     }
 
     void nullCheck(Object object) {
@@ -396,13 +396,6 @@ public abstract class CBORObject {
             return (byte)i;
         }
         
-        private long checkLength(long length) throws IOException {
-            if (length < 0) {
-                reportError("Length < 0");
-            }
-            return length;
-        }
-
         private byte[] readBytes(long length) throws IOException {
             ByteArrayOutputStream baos = new ByteArrayOutputStream(BUFFER_SIZE);
             byte[] buffer = new byte[BUFFER_SIZE];
@@ -425,6 +418,13 @@ public abstract class CBORObject {
                 value += readByte() & 0xffl;
             }
             return value;
+        }
+
+        private long checkLength(long length) throws IOException {
+            if (length < 0) {
+                reportError("Length < 0");
+            }
+            return length;
         }
 
         private CBORFloatingPoint checkDoubleConversion(byte tag, long bitFormat, long rawDouble)
