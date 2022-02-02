@@ -689,7 +689,7 @@ public abstract class CBORObject {
             if (notFirst) {
                 newlineAndIndent();
             }
-            appendText("}");
+            result.append('}');
         }
 
         PrettyPrinter appendText(String text) {
