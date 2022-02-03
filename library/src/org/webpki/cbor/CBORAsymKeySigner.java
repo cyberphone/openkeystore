@@ -25,7 +25,7 @@ import java.security.PublicKey;
 import org.webpki.crypto.AsymKeySignerInterface;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.KeyAlgorithms;
-
+import org.webpki.crypto.SignatureAlgorithms;
 import org.webpki.crypto.signatures.SignatureWrapper;
 
 import static org.webpki.cbor.CBORCryptoConstants.*;
@@ -82,6 +82,11 @@ public class CBORAsymKeySigner extends CBORSigner {
                         .sign();            
             }
             
+            @Override
+            public AsymSignatureAlgorithms getAlgorithm() {
+                return algorithm;
+            }
+            
         };
         setAlgorithm(KeyAlgorithms.getKeyAlgorithm(privateKey).getRecommendedSignatureAlgorithm());
     }
@@ -113,7 +118,6 @@ public class CBORAsymKeySigner extends CBORSigner {
      */
     public CBORAsymKeySigner setAlgorithm(AsymSignatureAlgorithms algorithm) throws IOException {
         this.algorithm = algorithm;
-        this.coseAlgorithmId = algorithm.getCoseAlgorithmId();
         return this;
     }    
 
@@ -128,5 +132,10 @@ public class CBORAsymKeySigner extends CBORSigner {
             signatureObject.setObject(PUBLIC_KEY_LABEL, CBORPublicKey.encode(optionalPublicKey));
             checkKeyId(optionalKeyId);
         }
+    }
+
+    @Override
+    SignatureAlgorithms getSignatureAlgorithm() throws IOException, GeneralSecurityException {
+        return signer.getAlgorithm();
     }
 }

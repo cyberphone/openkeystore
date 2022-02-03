@@ -274,16 +274,16 @@
         replace="import android.util.Base64;"
         flags="g"/>
     <replaceregexp file="${android_dir}/org/webpki/crypto/AsymSignatureAlgorithms.java"
-        match="&quot;RSASSA-PSS&quot;,.*256,"
-        replace="&quot;SHA256withRSA/PSS&quot;, null/* Android != JDK */,"
+        match="&quot;RSASSA-PSS&quot;,\n.*256,"
+        replace="&quot;SHA256withRSA/PSS&quot;,&#10;                   null/* Android != JDK */,"
         flags="g"/>
     <replaceregexp file="${android_dir}/org/webpki/crypto/AsymSignatureAlgorithms.java"
-        match="&quot;RSASSA-PSS&quot;,.*384,"
-        replace="&quot;SHA384withRSA/PSS&quot;, null/* Android != JDK */,"
+        match="&quot;RSASSA-PSS&quot;,\n.*384,"
+        replace="&quot;SHA384withRSA/PSS&quot;,&#10;                   null/* Android != JDK */,"
         flags="g"/>
     <replaceregexp file="${android_dir}/org/webpki/crypto/AsymSignatureAlgorithms.java"
-        match="&quot;RSASSA-PSS&quot;,.*512,"
-        replace="&quot;SHA512withRSA/PSS&quot;, null/* Android != JDK */,"
+        match="&quot;RSASSA-PSS&quot;,\n.*512,"
+        replace="&quot;SHA512withRSA/PSS&quot;,&#10;                   null/* Android != JDK */,"
         flags="g"/>
   </target>
 
@@ -471,8 +471,11 @@
         <include name="**/crypto/AlgorithmPreferences.java"/>
         <include name="**/crypto/AsymSignatureAlgorithms.java"/>
         <include name="**/crypto/SymSignatureAlgorithms.java"/>
-        <include name="**/crypto/SignatureWrapper.java"/>
         <include name="**/crypto/CryptoRandom.java"/>
+        <include name="**/AsymEncryptionAlgorithms.java"/>
+        <include name="**/SymEncryptionAlgorithms.java"/>
+        <include name="**/EncryptionAlgorithms.java"/>
+        <include name="**/crypto/signatures/SignatureWrapper.java"/>
         <include name="**/crypto/encryption/KeyEncryptionAlgorithms.java"/>
         <include name="**/crypto/encryption/ContentEncryptionAlgorithms.java"/>
         <include name="**/net/HTTPSWrapper.java"/>
@@ -505,6 +508,7 @@
     <jpp destdir="${android_dir}" verbose="true" force="true">
         <fileset dir="ppmaster/src" includes="**/*.java">
         	<exclude name="**/PEMDecoder.java"/>
+            <exclude name="**/CustomCryptoProvider.java"/>
         </fileset>
         <fileset dir="ppmaster/test" includes="**/*.java"/>
     </jpp>
@@ -529,9 +533,6 @@
   	</copy>
   	<copy todir="${android_test_dir}">
   		<fileset dir="${src_dir}">
-  	       <include name="**/AsymEncryptionAlgorithms.java"/>
-  	       <include name="**/SymEncryptionAlgorithms.java"/>
-   	       <include name="**/EncryptionAlgorithms.java"/>
    	       <include name="**/CA.java"/>
    	       <include name="**/CertSpec.java"/>
   		</fileset>

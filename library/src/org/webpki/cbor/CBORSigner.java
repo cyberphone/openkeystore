@@ -20,6 +20,8 @@ import java.io.IOException;
 
 import java.security.GeneralSecurityException;
 
+import org.webpki.crypto.SignatureAlgorithms;
+
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
 /**
@@ -33,14 +35,15 @@ public abstract class CBORSigner {
     // Set by implementing classes
     String provider;
     
-    int coseAlgorithmId;
-    
     // Optional key ID
     CBORObject optionalKeyId;
 
     CBORSigner() {}
     
     abstract byte[] signData(byte[] dataToSign) throws IOException, GeneralSecurityException;
+    
+    abstract SignatureAlgorithms getSignatureAlgorithm()
+            throws IOException,GeneralSecurityException;
     
     abstract void additionalItems(CBORMap signatureObject)
             throws IOException, GeneralSecurityException;
@@ -133,7 +136,8 @@ public abstract class CBORSigner {
         CBORMap signatureObject = new CBORMap();
         
         // Add the mandatory signature algorithm.
-        signatureObject.setObject(ALGORITHM_LABEL, new CBORInteger(coseAlgorithmId));
+        signatureObject.setObject(ALGORITHM_LABEL, 
+                                  new CBORInteger(getSignatureAlgorithm().getCoseAlgorithmId()));
         
         // Add a keyId if there is one.
         if (optionalKeyId != null) {

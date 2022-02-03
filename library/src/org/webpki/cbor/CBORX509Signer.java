@@ -27,7 +27,7 @@ import org.webpki.crypto.X509SignerInterface;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.CertificateUtil;
 import org.webpki.crypto.KeyAlgorithms;
-
+import org.webpki.crypto.SignatureAlgorithms;
 import org.webpki.crypto.signatures.SignatureWrapper;
 
 import static org.webpki.cbor.CBORCryptoConstants.*;
@@ -49,8 +49,6 @@ public class CBORX509Signer extends CBORSigner {
     
     X509SignerInterface signer;
     
-    X509Certificate[] certificatePath;
-
     /**
      * Initializes a signer with an external interface.
      * 
@@ -62,7 +60,6 @@ public class CBORX509Signer extends CBORSigner {
                                                              GeneralSecurityException {
         this.signer = signer;
         setAlgorithm(signer.getAlgorithm());
-        this.certificatePath = signer.getCertificatePath();
     }
     
     /**
@@ -78,7 +75,6 @@ public class CBORX509Signer extends CBORSigner {
      */
     public CBORX509Signer(PrivateKey privateKey, X509Certificate[] certificatePath) 
             throws IOException, GeneralSecurityException {
-        this.certificatePath = certificatePath;
         signer = new X509SignerInterface() {
 
             @Override
@@ -90,10 +86,14 @@ public class CBORX509Signer extends CBORSigner {
             }
 
             @Override
-            public X509Certificate[] getCertificatePath()
-                    throws IOException, GeneralSecurityException {
-                // TODO Auto-generated method stub
-                return null;
+            public X509Certificate[] getCertificatePath() throws IOException, 
+                                                                 GeneralSecurityException {
+                return certificatePath;
+            }
+
+            @Override
+            public AsymSignatureAlgorithms getAlgorithm() {
+                return algorithm;
             }
             
         };
@@ -110,7 +110,6 @@ public class CBORX509Signer extends CBORSigner {
      */
     public CBORX509Signer setAlgorithm(AsymSignatureAlgorithms algorithm) throws IOException {
         this.algorithm = algorithm;
-        this.coseAlgorithmId = algorithm.getCoseAlgorithmId();
         return this;
     }    
 
@@ -147,7 +146,12 @@ public class CBORX509Signer extends CBORSigner {
     @Override
     void additionalItems(CBORMap signatureObject) 
             throws IOException, GeneralSecurityException {
-        signatureObject.setObject(CERT_PATH_LABEL, encodeCertificateArray(certificatePath));
+        signatureObject.setObject(CERT_PATH_LABEL, encodeCertificateArray(signer.getCertificatePath()));
         checkKeyId(optionalKeyId);
+    }
+
+    @Override
+    SignatureAlgorithms getSignatureAlgorithm() throws IOException, GeneralSecurityException {
+        return signer.getAlgorithm();
     }
 }
