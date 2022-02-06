@@ -42,6 +42,7 @@ public abstract class CBORObject {
     static final byte MT_TEXT_STRING   = (byte) 0x60;
     static final byte MT_ARRAY         = (byte) 0x80;
     static final byte MT_MAP           = (byte) 0xa0;
+    static final byte MT_TAG_EXTENSION = (byte) 0xc0;
     static final byte MT_BIG_UNSIGNED  = (byte) 0xc2;
     static final byte MT_BIG_SIGNED    = (byte) 0xc3;
     static final byte MT_FALSE         = (byte) 0xf4;
@@ -328,6 +329,43 @@ public abstract class CBORObject {
     }
     
     /**
+     * Returns tagged object.
+     * <p>
+     * This method requires that the object is a
+     * {@link CBORTaggedObject}, otherwise an exception will be thrown.
+     * </p>
+     * @param tagNumber Expected tag number
+     * 
+     * @return CBOR object
+     * @throws IOException
+     */
+    public CBORObject getTaggedObject(long tagNumber) throws IOException {
+        long actualTagNumber = getTagNumber();
+        if (actualTagNumber != tagNumber) {
+            reportError("Tag number mismatch, requested=" +
+                        Long.toUnsignedString(tagNumber) +
+                        ", actual=" +
+                        Long.toUnsignedString(actualTagNumber));
+        }
+        return ((CBORTaggedObject) this).object;
+    }
+
+    /**
+     * Returns tag number.
+     * <p>
+     * This method requires that the object is a
+     * {@link CBORTaggedObject}, otherwise an exception will be thrown.
+     * </p>
+     * 
+     * @return Tag number
+     * @throws IOException
+     */
+    public long getTagNumber() throws IOException {
+        checkTypeAndMarkAsRead(CBORTypes.TAGGED_OBJECT);
+        return ((CBORTaggedObject) this).tagNumber;
+    }
+
+    /**
      * Scans object.
      * <p>
      * This method sets the status of this object as well as to possible
@@ -359,6 +397,10 @@ public abstract class CBORObject {
                 }
                 break;
         
+            case TAGGED_OBJECT:
+                scan(((CBORTaggedObject) this).object);
+                break;
+
             default:
         }
         currentObject.readFlag = true;
@@ -366,7 +408,7 @@ public abstract class CBORObject {
     
     static class CBORDecoder {
 
-         // The point with BUFFER_SIZE is to protect against
+         // The purpose of using a buffer to protect against
          // allocating huge amounts of memory due to malformed
          // CBOR data. That is, even if you verified that the CBOR
          // input data is < 100kbytes, individual objects could ask
@@ -378,8 +420,7 @@ public abstract class CBORObject {
         private ByteArrayInputStream input;
         private boolean checkKeySortingOrder;
          
-        private CBORDecoder(byte[] encodedCborData,
-                           boolean ignoreKeySortingOrder) {
+        private CBORDecoder(byte[] encodedCborData, boolean ignoreKeySortingOrder) {
             input = new ByteArrayInputStream(encodedCborData);
             this.checkKeySortingOrder = !ignoreKeySortingOrder;
         }
@@ -543,6 +584,9 @@ public abstract class CBORObject {
                 }
             }
             switch (majorType) {
+                case MT_TAG_EXTENSION:
+                    return new CBORTaggedObject(n, getObject());
+
                 case MT_UNSIGNED:
                     return new CBORInteger(n, true);
     
@@ -649,13 +693,19 @@ public abstract class CBORObject {
                 }
                 break;
         
+            case TAGGED_OBJECT:
+                CBORTaggedObject cborTaggedObject = (CBORTaggedObject) this;
+                cborTaggedObject.object.checkForUnread(cborTaggedObject);
+                break;
+
             default:
         }
         if (!readFlag) {
             reportError((holderObject == null ? "Data" : 
-                        holderObject instanceof CBORArray ?
-                                "Array element" :
-                                "Map key " + holderObject.toString()) +                    
+                        holderObject instanceof CBORArray ? "Array element" :
+                            holderObject instanceof CBORTaggedObject ?
+                            "Tagged object " + Long.toUnsignedString(holderObject.getTagNumber()) : 
+                            "Map key " + holderObject.toString()) +                    
                         " of type=" + getClass().getSimpleName() + 
                         " with value=" + toString() + " was never read");
         }

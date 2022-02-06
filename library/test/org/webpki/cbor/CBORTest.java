@@ -385,7 +385,7 @@ public class CBORTest {
                 .addObject(new CBORInteger(2))
                 .addObject(new CBORInteger(3)), "83010203");
         
-        unsupportedTag("C07819323032312D30352D30315430363A33373A35352B30313A3030");
+//        unsupportedTag("C07819323032312D30352D30315430363A33373A35352B30313A3030");
         unsupportedTag("1C");
         
         // These numbers are supposed to be tie-breakers...
@@ -443,6 +443,9 @@ public class CBORTest {
         floatTest("NaN",                        "FA80000000",           1);
         floatTest("NaN",                        "FB8000000000000000",   1);
         floatTest("65504.00390625",             "F97BFF",               2);
+        
+        assertTrue("Tag", new CBORTaggedObject(5, new CBORTextString("hi"))
+                        .equals(parseCborHex("C5626869")));
     }
  
     public static boolean compareKeyId(CBORObject keyId, CBORObject optionalKeyId) {
@@ -549,17 +552,16 @@ public class CBORTest {
         } catch (Exception e) {
             checkException(e, "Missing key: -91");
         }
-        
-        assertTrue("v1", ((CBORArray) cbor).getObject(1).getMap().getObject(58).getInt() == 3);
-
+ 
         try {
-            CBORObject unread = parseCborHex("17");
-            unread.checkForUnread();  
+            parseCborHex("C5626869").getTaggedObject(6);
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, 
-                "Data of type=CBORInteger with value=23 was never read");
+            checkException(e, "Tag number mismatch, requested=6, actual=5");
         }
+
+        assertTrue("v1", ((CBORArray) cbor).getObject(1).getMap().getObject(58).getInt() == 3);
+
     }
 
     @Test
@@ -588,7 +590,19 @@ public class CBORTest {
                 "Array element of type=CBORBoolean with value=false was never read");
         }
         
-/*
+        try {
+            unread = parseCborHex("C5626869");
+            unread = ((CBORTaggedObject) unread).getTaggedObject(5);
+            unread.checkForUnread();
+            fail("must not execute");
+        } catch (Exception e) {
+            checkException(e, 
+                "Data of type=CBORTextString with value=\"hi\" was never read");
+        }
+        unread.getTextString();
+        unread.checkForUnread();
+        
+        /*
              .addObject(new CBORInteger(1))
             .addObject(new CBORMap()
                 .setObject(8, new CBORInteger(2))

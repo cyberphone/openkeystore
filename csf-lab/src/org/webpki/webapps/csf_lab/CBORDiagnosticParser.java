@@ -28,6 +28,7 @@ import org.webpki.cbor.CBORFloatingPoint;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORNull;
 import org.webpki.cbor.CBORObject;
+import org.webpki.cbor.CBORTaggedObject;
 import org.webpki.cbor.CBORTextString;
 
 /**
@@ -178,7 +179,7 @@ public class CBORDiagnosticParser {
                     scanFor("Infinity");
                     return new CBORFloatingPoint(Double.NEGATIVE_INFINITY);
                 }
-                return getNumber();
+                return getNumberOrTag();
                 
             case '0':
             case '1':
@@ -192,7 +193,7 @@ public class CBORDiagnosticParser {
             case '9':
 
             case '+':
-                return getNumber();
+                return getNumberOrTag();
 
             case 'N':
                 scanFor("aN");
@@ -209,7 +210,7 @@ public class CBORDiagnosticParser {
         }
     }
 
-    private CBORObject getNumber() throws IOException {
+    private CBORObject getNumberOrTag() throws IOException {
         StringBuilder token = new StringBuilder();
         index--;
         char c;
@@ -229,6 +230,15 @@ public class CBORDiagnosticParser {
                     reportError("Floating point value out of range");
                 }
                 return new CBORFloatingPoint(value);
+            }
+            if (c == '(') {
+                readChar();
+                CBORTaggedObject cborTaggedObject = 
+                        new CBORTaggedObject(Long.parseUnsignedLong(token.toString()), getObject());
+                if (readChar() != ')') {
+                    reportError("Tag syntax error");
+                }
+                return cborTaggedObject;
             }
             return new CBORInteger(new BigInteger(token.toString()));
         } catch (IllegalArgumentException e) {
