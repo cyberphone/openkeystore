@@ -63,8 +63,7 @@ import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.SymEncryptionAlgorithms;
-
-import org.webpki.crypto.signatures.SignatureWrapper;
+import org.webpki.crypto.SignatureWrapper;
 
 //#if ANDROID
 import androidx.test.ext.junit.runners.AndroidJUnit4;

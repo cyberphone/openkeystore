@@ -315,8 +315,8 @@
         <include name="**/crypto/AsymSignatureAlgorithms.java"/>
         <include name="**/crypto/SymSignatureAlgorithms.java"/>
         <include name="**/crypto/CryptoRandom.java"/>
-        <include name="**/crypto/encryption/KeyEncryptionAlgorithms.java"/>
-        <include name="**/crypto/encryption/ContentEncryptionAlgorithms.java"/>
+        <include name="**/crypto/KeyEncryptionAlgorithms.java"/>
+        <include name="**/crypto/ContentEncryptionAlgorithms.java"/>
         <include name="**/json/*.java"/>
         <include name="**/jose/**/*.java"/>
       </fileset>
@@ -376,8 +376,8 @@
         <include name="**/crypto/AsymSignatureAlgorithms.java"/>
         <include name="**/crypto/SymSignatureAlgorithms.java"/>
         <include name="**/crypto/CryptoRandom.java"/>
-        <include name="**/crypto/encryption/KeyEncryptionAlgorithms.java"/>
-        <include name="**/crypto/encryption/ContentEncryptionAlgorithms.java"/>
+        <include name="**/crypto/KeyEncryptionAlgorithms.java"/>
+        <include name="**/crypto/ContentEncryptionAlgorithms.java"/>
         <include name="**/cbor/*.java"/>
       </fileset>
     </copy>
@@ -472,12 +472,12 @@
         <include name="**/crypto/AsymSignatureAlgorithms.java"/>
         <include name="**/crypto/SymSignatureAlgorithms.java"/>
         <include name="**/crypto/CryptoRandom.java"/>
-        <include name="**/AsymEncryptionAlgorithms.java"/>
-        <include name="**/SymEncryptionAlgorithms.java"/>
-        <include name="**/EncryptionAlgorithms.java"/>
-        <include name="**/crypto/signatures/SignatureWrapper.java"/>
-        <include name="**/crypto/encryption/KeyEncryptionAlgorithms.java"/>
-        <include name="**/crypto/encryption/ContentEncryptionAlgorithms.java"/>
+        <include name="**/crypto/AsymEncryptionAlgorithms.java"/>
+        <include name="**/crypto/SymEncryptionAlgorithms.java"/>
+        <include name="**/crypto/EncryptionAlgorithms.java"/>
+        <include name="**/crypto/SignatureWrapper.java"/>
+        <include name="**/crypto/KeyEncryptionAlgorithms.java"/>
+        <include name="**/crypto/ContentEncryptionAlgorithms.java"/>
         <include name="**/net/HTTPSWrapper.java"/>
       </fileset>
     </copy>

@@ -22,9 +22,9 @@ import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
-import org.webpki.crypto.encryption.ContentEncryptionAlgorithms;
-import org.webpki.crypto.encryption.EncryptionCore;
-import org.webpki.crypto.encryption.KeyEncryptionAlgorithms;
+import org.webpki.crypto.ContentEncryptionAlgorithms;
+import org.webpki.crypto.EncryptionCore;
+import org.webpki.crypto.KeyEncryptionAlgorithms;
 
 import static org.webpki.cbor.CBORCryptoConstants.*;
 

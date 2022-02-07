@@ -24,6 +24,10 @@ import org.webpki.util.ArrayUtil;
  * Class for holding CBOR tagged objects.
  * 
  * Tagged objects are based on CBOR major type 6.
+ * <p>
+ * Note that the <code>big number</code> type is dealt with
+ * as a specific primitive, in spite of being a tagged object.
+ * </p>
  */
 public class CBORTaggedObject extends CBORObject {
 

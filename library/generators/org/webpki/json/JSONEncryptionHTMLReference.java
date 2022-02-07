@@ -29,13 +29,11 @@ import java.security.interfaces.RSAKey;
 import java.util.ArrayList;
 
 import org.webpki.crypto.AlgorithmPreferences;
+import org.webpki.crypto.ContentEncryptionAlgorithms;
 import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.KeyAlgorithms;
+import org.webpki.crypto.KeyEncryptionAlgorithms;
 import org.webpki.crypto.KeyTypes;
-
-import org.webpki.crypto.encryption.ContentEncryptionAlgorithms;
-import org.webpki.crypto.encryption.KeyEncryptionAlgorithms;
-
 import org.webpki.json.JSONBaseHTML.Extender;
 import org.webpki.json.JSONBaseHTML.RowInterface;
 import org.webpki.json.JSONBaseHTML.Types;

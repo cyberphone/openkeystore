@@ -40,11 +40,9 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import org.webpki.crypto.AlgorithmPreferences;
+import org.webpki.crypto.ContentEncryptionAlgorithms;
 import org.webpki.crypto.OkpSupport;
 import org.webpki.crypto.KeyAlgorithms;
-
-import org.webpki.crypto.encryption.ContentEncryptionAlgorithms;
-
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.Base64URL;
 import org.webpki.util.ISODateTime;

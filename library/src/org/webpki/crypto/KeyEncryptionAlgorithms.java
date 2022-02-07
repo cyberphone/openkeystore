@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package org.webpki.crypto.encryption;
+package org.webpki.crypto;
 
 /**
  * JWE and COSE key encryption algorithms.

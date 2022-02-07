@@ -21,7 +21,7 @@ import java.io.FileInputStream;
 
 import java.security.KeyStore;
 
-import org.webpki.crypto.signatures.KeyStoreSigner;
+import org.webpki.crypto.KeyStoreSigner;
 import org.webpki.util.ArrayUtil;
 
 import org.webpki.xml.XMLSchemaCache;

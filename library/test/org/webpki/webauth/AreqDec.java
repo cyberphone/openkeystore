@@ -20,7 +20,7 @@ import org.webpki.util.StringUtil;
 import org.webpki.util.ArrayUtil;
 
 import org.webpki.crypto.DemoKeyStore;
-import org.webpki.crypto.signatures.KeyStoreVerifier;
+import org.webpki.crypto.KeyStoreVerifier;
 import org.webpki.crypto.CertificateFilter;
 
 import org.webpki.json.JSONDecoderCache;

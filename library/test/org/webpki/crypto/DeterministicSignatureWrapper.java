@@ -32,7 +32,6 @@ import java.security.interfaces.RSAKey;
 
 import java.security.spec.ECParameterSpec;
 
-import org.webpki.crypto.signatures.SignatureWrapper;
 import org.webpki.json.JSONCryptoHelper;
 import org.webpki.json.JSONObjectWriter;
 import org.webpki.json.JSONParser;

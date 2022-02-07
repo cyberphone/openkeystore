@@ -21,7 +21,7 @@ import java.io.IOException;
 /**
  * Class for converting JSON to CBOR.
  * 
- * Note that the JSON Number type is restricted to integers with a magnitude <= 2^53.
+ * Note that the JSON Number type is restricted to integers with a magnitude &lt;= 2^53.
  * 
  */
 public class CBORFromJSON {

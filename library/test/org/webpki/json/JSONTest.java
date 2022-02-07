@@ -53,20 +53,18 @@ import org.junit.Test;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.CertificateUtil;
+import org.webpki.crypto.ContentEncryptionAlgorithms;
 import org.webpki.crypto.OkpSupport;
+import org.webpki.crypto.SignatureWrapper;
 import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.DeterministicSignatureWrapper;
+import org.webpki.crypto.EncryptionCore;
 import org.webpki.crypto.KeyAlgorithms;
+import org.webpki.crypto.KeyEncryptionAlgorithms;
+import org.webpki.crypto.KeyStoreVerifier;
 import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.HmacAlgorithms;
-
-import org.webpki.crypto.signatures.SignatureWrapper;
-
-import org.webpki.crypto.encryption.EncryptionCore;
-import org.webpki.crypto.encryption.ContentEncryptionAlgorithms;
-import org.webpki.crypto.encryption.KeyEncryptionAlgorithms;
-import org.webpki.crypto.signatures.KeyStoreVerifier;
 
 import org.webpki.jose.jws.JWSAsymKeySigner;
 import org.webpki.jose.jws.JWSAsymSignatureValidator;

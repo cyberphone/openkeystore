@@ -66,12 +66,11 @@ import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.HashAlgorithms;
 import org.webpki.crypto.KeyContainerTypes;
 import org.webpki.crypto.KeyUsageBits;
+import org.webpki.crypto.SignatureWrapper;
 import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.SymEncryptionAlgorithms;
-
-import org.webpki.crypto.signatures.SignatureWrapper;
 
 import org.webpki.sks.AppUsage;
 import org.webpki.sks.BiometricProtection;

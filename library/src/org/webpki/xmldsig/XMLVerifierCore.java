@@ -32,8 +32,7 @@ import org.webpki.xml.XMLObjectWrapper;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.HashAlgorithms;
-
-import org.webpki.crypto.signatures.SignatureWrapper;
+import org.webpki.crypto.SignatureWrapper;
 
 abstract class XMLVerifierCore {
     private static Logger logger = Logger.getLogger(XMLVerifierCore.class.getCanonicalName());

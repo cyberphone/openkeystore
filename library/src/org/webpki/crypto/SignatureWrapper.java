@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package org.webpki.crypto.signatures;
+package org.webpki.crypto;
 
 import java.io.IOException;
 
@@ -28,26 +28,12 @@ import java.security.Signature;
 import java.security.interfaces.ECKey;
 
 import java.security.spec.ECParameterSpec;
-//#if !ANDROID
 import java.security.spec.PSSParameterSpec;
-//#endif
-
-import org.webpki.crypto.KeyTypes;
-import org.webpki.crypto.KeyAlgorithms;
-import org.webpki.crypto.AsymSignatureAlgorithms;
 
 /**
  * Wrapper over java.security.Signature.
  *
-#if ANDROID
- * Source configured for Android. 
-#else
-#if BOUNCYCASTLE
- * Source configured for the BouncyCastle provider.
-#else 
  * Source configured for the default provider.
-#endif
-#endif
  */
 public class SignatureWrapper {
 
@@ -166,25 +152,11 @@ public class SignatureWrapper {
                     algorithm.toString() +
                     ")");
         }
-//#if BOUNCYCASTLE
-        if (provider == null) {
-            instance = algorithm.getKeyType() == KeyTypes.EDDSA ?
-                    Signature.getInstance(algorithm.getJceName(), "BC")
-                                             : 
-                    Signature.getInstance(algorithm.getJceName());
-        } else {
-            instance = Signature.getInstance(algorithm.getJceName(), provider);
-        }
-//#else
         instance = provider == null ? 
                 Signature.getInstance(algorithm.getJceName())
                                     :
                 Signature.getInstance(algorithm.getJceName(), provider);
-//#endif
         unmodifiedSignature = algorithm.getKeyType() != KeyTypes.EC;
-//#if ANDROID
-        if (!unmodifiedSignature) {
-//#else
         if (unmodifiedSignature) {
             if (algorithm.getMGF1ParameterSpec() != null) {
                 instance.setParameter(
@@ -195,7 +167,6 @@ public class SignatureWrapper {
                                              1));
             }
         } else {
-//#endif
             ecParameters = ((ECKey) key).getParams();
         }
     }

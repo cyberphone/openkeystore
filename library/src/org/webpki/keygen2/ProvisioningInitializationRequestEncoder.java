@@ -35,8 +35,7 @@ import org.webpki.json.JSONObjectWriter;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
-
-import org.webpki.crypto.signatures.SignatureWrapper;
+import org.webpki.crypto.SignatureWrapper;
 
 import org.webpki.keygen2.ServerState.ProtocolPhase;
 

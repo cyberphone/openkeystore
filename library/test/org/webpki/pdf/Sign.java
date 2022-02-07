@@ -22,7 +22,7 @@ import java.security.GeneralSecurityException;
 
 import org.webpki.util.ArrayUtil;
 import org.webpki.crypto.DemoKeyStore;
-import org.webpki.crypto.signatures.KeyStoreSigner;
+import org.webpki.crypto.KeyStoreSigner;
 
 public class Sign {
 

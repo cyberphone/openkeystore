@@ -24,11 +24,10 @@ import java.security.PublicKey;
 import java.util.LinkedHashSet;
 
 import org.webpki.crypto.AlgorithmPreferences;
+import org.webpki.crypto.ContentEncryptionAlgorithms;
 import org.webpki.crypto.CryptoRandom;
-
-import org.webpki.crypto.encryption.EncryptionCore;
-import org.webpki.crypto.encryption.KeyEncryptionAlgorithms;
-import org.webpki.crypto.encryption.ContentEncryptionAlgorithms;
+import org.webpki.crypto.EncryptionCore;
+import org.webpki.crypto.KeyEncryptionAlgorithms;
 
 /**
  * Support class for encryption generators.

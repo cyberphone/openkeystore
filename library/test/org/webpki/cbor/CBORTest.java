@@ -38,15 +38,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
+import org.webpki.crypto.ContentEncryptionAlgorithms;
 import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.HmacSignerInterface;
+import org.webpki.crypto.KeyEncryptionAlgorithms;
+import org.webpki.crypto.SignatureWrapper;
 import org.webpki.crypto.X509SignerInterface;
 import org.webpki.crypto.CustomCryptoProvider;
-
-import org.webpki.crypto.encryption.ContentEncryptionAlgorithms;
-import org.webpki.crypto.encryption.EncryptionCore;
-import org.webpki.crypto.encryption.KeyEncryptionAlgorithms;
-import org.webpki.crypto.signatures.SignatureWrapper;
+import org.webpki.crypto.EncryptionCore;
 
 import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONParser;

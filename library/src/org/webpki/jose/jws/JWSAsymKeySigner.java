@@ -30,8 +30,7 @@ import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyTypes;
-
-import org.webpki.crypto.signatures.SignatureWrapper;
+import org.webpki.crypto.SignatureWrapper;
 
 import static org.webpki.jose.JOSEKeyWords.*;
 

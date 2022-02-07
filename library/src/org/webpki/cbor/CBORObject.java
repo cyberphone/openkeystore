@@ -334,6 +334,10 @@ public abstract class CBORObject {
      * This method requires that the object is a
      * {@link CBORTaggedObject}, otherwise an exception will be thrown.
      * </p>
+     * <p>
+     * Note that the <code>big number</code> type is dealt with
+     * as a specific primitive, in spite of being a tagged object.
+     * </p>
      * @param tagNumber Expected tag number
      * 
      * @return CBOR object

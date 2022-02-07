@@ -31,8 +31,8 @@ import java.util.ArrayList;
 import org.webpki.crypto.CustomCryptoProvider;
 
 //Std
-import org.webpki.crypto.encryption.ContentEncryptionAlgorithms;
-import org.webpki.crypto.encryption.KeyEncryptionAlgorithms;
+import org.webpki.crypto.ContentEncryptionAlgorithms;
+import org.webpki.crypto.KeyEncryptionAlgorithms;
 
 import org.webpki.json.JSONArrayReader;
 import org.webpki.json.JSONAsymKeyEncrypter;

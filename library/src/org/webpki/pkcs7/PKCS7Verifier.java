@@ -27,10 +27,9 @@ import java.security.cert.X509Certificate;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.AsymEncryptionAlgorithms;
 import org.webpki.crypto.HashAlgorithms;
+import org.webpki.crypto.SignatureWrapper;
 import org.webpki.crypto.X509VerifierInterface;
 import org.webpki.crypto.CertificateUtil;
-
-import org.webpki.crypto.signatures.SignatureWrapper;
 
 import org.webpki.asn1.ASN1Util;
 import org.webpki.asn1.ParseUtil;

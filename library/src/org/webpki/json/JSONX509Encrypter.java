@@ -22,7 +22,7 @@ import java.security.GeneralSecurityException;
 
 import java.security.cert.X509Certificate;
 
-import org.webpki.crypto.encryption.KeyEncryptionAlgorithms;
+import org.webpki.crypto.KeyEncryptionAlgorithms;
 
 /**
  * Initiator object for certificate based encryptions.
