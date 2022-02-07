@@ -44,11 +44,12 @@ public class HomeServlet extends HttpServlet {
             "to become a part of the application data, rather than embedding " +
             "such data in signatures.  For detailed technical information " +
             "click on the CSF logotype.</div>" +
-            "<div style='margin-top:0.7em'>Note that this implementation only supports a " +
-            "subset of CBOR primitives: " +
+            "<div style='margin-top:0.7em'>This implementation supports the " +
+            "following subset of CBOR primitives: " +
             "<i>text&nbsp;string</i>, <i>byte&nbsp;string</i>, " +
             "<i>integer</i>, <i>big&nbsp;number</i>, <i>floating&nbsp;point</i> (16/32/64 bit), " +
-            "<code>true</code>, <code>false</code>, and <code>null</code></div>" +
+            "<code>true</code>, <code>false</code>, and <code>null</code>. " +
+            "In addition, this implementation supports <i>tagged data</i> (CBOR major type 6).</div>" +
             "<div style='display:flex;justify-content:center'><table>" +
             "<tr><td><div class='multibtn' " +
             "onclick=\"document.location.href='create'\" " +

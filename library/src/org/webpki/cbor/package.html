@@ -18,6 +18,11 @@ applications.
 <tr><td><code>null</code></td><td></td><td><code>null</code></td></tr>
 </table>
 <p>*) Note that floating point data covers the 16, 32, and 64-bit IEEE 754 variants.</p>
+<p>
+In addition to the primitives above, this implementation also supports
+arbitrary tagged objects
+based on CBOR major type 6.
+</p>
 <h3>Deterministic Serialization</h3>
 Since this package is intended for security related
 work, it is (by design) quite picky when decoding CBOR data

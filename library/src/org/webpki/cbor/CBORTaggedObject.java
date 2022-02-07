@@ -21,7 +21,9 @@ import java.io.IOException;
 import org.webpki.util.ArrayUtil;
 
 /**
- * Class for holding CBOR tagged object.
+ * Class for holding CBOR tagged objects.
+ * 
+ * Tagged objects are based on CBOR major type 6.
  */
 public class CBORTaggedObject extends CBORObject {
 
