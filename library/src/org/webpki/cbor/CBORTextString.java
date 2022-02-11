@@ -58,7 +58,7 @@ public class CBORTextString extends CBORObject {
     
     @Override
     void internalToString(CBORObject.PrettyPrinter prettyPrinter) {
-        StringBuilder buffer = new StringBuilder("\"");
+        StringBuilder buffer = new StringBuilder('"');
         for (char c : textString.toCharArray()) {
             if (c <= '\\') {
                 char convertedCharacter;
