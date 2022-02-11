@@ -223,24 +223,28 @@ public class CBORDiagnosticParser {
                 c = '0';
             }
         } while ((c >= '0' && c <= '9') || c == '+'  || c == '-');
+        String number = token.toString();
         try {
             if (floatingPoint) {
-                Double value = Double.valueOf(token.toString());
+                Double value = Double.valueOf(number);
+                // Implicit overflow is not permitted
                 if (value.isInfinite()) {
                     reportError("Floating point value out of range");
                 }
                 return new CBORFloatingPoint(value);
             }
             if (c == '(') {
-                readChar();
-                CBORTaggedObject cborTaggedObject = 
-                        new CBORTaggedObject(Long.parseUnsignedLong(token.toString()), getObject());
-                if (readChar() != ')') {
+                // Do not accept '+', '-', or leading zeros
+                if (number.charAt(0) < '0' || (number.charAt(0) == '0' && number.length() > 1)) {
                     reportError("Tag syntax error");
                 }
+                readChar();
+                CBORTaggedObject cborTaggedObject = 
+                        new CBORTaggedObject(Long.parseUnsignedLong(number), getObject());
+                scanFor(")");
                 return cborTaggedObject;
             }
-            return new CBORInteger(new BigInteger(token.toString()));
+            return new CBORInteger(new BigInteger(number));
         } catch (IllegalArgumentException e) {
             reportError(e.getMessage());
         }

@@ -762,6 +762,7 @@ public class CBORTest {
         
         for (String value : new String[]{"1B8000000000000000", 
                                          "1B0001000000000000",
+                                         "FB6950B8E0ACAC4EAF",
                                          "1A80000000",
                                          "1A00010000",
                                          "198000",
@@ -771,6 +772,9 @@ public class CBORTest {
                                          "1818",
                                          "3818",
                                          "38FF",
+                                         "F97C00",
+                                         "F90000",
+                                         "F98000",
                                          "17",
                                          "01",
                                          "00",
@@ -780,6 +784,9 @@ public class CBORTest {
         }
         for (String value : new String[]{"1B00000000FFFFFFFF",
                                          "1B0000000080000000",
+                                         "FB7FF8000000000000",
+                                         "FB0000000000000000",
+                                         "FB8000000000000000",
                                          "1A0000FFFF",
                                          "1A00008000",
                                          "1900FF",
@@ -790,12 +797,16 @@ public class CBORTest {
                                          "1801",
                                          "1817",
                                          "3801",
-                                         "3817"}) {
+                                         "3817",
+                                         "F97C01"}) {
             try {
                 parseCborHex(value);
                 fail("must not execute");
             } catch (Exception e) {
                 checkException(e, 
+                        e.getMessage().contains("float") ?
+                    "Non-deterministic encoding of floating point value, tag:"
+                                                         :
                     "Non-deterministic encoding of N");
             }
         }

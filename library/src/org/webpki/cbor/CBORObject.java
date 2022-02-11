@@ -477,7 +477,7 @@ public abstract class CBORObject {
             CBORFloatingPoint value = new CBORFloatingPoint(Double.longBitsToDouble(rawDouble));
             if (value.tag != tag || value.bitFormat != bitFormat) {
                 reportError(String.format(
-                        "Non-deterministic encoding of floating point value, tag:  %2x", tag & 0xff));
+                        "Non-deterministic encoding of floating point value, tag: %2x", tag & 0xff));
             }
             return value;
         }
