@@ -58,21 +58,21 @@ public class CBORTextString extends CBORObject {
     
     @Override
     void internalToString(CBORObject.PrettyPrinter prettyPrinter) {
-        StringBuilder buffer = new StringBuilder('"');
+        prettyPrinter.append('"');
         for (char c : textString.toCharArray()) {
             if (c <= '\\') {
                 char convertedCharacter;
                 if ((convertedCharacter = SPECIAL_CHARACTERS[c]) != 0) {
+                    prettyPrinter.append('\\');
                     if (convertedCharacter == 1) {
-                        buffer.append(String.format("\\u%04x", (int)c));
-                    } else {
-                        buffer.append('\\').append(convertedCharacter);
+                        prettyPrinter.append(String.format("u%04x", (int)c));
+                        continue;
                     }
-                    continue;
+                    c = convertedCharacter;
                 }
             }
-            buffer.append(c);
+            prettyPrinter.append(c);
         }
-        prettyPrinter.appendText(buffer.append('"').toString());
+        prettyPrinter.append('"');
     }
 }

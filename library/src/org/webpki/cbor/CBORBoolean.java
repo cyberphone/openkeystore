@@ -49,6 +49,6 @@ public class CBORBoolean extends CBORObject {
 
     @Override
     void internalToString(CBORObject.PrettyPrinter prettyPrinter) {
-        prettyPrinter.appendText(String.valueOf(value));
+        prettyPrinter.append(String.valueOf(value));
     }
 }

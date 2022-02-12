@@ -51,7 +51,7 @@ public abstract class CBORValidator {
         CBORMap signatureObject = signedObject.getObject(key).getMap();
 
         // Get the signature value and remove it from the (map) object.
-        byte[] signatureValue = CBORValidator.readAndRemove(signatureObject, SIGNATURE_LABEL);
+        byte[] signatureValue = signatureObject.readAndRemove(SIGNATURE_LABEL);
 
         // Fetch optional keyId.
         CBORObject optionalKeyId = signatureObject.hasKey(KEY_ID_LABEL) ?
@@ -101,11 +101,5 @@ public abstract class CBORValidator {
     public CBORMap validate(String key, CBORMap signedObject) throws IOException, 
                                                                      GeneralSecurityException {
         return validate(new CBORTextString(key), signedObject);
-    }
-
-    static byte[] readAndRemove(CBORMap object, CBORInteger key) throws IOException {
-        byte[] data = object.getObject(key).getByteString();
-        object.removeObject(key);
-        return data;
     }
 }

@@ -55,8 +55,7 @@ public abstract class CBORDecrypter {
             throws IOException, GeneralSecurityException {
 
         // Decode encryption object.
-        CBORMap encryptionObject = 
-                CBORObject.decode(encodedEncryptionObject).getMap();
+        CBORMap encryptionObject = CBORObject.decode(encodedEncryptionObject).getMap();
         
         // Get the mandatory content encryption algorithm.
         ContentEncryptionAlgorithms contentEncryptionAlgorithm =
@@ -77,9 +76,9 @@ public abstract class CBORDecrypter {
         
         // Read and remove the encryption object (map) parameters that
         // do not participate (because they cannot) in "authData".
-        byte[] iv = CBORValidator.readAndRemove(encryptionObject, IV_LABEL);
-        byte[] tag = CBORValidator.readAndRemove(encryptionObject, TAG_LABEL);
-        byte[] cipherText = CBORValidator.readAndRemove(encryptionObject, CIPHER_TEXT_LABEL);
+        byte[] iv = encryptionObject.readAndRemove(IV_LABEL);
+        byte[] tag = encryptionObject.readAndRemove(TAG_LABEL);
+        byte[] cipherText = encryptionObject.readAndRemove(CIPHER_TEXT_LABEL);
         
         // Check that there is no unread (illegal) data like public 
         // keys in symmetric encryption or just plain unknown elements.

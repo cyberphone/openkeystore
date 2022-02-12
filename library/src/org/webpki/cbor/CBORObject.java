@@ -738,16 +738,21 @@ public abstract class CBORObject {
             indentationLevel++;
         }
 
-        void endMap(boolean notFirst) {
+        void endMap(boolean notEmpty) {
             indentationLevel--;
-            if (notFirst) {
+            if (notEmpty) {
                 newlineAndIndent();
             }
             result.append('}');
         }
 
-        PrettyPrinter appendText(String text) {
+        PrettyPrinter append(String text) {
             result.append(text);
+            return this;
+        }
+
+        PrettyPrinter append(char c) {
+            result.append(c);
             return this;
         }
         

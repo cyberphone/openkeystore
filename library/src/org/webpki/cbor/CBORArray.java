@@ -91,15 +91,15 @@ public class CBORArray extends CBORObject {
 
     @Override
     void internalToString(CBORObject.PrettyPrinter prettyPrinter) {
-        prettyPrinter.appendText("[");
+        prettyPrinter.append('[');
         boolean notFirst = false;
         for (CBORObject cborObject : getObjects()) {
             if (notFirst) {
-                prettyPrinter.appendText(", ");
+                prettyPrinter.append(", ");
             }
             notFirst = true;
             cborObject.internalToString(prettyPrinter);
         }
-        prettyPrinter.appendText("]");
+        prettyPrinter.append(']');
     }
 }

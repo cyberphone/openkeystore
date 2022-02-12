@@ -248,6 +248,12 @@ public class CBORMap extends CBORObject {
         return keys.keySet().toArray(new CBORObject[0]);
     }
 
+    byte[] readAndRemove(CBORInteger key) throws IOException {
+        byte[] data = getObject(key).getByteString();
+        removeObject(key);
+        return data;
+    }
+
     @Override
     byte[] internalEncode() throws IOException {
         byte[] encoded = getEncodedCore(MT_MAP, keys.size());
@@ -266,12 +272,12 @@ public class CBORMap extends CBORObject {
         for (CBORObject key : keys.keySet()) {
             CBORObject value = keys.get(key);
             if (notFirst) {
-                prettyPrinter.appendText(",");
+                prettyPrinter.append(',');
             }
             notFirst = true;
             prettyPrinter.newlineAndIndent();
             key.internalToString(prettyPrinter);
-            prettyPrinter.appendText(": ");
+            prettyPrinter.append(": ");
             value.internalToString(prettyPrinter);
         }
         prettyPrinter.endMap(notFirst);

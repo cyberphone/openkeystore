@@ -148,6 +148,6 @@ public class CBORFloatingPoint extends CBORObject {
     
     @Override
     void internalToString(CBORObject.PrettyPrinter prettyPrinter) {
-         prettyPrinter.appendText(formatDouble(value));
+         prettyPrinter.append(formatDouble(value));
     }
 }
