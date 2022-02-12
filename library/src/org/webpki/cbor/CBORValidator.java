@@ -51,7 +51,7 @@ public abstract class CBORValidator {
         CBORMap signatureObject = signedObject.getObject(key).getMap();
 
         // Get the signature value and remove it from the (map) object.
-        byte[] signatureValue = signatureObject.readAndRemove(SIGNATURE_LABEL);
+        byte[] signatureValue = signatureObject.readByteStringAndRemoveKey(SIGNATURE_LABEL);
 
         // Fetch optional keyId.
         CBORObject optionalKeyId = signatureObject.hasKey(KEY_ID_LABEL) ?

@@ -69,16 +69,16 @@ public abstract class CBORDecrypter {
         CBORObject optionalKeyId = innerObject.hasKey(KEY_ID_LABEL) ?
                          innerObject.getObject(KEY_ID_LABEL).scan() : null;
         
-        // Get the content encryption key which also may be encrypted 
+        // Get the content encryption key which also may be encrypted.
         byte[] contentDecryptionKey = getContentEncryptionKey(innerObject,
                                                               contentEncryptionAlgorithm,
                                                               optionalKeyId);
         
         // Read and remove the encryption object (map) parameters that
         // do not participate (because they cannot) in "authData".
-        byte[] iv = encryptionObject.readAndRemove(IV_LABEL);
-        byte[] tag = encryptionObject.readAndRemove(TAG_LABEL);
-        byte[] cipherText = encryptionObject.readAndRemove(CIPHER_TEXT_LABEL);
+        byte[] iv = encryptionObject.readByteStringAndRemoveKey(IV_LABEL);
+        byte[] tag = encryptionObject.readByteStringAndRemoveKey(TAG_LABEL);
+        byte[] cipherText = encryptionObject.readByteStringAndRemoveKey(CIPHER_TEXT_LABEL);
         
         // Check that there is no unread (illegal) data like public 
         // keys in symmetric encryption or just plain unknown elements.

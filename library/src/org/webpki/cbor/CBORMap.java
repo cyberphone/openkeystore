@@ -248,7 +248,14 @@ public class CBORMap extends CBORObject {
         return keys.keySet().toArray(new CBORObject[0]);
     }
 
-    byte[] readAndRemove(CBORInteger key) throws IOException {
+    /**
+     * Reads a <code>byte string</code> value, then deletes key.
+     * 
+     * @param key Integer key
+     * @return byte string
+     * @throws IOException
+     */
+    public byte[] readByteStringAndRemoveKey(CBORInteger key) throws IOException {
         byte[] data = getObject(key).getByteString();
         removeObject(key);
         return data;
