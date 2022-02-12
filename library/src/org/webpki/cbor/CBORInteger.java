@@ -76,10 +76,7 @@ public class CBORInteger extends CBORObject {
         this(unsigned ? 
             BigInteger.valueOf(value).and(MAX_INT64) 
                       : 
-            value == -1 ? MIN_INT64 : BigInteger.valueOf(value)
-                                          .and(MAX_INT64)
-                                          .add(BigInteger.ONE)
-                                          .negate());
+            BigInteger.valueOf(value).and(MAX_INT64).add(BigInteger.ONE).negate());
     }
 
     /**
