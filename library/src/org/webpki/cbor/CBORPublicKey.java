@@ -164,8 +164,13 @@ public class CBORPublicKey {
         return new BigInteger(1, fixedBinary);
     }
 
-    static KeyAlgorithms getKeyAlgorithm(CBORObject curve) throws IOException {
-        return COSE_2_WEBPKI_CRV.get(curve.getInt());
+    static KeyAlgorithms getKeyAlgorithm(CBORObject curve) throws IOException,
+                                                                  GeneralSecurityException {
+        KeyAlgorithms keyAlgorithm = COSE_2_WEBPKI_CRV.get(curve.getInt());
+        if (keyAlgorithm == null) {
+            throw new GeneralSecurityException("No such key/curve algorithm: " + curve.getInt());
+        }
+        return keyAlgorithm;
     }
 
     /**
