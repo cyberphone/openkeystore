@@ -19,7 +19,7 @@ package org.webpki.sks;
 import java.security.SecureRandom;
 
 import org.webpki.util.Base64;
-import org.webpki.util.DebugFormatter;
+import org.webpki.util.HexaDecimal;
 
 public class Random {
     public static void main(String[] argc) {
@@ -31,7 +31,7 @@ public class Random {
         byte[] rnd = new byte[n];
         new SecureRandom().nextBytes(rnd);
         if (argc[1].equals("hex")) {
-            System.out.println(DebugFormatter.getHexString(rnd));
+            System.out.println(HexaDecimal.encode(rnd));
         } else {
             System.out.println(new Base64().getBase64StringFromBinary(rnd));
         }

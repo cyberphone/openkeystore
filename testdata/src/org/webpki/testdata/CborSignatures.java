@@ -57,7 +57,7 @@ import org.webpki.json.JSONParser;
 import org.webpki.json.SymmetricKeys;
 
 import org.webpki.util.ArrayUtil;
-import org.webpki.util.DebugFormatter;
+import org.webpki.util.HexaDecimal;
 import org.webpki.util.PEMDecoder;
 
 /*
@@ -399,7 +399,7 @@ public class CborSignatures {
 
     private static void additionalFiles(String fileName, byte[] signature) throws IOException {
         ArrayUtil.writeFile(fileName.replace(".cbor", ".hex"), 
-                            DebugFormatter.getHexString(signature).getBytes("utf-8"));
+                            HexaDecimal.encode(signature).getBytes("utf-8"));
         StringBuilder text = new StringBuilder(CBORObject.decode(signature).toString());
         int i = text.indexOf("\n  8:");
         for (String comment : new String[]{"Enveloped signature object",

@@ -19,7 +19,7 @@ package org.webpki.wasp.test;
 
 import org.webpki.util.StringUtil;
 import org.webpki.util.ArrayUtil;
-import org.webpki.util.DebugFormatter;
+import org.webpki.util.HexaDecimal;
 
 import org.webpki.xml.XMLSchemaCache;
 
@@ -46,7 +46,7 @@ public class SreqDec {
     static void printcf(CertificateFilter cf, StringBuilder s) {
         s.append("\nCERTFILTER:");
         if (cf.getFingerPrint() != null)
-            s.append("\nSha1=" + DebugFormatter.getHexString(cf.getFingerPrint()));
+            s.append("\nSha1=" + HexaDecimal.encode(cf.getFingerPrint()));
         if (cf.getIssuerRegEx() != null) s.append("\nIssuer=" + cf.getIssuerRegEx());
         if (cf.getSubjectRegEx() != null) s.append("\nSubject=" + cf.getSubjectRegEx());
         if (cf.getSerialNumber() != null) s.append("\nSerial=" + cf.getSerialNumber());

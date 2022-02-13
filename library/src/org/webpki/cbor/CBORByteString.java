@@ -19,7 +19,7 @@ package org.webpki.cbor;
 import java.io.IOException;
 
 import org.webpki.util.ArrayUtil;
-import org.webpki.util.DebugFormatter;
+import org.webpki.util.HexaDecimal;
 
 /**
  * Class for holding CBOR byte strings.
@@ -50,6 +50,6 @@ public class CBORByteString extends CBORObject {
 
     @Override
     void internalToString(CBORObject.PrettyPrinter prettyPrinter) {
-        prettyPrinter.append("h'").append(DebugFormatter.getHexString(byteString)).append('\'');
+        prettyPrinter.append("h'").append(HexaDecimal.encode(byteString)).append('\'');
     }
 }

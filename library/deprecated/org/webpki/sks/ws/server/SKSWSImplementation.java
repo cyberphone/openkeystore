@@ -65,7 +65,7 @@ import org.webpki.sks.SecureKeyStore;
 import org.webpki.sks.ws.SKSException;
 import org.webpki.sks.ws.TrustedGUIAuthorization;
 
-import org.webpki.util.DebugFormatter;
+import org.webpki.util.HexaDecimal;
 
 /**
  * SKS Web Service Implementation.
@@ -120,7 +120,7 @@ public class SKSWSImplementation
                     default_device = sks;
                   }
                 DeviceInfo device_info = sks.getDeviceInfo ();
-                String device_id = DebugFormatter.getHexString (MessageDigest.getInstance ("SHA1").digest (device_info.getCertificatePath ()[0].getEncoded ()));
+                String device_id = HexaDecimal.encode (MessageDigest.getInstance ("SHA1").digest (device_info.getCertificatePath ()[0].getEncoded ()));
                 devices.put (device_id, sks);
                 System.out.println ("Device: " + device_info.getVendorDescription ());
                 System.out.println ("Vendor: " + device_info.getVendorName ());

@@ -22,7 +22,7 @@ public class CBORFloat16Test {
             try {
                 CBORObject cbor = CBORObject.decode(encoded);
                 if (mustFlag) {
-                    System.out.println("**********=" + org.webpki.util.DebugFormatter.getHexString(encoded));
+                    System.out.println("**********=" + org.webpki.util.HexaDecimal.encode(encoded));
                     return;
                 }
                 double value = cbor.getFloatingPoint();
@@ -32,10 +32,10 @@ public class CBORFloat16Test {
                 if (!cbor.equals(new CBORFloatingPoint(Double.valueOf(cbor.toString())))) {
                     throw new RuntimeException("Diff2 for: " + value);
                 }
-                System.out.println("V=" + value + " D=" + org.webpki.util.DebugFormatter.getHexString(encoded));
+                System.out.println("V=" + value + " D=" + org.webpki.util.HexaDecimal.encode(encoded));
             } catch (Exception e) {
                 if (!mustFlag) {
-                    System.out.println("**********=" + org.webpki.util.DebugFormatter.getHexString(encoded));
+                    System.out.println("**********=" + org.webpki.util.HexaDecimal.encode(encoded));
                     return;
                 }
             }

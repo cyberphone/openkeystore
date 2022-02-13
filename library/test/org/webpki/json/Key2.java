@@ -34,7 +34,7 @@ import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.CustomCryptoProvider;
 
 import org.webpki.util.ArrayUtil;
-import org.webpki.util.DebugFormatter;
+import org.webpki.util.HexaDecimal;
 
 /**
  * Testing public keys
@@ -131,7 +131,7 @@ public class Key2 {
                             }
                             System.out.print(" ");
                         }
-                        System.out.print("(byte)0x" + DebugFormatter.getHexString(new byte[]{b}));
+                        System.out.print("(byte)0x" + HexaDecimal.encode(new byte[]{b}));
                     }
                     System.out.println("}\n");
                 }

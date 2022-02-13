@@ -62,7 +62,7 @@ import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.json.JSONParser;
 
 import org.webpki.util.ArrayUtil;
-import org.webpki.util.DebugFormatter;
+import org.webpki.util.HexaDecimal;
 
 public class ProvSess {
     
@@ -621,7 +621,7 @@ public class ProvSess {
 
     public byte[] getPassphraseBytes(PassphraseFormat format, String passphrase) throws IOException {
         if (format == PassphraseFormat.BINARY) {
-            return DebugFormatter.getByteArrayFromHex(passphrase);
+            return HexaDecimal.decode(passphrase);
         }
         return passphrase.getBytes("UTF-8");
     }

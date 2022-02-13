@@ -19,9 +19,9 @@ package org.webpki.util;
 
 import java.io.IOException;
 
-public class DebugFormatter {
+public class HexaDecimal {
 
-    private DebugFormatter() {}
+    private HexaDecimal() {}
 
     private StringBuilder res = new StringBuilder(1000);
 
@@ -112,15 +112,15 @@ public class DebugFormatter {
     }
 
     public static String getHexDebugData(byte[] binaryBlob, int bytesPerLine) {
-        return new DebugFormatter().toHexDebugData(binaryBlob, bytesPerLine);
+        return new HexaDecimal().toHexDebugData(binaryBlob, bytesPerLine);
     }
 
     public static String getHexDebugData(byte[] binaryBlob) {
         return getHexDebugData(binaryBlob, 16);
     }
 
-    public static String getHexString(byte[] binaryBlob) {
-        return new DebugFormatter().toHexString(binaryBlob);
+    public static String encode(byte[] binaryBlob) {
+        return new HexaDecimal().toHexString(binaryBlob);
     }
 
     public static int toHex(char c) throws IOException {
@@ -136,13 +136,13 @@ public class DebugFormatter {
         throw new IOException("Bad hexchar: " + c);
     }
 
-    public static byte[] getByteArrayFromHex(String hex) throws IOException {
-        int l = hex.length();
+    public static byte[] decode(String hexString) throws IOException {
+        int l = hexString.length();
         int bl;
-        if (l == 0 || l % 2 != 0) throw new IOException("Bad hexstring: " + hex);
+        if (l == 0 || l % 2 != 0) throw new IOException("Bad hexstring: " + hexString);
         byte[] data = new byte[bl = l / 2];
         while (--bl >= 0) {
-            data[bl] = (byte) (toHex(hex.charAt(--l)) + (toHex(hex.charAt(--l)) << 4));
+            data[bl] = (byte) (toHex(hexString.charAt(--l)) + (toHex(hexString.charAt(--l)) << 4));
         }
         return data;
     }
@@ -158,16 +158,16 @@ public class DebugFormatter {
 
     public static void main(String[] args) throws IOException {
         if (args.length == 3 && args[0].equals("tobin")) {
-            ArrayUtil.writeFile(args[2], DebugFormatter.getByteArrayFromHex(new String(ArrayUtil.readFile(args[1]), "UTF-8")));
+            ArrayUtil.writeFile(args[2], HexaDecimal.decode(new String(ArrayUtil.readFile(args[1]), "UTF-8")));
             System.exit(0);
         }
         if (args.length != 2 || !(args[0].equals("hex") || args[0].equals("dump"))) {
-            System.out.println("Usage: DebugFormatter hex|dump bininputfile \n" +
+            System.out.println("Usage: HexaDecimal hex|dump bininputfile \n" +
                     "                      tobin inputfileinhex outputfilebin\n");
             System.exit(0);
         }
         byte[] data = ArrayUtil.readFile(args[1]);
-        System.out.print(args[0].equals("dump") ? DebugFormatter.getHexDebugData(data) : DebugFormatter.getHexString(data));
+        System.out.print(args[0].equals("dump") ? HexaDecimal.getHexDebugData(data) : HexaDecimal.encode(data));
     }
 
 }

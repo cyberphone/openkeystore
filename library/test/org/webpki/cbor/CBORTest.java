@@ -52,7 +52,7 @@ import org.webpki.json.JSONParser;
 import org.webpki.json.SymmetricKeys;
 
 import org.webpki.util.ArrayUtil;
-import org.webpki.util.DebugFormatter;
+import org.webpki.util.HexaDecimal;
 import org.webpki.util.PEMDecoder;
 
 import static org.webpki.cbor.CBORCryptoConstants.*;
@@ -122,7 +122,7 @@ public class CBORTest {
     
     void binaryCompare(CBORObject cborObject, String hex) throws Exception {
         byte[] cbor = cborObject.encode();
-        String actual = DebugFormatter.getHexString(cbor);
+        String actual = HexaDecimal.encode(cbor);
         hex = hex.toLowerCase();
         assertTrue("binary h=" + hex + " c=" + actual, hex.equals(actual));
         CBORObject cborO = CBORObject.decode(cbor);
@@ -137,7 +137,7 @@ public class CBORTest {
     }
 
     CBORObject parseCborHex(String hex) throws IOException {
-        byte[] cbor = DebugFormatter.getByteArrayFromHex(hex);
+        byte[] cbor = HexaDecimal.decode(hex);
         CBORObject cborObject = CBORObject.decode(cbor);
         assertTrue("phex: " + hex, ArrayUtil.compare(cbor, cborObject.encode()));
         return cborObject;
@@ -147,7 +147,7 @@ public class CBORTest {
         CBORObject cborObject = set ? 
                 new CBORInteger(value, forceUnsigned) : new CBORInteger(value);
         byte[] cbor = cborObject.encode();
-        String calc = DebugFormatter.getHexString(cbor);
+        String calc = HexaDecimal.encode(cbor);
         assertTrue("int=" + value + " c=" + calc + " h=" + hex, hex.equals(calc));
         CBORObject decodedInteger = CBORObject.decode(cbor);
         if (value != -1 || forceUnsigned) {
@@ -217,9 +217,9 @@ public class CBORTest {
 
     void bigIntegerTest(String value, String hex) throws Exception {
         byte[] cbor = new CBORInteger(new BigInteger(value)).encode();
-        String calc = DebugFormatter.getHexString(cbor);
+        String calc = HexaDecimal.encode(cbor);
         assertTrue("big int=" + value + " c=" + calc + " h=" + hex,
-                hex.equals(DebugFormatter.getHexString(cbor)));
+                hex.equals(HexaDecimal.encode(cbor)));
         CBORObject decodedBig = CBORObject.decode(cbor);
         String decS = decodedBig.getBigInteger().toString();
         assertTrue("Big2 d=" + decS + " v=" + value, value.equals(decS));
@@ -227,14 +227,14 @@ public class CBORTest {
 
     void stringTest(String string, String hex) throws Exception {
         byte[] cbor = new CBORTextString(string).encode();
-        String calc = DebugFormatter.getHexString(cbor);
+        String calc = HexaDecimal.encode(cbor);
         assertTrue("string=" + string + " c=" + calc + " h=" + hex, hex.equals(calc));
         assertTrue("string 2", CBORObject.decode(cbor).toString().equals("\"" + string + "\""));
     }
 
     void arrayTest(CBORArray cborArray, String hex) throws Exception {
         byte[] cbor = cborArray.encode();
-        String calc = DebugFormatter.getHexString(cbor);
+        String calc = HexaDecimal.encode(cbor);
         assertTrue(" c=" + calc + " h=" + hex, hex.equals(calc));
         assertTrue("arr", CBORObject.decode(cbor).toString().equals(cborArray.toString()));
     }
@@ -1312,7 +1312,7 @@ public class CBORTest {
         if (hex.length() == 0) {
             return new byte[0];
         }
-        return DebugFormatter.getByteArrayFromHex(hex);
+        return HexaDecimal.decode(hex);
     }
     
     void hmacKdfRun(String ikmHex,
@@ -1321,7 +1321,7 @@ public class CBORTest {
                     int keyLen, 
                     String okmHex) throws Exception {
         assertTrue("KDF",
-                DebugFormatter.getHexString(
+                HexaDecimal.encode(
                         EncryptionCore.hmacKdf(getBinaryFromHex(ikmHex),
                                                getBinaryFromHex(saltHex),
                                                getBinaryFromHex(infoHex),
@@ -1380,8 +1380,8 @@ public class CBORTest {
                              String hexExpectedResult,
                              boolean ignoreAdditionalData, 
                              boolean ignoreKeySortingOrder) throws IOException {
-        String result = DebugFormatter.getHexString(
-                CBORObject.decodeWithOptions(DebugFormatter.getByteArrayFromHex(hexInput),
+        String result = HexaDecimal.encode(
+                CBORObject.decodeWithOptions(HexaDecimal.decode(hexInput),
                                              ignoreAdditionalData,
                                              ignoreKeySortingOrder).encode()).toUpperCase();
         assertTrue("Strange=" + result, hexExpectedResult.equals(result));

@@ -37,7 +37,7 @@ import org.webpki.json.JSONBaseHTML.RowInterface;
 import org.webpki.json.JSONBaseHTML.Types;
 
 import org.webpki.util.ArrayUtil;
-import org.webpki.util.DebugFormatter;
+import org.webpki.util.HexaDecimal;
 import org.webpki.util.PEMDecoder;
 
 /**
@@ -149,7 +149,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
     static SymKey readSymKey(String keyName) throws IOException {
         SymKey symKey = new SymKey();
         symKey.text = new String(json.readFile1(symKey.fileName = keyName + ".hex"), "utf-8");
-        symKey.keyValue = DebugFormatter.getByteArrayFromHex(symKey.text);
+        symKey.keyValue = HexaDecimal.decode(symKey.text);
         symKey.keyId = keyName;
         return symKey;
     }

@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 
 import org.webpki.util.ArrayUtil;
-import org.webpki.util.DebugFormatter;
+import org.webpki.util.HexaDecimal;
 
 /*
  * Holder of symmetric keys
@@ -41,7 +41,7 @@ public class SymmetricKeys {
 
     private void init(int i) throws IOException {
         keys.put(i,        
-                 DebugFormatter.getByteArrayFromHex(new String(ArrayUtil.readFile(keyBase + getName(i) + ".hex"), "utf-8")));
+                 HexaDecimal.decode(new String(ArrayUtil.readFile(keyBase + getName(i) + ".hex"), "utf-8")));
     }
 
     public String getName(int i) throws IOException {

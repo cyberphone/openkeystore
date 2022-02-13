@@ -20,7 +20,7 @@ import java.util.*;
 import java.math.*;
 import java.io.*;
 
-import org.webpki.util.DebugFormatter;
+import org.webpki.util.HexaDecimal;
 
 public abstract class BaseASN1Object implements ASN1Constants {
     static byte[] bitMasks = new byte[]{(byte) 0x01, (byte) 0x02, (byte) 0x04, (byte) 0x08,
@@ -329,14 +329,14 @@ public abstract class BaseASN1Object implements ASN1Constants {
     void hexData(StringBuilder s, byte[] value) {
         if (value.length <= 16) {
             s.append(',');
-            String hex = DebugFormatter.getHexString(value);
+            String hex = HexaDecimal.encode(value);
             int i = 0;
             while (i < hex.length()) {
                 if (i % 2 == 0) s.append(' ');
                 s.append(hex.charAt(i++));
             }
         } else {
-            String hex = DebugFormatter.getHexDebugData(value);
+            String hex = HexaDecimal.getHexDebugData(value);
             int i = 0;
             while (hex.length() > 0) {
                 s.append("\n" + getByteNumberBlanks());

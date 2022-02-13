@@ -49,7 +49,7 @@ import org.webpki.json.JSONParser;
 import org.webpki.json.SymmetricKeys;
 
 import org.webpki.util.ArrayUtil;
-import org.webpki.util.DebugFormatter;
+import org.webpki.util.HexaDecimal;
 import org.webpki.util.PEMDecoder;
 
 /*
@@ -288,7 +288,7 @@ public class CborEncryption {
         fileName = baseEncryption + fileName;
         byte[] encryption = ArrayUtil.readFile(baseEncryption + "x25519#ecdh-es+a256kw@a256gcm@kid.cbor"); 
         ArrayUtil.writeFile(fileName + ".hex", 
-                            DebugFormatter.getHexString(encryption).getBytes("utf-8"));
+                            HexaDecimal.encode(encryption).getBytes("utf-8"));
         StringBuilder text = new StringBuilder(CBORObject.decode(encryption).toString());
         int i = text.indexOf("\n  1:");
         for (String comment : new String[]{"Content encryption algorithm = A256GCM",

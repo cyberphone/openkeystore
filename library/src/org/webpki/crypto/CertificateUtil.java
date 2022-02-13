@@ -34,7 +34,7 @@ import java.util.regex.Matcher;
 import javax.security.auth.x500.X500Principal;
 
 import org.webpki.util.ArrayUtil;
-import org.webpki.util.DebugFormatter;
+import org.webpki.util.HexaDecimal;
 
 import org.webpki.asn1.DerDecoder;
 import org.webpki.asn1.ASN1Sequence;
@@ -246,7 +246,7 @@ public class CertificateUtil {
 
     private static String getHexASN1String(String asciiHex) throws IOException {
         return ParseUtil.string(
-                DerDecoder.decode(DebugFormatter.getByteArrayFromHex(asciiHex))).value();
+                DerDecoder.decode(HexaDecimal.decode(asciiHex))).value();
     }
 
     private static String trycut(String olddn, 

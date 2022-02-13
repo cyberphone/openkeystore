@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.webpki.cbor.CBORObject;
 
-import org.webpki.util.DebugFormatter;
+import org.webpki.util.HexaDecimal;
 
 
 public class CoreRequestServlet extends HttpServlet {
@@ -91,7 +91,7 @@ public class CoreRequestServlet extends HttpServlet {
     }
 
     CBORObject hexDecodedCbor(String hexAndOptionalComments) throws IOException {
-        return CBORObject.decode(DebugFormatter.getByteArrayFromHex(
+        return CBORObject.decode(HexaDecimal.decode(
                 hexAndOptionalComments.replaceAll("#.*(\r|\n|$)", "")
                                       .replaceAll("( |\n|\r)", "")));
     }

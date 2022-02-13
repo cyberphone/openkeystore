@@ -27,7 +27,7 @@ import java.net.URLEncoder;
 
 import org.webpki.util.HTMLEncoder;
 import org.webpki.util.HTMLHeader;
-import org.webpki.util.DebugFormatter;
+import org.webpki.util.HexaDecimal;
 
 
 public class XSD2HTMLPrinter {
@@ -698,7 +698,7 @@ public class XSD2HTMLPrinter {
                         }
                         q = lv.indexOf(URL_HEX_LINK);
                         if (q > 0) {
-                            lv = lv.substring(0, q) + DebugFormatter.getHexString(avalue.getBytes("UTF-8")) + lv.substring(q + 3);
+                            lv = lv.substring(0, q) + HexaDecimal.encode(avalue.getBytes("UTF-8")) + lv.substring(q + 3);
                         }
                         outdata.append(lv);
                     }

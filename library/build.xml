@@ -358,7 +358,7 @@
 
     <copy todir="${android_dir}/org/webpki" preservelastmodified="true">
       <fileset dir="${src_dir}/org/webpki">
-        <include name="**/util/DebugFormatter.java"/>
+        <include name="**/util/HexaDecimal.java"/>
         <include name="**/util/ArrayUtil.java"/>
         <include name="**/crypto/X509VerifierInterface.java"/>
         <include name="**/crypto/HmacVerifierInterface.java"/>
@@ -442,7 +442,7 @@
       </fileset>
       <fileset dir="${src_dir}/org/webpki">
         <include name="**/util/ISODateTime.java"/>
-        <include name="**/util/DebugFormatter.java"/>
+        <include name="**/util/HexaDecimal.java"/>
         <include name="**/util/ArrayUtil.java"/>
         <include name="**/util/StringUtil.java"/>
         <include name="**/util/Base64URL.java"/>

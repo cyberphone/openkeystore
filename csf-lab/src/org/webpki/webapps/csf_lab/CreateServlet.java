@@ -43,7 +43,7 @@ import org.webpki.json.JSONObjectWriter;
 import org.webpki.json.JSONParser;
 
 import org.webpki.util.Base64;
-import org.webpki.util.DebugFormatter;
+import org.webpki.util.HexaDecimal;
 import org.webpki.util.PEMDecoder;
 
 public class CreateServlet extends CoreRequestServlet {
@@ -312,7 +312,7 @@ public class CreateServlet extends CoreRequestServlet {
             if (algorithmString.startsWith("HS")) {
                 validationKey = getParameter(request, PRM_SECRET_KEY);
                 signer = new CBORHmacSigner(
-                        DebugFormatter.getByteArrayFromHex(validationKey),
+                        HexaDecimal.decode(validationKey),
                         HmacAlgorithms.getAlgorithmFromId(algorithmString, 
                                                           AlgorithmPreferences.JOSE));
             } else {
@@ -357,7 +357,7 @@ public class CreateServlet extends CoreRequestServlet {
                 "=true&" +
                 CSF_OBJECT + 
                 "=" +
-                DebugFormatter.getHexString(signedCborObject.encode()) +
+                HexaDecimal.encode(signedCborObject.encode()) +
                 "&" +
                 CSF_VALIDATION_KEY + 
                 "=" +

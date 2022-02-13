@@ -32,7 +32,7 @@ import org.webpki.sks.PassphraseFormat;
 import org.webpki.sks.PatternRestriction;
 
 import org.webpki.util.ArrayUtil;
-import org.webpki.util.DebugFormatter;
+import org.webpki.util.HexaDecimal;
 
 import org.webpki.xml.DOMReaderHelper;
 import org.webpki.xml.DOMAttributeReaderHelper;
@@ -495,7 +495,7 @@ public class KeyCreationRequestDecoder extends KeyCreationRequest
               {
                 if (pin_string_value.length () > 0 && pinPolicy.format == PassphraseFormat.BINARY)
                   {
-                    pin = DebugFormatter.getByteArrayFromHex (pin_string_value);
+                    pin = HexaDecimal.decode (pin_string_value);
                   }
                 else
                   {

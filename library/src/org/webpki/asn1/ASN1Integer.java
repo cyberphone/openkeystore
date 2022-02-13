@@ -20,7 +20,7 @@ import java.io.IOException;
 
 import java.math.*;
 
-import org.webpki.util.DebugFormatter;
+import org.webpki.util.HexaDecimal;
 
 
 public final class ASN1Integer extends Simple {
@@ -72,7 +72,7 @@ public final class ASN1Integer extends Simple {
         if (num.length() <= 10) {
             s.append(num);
         } else {
-            num = DebugFormatter.getHexString(value.toByteArray());
+            num = HexaDecimal.encode(value.toByteArray());
             prefix = (num.length() <= 48) ? "" : "\n " + prefix + getByteNumberBlanks();
             while (num.length() > 0) {
                 s.append(prefix);

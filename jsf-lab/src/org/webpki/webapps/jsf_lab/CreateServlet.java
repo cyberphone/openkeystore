@@ -45,7 +45,7 @@ import org.webpki.json.JSONAsymKeySigner;
 import org.webpki.json.JSONX509Signer;
 
 import org.webpki.util.Base64;
-import org.webpki.util.DebugFormatter;
+import org.webpki.util.HexaDecimal;
 import org.webpki.util.PEMDecoder;
 
 public class CreateServlet extends HttpServlet {
@@ -346,7 +346,7 @@ public class CreateServlet extends HttpServlet {
             if (isSymmetric(algorithmString)) {
                 validationKey = getParameter(request, PRM_SECRET_KEY);
                 signer = new JSONHmacSigner(
-                        DebugFormatter.getByteArrayFromHex(validationKey),
+                        HexaDecimal.decode(validationKey),
                         HmacAlgorithms.getAlgorithmFromId(algorithmString, 
                                                          AlgorithmPreferences.JOSE));
             } else {

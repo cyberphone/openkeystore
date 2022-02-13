@@ -35,7 +35,7 @@ import org.webpki.json.JSONOutputFormats;
 import org.webpki.json.JSONParser;
 
 import org.webpki.util.ArrayUtil;
-import org.webpki.util.DebugFormatter;
+import org.webpki.util.HexaDecimal;
 
 public class Benchmark {
     
@@ -53,7 +53,7 @@ public class Benchmark {
     
     static {
         try {
-            SECRET_KEY = DebugFormatter.getByteArrayFromHex(
+            SECRET_KEY = HexaDecimal.decode(
                     "7fdd851a3b9d2dafc5f0d00030e22b9343900cd42ede4948568a4a2ee655291a");
         } catch (IOException e) {
             throw new RuntimeException(e);

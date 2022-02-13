@@ -27,7 +27,7 @@ import java.security.cert.X509Certificate;
 import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAKey;
 
-import org.webpki.util.DebugFormatter;
+import org.webpki.util.HexaDecimal;
 import org.webpki.util.ISODateTime;
 
 import org.webpki.asn1.DerDecoder;
@@ -296,7 +296,7 @@ public class CertificateInfo {
 
 
     public String getSerialNumberInHex() throws IOException {
-        return DebugFormatter.getHexString(certificate.getSerialNumber().toByteArray());
+        return HexaDecimal.encode(certificate.getSerialNumber().toByteArray());
     }
 
 
@@ -343,7 +343,7 @@ public class CertificateInfo {
                toDate(notValidBefore) + " To " +
                toDate(notValidAfter) + (isValid() ? "" : " ***EXPIRED***") +
                (trusted ? "" : " ***UNKNOWN CA***") +
-               "\n  SHA256 hash: " + (hash == null ? "BAD" : DebugFormatter.getHexString(hash));
+               "\n  SHA256 hash: " + (hash == null ? "BAD" : HexaDecimal.encode(hash));
     }
 
 

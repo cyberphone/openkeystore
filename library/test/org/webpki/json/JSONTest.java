@@ -73,7 +73,7 @@ import org.webpki.json.JSONCryptoHelper.PUBLIC_KEY_OPTIONS;
 
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.Base64URL;
-import org.webpki.util.DebugFormatter;
+import org.webpki.util.HexaDecimal;
 import org.webpki.util.ISODateTime;
 
 /**
@@ -3418,13 +3418,13 @@ public class JSONTest {
                  String signatureInHex) {
         try {
             PrivateKey privateKey = 
-                    OkpSupport.raw2PrivateOkpKey(DebugFormatter.getByteArrayFromHex(secretKeyInHex), 
+                    OkpSupport.raw2PrivateOkpKey(HexaDecimal.decode(secretKeyInHex), 
                                                  keyAlgorithm);
             PublicKey publicKey = 
-                    OkpSupport.raw2PublicOkpKey(DebugFormatter.getByteArrayFromHex(publicKeyInHex), 
+                    OkpSupport.raw2PublicOkpKey(HexaDecimal.decode(publicKeyInHex), 
                                                 keyAlgorithm);
-            byte[] message = DebugFormatter.getByteArrayFromHex(messageInHex);
-            byte[] expectedSignature = DebugFormatter.getByteArrayFromHex(signatureInHex);
+            byte[] message = HexaDecimal.decode(messageInHex);
+            byte[] expectedSignature = HexaDecimal.decode(signatureInHex);
             byte[] signature = 
                     new SignatureWrapper(keyAlgorithm.getRecommendedSignatureAlgorithm(),
                                          privateKey)
@@ -4049,12 +4049,12 @@ public class JSONTest {
             String e,
             String t,
             ContentEncryptionAlgorithms enc) throws Exception {
-        aesCbcHmac(DebugFormatter.getByteArrayFromHex(k),
-                   DebugFormatter.getByteArrayFromHex(p),
-                   DebugFormatter.getByteArrayFromHex(iv),
-                   DebugFormatter.getByteArrayFromHex(a),
-                   DebugFormatter.getByteArrayFromHex(e),
-                   DebugFormatter.getByteArrayFromHex(t),
+        aesCbcHmac(HexaDecimal.decode(k),
+                   HexaDecimal.decode(p),
+                   HexaDecimal.decode(iv),
+                   HexaDecimal.decode(a),
+                   HexaDecimal.decode(e),
+                   HexaDecimal.decode(t),
                    enc);
     }
     
@@ -4289,27 +4289,27 @@ public class JSONTest {
 
     void rfc7748Encryption() throws Exception {
         PrivateKey ALICE_PRIV = 
-             OkpSupport.raw2PrivateOkpKey(DebugFormatter.getByteArrayFromHex(
+             OkpSupport.raw2PrivateOkpKey(HexaDecimal.decode(
                     "9a8f4925d1519f5775cf46b04b5800d4ee9ee8bae8bc5565d498c28d" +
                     "d9c9baf574a9419744897391006382a6f127ab1d9ac2d8c0a598726b"),
                     KeyAlgorithms.X448);
         PublicKey ALICE_PUB = 
-             OkpSupport.raw2PublicOkpKey(DebugFormatter.getByteArrayFromHex(
+             OkpSupport.raw2PublicOkpKey(HexaDecimal.decode(
                     "9b08f7cc31b7e3e67d22d5aea121074a273bd2b83de09c63faa73d2c" +
                     "22c5d9bbc836647241d953d40c5b12da88120d53177f80e532c41fa0"),
                     KeyAlgorithms.X448);
         PrivateKey BOB_PRIV = 
-             OkpSupport.raw2PrivateOkpKey(DebugFormatter.getByteArrayFromHex(
+             OkpSupport.raw2PrivateOkpKey(HexaDecimal.decode(
                     "1c306a7ac2a0e2e0990b294470cba339e6453772b075811d8fad0d1d" +
                     "6927c120bb5ee8972b0d3e21374c9c921b09d1b0366f10b65173992d"),
                     KeyAlgorithms.X448);
         PublicKey BOB_PUB = 
-             OkpSupport.raw2PublicOkpKey(DebugFormatter.getByteArrayFromHex(
+             OkpSupport.raw2PublicOkpKey(HexaDecimal.decode(
                     "3eb7a829b0cd20f5bcfc0b599b6feccf6da4627107bdb0d4f345b430" +
                     "27d8b972fc3e34fb4232a13ca706dcb57aec3dae07bdc1c67bf33609"),
                     KeyAlgorithms.X448);
 
-        byte[] K = DebugFormatter.getByteArrayFromHex(
+        byte[] K = HexaDecimal.decode(
                     "07fff4181ac6cc95ec1c16a94a0f74d12da232ce40a77552281d282b" +
                     "b60c0b56fd2464c335543936521c24403085d59a449a5037514a879d");
         

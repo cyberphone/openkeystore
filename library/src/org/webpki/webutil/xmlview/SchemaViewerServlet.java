@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServlet;
 
-import org.webpki.util.DebugFormatter;
+import org.webpki.util.HexaDecimal;
 import org.webpki.util.Base64;
 import org.webpki.tools.XSD2HTMLPrinter;
 
@@ -85,7 +85,7 @@ public abstract class SchemaViewerServlet extends HttpServlet {
             bug("bad url", response);
             return;
         }
-        String url = new String(DebugFormatter.getByteArrayFromHex(path.substring(1)), "UTF-8");
+        String url = new String(HexaDecimal.decode(path.substring(1)), "UTF-8");
         ReturnValue rv = getData(url, request);
         if (rv == null) {
             bug("No schema file available for <b>" + url + "</b>", response);
@@ -121,7 +121,7 @@ public abstract class SchemaViewerServlet extends HttpServlet {
                         "\"></form>" +
                         "<a href=\"javascript:document.shoot.submit ()\">Click here to get raw XML</a><p>" +
                         "Click on XML name-space URIs to view the other schemas<p>" +
-                        "<a href=\"" + baseurl + "/" + getSchemaViewerName() + "/" + DebugFormatter.getHexString(url.getBytes("UTF-8")) +
+                        "<a href=\"" + baseurl + "/" + getSchemaViewerName() + "/" + HexaDecimal.encode(url.getBytes("UTF-8")) +
                         "\">Click here to get listing without a header</a> (suitable for printing)<p><hr><p>" : "") +
                 XSD2HTMLPrinter.convert(new String(rv.data, "UTF-8"),
                         head ? "<a class=\"g\" href=\"javascript:viewxml('" + baseurl + "/" + getSchemaViewerName() +

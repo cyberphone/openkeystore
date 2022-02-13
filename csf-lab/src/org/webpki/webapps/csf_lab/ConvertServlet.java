@@ -32,7 +32,7 @@ import org.webpki.json.JSONOutputFormats;
 import org.webpki.json.JSONParser;
 
 import org.webpki.util.Base64URL;
-import org.webpki.util.DebugFormatter;
+import org.webpki.util.HexaDecimal;
 
 import org.webpki.webutil.ServletUtil;
 
@@ -117,7 +117,7 @@ public class ConvertServlet extends CoreRequestServlet {
                     break;
     
                 case HEXA:
-                    outData = DebugFormatter.getHexString(cbor.encode());
+                    outData = HexaDecimal.encode(cbor.encode());
                     break;
     
                 default:

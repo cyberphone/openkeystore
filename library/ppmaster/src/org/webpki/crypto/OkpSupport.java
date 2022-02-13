@@ -74,7 +74,7 @@ import org.webpki.asn1.DerDecoder;
 import org.webpki.asn1.ParseUtil;
 
 import org.webpki.util.ArrayUtil;
-import org.webpki.util.DebugFormatter;
+import org.webpki.util.HexaDecimal;
 
 /**
  * Support methods for "OKP" (RFC 8037).
@@ -105,13 +105,13 @@ public class OkpSupport {
     static {
         try {
             okpPrefix.put(KeyAlgorithms.ED25519, 
-                          DebugFormatter.getByteArrayFromHex("302a300506032b6570032100"));
+                          HexaDecimal.decode("302a300506032b6570032100"));
             okpPrefix.put(KeyAlgorithms.ED448,
-                          DebugFormatter.getByteArrayFromHex("3043300506032b6571033a00"));
+                          HexaDecimal.decode("3043300506032b6571033a00"));
             okpPrefix.put(KeyAlgorithms.X25519,
-                          DebugFormatter.getByteArrayFromHex("302a300506032b656e032100"));
+                          HexaDecimal.decode("302a300506032b656e032100"));
             okpPrefix.put(KeyAlgorithms.X448,
-                          DebugFormatter.getByteArrayFromHex("3042300506032b656f033900"));
+                          HexaDecimal.decode("3042300506032b656f033900"));
         } catch (Exception e) {
         }
     }

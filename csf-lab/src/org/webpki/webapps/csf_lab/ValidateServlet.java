@@ -41,7 +41,7 @@ import org.webpki.crypto.CertificateInfo;
 
 import org.webpki.json.JSONParser;
 
-import org.webpki.util.DebugFormatter;
+import org.webpki.util.HexaDecimal;
 import org.webpki.util.PEMDecoder;
 
 public class ValidateServlet extends CoreRequestServlet {
@@ -73,7 +73,7 @@ public class ValidateServlet extends CoreRequestServlet {
             // Validation
             boolean jwkValidationKey = validationKey.startsWith("{");
             if (hmacSignature) {
-                new CBORHmacValidator(DebugFormatter.getByteArrayFromHex(validationKey))
+                new CBORHmacValidator(HexaDecimal.decode(validationKey))
                     .validate(signatureLabel, signedCborObject);
             } else {
                 PublicKey externalPublicKey =  jwkValidationKey ? 
@@ -116,7 +116,7 @@ public class ValidateServlet extends CoreRequestServlet {
                             "Signed CBOR object in diagnostic notation"))           
                 .append(HTML.fancyBox(
                             "inhex",
-                            DebugFormatter.getHexString(signedCborObject.encode()), 
+                            HexaDecimal.encode(signedCborObject.encode()), 
                             "Signed CBOR object in hexadecimal notation"))           
                 .append(HTML.fancyBox(
                             CSF_VALIDATION_KEY,

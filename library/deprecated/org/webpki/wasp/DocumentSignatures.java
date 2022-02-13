@@ -25,7 +25,7 @@ import java.security.NoSuchAlgorithmException;
 
 import org.w3c.dom.Element;
 
-import org.webpki.util.DebugFormatter;
+import org.webpki.util.HexaDecimal;
 import org.webpki.util.ArrayUtil;
 
 import org.webpki.xml.DOMWriterHelper;
@@ -189,7 +189,7 @@ public class DocumentSignatures {
         s.append(DIGEST_ALG_ATTR + "=" + digest_algorithm.getAlgorithmId() +
                 "\n" + CN_ALG_ATTR + "=" + canonicalization_algorithm);
         for (ContentIDAndDigest t : signatures) {
-            s.append("\n" + t.content_id + "=" + DebugFormatter.getHexString(t.digest));
+            s.append("\n" + t.content_id + "=" + HexaDecimal.encode(t.digest));
         }
         return s.toString();
     }

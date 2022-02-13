@@ -20,7 +20,7 @@ import org.webpki.cbor.CBORObject;
 
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.Base64URL;
-import org.webpki.util.DebugFormatter;
+import org.webpki.util.HexaDecimal;
 
 /**
  * Decodes CBOR data.
@@ -53,7 +53,7 @@ public class CBORPrinter {
             String hex = new String(readCbor, "utf-8")
                     .replaceAll("#.*(\r|\n|$)", "")
                     .replaceAll("( |\n|\r)", "");
-            readCbor = DebugFormatter.getByteArrayFromHex(hex);
+            readCbor = HexaDecimal.decode(hex);
         } else if (format.equals("b64u")) {
             readCbor = Base64URL.decode(new String(readCbor, "utf-8"));
         } else if (!format.equals("bin")) {
@@ -62,8 +62,8 @@ public class CBORPrinter {
         CBORObject decodedCborObject = CBORObject.decode(readCbor);
         byte[] decodedCbor = decodedCborObject.encode();
         System.out.println(decodedCborObject.toString());
-        String readCborHex = DebugFormatter.getHexString(readCbor);
-        String decodedCborHex = DebugFormatter.getHexString(decodedCbor);
+        String readCborHex = HexaDecimal.encode(readCbor);
+        String decodedCborHex = HexaDecimal.encode(decodedCbor);
         if (!readCborHex.equals(decodedCborHex)) {
             System.out.println("Failed to encode \n" + readCborHex + "\n" + decodedCborHex);
         }
