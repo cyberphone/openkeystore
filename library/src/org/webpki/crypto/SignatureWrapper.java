@@ -42,15 +42,15 @@ public class SignatureWrapper {
 
     static final int LEADING_ZERO  = 0x00;
 
-    boolean ecdsaDerEncoded;
+    boolean ecdsaAsn1EncodedFlag;
 
     private static int getExtendTo(ECParameterSpec ecParameters) 
             throws IOException, GeneralSecurityException {
         return (KeyAlgorithms.getECKeyAlgorithm(ecParameters).getPublicKeySizeInBits() + 7) / 8;
     }
 
-    public static byte[] decodeDEREncodedECDSASignature(byte[] derCodedSignature,
-                                                        ECParameterSpec ecParameters)
+    private byte[] decodeAsn1EncodedEcdsaSignature(byte[] derCodedSignature,
+                                                   ECParameterSpec ecParameters)
             throws IOException, GeneralSecurityException {
         int extendTo = getExtendTo(ecParameters);
         int index = 2;
@@ -89,8 +89,8 @@ public class SignatureWrapper {
         return concatenatedSignature;
     }
 
-    public static byte[] encodeDEREncodedECDSASignature(byte[] concatenatedSignature,
-                                                        ECParameterSpec ecParameters) 
+    private byte[] encodeAsn1EncodedEcdsaSignature(byte[] concatenatedSignature,
+                                                   ECParameterSpec ecParameters) 
             throws IOException, GeneralSecurityException {
         int extendTo = getExtendTo(ecParameters);
         if (extendTo != concatenatedSignature.length / 2) {
@@ -195,8 +195,8 @@ public class SignatureWrapper {
         this(algorithm, privateKey, null);
     }
 
-    public SignatureWrapper setEcdsaSignatureEncoding(boolean derEncoded) {
-        ecdsaDerEncoded = derEncoded;
+    public SignatureWrapper ecdsaAsn1SignatureEncoding(boolean flag) {
+        ecdsaAsn1EncodedFlag = flag;
         return this;
     }
 
@@ -215,14 +215,12 @@ public class SignatureWrapper {
     }
 
     public boolean verify(byte[] signature) throws GeneralSecurityException, IOException {
-        return instance.verify(ecdsaDerEncoded || unmodifiedSignature ?
-                signature : SignatureWrapper.encodeDEREncodedECDSASignature(signature, 
-                                                                            ecParameters));
+        return instance.verify(ecdsaAsn1EncodedFlag || unmodifiedSignature ?
+                signature : encodeAsn1EncodedEcdsaSignature(signature, ecParameters));
     }
 
     public byte[] sign() throws GeneralSecurityException, IOException {
-        return ecdsaDerEncoded || unmodifiedSignature ?
-                instance.sign() : SignatureWrapper.decodeDEREncodedECDSASignature(instance.sign(),
-                                                                                  ecParameters);
+        return ecdsaAsn1EncodedFlag || unmodifiedSignature ?
+                instance.sign() : decodeAsn1EncodedEcdsaSignature(instance.sign(), ecParameters);
     }
 }

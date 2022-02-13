@@ -103,7 +103,7 @@ public class KeyStoreSigner implements X509SignerInterface, CertificateSelectorS
     }
 
 
-    public KeyStoreSigner setECDSASignatureEncoding(boolean derEncoded) {
+    public KeyStoreSigner ecdsaAsn1SignatureEncoding(boolean derEncoded) {
         ecdsaDerEncoded = derEncoded;
         return this;
     }
@@ -112,7 +112,7 @@ public class KeyStoreSigner implements X509SignerInterface, CertificateSelectorS
     @Override
     public byte[] signData(byte[] data) throws IOException, GeneralSecurityException {
          return new SignatureWrapper(algorithm, privateKey)
-                .setEcdsaSignatureEncoding(ecdsaDerEncoded)
+                .ecdsaAsn1SignatureEncoding(ecdsaDerEncoded)
                 .update(data)
                 .sign();
     }

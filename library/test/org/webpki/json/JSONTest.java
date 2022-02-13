@@ -58,7 +58,6 @@ import org.webpki.crypto.OkpSupport;
 import org.webpki.crypto.SignatureWrapper;
 import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.AlgorithmPreferences;
-import org.webpki.crypto.DeterministicSignatureWrapper;
 import org.webpki.crypto.EncryptionCore;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyEncryptionAlgorithms;
@@ -3562,10 +3561,6 @@ public class JSONTest {
 
     @Test
     public void Signatures() throws Exception {
-        if (bcLoaded) {
-            // This does NOT work with the SUN JCE
-            DeterministicSignatureWrapper.rfc4754();
-        }
         JSONX509Verifier rootCa = readDerCertificate("rootca.cer");
         JSONX509Verifier unknownCa = readDerCertificate("unknownca.cer");
         PublicKey otherp256 = JSONParser.parse(p256_jcs).getPublicKey(AlgorithmPreferences.JOSE_ACCEPT_PREFER);

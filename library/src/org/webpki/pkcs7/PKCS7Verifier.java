@@ -192,7 +192,7 @@ public class PKCS7Verifier {
             throw new IOException("Signer certificate descriptor error");
         }
         if (!new SignatureWrapper(getSignatureAlgorithm(), certpath[0].getPublicKey())
-                .setEcdsaSignatureEncoding(true)
+                .ecdsaAsn1SignatureEncoding(true)
                 .update(message)
                 .verify(signer_info.encrypted_digest)) {
             throw new IOException("Incorrect signature");

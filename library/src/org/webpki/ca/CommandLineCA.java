@@ -224,7 +224,7 @@ public class CommandLineCA {
         @Override
         public byte[] signData(byte[] data) throws IOException, GeneralSecurityException {
             return new SignatureWrapper(certalg, signKey)
-                        .setEcdsaSignatureEncoding(true)
+                        .ecdsaAsn1SignatureEncoding(true)
                         .update(data)
                         .sign();
         }

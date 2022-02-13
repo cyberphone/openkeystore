@@ -93,7 +93,7 @@ public class GenKey {
                                 SignatureWrapper signer = 
                                         new SignatureWrapper(AsymSignatureAlgorithms.RSA_SHA256, 
                                                              ProvSess.RSA_KEY_2.getPrivate());
-                                signer.setEcdsaSignatureEncoding(true);
+                                signer.ecdsaAsn1SignatureEncoding(true);
                                 signer.update(data);
                                 return signer.sign();
 
