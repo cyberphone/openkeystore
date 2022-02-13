@@ -28,92 +28,92 @@ public interface CBORCryptoConstants {
     /**
      * COSE "kty" label.
      */
-    int COSE_KTY_LABEL          = 1;
+    CBORInteger COSE_KTY_LABEL          = new CBORInteger(1);
 
     /**
      * COSE OKP "kty" identifier.
      */
-    int COSE_OKP_KTY            = 1;
+    CBORInteger COSE_OKP_KTY            = new CBORInteger(1);
 
     /**
      * COSE OKP "crv" label.
      */
-    int COSE_OKP_CRV_LABEL      = -1;
+    CBORInteger COSE_OKP_CRV_LABEL      = new CBORInteger(-1);
 
     /**
      * COSE OKP "x" label.
      */
-    int COSE_OKP_X_LABEL        = -2;
+    CBORInteger COSE_OKP_X_LABEL        = new CBORInteger(-2);
 
     /**
      * COSE EC2 "kty" identifier.
      */
-    int COSE_EC2_KTY            = 2;
+    CBORInteger COSE_EC2_KTY            = new CBORInteger(2);
 
     /**
      * COSE EC2 "crv" label.
      */
-    int COSE_EC2_CRV_LABEL      = -1;
+    CBORInteger COSE_EC2_CRV_LABEL      = new CBORInteger(-1);
 
     /**
      * COSE EC2 "x" label.
      */
-    int COSE_EC2_X_LABEL        = -2;
+    CBORInteger COSE_EC2_X_LABEL        = new CBORInteger(-2);
 
     /**
      * COSE EC2 "y" label.
      */
-    int COSE_EC2_Y_LABEL        = -3;
+    CBORInteger COSE_EC2_Y_LABEL        = new CBORInteger(-3);
     
     /**
      * COSE RSA "kty" identifier.
      */
-    int COSE_RSA_KTY            = 3;
+    CBORInteger COSE_RSA_KTY            = new CBORInteger(3);
 
     /**
      * COSE RSA modulus label.
      */
-    int COSE_RSA_N_LABEL        = -1;
+    CBORInteger COSE_RSA_N_LABEL        = new CBORInteger(-1);
 
     /**
      * COSE RSA exponent label.
      */
-    int COSE_RSA_E_LABEL        = -2;
+    CBORInteger COSE_RSA_E_LABEL        = new CBORInteger(-2);
     
     /**
      * COSE "crv" identifier.
      */
-    int COSE_CRV_NIST_P_256     = 1;
+    CBORInteger COSE_CRV_NIST_P_256     = new CBORInteger(1);
 
     /**
      * COSE "crv" identifier.
      */
-    int COSE_CRV_NIST_P_384     = 2;
+    CBORInteger COSE_CRV_NIST_P_384     = new CBORInteger(2);
 
     /**
      * COSE "crv" identifier.
      */
-    int COSE_CRV_NIST_P_521     = 3;
+    CBORInteger COSE_CRV_NIST_P_521     = new CBORInteger(3);
 
     /**
      * COSE "crv" identifier.
      */
-    int COSE_CRV_X25519         = 4;
+    CBORInteger COSE_CRV_X25519         = new CBORInteger(4);
 
     /**
      * COSE "crv" identifier.
      */
-    int COSE_CRV_X448           = 5;
+    CBORInteger COSE_CRV_X448           = new CBORInteger(5);
 
     /**
      * COSE "crv" identifier.
      */
-    int COSE_CRV_ED25519        = 6;
+    CBORInteger COSE_CRV_ED25519        = new CBORInteger(6);
 
     /**
      * COSE "crv" identifier.
      */
-    int COSE_CRV_ED448          = 7;
+    CBORInteger COSE_CRV_ED448          = new CBORInteger(7);
     
     /////////////////////////////////////////////////////////////////
     //                                                             //
