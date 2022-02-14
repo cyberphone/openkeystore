@@ -164,8 +164,8 @@ public class CBORPublicKey {
         return new BigInteger(1, fixedBinary);
     }
 
-    static KeyAlgorithms getCurveIdentifier(CBORObject curve) throws IOException,
-                                                                  GeneralSecurityException {
+    static KeyAlgorithms getKeyAlgorithmFromCurveId(CBORObject curve) 
+            throws IOException, GeneralSecurityException {
         KeyAlgorithms keyAlgorithm = COSE_2_WEBPKI_CRV.get(curve.getInt());
         if (keyAlgorithm == null) {
             throw new GeneralSecurityException("No such key/curve algorithm: " + curve.getInt());
@@ -189,7 +189,7 @@ public class CBORPublicKey {
         if (keyType == null) {
             throw new GeneralSecurityException("Unrecognized key type: " + coseKty);
         }
-        KeyAlgorithms curveId;
+        KeyAlgorithms keyAlg;
         PublicKey publicKey;
 
         switch (keyType) {
@@ -200,26 +200,26 @@ public class CBORPublicKey {
             break;
 
         case EC:
-            curveId = getCurveIdentifier(publicKeyMap.getObject(COSE_EC2_CRV_LABEL));
-            if (curveId.getKeyType() != KeyTypes.EC) {
-                throw new GeneralSecurityException(curveId.getKeyType()  +
+            keyAlg = getKeyAlgorithmFromCurveId(publicKeyMap.getObject(COSE_EC2_CRV_LABEL));
+            if (keyAlg.getKeyType() != KeyTypes.EC) {
+                throw new GeneralSecurityException(keyAlg.getKeyType()  +
                                                    " is not a valid EC curve");
             }
             publicKey = KeyFactory.getInstance("EC").generatePublic(new ECPublicKeySpec(
-                new ECPoint(getCurvePoint(publicKeyMap.getObject(COSE_EC2_X_LABEL), curveId),
-                            getCurvePoint(publicKeyMap.getObject(COSE_EC2_Y_LABEL), curveId)),
-                curveId.getECParameterSpec()));
+                new ECPoint(getCurvePoint(publicKeyMap.getObject(COSE_EC2_X_LABEL), keyAlg),
+                            getCurvePoint(publicKeyMap.getObject(COSE_EC2_Y_LABEL), keyAlg)),
+                keyAlg.getECParameterSpec()));
             break;
 
         default:
-           curveId = getCurveIdentifier(publicKeyMap.getObject(COSE_OKP_CRV_LABEL));
-            if (curveId.getKeyType() != KeyTypes.EDDSA && curveId.getKeyType() != KeyTypes.XEC) {
-                throw new GeneralSecurityException(curveId.getKeyType()  +
+           keyAlg = getKeyAlgorithmFromCurveId(publicKeyMap.getObject(COSE_OKP_CRV_LABEL));
+            if (keyAlg.getKeyType() != KeyTypes.EDDSA && keyAlg.getKeyType() != KeyTypes.XEC) {
+                throw new GeneralSecurityException(keyAlg.getKeyType()  +
                                                    " is not a valid OKP curve");
             }
             publicKey = OkpSupport.raw2PublicOkpKey(
                     publicKeyMap.getObject(COSE_OKP_X_LABEL).getByteString(), 
-                    curveId);
+                    keyAlg);
         }
         publicKeyMap.checkForUnread();
         return publicKey;
