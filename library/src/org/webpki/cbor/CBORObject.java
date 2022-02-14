@@ -768,6 +768,9 @@ public abstract class CBORObject {
     @Override
     public boolean equals(Object object) {
         try {
+            if (object == null) {
+                return false;
+            }
             return ArrayUtil.compare(((CBORObject) object).internalEncode(), internalEncode());
         } catch (IOException e) {
             return false;
