@@ -445,6 +445,10 @@ public class CBORTest {
         
         assertTrue("Tag", new CBORTaggedObject(5, new CBORTextString("hi"))
                         .equals(parseCborHex("C5626869")));
+        
+        assertFalse("comp", parseCborHex("C5626869").equals(null));
+        assertFalse("comp", parseCborHex("C5626869").equals("jj"));
+        assertTrue("comp", parseCborHex("C5626869").equals(parseCborHex("C5626869")));
     }
  
     public static boolean compareKeyId(CBORObject keyId, CBORObject optionalKeyId) {
