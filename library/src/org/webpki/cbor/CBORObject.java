@@ -123,7 +123,8 @@ public abstract class CBORObject {
     
     byte[] getEncodedCore(byte majorType, long value) {
         byte[] encoded;
-        if (value < 0 || value > 4294967295L) {
+        // Note: value is actually an unsigned long
+        if (value < 0 || value > 0xffffffffl) {
             encoded = new byte[9];
             encoded[0] = 27;
             for (int i = 8; i > 0; i--) {
