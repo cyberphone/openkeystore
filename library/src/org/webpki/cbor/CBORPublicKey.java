@@ -118,12 +118,12 @@ public class CBORPublicKey {
      */
     public static CBORMap encode(PublicKey jcePublicKey) 
             throws IOException, GeneralSecurityException {
-        CBORMap cborPublicKey = new CBORMap();
+        CBORMap cosePublicKey = new CBORMap();
         KeyAlgorithms keyAlg = KeyAlgorithms.getKeyAlgorithm(jcePublicKey);
         switch (keyAlg.getKeyType()) {
         case RSA:
             RSAPublicKey rsaPublicKey = (RSAPublicKey) jcePublicKey;
-            cborPublicKey.setObject(COSE_KTY_LABEL, COSE_RSA_KTY)
+            cosePublicKey.setObject(COSE_KTY_LABEL, COSE_RSA_KTY)
                          .setObject(COSE_RSA_N_LABEL, cryptoBinary(rsaPublicKey.getModulus()))
                          .setObject(COSE_RSA_E_LABEL, 
                                     cryptoBinary(rsaPublicKey.getPublicExponent()));
@@ -131,19 +131,19 @@ public class CBORPublicKey {
 
         case EC:
             ECPoint ecPoint = ((ECPublicKey) jcePublicKey).getW();
-            cborPublicKey.setObject(COSE_KTY_LABEL, COSE_EC2_KTY)
+            cosePublicKey.setObject(COSE_KTY_LABEL, COSE_EC2_KTY)
                          .setObject(COSE_EC2_CRV_LABEL, WEBPKI_2_COSE_CRV.get(keyAlg))
                          .setObject(COSE_EC2_X_LABEL, curvePoint(ecPoint.getAffineX(), keyAlg))
                          .setObject(COSE_EC2_Y_LABEL, curvePoint(ecPoint.getAffineY(), keyAlg));
             break;
  
         default:  // EDDSA and XEC
-            cborPublicKey.setObject(COSE_KTY_LABEL, COSE_OKP_KTY)
+            cosePublicKey.setObject(COSE_KTY_LABEL, COSE_OKP_KTY)
                          .setObject(COSE_OKP_CRV_LABEL, WEBPKI_2_COSE_CRV.get(keyAlg))
                          .setObject(COSE_OKP_X_LABEL, new CBORByteString(
                                  OkpSupport.public2RawOkpKey(jcePublicKey, keyAlg)));
         }
-        return cborPublicKey;
+        return cosePublicKey;
     }
 
     static BigInteger getCryptoBinary(CBORObject value) 
@@ -176,14 +176,14 @@ public class CBORPublicKey {
     /**
      * Converts COSE public key to JCE.
      * 
-     * @param cborPublicKey Public key in COSE format
+     * @param cosePublicKey Public key in COSE format
      * @return Public key as a Java/JCE object 
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public static PublicKey decode(CBORObject cborPublicKey) 
+    public static PublicKey decode(CBORObject cosePublicKey) 
             throws IOException, GeneralSecurityException {
-        CBORMap publicKeyMap = cborPublicKey.getMap();
+        CBORMap publicKeyMap = cosePublicKey.getMap();
         int coseKty = publicKeyMap.getObject(COSE_KTY_LABEL).getInt();
         KeyTypes keyType = keyTypes.get(coseKty);
         if (keyType == null) {
@@ -211,7 +211,7 @@ public class CBORPublicKey {
                 keyAlg.getECParameterSpec()));
             break;
 
-        default:
+        default:  // EDDSA and XEC
            keyAlg = getKeyAlgorithmFromCurveId(publicKeyMap.getObject(COSE_OKP_CRV_LABEL));
             if (keyAlg.getKeyType() != KeyTypes.EDDSA && keyAlg.getKeyType() != KeyTypes.XEC) {
                 throw new GeneralSecurityException(keyAlg.getKeyType()  +
