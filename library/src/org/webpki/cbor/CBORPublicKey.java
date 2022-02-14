@@ -109,20 +109,20 @@ public class CBORPublicKey {
     }
     
      /**
-     * Java/JCE to CBOR/COSE conversion.
+     * Converts JCE public key to COSE.
      * 
-     * @param publicKey
-     * @return Public key in CBOR format
+     * @param jcePublicKey in Java/JCE format
+     * @return Public key in COSE format
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public static CBORMap encode(PublicKey publicKey) 
+    public static CBORMap encode(PublicKey jcePublicKey) 
             throws IOException, GeneralSecurityException {
         CBORMap cborPublicKey = new CBORMap();
-        KeyAlgorithms keyAlg = KeyAlgorithms.getKeyAlgorithm(publicKey);
+        KeyAlgorithms keyAlg = KeyAlgorithms.getKeyAlgorithm(jcePublicKey);
         switch (keyAlg.getKeyType()) {
         case RSA:
-            RSAPublicKey rsaPublicKey = (RSAPublicKey) publicKey;
+            RSAPublicKey rsaPublicKey = (RSAPublicKey) jcePublicKey;
             cborPublicKey.setObject(COSE_KTY_LABEL, COSE_RSA_KTY)
                          .setObject(COSE_RSA_N_LABEL, cryptoBinary(rsaPublicKey.getModulus()))
                          .setObject(COSE_RSA_E_LABEL, 
@@ -130,7 +130,7 @@ public class CBORPublicKey {
             break;
 
         case EC:
-            ECPoint ecPoint = ((ECPublicKey) publicKey).getW();
+            ECPoint ecPoint = ((ECPublicKey) jcePublicKey).getW();
             cborPublicKey.setObject(COSE_KTY_LABEL, COSE_EC2_KTY)
                          .setObject(COSE_EC2_CRV_LABEL, WEBPKI_2_COSE_CRV.get(keyAlg))
                          .setObject(COSE_EC2_X_LABEL, curvePoint(ecPoint.getAffineX(), keyAlg))
@@ -141,7 +141,7 @@ public class CBORPublicKey {
             cborPublicKey.setObject(COSE_KTY_LABEL, COSE_OKP_KTY)
                          .setObject(COSE_OKP_CRV_LABEL, WEBPKI_2_COSE_CRV.get(keyAlg))
                          .setObject(COSE_OKP_X_LABEL, new CBORByteString(
-                                 OkpSupport.public2RawOkpKey(publicKey, keyAlg)));
+                                 OkpSupport.public2RawOkpKey(jcePublicKey, keyAlg)));
         }
         return cborPublicKey;
     }
@@ -174,15 +174,15 @@ public class CBORPublicKey {
     }
 
     /**
-     * CBOR/COSE to Java/JCE conversion.
+     * Converts COSE public key to JCE.
      * 
-     * @param cborPublicKey Public key in CBOR format
-     * @return Public key as a Java object 
+     * @param cborPublicKey Public key in COSE format
+     * @return Public key as a Java/JCE object 
      * @throws IOException
      * @throws GeneralSecurityException
      */
     public static PublicKey decode(CBORObject cborPublicKey) 
-    throws IOException, GeneralSecurityException {
+            throws IOException, GeneralSecurityException {
         CBORMap publicKeyMap = cborPublicKey.getMap();
         int coseKty = publicKeyMap.getObject(COSE_KTY_LABEL).getInt();
         KeyTypes keyType = keyTypes.get(coseKty);
@@ -194,7 +194,7 @@ public class CBORPublicKey {
 
         switch (keyType) {
         case RSA:
-            publicKey =  KeyFactory.getInstance("RSA").generatePublic(
+            publicKey = KeyFactory.getInstance("RSA").generatePublic(
                 new RSAPublicKeySpec(getCryptoBinary(publicKeyMap.getObject(COSE_RSA_N_LABEL)),
                                      getCryptoBinary(publicKeyMap.getObject(COSE_RSA_E_LABEL))));
             break;
@@ -218,8 +218,7 @@ public class CBORPublicKey {
                                                    " is not a valid OKP curve");
             }
             publicKey = OkpSupport.raw2PublicOkpKey(
-                    publicKeyMap.getObject(COSE_OKP_X_LABEL).getByteString(), 
-                    keyAlg);
+                publicKeyMap.getObject(COSE_OKP_X_LABEL).getByteString(), keyAlg);
         }
         publicKeyMap.checkForUnread();
         return publicKey;
