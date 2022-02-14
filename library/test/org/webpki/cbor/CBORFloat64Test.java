@@ -22,6 +22,9 @@ public class CBORFloat64Test {
                     break;
                 case CBORObject.MT_FLOAT64:
                     float64++;
+                    if (float32Flag) {
+                        throw new RuntimeException("BUG");
+                    }
                     break;
                 default:
                     throw new RuntimeException("BUG");
@@ -40,11 +43,11 @@ public class CBORFloat64Test {
     }
     
     public static void main(String[] argv)  {
-        convert(0x46901000, true);
         Random random = new Random();
         while (true) {
             long l = random.nextLong();
             convert(l, false);
+            convert(l, true);
         }
     }
 }
