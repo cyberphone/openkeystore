@@ -593,9 +593,9 @@ public abstract class CBORObject {
                     n <<= 8;
                     n |= readByte() & 0xffl;
                 }
-                // If the upper half (for 2, 4, 8 byte N) of N or the single byte
+                // If the upper half (for 2, 4, 8 byte N) of N or a single byte
                 // N is zero, a shorter variant should have been used.
-                // In addition, the single byte N must be > 23. 
+                // In addition, a single byte N must be > 23. 
                 if ((n & mask) == 0 || (n > 0 && n < 24)) {
                     reportError("Non-deterministic encoding of N");
                 }
