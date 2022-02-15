@@ -273,20 +273,20 @@ public class CBORMap extends CBORObject {
     }
         
     @Override
-    void internalToString(CBORObject.DiagnosticNotation outputBuffer) {
-        outputBuffer.beginMap();
+    void internalToString(CBORObject.DiagnosticNotation cborPrinter) {
+        cborPrinter.beginMap();
         boolean notFirst = false;
         for (CBORObject key : keys.keySet()) {
             CBORObject value = keys.get(key);
             if (notFirst) {
-                outputBuffer.append(',');
+                cborPrinter.append(',');
             }
             notFirst = true;
-            outputBuffer.newlineAndIndent();
-            key.internalToString(outputBuffer);
-            outputBuffer.append(": ");
-            value.internalToString(outputBuffer);
+            cborPrinter.newlineAndIndent();
+            key.internalToString(cborPrinter);
+            cborPrinter.append(": ");
+            value.internalToString(cborPrinter);
         }
-        outputBuffer.endMap(notFirst);
+        cborPrinter.endMap(notFirst);
     }
 }

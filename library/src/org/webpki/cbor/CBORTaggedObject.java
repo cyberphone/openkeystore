@@ -60,9 +60,9 @@ public class CBORTaggedObject extends CBORObject {
     }
     
     @Override
-    void internalToString(CBORObject.DiagnosticNotation outputBuffer) {
-         outputBuffer.append(Long.toUnsignedString(tagNumber)).append('(');
-         object.internalToString(outputBuffer);
-         outputBuffer.append(')');
+    void internalToString(CBORObject.DiagnosticNotation cborPrinter) {
+         cborPrinter.append(Long.toUnsignedString(tagNumber)).append('(');
+         object.internalToString(cborPrinter);
+         cborPrinter.append(')');
     }
 }

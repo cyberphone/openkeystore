@@ -90,16 +90,16 @@ public class CBORArray extends CBORObject {
     }
 
     @Override
-    void internalToString(CBORObject.DiagnosticNotation outputBuffer) {
-        outputBuffer.append('[');
+    void internalToString(CBORObject.DiagnosticNotation cborPrinter) {
+        cborPrinter.append('[');
         boolean notFirst = false;
         for (CBORObject cborObject : getObjects()) {
             if (notFirst) {
-                outputBuffer.append(", ");
+                cborPrinter.append(", ");
             }
             notFirst = true;
-            cborObject.internalToString(outputBuffer);
+            cborObject.internalToString(cborPrinter);
         }
-        outputBuffer.append(']');
+        cborPrinter.append(']');
     }
 }

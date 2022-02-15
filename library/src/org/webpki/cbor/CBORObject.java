@@ -721,21 +721,21 @@ public abstract class CBORObject {
         static final String INDENT = "  ";
         
         private int indentationLevel;
-        private StringBuilder result;
+        private StringBuilder outputBuffer;
                
         private DiagnosticNotation() {
-            result = new StringBuilder();
+            outputBuffer = new StringBuilder();
         }
 
         void newlineAndIndent() {
-            result.append('\n');
+            outputBuffer.append('\n');
             for (int i = 0; i < indentationLevel; i++) {
-                result.append(INDENT);
+                outputBuffer.append(INDENT);
             }
         }
         
         void beginMap() {
-            result.append('{');
+            outputBuffer.append('{');
             indentationLevel++;
         }
 
@@ -744,21 +744,21 @@ public abstract class CBORObject {
             if (notEmpty) {
                 newlineAndIndent();
             }
-            result.append('}');
+            outputBuffer.append('}');
         }
 
         DiagnosticNotation append(String text) {
-            result.append(text);
+            outputBuffer.append(text);
             return this;
         }
 
         DiagnosticNotation append(char c) {
-            result.append(c);
+            outputBuffer.append(c);
             return this;
         }
         
-        String getTotalText() {
-            return result.toString();
+        String getTextualCbor() {
+            return outputBuffer.toString();
         }
     }
 
@@ -781,6 +781,6 @@ public abstract class CBORObject {
     public String toString() {
         DiagnosticNotation outputBuffer = new DiagnosticNotation();
         internalToString(outputBuffer);
-        return outputBuffer.getTotalText();
+        return outputBuffer.getTextualCbor();
     }
 }

@@ -49,7 +49,7 @@ public class CBORByteString extends CBORObject {
     }
 
     @Override
-    void internalToString(CBORObject.DiagnosticNotation outputBuffer) {
-        outputBuffer.append("h'").append(HexaDecimal.encode(byteString)).append('\'');
+    void internalToString(CBORObject.DiagnosticNotation cborPrinter) {
+        cborPrinter.append("h'").append(HexaDecimal.encode(byteString)).append('\'');
     }
 }

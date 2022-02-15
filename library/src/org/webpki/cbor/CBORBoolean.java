@@ -48,7 +48,7 @@ public class CBORBoolean extends CBORObject {
     }
 
     @Override
-    void internalToString(CBORObject.DiagnosticNotation outputBuffer) {
-        outputBuffer.append(String.valueOf(value));
+    void internalToString(CBORObject.DiagnosticNotation cborPrinter) {
+        cborPrinter.append(String.valueOf(value));
     }
 }
