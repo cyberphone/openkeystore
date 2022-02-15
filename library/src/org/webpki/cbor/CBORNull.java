@@ -41,7 +41,7 @@ public class CBORNull extends CBORObject {
     }
 
     @Override
-    void internalToString(CBORObject.DiagnosticNotation diagnosticNotation) {
-        diagnosticNotation.append("null");
+    void internalToString(CBORObject.DiagnosticNotation outputBuffer) {
+        outputBuffer.append("null");
     }
 }

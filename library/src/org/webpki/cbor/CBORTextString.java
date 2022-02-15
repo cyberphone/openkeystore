@@ -57,22 +57,22 @@ public class CBORTextString extends CBORObject {
          0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0,   0 ,  0 ,  0 ,  0 ,  0 , '\\'};
     
     @Override
-    void internalToString(CBORObject.DiagnosticNotation diagnosticNotation) {
-        diagnosticNotation.append('"');
+    void internalToString(CBORObject.DiagnosticNotation outputBuffer) {
+        outputBuffer.append('"');
         for (char c : textString.toCharArray()) {
             if (c <= '\\') {
                 char convertedCharacter;
                 if ((convertedCharacter = SPECIAL_CHARACTERS[c]) != 0) {
-                    diagnosticNotation.append('\\');
+                    outputBuffer.append('\\');
                     if (convertedCharacter == 1) {
-                        diagnosticNotation.append(String.format("u%04x", (int)c));
+                        outputBuffer.append(String.format("u%04x", (int)c));
                         continue;
                     }
                     c = convertedCharacter;
                 }
             }
-            diagnosticNotation.append(c);
+            outputBuffer.append(c);
         }
-        diagnosticNotation.append('"');
+        outputBuffer.append('"');
     }
 }

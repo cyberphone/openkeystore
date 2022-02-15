@@ -105,7 +105,7 @@ public abstract class CBORObject {
         return internalEncode();
     }
     
-    abstract void internalToString(DiagnosticNotation diagnosticNotation);
+    abstract void internalToString(DiagnosticNotation outputBuffer);
 
     static void reportError(String error) throws IOException {
         throw new IOException(error);
@@ -779,8 +779,8 @@ public abstract class CBORObject {
      */
     @Override
     public String toString() {
-        DiagnosticNotation diagnosticNotation = new DiagnosticNotation();
-        internalToString(diagnosticNotation);
-        return diagnosticNotation.getTotalText();
+        DiagnosticNotation outputBuffer = new DiagnosticNotation();
+        internalToString(outputBuffer);
+        return outputBuffer.getTotalText();
     }
 }
