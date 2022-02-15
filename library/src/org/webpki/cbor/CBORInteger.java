@@ -121,7 +121,7 @@ public class CBORInteger extends CBORObject {
     }
     
     @Override
-    void internalToString(CBORObject.PrettyPrinter prettyPrinter) {
-        prettyPrinter.append(value.toString());
+    void internalToString(CBORObject.DiagnosticNotation diagnosticNotation) {
+        diagnosticNotation.append(value.toString());
     }
 }

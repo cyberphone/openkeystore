@@ -105,7 +105,7 @@ public abstract class CBORObject {
         return internalEncode();
     }
     
-    abstract void internalToString(PrettyPrinter prettyPrinter);
+    abstract void internalToString(DiagnosticNotation diagnosticNotation);
 
     static void reportError(String error) throws IOException {
         throw new IOException(error);
@@ -716,14 +716,14 @@ public abstract class CBORObject {
         }
     }
 
-    class PrettyPrinter {
+    class DiagnosticNotation {
  
         static final String INDENT = "  ";
         
         private int indentationLevel;
         private StringBuilder result;
                
-        private PrettyPrinter() {
+        private DiagnosticNotation() {
             result = new StringBuilder();
         }
 
@@ -747,12 +747,12 @@ public abstract class CBORObject {
             result.append('}');
         }
 
-        PrettyPrinter append(String text) {
+        DiagnosticNotation append(String text) {
             result.append(text);
             return this;
         }
 
-        PrettyPrinter append(char c) {
+        DiagnosticNotation append(char c) {
             result.append(c);
             return this;
         }
@@ -779,8 +779,8 @@ public abstract class CBORObject {
      */
     @Override
     public String toString() {
-        PrettyPrinter prettyPrinter = new PrettyPrinter();
-        internalToString(prettyPrinter);
-        return prettyPrinter.getTotalText();
+        DiagnosticNotation diagnosticNotation = new DiagnosticNotation();
+        internalToString(diagnosticNotation);
+        return diagnosticNotation.getTotalText();
     }
 }

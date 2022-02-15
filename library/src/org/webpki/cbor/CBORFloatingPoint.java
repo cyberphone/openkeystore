@@ -147,7 +147,7 @@ public class CBORFloatingPoint extends CBORObject {
     }
     
     @Override
-    void internalToString(CBORObject.PrettyPrinter prettyPrinter) {
-         prettyPrinter.append(formatDouble(value));
+    void internalToString(CBORObject.DiagnosticNotation diagnosticNotation) {
+         diagnosticNotation.append(formatDouble(value));
     }
 }
