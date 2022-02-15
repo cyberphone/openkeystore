@@ -202,7 +202,7 @@ public class CBORPublicKey {
         case EC:
             keyAlg = getKeyAlgorithmFromCurveId(publicKeyMap.getObject(COSE_EC2_CRV_LABEL));
             if (keyAlg.getKeyType() != KeyTypes.EC) {
-                throw new GeneralSecurityException(keyAlg.getKeyType()  +
+                throw new GeneralSecurityException(keyAlg.getKeyType() +
                                                    " is not a valid EC curve");
             }
             publicKey = KeyFactory.getInstance("EC").generatePublic(new ECPublicKeySpec(
@@ -214,7 +214,7 @@ public class CBORPublicKey {
         default:  // EDDSA and XEC
            keyAlg = getKeyAlgorithmFromCurveId(publicKeyMap.getObject(COSE_OKP_CRV_LABEL));
             if (keyAlg.getKeyType() != KeyTypes.EDDSA && keyAlg.getKeyType() != KeyTypes.XEC) {
-                throw new GeneralSecurityException(keyAlg.getKeyType()  +
+                throw new GeneralSecurityException(keyAlg.getKeyType() +
                                                    " is not a valid OKP curve");
             }
             publicKey = OkpSupport.raw2PublicOkpKey(
