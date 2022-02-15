@@ -212,7 +212,7 @@ public class CBORPublicKey {
             break;
 
         default:  // EDDSA and XEC
-           keyAlg = getKeyAlgorithmFromCurveId(publicKeyMap.getObject(COSE_OKP_CRV_LABEL));
+            keyAlg = getKeyAlgorithmFromCurveId(publicKeyMap.getObject(COSE_OKP_CRV_LABEL));
             if (keyAlg.getKeyType() != KeyTypes.EDDSA && keyAlg.getKeyType() != KeyTypes.XEC) {
                 throw new GeneralSecurityException(keyAlg.getKeyType() +
                                                    " is not a valid OKP curve");
