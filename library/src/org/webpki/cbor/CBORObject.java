@@ -581,13 +581,21 @@ public abstract class CBORObject {
                 unsupportedTag(tag);
             }
             if (n > 23) {
+                // For 1, 2, 4, and 8 byte N
                 int q = 1 << (n - 24);
+                // 1: 00000000ffffffff
+                // 2: 000000ffffffff00
+                // 4: 0000ffffffff0000
+                // 8: ffffffff00000000
                 long mask = 0xffffffffl << (q / 2) * 8;
                 n = 0;
                 while (--q >= 0) {
                     n <<= 8;
                     n |= readByte() & 0xffl;
                 }
+                // If the upper half (for 2, 4, 8 byte N) of N or the single byte
+                // N is zero, a shorter variant should have been used.
+                // In addition, the single byte N must be > 23. 
                 if ((n & mask) == 0 || (n > 0 && n < 24)) {
                     reportError("Non-deterministic encoding of N");
                 }
