@@ -29,6 +29,11 @@ public interface CryptoAlgorithms {
     default String getJoseAlgorithmId() {
         return getAlgorithmId(AlgorithmPreferences.JOSE);
     }
+    
+    
+    default int getCoseAlgorithmId() {
+        throw new IllegalArgumentException("COSE algorithm not defined for " +  getJceName());
+    }
 
     String getOid();
 

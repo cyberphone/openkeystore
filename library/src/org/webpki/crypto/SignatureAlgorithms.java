@@ -21,9 +21,7 @@ package org.webpki.crypto;
  *
  */
 public interface SignatureAlgorithms extends CryptoAlgorithms {
-    
+
     HashAlgorithms getDigestAlgorithm();
-    
-    int getCoseAlgorithmId() ;
-    
- }
+
+}
