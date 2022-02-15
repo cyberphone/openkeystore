@@ -82,6 +82,10 @@ public abstract class CBORObject {
     static final long FLOAT64_POS_ZERO     = 0x0000000000000000l;
     static final long FLOAT64_NEG_ZERO     = 0x8000000000000000l;
 
+    static final long MAX_UINT8            = 0x00000000000000ffl;
+    static final long MAX_UINT16           = 0x000000000000ffffl;
+    static final long MAX_UINT32           = 0x00000000ffffffffl;
+    
     abstract CBORTypes internalGetType();
 
     /**
@@ -124,7 +128,7 @@ public abstract class CBORObject {
     byte[] getEncodedCore(byte majorType, long value) {
         byte[] encoded;
         // Note: value is actually an unsigned long
-        if (value < 0 || value > 0xffffffffl) {
+        if (value < 0 || value > MAX_UINT32) {
             encoded = new byte[9];
             encoded[0] = 27;
             for (int i = 8; i > 0; i--) {
@@ -133,9 +137,9 @@ public abstract class CBORObject {
             } 
         } else if (value <= 23) {
             encoded = new byte[] {(byte) value};
-        } else if (value <= 255) {
+        } else if (value <= MAX_UINT8) {
             encoded = new byte[] {24, (byte) value};
-        } else if (value <= 65535) {
+        } else if (value <= MAX_UINT16) {
             encoded = new byte[] {25, (byte) (value >> 8),  (byte) value};
         } else {
             encoded = new byte[] {26, (byte) (value >> 24), (byte) (value >> 16), 
