@@ -25,13 +25,9 @@ import org.webpki.crypto.HmacSignerInterface;
 import org.webpki.crypto.SignatureAlgorithms;
 
 /**
- * Class for creating CBOR HMAC signatures.
- * 
- * It uses COSE algorithms but relies on CSF for the packaging.
- * 
- * Note that signer objects may be used any number of times
- * (assuming that the same parameters are valid).  They are also
- * thread-safe.
+ * <p>
+ * See {@link CBORSigner} for details.
+ * </p>
  */
 public class CBORHmacSigner extends CBORSigner {
 

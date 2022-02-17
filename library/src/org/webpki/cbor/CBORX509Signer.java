@@ -33,15 +33,12 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
 
 /**
  * Class for creating CBOR X509 signatures.
- * 
- * The code creates signatures using CSF (CBOR Signature Format) packaging,
- * while algorithms are derived from COSE.
- * 
- * Note that signer objects may be used any number of times
- * (assuming that the same parameters are valid).  They are also
- * thread-safe.
- * 
- * X509 signatures do not permit the use of a keyId.
+ * <p>
+ * See {@link CBORSigner} for details.
+ * </p>
+ * <p> 
+ * Note that X509 signatures do not permit the use of a keyId.
+ * </p>
  */
 public class CBORX509Signer extends CBORSigner {
 

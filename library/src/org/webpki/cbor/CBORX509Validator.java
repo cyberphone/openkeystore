@@ -31,8 +31,9 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
  *<p>
  * See {@link CBORValidator} for details.
  *</p> 
- * 
+ * <p>
  * Note that X509 signatures do not permit the use of a keyId.
+ * </p>
  */
 public class CBORX509Validator extends CBORValidator {
     

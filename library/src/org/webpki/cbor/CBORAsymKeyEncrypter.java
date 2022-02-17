@@ -31,11 +31,7 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
 /**
  * Class for creating CBOR asymmetric key encryptions.
  * 
- * It uses COSE algorithms but relies on CEF for the packaging.
- * 
- * Note that encrypters may be used any number of times
- * (assuming that the same parameters are valid).  They are also
- * thread-safe.
+
  */
 public class CBORAsymKeyEncrypter extends CBOREncrypter {
 

@@ -32,12 +32,9 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
 
 /**
  * Class for creating CBOR asymmetric key signatures.
- * 
- * It uses COSE algorithms but relies on CSF for the packaging.
- * 
- * Note that signer objects may be used any number of times
- * (assuming that the same parameters are valid).  They are also
- * thread-safe.
+ * <p>
+ * See {@link CBORSigner} for details.
+ * </p>
  */
 public class CBORAsymKeySigner extends CBORSigner {
 

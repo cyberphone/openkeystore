@@ -167,10 +167,14 @@ public abstract class CBORObject {
     }
     
     /**
-     * Returns <code>big number</code> value.
+     * Returns {@link BigInteger} value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInteger}, otherwise an exception will be thrown.
+     * </p>
+     * <p>
+     * Note that due to the deterministic serialization mode, this method
+     * is independent of the underlying CBOR integer type.
      * </p>
      * 
      * @return BigInteger
