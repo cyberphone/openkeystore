@@ -20,13 +20,14 @@ import java.io.IOException;
 
 /**
  * Class for holding CBOR floating point numbers.
- * 
+ * <p>
  * Numbers are constrained to the IEEE 754 notation
  * using the length 16, 32, and 64 bit on "wire".  Which
  * length to use is governed by the size and precision 
  * required to (minimally) correctly represent a number.
  * API-wise numbers are only communicated as
  * 64-bit items (Java double).
+ * </p>
  */
 public class CBORFloatingPoint extends CBORObject {
 

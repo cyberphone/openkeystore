@@ -1044,7 +1044,7 @@ public class CBORTest {
                 }));
             fail("Must not execute");
         } catch (Exception e) {
-            checkException(e, CBORSigner.STDERR_KEY_ID_PUBLIC);
+            checkException(e, CBORCryptoUtils.STDERR_KEY_ID_PUBLIC);
         }
         
         try {
@@ -1119,7 +1119,7 @@ public class CBORTest {
                 .sign(7, createDataToBeSigned().getMap()); 
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, CBORSigner.STDERR_KEY_ID_PUBLIC);
+            checkException(e, CBORCryptoUtils.STDERR_KEY_ID_PUBLIC);
         }
 
         // HMAC signatures
@@ -1264,7 +1264,7 @@ public class CBORTest {
                                          .setKeyId(keyId).encrypt(dataToEncrypt);
             fail("must not run");
         } catch (Exception e) {
-            checkException(e, CBORSigner.STDERR_KEY_ID_PUBLIC);
+            checkException(e, CBORCryptoUtils.STDERR_KEY_ID_PUBLIC);
         }
         try {
             new CBORAsymKeyDecrypter(p256_2.getPrivate()).decrypt(p256Encrypted);

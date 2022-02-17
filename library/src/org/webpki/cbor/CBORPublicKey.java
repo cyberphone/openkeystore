@@ -42,7 +42,7 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
 import org.webpki.util.ArrayUtil;
 
 /**
- * Class for CBOR/COSE public keys.
+ * Class handling CBOR/COSE public keys.
  * 
  */
 public class CBORPublicKey {
@@ -121,27 +121,27 @@ public class CBORPublicKey {
         CBORMap cosePublicKey = new CBORMap();
         KeyAlgorithms keyAlg = KeyAlgorithms.getKeyAlgorithm(jcePublicKey);
         switch (keyAlg.getKeyType()) {
-        case RSA:
-            RSAPublicKey rsaPublicKey = (RSAPublicKey) jcePublicKey;
-            cosePublicKey.setObject(COSE_KTY_LABEL, COSE_RSA_KTY)
-                         .setObject(COSE_RSA_N_LABEL, cryptoBinary(rsaPublicKey.getModulus()))
-                         .setObject(COSE_RSA_E_LABEL, 
-                                    cryptoBinary(rsaPublicKey.getPublicExponent()));
-            break;
-
-        case EC:
-            ECPoint ecPoint = ((ECPublicKey) jcePublicKey).getW();
-            cosePublicKey.setObject(COSE_KTY_LABEL, COSE_EC2_KTY)
-                         .setObject(COSE_EC2_CRV_LABEL, WEBPKI_2_COSE_CRV.get(keyAlg))
-                         .setObject(COSE_EC2_X_LABEL, curvePoint(ecPoint.getAffineX(), keyAlg))
-                         .setObject(COSE_EC2_Y_LABEL, curvePoint(ecPoint.getAffineY(), keyAlg));
-            break;
- 
-        default:  // EDDSA and XEC
-            cosePublicKey.setObject(COSE_KTY_LABEL, COSE_OKP_KTY)
-                         .setObject(COSE_OKP_CRV_LABEL, WEBPKI_2_COSE_CRV.get(keyAlg))
-                         .setObject(COSE_OKP_X_LABEL, new CBORByteString(
-                                 OkpSupport.public2RawOkpKey(jcePublicKey, keyAlg)));
+            case RSA:
+                RSAPublicKey rsaPublicKey = (RSAPublicKey) jcePublicKey;
+                cosePublicKey.setObject(COSE_KTY_LABEL, COSE_RSA_KTY)
+                             .setObject(COSE_RSA_N_LABEL, cryptoBinary(rsaPublicKey.getModulus()))
+                             .setObject(COSE_RSA_E_LABEL, 
+                                        cryptoBinary(rsaPublicKey.getPublicExponent()));
+                break;
+    
+            case EC:
+                ECPoint ecPoint = ((ECPublicKey) jcePublicKey).getW();
+                cosePublicKey.setObject(COSE_KTY_LABEL, COSE_EC2_KTY)
+                             .setObject(COSE_EC2_CRV_LABEL, WEBPKI_2_COSE_CRV.get(keyAlg))
+                             .setObject(COSE_EC2_X_LABEL, curvePoint(ecPoint.getAffineX(), keyAlg))
+                             .setObject(COSE_EC2_Y_LABEL, curvePoint(ecPoint.getAffineY(), keyAlg));
+                break;
+     
+            default:  // EDDSA and XEC
+                cosePublicKey.setObject(COSE_KTY_LABEL, COSE_OKP_KTY)
+                             .setObject(COSE_OKP_CRV_LABEL, WEBPKI_2_COSE_CRV.get(keyAlg))
+                             .setObject(COSE_OKP_X_LABEL, new CBORByteString(
+                                     OkpSupport.public2RawOkpKey(jcePublicKey, keyAlg)));
         }
         return cosePublicKey;
     }
@@ -193,32 +193,30 @@ public class CBORPublicKey {
         PublicKey publicKey;
 
         switch (keyType) {
-        case RSA:
-            publicKey = KeyFactory.getInstance("RSA").generatePublic(
-                new RSAPublicKeySpec(getCryptoBinary(publicKeyMap.getObject(COSE_RSA_N_LABEL)),
-                                     getCryptoBinary(publicKeyMap.getObject(COSE_RSA_E_LABEL))));
-            break;
-
-        case EC:
-            keyAlg = getKeyAlgorithmFromCurveId(publicKeyMap.getObject(COSE_EC2_CRV_LABEL));
-            if (keyAlg.getKeyType() != KeyTypes.EC) {
-                throw new GeneralSecurityException(keyAlg.getKeyType() +
-                                                   " is not a valid EC curve");
-            }
-            publicKey = KeyFactory.getInstance("EC").generatePublic(new ECPublicKeySpec(
-                new ECPoint(getCurvePoint(publicKeyMap.getObject(COSE_EC2_X_LABEL), keyAlg),
-                            getCurvePoint(publicKeyMap.getObject(COSE_EC2_Y_LABEL), keyAlg)),
-                keyAlg.getECParameterSpec()));
-            break;
-
-        default:  // EDDSA and XEC
-            keyAlg = getKeyAlgorithmFromCurveId(publicKeyMap.getObject(COSE_OKP_CRV_LABEL));
-            if (keyAlg.getKeyType() != KeyTypes.EDDSA && keyAlg.getKeyType() != KeyTypes.XEC) {
-                throw new GeneralSecurityException(keyAlg.getKeyType() +
-                                                   " is not a valid OKP curve");
-            }
-            publicKey = OkpSupport.raw2PublicOkpKey(
-                publicKeyMap.getObject(COSE_OKP_X_LABEL).getByteString(), keyAlg);
+            case RSA:
+                publicKey = KeyFactory.getInstance("RSA").generatePublic(
+                    new RSAPublicKeySpec(getCryptoBinary(publicKeyMap.getObject(COSE_RSA_N_LABEL)),
+                                         getCryptoBinary(publicKeyMap.getObject(COSE_RSA_E_LABEL))));
+                break;
+    
+            case EC:
+                keyAlg = getKeyAlgorithmFromCurveId(publicKeyMap.getObject(COSE_EC2_CRV_LABEL));
+                if (keyAlg.getKeyType() != KeyTypes.EC) {
+                    throw new GeneralSecurityException("Invalid EC curve: " + keyAlg.toString());
+                }
+                publicKey = KeyFactory.getInstance("EC").generatePublic(new ECPublicKeySpec(
+                    new ECPoint(getCurvePoint(publicKeyMap.getObject(COSE_EC2_X_LABEL), keyAlg),
+                                getCurvePoint(publicKeyMap.getObject(COSE_EC2_Y_LABEL), keyAlg)),
+                    keyAlg.getECParameterSpec()));
+                break;
+    
+            default:  // EDDSA and XEC
+                keyAlg = getKeyAlgorithmFromCurveId(publicKeyMap.getObject(COSE_OKP_CRV_LABEL));
+                if (keyAlg.getKeyType() != KeyTypes.EDDSA && keyAlg.getKeyType() != KeyTypes.XEC) {
+                    throw new GeneralSecurityException("Invalid OKP curve: " + keyAlg.toString());
+                }
+                publicKey = OkpSupport.raw2PublicOkpKey(
+                    publicKeyMap.getObject(COSE_OKP_X_LABEL).getByteString(), keyAlg);
         }
         publicKeyMap.checkForUnread();
         return publicKey;

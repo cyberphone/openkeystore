@@ -26,9 +26,16 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
 
 /**
  * Base class for creating CBOR signatures.
- * 
- * It uses COSE algorithms but relies on CSF for the packaging.
- * 
+ * <p>
+ * This implementation supports signatures using CSF (CBOR Signature Format) packaging,
+ * while algorithms are derived from COSE.
+ * </p>
+ * <p>
+ * Note that signer objects may be used any number of times
+ * (assuming that the same parameters are valid).  They are also
+ * thread-safe.
+ * </p>
+ * @see CBORValidator
  */
 public abstract class CBORSigner {
  
@@ -40,7 +47,7 @@ public abstract class CBORSigner {
 
     CBORSigner() {}
     
-    abstract byte[] signData(byte[] dataToSign) throws IOException, GeneralSecurityException;
+    abstract byte[] coreSigner(byte[] dataToSign) throws IOException, GeneralSecurityException;
     
     abstract SignatureAlgorithms getSignatureAlgorithm()
             throws IOException,GeneralSecurityException;
@@ -58,16 +65,11 @@ public abstract class CBORSigner {
      * convention between the parties using
      * a specific message scheme.  A <code>keyId</code> may be a
      * database index, a hash of the public key, a text string,
-     * or a URL pointing to a Web server holding a public key
-     * in PEM format.
+     * or a URL pointing to a public key in PEM format.
      * <p>
      * For HMAC-signatures, a <code>keyId</code> or implicit key are
      * the only ways to retrieve the proper secret key.
      * </p>
-     * <p>
-     * Note that <code>keyId</code> is not permitted for X509 based signatures.
-     * </p>
-     * <p>
      * <p>
      * Note that a <code>keyId</code> argument of <code>null</code> 
      * is equivalent to the default (= no <code>keyId</code>).
@@ -85,11 +87,13 @@ public abstract class CBORSigner {
      * Sets signature <code>keyId</code>.
      * 
      * The <code>keyId</code> will be represented as a CBOR <code>text&nbsp;string</code>.
+     * <p>
+     * See {@link #setKeyId(CBORObject)} for details.
+     * </p>
      * 
      * @param keyId A CBOR key Id
      * @return this
      * 
-     * @see {@link setKeyId(CBORObject)}.
      */
     public CBORSigner setKeyId(String keyId) {
         return setKeyId(new CBORTextString(keyId));
@@ -100,10 +104,13 @@ public abstract class CBORSigner {
      * 
      * The <code>keyId</code> will be represented as a CBOR <code>integer</code>.
      * 
+     * <p>
+     * See {@link #setKeyId(CBORObject)} for details.
+     * </p>
+     * 
      * @param keyId A CBOR key Id
      * @return this
      *
-     * @see {@link setKeyId(CBORObject)}.
      */
     public CBORSigner setKeyId(int keyId) {
         return setKeyId(new CBORInteger(keyId));
@@ -122,6 +129,10 @@ public abstract class CBORSigner {
 
     /**
      * Signs CBOR object.
+     * 
+     * <p>
+     * Adds an enveloped CSF object (signature) to a CBOR map.
+     * </p>
      * 
      * @param key Key holding the signature in the CBOR map to sign
      * @param objectToSign CBOR map to be signed
@@ -151,9 +162,10 @@ public abstract class CBORSigner {
         objectToSign.setObject(key, signatureObject);
 
         // Finally, sign all but the signature label and associated value.
-        // internalEncode() is supposed to produce a deterministic representation.
+        // internalEncode() is supposed to produce a deterministic representation
+        // of the CBOR data to be signed.
         signatureObject.keys.put(SIGNATURE_LABEL, 
-                                 new CBORByteString(signData(objectToSign.internalEncode())));
+                                 new CBORByteString(coreSigner(objectToSign.internalEncode())));
 
         // Return the now signed object.
         return objectToSign;
@@ -161,6 +173,10 @@ public abstract class CBORSigner {
 
     /**
      * Signs CBOR object.
+     * 
+     * <p>
+     * See {@link #sign(CBORObject, CBORMap)} for details.
+     * </p>
      * 
      * @param key Key holding the signature in the CBOR map to sign
      * @param objectToSign CBOR map to be signed
@@ -175,27 +191,18 @@ public abstract class CBORSigner {
 
     /**
      * Signs CBOR object.
+     * <p>
+     * See {@link #sign(CBORObject, CBORMap)} for details.
+     * </p>
      * 
      * @param key Key holding the signature in the CBOR map to sign
      * @param objectToSign CBOR map to be signed
      * @return Signed object
      * @throws IOException
      * @throws GeneralSecurityException
-     */
+      */
     public CBORMap sign(String key, CBORMap objectToSign) throws IOException, 
                                                                  GeneralSecurityException {
         return sign(new CBORTextString(key), objectToSign);
     }
-
-    static void checkKeyId(CBORObject optionalKeyId) throws GeneralSecurityException {
-        if (optionalKeyId != null) {
-            throw new GeneralSecurityException(STDERR_KEY_ID_PUBLIC);
-        }
-    }
-    
-    /**
-     * For internal use only
-     */
-    static final String STDERR_KEY_ID_PUBLIC = 
-            "\"keyId\" cannot be combined with public key objects";
 }

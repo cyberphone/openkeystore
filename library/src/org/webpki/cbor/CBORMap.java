@@ -26,15 +26,17 @@ import org.webpki.util.ArrayUtil;
 
 /**
  * Class for holding CBOR maps.
- * 
+ * <p>
  * In addition to supporting the generic {@link CBORObject} type for key identifiers,
  * there are convenience methods for 
  * retrieving (<code>getObject</code>), 
- * adding (<code>setObject</code>),
+ * setting (<code>setObject</code>),
  * testing (<code>hasKey</code>), and
  * removing (<code>removeObject</code>)
  * objects using the Java <code>String</code> and <code>int</code> types for key identifiers.
- * The latter maps to the {@link CBORTextString} and {@link CBORInteger} types respectively.
+ * The latter maps to the CBOR <code>text&nbsp;string</code> and <code>integer</code>
+ * type respectively.
+ * </p>
  */
 public class CBORMap extends CBORObject {
 
@@ -66,7 +68,7 @@ public class CBORMap extends CBORObject {
     Map<CBORObject, CBORObject> keys = new TreeMap<>(comparator);
     
     /**
-     * Creates a CBOR <code>map</code>.
+     * Creates a empty CBOR <code>map</code>.
      */
     public CBORMap() {
     }
@@ -98,6 +100,9 @@ public class CBORMap extends CBORObject {
 
     /**
      * Checks map for key presence.
+     * <p>
+     * See {@link #hasKey(CBORObject)} for details.
+     * </p>
      * 
      * @param key Key
      * @return <code>true</code> if the key is present
@@ -108,6 +113,9 @@ public class CBORMap extends CBORObject {
     
     /**
      * Checks map for key presence.
+     * <p>
+     * See {@link #hasKey(CBORObject)} for details.
+     * </p>
      * 
      * @param key Key
      * @return <code>true</code> if the key is present
@@ -118,6 +126,9 @@ public class CBORMap extends CBORObject {
     
     /**
      * Sets map object.
+     * <p>
+     * If <code>key</code> is already present, an exception is thrown.
+     * </p>
      * 
      * @param key Key
      * @param value Object
@@ -139,6 +150,9 @@ public class CBORMap extends CBORObject {
 
     /**
      * Sets map object.
+     * <p>
+     * See {@link #setObject(CBORObject, CBORObject)} for details.
+     * </p>
      * 
      * @param key Key
      * @param value Object
@@ -152,6 +166,9 @@ public class CBORMap extends CBORObject {
 
     /**
      * Sets map object.
+     * <p>
+     * See {@link #setObject(CBORObject, CBORObject)} for details.
+     * </p>
      * 
      * @param key Key
      * @param value Object
@@ -165,6 +182,9 @@ public class CBORMap extends CBORObject {
     
      /**
      * Retrieves map object.
+     * <p>
+     * If <code>key</code> is not present, an exception is thrown.
+     * </p>
      * 
      * @param key Key
      * @return Object
@@ -180,6 +200,9 @@ public class CBORMap extends CBORObject {
 
     /**
      * Retrieves map object.
+     * <p>
+     * See {@link #getObject(CBORObject)} for details.
+     * </p>
      * 
      * @param key Key
      * @return Object
@@ -191,6 +214,9 @@ public class CBORMap extends CBORObject {
     
     /**
      * Retrieves map object.
+     * <p>
+     * See {@link #getObject(CBORObject)} for details.
+     * </p>
      * 
      * @param key Key
      * @return Object
@@ -202,6 +228,9 @@ public class CBORMap extends CBORObject {
     
     /**
      * Removes mapped object.
+     * <p>
+     * If <code>key</code> is not present, an exception is thrown.
+     * </p>
      * 
      * @param key Key
      * @return <code>this</code>
@@ -217,6 +246,9 @@ public class CBORMap extends CBORObject {
 
     /**
      * Removes mapped object.
+     * <p>
+     * See {@link #removeObject(CBORObject)} for details.
+     * </p>
      * 
      * @param key Key
      * @return <code>this</code>
@@ -229,6 +261,9 @@ public class CBORMap extends CBORObject {
 
     /**
      * Removes mapped object.
+     * <p>
+     * See {@link #removeObject(CBORObject)} for details.
+     * </p>
      * 
      * @param key Key
      * @return <code>this</code>
@@ -250,6 +285,15 @@ public class CBORMap extends CBORObject {
 
     /**
      * Reads a <code>byte string</code> value, then deletes key.
+     * <p>
+     * If <code>key</code> is not present or the
+     * mapped data is not a CBOR <code>byte&nbsp;string</code>,
+     * an exception is thrown.
+     * </p>
+     * <p>
+     * This method is provided for supporting the validation phase
+     * of enveloped cryptographic constructs like CSF and CEF.
+     * </p>
      * 
      * @param key Integer key
      * @return byte string

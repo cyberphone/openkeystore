@@ -67,7 +67,7 @@ public class CBORInteger extends CBORObject {
      * A special case is the value <code>0xffffffffffffffffL</code>
      * (long <code>-1</code>), which corresponds to <code>-2^64</code>.
      * </p>
-     * See {@link CBORInteger(long)} and {@link CBORInteger(BigInteger)}.
+     * See {@link CBORInteger(long)} and {@link #CBORInteger(BigInteger)}.
      *
      * @param value long value
      * @param unsigned <code>true</code> if value should be considered as unsigned
@@ -81,14 +81,17 @@ public class CBORInteger extends CBORObject {
 
     /**
      * Creates a CBOR integer value of any size.
-     * 
-     * This constructor permits using the full range of applicable
-     * <code>integer</code> and <code>big&nbsp;number</code> values.
+     * <p>
+     * If <code>value</code> is within the CBOR <code>integer</code> range,
+     * the <code>integer</code> type will be used, otherwise serializations
+     * will use the <code>big&nbsp;number</code> type.
+     * </p>
      * 
      * @param value Integer in BigInteger format
      */
     public CBORInteger(BigInteger value) {
         this.value = value;
+        nullCheck(value);
     }
 
     static boolean fitsAnInteger(BigInteger value) {

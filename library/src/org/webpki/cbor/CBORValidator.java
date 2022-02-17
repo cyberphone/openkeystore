@@ -23,21 +23,34 @@ import java.security.GeneralSecurityException;
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
 /**
- * Base class for CBOR signature validation
- * 
+ * Base class for validating CBOR signatures.
+ * <p>
+ * This implementation supports signatures using CSF (CBOR Signature Format) packaging,
+ * while algorithms are derived from COSE.
+ * </p>
+ * <p>
+ * Note that validator objects may be used any number of times
+ * (assuming that the same parameters are valid).  They are also
+ * thread-safe.
+ * </p>
+ * @see CBORSigner
  */
 public abstract class CBORValidator {
     
     CBORValidator() {}
 
-    abstract void validate(CBORMap signatureObject, 
-                           int coseAlgorithmId,
-                           CBORObject optionalKeyId,
-                           byte[] signatureValue,
-                           byte[] signedData) throws IOException, GeneralSecurityException;
+    abstract void coreValidation(CBORMap signatureObject, 
+                                 int coseAlgorithmId,
+                                 CBORObject optionalKeyId,
+                                 byte[] signatureValue,
+                                 byte[] signedData) throws IOException, GeneralSecurityException;
  
     /**
      * Validates signed CBOR map.
+     * <p>
+     * This method presumes that <code>signedObject</code> holds
+     * an enveloped signature according to CSF.
+     * </p>
      * 
      * @param key Key in map holding signature
      * @param signedObject Signed CBOR map object
@@ -57,13 +70,13 @@ public abstract class CBORValidator {
         CBORObject optionalKeyId = signatureObject.hasKey(KEY_ID_LABEL) ?
                          signatureObject.getObject(KEY_ID_LABEL).scan() : null;
 
-        // Call specific validator. This code presumes that internalEncode() 
-        // returns a deterministic representation of CBOR items.
-        validate(signatureObject,
-                 signatureObject.getObject(ALGORITHM_LABEL).getInt(),
-                 optionalKeyId, 
-                 signatureValue,
-                 signedObject.internalEncode());
+        // Call algorithmic-specific validator. The code below presumes that internalEncode()
+        // returns a deterministic representation of the signed CBOR data.
+        coreValidation(signatureObject,
+                       signatureObject.getObject(ALGORITHM_LABEL).getInt(),
+                       optionalKeyId, 
+                       signatureValue,
+                       signedObject.internalEncode());
 
         // Check that nothing "extra" was supplied.
         signatureObject.checkForUnread();
@@ -77,6 +90,9 @@ public abstract class CBORValidator {
 
     /**
      * Validates signed CBOR map.
+     * <p>
+     * See {@link #validate(CBORObject, CBORMap)} for details.
+     * </p>
      * 
      * @param key Key in map holding signature
      * @param signedObject Signed CBOR map object
@@ -91,6 +107,9 @@ public abstract class CBORValidator {
     
     /**
      * Validates signed CBOR map.
+     * <p>
+     * See {@link #validate(CBORObject, CBORMap)} for details.
+     * </p>
      * 
      * @param key Key in map holding signature
      * @param signedObject Signed CBOR map object

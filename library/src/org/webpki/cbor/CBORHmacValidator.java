@@ -26,12 +26,9 @@ import org.webpki.util.ArrayUtil;
 
 /**
  * Class for CBOR HMAC signature validation.
- *
- * It uses COSE algorithms but relies on CSF for the packaging.
- * 
- * Note that validator objects may be used any number of times
- * (assuming that the same parameters are valid).  They are also
- * thread-safe. 
+ *<p>
+ * See {@link CBORValidator} for details.
+ *</p>
  */
 public class CBORHmacValidator extends CBORValidator {
     
@@ -88,11 +85,11 @@ public class CBORHmacValidator extends CBORValidator {
     }
 
     @Override
-    void validate(CBORMap signatureObject, 
-                  int coseAlgorithmId,
-                  CBORObject optionalKeyId,
-                  byte[] signatureValue,
-                  byte[] signedData) throws IOException, GeneralSecurityException {
+    void coreValidation(CBORMap signatureObject, 
+                        int coseAlgorithmId,
+                        CBORObject optionalKeyId,
+                        byte[] signatureValue,
+                        byte[] signedData) throws IOException, GeneralSecurityException {
         // Get algorithm from the signature object.
         HmacAlgorithms hmacAlgorithm = HmacAlgorithms.getAlgorithmFromId(coseAlgorithmId);
 

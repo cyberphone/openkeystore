@@ -115,7 +115,7 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
         if (innerObject.hasKey(PUBLIC_KEY_LABEL)) {
             optionalPublicKey = CBORPublicKey.decode(innerObject.getObject(PUBLIC_KEY_LABEL));
             // Please select ONE method for identifying the decryption key.
-            CBORSigner.checkKeyId(optionalKeyId);
+            CBORCryptoUtils.checkKeyId(optionalKeyId);
         }
 
         // Now we have what it takes for finding the proper private key

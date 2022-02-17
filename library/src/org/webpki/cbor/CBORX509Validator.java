@@ -22,21 +22,17 @@ import java.security.GeneralSecurityException;
 
 import java.security.cert.X509Certificate;
 
-import java.util.ArrayList;
-
 import org.webpki.crypto.AsymSignatureAlgorithms;
-import org.webpki.crypto.CertificateUtil;
 
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
 /**
  * Class for CBOR X509 signature validation.
+ *<p>
+ * See {@link CBORValidator} for details.
+ *</p> 
  * 
- * It uses COSE algorithms but relies on CSF for the packaging.
- * 
- * Note that validator objects may be used any number of times
- * (assuming that the same parameters are valid).  They are also
- * thread-safe. 
+ * Note that X509 signatures do not permit the use of a keyId.
  */
 public class CBORX509Validator extends CBORValidator {
     
@@ -71,49 +67,23 @@ public class CBORX509Validator extends CBORValidator {
     public CBORX509Validator(SignatureParameters checker) {
         this.checker = checker;
     }
-    
-    /**
-     * Decodes a certificate path from a CBOR array.
- 
-     * Note that the array must only contain a
-     * list of X509 certificates in DER format.
-     * The certificates must be in ascending
-     * order with respect to parenthood.  That is,
-     * the first certificate would typically be
-     * an end-entity certificate.
-     * 
-     * See {@link CBORX509Signer#encodeCertificateArray(X509Certificate[])}.
-     * 
-     * @return Certificate path
-     * @throws IOException
-     * @throws GeneralSecurityException
-     */
-    public static X509Certificate[] decodeCertificateArray(CBORArray array) 
-            throws IOException, GeneralSecurityException {
-        ArrayList<byte[]> blobs = new ArrayList<>();
-        int index = 0;
-        do {
-            blobs.add(array.objectList.get(index).getByteString());
-        } while (++index < array.objectList.size());
-        return CertificateUtil.makeCertificatePath(blobs);
-    }
  
     @Override
-    void validate(CBORMap signatureObject, 
-                  int coseAlgorithmId,
-                  CBORObject optionalKeyId,
-                  byte[] signatureValue,
-                  byte[] signedData) throws IOException, GeneralSecurityException {
+    void coreValidation(CBORMap signatureObject, 
+                        int coseAlgorithmId,
+                        CBORObject optionalKeyId,
+                        byte[] signatureValue,
+                        byte[] signedData) throws IOException, GeneralSecurityException {
 
         // keyId and certificates? Never!
-        CBORSigner.checkKeyId(optionalKeyId);
+        CBORCryptoUtils.checkKeyId(optionalKeyId);
         
         // Get signature algorithm.
         AsymSignatureAlgorithms signatureAlgorithm =
                 AsymSignatureAlgorithms.getAlgorithmFromId(coseAlgorithmId);
         
         // Fetch certificate(path).
-        X509Certificate[] certificatePath = decodeCertificateArray(
+        X509Certificate[] certificatePath = CBORCryptoUtils.decodeCertificateArray(
                 signatureObject.getObject(CERT_PATH_LABEL).getArray());
         
         // Now we have everything needed for validating the signature.

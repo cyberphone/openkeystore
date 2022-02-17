@@ -85,7 +85,7 @@ public class CBORAsymKeyEncrypter extends CBOREncrypter {
         if (wantPublicKey) {
             keyEncryption.setObject(PUBLIC_KEY_LABEL, CBORPublicKey.encode(publicKey));
             // Which does not go together with a keyId
-            CBORSigner.checkKeyId(optionalKeyId);
+            CBORCryptoUtils.checkKeyId(optionalKeyId);
         }
         
         // Key wrapping algorithms need a key to wrap

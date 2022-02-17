@@ -46,6 +46,7 @@ public class CBORTaggedObject extends CBORObject {
     public CBORTaggedObject(long tagNumber, CBORObject object) {
         this.tagNumber = tagNumber;
         this.object = object;
+        nullCheck(object);
     }
 
     @Override

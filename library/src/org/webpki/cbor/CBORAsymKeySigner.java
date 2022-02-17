@@ -122,7 +122,7 @@ public class CBORAsymKeySigner extends CBORSigner {
     }    
 
     @Override
-    byte[] signData(byte[] dataToBeSigned) throws IOException, GeneralSecurityException {
+    byte[] coreSigner(byte[] dataToBeSigned) throws IOException, GeneralSecurityException {
         return signer.signData(dataToBeSigned);
     }
 
@@ -130,7 +130,7 @@ public class CBORAsymKeySigner extends CBORSigner {
     void additionalItems(CBORMap signatureObject) throws IOException, GeneralSecurityException {
         if (optionalPublicKey != null) {
             signatureObject.setObject(PUBLIC_KEY_LABEL, CBORPublicKey.encode(optionalPublicKey));
-            checkKeyId(optionalKeyId);
+            CBORCryptoUtils.checkKeyId(optionalKeyId);
         }
     }
 

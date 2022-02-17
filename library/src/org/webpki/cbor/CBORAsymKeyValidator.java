@@ -29,12 +29,9 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
 
 /**
  * Class for CBOR asymmetric key signature validation.
- *
- * It uses COSE algorithms but relies on CSF for the packaging.
- * 
- * Note that validator objects may be used any number of times
- * (assuming that the same parameters are valid).  They are also
- * thread-safe. 
+ *<p>
+ * See {@link CBORValidator} for details.
+ *</p> 
  */
 public class CBORAsymKeyValidator extends CBORValidator {
     
@@ -130,11 +127,11 @@ public class CBORAsymKeyValidator extends CBORValidator {
     }
 
     @Override
-    void validate(CBORMap signatureObject, 
-                  int coseAlgorithmId,
-                  CBORObject optionalKeyId,
-                  byte[] signatureValue,
-                  byte[] signedData) throws IOException, GeneralSecurityException {
+    void coreValidation(CBORMap signatureObject, 
+                        int coseAlgorithmId,
+                        CBORObject optionalKeyId,
+                        byte[] signatureValue,
+                        byte[] signedData) throws IOException, GeneralSecurityException {
         
         // Get signature algorithm.
         AsymSignatureAlgorithms signatureAlgorithm =
@@ -143,7 +140,7 @@ public class CBORAsymKeyValidator extends CBORValidator {
         // Fetch public key if there is one.
         PublicKey inLinePublicKey = null;
         if (signatureObject.hasKey(PUBLIC_KEY_LABEL)) {
-            CBORSigner.checkKeyId(optionalKeyId);
+            CBORCryptoUtils.checkKeyId(optionalKeyId);
             inLinePublicKey = CBORPublicKey.decode(signatureObject.getObject(PUBLIC_KEY_LABEL));
         }
 
