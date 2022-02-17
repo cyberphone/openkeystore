@@ -39,6 +39,11 @@ public class CBORHmacValidator extends CBORValidator {
 
         /**
          * Check signature data and retrieve validation key.
+         * <p>
+         * An implementation is supposed to throw an exception if it
+         * does not find a matching key or if the supplied algorithm does
+         * not meet the policy.
+         * </p>
          * 
          * @param optionalKeyId KeyId or null
          * @param hmacAlgorithm The found HMAC algorithm
@@ -59,7 +64,7 @@ public class CBORHmacValidator extends CBORValidator {
      * producer is supposed to be correct.  The alternative
      * constructor gives the validator full control.
      * 
-     * @param secretKey The anticipated public key
+     * @param secretKey The anticipated secret key
      */
     public CBORHmacValidator(byte[] secretKey) {
         this(new KeyLocator() {

@@ -43,10 +43,12 @@ public class CBORX509Validator extends CBORValidator {
 
         /**
          * Checks signature data.
-         * 
+         * <p>
          * A relying party is supposed to verify that the
-         * certificate(path) is trusted and that the
-         * signature algorithm meets their policy requirements.
+         * certificate(path) is trusted and that the supplied
+         * algorithm meets their policy requirements.
+         * Deviations should force the implementation to throw an exception.
+         * </p>
          * 
          * @param certificatePath Path to be verified
          * @param signatureAlgorithm The specified signature algorithm

@@ -41,8 +41,11 @@ public class CBORSymKeyDecrypter extends CBORDecrypter {
 
         /**
          * Lookup of secret decryption key.
-         * 
-         * This interface also enables encryption parameter validation.
+         * <p>
+         * An implementation is supposed to throw an exception if it
+         * does not find a matching key or if the supplied algorithm does
+         * not meet the policy.
+         * </p>
          * 
          * @param optionalKeyId Optional key Id found in the encryption object
          * @param contentEncryptionAlgorithm The requested content encryption algorithm

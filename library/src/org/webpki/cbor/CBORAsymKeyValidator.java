@@ -42,6 +42,11 @@ public class CBORAsymKeyValidator extends CBORValidator {
 
         /**
          * Checks signature data and retrieves validation key.
+         * <p>
+         * An implementation is supposed to throw an exception if it
+         * does not find a matching key or if the supplied algorithm does
+         * not meet the policy.
+         * </p>
          * 
          * @param optionalPublicKey Optional public key found in the signature object
          * @param optionalKeyId KeyId or <code>null</code>
