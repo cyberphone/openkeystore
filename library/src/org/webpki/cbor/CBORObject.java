@@ -125,27 +125,32 @@ public abstract class CBORObject {
         }
     }
     
-    byte[] getEncodedCore(byte majorType, long value) {
-        byte[] encoded;
+    byte[] getEncodedCore(int majorType, long value) {
+        int modifier;
+        int length;
         // Note: value is actually an unsigned long
         if (value < 0 || value > MAX_UINT32) {
-            encoded = new byte[9];
-            encoded[0] = 27;
-            for (int i = 8; i > 0; i--) {
-                encoded[i] = (byte) value;
-                value >>>= 8;
-            } 
+            modifier = 27;
+            length = 9;
         } else if (value <= 23) {
-            encoded = new byte[] {(byte) value};
+            modifier = (int) value;
+            length = 1;
         } else if (value <= MAX_UINT8) {
-            encoded = new byte[] {24, (byte) value};
+            modifier = 24;
+            length = 2;
         } else if (value <= MAX_UINT16) {
-            encoded = new byte[] {25, (byte) (value >> 8),  (byte) value};
+            modifier = 25;
+            length = 3;
         } else {
-            encoded = new byte[] {26, (byte) (value >> 24), (byte) (value >> 16), 
-                                      (byte) (value >> 8),  (byte) value};
-        } 
-        encoded[0] |= majorType;
+            modifier = 26;
+            length = 5;
+        }
+        byte[] encoded = new byte[length];
+        while (--length > 0) {
+            encoded[length] = (byte)value;
+            value >>>= 8;
+        }
+        encoded[0] = (byte)(majorType | modifier);
         return encoded;
     }
 
