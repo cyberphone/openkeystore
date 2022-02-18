@@ -128,7 +128,7 @@ public abstract class CBORObject {
     byte[] getEncodedCore(int majorType, long n) {
         int modifier;
         int length;
-        // Note: value is actually an unsigned long
+        // Note: n is actually an UNSIGNED long
         if (n < 0 || n > MAX_UINT32) {
             modifier = 27;
             length = 9;
