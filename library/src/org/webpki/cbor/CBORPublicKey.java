@@ -125,8 +125,7 @@ public class CBORPublicKey {
                 RSAPublicKey rsaPublicKey = (RSAPublicKey) jcePublicKey;
                 cosePublicKey.setObject(COSE_KTY_LABEL, COSE_RSA_KTY)
                              .setObject(COSE_RSA_N_LABEL, cryptoBinary(rsaPublicKey.getModulus()))
-                             .setObject(COSE_RSA_E_LABEL, 
-                                        cryptoBinary(rsaPublicKey.getPublicExponent()));
+                             .setObject(COSE_RSA_E_LABEL, cryptoBinary(rsaPublicKey.getPublicExponent()));
                 break;
     
             case EC:
@@ -141,7 +140,7 @@ public class CBORPublicKey {
                 cosePublicKey.setObject(COSE_KTY_LABEL, COSE_OKP_KTY)
                              .setObject(COSE_OKP_CRV_LABEL, WEBPKI_2_COSE_CRV.get(keyAlg))
                              .setObject(COSE_OKP_X_LABEL, new CBORByteString(
-                                     OkpSupport.public2RawOkpKey(jcePublicKey, keyAlg)));
+                                 OkpSupport.public2RawOkpKey(jcePublicKey, keyAlg)));
         }
         return cosePublicKey;
     }
@@ -194,9 +193,9 @@ public class CBORPublicKey {
 
         switch (keyType) {
             case RSA:
-                publicKey = KeyFactory.getInstance("RSA").generatePublic(
-                    new RSAPublicKeySpec(getCryptoBinary(publicKeyMap.getObject(COSE_RSA_N_LABEL)),
-                                         getCryptoBinary(publicKeyMap.getObject(COSE_RSA_E_LABEL))));
+                publicKey = KeyFactory.getInstance("RSA").generatePublic(new RSAPublicKeySpec(
+                    getCryptoBinary(publicKeyMap.getObject(COSE_RSA_N_LABEL)),
+                    getCryptoBinary(publicKeyMap.getObject(COSE_RSA_E_LABEL))));
                 break;
     
             case EC:
