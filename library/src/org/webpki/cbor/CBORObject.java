@@ -125,7 +125,7 @@ public abstract class CBORObject {
         }
     }
     
-    byte[] encodeTag(byte tag, int length, long value) {
+    byte[] encodeTagAndValue(byte tag, int length, long value) {
         byte[] encoded = new byte[length];
         encoded[0] = tag;
         while (--length > 0) {
@@ -155,7 +155,7 @@ public abstract class CBORObject {
             modifier = 26;
             length = 5;
         }
-        return encodeTag((byte)(majorType | modifier), length, n);
+        return encodeTagAndValue((byte)(majorType | modifier), length, n);
     }
 
     void checkTypeAndMarkAsRead(CBORTypes requestedCborType) throws IOException {
