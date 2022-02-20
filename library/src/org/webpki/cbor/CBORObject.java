@@ -135,7 +135,7 @@ public abstract class CBORObject {
         return encoded;
     }
     
-    byte[] encodedN(byte majorType, long n) {
+    byte[] encodeTagAndN(byte majorType, long n) {
         byte modifier;
         int length;
         // Note: n is actually an UNSIGNED long
