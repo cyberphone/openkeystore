@@ -82,9 +82,7 @@ public abstract class CBORObject {
     static final long FLOAT64_POS_ZERO     = 0x0000000000000000l;
     static final long FLOAT64_NEG_ZERO     = 0x8000000000000000l;
 
-    static final long MAX_UINT8            = 0x00000000000000ffl;
-    static final long MAX_UINT16           = 0x000000000000ffffl;
-    static final long MAX_UINT32           = 0x00000000ffffffffl;
+    static final long MASK_LOWER_32        = 0x00000000ffffffffl;
     
     abstract CBORTypes internalGetType();
 
@@ -124,36 +122,28 @@ public abstract class CBORObject {
             throw new IllegalArgumentException("Null argument");
         }
     }
-    
+
     byte[] encodeTagAndValue(int tag, int length, long value) {
-        byte[] encoded = new byte[length];
+        byte[] encoded = new byte[length + 1];
         encoded[0] = (byte)tag;
-        while (--length > 0) {
-            encoded[length] = (byte)value;
+        while (length > 0) {
+            encoded[length--] = (byte)value;
             value >>>= 8;
         }
         return encoded;
     }
-    
+
     byte[] encodeTagAndN(int majorType, long n) {
-        int modifier;
-        int length;
         // Note: n is actually an UNSIGNED long
-        if (n < 0 || n > MAX_UINT32) {
+        int modifier = (int) n;
+        int length = 0;
+        if (n < 0 || n > 23) {
             modifier = 27;
-            length = 9;
-        } else if (n <= 23) {
-            modifier = (int) n;
-            length = 1;
-        } else if (n <= MAX_UINT8) {
-            modifier = 24;
-            length = 2;
-        } else if (n <= MAX_UINT16) {
-            modifier = 25;
-            length = 3;
-        } else {
-            modifier = 26;
-            length = 5;
+            length = 8;
+            while (((MASK_LOWER_32 << ((length / 2) * 8)) & n) == 0) {
+                modifier--;
+                length >>= 1;
+            }
         }
         return encodeTagAndValue(majorType | modifier, length, n);
     }
@@ -597,7 +587,7 @@ public abstract class CBORObject {
                 // 2: 000000ffffffff00
                 // 4: 0000ffffffff0000
                 // 8: ffffffff00000000
-                long mask = 0xffffffffl << (q / 2) * 8;
+                long mask = MASK_LOWER_32 << (q / 2) * 8;
                 n = 0;
                 while (--q >= 0) {
                     n <<= 8;
