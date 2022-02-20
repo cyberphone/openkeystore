@@ -612,7 +612,7 @@ public abstract class CBORObject {
                     reportError("Non-deterministic encoding of N");
                 }
             }
-            // N successfully decoded, now switch on major type
+            // N successfully decoded, now switch on major type (upper three bits)
             switch ((byte)(tag & 0xe0)) {
                 case MT_TAG_EXTENSION:
                     return new CBORTaggedObject(n, getObject());
