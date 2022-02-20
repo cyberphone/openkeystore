@@ -23,8 +23,8 @@ import java.io.IOException;
  */
 public class CBORBoolean extends CBORObject {
 
-    static final byte[] TRUE  = {MT_TRUE};
-    static final byte[] FALSE = {MT_FALSE};
+    static final byte[] TRUE  = {(byte)MT_TRUE};
+    static final byte[] FALSE = {(byte)MT_FALSE};
 
     boolean value;
 

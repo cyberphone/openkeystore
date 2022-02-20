@@ -36,7 +36,7 @@ public class CBORFloatingPoint extends CBORObject {
     /**
      * CBOR representation of value
      */
-    byte tag;
+    int tag;
     long bitFormat;
     
     /**

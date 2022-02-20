@@ -23,7 +23,7 @@ import java.io.IOException;
  */
 public class CBORNull extends CBORObject {
 
-    static final byte[] NULL_TAG = {MT_NULL};
+    static final byte[] NULL_TAG = {(byte)MT_NULL};
 
     /**
      * Creates a CBOR <code>null</code>.

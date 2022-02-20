@@ -33,8 +33,8 @@ public class CBORInteger extends CBORObject {
     static final BigInteger MAX_INT64 = new BigInteger("18446744073709551615");
     static final BigInteger MIN_INT64 = new BigInteger("-18446744073709551616");
     
-    static final byte[] UNSIGNED_BIG_INTEGER_TAG = {MT_BIG_UNSIGNED};
-    static final byte[] SIGNED_BIG_INTEGER_TAG   = {MT_BIG_SIGNED};
+    static final byte[] UNSIGNED_BIG_INTEGER_TAG = {(byte)MT_BIG_UNSIGNED};
+    static final byte[] SIGNED_BIG_INTEGER_TAG   = {(byte)MT_BIG_SIGNED};
 
     BigInteger value;
  

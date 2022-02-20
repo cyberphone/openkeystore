@@ -36,21 +36,21 @@ public abstract class CBORObject {
     private boolean readFlag;
 
     // Supported CBOR types
-    static final byte MT_UNSIGNED      = (byte) 0x00;
-    static final byte MT_NEGATIVE      = (byte) 0x20;
-    static final byte MT_BYTE_STRING   = (byte) 0x40;
-    static final byte MT_TEXT_STRING   = (byte) 0x60;
-    static final byte MT_ARRAY         = (byte) 0x80;
-    static final byte MT_MAP           = (byte) 0xa0;
-    static final byte MT_TAG_EXTENSION = (byte) 0xc0;
-    static final byte MT_BIG_UNSIGNED  = (byte) 0xc2;
-    static final byte MT_BIG_SIGNED    = (byte) 0xc3;
-    static final byte MT_FALSE         = (byte) 0xf4;
-    static final byte MT_TRUE          = (byte) 0xf5;
-    static final byte MT_NULL          = (byte) 0xf6;
-    static final byte MT_FLOAT16       = (byte) 0xf9;
-    static final byte MT_FLOAT32       = (byte) 0xfa;
-    static final byte MT_FLOAT64       = (byte) 0xfb;
+    static final int MT_UNSIGNED      = 0x00;
+    static final int MT_NEGATIVE      = 0x20;
+    static final int MT_BYTE_STRING   = 0x40;
+    static final int MT_TEXT_STRING   = 0x60;
+    static final int MT_ARRAY         = 0x80;
+    static final int MT_MAP           = 0xa0;
+    static final int MT_TAG_EXTENSION = 0xc0;
+    static final int MT_BIG_UNSIGNED  = 0xc2;
+    static final int MT_BIG_SIGNED    = 0xc3;
+    static final int MT_FALSE         = 0xf4;
+    static final int MT_TRUE          = 0xf5;
+    static final int MT_NULL          = 0xf6;
+    static final int MT_FLOAT16       = 0xf9;
+    static final int MT_FLOAT32       = 0xfa;
+    static final int MT_FLOAT64       = 0xfb;
 
     static final BigInteger MIN_INT  = BigInteger.valueOf(Integer.MIN_VALUE);
     static final BigInteger MAX_INT  = BigInteger.valueOf(Integer.MAX_VALUE);
@@ -115,8 +115,8 @@ public abstract class CBORObject {
         throw new IOException(error);
     }
 
-    static void unsupportedTag(byte tag) throws IOException {
-        reportError(String.format("Unsupported tag: %02x", tag & 0xff));
+    static void unsupportedTag(int tag) throws IOException {
+        reportError(String.format("Unsupported tag: %02x", tag));
     }
 
     void nullCheck(Object object) {
@@ -125,9 +125,9 @@ public abstract class CBORObject {
         }
     }
     
-    byte[] encodeTagAndValue(byte tag, int length, long value) {
+    byte[] encodeTagAndValue(int tag, int length, long value) {
         byte[] encoded = new byte[length];
-        encoded[0] = tag;
+        encoded[0] = (byte)tag;
         while (--length > 0) {
             encoded[length] = (byte)value;
             value >>>= 8;
@@ -135,15 +135,15 @@ public abstract class CBORObject {
         return encoded;
     }
     
-    byte[] encodeTagAndN(byte majorType, long n) {
-        byte modifier;
+    byte[] encodeTagAndN(int majorType, long n) {
+        int modifier;
         int length;
         // Note: n is actually an UNSIGNED long
         if (n < 0 || n > MAX_UINT32) {
             modifier = 27;
             length = 9;
         } else if (n <= 23) {
-            modifier = (byte) n;
+            modifier = (int) n;
             length = 1;
         } else if (n <= MAX_UINT8) {
             modifier = 24;
@@ -155,7 +155,7 @@ public abstract class CBORObject {
             modifier = 26;
             length = 5;
         }
-        return encodeTagAndValue((byte)(majorType | modifier), length, n);
+        return encodeTagAndValue(majorType | modifier, length, n);
     }
 
     void checkTypeAndMarkAsRead(CBORTypes requestedCborType) throws IOException {
@@ -451,12 +451,12 @@ public abstract class CBORObject {
             reportError("Malformed CBOR, trying to read past EOF");
         }
         
-        private byte readByte() throws IOException {
+        private int readByte() throws IOException {
             int i = input.read();
             if (i < 0) {
                 eofError();
             }
-            return (byte)i;
+            return i;
         }
         
         private byte[] readBytes(long length) throws IOException {
@@ -478,7 +478,7 @@ public abstract class CBORObject {
             long value = 0;
             while (--length >= 0) {
                 value <<= 8;
-                value += readByte() & 0xffl;
+                value += readByte();
             }
             return value;
         }
@@ -490,7 +490,7 @@ public abstract class CBORObject {
             return length;
         }
 
-        private CBORFloatingPoint checkDoubleConversion(byte tag, long bitFormat, long rawDouble)
+        private CBORFloatingPoint checkDoubleConversion(int tag, long bitFormat, long rawDouble)
                 throws IOException {
             CBORFloatingPoint value = new CBORFloatingPoint(Double.longBitsToDouble(rawDouble));
             if (value.tag != tag || value.bitFormat != bitFormat) {
@@ -501,9 +501,9 @@ public abstract class CBORObject {
         }
 
         private CBORObject getObject() throws IOException {
-            byte tag = readByte();
+            int tag = readByte();
 
-            // Begin with the types uniquely defined by the initial byte
+            // Begin with CBOR types that are uniquely defined by the tag byte
             switch (tag) {
                 case MT_BIG_SIGNED:
                 case MT_BIG_UNSIGNED:
@@ -587,7 +587,7 @@ public abstract class CBORObject {
                 default:
             }
 
-            // Then decode the types blending length data in the initial byte as well
+            // Then decode CBOR types that blend length of data in the tag byte
             long n = tag & 0x1fl;
             if (n > 27) {
                 unsupportedTag(tag);
@@ -603,7 +603,7 @@ public abstract class CBORObject {
                 n = 0;
                 while (--q >= 0) {
                     n <<= 8;
-                    n |= readByte() & 0xffl;
+                    n |= readByte();
                 }
                 // If the upper half (for 2, 4, 8 byte N) of N or a single byte
                 // N is zero, a shorter variant should have been used.
@@ -613,7 +613,7 @@ public abstract class CBORObject {
                 }
             }
             // N successfully decoded, now switch on major type (upper three bits)
-            switch ((byte)(tag & 0xe0)) {
+            switch (tag & 0xe0) {
                 case MT_TAG_EXTENSION:
                     return new CBORTaggedObject(n, getObject());
 
