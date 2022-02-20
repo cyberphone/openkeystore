@@ -589,7 +589,6 @@ public abstract class CBORObject {
 
             // Then decode the types blending length data in the initial byte as well
             long n = tag & 0x1fl;
-            byte majorType = (byte)(tag & 0xe0);
             if (n > 27) {
                 unsupportedTag(tag);
             }
@@ -613,7 +612,8 @@ public abstract class CBORObject {
                     reportError("Non-deterministic encoding of N");
                 }
             }
-            switch (majorType) {
+            // N successfully decoded, now switch on major type
+            switch ((byte)(tag & 0xe0)) {
                 case MT_TAG_EXTENSION:
                     return new CBORTaggedObject(n, getObject());
 
