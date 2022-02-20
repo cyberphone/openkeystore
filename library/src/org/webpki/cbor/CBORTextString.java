@@ -48,7 +48,7 @@ public class CBORTextString extends CBORObject {
 
     // JavaScript/JSON compatible escape character support
     static final char[] SPECIAL_CHARACTERS = {
-    //  00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
+    //   0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F
          1 ,  1 ,  1 ,  1 ,  1 ,  1 ,  1 ,  1 , 'b', 't', 'n',  1 , 'f', 'r',  1 ,  1 ,
          1 ,  1 ,  1 ,  1 ,  1 ,  1 ,  1 ,  1 ,  1 ,  1 ,  1 ,  1 ,  1 ,  1 ,  1 ,  1 ,
          0 ,  0 , '"',  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,
