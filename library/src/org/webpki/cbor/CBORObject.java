@@ -583,8 +583,6 @@ public abstract class CBORObject {
                 case MT_TRUE:
                 case MT_FALSE:
                     return new CBORBoolean(tag == MT_TRUE);
-                    
-                default:
             }
 
             // Then decode CBOR types that blend length of data in the tag byte
