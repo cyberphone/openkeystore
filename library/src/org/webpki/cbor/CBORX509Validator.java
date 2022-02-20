@@ -90,10 +90,10 @@ public class CBORX509Validator extends CBORValidator {
                 signatureObject.getObject(CERT_PATH_LABEL).getArray());
         
         // Now we have everything needed for validating the signature.
-        CBORAsymKeyValidator.asymKeySignatureValidation(certificatePath[0].getPublicKey(),
-                                                        signatureAlgorithm, 
-                                                        signedData, 
-                                                        signatureValue);
+        CBORCryptoUtils.asymKeySignatureValidation(certificatePath[0].getPublicKey(),
+                                                   signatureAlgorithm, 
+                                                   signedData, 
+                                                   signatureValue);
 
         // Finally, check certificate(path) and signature algorithm.
         checker.check(certificatePath, signatureAlgorithm);

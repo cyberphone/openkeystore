@@ -1,8 +1,6 @@
 <body>
-<h2>Basic CBOR support</h2>
+<h2>CBOR - Encoder, Decoder, Signatures, and Encryption</h2>
 This package contains java support for CBOR (RFC 8949).
-It is mainly intended for low-level security related
-applications.
 <h3>Currently Supported Primitives</h3>
 <table>
 <tr><th>CBOR Data Type</th><th>&nbsp;&nbsp;</th><th>Java Counterpart</th></tr>
@@ -34,7 +32,8 @@ that due to their value could equally well be provided in the
 shorter <code>integer</code> format.</li>
 <li>Floating point data that could equally well be properly represented by a
 shorter variant.
-As an example <code>0.0</code> must be encoded as a 16-bit floating point type.</li>
+As an example <code>0.0</code> must be encoded as a 16-bit floating point type.
+Note that floating point and integer objects must be treated as distinct types.</li>
 <li>Maps with keys that are not sorted according to section 4.2.1 of RFC 8949.</li>
 </ul>
 On output (encode) the preferred serialization format is always used

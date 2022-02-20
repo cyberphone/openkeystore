@@ -19,12 +19,16 @@ package org.webpki.cbor;
 import java.io.IOException;
 
 import java.security.GeneralSecurityException;
+import java.security.PublicKey;
 
 import java.security.cert.X509Certificate;
 
 import java.util.ArrayList;
 
+import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.CertificateUtil;
+import org.webpki.crypto.KeyAlgorithms;
+import org.webpki.crypto.SignatureWrapper;
 
 /**
  * Class holding crypto support 
@@ -87,7 +91,28 @@ public class CBORCryptoUtils {
         }
         return array;
     }
-    
+
+    static void asymKeySignatureValidation(PublicKey publicKey,
+                                           AsymSignatureAlgorithms signatureAlgorithm,
+                                           byte[] signedData,
+                                           byte[] signatureValue) 
+            throws GeneralSecurityException, IOException {
+
+        // Verify that the public key matches the signature algorithm.
+        KeyAlgorithms keyAlgorithm = KeyAlgorithms.getKeyAlgorithm(publicKey);
+        if (signatureAlgorithm.getKeyType() != keyAlgorithm.getKeyType()) {
+            throw new GeneralSecurityException("Algorithm " + signatureAlgorithm + 
+                                               " does not match key type " + keyAlgorithm);
+        }
+        
+        // Finally, verify the signature.
+        if (!new SignatureWrapper(signatureAlgorithm, publicKey)
+                 .update(signedData)
+                 .verify(signatureValue)) {
+            throw new GeneralSecurityException("Bad signature for key: " + publicKey.toString());
+        }
+    }
+   
     static void checkKeyId(CBORObject optionalKeyId) throws GeneralSecurityException {
         if (optionalKeyId != null) {
             throw new GeneralSecurityException(STDERR_KEY_ID_PUBLIC);

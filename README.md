@@ -16,7 +16,7 @@ as well as a "matching" encryption scheme coined JEF:<br>
 https://cyberphone.github.io/doc/security/jef.html
 
 ## CBOR Support
-The CBOR library also supports signatures encryption:<br>
+The CBOR library also supports signatures and encryption:<br>
 https://cyberphone.github.io/javaapi/org/webpki/cbor/package-summary.html
 
 ## Requirements
@@ -24,7 +24,7 @@ https://cyberphone.github.io/javaapi/org/webpki/cbor/package-summary.html
 * Ant 1.10.8 or later
 * The projects are being developed using Eclipse but there's no dependence on Eclipse.
 
-Currently only the "library" and "resources" projects are suitable public use.
+Currently only the "library" project is suitable for public use.
 To create the openkeystore library, perform the following steps:
 ```
 $ cd library

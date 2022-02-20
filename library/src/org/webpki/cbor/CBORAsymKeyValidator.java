@@ -22,8 +22,6 @@ import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
-import org.webpki.crypto.KeyAlgorithms;
-import org.webpki.crypto.SignatureWrapper;
 
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
@@ -110,27 +108,6 @@ public class CBORAsymKeyValidator extends CBORValidator {
         this.keyLocator = keyLocator;
     }
 
-    static void asymKeySignatureValidation(PublicKey publicKey,
-                                           AsymSignatureAlgorithms signatureAlgorithm,
-                                           byte[] signedData,
-                                           byte[] signatureValue) 
-            throws GeneralSecurityException, IOException {
-
-        // Verify that the public key matches the signature algorithm.
-        KeyAlgorithms keyAlgorithm = KeyAlgorithms.getKeyAlgorithm(publicKey);
-        if (signatureAlgorithm.getKeyType() != keyAlgorithm.getKeyType()) {
-            throw new GeneralSecurityException("Algorithm " + signatureAlgorithm + 
-                                  " does not match key type " + keyAlgorithm);
-        }
-        
-        // Finally, verify the signature.
-        if (!new SignatureWrapper(signatureAlgorithm, publicKey)
-                 .update(signedData)
-                 .verify(signatureValue)) {
-            throw new GeneralSecurityException("Bad signature for key: " + publicKey.toString());
-        }
-    }
-
     @Override
     void coreValidation(CBORMap signatureObject, 
                         int coseAlgorithmId,
@@ -154,7 +131,10 @@ public class CBORAsymKeyValidator extends CBORValidator {
                  keyLocator.locate(null, optionalKeyId, signatureAlgorithm) : inLinePublicKey;
         
         // Now we have everything needed for validating the signature.
-        asymKeySignatureValidation(publicKey, signatureAlgorithm, signedData, signatureValue);
+        CBORCryptoUtils.asymKeySignatureValidation(publicKey,
+                                                   signatureAlgorithm, 
+                                                   signedData, 
+                                                   signatureValue);
 
         // If we have an in-line public key, check that it matches the expected one.
         if (inLinePublicKey != null && 
