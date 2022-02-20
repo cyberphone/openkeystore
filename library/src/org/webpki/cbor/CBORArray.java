@@ -82,7 +82,7 @@ public class CBORArray extends CBORObject {
 
     @Override
     byte[] internalEncode() throws IOException {
-        byte[] encoded = getEncodedCore(MT_ARRAY, objectList.size());
+        byte[] encoded = encodedN(MT_ARRAY, objectList.size());
         for (CBORObject cborObject : getObjects()) {
             encoded = ArrayUtil.add(encoded, cborObject.internalEncode());
         }

@@ -45,7 +45,7 @@ public class CBORByteString extends CBORObject {
 
     @Override
     byte[] internalEncode() throws IOException {
-        return ArrayUtil.add(getEncodedCore(MT_BYTE_STRING, byteString.length), byteString);
+        return ArrayUtil.add(encodedN(MT_BYTE_STRING, byteString.length), byteString);
     }
 
     @Override

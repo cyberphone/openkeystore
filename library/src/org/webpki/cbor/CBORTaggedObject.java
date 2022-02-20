@@ -56,7 +56,7 @@ public class CBORTaggedObject extends CBORObject {
     
     @Override
     byte[] internalEncode() throws IOException {
-        return ArrayUtil.add(getEncodedCore(MT_TAG_EXTENSION, tagNumber), object.internalEncode());
+        return ArrayUtil.add(encodedN(MT_TAG_EXTENSION, tagNumber), object.internalEncode());
 
     }
     

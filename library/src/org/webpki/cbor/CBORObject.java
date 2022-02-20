@@ -125,7 +125,17 @@ public abstract class CBORObject {
         }
     }
     
-    byte[] getEncodedCore(byte majorType, long n) {
+    byte[] encodeTag(byte tag, int length, long value) {
+        byte[] encoded = new byte[length];
+        encoded[0] = tag;
+        while (--length > 0) {
+            encoded[length] = (byte)value;
+            value >>>= 8;
+        }
+        return encoded;
+    }
+    
+    byte[] encodedN(byte majorType, long n) {
         byte modifier;
         int length;
         // Note: n is actually an UNSIGNED long
@@ -145,13 +155,7 @@ public abstract class CBORObject {
             modifier = 26;
             length = 5;
         }
-        byte[] encoded = new byte[length];
-        while (--length > 0) {
-            encoded[length] = (byte)n;
-            n >>>= 8;
-        }
-        encoded[0] = (byte)(majorType | modifier);
-        return encoded;
+        return encodeTag((byte)(majorType | modifier), length, n);
     }
 
     void checkTypeAndMarkAsRead(CBORTypes requestedCborType) throws IOException {

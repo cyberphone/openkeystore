@@ -307,7 +307,7 @@ public class CBORMap extends CBORObject {
 
     @Override
     byte[] internalEncode() throws IOException {
-        byte[] encoded = getEncodedCore(MT_MAP, keys.size());
+        byte[] encoded = encodedN(MT_MAP, keys.size());
         for (CBORObject key : keys.keySet()) {
             encoded = ArrayUtil.add(encoded,
                                     ArrayUtil.add(key.internalEncode(), 

@@ -136,15 +136,7 @@ public class CBORFloatingPoint extends CBORObject {
     
     @Override
     byte[] internalEncode() throws IOException {
-        int length = (2 << (tag - MT_FLOAT16)) + 1;
-        byte[] encoded = new byte[length];
-        encoded[0] = tag;
-        long copy = bitFormat;
-        while (--length > 0) {
-            encoded[length] = (byte) copy;
-            copy >>>= 8;
-        }
-        return encoded;
+        return encodeTag(tag, (2 << (tag - MT_FLOAT16)) + 1, bitFormat);
     }
     
     @Override

@@ -109,7 +109,7 @@ public class CBORInteger extends CBORObject {
         BigInteger cborAdjusted = unsigned ? value : value.negate().subtract(BigInteger.ONE);
         if (fitsAnInteger(value)) {
             // Fits in "int65" decoding
-            return getEncodedCore(unsigned ? MT_UNSIGNED : MT_NEGATIVE, cborAdjusted.longValue());
+            return encodedN(unsigned ? MT_UNSIGNED : MT_NEGATIVE, cborAdjusted.longValue());
         }
         // Does not fit "int65" so we must use big number encoding
         byte[] encoded = cborAdjusted.toByteArray();
