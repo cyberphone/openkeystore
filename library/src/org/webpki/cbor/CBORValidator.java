@@ -70,7 +70,7 @@ public abstract class CBORValidator {
         CBORObject optionalKeyId = signatureObject.hasKey(KEY_ID_LABEL) ?
                          signatureObject.getObject(KEY_ID_LABEL).scan() : null;
 
-        // Call algorithmic-specific validator. The code below presumes that internalEncode()
+        // Call algorithm specific validator. The code below presumes that internalEncode()
         // returns a deterministic representation of the signed CBOR data.
         coreValidation(signatureObject,
                        signatureObject.getObject(ALGORITHM_LABEL).getInt(),
