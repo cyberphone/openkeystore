@@ -82,7 +82,7 @@ public abstract class CBORValidator {
         signatureObject.checkForUnread();
 
         // Restore object.
-        signatureObject.keys.put(SIGNATURE_LABEL, new CBORByteString(signatureValue));
+        signatureObject.setObject(SIGNATURE_LABEL, new CBORByteString(signatureValue));
         
         // Return it as well.
         return signedObject;
