@@ -101,7 +101,7 @@ public class CBORHmacValidator extends CBORValidator {
         // Finally, verify the HMAC.
         if (!ArrayUtil.compare(hmacAlgorithm.digest(
                 keyLocator.locate(optionalKeyId, hmacAlgorithm), signedData), signatureValue)) {
-             throw new GeneralSecurityException("HMAC signature validation error");
+            throw new GeneralSecurityException("HMAC signature validation error");
         }
     }
 }
