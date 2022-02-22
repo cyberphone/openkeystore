@@ -55,13 +55,10 @@ public class CBORFloatingPoint extends CBORObject {
             bitFormat = (bitFormat == FLOAT64_POS_ZERO) ? FLOAT16_POS_ZERO : FLOAT16_NEG_ZERO;
         } else if ((bitFormat & FLOAT64_POS_INFINITY) == FLOAT64_POS_INFINITY) {
             // Special "number"
-            if (bitFormat == FLOAT64_POS_INFINITY) {
-                bitFormat = FLOAT16_POS_INFINITY;
-            } else {
-                // Due to the deterministic encoding there is no support for NaN "signaling"
-                bitFormat = (bitFormat == FLOAT64_NEG_INFINITY) ?
-                                           FLOAT16_NEG_INFINITY : FLOAT16_NOT_A_NUMBER;
-            }
+            bitFormat = (bitFormat == FLOAT64_POS_INFINITY) ?
+                FLOAT16_POS_INFINITY : (bitFormat == FLOAT64_NEG_INFINITY) ?
+                    // Non-deterministic representations of NaN will be flagged later
+                    FLOAT16_NEG_INFINITY : FLOAT16_NOT_A_NUMBER;
         } else if (Math.abs(value) > Float.MAX_VALUE || value != (double)((float) value)) {
             // Too big or would lose precision unless we stick to 64 bits.
             tag = MT_FLOAT64; 
