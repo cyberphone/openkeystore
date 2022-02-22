@@ -68,7 +68,7 @@ public class CBORFloatingPoint extends CBORObject {
         } else { 
             // Revised assumption: we go for 32 bits until proven wrong...
             tag = MT_FLOAT32;
-            bitFormat = Float.floatToIntBits((float)value) & 0xffffffffl;
+            bitFormat = Float.floatToIntBits((float)value) & MASK_LOWER_32;
 
             // Warning: slightly complex code ahead :)
             long exp16 = ((bitFormat >>> FLOAT32_FRACTION_SIZE) & 
