@@ -544,8 +544,8 @@ public abstract class CBORObject {
                             } while ((frac16 & (1l << FLOAT64_FRACTION_SIZE)) == 0);
                         }
                         rawDouble = 
-                        // Sign bit
-                        ((float16 & 0x8000l) << 48) +
+                        // Put possible sign bit in position
+                        ((float16 & FLOAT16_NEG_ZERO) << (64 - 16)) +
                         // Exponent.  Set the proper bias and put the result in front of fraction
                         ((exp16 + (FLOAT64_EXPONENT_BIAS - FLOAT16_EXPONENT_BIAS)) 
                            << FLOAT64_FRACTION_SIZE) +

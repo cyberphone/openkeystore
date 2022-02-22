@@ -107,8 +107,8 @@ public class CBORFloatingPoint extends CBORObject {
             // Seems like 16 bits indeed are sufficient!
             tag = MT_FLOAT16;
             bitFormat = 
-                // Sign bit
-                ((bitFormat >>> 16) & 0x8000l) +
+                // Put possible sign bit in position
+                ((bitFormat >>> (32 - 16)) & FLOAT16_NEG_ZERO) +
                 // Exponent.  Put it in front of fraction.
                 (exp16 << FLOAT16_FRACTION_SIZE) +
                 // Fraction
