@@ -523,7 +523,7 @@ public abstract class CBORObject {
                         // Special "number"
                         rawDouble = (float16 == FLOAT16_POS_INFINITY) ?
                             FLOAT64_POS_INFINITY : (float16 == FLOAT16_NEG_INFINITY) ?
-                            // Non-deterministic representations of NaN will be flagged later
+                                // Non-deterministic representations of NaN will be flagged later
                                 FLOAT64_NEG_INFINITY : FLOAT64_NOT_A_NUMBER;
                      } else {
                         // Get the bare (but still biased) float16 exponent
