@@ -516,10 +516,9 @@ public abstract class CBORObject {
                 case MT_FLOAT16:
                     long rawDouble;
                     long float16 = getLongFromBytes(2);
-                    if (float16 == FLOAT16_POS_ZERO) {
-                        rawDouble = FLOAT64_POS_ZERO;
-                    } else if (float16 == FLOAT16_NEG_ZERO) {
-                        rawDouble = FLOAT64_NEG_ZERO;
+                    if ((float16 & ~FLOAT16_NEG_ZERO) == FLOAT16_POS_ZERO) {
+                        rawDouble = (float16 == FLOAT16_POS_ZERO) ?
+                                                 FLOAT64_POS_ZERO : FLOAT64_NEG_ZERO;
                     } else if ((float16 & FLOAT16_POS_INFINITY) == FLOAT16_POS_INFINITY) {
                         // Special "number"
                         if (float16 == FLOAT16_POS_INFINITY) {
