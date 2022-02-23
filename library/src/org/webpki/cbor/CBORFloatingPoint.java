@@ -47,23 +47,24 @@ public class CBORFloatingPoint extends CBORObject {
     public CBORFloatingPoint(double value) {
         this.value = value;
         
-        // Initial assumption
-        tag = MT_FLOAT16;
+        // Initial assumption: it is a plain vanilla 64-bit double.
+        tag = MT_FLOAT64;
         bitFormat = Double.doubleToLongBits(value);
 
+        // Check for possible edge cases.
         if ((bitFormat & ~FLOAT64_NEG_ZERO) == FLOAT64_POS_ZERO) {
+            // Some zeroes are more zero than others.
+            tag = MT_FLOAT16;
             bitFormat = (bitFormat == FLOAT64_POS_ZERO) ? FLOAT16_POS_ZERO : FLOAT16_NEG_ZERO;
-        } else if ((bitFormat & FLOAT64_POS_INFINITY) == FLOAT64_POS_INFINITY) {
-            // Special "number"
+         } else if ((bitFormat & FLOAT64_POS_INFINITY) == FLOAT64_POS_INFINITY) {
+            // Special "number".
+            tag = MT_FLOAT16;
             bitFormat = (bitFormat == FLOAT64_POS_INFINITY) ?
                 FLOAT16_POS_INFINITY : (bitFormat == FLOAT64_NEG_INFINITY) ?
-                    // Non-deterministic representations of NaN will be flagged later
+                    // Deterministic representation of NaN => No NaN "signaling".
                     FLOAT16_NEG_INFINITY : FLOAT16_NOT_A_NUMBER;
-        } else if (Math.abs(value) > Float.MAX_VALUE || value != (double)((float) value)) {
-            // Too big or would lose precision unless we stick to 64 bits.
-            tag = MT_FLOAT64; 
-        } else { 
-            // Revised assumption: we go for 32 bits until proven wrong...
+         } else if (Math.abs(value) <= Float.MAX_VALUE && value == (double)((float) value)) {
+            // Revised assumption: we go for 32 bits until proven wrong.
             tag = MT_FLOAT32;
             bitFormat = Float.floatToIntBits((float)value) & MASK_LOWER_32;
 
@@ -74,27 +75,27 @@ public class CBORFloatingPoint extends CBORObject {
             long frac16 = (bitFormat >> (FLOAT32_FRACTION_SIZE - FLOAT16_FRACTION_SIZE)) & 
                     ((1l << FLOAT16_FRACTION_SIZE) - 1);
 
-            // Too big for float16 or into the space reserved for NaN and Infinity
+            // Too big for float16 or into the space reserved for NaN and Infinity.
             if (exp16 > (FLOAT16_EXPONENT_BIAS << 1)) {
                 return;
             }
 
-            // Losing fraction bits is not an option
+            // Losing fraction bits is not an option.
             if ((bitFormat & ((1l << FLOAT32_FRACTION_SIZE) - 1)) != 
                 (frac16 << (FLOAT32_FRACTION_SIZE - FLOAT16_FRACTION_SIZE))) {
                 return;
             }
 
-            // Check if we need to denormalize data
+            // Check if we need to denormalize data.
             if (exp16 <= 0) {
-                // The implicit "1" becomes explicit using subnormal representation
+                // The implicit "1" becomes explicit using subnormal representation.
                 frac16 += 1l << FLOAT16_FRACTION_SIZE;
                 exp16--;
-                // Always do at least one turn
+                // Always do at least one turn.
                 do {
                     if ((frac16 & 1) != 0) {
-                        // Too off scale for float16
-                        // This test also catches subnormal float32 numbers
+                        // Too off scale for float16.
+                        // This test also catches subnormal float32 numbers.
                         return;
                     }
                     frac16 >>= 1;
@@ -104,11 +105,11 @@ public class CBORFloatingPoint extends CBORObject {
             // Seems like 16 bits indeed are sufficient!
             tag = MT_FLOAT16;
             bitFormat = 
-                // Put possible sign bit in position
+                // Put possible sign bit in position.
                 ((bitFormat >>> (32 - 16)) & FLOAT16_NEG_ZERO) +
                 // Exponent.  Put it in front of fraction.
                 (exp16 << FLOAT16_FRACTION_SIZE) +
-                // Fraction
+                // Fraction.
                 frac16;
         }
     }
