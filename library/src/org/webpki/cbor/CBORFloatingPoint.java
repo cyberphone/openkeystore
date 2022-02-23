@@ -53,7 +53,7 @@ public class CBORFloatingPoint extends CBORObject {
 
         // Check for possible edge cases.
         if ((bitFormat & ~FLOAT64_NEG_ZERO) == FLOAT64_POS_ZERO) {
-            // Some zeroes are more zero than others.
+            // Some zeroes are more zero than others :)
             tag = MT_FLOAT16;
             bitFormat = (bitFormat == FLOAT64_POS_ZERO) ? FLOAT16_POS_ZERO : FLOAT16_NEG_ZERO;
         } else if ((bitFormat & FLOAT64_POS_INFINITY) == FLOAT64_POS_INFINITY) {
@@ -67,22 +67,22 @@ public class CBORFloatingPoint extends CBORObject {
             // It is apparently a regular number. Does it fit in a 32-bit float?
 
             // Note: the following 64-bit to 32-bit conversion and tests could be replaced
-            // by a single line of Java code but I wanted to see how ugly a "raw" variant
+            // by two lines of Java code but I wanted to see how ugly a "raw" variant
             // would be.  Fortunately it wasn't too horrible :)
+            long sign64 = bitFormat & FLOAT64_NEG_ZERO;
             long exp32 = ((bitFormat >>> FLOAT64_FRACTION_SIZE) & 
                     ((1l << FLOAT64_EXPONENT_SIZE) - 1)) -
                         (FLOAT64_EXPONENT_BIAS - FLOAT32_EXPONENT_BIAS);
-            long frac32 = (bitFormat >> (FLOAT64_FRACTION_SIZE - FLOAT32_FRACTION_SIZE)) & 
-                    ((1l << FLOAT32_FRACTION_SIZE) - 1);
+            long frac64 = bitFormat & ((1l << FLOAT64_FRACTION_SIZE) - 1);
+            long frac32 = frac64 >> (FLOAT64_FRACTION_SIZE - FLOAT32_FRACTION_SIZE);
 
-            // Too big for float32 or into the space reserved for NaN and Infinity.
-            if (exp32 > (FLOAT32_EXPONENT_BIAS << 1)) {
+            if (frac64 != (frac32 << (FLOAT64_FRACTION_SIZE - FLOAT32_FRACTION_SIZE))) {
+                // Losing fraction bits is not an option.
                 return;
             }
 
-            // Losing fraction bits is not an option.
-            if ((bitFormat & ((1l << FLOAT64_FRACTION_SIZE) - 1)) != 
-                (frac32 << (FLOAT64_FRACTION_SIZE - FLOAT32_FRACTION_SIZE))) {
+            if (exp32 > (FLOAT32_EXPONENT_BIAS << 1)) {
+                // Too big for float32 or into the space reserved for NaN and Infinity.
                 return;
             }
 
@@ -106,7 +106,7 @@ public class CBORFloatingPoint extends CBORObject {
             tag = MT_FLOAT32;
             bitFormat = 
                 // Put possible sign bit in position.
-                ((bitFormat >>> (64 - 32)) & FLOAT32_NEG_ZERO) +
+                (sign64 >>> (64 - 32)) +
                 // Exponent.  Put it in front of fraction.
                 (exp32 << FLOAT32_FRACTION_SIZE) +
                 // Fraction.
@@ -116,13 +116,13 @@ public class CBORFloatingPoint extends CBORObject {
             long exp16 = exp32 - (FLOAT32_EXPONENT_BIAS - FLOAT16_EXPONENT_BIAS);
             long frac16 = frac32 >> (FLOAT32_FRACTION_SIZE - FLOAT16_FRACTION_SIZE);
 
-            // Too big for float16 or into the space reserved for NaN and Infinity.
-            if (exp16 > (FLOAT16_EXPONENT_BIAS << 1)) {
+            if (frac32 != (frac16 << (FLOAT32_FRACTION_SIZE - FLOAT16_FRACTION_SIZE))) {
+                // Losing fraction bits is not an option.
                 return;
             }
 
-            // Losing fraction bits is not an option.
-            if (frac32 != (frac16 << (FLOAT32_FRACTION_SIZE - FLOAT16_FRACTION_SIZE))) {
+            if (exp16 > (FLOAT16_EXPONENT_BIAS << 1)) {
+                // Too big for float16 or into the space reserved for NaN and Infinity.
                 return;
             }
 
@@ -146,7 +146,7 @@ public class CBORFloatingPoint extends CBORObject {
             tag = MT_FLOAT16;
             bitFormat = 
                 // Put possible sign bit in position.
-                ((bitFormat >>> (32 - 16)) & FLOAT16_NEG_ZERO) +
+                (sign64 >>> (64 - 16))  +
                 // Exponent.  Put it in front of fraction.
                 (exp16 << FLOAT16_FRACTION_SIZE) +
                 // Fraction.
