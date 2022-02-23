@@ -65,6 +65,10 @@ public class CBORFloatingPoint extends CBORObject {
                     FLOAT16_NEG_INFINITY : FLOAT16_NOT_A_NUMBER;
         } else {
             // It is apparently a regular number. Does it fit in a 32-bit float?
+
+            // Note: the following 64-bit to 32-bit conversion and tests could be replaced
+            // by a single line of Java code but I wanted to see how ugly a "raw" variant
+            // would be.  Fortunately it wasn't too horrible :)
             long exp32 = ((bitFormat >>> FLOAT64_FRACTION_SIZE) & 
                     ((1l << FLOAT64_EXPONENT_SIZE) - 1)) -
                         (FLOAT64_EXPONENT_BIAS - FLOAT32_EXPONENT_BIAS);
