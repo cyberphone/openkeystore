@@ -56,15 +56,21 @@ public class CBORFloatingPoint extends CBORObject {
             // Some zeroes are more zero than others.
             tag = MT_FLOAT16;
             bitFormat = (bitFormat == FLOAT64_POS_ZERO) ? FLOAT16_POS_ZERO : FLOAT16_NEG_ZERO;
-         } else if ((bitFormat & FLOAT64_POS_INFINITY) == FLOAT64_POS_INFINITY) {
+        } else if ((bitFormat & FLOAT64_POS_INFINITY) == FLOAT64_POS_INFINITY) {
             // Special "number".
             tag = MT_FLOAT16;
             bitFormat = (bitFormat == FLOAT64_POS_INFINITY) ?
                 FLOAT16_POS_INFINITY : (bitFormat == FLOAT64_NEG_INFINITY) ?
                     // Deterministic representation of NaN => No NaN "signaling".
                     FLOAT16_NEG_INFINITY : FLOAT16_NOT_A_NUMBER;
-         } else if (Math.abs(value) <= Float.MAX_VALUE && value == (double)((float) value)) {
-            // Revised assumption: we go for 32 bits until proven wrong.
+        } else {
+            // It is apparently a regular number. Does it fit in a 32-bit float?
+            if (value != (double)((float) value)) {
+                // No, it doesn't.  Note that the test above presumes that a conversion from 
+                // double to float returns Infinity or NaN for values that are out of range.
+                return;
+            }
+            // Revised assumption: we settle on 32-bit float representation until proven wrong.
             tag = MT_FLOAT32;
             bitFormat = Float.floatToIntBits((float)value) & MASK_LOWER_32;
 
