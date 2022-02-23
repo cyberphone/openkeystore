@@ -122,8 +122,7 @@ public class CBORFloatingPoint extends CBORObject {
             }
 
             // Losing fraction bits is not an option.
-            if ((bitFormat & ((1l << FLOAT32_FRACTION_SIZE) - 1)) != 
-                (frac16 << (FLOAT32_FRACTION_SIZE - FLOAT16_FRACTION_SIZE))) {
+            if (frac32 != (frac16 << (FLOAT32_FRACTION_SIZE - FLOAT16_FRACTION_SIZE))) {
                 return;
             }
 
