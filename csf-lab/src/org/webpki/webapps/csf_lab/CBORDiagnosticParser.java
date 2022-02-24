@@ -179,8 +179,7 @@ public class CBORDiagnosticParser {
                     scanFor("Infinity");
                     return new CBORFloatingPoint(Double.NEGATIVE_INFINITY);
                 }
-                return getNumberOrTag();
-                
+
             case '0':
             case '1':
             case '2':
