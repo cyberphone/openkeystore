@@ -76,8 +76,6 @@ public abstract class CBORObject {
     static final long FLOAT16_POS_ZERO     = 0x0000000000000000l;
     static final long FLOAT16_NEG_ZERO     = 0x0000000000008000l;
      
-    static final long FLOAT32_NEG_ZERO     = 0x0000000080000000l;
-
     static final long FLOAT64_NOT_A_NUMBER = 0x7ff8000000000000l;
     static final long FLOAT64_POS_INFINITY = 0x7ff0000000000000l;
     static final long FLOAT64_NEG_INFINITY = 0xfff0000000000000l;

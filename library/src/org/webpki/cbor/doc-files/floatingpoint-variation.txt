@@ -64,61 +64,93 @@ public class CBORFloatingPoint extends CBORObject {
                     // Deterministic representation of NaN => No NaN "signaling".
                     FLOAT16_NEG_INFINITY : FLOAT16_NOT_A_NUMBER;
         } else {
-            // It is apparently a regular number.
+            // It is apparently a regular number. Does it fit in a 32-bit float?
 
-            // Does the number fit in a 32-bit float?
-            if (value != (double)((float) value)) {
-                // Apparently it did not.  Note that the test above presumes that a conversion from
-                // double to float returns Infinity or NaN for values that are out of range.
-                // See sub-directory doc-files for another solution.
+            // Note: the following 64-bit to 32-bit conversion and tests could be replaced
+            // by two lines of Java code but I wanted to see how ugly a "raw" variant
+            // would be.  Fortunately it wasn't too horrible :)
+            long sign64 = bitFormat & FLOAT64_NEG_ZERO;
+            long exp32 = ((bitFormat >>> FLOAT64_FRACTION_SIZE) & 
+                    ((1l << FLOAT64_EXPONENT_SIZE) - 1)) -
+                        (FLOAT64_EXPONENT_BIAS - FLOAT32_EXPONENT_BIAS);
+            long frac64 = bitFormat & ((1l << FLOAT64_FRACTION_SIZE) - 1);
+            long frac32 = frac64 >> (FLOAT64_FRACTION_SIZE - FLOAT32_FRACTION_SIZE);
+
+            if (frac64 != (frac32 << (FLOAT64_FRACTION_SIZE - FLOAT32_FRACTION_SIZE))) {
+                // Losing fraction bits is not an option.
                 return;
+            }
+
+            if (exp32 > (FLOAT32_EXPONENT_BIAS << 1)) {
+                // Too big for float32 or into the space reserved for NaN and Infinity.
+                return;
+            }
+
+            // Check if we need to denormalize data.
+            if (exp32 <= 0) {
+                // The implicit "1" becomes explicit using subnormal representation.
+                frac32 += 1l << FLOAT32_FRACTION_SIZE;
+                exp32--;
+                // Always do at least one turn.
+                do {
+                    if ((frac32 & 1) != 0) {
+                        // Too off scale for float32.
+                        // This test also catches subnormal float64 numbers.
+                        return;
+                    }
+                    frac32 >>= 1;
+                } while (++exp32 < 0);
             }
 
             // New assumption: we settle on 32-bit float representation.
             tag = MT_FLOAT32;
-            bitFormat = Float.floatToIntBits((float)value) & MASK_LOWER_32;
-            
+            bitFormat = 
+                // Put possible sign bit in position.
+                (sign64 >>> (64 - 32)) +
+                // Exponent.  Put it in front of fraction.
+                (exp32 << FLOAT32_FRACTION_SIZE) +
+                // Fraction.
+                frac32;
+ 
             // However, we must still check if the number could fit in a 16-bit float.
-            long exponent = ((bitFormat >>> FLOAT32_FRACTION_SIZE) & 
-                ((1l << FLOAT32_EXPONENT_SIZE) - 1)) -
-                    (FLOAT32_EXPONENT_BIAS - FLOAT16_EXPONENT_BIAS);
-            if (exponent > (FLOAT16_EXPONENT_BIAS << 1)) {
+            long exp16 = exp32 - (FLOAT32_EXPONENT_BIAS - FLOAT16_EXPONENT_BIAS);
+            long frac16 = frac32 >> (FLOAT32_FRACTION_SIZE - FLOAT16_FRACTION_SIZE);
+
+            if (frac32 != (frac16 << (FLOAT32_FRACTION_SIZE - FLOAT16_FRACTION_SIZE))) {
+                // Losing fraction bits is not an option.
+                return;
+            }
+
+            if (exp16 > (FLOAT16_EXPONENT_BIAS << 1)) {
                 // Too big for float16 or into the space reserved for NaN and Infinity.
                 return;
             }
 
-            long fraction = bitFormat & ((1l << FLOAT32_FRACTION_SIZE) - 1);
-            if ((fraction & (1l << (FLOAT32_FRACTION_SIZE - FLOAT16_FRACTION_SIZE)) -1) != 0) {
-                // Losing fraction bits is not an option.
-                return;
-            }
-            fraction >>= (FLOAT32_FRACTION_SIZE - FLOAT16_FRACTION_SIZE);
-
             // Check if we need to denormalize data.
-            if (exponent <= 0) {
+            if (exp16 <= 0) {
                 // The implicit "1" becomes explicit using subnormal representation.
-                fraction += 1l << FLOAT16_FRACTION_SIZE;
-                exponent--;
+                frac16 += 1l << FLOAT16_FRACTION_SIZE;
+                exp16--;
                 // Always do at least one turn.
                 do {
-                    if ((fraction & 1) != 0) {
+                    if ((frac16 & 1) != 0) {
                         // Too off scale for float16.
                         // This test also catches subnormal float32 numbers.
                         return;
                     }
-                    fraction >>= 1;
-                } while (++exponent < 0);
+                    frac16 >>= 1;
+                } while (++exp16 < 0);
             }
 
             // Seems like 16 bits indeed are sufficient!
             tag = MT_FLOAT16;
             bitFormat = 
                 // Put possible sign bit in position.
-                ((bitFormat >>> (32 - 16)) & FLOAT16_NEG_ZERO) +
+                (sign64 >>> (64 - 16))  +
                 // Exponent.  Put it in front of fraction.
-                (exponent << FLOAT16_FRACTION_SIZE) +
+                (exp16 << FLOAT16_FRACTION_SIZE) +
                 // Fraction.
-                fraction;
+                frac16;
         }
     }
 
