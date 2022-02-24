@@ -27,6 +27,13 @@ import javax.servlet.http.HttpServletResponse;
 public class HomeServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
+    
+    static final String SUPPORTED_CBOR = "This implementation supports the " +
+            "following subset of CBOR primitives: " +
+            "<i>text&nbsp;string</i>, <i>byte&nbsp;string</i>, " +
+            "<i>integer</i>, <i>big&nbsp;number</i>, <i>floating&nbsp;point</i> (16/32/64 bit), " +
+            "<code>true</code>, <code>false</code>, and <code>null</code>. " +
+            "In addition, this implementation supports <i>tagged data</i> (CBOR major type 6).";
 
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
@@ -44,12 +51,7 @@ public class HomeServlet extends HttpServlet {
             "to become a part of the application data, rather than embedding " +
             "such data in signatures.  For detailed technical information " +
             "click on the CSF logotype.</div>" +
-            "<div style='margin-top:0.7em'>This implementation supports the " +
-            "following subset of CBOR primitives: " +
-            "<i>text&nbsp;string</i>, <i>byte&nbsp;string</i>, " +
-            "<i>integer</i>, <i>big&nbsp;number</i>, <i>floating&nbsp;point</i> (16/32/64 bit), " +
-            "<code>true</code>, <code>false</code>, and <code>null</code>. " +
-            "In addition, this implementation supports <i>tagged data</i> (CBOR major type 6).</div>" +
+            "<div style='margin-top:0.7em'>" + SUPPORTED_CBOR + "</div>" +
             "<div style='display:flex;justify-content:center'><table>" +
             "<tr><td><div class='multibtn' " +
             "onclick=\"document.location.href='create'\" " +

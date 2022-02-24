@@ -98,7 +98,7 @@ public class ConvertServlet extends CoreRequestServlet {
             CBORObject cbor;
             switch (parsedJson.getString(SEL_IN)) {
                 case DIAG:
-                    cbor = CBORDiagnosticParser.parse(inData);
+                    cbor = CBORObject.decode(CBORDiagnosticParser.parse(inData).encode());
                     break;
     
                 case HEXA:
@@ -179,7 +179,10 @@ public class ConvertServlet extends CoreRequestServlet {
                 "}\n");
 
         StringBuilder html = new StringBuilder(
-                "<div class='header'>CBOR Conversion Utility</div>")
+                "<div class='header'>CBOR Conversion Utility</div>" +
+                "<div style='padding-top:15pt'>" + HomeServlet.SUPPORTED_CBOR + "</div>" +
+                "<div style='padding-top:0.5em'>Note that hexadecimal and base64url encoded data must use " +
+                "<i>deterministic representation</i>.</div>")
             .append(HTML.fancyText(
                         true,
                         CBOR_IN,
