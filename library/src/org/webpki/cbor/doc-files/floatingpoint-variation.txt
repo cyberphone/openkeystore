@@ -69,88 +69,88 @@ public class CBORFloatingPoint extends CBORObject {
             // Note: the following 64-bit to 32-bit conversion and tests could be replaced
             // by two lines of Java code but I wanted to see how ugly a "raw" variant
             // would be.  Fortunately it wasn't too horrible :)
-            long sign64 = bitFormat & FLOAT64_NEG_ZERO;
-            long exp32 = ((bitFormat >>> FLOAT64_FRACTION_SIZE) & 
+            long signBit = bitFormat & FLOAT64_NEG_ZERO;
+            long exponent = ((bitFormat >>> FLOAT64_SIGNIFICAND_SIZE) & 
                     ((1l << FLOAT64_EXPONENT_SIZE) - 1)) -
                         (FLOAT64_EXPONENT_BIAS - FLOAT32_EXPONENT_BIAS);
-            long frac64 = bitFormat & ((1l << FLOAT64_FRACTION_SIZE) - 1);
-            long frac32 = frac64 >> (FLOAT64_FRACTION_SIZE - FLOAT32_FRACTION_SIZE);
-
-            if (frac64 != (frac32 << (FLOAT64_FRACTION_SIZE - FLOAT32_FRACTION_SIZE))) {
-                // Losing fraction bits is not an option.
-                return;
-            }
-
-            if (exp32 > (FLOAT32_EXPONENT_BIAS << 1)) {
+            if (exponent > (FLOAT32_EXPONENT_BIAS << 1)) {
                 // Too big for float32 or into the space reserved for NaN and Infinity.
                 return;
             }
 
+            long significand = bitFormat & ((1l << FLOAT64_SIGNIFICAND_SIZE) - 1);
+            if ((significand & 
+                ((1l << (FLOAT64_SIGNIFICAND_SIZE - FLOAT32_SIGNIFICAND_SIZE)) - 1)) != 0) {
+                // Losing significand bits is not an option.
+                return;
+            }
+            significand >>= (FLOAT64_SIGNIFICAND_SIZE - FLOAT32_SIGNIFICAND_SIZE);
+
             // Check if we need to denormalize data.
-            if (exp32 <= 0) {
+            if (exponent <= 0) {
                 // The implicit "1" becomes explicit using subnormal representation.
-                frac32 += 1l << FLOAT32_FRACTION_SIZE;
-                exp32--;
-                // Always do at least one turn.
+                significand += 1l << FLOAT32_SIGNIFICAND_SIZE;
+                exponent--;
+                // Always perform at least one turn.
                 do {
-                    if ((frac32 & 1) != 0) {
+                    if ((significand & 1) != 0) {
                         // Too off scale for float32.
                         // This test also catches subnormal float64 numbers.
                         return;
                     }
-                    frac32 >>= 1;
-                } while (++exp32 < 0);
+                    significand >>= 1;
+                } while (++exponent < 0);
             }
 
             // New assumption: we settle on 32-bit float representation.
             tag = MT_FLOAT32;
             bitFormat = 
                 // Put possible sign bit in position.
-                (sign64 >>> (64 - 32)) +
-                // Exponent.  Put it in front of fraction.
-                (exp32 << FLOAT32_FRACTION_SIZE) +
-                // Fraction.
-                frac32;
+                (signBit >>> (64 - 32)) +
+                // Exponent.  Put it in front of significand.
+                (exponent << FLOAT32_SIGNIFICAND_SIZE) +
+                // Significand.
+                significand;
  
             // However, we must still check if the number could fit in a 16-bit float.
-            long exp16 = exp32 - (FLOAT32_EXPONENT_BIAS - FLOAT16_EXPONENT_BIAS);
-            long frac16 = frac32 >> (FLOAT32_FRACTION_SIZE - FLOAT16_FRACTION_SIZE);
-
-            if (frac32 != (frac16 << (FLOAT32_FRACTION_SIZE - FLOAT16_FRACTION_SIZE))) {
-                // Losing fraction bits is not an option.
-                return;
-            }
-
-            if (exp16 > (FLOAT16_EXPONENT_BIAS << 1)) {
+            exponent -= (FLOAT32_EXPONENT_BIAS - FLOAT16_EXPONENT_BIAS);
+            if (exponent > (FLOAT16_EXPONENT_BIAS << 1)) {
                 // Too big for float16 or into the space reserved for NaN and Infinity.
                 return;
             }
-
+            
+            if ((significand & 
+                ((1l << (FLOAT32_SIGNIFICAND_SIZE - FLOAT16_SIGNIFICAND_SIZE)) - 1)) != 0) {
+                // Losing significand bits is not an option.
+                return;
+            }
+            significand >>= (FLOAT32_SIGNIFICAND_SIZE - FLOAT16_SIGNIFICAND_SIZE);
+ 
             // Check if we need to denormalize data.
-            if (exp16 <= 0) {
+            if (exponent <= 0) {
                 // The implicit "1" becomes explicit using subnormal representation.
-                frac16 += 1l << FLOAT16_FRACTION_SIZE;
-                exp16--;
-                // Always do at least one turn.
+                significand += 1l << FLOAT16_SIGNIFICAND_SIZE;
+                exponent--;
+                // Always perform at least one turn.
                 do {
-                    if ((frac16 & 1) != 0) {
+                    if ((significand & 1) != 0) {
                         // Too off scale for float16.
                         // This test also catches subnormal float32 numbers.
                         return;
                     }
-                    frac16 >>= 1;
-                } while (++exp16 < 0);
+                    significand >>= 1;
+                } while (++exponent < 0);
             }
 
             // Seems like 16 bits indeed are sufficient!
             tag = MT_FLOAT16;
             bitFormat = 
                 // Put possible sign bit in position.
-                (sign64 >>> (64 - 16))  +
-                // Exponent.  Put it in front of fraction.
-                (exp16 << FLOAT16_FRACTION_SIZE) +
-                // Fraction.
-                frac16;
+                (signBit >>> (64 - 16))  +
+                // Exponent.  Put it in front of significand.
+                (exponent << FLOAT16_SIGNIFICAND_SIZE) +
+                // Significand.
+                significand;
         }
     }
 
