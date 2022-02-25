@@ -35,10 +35,10 @@ public class CBORFloat32Test {
     
     public static void main(String[] argv)  {
         int f = 0;
-        while (f < (1 << CBORObject.FLOAT32_FRACTION_SIZE)) {
+        while (f < (1 << CBORObject.FLOAT32_SIGNIFICAND_SIZE)) {
             int e = 0;
             while (e < (1 << CBORObject.FLOAT32_EXPONENT_SIZE)) {
-                convert((e << CBORObject.FLOAT32_FRACTION_SIZE) + f);
+                convert((e << CBORObject.FLOAT32_SIGNIFICAND_SIZE) + f);
                 e++;
             }
             f++;

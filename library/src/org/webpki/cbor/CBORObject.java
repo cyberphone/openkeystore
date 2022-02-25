@@ -58,31 +58,31 @@ public abstract class CBORObject {
     static final BigInteger MIN_LONG = BigInteger.valueOf(Long.MIN_VALUE);
     static final BigInteger MAX_LONG = BigInteger.valueOf(Long.MAX_VALUE);
     
-    static final int FLOAT16_FRACTION_SIZE = 10;
-    static final int FLOAT32_FRACTION_SIZE = 23;
-    static final int FLOAT64_FRACTION_SIZE = 52;
+    static final int FLOAT16_SIGNIFICAND_SIZE = 10;
+    static final int FLOAT32_SIGNIFICAND_SIZE = 23;
+    static final int FLOAT64_SIGNIFICAND_SIZE = 52;
 
-    static final int FLOAT16_EXPONENT_SIZE = 5;
-    static final int FLOAT32_EXPONENT_SIZE = 8;
-    static final int FLOAT64_EXPONENT_SIZE = 11;
+    static final int FLOAT16_EXPONENT_SIZE    = 5;
+    static final int FLOAT32_EXPONENT_SIZE    = 8;
+    static final int FLOAT64_EXPONENT_SIZE    = 11;
 
-    static final int FLOAT16_EXPONENT_BIAS = 15;
-    static final int FLOAT32_EXPONENT_BIAS = 127;
-    static final int FLOAT64_EXPONENT_BIAS = 1023;
+    static final int FLOAT16_EXPONENT_BIAS    = 15;
+    static final int FLOAT32_EXPONENT_BIAS    = 127;
+    static final int FLOAT64_EXPONENT_BIAS    = 1023;
 
-    static final long FLOAT16_NOT_A_NUMBER = 0x0000000000007e00l;
-    static final long FLOAT16_POS_INFINITY = 0x0000000000007c00l;
-    static final long FLOAT16_NEG_INFINITY = 0x000000000000fc00l;
-    static final long FLOAT16_POS_ZERO     = 0x0000000000000000l;
-    static final long FLOAT16_NEG_ZERO     = 0x0000000000008000l;
+    static final long FLOAT16_NOT_A_NUMBER    = 0x0000000000007e00l;
+    static final long FLOAT16_POS_INFINITY    = 0x0000000000007c00l;
+    static final long FLOAT16_NEG_INFINITY    = 0x000000000000fc00l;
+    static final long FLOAT16_POS_ZERO        = 0x0000000000000000l;
+    static final long FLOAT16_NEG_ZERO        = 0x0000000000008000l;
      
-    static final long FLOAT64_NOT_A_NUMBER = 0x7ff8000000000000l;
-    static final long FLOAT64_POS_INFINITY = 0x7ff0000000000000l;
-    static final long FLOAT64_NEG_INFINITY = 0xfff0000000000000l;
-    static final long FLOAT64_POS_ZERO     = 0x0000000000000000l;
-    static final long FLOAT64_NEG_ZERO     = 0x8000000000000000l;
+    static final long FLOAT64_NOT_A_NUMBER    = 0x7ff8000000000000l;
+    static final long FLOAT64_POS_INFINITY    = 0x7ff0000000000000l;
+    static final long FLOAT64_NEG_INFINITY    = 0xfff0000000000000l;
+    static final long FLOAT64_POS_ZERO        = 0x0000000000000000l;
+    static final long FLOAT64_NEG_ZERO        = 0x8000000000000000l;
 
-    static final long MASK_LOWER_32        = 0x00000000ffffffffl;
+    static final long MASK_LOWER_32           = 0x00000000ffffffffl;
     
     abstract CBORTypes internalGetType();
 
@@ -493,13 +493,13 @@ public abstract class CBORObject {
         private CBORObject getObject() throws IOException {
             int tag = readByte();
 
-            // Begin with CBOR types that are uniquely defined by the tag byte
+            // Begin with CBOR types that are uniquely defined by the tag byte.
             switch (tag) {
                 case MT_BIG_SIGNED:
                 case MT_BIG_UNSIGNED:
                     byte[] byteArray = getObject().getByteString();
                     if (byteArray.length == 0) {
-                        byteArray = ZERO_BYTE;  // Zero length byte string => n == 0
+                        byteArray = ZERO_BYTE;  // Zero length byte string => n == 0.
                     } else if (byteArray[0] == 0) {
                         reportError("Non-deterministic encoding: leading zero byte");
                     }
@@ -523,31 +523,33 @@ public abstract class CBORObject {
                         // Special "number"
                         rawDouble = (float16 == FLOAT16_POS_INFINITY) ?
                             FLOAT64_POS_INFINITY : (float16 == FLOAT16_NEG_INFINITY) ?
-                                // Non-deterministic representations of NaN will be flagged later
+                                // Non-deterministic representations of NaN will be flagged later.
+                            // NaN "signaling" is not supported.
                                 FLOAT64_NEG_INFINITY : FLOAT64_NOT_A_NUMBER;
                      } else {
-                        // Get the bare (but still biased) float16 exponent
-                        long exp16 = (float16 >>> FLOAT16_FRACTION_SIZE) &
-                                       ((1l << FLOAT16_EXPONENT_SIZE) - 1);
-                        // Relocate the float16 fraction bits to their proper float64 position
-                        long frac16 = (float16 << (FLOAT64_FRACTION_SIZE - FLOAT16_FRACTION_SIZE));
-                        if (exp16 == 0) {
-                            // Subnormal float16 - In float64 that must translate to normalized 
-                            exp16++;
+                        // Get the bare (but still biased) float16 exponent.
+                        long exponent = (float16 >>> FLOAT16_SIGNIFICAND_SIZE) &
+                                        ((1l << FLOAT16_EXPONENT_SIZE) - 1);
+                        // Relocate float16 significand bits to their proper float64 position.
+                        long significand = 
+                            (float16 << (FLOAT64_SIGNIFICAND_SIZE - FLOAT16_SIGNIFICAND_SIZE));
+                        if (exponent == 0) {
+                            // Subnormal float16 - In float64 that must translate to normalized.
+                            exponent++;
                             do {
-                                exp16--;
-                                frac16 <<= 1;
-                                // Continue until the implicit "1" is in the proper position
-                            } while ((frac16 & (1l << FLOAT64_FRACTION_SIZE)) == 0);
+                                exponent--;
+                                significand <<= 1;
+                                // Continue until the implicit "1" is in the proper position.
+                            } while ((significand & (1l << FLOAT64_SIGNIFICAND_SIZE)) == 0);
                         }
                         rawDouble = 
-                        // Put possible sign bit in position
+                        // Put possible sign bit in position.
                         ((float16 & FLOAT16_NEG_ZERO) << (64 - 16)) +
-                        // Exponent.  Set the proper bias and put the result in front of fraction
-                        ((exp16 + (FLOAT64_EXPONENT_BIAS - FLOAT16_EXPONENT_BIAS)) 
-                           << FLOAT64_FRACTION_SIZE) +
-                        // Fraction.  Remove everything above
-                        (frac16 & ((1l << FLOAT64_FRACTION_SIZE) - 1));
+                        // Exponent.  Set the proper bias and put result in front of significand.
+                        ((exponent + (FLOAT64_EXPONENT_BIAS - FLOAT16_EXPONENT_BIAS)) 
+                            << FLOAT64_SIGNIFICAND_SIZE) +
+                        // Significand.  Remove everything above.
+                        (significand & ((1l << FLOAT64_SIGNIFICAND_SIZE) - 1));
                     }
                     return checkDoubleConversion(tag, float16, rawDouble);
 
@@ -570,13 +572,13 @@ public abstract class CBORObject {
                     return new CBORBoolean(tag == MT_TRUE);
             }
 
-            // Then decode CBOR types that blend length of data in the tag byte
+            // Then decode CBOR types that blend length of data in the tag byte.
             long n = tag & 0x1fl;
             if (n > 27) {
                 unsupportedTag(tag);
             }
             if (n > 23) {
-                // For 1, 2, 4, and 8 byte N
+                // For 1, 2, 4, and 8 byte N.
                 int q = 1 << (n - 24);
                 // 1: 00000000ffffffff
                 // 2: 000000ffffffff00
@@ -595,7 +597,7 @@ public abstract class CBORObject {
                     reportError("Non-deterministic encoding of N");
                 }
             }
-            // N successfully decoded, now switch on major type (upper three bits)
+            // N successfully decoded, now switch on major type (upper three bits).
             switch (tag & 0xe0) {
                 case MT_TAG_EXTENSION:
                     return new CBORTaggedObject(n, getObject());

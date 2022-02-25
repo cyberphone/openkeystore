@@ -47,7 +47,7 @@ public class CBORFloatingPoint extends CBORObject {
     public CBORFloatingPoint(double value) {
         this.value = value;
         
-        // Initial assumption: it is a plain vanilla 64-bit double.
+        // Initial assumption: value is a plain vanilla 64-bit double.
         tag = MT_FLOAT64;
         bitFormat = Double.doubleToLongBits(value);
 
@@ -64,22 +64,24 @@ public class CBORFloatingPoint extends CBORObject {
                     // Deterministic representation of NaN => No NaN "signaling".
                     FLOAT16_NEG_INFINITY : FLOAT16_NOT_A_NUMBER;
         } else {
-            // It is apparently a regular number.
+            // We are apparently dealing a regular number.
 
             // Does the number fit in a 32-bit float?
             if (value != (double)((float) value)) {
                 // Apparently it did not.  Note that the test above presumes that a conversion from
                 // double to float returns Infinity or NaN for values that are out of range.
-                // See sub-directory doc-files for another solution.
+        	// The code also presumes that subnormal values are dealt with.
+                // See sub-directory doc-files for another solution which does not utilize any
+        	// floating point operations.
                 return;
             }
 
-            // New assumption: we settle on 32-bit float representation.
+            // Yes, the number is compatible with 32-bit float representation.
             tag = MT_FLOAT32;
             bitFormat = Float.floatToIntBits((float)value) & MASK_LOWER_32;
             
             // However, we must still check if the number could fit in a 16-bit float.
-            long exponent = ((bitFormat >>> FLOAT32_FRACTION_SIZE) & 
+            long exponent = ((bitFormat >>> FLOAT32_SIGNIFICAND_SIZE) & 
                 ((1l << FLOAT32_EXPONENT_SIZE) - 1)) -
                     (FLOAT32_EXPONENT_BIAS - FLOAT16_EXPONENT_BIAS);
             if (exponent > (FLOAT16_EXPONENT_BIAS << 1)) {
@@ -87,26 +89,27 @@ public class CBORFloatingPoint extends CBORObject {
                 return;
             }
 
-            long fraction = bitFormat & ((1l << FLOAT32_FRACTION_SIZE) - 1);
-            if ((fraction & (1l << (FLOAT32_FRACTION_SIZE - FLOAT16_FRACTION_SIZE)) -1) != 0) {
-                // Losing fraction bits is not an option.
+            long significand = bitFormat & ((1l << FLOAT32_SIGNIFICAND_SIZE) - 1);
+            if ((significand & 
+                (1l << (FLOAT32_SIGNIFICAND_SIZE - FLOAT16_SIGNIFICAND_SIZE)) -1) != 0) {
+                // Losing significand bits is not an option.
                 return;
             }
-            fraction >>= (FLOAT32_FRACTION_SIZE - FLOAT16_FRACTION_SIZE);
+            significand >>= (FLOAT32_SIGNIFICAND_SIZE - FLOAT16_SIGNIFICAND_SIZE);
 
             // Check if we need to denormalize data.
             if (exponent <= 0) {
                 // The implicit "1" becomes explicit using subnormal representation.
-                fraction += 1l << FLOAT16_FRACTION_SIZE;
+                significand += 1l << FLOAT16_SIGNIFICAND_SIZE;
                 exponent--;
-                // Always do at least one turn.
+                // Always perform at least one turn.
                 do {
-                    if ((fraction & 1) != 0) {
+                    if ((significand & 1) != 0) {
                         // Too off scale for float16.
                         // This test also catches subnormal float32 numbers.
                         return;
                     }
-                    fraction >>= 1;
+                    significand >>= 1;
                 } while (++exponent < 0);
             }
 
@@ -115,10 +118,10 @@ public class CBORFloatingPoint extends CBORObject {
             bitFormat = 
                 // Put possible sign bit in position.
                 ((bitFormat >>> (32 - 16)) & FLOAT16_NEG_ZERO) +
-                // Exponent.  Put it in front of fraction.
-                (exponent << FLOAT16_FRACTION_SIZE) +
-                // Fraction.
-                fraction;
+                // Exponent.  Put it in front of significand.
+                (exponent << FLOAT16_SIGNIFICAND_SIZE) +
+                // Significand.
+                significand;
         }
     }
 
