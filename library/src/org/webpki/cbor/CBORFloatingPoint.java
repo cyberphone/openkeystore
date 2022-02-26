@@ -70,9 +70,9 @@ public class CBORFloatingPoint extends CBORObject {
             if (value != (double)((float) value)) {
                 // Apparently it did not.  Note that the test above presumes that a conversion from
                 // double to float returns Infinity or NaN for values that are out of range.
-        	// The code also presumes that subnormal values are dealt with.
+                // The code also presumes that subnormal values are dealt with.
                 // See sub-directory doc-files for another solution which does not utilize any
-        	// floating point operations.
+                // floating point operations.
                 return;
             }
 
