@@ -46,41 +46,47 @@ public class CBORFloatingPoint extends CBORObject {
      */
     public CBORFloatingPoint(double value) {
         this.value = value;
-        
-        // Initial assumption: value is a plain vanilla 64-bit double.
+
+        // Initial assumption: the number is a plain vanilla 64-bit double.
+
         tag = MT_FLOAT64;
         bitFormat = Double.doubleToLongBits(value);
 
         // Check for possible edge cases.
+
         if ((bitFormat & ~FLOAT64_NEG_ZERO) == FLOAT64_POS_ZERO) {
-            // Some zeroes are more zero than others :)
+
+            // Some zeroes are apparently more zero than others :)
             tag = MT_FLOAT16;
             bitFormat = (bitFormat == FLOAT64_POS_ZERO) ? FLOAT16_POS_ZERO : FLOAT16_NEG_ZERO;
+
         } else if ((bitFormat & FLOAT64_POS_INFINITY) == FLOAT64_POS_INFINITY) {
+
             // Special "number".
             tag = MT_FLOAT16;
             bitFormat = (bitFormat == FLOAT64_POS_INFINITY) ?
                 FLOAT16_POS_INFINITY : (bitFormat == FLOAT64_NEG_INFINITY) ?
                     // Deterministic representation of NaN => No NaN "signaling".
                     FLOAT16_NEG_INFINITY : FLOAT16_NOT_A_NUMBER;
-        } else {
-            // We are apparently dealing a regular number.
 
-            // Does the number fit in a 32-bit float?
+        } else {
+
+            // It must be a "regular" number. Does it fit in a 32-bit float?
+ 
+            // The following code presumes that the underlying floating point system handles
+            // overflow conditions and subnormal numbers that may be the result of a conversion.  
             if (value != (double)((float) value)) {
-                // Apparently it did not.  Note that the test above presumes that a conversion from
-                // double to float returns Infinity or NaN for values that are out of range.
-                // The code also presumes that subnormal values are dealt with.
-                // See sub-directory doc-files for another solution which does not utilize any
-                // floating point operations.
+                // "Lost in translation".  Stick to float64.
                 return;
             }
 
             // Yes, the number is compatible with 32-bit float representation.
+
             tag = MT_FLOAT32;
             bitFormat = Float.floatToIntBits((float)value) & MASK_LOWER_32;
             
             // However, we must still check if the number could fit in a 16-bit float.
+
             long exponent = ((bitFormat >>> FLOAT32_SIGNIFICAND_SIZE) & 
                 ((1l << FLOAT32_EXPONENT_SIZE) - 1)) -
                     (FLOAT32_EXPONENT_BIAS - FLOAT16_EXPONENT_BIAS);
@@ -114,6 +120,7 @@ public class CBORFloatingPoint extends CBORObject {
             }
 
             // Seems like 16 bits indeed are sufficient!
+
             tag = MT_FLOAT16;
             bitFormat = 
                 // Put sign bit in position.
