@@ -514,25 +514,27 @@ public abstract class CBORObject {
                     return new CBORInteger(bigInteger);
 
                 case MT_FLOAT16:
-                    long rawDouble;
                     long float16 = getLongFromBytes(2);
-                    if ((float16 & ~FLOAT16_NEG_ZERO) == FLOAT16_POS_ZERO) {
-                        rawDouble = (float16 == FLOAT16_POS_ZERO) ?
-                                                 FLOAT64_POS_ZERO : FLOAT64_NEG_ZERO;
-                    } else if ((float16 & FLOAT16_POS_INFINITY) == FLOAT16_POS_INFINITY) {
+                    long unsigned16 = float16 & ~FLOAT16_NEG_ZERO;
+
+                    // Begin with the edge cases.
+                    
+                    if ((unsigned16 & FLOAT16_POS_INFINITY) == FLOAT16_POS_INFINITY) {
                         // Special "number"
-                        rawDouble = (float16 == FLOAT16_POS_INFINITY) ?
-                            FLOAT64_POS_INFINITY : (float16 == FLOAT16_NEG_INFINITY) ?
-                                // Non-deterministic representations of NaN will be flagged later.
+                        unsigned16 = (unsigned16 == FLOAT16_POS_INFINITY) ?
+                            // Non-deterministic representations of NaN will be flagged later.
                             // NaN "signaling" is not supported.
-                                FLOAT64_NEG_INFINITY : FLOAT64_NOT_A_NUMBER;
-                     } else {
+                            FLOAT64_POS_INFINITY : FLOAT64_NOT_A_NUMBER;
+
+                    } else if (unsigned16 != 0){
+
+                        // It is a "regular" non-zero number.
+                    
                         // Get the bare (but still biased) float16 exponent.
-                        long exponent = (float16 >>> FLOAT16_SIGNIFICAND_SIZE) &
-                                        ((1l << FLOAT16_EXPONENT_SIZE) - 1);
+                        long exponent = (unsigned16 >>> FLOAT16_SIGNIFICAND_SIZE);
                         // Relocate float16 significand bits to their proper float64 position.
                         long significand = 
-                            (float16 << (FLOAT64_SIGNIFICAND_SIZE - FLOAT16_SIGNIFICAND_SIZE));
+                            (unsigned16 << (FLOAT64_SIGNIFICAND_SIZE - FLOAT16_SIGNIFICAND_SIZE));
                         if (exponent == 0) {
                             // Subnormal float16 - In float64 that must translate to normalized.
                             exponent++;
@@ -542,16 +544,18 @@ public abstract class CBORObject {
                                 // Continue until the implicit "1" is in the proper position.
                             } while ((significand & (1l << FLOAT64_SIGNIFICAND_SIZE)) == 0);
                         }
-                        rawDouble = 
-                        // Put possible sign bit in position.
-                        ((float16 & FLOAT16_NEG_ZERO) << (64 - 16)) +
+                        unsigned16 = 
                         // Exponent.  Set the proper bias and put result in front of significand.
                         ((exponent + (FLOAT64_EXPONENT_BIAS - FLOAT16_EXPONENT_BIAS)) 
                             << FLOAT64_SIGNIFICAND_SIZE) +
                         // Significand.  Remove everything above.
                         (significand & ((1l << FLOAT64_SIGNIFICAND_SIZE) - 1));
                     }
-                    return checkDoubleConversion(tag, float16, rawDouble);
+                    return checkDoubleConversion(tag,
+                                                 float16, 
+                                                 unsigned16 +
+                                                 // Put sign bit in position.
+                                                 ((float16 & FLOAT16_NEG_ZERO) << (64 - 16)));
 
                 case MT_FLOAT32:
                     long float32 = getLongFromBytes(4);
