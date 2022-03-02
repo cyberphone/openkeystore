@@ -49,6 +49,7 @@ public class ConvertServlet extends CoreRequestServlet {
     
     static final String DIAG        = "diag";
     static final String HEXA        = "hexa";
+    static final String CSTYLE      = "cstyle";
     static final String B64U        = "b64u";
     
     static final String HTTP_PRAGMA              = "Pragma";
@@ -68,6 +69,8 @@ public class ConvertServlet extends CoreRequestServlet {
             "value='" + HEXA + "'" + (primary ? "" : " checked") +
             "></td><td>Hexadecimal notation" + (primary ? " (including possible #-comments)" 
                                                         : "") + "</td></tr>" +
+            "<tr><td><input type='radio' name='" + name + "' " +
+            "value='" + CSTYLE + "'></td><td><code>0xhh, 0xhh...</code> notation</td></tr>" +
             "<tr><td><input type='radio' name='" + name + "' " +
             "value='" + B64U + "'></td><td>Base64Url notation</td></tr>" +
             "</table>";
@@ -101,6 +104,8 @@ public class ConvertServlet extends CoreRequestServlet {
                     cbor = CBORObject.decode(CBORDiagnosticParser.parse(inData).encode());
                     break;
     
+                case CSTYLE:
+                    inData = inData.toLowerCase().replace("0x", "").replace(',', ' ');
                 case HEXA:
                     cbor = hexDecodedCbor(inData);
                     break;
@@ -118,6 +123,18 @@ public class ConvertServlet extends CoreRequestServlet {
     
                 case HEXA:
                     outData = HexaDecimal.encode(cbor.encode());
+                    break;
+                    
+                case CSTYLE:
+                    outData = HexaDecimal.encode(cbor.encode());
+                    StringBuilder cstyle = new StringBuilder();
+                    for (int i = 0; i < outData.length(); ) {
+                    if (i > 0) {
+                        cstyle.append(", ");
+                    }
+                    cstyle.append("0x").append(outData.charAt(i++)).append(outData.charAt(i++));
+                    }
+                    outData = cstyle.toString();
                     break;
     
                 default:
