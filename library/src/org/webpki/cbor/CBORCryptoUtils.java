@@ -91,6 +91,11 @@ public class CBORCryptoUtils {
         }
         return array;
     }
+    
+    static CBORMap getContainerMap(CBORObject cryptoObject) throws IOException {
+        return (cryptoObject.getType() == CBORTypes.TAGGED_OBJECT ?
+                cryptoObject.getTaggedObject(cryptoObject.getTagNumber()) : cryptoObject).getMap();
+    }
 
     static void asymKeySignatureValidation(PublicKey publicKey,
                                            AsymSignatureAlgorithms signatureAlgorithm,

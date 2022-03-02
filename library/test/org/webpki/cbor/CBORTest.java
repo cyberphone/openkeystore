@@ -839,22 +839,30 @@ public class CBORTest {
         assertTrue("PK" + cborPublicKey.toString(), publicKey.equals(keyPair.getPublic()));
     }
     
-    CBORObject signAndVerify(CBORSigner signer, CBORValidator validator) 
+    CBORObject signAndVerify(CBORSigner signer, CBORValidator validator, boolean addTag) 
             throws IOException, GeneralSecurityException {
         CBORObject tbs = createDataToBeSigned();
-        signer.sign(7, tbs.getMap());
+        if (addTag) {
+            tbs = new CBORTaggedObject(18, tbs);
+        }
+        signer.sign(7, tbs);
         byte[] sd = tbs.encode();
         CBORObject cborSd = CBORObject.decode(sd);
-        return validator.validate(7, cborSd.getMap());
+        return validator.validate(7, cborSd);
      }
-  
+
+    CBORObject signAndVerify(CBORSigner signer, CBORValidator validator) 
+            throws IOException, GeneralSecurityException {
+        return signAndVerify(signer, validator, false);
+    }
+
     void hmacTest(final int size, final HmacAlgorithms algorithm) throws IOException,
                                                                          GeneralSecurityException {
         CBORObject tbs = createDataToBeSigned();
-        new CBORHmacSigner(symmetricKeys.getValue(size), algorithm).sign(7, tbs.getMap());
+        new CBORHmacSigner(symmetricKeys.getValue(size), algorithm).sign(7, tbs);
         byte[] sd = tbs.encode();
         CBORObject cborSd = CBORObject.decode(sd);
-        new CBORHmacValidator(symmetricKeys.getValue(size)).validate(7, cborSd.getMap());
+        new CBORHmacValidator(symmetricKeys.getValue(size)).validate(7, cborSd);
         
         tbs = createDataToBeSigned();
          new CBORHmacSigner(new HmacSignerInterface() {
@@ -869,15 +877,15 @@ public class CBORTest {
                 return algorithm;
             }
             
-        }).sign(7, tbs.getMap());
+        }).sign(7, tbs);
         sd = tbs.encode();
         cborSd = CBORObject.decode(sd);
-        new CBORHmacValidator(symmetricKeys.getValue(size)).validate(7, cborSd.getMap());
+        new CBORHmacValidator(symmetricKeys.getValue(size)).validate(7, cborSd);
 
         tbs = createDataToBeSigned();
         CBORObject keyId = new CBORTextString(symmetricKeys.getName(size));
         new CBORHmacSigner(symmetricKeys.getValue(size), algorithm).setKeyId(keyId)
-            .sign(7, tbs.getMap()); 
+            .sign(7, tbs); 
         sd = tbs.encode();
         cborSd = CBORObject.decode(sd);
         new CBORHmacValidator(
@@ -920,6 +928,9 @@ public class CBORTest {
         signAndVerify(new CBORAsymKeySigner(r2048.getPrivate()).setPublicKey(r2048.getPublic()), 
                       new CBORAsymKeyValidator(r2048.getPublic()));
 
+        signAndVerify(new CBORAsymKeySigner(r2048.getPrivate()).setPublicKey(r2048.getPublic()), 
+                      new CBORAsymKeyValidator(r2048.getPublic()), true);
+        
         signAndVerify(new CBORAsymKeySigner(p256.getPrivate()), 
                       new CBORAsymKeyValidator(new CBORAsymKeyValidator.KeyLocator() {
                 

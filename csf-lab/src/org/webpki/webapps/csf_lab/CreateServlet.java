@@ -288,8 +288,9 @@ public class CreateServlet extends CoreRequestServlet {
                     CBORDiagnosticParser.parse(getParameterTextarea(request, PRM_CBOR_DATA))
                                         :
                     hexDecodedCbor(getParameter(request, PRM_CBOR_DATA));
-            if (cbor.getType() != CBORTypes.MAP) {
-                throw new IOException("Only CBOR \"map\" can be signed");
+            if ((cbor.getType() == CBORTypes.TAGGED_OBJECT ?
+                 cbor.getTaggedObject(cbor.getTagNumber()) : cbor).getType() != CBORTypes.MAP) {
+                throw new IOException("Only CBOR \"map\" (optionally tagged) can be signed");
             }
             CBORObject signatureLabel = getSignatureLabel(request);
             boolean keyInlining = request.getParameter(FLG_PUB_INLINE) != null;
@@ -350,7 +351,7 @@ public class CreateServlet extends CoreRequestServlet {
             }
 
             signer.setKeyId(optionalKeyId);
-            CBORObject signedCborObject = signer.sign(signatureLabel, cbor.getMap());
+            CBORObject signedCborObject = signer.sign(signatureLabel, cbor);
             // We terminate by validating the signature as well
             request.getRequestDispatcher("validate?" +
                 CSF_OBJECT_IN_HEX +

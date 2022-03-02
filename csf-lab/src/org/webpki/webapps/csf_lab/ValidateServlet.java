@@ -32,6 +32,7 @@ import org.webpki.cbor.CBORAsymKeyValidator;
 import org.webpki.cbor.CBORHmacValidator;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;
+import org.webpki.cbor.CBORTypes;
 import org.webpki.cbor.CBORX509Validator;
 import org.webpki.cbor.CBORCryptoConstants;
 
@@ -56,15 +57,18 @@ public class ValidateServlet extends CoreRequestServlet {
                 throw new IOException("Unexpected MIME type:" + request.getContentType());
             }
             // Get the input data items
-            CBORMap signedCborObject = (Boolean.valueOf(getParameter(request, CSF_OBJECT_IN_HEX)) ?
+            CBORObject signedCborObject = (Boolean.valueOf(getParameter(request, CSF_OBJECT_IN_HEX)) ?
                     hexDecodedCbor(getParameter(request, CSF_OBJECT))
                                                 :
-                    CBORDiagnosticParser.parse(getParameterTextarea(request, CSF_OBJECT))).getMap();
+                    CBORDiagnosticParser.parse(getParameterTextarea(request, CSF_OBJECT)));
             String validationKey = getParameter(request, CSF_VALIDATION_KEY);
             CBORObject signatureLabel = getSignatureLabel(request);
             
-            // This is not how you would do in an application...
-            CBORMap signatureObject = signedCborObject.getObject(signatureLabel).getMap();
+            // This is certainly not what you would do in an application...
+            CBORMap signatureObject = (signedCborObject.getType() == CBORTypes.TAGGED_OBJECT ?
+                    signedCborObject.getTaggedObject(signedCborObject.getTagNumber()) 
+                                                  :
+                    signedCborObject).getMap().getObject(signatureLabel).getMap();
             boolean hmacSignature = 
                     signatureObject.getObject(CBORCryptoConstants.ALGORITHM_LABEL).getInt() > 0;
             boolean x509flag = signatureObject.hasKey(CBORCryptoConstants.CERT_PATH_LABEL);

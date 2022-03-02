@@ -133,6 +133,11 @@ public abstract class CBORSigner {
      * <p>
      * Adds an enveloped CSF object (signature) to a CBOR map.
      * </p>
+     * <p>
+     * Note that if <code>objectToSign</code> holds a CBOR
+     * tag object the tag must in turn contain the map to be signed,
+     * and the tag will also be included in the data to be signed.
+     * </p>
      * 
      * @param key Key holding the signature in the CBOR map to sign
      * @param objectToSign CBOR map to be signed
@@ -140,8 +145,11 @@ public abstract class CBORSigner {
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public CBORMap sign(CBORObject key, CBORMap objectToSign) throws IOException,
-                                                                     GeneralSecurityException {
+    public CBORObject sign(CBORObject key, CBORObject objectToSign) 
+        throws IOException, GeneralSecurityException {
+
+        // There may be a tag holding the map to be signed.
+        CBORMap mapToSign = CBORCryptoUtils.getContainerMap(objectToSign);
 
         // Create empty signature object.
         CBORMap signatureObject = new CBORMap();
@@ -158,8 +166,8 @@ public abstract class CBORSigner {
         // Asymmetric key signatures add specific items to the signature container.
         additionalItems(signatureObject);
         
-        // Add the prepared signature object to the object we want to sign. 
-        objectToSign.setObject(key, signatureObject);
+        // Add the prepared signature object to the map object we want to sign. 
+        mapToSign.setObject(key, signatureObject);
 
         // Finally, sign all but the signature label and associated value.
         // internalEncode() is supposed to produce a deterministic representation
@@ -184,8 +192,8 @@ public abstract class CBORSigner {
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public CBORMap sign(int key, CBORMap objectToSign) throws IOException,
-                                                              GeneralSecurityException {
+    public CBORObject sign(int key, CBORObject objectToSign) throws IOException,
+                                                                    GeneralSecurityException {
         return sign(new CBORInteger(key), objectToSign);
     }
 
@@ -201,8 +209,8 @@ public abstract class CBORSigner {
      * @throws IOException
      * @throws GeneralSecurityException
       */
-    public CBORMap sign(String key, CBORMap objectToSign) throws IOException, 
-                                                                 GeneralSecurityException {
+    public CBORObject sign(String key, CBORObject objectToSign) throws IOException, 
+                                                                       GeneralSecurityException {
         return sign(new CBORTextString(key), objectToSign);
     }
 }

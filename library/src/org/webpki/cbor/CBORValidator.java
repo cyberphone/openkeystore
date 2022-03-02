@@ -51,17 +51,25 @@ public abstract class CBORValidator {
      * This method presumes that <code>signedObject</code> holds
      * an enveloped signature according to CSF.
      * </p>
-     * 
+     * <p>
+     * Note that if <code>signedObject</code> holds a CBOR
+     * tag object the tag must in turn contain the signed map,
+     * and the tag will also be included in the signed data.
+     * </p>
      * @param key Key in map holding signature
      * @param signedObject Signed CBOR map object
      * @return The signed object
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public CBORMap validate(CBORObject key, CBORMap signedObject) throws IOException, 
-                                                                         GeneralSecurityException {
+    public CBORObject validate(CBORObject key, CBORObject signedObject) 
+            throws IOException, GeneralSecurityException {
+
+        // There may be a tag holding the signed map.
+        CBORMap signedMap = CBORCryptoUtils.getContainerMap(signedObject);
+
         // Fetch signature object
-        CBORMap signatureObject = signedObject.getObject(key).getMap();
+        CBORMap signatureObject = signedMap.getObject(key).getMap();
 
         // Get the signature value and remove it from the (map) object.
         byte[] signatureValue = signatureObject.readByteStringAndRemoveKey(SIGNATURE_LABEL);
@@ -100,8 +108,8 @@ public abstract class CBORValidator {
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public CBORMap validate(int key, CBORMap signedObject) throws IOException, 
-                                                                  GeneralSecurityException {
+    public CBORObject validate(int key, CBORObject signedObject) throws IOException, 
+                                                                        GeneralSecurityException {
         return validate(new CBORInteger(key), signedObject);
     }
     
@@ -117,8 +125,8 @@ public abstract class CBORValidator {
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public CBORMap validate(String key, CBORMap signedObject) throws IOException, 
-                                                                     GeneralSecurityException {
+    public CBORObject validate(String key, CBORObject signedObject) throws IOException, 
+                                                                           GeneralSecurityException {
         return validate(new CBORTextString(key), signedObject);
     }
 }
