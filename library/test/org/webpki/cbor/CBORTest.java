@@ -428,9 +428,12 @@ public class CBORTest {
         floatTest("3.0584633350372314e-5",      "FA38004800");
         floatTest("5.9604644775390625e-8",      "F90001");
         floatTest("5.960465188081798e-8",       "FA33800001");
+        floatTest("-5.9604644775390625e-8",     "F98001");
+        floatTest("-5.960465188081798e-8",      "FAB3800001");
         
         floatTest("65504.0",                    "F97BFF");
         floatTest("65504.00390625",             "FA477FE001");
+        floatTest("-65504.00390625",            "FAC77FE001");
         floatTest("65505.0",                    "FA477FE100");
 
         floatTest("65536.0",                    "FA47800000");
