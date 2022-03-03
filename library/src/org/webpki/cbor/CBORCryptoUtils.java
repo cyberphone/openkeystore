@@ -65,7 +65,7 @@ public class CBORCryptoUtils {
     }
 
     /**
-     * Encode certificate path into a CBOR array.
+     * Encodes certificate path into a CBOR array.
  
      * Note that the certificates must be in ascending
      * order with respect to parenthood.  That is,
@@ -91,10 +91,37 @@ public class CBORCryptoUtils {
         }
         return array;
     }
-    
-    static CBORMap getContainerMap(CBORObject cryptoObject) throws IOException {
-        return (cryptoObject.getType() == CBORTypes.TAGGED_OBJECT ?
-                cryptoObject.getTaggedObject(cryptoObject.getTagNumber()) : cryptoObject).getMap();
+
+    /**
+     * Retrieves the container map object.
+ 
+     * <p>
+     * This method is intended for CBOR map objects that <i>optionally</i>
+     * are wrapped in a tag.  This implementation accepts two variants of tags:
+     * </p>
+     * <pre>
+     *     nnn({})
+     *     nnn(["string data", {}])
+     * </pre>
+     * 
+     * @param container A map optionally enclosed in a tag 
+     * @return The map object without the tag
+     * @throws IOException
+     */
+    public static CBORMap getContainerMap(CBORObject container) throws IOException {
+        if (container.getType() == CBORTypes.TAGGED_OBJECT) {
+            CBORObject tagged = container.getTaggedObject(container.getTagNumber());
+            if (tagged.getType() == CBORTypes.ARRAY) {
+                CBORArray holder = tagged.getArray();
+                if (holder.size() != 2 ||
+                    holder.getObject(0).getType() != CBORTypes.TEXT_STRING) {
+                    throw new IOException(
+                            "Tag syntax nnn([\"string\", {}]) expected");
+                }
+                container = holder.getObject(1);
+            } else container = tagged;
+        }
+        return container.getMap();
     }
 
     static void asymKeySignatureValidation(PublicKey publicKey,

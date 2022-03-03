@@ -35,7 +35,7 @@ import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORTypes;
 import org.webpki.cbor.CBORX509Validator;
 import org.webpki.cbor.CBORCryptoConstants;
-
+import org.webpki.cbor.CBORCryptoUtils;
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.CertificateInfo;
@@ -65,10 +65,9 @@ public class ValidateServlet extends CoreRequestServlet {
             CBORObject signatureLabel = getSignatureLabel(request);
             
             // This is certainly not what you would do in an application...
-            CBORMap signatureObject = (signedCborObject.getType() == CBORTypes.TAGGED_OBJECT ?
-                    signedCborObject.getTaggedObject(signedCborObject.getTagNumber()) 
-                                                  :
-                    signedCborObject).getMap().getObject(signatureLabel).getMap();
+            CBORMap signatureObject = 
+                    CBORCryptoUtils.getContainerMap(signedCborObject)
+                        .getObject(signatureLabel).getMap();
             boolean hmacSignature = 
                     signatureObject.getObject(CBORCryptoConstants.ALGORITHM_LABEL).getInt() > 0;
             boolean x509flag = signatureObject.hasKey(CBORCryptoConstants.CERT_PATH_LABEL);

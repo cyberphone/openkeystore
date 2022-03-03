@@ -839,12 +839,19 @@ public class CBORTest {
         assertTrue("PK" + cborPublicKey.toString(), publicKey.equals(keyPair.getPublic()));
     }
     
-    CBORObject signAndVerify(CBORSigner signer, CBORValidator validator, boolean addTag) 
+    CBORObject signAndVerify(CBORSigner signer, 
+                             CBORValidator validator,
+                             Integer tagNumber,
+                             String objectId) 
             throws IOException, GeneralSecurityException {
         CBORObject tbs = createDataToBeSigned();
-        if (addTag) {
-            tbs = new CBORTaggedObject(18, tbs);
+        if (tagNumber != null) {
+            new CBORTaggedObject(tagNumber,
+                    objectId == null ? tbs : new CBORArray()
+                            .addObject(new CBORTextString(objectId))
+                            .addObject(tbs));
         }
+
         signer.sign(7, tbs);
         byte[] sd = tbs.encode();
         CBORObject cborSd = CBORObject.decode(sd);
@@ -853,7 +860,7 @@ public class CBORTest {
 
     CBORObject signAndVerify(CBORSigner signer, CBORValidator validator) 
             throws IOException, GeneralSecurityException {
-        return signAndVerify(signer, validator, false);
+        return signAndVerify(signer, validator, null, null);
     }
 
     void hmacTest(final int size, final HmacAlgorithms algorithm) throws IOException,
@@ -929,8 +936,11 @@ public class CBORTest {
                       new CBORAsymKeyValidator(r2048.getPublic()));
 
         signAndVerify(new CBORAsymKeySigner(r2048.getPrivate()).setPublicKey(r2048.getPublic()), 
-                      new CBORAsymKeyValidator(r2048.getPublic()), true);
-        
+                      new CBORAsymKeyValidator(r2048.getPublic()), 18, null);
+
+        signAndVerify(new CBORAsymKeySigner(r2048.getPrivate()).setPublicKey(r2048.getPublic()), 
+                      new CBORAsymKeyValidator(r2048.getPublic()), 211, "https://example.com/myobject");
+
         signAndVerify(new CBORAsymKeySigner(p256.getPrivate()), 
                       new CBORAsymKeyValidator(new CBORAsymKeyValidator.KeyLocator() {
                 
@@ -1189,7 +1199,7 @@ public class CBORTest {
                             new CBORAsymKeyEncrypter(keyPair.getPublic(),
                                                      kea,
                                                      cea); 
-                    byte[] encrypted = encrypter.encrypt(dataToEncrypt).encode();
+                    CBORObject encrypted = encrypter.encrypt(dataToEncrypt);
                     assertTrue("enc/dec", 
                             ArrayUtil.compare(new CBORAsymKeyDecrypter(
                                     keyPair.getPrivate()).decrypt(encrypted),
@@ -1207,7 +1217,7 @@ public class CBORTest {
                 boolean ok = cea.getKeyLength() == secretKey.length;
                 try {
                     CBORSymKeyEncrypter encrypter = new CBORSymKeyEncrypter(secretKey, cea);
-                    byte[] encrypted = encrypter.encrypt(dataToEncrypt).encode();
+                    CBORObject encrypted = encrypter.encrypt(dataToEncrypt);
                     assertTrue("enc/dec",
                             ArrayUtil.compare(
                                     new CBORSymKeyDecrypter(secretKey).decrypt(encrypted),
@@ -1244,13 +1254,13 @@ public class CBORTest {
                 new CBORAsymKeyEncrypter(p256.getPublic(),
                                          KeyEncryptionAlgorithms.ECDH_ES,
                                          ContentEncryptionAlgorithms.A256GCM);
-        byte[] p256Encrypted = p256Encrypter.encrypt(dataToEncrypt).encode();
+        CBORObject p256Encrypted = p256Encrypter.encrypt(dataToEncrypt);
         assertTrue("enc/dec", 
                 ArrayUtil.compare(new CBORAsymKeyDecrypter(
                         p256.getPrivate()).decrypt(p256Encrypted),
                         dataToEncrypt));
         p256Encrypter.setKeyId(keyId);
-        byte[] p256EncryptedKeyId = p256Encrypter.encrypt(dataToEncrypt).encode();
+        CBORObject p256EncryptedKeyId = p256Encrypter.encrypt(dataToEncrypt);
         assertTrue("enc/dec", 
                 ArrayUtil.compare(new CBORAsymKeyDecrypter(
                         p256.getPrivate()).decrypt(p256EncryptedKeyId),
@@ -1290,8 +1300,8 @@ public class CBORTest {
         try {
             new CBORAsymKeyDecrypter(
                         p256.getPrivate()).decrypt(
-                            CBORObject.decode(
-                                    p256Encrypted).getMap().setObject(-2, new CBORInteger(5)).encode());
+                            
+                                    p256Encrypted.getMap().setObject(-2, new CBORInteger(5)));
             fail("must not run");
         } catch (Exception e) {
             checkException(e, "Map key -2 of type=CBORInteger with value=5 was never read");
@@ -1299,17 +1309,16 @@ public class CBORTest {
         try {
             new CBORAsymKeyDecrypter(
                         p256.getPrivate()).decrypt(
-                            CBORObject.decode(
-                                    p256Encrypted).getMap()
+                                     p256Encrypted.getMap()
                             .getObject(KEY_ENCRYPTION_LABEL)
-                            .getMap().removeObject(ALGORITHM_LABEL).encode());
+                            .getMap().removeObject(ALGORITHM_LABEL));
             fail("must not run");
         } catch (Exception e) {
             checkException(e, "Missing key: 1");
         }
-        byte[] a256Encrypted = new CBORSymKeyEncrypter(symmetricKeys.getValue(256),
+        CBORObject a256Encrypted = new CBORSymKeyEncrypter(symmetricKeys.getValue(256),
                                             ContentEncryptionAlgorithms.A256GCM)
-                                                .encrypt(dataToEncrypt).encode();
+                                                .encrypt(dataToEncrypt);
         
         CBORSymKeyDecrypter a256Decrypter = new CBORSymKeyDecrypter(symmetricKeys.getValue(256));
         assertTrue("enc/dec", 
@@ -1317,14 +1326,58 @@ public class CBORTest {
                         dataToEncrypt));
         
         try {
-            a256Decrypter.decrypt(CBORObject.decode(
-                a256Encrypted).getMap().setObject(KEY_ENCRYPTION_LABEL, 
+            a256Decrypter.decrypt(
+                a256Encrypted.getMap().setObject(KEY_ENCRYPTION_LABEL, 
                         new CBORMap().setObject(ALGORITHM_LABEL,
-                                new CBORInteger(600))).encode());
+                                new CBORInteger(600))));
             fail("must not run");
         } catch (Exception e) {
             checkException(e, "Map key 1 of type=CBORInteger with value=600 was never read");
         }
+        
+        CBOREncrypter taggedX25519Encrypter =  new CBORAsymKeyEncrypter(x25519.getPublic(),
+                                         KeyEncryptionAlgorithms.ECDH_ES_A256KW,
+                                         ContentEncryptionAlgorithms.A256GCM)
+                .setKeyId("mykey")
+                .setTagWrapper(new CBOREncrypter.TagWrapper() {
+                    
+                    @Override
+                    public CBORObject wrap(CBORMap encryptionObject)
+                            throws IOException, GeneralSecurityException {
+                        return new CBORTaggedObject(211, 
+                                                    new CBORArray()
+                                .addObject(new CBORTextString("https://example.com/myobject"))
+                                .addObject(encryptionObject));
+                    }
+                });
+
+
+        CBORObject taggedX25519Encrypted = taggedX25519Encrypter.encrypt(dataToEncrypt);
+        assertTrue("enc/dec", 
+                ArrayUtil.compare(new CBORAsymKeyDecrypter(
+                                        x25519.getPrivate()).decrypt(taggedX25519Encrypted),
+                                  dataToEncrypt));
+        
+        taggedX25519Encrypter = new CBORAsymKeyEncrypter(x25519.getPublic(),
+                                         KeyEncryptionAlgorithms.ECDH_ES_A256KW,
+                                         ContentEncryptionAlgorithms.A256GCM)
+                .setKeyId("mykey")
+                .setTagWrapper(new CBOREncrypter.TagWrapper() {
+                    
+                    @Override
+                    public CBORObject wrap(CBORMap encryptionObject)
+                            throws IOException, GeneralSecurityException {
+                        return new CBORTaggedObject(18, encryptionObject);
+                    }
+                });
+
+        taggedX25519Encrypted = taggedX25519Encrypter.encrypt(dataToEncrypt);
+        assertTrue("enc/dec", 
+                ArrayUtil.compare(new CBORAsymKeyDecrypter(
+                                        x25519.getPrivate()).decrypt(taggedX25519Encrypted),
+                                  dataToEncrypt));
+
+
     }
     
     byte[] getBinaryFromHex(String hex) throws Exception {

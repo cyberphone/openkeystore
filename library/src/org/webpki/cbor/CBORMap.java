@@ -305,6 +305,25 @@ public class CBORMap extends CBORObject {
         return data;
     }
 
+    /**
+     * Sets a <code>byte string</code> value.
+     * <p>
+     * If <code>key</code> is not present an exception is thrown.
+     * </p>
+     * <p>
+     * This convenience method is provided for supporting
+     * cryptographic constructs like CSF and CEF.
+     * </p>
+     * 
+     * @param key Integer key
+     * @param byteString Byte string
+     * @return <code>this</code>
+     * @throws IOException
+     */
+    public CBORMap setByteString(CBORInteger key, byte[] byteString) throws IOException {
+        return setObject(key, new CBORByteString(byteString));
+    }
+    
     @Override
     byte[] internalEncode() throws IOException {
         byte[] encoded = encodeTagAndN(MT_MAP, keys.size());

@@ -32,6 +32,35 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
  */
 public abstract class CBOREncrypter {
 
+    /**
+     * For wrapping encryption objects in a tag.
+     */
+    public interface TagWrapper {
+
+        /**
+         * Optionally wraps an encryption map in a tag.
+         * <p>
+         * See {@link CBORCryptoUtils#getContainerMap(CBORObject)} for details.
+         * </p>
+         * 
+         * @param encryptionObject Unwrapped map
+         * @return Original or wrapped map
+         * @throws IOException
+         * @throws GeneralSecurityException
+         */
+        CBORObject wrap(CBORMap encryptionObject) throws IOException, GeneralSecurityException;
+    }
+    
+    // The default is to use a map without tagging.
+    TagWrapper tagWrapper = new TagWrapper() {
+
+        @Override
+        public CBORObject wrap(CBORMap encryptionObject)
+                throws IOException, GeneralSecurityException {
+            return encryptionObject;
+
+        }};
+
     // The algorithm to use with the contentEncryptionKey
     ContentEncryptionAlgorithms contentEncryptionAlgorithm;
     
@@ -48,6 +77,21 @@ public abstract class CBOREncrypter {
     // Overridden by key encryption encrypters
     CBORMap getEncryptionObject(CBORMap original) throws IOException {
         return original;
+    }
+    
+    /**
+     * Sets optional tag wrapper.
+     * 
+     * <p>
+     * See {@link CBORCryptoUtils#getContainerMap(CBORObject)} for details.
+     * </p>
+     * 
+     * @param tagWrapper An instance of TagWrapper
+     * @return this
+     */
+    public CBOREncrypter setTagWrapper(TagWrapper tagWrapper) {
+        this.tagWrapper = tagWrapper;
+        return this;
     }
     
     /**
@@ -105,14 +149,17 @@ public abstract class CBOREncrypter {
      * Encrypts data.
      * 
      * @param dataToEncrypt The data to encrypt
-     * @return CBORMap CBOR encryption object
+     * @return CBOR encryption object
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public CBORMap encrypt(byte[] dataToEncrypt) throws IOException, GeneralSecurityException {
+    public CBORObject encrypt(byte[] dataToEncrypt) throws IOException, GeneralSecurityException {
 
         // Create an empty encryption object.
         CBORMap encryptionObject = new CBORMap();
+        
+        // The object may be wrapped in a tag as well.
+        CBORObject outerObject = tagWrapper.wrap(encryptionObject);
         
         // Add the mandatory content encryption algorithm.
         encryptionObject.setObject(ALGORITHM_LABEL,
@@ -135,7 +182,7 @@ public abstract class CBOREncrypter {
         // CBOR implementation supports fully canonical (deterministic)
         // parsing and code generation! This implementation shows that
         // this is quite simple.
-        byte[] authData = encryptionObject.internalEncode();
+        byte[] authData = outerObject.internalEncode();
         
         // Create an initialization vector.
         byte[] iv = EncryptionCore.createIv(contentEncryptionAlgorithm);
@@ -160,6 +207,6 @@ public abstract class CBOREncrypter {
         encryptionObject.setObject(CIPHER_TEXT_LABEL, new CBORByteString(result.getCipherText()));
 
         // Finally, the thing we all longed(?) for!
-        return encryptionObject;
+        return outerObject;
     }
 }

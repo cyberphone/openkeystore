@@ -27,7 +27,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.webpki.cbor.CBORArray;
 import org.webpki.cbor.CBORAsymKeySigner;
+import org.webpki.cbor.CBORCryptoUtils;
 import org.webpki.cbor.CBORHmacSigner;
 import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORSigner;
@@ -288,10 +290,7 @@ public class CreateServlet extends CoreRequestServlet {
                     CBORDiagnosticParser.parse(getParameterTextarea(request, PRM_CBOR_DATA))
                                         :
                     hexDecodedCbor(getParameter(request, PRM_CBOR_DATA));
-            if ((cbor.getType() == CBORTypes.TAGGED_OBJECT ?
-                 cbor.getTaggedObject(cbor.getTagNumber()) : cbor).getType() != CBORTypes.MAP) {
-                throw new IOException("Only CBOR \"map\" (optionally tagged) can be signed");
-            }
+            CBORCryptoUtils.getContainerMap(cbor);
             CBORObject signatureLabel = getSignatureLabel(request);
             boolean keyInlining = request.getParameter(FLG_PUB_INLINE) != null;
             boolean certOption = request.getParameter(FLG_CERT_PATH) != null;

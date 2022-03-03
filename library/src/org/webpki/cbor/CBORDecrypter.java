@@ -46,24 +46,24 @@ public abstract class CBORDecrypter {
     /**
      * Decrypts data.
      * 
-     * @param encodedEncryptionObject CBOR encryption object
+     * @param encryptionObject CBOR encryption object
      * @return Decrypted data
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public byte[] decrypt(byte[] encodedEncryptionObject)
-            throws IOException, GeneralSecurityException {
+    public byte[] decrypt(CBORObject encryptionObject) throws IOException, 
+                                                              GeneralSecurityException {
 
-        // Decode encryption object.
-        CBORMap encryptionObject = CBORObject.decode(encodedEncryptionObject).getMap();
-        
+        // There may be a tag holding the encryption map.
+        CBORMap encryptionMap = CBORCryptoUtils.getContainerMap(encryptionObject);
+
         // Get the mandatory content encryption algorithm.
         ContentEncryptionAlgorithms contentEncryptionAlgorithm =
                 ContentEncryptionAlgorithms.getAlgorithmFromId(
-                        encryptionObject.getObject(ALGORITHM_LABEL).getInt());
+                        encryptionMap.getObject(ALGORITHM_LABEL).getInt());
 
         // Possible key encryption begins to kick in here.
-        CBORMap innerObject = getOptionalKeyEncryptionObject(encryptionObject);
+        CBORMap innerObject = getOptionalKeyEncryptionObject(encryptionMap);
              
         // Get the key Id if there is one.
         CBORObject optionalKeyId = innerObject.hasKey(KEY_ID_LABEL) ?
@@ -76,13 +76,13 @@ public abstract class CBORDecrypter {
         
         // Read and remove the encryption object (map) parameters that
         // do not participate (because they cannot) in "authData".
-        byte[] iv = encryptionObject.readByteStringAndRemoveKey(IV_LABEL);
-        byte[] tag = encryptionObject.readByteStringAndRemoveKey(TAG_LABEL);
-        byte[] cipherText = encryptionObject.readByteStringAndRemoveKey(CIPHER_TEXT_LABEL);
+        byte[] iv = encryptionMap.readByteStringAndRemoveKey(IV_LABEL);
+        byte[] tag = encryptionMap.readByteStringAndRemoveKey(TAG_LABEL);
+        byte[] cipherText = encryptionMap.readByteStringAndRemoveKey(CIPHER_TEXT_LABEL);
         
         // Check that there is no unread (illegal) data like public 
         // keys in symmetric encryption or just plain unknown elements.
-        encryptionObject.checkForUnread();
+        encryptionMap.checkForUnread();
         
         // Now we should have everything for decrypting the actual data.
         // Use the remaining CBOR data as "authData".
@@ -92,6 +92,11 @@ public abstract class CBORDecrypter {
         // parsing and code generation! This implementation shows that
         // this is quite simple.
         byte[] authData = encryptionObject.internalEncode();
+        
+        // Be nice and restore the object as well.
+        encryptionMap.setByteString(IV_LABEL, iv);
+        encryptionMap.setByteString(TAG_LABEL, tag);
+        encryptionMap.setByteString(CIPHER_TEXT_LABEL, cipherText);
          
         // Perform the actual decryption.
         return EncryptionCore.contentDecryption(contentEncryptionAlgorithm,
