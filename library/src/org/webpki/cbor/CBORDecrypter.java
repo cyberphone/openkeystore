@@ -68,7 +68,12 @@ public abstract class CBORDecrypter {
         // Get the key Id if there is one.
         CBORObject optionalKeyId = innerObject.hasKey(KEY_ID_LABEL) ?
                          innerObject.getObject(KEY_ID_LABEL).scan() : null;
-        
+
+        // Access a possible customData element in order satisfy checkForUnread().
+        if (encryptionMap.hasKey(CUSTOM_DATA_LABEL)) {
+            encryptionMap.getObject(CUSTOM_DATA_LABEL).scan();
+        }
+
         // Get the content encryption key which also may be encrypted.
         byte[] contentDecryptionKey = getContentEncryptionKey(innerObject,
                                                               contentEncryptionAlgorithm,

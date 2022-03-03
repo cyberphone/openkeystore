@@ -33,12 +33,12 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
 public abstract class CBOREncrypter {
 
     /**
-     * For wrapping encryption objects in a tag.
+     * For customizing encryption map objects.
      */
-    public interface TagWrapper {
+    public interface Intercepter {
 
         /**
-         * Optionally wraps an encryption map in a tag.
+         * Optionally wraps map in a tag.
          * <p>
          * See {@link CBORCryptoUtils#getContainerMap(CBORObject)} for details.
          * </p>
@@ -48,19 +48,26 @@ public abstract class CBOREncrypter {
          * @throws IOException
          * @throws GeneralSecurityException
          */
-        CBORObject wrap(CBORMap encryptionObject) throws IOException, GeneralSecurityException;
-    }
-    
-    // The default is to use a map without tagging.
-    TagWrapper tagWrapper = new TagWrapper() {
-
-        @Override
-        public CBORObject wrap(CBORMap encryptionObject)
+        default CBORObject wrap(CBORMap encryptionObject) 
                 throws IOException, GeneralSecurityException {
             return encryptionObject;
+        }
 
-        }};
-
+        /**
+         * Optionally adds custom data to the map.
+         * 
+         * @return <code>null</code> or customData object.
+         * @throws IOException
+         * @throws GeneralSecurityException
+         */
+        default CBORObject getCustomData() throws IOException, GeneralSecurityException {
+            return null;
+        }
+    }
+    
+    // The default is to use a map without tagging and custom data.
+    Intercepter intercepter = new Intercepter() { };
+    
     // The algorithm to use with the contentEncryptionKey
     ContentEncryptionAlgorithms contentEncryptionAlgorithm;
     
@@ -80,17 +87,17 @@ public abstract class CBOREncrypter {
     }
     
     /**
-     * Sets optional tag wrapper.
+     * Sets optional Intercepter.
      * 
      * <p>
      * See {@link CBORCryptoUtils#getContainerMap(CBORObject)} for details.
      * </p>
      * 
-     * @param tagWrapper An instance of TagWrapper
+     * @param intercepter An instance of TagWrapper
      * @return this
      */
-    public CBOREncrypter setTagWrapper(TagWrapper tagWrapper) {
-        this.tagWrapper = tagWrapper;
+    public CBOREncrypter setTagWrapper(Intercepter intercepter) {
+        this.intercepter = intercepter;
         return this;
     }
     
@@ -157,10 +164,16 @@ public abstract class CBOREncrypter {
 
         // Create an empty encryption object.
         CBORMap encryptionObject = new CBORMap();
-        
+
         // The object may be wrapped in a tag as well.
-        CBORObject outerObject = tagWrapper.wrap(encryptionObject);
-        
+        CBORObject outerObject = intercepter.wrap(encryptionObject);
+
+        // Get optional custom data.
+        CBORObject customData = intercepter.getCustomData();
+        if (customData != null) {
+            encryptionObject.setObject(CUSTOM_DATA_LABEL, customData);
+        }
+
         // Add the mandatory content encryption algorithm.
         encryptionObject.setObject(ALGORITHM_LABEL,
                                    new CBORInteger(

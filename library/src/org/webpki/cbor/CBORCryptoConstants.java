@@ -125,6 +125,12 @@ public interface CBORCryptoConstants {
     /////////////////////////////////////////////////////////////////
  
     /**
+     * CEF "customData" label (0).
+     * Passes through and is protected by being a part of AAD.
+     */
+    CBORInteger CUSTOM_DATA_LABEL    = new CBORInteger(0);
+    
+    /**
      * CSF/CEF "algorithm" label (1).
      * Note: This label is also used in key encryption sub-maps.
      */
