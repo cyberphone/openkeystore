@@ -19,7 +19,7 @@ package org.webpki.keygen2;
 import java.io.IOException;
 
 import java.util.LinkedHashMap;
-
+import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 
 import org.webpki.crypto.AlgorithmPreferences;
@@ -48,7 +48,7 @@ public class KeyCreationResponseDecoder extends KeyGen2Validator {
     }
 
     @Override
-    protected void readJSONData(JSONObjectReader rd) throws IOException {
+    protected void readJSONData(JSONObjectReader rd) throws IOException, GeneralSecurityException {
         //////////////////////////////////////////////////////////////////////////
         // Session properties
         //////////////////////////////////////////////////////////////////////////

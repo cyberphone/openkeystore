@@ -55,7 +55,8 @@ public class Key2 {
         }
 
         @Override
-        protected void readJSONData(JSONObjectReader rd) throws IOException {
+        protected void readJSONData(JSONObjectReader rd) throws IOException,
+                                                                GeneralSecurityException {
             publicKey = rd.getPublicKey();
         }
 

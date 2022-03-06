@@ -523,7 +523,7 @@ public abstract class CBORObject {
                         // Special "number"
                         unsignedResult = (unsignedResult == FLOAT16_POS_INFINITY) ?
                             // Non-deterministic representations of NaN will be flagged later.
-                            // NaN "signaling" is not supported.
+                            // NaN "signaling" is not supported, "quiet" NaN is all there is.
                             FLOAT64_POS_INFINITY : FLOAT64_NOT_A_NUMBER;
 
                     } else if (unsignedResult != FLOAT16_POS_ZERO){

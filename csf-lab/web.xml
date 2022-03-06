@@ -34,6 +34,11 @@
         <servlet-class>org.webpki.webapps.csf_lab.ConvertServlet</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>CoseKeyServlet</servlet-name>
+        <servlet-class>org.webpki.webapps.csf_lab.CoseKeyServlet</servlet-class>
+    </servlet>
+
     <servlet-mapping>
         <servlet-name>HomeServlet</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -54,4 +59,9 @@
         <url-pattern>/convert</url-pattern>
     </servlet-mapping>
 
+    <servlet-mapping>
+        <servlet-name>CoseKeyServlet</servlet-name>
+        <url-pattern>/cosekey</url-pattern>
+    </servlet-mapping>
+    
 </web-app>

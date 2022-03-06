@@ -2307,7 +2307,6 @@ public class JSONTest {
         symmetricKeys = new SymmetricKeys(baseKey);
     }
 
-    @SuppressWarnings("serial")
     public static class Reader extends JSONDecoder {
         void test(boolean ok) throws IOException {
             if (!ok) throw new IOException("Bad");
@@ -2346,7 +2345,6 @@ public class JSONTest {
         }
     }
 
-    @SuppressWarnings("serial")
     static class Writer extends JSONEncoder {
         @Override
         protected void writeJSONData(JSONObjectWriter wr) throws IOException {

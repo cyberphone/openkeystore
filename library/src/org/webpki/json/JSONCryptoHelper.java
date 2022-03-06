@@ -18,12 +18,30 @@ package org.webpki.json;
 
 import java.lang.reflect.InvocationTargetException;
 
+import java.math.BigInteger;
+
+import java.security.GeneralSecurityException;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+
+import java.security.interfaces.RSAPublicKey;
+
+import java.security.spec.ECPoint;
+import java.security.spec.ECPrivateKeySpec;
+import java.security.spec.ECPublicKeySpec;
+import java.security.spec.RSAPrivateCrtKeySpec;
+import java.security.spec.RSAPublicKeySpec;
+
 import java.io.IOException;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
 import org.webpki.crypto.AlgorithmPreferences;
+import org.webpki.crypto.KeyAlgorithms;
+import org.webpki.crypto.KeyTypes;
+import org.webpki.crypto.OkpSupport;
 
 /**
  * Common crypto support for JSF and JEF.
@@ -406,6 +424,96 @@ public class JSONCryptoHelper {
         
         public void setExtensionNames(String[] names, boolean encryptionMode) throws IOException {
             this.extensionNames = createSet(checkExtensions(names, encryptionMode));
+        }
+    }
+    
+    static BigInteger getCurvePoint(JSONObjectReader rd, 
+                                    String property,
+                                    KeyAlgorithms ec) throws IOException {
+        byte[] fixedBinary = rd.getBinary(property);
+        if (fixedBinary.length != (ec.getPublicKeySizeInBits() + 7) / 8) {
+            throw new IOException("Public EC key parameter \"" + property + "\" is not normalized");
+        }
+        return new BigInteger(1, fixedBinary);
+    }
+
+    static BigInteger getCryptoBinary(JSONObjectReader rd, 
+                                      String property) throws IOException {
+        byte[] cryptoBinary = rd.getBinary(property);
+        if (cryptoBinary[0] == 0x00) {
+            throw new IOException("RSA key parameter \"" + 
+                                  property + 
+                                  "\" contains leading zeroes");
+        }
+        return new BigInteger(1, cryptoBinary);
+    }
+
+    public static PublicKey decodePublicKey(JSONObjectReader rd,
+                                            AlgorithmPreferences algorithmPreferences) 
+            throws IOException, GeneralSecurityException {
+        PublicKey publicKey = null;
+            String kty = rd.getString(JSONCryptoHelper.KTY_JSON);
+            KeyAlgorithms keyAlgorithm;
+            switch (kty) {
+            case JSONCryptoHelper.RSA_PUBLIC_KEY:
+                publicKey = KeyFactory.getInstance("RSA").generatePublic(
+                        new RSAPublicKeySpec(getCryptoBinary(rd, JSONCryptoHelper.N_JSON),
+                                             getCryptoBinary(rd, JSONCryptoHelper.E_JSON)));
+                break;
+            case JSONCryptoHelper.EC_PUBLIC_KEY:
+                keyAlgorithm = KeyAlgorithms.getKeyAlgorithmFromId(
+                        rd.getString(JSONCryptoHelper.CRV_JSON),
+                        algorithmPreferences);
+                if (keyAlgorithm.getKeyType() != KeyTypes.EC) {
+                    throw new IllegalArgumentException("\"" + JSONCryptoHelper.CRV_JSON + 
+                                                       "\" is not an EC type");
+                }
+                ECPoint w = new ECPoint(getCurvePoint(rd, JSONCryptoHelper.X_JSON, keyAlgorithm),
+                                        getCurvePoint(rd, JSONCryptoHelper.Y_JSON, keyAlgorithm));
+                publicKey = KeyFactory.getInstance("EC")
+                        .generatePublic(new ECPublicKeySpec(w, keyAlgorithm.getECParameterSpec()));
+                break;
+            case JSONCryptoHelper.OKP_PUBLIC_KEY:
+                keyAlgorithm = KeyAlgorithms.getKeyAlgorithmFromId(
+                        rd.getString(JSONCryptoHelper.CRV_JSON),
+                        algorithmPreferences);
+                if (keyAlgorithm.getKeyType() != KeyTypes.EDDSA &&
+                    keyAlgorithm.getKeyType() != KeyTypes.XEC) {
+                    throw new IllegalArgumentException("\"" + JSONCryptoHelper.CRV_JSON + 
+                                                       "\" is not a valid OKP type");
+                }
+                publicKey = OkpSupport.raw2PublicOkpKey(rd.getBinary(JSONCryptoHelper.X_JSON), 
+                                                        keyAlgorithm);
+                break;
+            default:
+                throw new IllegalArgumentException("Unrecognized \"" + 
+                                                   JSONCryptoHelper.KTY_JSON + "\": " + kty);
+            }
+            return publicKey;
+
+    }
+
+    public static PrivateKey decodePrivateKey(JSONObjectReader rd,
+                                              PublicKey publicKey) 
+           throws IOException, GeneralSecurityException {
+        KeyAlgorithms keyAlgorithm = KeyAlgorithms.getKeyAlgorithm(publicKey);
+        switch (keyAlgorithm.getKeyType()) {
+        case EC:
+            return KeyFactory.getInstance("EC").generatePrivate(
+                    new ECPrivateKeySpec(getCurvePoint(rd, "d", keyAlgorithm),
+                                         keyAlgorithm.getECParameterSpec()));
+        case RSA:
+            return KeyFactory.getInstance("RSA").generatePrivate(
+                    new RSAPrivateCrtKeySpec(((RSAPublicKey) publicKey).getModulus(),
+                                             ((RSAPublicKey) publicKey).getPublicExponent(),
+                                             getCryptoBinary(rd, "d"),
+                                             getCryptoBinary(rd, "p"),
+                                             getCryptoBinary(rd, "q"),
+                                             getCryptoBinary(rd, "dp"),
+                                             getCryptoBinary(rd, "dq"),
+                                             getCryptoBinary(rd, "qi")));
+        default:
+            return OkpSupport.raw2PrivateOkpKey(rd.getBinary("d"), keyAlgorithm);
         }
     }
  }

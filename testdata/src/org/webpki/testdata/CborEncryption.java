@@ -185,7 +185,8 @@ public class CborEncryption {
 
     static void compareResults(CBORDecrypter decrypter, 
                                byte[] encryptedData) throws Exception {
-        if (!ArrayUtil.compare(decrypter.decrypt(encryptedData), dataToBeEncrypted)) {
+        if (!ArrayUtil.compare(decrypter.decrypt(CBORObject.decode(encryptedData)), 
+                               dataToBeEncrypted)) {
             throw new GeneralSecurityException("Failed to decrypt");
         }
     }

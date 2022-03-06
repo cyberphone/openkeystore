@@ -624,9 +624,11 @@ public class JSONObjectReader implements Cloneable {
      * @param algorithmPreferences JOSE or SKS notation expected
      * @return Java <code>PublicKey</code>
      * @throws IOException
+     * @throws GeneralSecurityException 
      * @see org.webpki.json.JSONObjectWriter#setPublicKey(PublicKey)
      */
-    public PublicKey getPublicKey(AlgorithmPreferences algorithmPreferences) throws IOException {
+    public PublicKey getPublicKey(AlgorithmPreferences algorithmPreferences) 
+            throws IOException, GeneralSecurityException {
         return getObject(JSONCryptoHelper.PUBLIC_KEY_JSON).getCorePublicKey(algorithmPreferences);
     }
 
@@ -638,9 +640,10 @@ public class JSONObjectReader implements Cloneable {
      * 
      * @return Java <code>PublicKey</code>
      * @throws IOException
+     * @throws GeneralSecurityException 
      * @see org.webpki.json.JSONObjectWriter#setPublicKey(PublicKey)
      */
-    public PublicKey getPublicKey() throws IOException {
+    public PublicKey getPublicKey() throws IOException, GeneralSecurityException {
         return getPublicKey(AlgorithmPreferences.JOSE);
     }
 
@@ -654,12 +657,13 @@ public class JSONObjectReader implements Cloneable {
      * @param algorithmPreferences JOSE or SKS notation expected
      * @return Java <code>PublicKey</code>
      * @throws IOException
+     * @throws GeneralSecurityException 
      * @see org.webpki.json.JSONObjectWriter#createCorePublicKey(PublicKey,AlgorithmPreferences)
      */
     public PublicKey getCorePublicKey(AlgorithmPreferences algorithmPreferences) 
-    throws IOException {
+    throws IOException, GeneralSecurityException {
         clearReadFlags();
-        PublicKey publicKey = JSONSignatureDecoder.decodePublicKey(this, algorithmPreferences);
+        PublicKey publicKey = JSONCryptoHelper.decodePublicKey(this, algorithmPreferences);
         checkForUnread();
         return publicKey;
     }
@@ -672,12 +676,14 @@ public class JSONObjectReader implements Cloneable {
      * @param algorithmPreferences JOSE or SKS notation expected
      * @return Java <code>KeyPair</code>
      * @throws IOException
+     * @throws GeneralSecurityException 
      */
-    public KeyPair getKeyPair(AlgorithmPreferences algorithmPreferences) throws IOException {
+    public KeyPair getKeyPair(AlgorithmPreferences algorithmPreferences)
+            throws IOException, GeneralSecurityException {
         clearReadFlags();
-        PublicKey publicKey = JSONSignatureDecoder.decodePublicKey(this, algorithmPreferences);
+        PublicKey publicKey = JSONCryptoHelper.decodePublicKey(this, algorithmPreferences);
         KeyPair keyPair =
-                new KeyPair(publicKey, JSONSignatureDecoder.decodePrivateKey(this, publicKey));
+                new KeyPair(publicKey, JSONCryptoHelper.decodePrivateKey(this, publicKey));
         checkForUnread();
         return keyPair;
     }
@@ -690,8 +696,9 @@ public class JSONObjectReader implements Cloneable {
      * 
      * @return Java <code>KeyPair</code>
      * @throws IOException
+     * @throws GeneralSecurityException 
      */
-    public KeyPair getKeyPair() throws IOException {
+    public KeyPair getKeyPair() throws IOException, GeneralSecurityException {
         return getKeyPair(AlgorithmPreferences.JOSE);
     }
 
