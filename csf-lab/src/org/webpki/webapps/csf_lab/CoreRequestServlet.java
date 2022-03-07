@@ -20,10 +20,16 @@ import java.io.IOException;
 
 import java.util.logging.Logger;
 
+import javax.servlet.ServletOutputStream;
+
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.webpki.cbor.CBORObject;
+
+import org.webpki.json.JSONObjectWriter;
+import org.webpki.json.JSONOutputFormats;
 
 import org.webpki.util.HexaDecimal;
 
@@ -73,6 +79,13 @@ public class CoreRequestServlet extends HttpServlet {
             "<td>Hexadecimal notation (including possible #-comments)</td></tr>" +
             "</table>";
     
+    static final String HTTP_PRAGMA              = "Pragma";
+    static final String HTTP_EXPIRES             = "Expires";
+    static final String HTTP_ACCEPT_HEADER       = "Accept";
+    static final String HTTP_CONTENT_TYPE_HEADER = "Content-Type";
+
+    static final String JSON_CONTENT_TYPE        = "application/json";
+    
  
     String getParameterTextarea(HttpServletRequest request, String parameter) throws IOException {
         String string = request.getParameter(parameter);
@@ -107,5 +120,17 @@ public class CoreRequestServlet extends HttpServlet {
     CBORObject getSignatureLabel(HttpServletRequest request) throws IOException {
         return getCborAttribute(getParameter(request, CSF_SIGN_LABEL),
                 "Signature labels must be in CBOR diagnostic notation like \"sig\" or 8");
+    }
+    
+    void returnJSON(HttpServletResponse response, JSONObjectWriter json) throws IOException {
+        byte[] rawData = json.serializeToBytes(JSONOutputFormats.NORMALIZED);
+        response.setContentType(JSON_CONTENT_TYPE);
+        response.setHeader(HTTP_PRAGMA, "No-Cache");
+        response.setDateHeader(HTTP_EXPIRES, 0);
+        // Chunked data seems unnecessary here
+        response.setContentLength(rawData.length);
+        ServletOutputStream serverOutputStream = response.getOutputStream();
+        serverOutputStream.write(rawData);
+        serverOutputStream.flush();
     }
 }

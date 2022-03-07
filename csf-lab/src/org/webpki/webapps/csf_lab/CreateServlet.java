@@ -27,13 +27,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.webpki.cbor.CBORArray;
 import org.webpki.cbor.CBORAsymKeySigner;
 import org.webpki.cbor.CBORCryptoUtils;
 import org.webpki.cbor.CBORHmacSigner;
 import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORSigner;
-import org.webpki.cbor.CBORTypes;
 import org.webpki.cbor.CBORX509Signer;
 
 import org.webpki.crypto.AlgorithmPreferences;

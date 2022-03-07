@@ -22,7 +22,6 @@ import java.security.KeyPair;
 import java.security.PublicKey;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,7 +36,6 @@ import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.json.JSONCryptoHelper;
 import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONObjectWriter;
-import org.webpki.json.JSONOutputFormats;
 import org.webpki.json.JSONParser;
 
 import org.webpki.tools.KeyStore2JWKConverter;
@@ -63,13 +61,6 @@ public class CoseKeyServlet extends CoreRequestServlet {
     static final String CSTYLE      = "cstyle";
     static final String B64U        = "b64u";
     
-    static final String HTTP_PRAGMA              = "Pragma";
-    static final String HTTP_EXPIRES             = "Expires";
-    static final String HTTP_ACCEPT_HEADER       = "Accept";
-    static final String HTTP_CONTENT_TYPE_HEADER = "Content-Type";
-
-    static final String JSON_CONTENT_TYPE        = "application/json";
-    
     String selector(String name, boolean primary) {
         return
             "<table style='margin-bottom:0.3em;border-spacing:0'>" +
@@ -87,18 +78,6 @@ public class CoseKeyServlet extends CoreRequestServlet {
             "</table>";
      }
     
-    void returnJSON(HttpServletResponse response, JSONObjectWriter json) throws IOException {
-        byte[] rawData = json.serializeToBytes(JSONOutputFormats.NORMALIZED);
-        response.setContentType(JSON_CONTENT_TYPE);
-        response.setHeader(HTTP_PRAGMA, "No-Cache");
-        response.setDateHeader(HTTP_EXPIRES, 0);
-        // Chunked data seems unnecessary here
-        response.setContentLength(rawData.length);
-        ServletOutputStream serverOutputStream = response.getOutputStream();
-        serverOutputStream.write(rawData);
-        serverOutputStream.flush();
-    }
-
     void setRSAParameter(JSONObjectReader jwk, String jsonArgument, CBORMap cbor, int cborLabel)
             throws IOException {
         cbor.setByteString(new CBORInteger(cborLabel), jwk.getBinary(jsonArgument));
