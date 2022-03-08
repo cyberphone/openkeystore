@@ -571,10 +571,10 @@
     	<sysproperty key="sks.standalone" value="${sks.standalone}"/>
       	<sysproperty key="sks.referenceimplementation" value="${sks.referenceimplementation}"/>
        	<sysproperty key="bcprovider" value="${bcprovider}"/>
-    	<sysproperty key="json.keys" value="${testdata_dir}/keys"/>
-    	<sysproperty key="json.data" value="${testdata_dir}/data"/>
-    	<sysproperty key="json.encryption" value="${testdata_dir}/json-encryption"/>
-    	<sysproperty key="json.signatures" value="${testdata_dir}/json-signatures"/>
+    	<sysproperty key="test.keys" value="${testdata_dir}/keys"/>
+    	<sysproperty key="test.data" value="${testdata_dir}/data"/>
+    	<sysproperty key="test.encryption" value="${testdata_dir}"/>
+    	<sysproperty key="test.signatures" value="${testdata_dir}"/>
       <formatter type="plain" usefile="false"/>
       <classpath refid="junit.classpath"/>
     </junit>

@@ -20,6 +20,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 
@@ -65,7 +66,7 @@ public class CBORTest {
     @BeforeClass
     public static void openFile() throws Exception {
         Locale.setDefault(Locale.FRANCE);  // Should create HUGE problems :-)
-        baseKey = System.clearProperty("json.keys") + File.separator;
+        baseKey = System.clearProperty("test.keys") + File.separator;
         CustomCryptoProvider.forcedLoad(false);
         dataToEncrypt = "The brown fox jumps over the lazy bear".getBytes("utf-8");
         symmetricKeys = new SymmetricKeys(baseKey);
@@ -1474,7 +1475,7 @@ public class CBORTest {
                              boolean ignoreAdditionalData, 
                              boolean ignoreKeySortingOrder) throws IOException {
         String result = HexaDecimal.encode(
-                CBORObject.decodeWithOptions(HexaDecimal.decode(hexInput),
+                CBORObject.decodeWithOptions(new ByteArrayInputStream(HexaDecimal.decode(hexInput)),
                                              ignoreAdditionalData,
                                              ignoreKeySortingOrder).encode()).toUpperCase();
         assertTrue("Strange=" + result, hexExpectedResult.equals(result));

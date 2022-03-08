@@ -2300,10 +2300,12 @@ public class JSONTest {
         CustomCryptoProvider.forcedLoad(false);
         
         Locale.setDefault(Locale.FRANCE);  // Should create HUGE problems :-)
-        baseKey = System.clearProperty("json.keys") + File.separator;
-        baseData = System.clearProperty("json.data") + File.separator;
-        baseSignatures = System.clearProperty("json.signatures") + File.separator;
-        baseEncryption = System.clearProperty("json.encryption") + File.separator;
+        baseKey = System.clearProperty("test.keys") + File.separator;
+        baseData = System.clearProperty("test.data") + File.separator;
+        baseSignatures = System.clearProperty("test.signatures") + 
+                File.separator + "json-signatures" + File.separator;
+        baseEncryption = System.clearProperty("test.encryption") + 
+                File.separator + "json-encryption" + File.separator;
         symmetricKeys = new SymmetricKeys(baseKey);
     }
 
@@ -2367,7 +2369,6 @@ public class JSONTest {
         }
     }
 
-    @SuppressWarnings("serial")
     public static class ESC extends JSONDecoder {
         String escape;
 

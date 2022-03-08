@@ -19,6 +19,7 @@ package org.webpki.cbor;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import java.math.BigInteger;
 
@@ -429,11 +430,11 @@ public abstract class CBORObject {
 
         private static final byte[] ZERO_BYTE = {0};
 
-        private ByteArrayInputStream input;
+        private InputStream inputStream;
         private boolean checkKeySortingOrder;
          
-        private CBORDecoder(byte[] encodedCborData, boolean ignoreKeySortingOrder) {
-            input = new ByteArrayInputStream(encodedCborData);
+        private CBORDecoder(InputStream inputStream, boolean ignoreKeySortingOrder) {
+            this.inputStream = inputStream;
             this.checkKeySortingOrder = !ignoreKeySortingOrder;
         }
         
@@ -442,7 +443,7 @@ public abstract class CBORObject {
         }
         
         private int readByte() throws IOException {
-            int i = input.read();
+            int i = inputStream.read();
             if (i < 0) {
                 eofError();
             }
@@ -453,13 +454,14 @@ public abstract class CBORObject {
             ByteArrayOutputStream baos = new ByteArrayOutputStream(BUFFER_SIZE);
             byte[] buffer = new byte[BUFFER_SIZE];
             while (length != 0) {
-                int returnedBytes =
-                        input.read(buffer, 0, length < BUFFER_SIZE ? (int)length : BUFFER_SIZE);
-                if (returnedBytes == -1) {
+                int bytesRead = inputStream.read(buffer,
+                                                 0, 
+                                                 length < BUFFER_SIZE ? (int)length : BUFFER_SIZE);
+                if (bytesRead == -1) {
                     eofError();
                 }
-                baos.write(buffer, 0, returnedBytes);
-                length -= returnedBytes;
+                baos.write(buffer, 0, bytesRead);
+                length -= bytesRead;
             }
             return baos.toByteArray();
         }
@@ -643,7 +645,7 @@ public abstract class CBORObject {
         }
 
         private void checkForUnexpectedInput() throws IOException {
-            if (input.read() != -1) {
+            if (inputStream.read() != -1) {
                 reportError("Unexpected data found after CBOR object");
             }
         }
@@ -652,16 +654,16 @@ public abstract class CBORObject {
     /**
      * Decodes CBOR data with options.
      * 
-     * @param encodedCborData
+     * @param inputStream Stream holding CBOR data
      * @param ignoreAdditionalData Stop reading after parsing a valid CBOR object
      * @param ignoreKeySortingOrder Do not enforce any particular sorting order
      * @return CBORObject
      * @throws IOException
      */
-    public static CBORObject decodeWithOptions(byte[] encodedCborData,
+    public static CBORObject decodeWithOptions(InputStream inputStream,
                                                boolean ignoreAdditionalData,
                                                boolean ignoreKeySortingOrder) throws IOException {
-        CBORDecoder cborDecoder = new CBORDecoder(encodedCborData, ignoreKeySortingOrder);
+        CBORDecoder cborDecoder = new CBORDecoder(inputStream, ignoreKeySortingOrder);
         CBORObject cborObject = cborDecoder.getObject();
         // https://github.com/w3c/webauthn/issues/1614
         if (!ignoreAdditionalData) {
@@ -673,12 +675,23 @@ public abstract class CBORObject {
     /**
      * Decodes CBOR data.
      * 
+     * @param inputStream Holds CBOR data
+     * @return CBORObject
+     * @throws IOException
+     */
+    public static CBORObject decode(InputStream inputStream) throws IOException {
+        return decodeWithOptions(inputStream, false, false);
+    }
+    
+    /**
+     * Decodes CBOR data.
+     * 
      * @param encodedCborData
      * @return CBORObject
      * @throws IOException
      */
     public static CBORObject decode(byte[] encodedCborData) throws IOException {
-        return decodeWithOptions(encodedCborData, false, false);
+        return decode(new ByteArrayInputStream(encodedCborData));
     }
 
     /**
