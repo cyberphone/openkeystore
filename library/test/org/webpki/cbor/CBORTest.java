@@ -23,6 +23,7 @@ import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 import java.math.BigInteger;
 
@@ -454,6 +455,7 @@ public class CBORTest {
         assertFalse("comp", parseCborHex("C5626869").equals(null));
         assertFalse("comp", parseCborHex("C5626869").equals("jj"));
         assertTrue("comp", parseCborHex("C5626869").equals(parseCborHex("C5626869")));
+        
     }
  
     public static boolean compareKeyId(CBORObject keyId, CBORObject optionalKeyId) {
@@ -1518,6 +1520,19 @@ public class CBORTest {
             fail("Should fail on: " + badJson);
         } catch (Exception e) {
         }
+    }
+    
+    @Test
+    public void cborSequences() throws Exception {
+        byte[] cborBytes = HexaDecimal.decode("00A104F58105");
+        InputStream sequence = new ByteArrayInputStream(cborBytes);
+        int pos = 0;
+        for (int length : new int[] {1, 3, 2}) {
+            byte[] part = CBORObject.decodeWithOptions(sequence, true, false).encode();
+            assertTrue("Seq", ArrayUtil.compare(part, 0, cborBytes, pos, length));
+            pos += length;
+        }
+        assertTrue("SeqEnd", sequence.read() == -1);
     }
     
     @Test
