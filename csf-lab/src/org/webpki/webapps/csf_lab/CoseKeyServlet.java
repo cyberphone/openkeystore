@@ -252,7 +252,7 @@ public class CoseKeyServlet extends CoreRequestServlet {
         StringBuilder html = new StringBuilder(
                 "<div class='header'>Key Conversion Utility</div>" +
                 "<div style='padding-top:15pt'>" + 
-                "This utility converts public and private keys supplied in JWK and PEM formats to " +
+                "This utility converts public and private keys supplied in JWK or PEM format to " +
                 "their COSE counterpart.</div>")
             .append(HTML.fancyText(
                         true,
