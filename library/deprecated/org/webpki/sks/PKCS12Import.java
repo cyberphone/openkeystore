@@ -164,7 +164,7 @@ public class PKCS12Import {
                 pin_caching /* enablePinCaching */,
                 appUsage,
                 "" /* friendlyName */,
-                new KeySpecifier(KeyAlgorithms.NIST_P_256),
+                new KeySpecifier(KeyAlgorithms.P_256),
                 endorsed_algs);
         key.setCertificatePath(cert_path.toArray(new X509Certificate[0]));
         key.setPrivateKey(new KeyPair(publicKey, privateKey));

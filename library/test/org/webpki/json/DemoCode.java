@@ -70,7 +70,7 @@ public class DemoCode {
     public static void main(String[] argc) {
         try {
             KeyPairGenerator kpg = KeyPairGenerator.getInstance("EC");
-            kpg.initialize(new ECGenParameterSpec(KeyAlgorithms.NIST_P_256.getJceName()), new SecureRandom());
+            kpg.initialize(new ECGenParameterSpec(KeyAlgorithms.P_256.getJceName()), new SecureRandom());
             KeyPair keyPair = kpg.generateKeyPair();
             new DemoCode().signAndVerify(keyPair.getPublic(), keyPair.getPrivate());
         } catch (Exception e) {

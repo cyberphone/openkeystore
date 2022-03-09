@@ -83,17 +83,17 @@ public interface CBORCryptoConstants {
     /**
      * COSE "crv" identifier (1).
      */
-    CBORInteger COSE_CRV_NIST_P_256     = new CBORInteger(1);
+    CBORInteger COSE_CRV_P_256          = new CBORInteger(1);
 
     /**
      * COSE "crv" identifier (2).
      */
-    CBORInteger COSE_CRV_NIST_P_384     = new CBORInteger(2);
+    CBORInteger COSE_CRV_P_384          = new CBORInteger(2);
 
     /**
      * COSE "crv" identifier (3).
      */
-    CBORInteger COSE_CRV_NIST_P_521     = new CBORInteger(3);
+    CBORInteger COSE_CRV_P_521          = new CBORInteger(3);
 
     /**
      * COSE "crv" identifier (4).

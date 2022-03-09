@@ -539,7 +539,7 @@ public class ProvSess {
 
     ProvSess(Device device, short sessionKeyLimit, Integer kmk_id, boolean privacy_enabled, String serv_sess) 
             throws GeneralSecurityException, IOException {
-        this(device, KeyAlgorithms.NIST_P_256, sessionKeyLimit, kmk_id, privacy_enabled, serv_sess);
+        this(device, KeyAlgorithms.P_256, sessionKeyLimit, kmk_id, privacy_enabled, serv_sess);
     }
 
     public ProvSess(Device device, short sessionKeyLimit, Integer kmk_id) throws GeneralSecurityException, IOException {

@@ -1155,7 +1155,7 @@ public class ServerState {
     }
 
 
-    KeyAlgorithms ephemeraKeyAlgorithm = KeyAlgorithms.NIST_P_256;
+    KeyAlgorithms ephemeraKeyAlgorithm = KeyAlgorithms.P_256;
 
     public void setEphemeralKeyAlgorithm(KeyAlgorithms ephemeralKeyAlgorithm) {
         this.ephemeraKeyAlgorithm = ephemeralKeyAlgorithm;

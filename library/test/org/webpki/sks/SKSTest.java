@@ -155,14 +155,14 @@ public class SKSTest {
     void edgeDeleteCase(boolean post) throws Exception {
         ProvSess sess = new ProvSess(device, 0);
         GenKey key1 = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         sess.closeSession();
         assertTrue(sess.exists());
         ProvSess sess2 = new ProvSess(device);
         GenKey key3 = sess2.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         if (post) {
@@ -252,14 +252,14 @@ public class SKSTest {
                 (short) 3 /* retryLimit*/,
                 null /* pukPolicy */);
         GenKey key1 = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(good_pin, pinPolicy),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         sess.closeSession();
         assertTrue(sess.exists());
         ProvSess sess2 = new ProvSess(device);
         GenKey key2 = sess2.createKey("Key.2",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         GenKey key3 = sess2.createKey("Key.1",
@@ -305,7 +305,7 @@ public class SKSTest {
     Extension extensionTest(byte subType, String qualifier, byte[] extension_data, String error) throws Exception {
         ProvSess sess = new ProvSess(device);
         GenKey key = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         String type = "http://example.com/define";
@@ -430,7 +430,7 @@ public class SKSTest {
                     (short) 3 /* retryLimit */,
                     puk_pol /* pukPolicy */);
             key = sess.createKey("Key.1",
-                    KeyAlgorithms.NIST_P_256,
+                    KeyAlgorithms.P_256,
                     new KeyProtectionSpec(good_pin, pin_pol),
                     AppUsage.AUTHENTICATION).setCertificate(cn());
             sess.closeSession();
@@ -476,7 +476,7 @@ public class SKSTest {
                     (short) 3 /* retryLimit*/,
                     null /* pukPolicy */);
             sess.createKey("Key.1",
-                    KeyAlgorithms.NIST_P_256,
+                    KeyAlgorithms.P_256,
                     new KeyProtectionSpec(pin, pin_pol),
                     AppUsage.AUTHENTICATION).setCertificate(cn());
             sess.abortSession();
@@ -567,7 +567,7 @@ public class SKSTest {
                     null /* pukPolicy */);
 
             sess.createKey("Key.1",
-                    KeyAlgorithms.NIST_P_256,
+                    KeyAlgorithms.P_256,
                     new KeyProtectionSpec(good_pin, pinPolicy),
                     AppUsage.AUTHENTICATION).setCertificate(cn());
             sess.closeSession();
@@ -592,21 +592,21 @@ public class SKSTest {
                     (short) 3 /* retryLimit*/,
                     null /* pukPolicy */);
             sess.createKey("Key.1",
-                    KeyAlgorithms.NIST_P_256,
+                    KeyAlgorithms.P_256,
                     new KeyProtectionSpec(pin1, pin_pol),
                     AppUsage.AUTHENTICATION).setCertificate(cn());
             if (grouping == Grouping.SIGNATURE_PLUS_STANDARD) {
                 sess.createKey("Key.1s",
-                        KeyAlgorithms.NIST_P_256,
+                        KeyAlgorithms.P_256,
                         new KeyProtectionSpec(pin1, pin_pol),
                         AppUsage.UNIVERSAL).setCertificate(cn());
                 sess.createKey("Key.2s",
-                        KeyAlgorithms.NIST_P_256,
+                        KeyAlgorithms.P_256,
                         new KeyProtectionSpec(same_pin ? pin1 : pin2, pin_pol),
                         AppUsage.SIGNATURE).setCertificate(cn());
             }
             sess.createKey("Key.2",
-                    KeyAlgorithms.NIST_P_256,
+                    KeyAlgorithms.P_256,
                     new KeyProtectionSpec(same_pin ? pin1 : pin2, pin_pol),
                     AppUsage.SIGNATURE).setCertificate(cn());
             sess.abortSession();
@@ -655,14 +655,14 @@ public class SKSTest {
     void updateTest(AppUsage appUsage) throws Exception {
         ProvSess sess = new ProvSess(device, 0);
         GenKey key1 = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         sess.closeSession();
         assertTrue(sess.exists());
         ProvSess sess2 = new ProvSess(device);
         GenKey key2 = sess2.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 appUsage).setCertificate(cn());
         try {
@@ -691,7 +691,7 @@ public class SKSTest {
                 (short) 3 /* retryLimit*/,
                 null /* pukPolicy */);
         GenKey key1 = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(good_pin, pinPolicy),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         sess.closeSession();
@@ -1034,7 +1034,7 @@ public class SKSTest {
     public void test8() throws Exception {
         ProvSess sess = new ProvSess(device);
         sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         sess.closeSession();
@@ -1045,7 +1045,7 @@ public class SKSTest {
     public void test9() throws Exception {
         ProvSess sess = new ProvSess(device);
         GenKey key = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         int keyHandle = device.sks.getKeyHandle(sess.provisioning_handle, "Key.1");
@@ -1182,11 +1182,11 @@ public class SKSTest {
     public void test14() throws Exception {
         ProvSess sess = new ProvSess(device, 0);
         GenKey key1 = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         GenKey key2 = sess.createKey("Key.2",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         sess.closeSession();
@@ -1207,7 +1207,7 @@ public class SKSTest {
             boolean updatable = i == 0;
             ProvSess sess = new ProvSess(device, updatable ? Integer.valueOf(0) : null);
             GenKey key1 = sess.createKey("Key.1",
-                    KeyAlgorithms.NIST_P_256,
+                    KeyAlgorithms.P_256,
                     new KeyProtectionSpec(),
                     AppUsage.AUTHENTICATION).setCertificate(cn());
             sess.closeSession();
@@ -1236,11 +1236,11 @@ public class SKSTest {
     public void test16() throws Exception {
         ProvSess sess = new ProvSess(device);
         GenKey key1 = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         GenKey key2 = sess.createKey("Key.2",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         sess.closeSession();
@@ -1254,7 +1254,7 @@ public class SKSTest {
     public void test17() throws Exception {
         ProvSess sess = new ProvSess(device);
         GenKey key1 = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         sess.closeSession();
@@ -1280,14 +1280,14 @@ public class SKSTest {
                 (short) 3 /* retryLimit*/,
                 null /* pukPolicy */);
         GenKey key1 = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(good_pin, pinPolicy),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         sess.closeSession();
         assertTrue(sess.exists());
         ProvSess sess2 = new ProvSess(device);
         GenKey key2 = sess2.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         key2.postUpdateKey(key1);
@@ -1321,7 +1321,7 @@ public class SKSTest {
         String good_pin = "1563";
         ProvSess sess = new ProvSess(device, 0);
         GenKey key1 = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         sess.closeSession();
@@ -1334,7 +1334,7 @@ public class SKSTest {
                 (short) 3 /* retryLimit*/,
                 null /* pukPolicy */);
         GenKey key2 = sess2.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(good_pin, pinPolicy),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         try {
@@ -1351,7 +1351,7 @@ public class SKSTest {
                 (short) 3 /* retryLimit*/,
                 null /* pukPolicy */);
         key2 = sess2.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(good_pin, pinPolicy),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         try {
@@ -1366,18 +1366,18 @@ public class SKSTest {
     public void test21() throws Exception {
         ProvSess sess = new ProvSess(device, 0);
         GenKey key1 = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         sess.closeSession();
         assertTrue(sess.exists());
         ProvSess sess2 = new ProvSess(device);
         GenKey key2 = sess2.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         GenKey key3 = sess2.createKey("Key.2",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         key2.postUpdateKey(key1);
@@ -1393,18 +1393,18 @@ public class SKSTest {
     public void test22() throws Exception {
         ProvSess sess = new ProvSess(device, 0);
         GenKey key1 = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         GenKey key2 = sess.createKey("Key.2",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         sess.closeSession();
         assertTrue(sess.exists());
         ProvSess sess2 = new ProvSess(device);
         GenKey key3 = sess2.createKey("Key.3",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         key3.postUpdateKey(key1);
@@ -1437,11 +1437,11 @@ public class SKSTest {
                 (short) 3 /* retryLimit*/,
                 null /* pukPolicy */);
         GenKey key1 = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(good_pin, pinPolicy),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         GenKey key2 = sess.createKey("Key.2",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(good_pin, pinPolicy),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         sess.closeSession();
@@ -1508,11 +1508,11 @@ public class SKSTest {
     public void test29() throws Exception {
         ProvSess sess = new ProvSess(device, 0);
         GenKey key1 = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         GenKey key2 = sess.createKey("Key.2",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         sess.closeSession();
@@ -1649,7 +1649,7 @@ public class SKSTest {
                     (short) 3 /* retryLimit*/,
                     puk /* pukPolicy */);
             GenKey key = sess.createKey("Key.1",
-                    KeyAlgorithms.NIST_P_256,
+                    KeyAlgorithms.P_256,
                     new KeyProtectionSpec(good_pin, pinPolicy),
                     AppUsage.AUTHENTICATION).setCertificate(cn());
             sess.closeSession();
@@ -1839,7 +1839,7 @@ public class SKSTest {
                     (short) 3 /* retryLimit*/,
                     null /* pukPolicy */);
             GenKey key = sess.createKey("Key.1",
-                    KeyAlgorithms.NIST_P_256,
+                    KeyAlgorithms.P_256,
                     new KeyProtectionSpec(good_pin, pinPolicy),
                     keyUsage,
                     new String[]{HmacAlgorithms.HMAC_SHA256.getAlgorithmId(AlgorithmPreferences.SKS)}).setCertificate(cn());
@@ -1863,7 +1863,7 @@ public class SKSTest {
                 (short) 3 /* retryLimit*/,
                 null /* pukPolicy */);
         GenKey key = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(good_pin, pinPolicy),
                 AppUsage.AUTHENTICATION,
                 new String[]{HmacAlgorithms.HMAC_SHA256.getAlgorithmId(AlgorithmPreferences.SKS)}).setCertificate(cn());
@@ -1921,7 +1921,7 @@ public class SKSTest {
             GenKey key = null;
             try {
                 key = sess.createKey("Key.1",
-                        KeyAlgorithms.NIST_P_256,
+                        KeyAlgorithms.P_256,
                         new KeyProtectionSpec(good_pin, pinPolicy),
                         AppUsage.AUTHENTICATION,
                         new String[]{sym_enc.getAlgorithmId(AlgorithmPreferences.SKS)}).setCertificate(cn());
@@ -1990,7 +1990,7 @@ public class SKSTest {
             GenKey key = null;
             try {
                 key = sess.createKey("Key.1",
-                        KeyAlgorithms.NIST_P_256,
+                        KeyAlgorithms.P_256,
                         new KeyProtectionSpec(good_pin, pinPolicy),
                         AppUsage.AUTHENTICATION,
                         new String[]{hmac.getAlgorithmId(AlgorithmPreferences.SKS)}).setCertificate(cn());
@@ -2022,7 +2022,7 @@ public class SKSTest {
                 (short) 3 /* retryLimit*/,
                 null /* pukPolicy */);
         GenKey key = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(good_pin, pinPolicy),
                 AppUsage.AUTHENTICATION,
                 new String[]{SymEncryptionAlgorithms.AES128_CBC.getAlgorithmId(AlgorithmPreferences.SKS)}).setCertificate(cn());
@@ -2049,7 +2049,7 @@ public class SKSTest {
                 null /* pukPolicy */);
 
         GenKey key = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(good_pin, pinPolicy),
                 AppUsage.AUTHENTICATION,
                 new String[]{SecureKeyStore.ALGORITHM_NONE}).setCertificate(cn());
@@ -2106,7 +2106,7 @@ public class SKSTest {
                 null /* pukPolicy */);
 
         sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(good_pin, pinPolicy),
                 AppUsage.ENCRYPTION,
                 new String[]{SymEncryptionAlgorithms.AES128_CBC.getAlgorithmId(AlgorithmPreferences.SKS)}).setCertificate(cn());
@@ -2145,7 +2145,7 @@ public class SKSTest {
                     (short) 3 /* retryLimit*/,
                     null /* pukPolicy */);
             GenKey key = sess.createKey("Key.1",
-                    KeyAlgorithms.NIST_P_256,
+                    KeyAlgorithms.P_256,
                     new KeyProtectionSpec(good_pin, pinPolicy),
                     keyUsage).setCertificate(cn(), key_pair.getPublic());
             key.setPrivateKey(key_pair);
@@ -2196,7 +2196,7 @@ public class SKSTest {
                 (short) 3 /* retryLimit*/,
                 null /* pukPolicy */);
         GenKey key = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(good_pin, pinPolicy),
                 AppUsage.ENCRYPTION,
                 new String[]{SymEncryptionAlgorithms.AES192_CBC.getAlgorithmId(AlgorithmPreferences.SKS)}).setCertificate(cn());
@@ -2222,7 +2222,7 @@ public class SKSTest {
                 (short) 3 /* retryLimit*/,
                 null /* pukPolicy */);
         GenKey key = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(good_pin, pinPolicy),
                 AppUsage.ENCRYPTION).setCertificate(cn());
         sess.closeSession();
@@ -2265,7 +2265,7 @@ public class SKSTest {
                 (short) 3 /* retryLimit*/,
                 null /* pukPolicy */);
         GenKey key = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(good_pin, pinPolicy),
                 AppUsage.ENCRYPTION).setCertificate(cn());
         sess.closeSession();
@@ -2291,7 +2291,7 @@ public class SKSTest {
                     (short) 3 /* retryLimit*/,
                     null /* pukPolicy */);
             GenKey key = sess.createKey("Key.1",
-                    KeyAlgorithms.NIST_P_256,
+                    KeyAlgorithms.P_256,
                     new KeyProtectionSpec(good_pin, pinPolicy),
                     AppUsage.AUTHENTICATION).setCertificate(cn());
             sess.closeSession();
@@ -2336,14 +2336,14 @@ public class SKSTest {
                     (short) 3 /* retryLimit*/,
                     null /* pukPolicy */);
             GenKey key = sess.createKey("Key.1",
-                    KeyAlgorithms.NIST_P_256,
+                    KeyAlgorithms.P_256,
                     new KeyProtectionSpec(good_pin, pinPolicy),
                     AppUsage.AUTHENTICATION).setCertificate(cn());
             sess.closeSession();
             lockECKey(key, good_pin);
             ProvSess sess2 = new ProvSess(device);
             GenKey new_key = sess2.createKey("Key.1",
-                    KeyAlgorithms.NIST_P_256,
+                    KeyAlgorithms.P_256,
                     new KeyProtectionSpec(),
                     AppUsage.AUTHENTICATION).setCertificate(cn());
             if (i == 0) new_key.postUpdateKey(key);
@@ -2371,14 +2371,14 @@ public class SKSTest {
                     (short) 3 /* retryLimit*/,
                     null /* pukPolicy */);
             GenKey key = sess.createKey("Key.1",
-                    KeyAlgorithms.NIST_P_256,
+                    KeyAlgorithms.P_256,
                     new KeyProtectionSpec(good_pin, pinPolicy),
                     AppUsage.AUTHENTICATION).setCertificate(cn());
             sess.closeSession();
             lockECKey(key, good_pin);
             ProvSess sess2 = new ProvSess(device);
             GenKey new_key = sess2.createKey("Key.1",
-                    KeyAlgorithms.NIST_P_256,
+                    KeyAlgorithms.P_256,
                     new KeyProtectionSpec(),
                     AppUsage.AUTHENTICATION).setCertificate(cn());
             if (i == 0) new_key.postCloneKey(key);
@@ -2408,14 +2408,14 @@ public class SKSTest {
                     (short) 3 /* retryLimit*/,
                     null /* pukPolicy */);
             GenKey key = sess.createKey("Key.1",
-                    KeyAlgorithms.NIST_P_256,
+                    KeyAlgorithms.P_256,
                     new KeyProtectionSpec(good_pin, pinPolicy),
                     AppUsage.AUTHENTICATION).setCertificate(cn());
             sess.closeSession();
             lockECKey(key, good_pin);
             ProvSess sess2 = new ProvSess(device, (short) 50, 0, i < 2 || i > 3, null);
             GenKey new_key = sess2.createKey("Key.1",
-                    KeyAlgorithms.NIST_P_256,
+                    KeyAlgorithms.P_256,
                     new KeyProtectionSpec(),
                     AppUsage.AUTHENTICATION).setCertificate(cn());
             try {
@@ -2457,12 +2457,12 @@ public class SKSTest {
         KeyPair key_pair = generator.generateKeyPair();
         ProvSess sess = new ProvSess(device);
         GenKey key = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn(), key_pair.getPublic());
         key.setPrivateKey(key_pair);
         GenKey key2 = sess.createKey("Key.2",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificatePath(key.getCertificatePath());
         key2.setPrivateKey(key_pair);
@@ -2474,14 +2474,14 @@ public class SKSTest {
         }
         sess = new ProvSess(device);
         key = sess.createKey("Key.3",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn(), key_pair.getPublic());
         key.setPrivateKey(key_pair);
         sess.closeSession();
         sess = new ProvSess(device);
         key2 = sess.createKey("Key.4",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificatePath(key.getCertificatePath());
         key2.setPrivateKey(key_pair);
@@ -2493,14 +2493,14 @@ public class SKSTest {
         }
         sess = new ProvSess(device, 0);
         key = sess.createKey("Key.3",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn(), key_pair.getPublic());
         key.setPrivateKey(key_pair);
         sess.closeSession();
         ProvSess sess2 = new ProvSess(device);
         GenKey new_key = sess2.createKey("Key.4",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificatePath(key.getCertificatePath());
         new_key.setPrivateKey(key_pair);
@@ -2508,14 +2508,14 @@ public class SKSTest {
         sess2.closeSession();
         sess = new ProvSess(device, 0);
         key = sess.createKey("Key.3",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn(), key_pair.getPublic());
         key.setPrivateKey(key_pair);
         sess.closeSession();
         sess2 = new ProvSess(device);
         new_key = sess2.createKey("Key.4",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificatePath(key.getCertificatePath());
         new_key.setPrivateKey(key_pair);
@@ -2538,7 +2538,7 @@ public class SKSTest {
                 (short) 3 /* retryLimit*/,
                 null /* pukPolicy */);
         GenKey key = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(good_pin, pinPolicy),
                 AppUsage.AUTHENTICATION,
                 new String[]{SymEncryptionAlgorithms.AES128_CBC.getAlgorithmId(AlgorithmPreferences.SKS)}).setCertificate(cn());
@@ -2565,7 +2565,7 @@ public class SKSTest {
                 (short) 3 /* retryLimit */,
                 null /* pukPolicy */);
         GenKey key = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(good_pin, pinPolicy),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         key.setSymmetricKey(symmetricKey);
@@ -2593,7 +2593,7 @@ public class SKSTest {
                 (short) 3 /* retryLimit */,
                 null /* pukPolicy */);
         GenKey key = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(good_pin, pinPolicy),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         try {
@@ -2623,7 +2623,7 @@ public class SKSTest {
         kpg.initialize(preferred_rsa_algorithm.getPublicKeySizeInBits());
         KeyPair key_pair = kpg.generateKeyPair();
         sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(good_pin, pinPolicy),
                 AppUsage.AUTHENTICATION).setCertificate(cn(), key_pair.getPublic());
         try {
@@ -2682,7 +2682,7 @@ public class SKSTest {
         generator.initialize(eccgen, new SecureRandom());
         KeyPair key_pair = generator.generateKeyPair();
         sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(good_pin, pinPolicy),
                 AppUsage.AUTHENTICATION).setCertificate(cn(), key_pair.getPublic());
         try {
@@ -2722,7 +2722,7 @@ public class SKSTest {
         GenKey key = null;
         try {
             key = sess.createKey("Key.1",
-                                 KeyAlgorithms.NIST_P_256,
+                                 KeyAlgorithms.P_256,
                                  new KeyProtectionSpec(biometricProtection, pin, pinPolicy),
                                  AppUsage.AUTHENTICATION,
      new String[] { AsymSignatureAlgorithms.ECDSA_SHA256.getAlgorithmId(AlgorithmPreferences.SKS) })
@@ -2806,7 +2806,7 @@ public class SKSTest {
     @Test
     public void test68() throws Exception {
         badKeySpec(preferred_rsa_algorithm.getAlgorithmId(AlgorithmPreferences.SKS), new byte[]{0, 0, 0, 3}, "Unexpected \"" + SecureKeyStore.VAR_KEY_PARAMETERS + "\"");
-        badKeySpec(KeyAlgorithms.NIST_P_256.getAlgorithmId(AlgorithmPreferences.SKS), new byte[]{0, 0, 0, 3}, "Unexpected \"" + SecureKeyStore.VAR_KEY_PARAMETERS + "\"");
+        badKeySpec(KeyAlgorithms.P_256.getAlgorithmId(AlgorithmPreferences.SKS), new byte[]{0, 0, 0, 3}, "Unexpected \"" + SecureKeyStore.VAR_KEY_PARAMETERS + "\"");
         badKeySpec("http://badcrypto/snakeoil-1", null, "Unsupported \"" + SecureKeyStore.VAR_KEY_ALGORITHM + "\": http://badcrypto/snakeoil-1");
         KeyAlgorithms rsa_var_exp = null;
         for (KeyAlgorithms ka : KeyAlgorithms.values()) {
@@ -2899,7 +2899,7 @@ public class SKSTest {
     public void test71() throws Exception {
         ProvSess sess = new ProvSess(device);
         GenKey key = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION);
         try {
@@ -2928,7 +2928,7 @@ public class SKSTest {
                 (short) 3 /* retryLimit*/,
                 puk_pol /* pukPolicy */);
         GenKey key = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(good_pin, pinPolicy),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         sess.closeSession();
@@ -2965,7 +2965,7 @@ public class SKSTest {
     public void test73() throws Exception {
         ProvSess sess = new ProvSess(device);
         GenKey key = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         String type = "http://example.com/define";
@@ -2980,7 +2980,7 @@ public class SKSTest {
         }
         sess = new ProvSess(device);
         key = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         type = "http://example.com/define";
@@ -3034,7 +3034,7 @@ public class SKSTest {
         sess.failMAC();
         try {
             sess.createKey("Key.1",
-                    KeyAlgorithms.NIST_P_256,
+                    KeyAlgorithms.P_256,
                     new KeyProtectionSpec(),
                     AppUsage.AUTHENTICATION);
             fail("MAC");
@@ -3048,7 +3048,7 @@ public class SKSTest {
         ProvSess sess = new ProvSess(device);
         try {
             sess.createKey("Key.1",
-                    KeyAlgorithms.NIST_P_256,
+                    KeyAlgorithms.P_256,
                     new KeyProtectionSpec(),
                     AppUsage.AUTHENTICATION).setCertificate(device.device_info.getCryptoDataSize());
             fail("Shouldn't pass");
@@ -3072,11 +3072,11 @@ public class SKSTest {
     public void test78() throws Exception {
         ProvSess sess = new ProvSess(device, 0);
         GenKey key = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         sess.createKey("Key.2",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         sess.closeSession();
@@ -3095,7 +3095,7 @@ public class SKSTest {
     public void test79() throws Exception {
         ProvSess sess = new ProvSess(device);
         sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         sess.closeSession();
@@ -3130,7 +3130,7 @@ public class SKSTest {
             sess = new ProvSess(device);
             sess.override_key_entry_algorithm = "http://somewhere";
             sess.createKey("Key.1",
-                    KeyAlgorithms.NIST_P_256,
+                    KeyAlgorithms.P_256,
                     new KeyProtectionSpec(),
                     AppUsage.AUTHENTICATION).setCertificate(cn());
             fail("Not good");
@@ -3143,7 +3143,7 @@ public class SKSTest {
     public void test82() throws Exception {
         ProvSess sess = new ProvSess(device);
         GenKey ec = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
         GenKey rsa = sess.createKey("Key.2",
@@ -3176,7 +3176,7 @@ public class SKSTest {
             ProvSess sess = new ProvSess(device);
             sess.devicePinProtected = true;
             sess.createKey("Key.1",
-                    KeyAlgorithms.NIST_P_256,
+                    KeyAlgorithms.P_256,
                     new KeyProtectionSpec(),
                     AppUsage.AUTHENTICATION).setCertificate(cn());
             assertTrue("devPIN", dev_pin);
@@ -3190,7 +3190,7 @@ public class SKSTest {
     public void test84() throws Exception {
         ProvSess sess = new ProvSess(device);
         GenKey key = sess.createKey("Key.1",
-                KeyAlgorithms.NIST_P_256,
+                KeyAlgorithms.P_256,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION,
                 new String[]{AsymSignatureAlgorithms.ECDSA_SHA256

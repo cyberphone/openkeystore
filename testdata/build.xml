@@ -180,7 +180,7 @@
 
    	<antcall target="_createcert">
        <param name="subject" value="Test Sub CA"/>
-  	   <param name="algorithms" value="-ecccurve NIST_P_521 -sigalg RSA_SHA512"/>
+  	   <param name="algorithms" value="-ecccurve P_521 -sigalg RSA_SHA512"/>
        <param name="cmd" value="-out/keyalias mykey -ca/keypass foo123 -ca/storetype PKCS12 -ca/storepass foo123 -ca/keystore rootca.p12 -entity/ca -validity/start 2016-07-10T10:00:00 -validity/end 2039-07-10T09:59:59 -out/storetype PKCS12 -out/keystore subca.p12 -out/storepass foo123 -out/keypass foo123 -serial 3"/>
     </antcall>
 
@@ -203,22 +203,22 @@
 
     <antcall target="_createtestcert">
        <param name="keyprefix" value="p256"/>
-       <param name="algorithm" value="-ecccurve NIST_P_256"/>
+       <param name="algorithm" value="-ecccurve P_256"/>
     </antcall>
 
     <antcall target="_createtestcert">
        <param name="keyprefix" value="p256-2"/>
-       <param name="algorithm" value="-ecccurve NIST_P_256"/>
+       <param name="algorithm" value="-ecccurve P_256"/>
     </antcall>
    
     <antcall target="_createtestcert">
        <param name="keyprefix" value="p384"/>
-       <param name="algorithm" value="-ecccurve NIST_P_384"/>
+       <param name="algorithm" value="-ecccurve P_384"/>
     </antcall>
 
     <antcall target="_createtestcert">
        <param name="keyprefix" value="p521"/>
-       <param name="algorithm" value="-ecccurve NIST_P_521"/>
+       <param name="algorithm" value="-ecccurve P_521"/>
     </antcall>
 
     <antcall target="_createtestcert">

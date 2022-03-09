@@ -67,7 +67,7 @@ public class Benchmark {
             
             byte[] data = json.serializeToBytes(JSONOutputFormats.CANONICALIZED);
             KeyPairGenerator kpg = KeyPairGenerator.getInstance("EC");
-            kpg.initialize(new ECGenParameterSpec(KeyAlgorithms.NIST_P_256.getJceName()),
+            kpg.initialize(new ECGenParameterSpec(KeyAlgorithms.P_256.getJceName()),
                                new SecureRandom());
             KeyPair keyPair = kpg.generateKeyPair();
             

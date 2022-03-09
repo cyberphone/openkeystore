@@ -777,7 +777,7 @@ public class KeyGen2Test {
                 serverState.setPrivacyEnabled(true);
             }
             if (p521) {
-                serverState.setEphemeralKeyAlgorithm(KeyAlgorithms.NIST_P_521);
+                serverState.setEphemeralKeyAlgorithm(KeyAlgorithms.P_521);
             }
             if (languages) {
                 serverState.setPreferredLanguages(new String[]{"en", "de", "fr"});
@@ -939,7 +939,7 @@ public class KeyGen2Test {
             }
             KeySpecifier key_alg = null;
             if (ecc_key) {
-                key_alg = new KeySpecifier(KeyAlgorithms.NIST_P_256);
+                key_alg = new KeySpecifier(KeyAlgorithms.P_256);
             } else if (ask_for_exponent) {
                 key_alg = new KeySpecifier(KeyAlgorithms.RSA2048_EXP, 3);
             } else {
@@ -1014,7 +1014,7 @@ public class KeyGen2Test {
                         delete_key.server_km);
             }
             if (two_keys) {
-                ServerState.Key key = serverState.createKey(AppUsage.SIGNATURE, new KeySpecifier(KeyAlgorithms.NIST_P_256), pinPolicy);
+                ServerState.Key key = serverState.createKey(AppUsage.SIGNATURE, new KeySpecifier(KeyAlgorithms.P_256), pinPolicy);
                 if (custom_key_name) {
                     key.setID("MyKeyName");
                 }

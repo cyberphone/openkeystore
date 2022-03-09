@@ -1399,7 +1399,7 @@ public class JSONBaseHTML  {
                       JSONCryptoHelper.CRV_JSON + "&quot;</code> parameter.  For example, " +
                       "if the value of <code>&quot;" + JSONCryptoHelper.CRV_JSON +
                       "&quot;</code> is <code>&quot;" +
-                      KeyAlgorithms.NIST_P_521.getAlgorithmId (AlgorithmPreferences.JOSE) +
+                      KeyAlgorithms.P_521.getAlgorithmId (AlgorithmPreferences.JOSE) +
                       "&quot;</code>, the <i>decoded</i> argument <b>must</b> be 66 bytes.")
       .newRow()
         .newColumn()
@@ -1414,7 +1414,7 @@ public class JSONBaseHTML  {
                       JSONCryptoHelper.CRV_JSON + "&quot;</code> parameter.  For example, " +
                       "if the value of <code>&quot;" + JSONCryptoHelper.CRV_JSON +
                       "&quot;</code> is <code>&quot;" +
-                      KeyAlgorithms.NIST_P_256.getAlgorithmId (AlgorithmPreferences.JOSE) +
+                      KeyAlgorithms.P_256.getAlgorithmId (AlgorithmPreferences.JOSE) +
                       "&quot;</code>, the <i>decoded</i> argument <b>must</b> be 32 bytes.")
 
           .newRow(JSF_PUBLIC_KEY_OKP)

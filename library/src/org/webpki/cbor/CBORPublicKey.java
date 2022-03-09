@@ -52,13 +52,13 @@ public class CBORPublicKey {
     static final HashMap<KeyAlgorithms, CBORInteger> WEBPKI_2_COSE_CRV = new HashMap<>();
 
     static {
-        WEBPKI_2_COSE_CRV.put(KeyAlgorithms.NIST_P_256, COSE_CRV_NIST_P_256);
-        WEBPKI_2_COSE_CRV.put(KeyAlgorithms.NIST_P_384, COSE_CRV_NIST_P_384);
-        WEBPKI_2_COSE_CRV.put(KeyAlgorithms.NIST_P_521, COSE_CRV_NIST_P_521);
-        WEBPKI_2_COSE_CRV.put(KeyAlgorithms.X25519,     COSE_CRV_X25519);
-        WEBPKI_2_COSE_CRV.put(KeyAlgorithms.X448,       COSE_CRV_X448);
-        WEBPKI_2_COSE_CRV.put(KeyAlgorithms.ED25519,    COSE_CRV_ED25519);
-        WEBPKI_2_COSE_CRV.put(KeyAlgorithms.ED448,      COSE_CRV_ED448);
+        WEBPKI_2_COSE_CRV.put(KeyAlgorithms.P_256,   COSE_CRV_P_256);
+        WEBPKI_2_COSE_CRV.put(KeyAlgorithms.P_384,   COSE_CRV_P_384);
+        WEBPKI_2_COSE_CRV.put(KeyAlgorithms.P_521,   COSE_CRV_P_521);
+        WEBPKI_2_COSE_CRV.put(KeyAlgorithms.X25519,  COSE_CRV_X25519);
+        WEBPKI_2_COSE_CRV.put(KeyAlgorithms.X448,    COSE_CRV_X448);
+        WEBPKI_2_COSE_CRV.put(KeyAlgorithms.ED25519, COSE_CRV_ED25519);
+        WEBPKI_2_COSE_CRV.put(KeyAlgorithms.ED448,   COSE_CRV_ED448);
     }
     
     static final HashMap<Integer, KeyAlgorithms> COSE_2_WEBPKI_CRV = new HashMap<>();

@@ -1162,7 +1162,7 @@ public class KeyGen2Test
             KeySpecifier key_alg = null;
             if (ecc_key)
               {
-                key_alg = new KeySpecifier (KeyAlgorithms.NIST_P_256);
+                key_alg = new KeySpecifier (KeyAlgorithms.P_256);
               }
             else if (ask_for_exponent)
               {
@@ -1246,7 +1246,7 @@ public class KeyGen2Test
               }
             if (two_keys)
               {
-                serverState.createKey (AppUsage.SIGNATURE, new KeySpecifier (KeyAlgorithms.NIST_P_256), pinPolicy);
+                serverState.createKey (AppUsage.SIGNATURE, new KeySpecifier (KeyAlgorithms.P_256), pinPolicy);
               }
 
             return new KeyCreationRequestEncoder (serverState, KEY_INIT_URL).writeXML ();

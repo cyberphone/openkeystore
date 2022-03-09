@@ -1129,7 +1129,7 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Supplied key (NIST_P_256) is incompatible with specified algorithm (ED25519)");
+                "Supplied key (P_256) is incompatible with specified algorithm (ED25519)");
         }
         
         try {

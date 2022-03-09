@@ -3492,7 +3492,7 @@ public class JSONTest {
         jwsSpecial(keyPair, 
                    AsymSignatureAlgorithms.ECDSA_SHA256,
                    AsymSignatureAlgorithms.RSA_SHA256,
-                   "Supplied key (NIST_P_256) is incompatible with specified algorithm (RSA_SHA256)");
+                   "Supplied key (P_256) is incompatible with specified algorithm (RSA_SHA256)");
         try {
             new JWSDecoder(new JSONObjectReader(new JSONObjectWriter().setString("hi","there")), "jws");
             fail("no prop");

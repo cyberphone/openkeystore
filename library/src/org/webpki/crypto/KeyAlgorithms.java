@@ -134,7 +134,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                 KeyTypes.RSA,
                 null),
     
-    NIST_P_256 ("https://webpki.github.io/sks/algorithm#ec.nist.p256",
+         P_256 ("https://webpki.github.io/sks/algorithm#ec.nist.p256",
                 "P-256",
                 "secp256r1",
                 256,
@@ -158,7 +158,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                     (byte)0xCA, (byte)0x5F, (byte)0xB5, (byte)0x09, (byte)0x6E, (byte)0x95, (byte)0xCF, (byte)0x78,
                     (byte)0x7C, (byte)0x0D, (byte)0xB2}),
     
-    NIST_P_384 ("https://webpki.github.io/sks/algorithm#ec.nist.p384",
+         P_384 ("https://webpki.github.io/sks/algorithm#ec.nist.p384",
                 "P-384",
                 "secp384r1",
                 384,
@@ -185,7 +185,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                     (byte)0x82, (byte)0xBD, (byte)0x65, (byte)0x83, (byte)0xB6, (byte)0x84, (byte)0x77, (byte)0xE8,
                     (byte)0x1F, (byte)0xB8, (byte)0xD7, (byte)0x3D, (byte)0x79, (byte)0x88, (byte)0x2E, (byte)0x98}),
     
-    NIST_P_521  ("https://webpki.github.io/sks/algorithm#ec.nist.p521",
+        P_521  ("https://webpki.github.io/sks/algorithm#ec.nist.p521",
                 "P-521",
                 "secp521r1",
                 521,

@@ -1162,7 +1162,7 @@ public class ServerState implements Serializable
         privacy_enabled = flag;
       }
 
-    KeyAlgorithms ephemeral_key_algorithm = KeyAlgorithms.NIST_P_256;
+    KeyAlgorithms ephemeral_key_algorithm = KeyAlgorithms.P_256;
     
     public void setEphemeralKeyAlgorithm (KeyAlgorithms ephemeral_key_algorithm)
       {
