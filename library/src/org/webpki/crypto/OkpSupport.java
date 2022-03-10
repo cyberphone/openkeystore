@@ -79,7 +79,7 @@ public class OkpSupport {
     }
 
     public static byte[] public2RawOkpKey(PublicKey publicKey, KeyAlgorithms keyAlgorithm)
-    throws IOException {
+            throws IOException {
         byte[] encoded = publicKey.getEncoded();
         int prefixLength = okpPrefix.get(keyAlgorithm).length;
         if (okpKeyLength.get(keyAlgorithm) != encoded.length - prefixLength) {
@@ -91,7 +91,10 @@ public class OkpSupport {
     }
 
     public static PublicKey raw2PublicOkpKey(byte[] x, KeyAlgorithms keyAlgorithm) 
-    throws GeneralSecurityException {
+            throws GeneralSecurityException {
+        if (okpKeyLength.get(keyAlgorithm) != x.length) {
+            throw new GeneralSecurityException("Wrong public key length for: " + keyAlgorithm.toString());
+        }
         return KeyFactory.getInstance(keyAlgorithm.getJceName())
                 .generatePublic(
                         new X509EncodedKeySpec(
@@ -99,7 +102,7 @@ public class OkpSupport {
     }
 
     public static byte[] private2RawOkpKey(PrivateKey privateKey, KeyAlgorithms keyAlgorithm) 
-    throws IOException {
+            throws IOException {
         byte[] rawKey = ParseUtil.octet(
                 DerDecoder.decode(
                         ParseUtil.octet(
@@ -112,7 +115,7 @@ public class OkpSupport {
     }
 
     public static PrivateKey raw2PrivateOkpKey(byte[] d, KeyAlgorithms keyAlgorithm)
-    throws IOException, GeneralSecurityException {
+            throws IOException, GeneralSecurityException {
         KeyFactory keyFactory = KeyFactory.getInstance(keyAlgorithm.getJceName());
         byte[] pkcs8 = new ASN1Sequence(new BaseASN1Object[] {
             new ASN1Integer(0),

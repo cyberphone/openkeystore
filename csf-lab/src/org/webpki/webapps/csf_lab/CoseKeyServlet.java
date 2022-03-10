@@ -92,7 +92,6 @@ public class CoseKeyServlet extends CoreRequestServlet {
                 throw new IOException("Unexpected MIME type:" + request.getContentType());
             }
             JSONObjectReader parsedJson = JSONParser.parse(ServletUtil.getData(request));
-            System.out.println(parsedJson.toString());
             String inData = parsedJson.getString(KEY_IN).trim();
             KeyPair keyPair = null;
             PublicKey publicKey = null;
@@ -101,17 +100,14 @@ public class CoseKeyServlet extends CoreRequestServlet {
                 JSONObjectReader jwk = JSONParser.parse(inData);
                 try {
                     publicKey = JSONCryptoHelper.decodePublicKey(jwk, AlgorithmPreferences.JOSE);
-                    // Success! However ther could be private key information as well.
-                    keyPair = new KeyPair(publicKey, JSONCryptoHelper.decodePrivateKey(jwk, publicKey));
-                    try {
-                        jwk.checkForUnread();
-                    } catch (Exception e) {
-                        throw new IOException("The JWK must only only contain key core parameters");
+                    if (jwk.hasProperty("d")) {
+                        // Success! However this is actually a private key.
+                        keyPair = new KeyPair(publicKey, 
+                                              JSONCryptoHelper.decodePrivateKey(jwk, publicKey));
                     }
+                    jwk.checkForUnread();
                 } catch (Exception e) {
-                    if (publicKey == null) {
-                        throw new IOException("Undecodable JWK");
-                    }
+                    throw new IOException("Undecodable JWK: " + e.getMessage());
                 }
             } else {
                 byte[] keyInBinary = inData.getBytes("utf-8");
