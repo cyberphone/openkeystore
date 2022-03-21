@@ -16,8 +16,6 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
-
 import java.math.BigInteger;
 
 import org.webpki.util.ArrayUtil;
@@ -104,7 +102,7 @@ public class CBORInteger extends CBORObject {
     }
 
     @Override
-    byte[] internalEncode() throws IOException {
+    byte[] internalEncode() {
         boolean unsigned = value.compareTo(BigInteger.ZERO) >= 0;
         BigInteger cborAdjusted = unsigned ? value : value.negate().subtract(BigInteger.ONE);
         if (fitsAnInteger(value)) {

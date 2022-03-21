@@ -16,8 +16,6 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
-
 /**
  * Class for holding CBOR floating point numbers.
  * <p>
@@ -148,7 +146,7 @@ public class CBORFloatingPoint extends CBORObject {
     }
     
     @Override
-    byte[] internalEncode() throws IOException {
+    byte[] internalEncode() {
         return encodeTagAndValue(tag, 2 << (tag - MT_FLOAT16), bitFormat);
     }
     

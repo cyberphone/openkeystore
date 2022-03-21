@@ -16,8 +16,6 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
-
 /**
  * Class for holding CBOR <code>true</code> and <code>false</code>.
  */
@@ -43,7 +41,7 @@ public class CBORBoolean extends CBORObject {
     }
 
     @Override
-    byte[] internalEncode() throws IOException {
+    byte[] internalEncode() {
         return value ? TRUE : FALSE;
     }
 

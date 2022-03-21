@@ -138,6 +138,9 @@ public abstract class CBORSigner {
      * tag object the tag must in turn contain the map to be signed,
      * and the tag will also be included in the data to be signed.
      * </p>
+     * <p>
+     * See {@link CBORCryptoUtils#getContainerMap(CBORObject)} for details.
+     * </p>
      * 
      * @param key Key holding the signature in the CBOR map to sign
      * @param objectToSign CBOR map to be signed

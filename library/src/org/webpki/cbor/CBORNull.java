@@ -16,8 +16,6 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
-
 /**
  * Class for holding CBOR <code>null</code>.
  */
@@ -36,7 +34,7 @@ public class CBORNull extends CBORObject {
     }
 
     @Override
-    byte[] internalEncode() throws IOException {
+    byte[] internalEncode() {
         return NULL_TAG;
     }
 

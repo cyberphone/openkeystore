@@ -46,7 +46,7 @@ public abstract class CBORValidator {
                                  byte[] signedData) throws IOException, GeneralSecurityException;
  
     /**
-     * Validates signed CBOR map.
+     * Validates signed CBOR object.
      * <p>
      * This method presumes that <code>signedObject</code> holds
      * an enveloped signature according to CSF.
@@ -54,10 +54,14 @@ public abstract class CBORValidator {
      * <p>
      * Note that if <code>signedObject</code> holds a CBOR
      * tag object the tag must in turn contain the signed map,
-     * and the tag will also be included in the signed data.
+     * and the tag as also included in the signed data.
      * </p>
+     * <p>
+     * See {@link CBORCryptoUtils#getContainerMap(CBORObject)} for details.
+     * </p>
+     * 
      * @param key Key in map holding signature
-     * @param signedObject Signed CBOR map object
+     * @param signedObject Signed CBOR object
      * @return The signed object
      * @throws IOException
      * @throws GeneralSecurityException
@@ -97,13 +101,13 @@ public abstract class CBORValidator {
     }
 
     /**
-     * Validates signed CBOR map.
+     * Validates signed CBOR object.
      * <p>
      * See {@link #validate(CBORObject, CBORMap)} for details.
      * </p>
      * 
      * @param key Key in map holding signature
-     * @param signedObject Signed CBOR map object
+     * @param signedObject Signed CBOR object
      * @return The signed object
      * @throws IOException
      * @throws GeneralSecurityException
@@ -114,13 +118,13 @@ public abstract class CBORValidator {
     }
     
     /**
-     * Validates signed CBOR map.
+     * Validates signed CBOR object.
      * <p>
      * See {@link #validate(CBORObject, CBORMap)} for details.
      * </p>
      * 
      * @param key Key in map holding signature
-     * @param signedObject Signed CBOR map object
+     * @param signedObject Signed CBOR object
      * @return The signed object
      * @throws IOException
      * @throws GeneralSecurityException

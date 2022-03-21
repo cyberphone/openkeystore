@@ -41,9 +41,13 @@ public class CBORTextString extends CBORObject {
     }
 
     @Override
-    byte[] internalEncode() throws IOException {
-        byte[] utf8 = textString.getBytes("utf-8");
-        return ArrayUtil.add(encodeTagAndN(MT_TEXT_STRING, utf8.length), utf8);
+    byte[] internalEncode() {
+        try {
+            byte[] utf8 = textString.getBytes("utf-8");
+            return ArrayUtil.add(encodeTagAndN(MT_TEXT_STRING, utf8.length), utf8);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // JavaScript/JSON compatible escape character support

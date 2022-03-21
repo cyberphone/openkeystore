@@ -16,8 +16,6 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
-
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.HexaDecimal;
 
@@ -44,7 +42,7 @@ public class CBORByteString extends CBORObject {
     }
 
     @Override
-    byte[] internalEncode() throws IOException {
+    byte[] internalEncode() {
         return ArrayUtil.add(encodeTagAndN(MT_BYTE_STRING, byteString.length), byteString);
     }
 

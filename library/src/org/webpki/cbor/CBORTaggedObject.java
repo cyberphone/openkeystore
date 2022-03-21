@@ -16,8 +16,6 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
-
 import org.webpki.util.ArrayUtil;
 
 /**
@@ -55,7 +53,7 @@ public class CBORTaggedObject extends CBORObject {
     }
     
     @Override
-    byte[] internalEncode() throws IOException {
+    byte[] internalEncode() {
         return ArrayUtil.add(encodeTagAndN(MT_TAG_EXTENSION, tagNumber), object.internalEncode());
 
     }

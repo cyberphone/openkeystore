@@ -96,15 +96,14 @@ public abstract class CBORObject {
         return internalGetType();
     }
  
-    abstract byte[] internalEncode() throws IOException;
+    abstract byte[] internalEncode();
 
     /**
      * Encodes CBOR object.
      * 
      * @return Byte data
-     * @throws IOException
      */
-    public byte[] encode() throws IOException {
+    public byte[] encode() {
         return internalEncode();
     }
     
