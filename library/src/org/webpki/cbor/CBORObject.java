@@ -27,7 +27,9 @@ import org.webpki.util.ArrayUtil;
 
 /**
  * Base class for all CBOR objects.
- * 
+ * <p>
+ * In this implementation "object" should be regarded as equivalent to the RFC 8949 "data item".
+ * </p>
  */
 public abstract class CBORObject {
     
