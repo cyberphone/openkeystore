@@ -112,7 +112,7 @@ public class CBORInteger extends CBORObject {
         // Does not fit "int65" so we must use big number encoding
         byte[] encoded = cborAdjusted.toByteArray();
         if (encoded[0] == 0) {
-            // Drop possible leading zero
+            // Remove leading zero
             byte[] temp = new byte[encoded.length - 1];
             System.arraycopy(encoded, 1, temp, 0, temp.length);
             encoded = temp;
