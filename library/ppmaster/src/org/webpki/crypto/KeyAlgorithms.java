@@ -34,6 +34,14 @@ import java.security.spec.ECParameterSpec;
 import java.security.spec.ECPublicKeySpec;
 import java.security.spec.RSAPublicKeySpec;
 
+//#if ANDROID
+// Android specials...
+import android.util.Log;
+
+import java.security.KeyPairGenerator;
+
+import java.security.spec.X509EncodedKeySpec;
+//#endif
 /**
  * Asymmetric key algorithms.
  */
@@ -269,6 +277,19 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                 tempEcParmSpec = parameters.getParameterSpec(ECParameterSpec.class);
             } catch (Exception e) {
                 if (!deprecated) {
+ //#if ANDROID
+                    try {
+                        // Android 7 fix...
+                        Log.i("OL1", jceName);
+                        KeyPairGenerator keyGen = KeyPairGenerator.getInstance("EC");
+                        keyGen.initialize(new ECGenParameterSpec(jceName));
+                        tempEcParmSpec = ((ECPublicKey) KeyFactory.getInstance("EC").generatePublic(
+                            new X509EncodedKeySpec(
+                                    keyGen.generateKeyPair().getPublic().getEncoded()))).getParams();
+                    } catch (Exception e1) {
+                        Log.e("OL2", jceName, e);
+                    }
+//#endif
                     new RuntimeException(e);
                 }
             }
