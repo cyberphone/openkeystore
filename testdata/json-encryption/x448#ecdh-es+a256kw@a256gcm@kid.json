@@ -6,11 +6,11 @@
     "ephemeralKey": {
       "kty": "OKP",
       "crv": "X448",
-      "x": "IMDAy9XUtF_ejirT3IH8vdNQjAUyoeQ18Ci9ZCVkUWlGfhaPck4VpJAfcSju0JdPTY25x1wPbVg"
+      "x": "pd1s3RkcRToZPx8mkDyNsB-JLXpT2smnlVixAlHPFTn-sZoeI5vQE2y2kYDzslbVDMpJvjpsj9E"
     },
-    "encryptedKey": "mN7Phxa-bG893FlGJ5vMXqhcvKCziSJGU-9dsIOz-LrVEnzofa51dw"
+    "encryptedKey": "FG84E-PTW3JUpt22y9hiKn-Q6GbmRWGeprr_PcI0sr0g9ywbVWbBDQ"
   },
-  "iv": "HoI50bjfoKptY76w",
-  "tag": "TZe-zo-zoqmMjmXhYcRjxQ",
-  "cipherText": "4me5woDzwZRVB2wupcpswFsBk_ExQA"
+  "iv": "xjOXsyavbMq2lBq4",
+  "tag": "eaOQqnVO1UYYqUtNBMc_3Q",
+  "cipherText": "ahGX5gL7PIMHALodc6O4-ahcPhVdXA"
 }

@@ -2,6 +2,6 @@
   "kid": "example.com:x25519",
   "kty": "OKP",
   "crv": "X25519",
-  "x": "o16U773QQYaQB4eegNCldg6huoIZLsOQIYkFWvbZ5lA",
-  "d": "8AMLEwmHm83XsNZ-ZfMxqa4mrPzIuIXOZfQshTJrX2g"
+  "x": "6ZoM7yBYlJYNmxwFl4UT3MtCoTv7ztUjpRuKEXrV8Aw",
+  "d": "cxfl86EVmcqrR07mWENCf1F_5Ni5mt1ViGyERB6Q1vA"
 }

@@ -2,6 +2,6 @@
   "kid": "example.com:x448",
   "kty": "OKP",
   "crv": "X448",
-  "x": "Nm2U_QCgZFMPGI-NjqjTtA8tk1hw8PvYUXChKyM-cJ0tSlivU9uoxkUYrt87KzMukVkfSlrimW0",
-  "d": "8AKsGXExIQSgaPxmm3ATFJgtpRlvDBwQs3gM9ew2xPWIAfTCZoiuMo6or6W4N-ziLU1KZSytdvs"
+  "x": "feX5Fmas-kUX-okhOcLEJx4fJCa7bG-OlhPFWF0Ug3E7USOMRhN6alLo1X7jfAwpGOepOZb4TWc",
+  "d": "WBS0vvYprkhd0lQ2z8KNjTkaM4AtyIWdcDwMQQk-YhImFM35WvTEYV903E2AjqFBFIIdjwvVdLc"
 }
