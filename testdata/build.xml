@@ -106,10 +106,13 @@
   </target>
 	
   <target name="_createtestcert">      
-   	<antcall target="_createcert">
+  	<condition property="key.usages" value="-extension/ku keyAgreement" else="">
+  	  <matches pattern="\-ecccurve\ X" string="${algorithm}"/>
+  	</condition>
+  	<antcall target="_createcert">
       <param name="subject" value="Test certificate matching ${keyprefix}privatekey.pem"/>
       <param name="algorithms" value="${algorithm} -sigalg ECDSA_SHA512"/>
-      <param name="cmd" value="-out/keyalias example.com:${keyprefix} -ca/addpath all -ca/keypass foo123 -ca/storetype PKCS12 -ca/storepass foo123 -ca/keystore subca.p12 -entity/ee -validity/start 2018-01-01T00:00:00 -validity/end 2030-12-31T23:59:59 -out/storetype PKCS12 -out/keystore ${keyprefix}certificate.p12 -out/storepass foo123 -out/keypass foo123"/>
+      <param name="cmd" value="-out/keyalias example.com:${keyprefix} -ca/addpath all -ca/keypass foo123 -ca/storetype PKCS12 -ca/storepass foo123 -ca/keystore subca.p12 ${key.usages} -entity/ee -validity/start 2018-01-01T00:00:00 -validity/end 2030-12-31T23:59:59 -out/storetype PKCS12 -out/keystore ${keyprefix}certificate.p12 -out/storepass foo123 -out/keypass foo123"/>
     </antcall>
     <antcall target="_creatr.jwk-priv.pem-all">
        <param name="keyprefix" value="${keyprefix}"/>
