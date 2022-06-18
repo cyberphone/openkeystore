@@ -19,6 +19,7 @@ package org.webpki.cbor;
 import java.io.IOException;
 
 import java.security.GeneralSecurityException;
+import java.security.PrivateKey;
 import java.security.PublicKey;
 
 import java.security.cert.X509Certificate;
@@ -27,8 +28,14 @@ import java.util.ArrayList;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.CertificateUtil;
+import org.webpki.crypto.ContentEncryptionAlgorithms;
+import org.webpki.crypto.CryptoRandom;
+import org.webpki.crypto.EncryptionCore;
 import org.webpki.crypto.KeyAlgorithms;
+import org.webpki.crypto.KeyEncryptionAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
+
+import static org.webpki.cbor.CBORCryptoConstants.*;
 
 /**
  * Class holding crypto support 
@@ -122,6 +129,77 @@ public class CBORCryptoUtils {
             } else container = tagged;
         }
         return container.getMap();
+    }
+    
+    static byte[] setupBasicKeyEncryption(PublicKey publicKey,
+                                          CBORMap keyEncryption,
+                                          KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+                                          ContentEncryptionAlgorithms contentEncryptionAlgorithm) 
+            throws GeneralSecurityException, IOException {
+
+        // The mandatory key encryption algorithm
+        keyEncryption.setObject(ALGORITHM_LABEL,
+                                new CBORInteger(keyEncryptionAlgorithm.getCoseAlgorithmId()));
+        
+        // Key wrapping algorithms need a key to wrap
+        byte[] contentEncryptionKey = keyEncryptionAlgorithm.isKeyWrap() ?
+            CryptoRandom.generateRandom(contentEncryptionAlgorithm.getKeyLength()) : null;
+                                                                         
+        // The real stuff...
+        EncryptionCore.AsymmetricEncryptionResult asymmetricEncryptionResult =
+                keyEncryptionAlgorithm.isRsa() ?
+                    EncryptionCore.rsaEncryptKey(contentEncryptionKey,
+                                                 keyEncryptionAlgorithm,
+                                                 publicKey)
+                                               :
+                    EncryptionCore.senderKeyAgreement(true,
+                                                      contentEncryptionKey,
+                                                      keyEncryptionAlgorithm,
+                                                      contentEncryptionAlgorithm,
+                                                      publicKey);
+        if (!keyEncryptionAlgorithm.isRsa()) {
+            // ECDH-ES requires the ephemeral public key
+            keyEncryption.setObject(EPHEMERAL_KEY_LABEL,
+                                    CBORPublicKey.encode(
+                                        asymmetricEncryptionResult.getEphemeralKey()));
+        }
+        if (keyEncryptionAlgorithm.isKeyWrap()) {
+            // Encrypted key
+            keyEncryption.setObject(CIPHER_TEXT_LABEL,
+                                    new CBORByteString(
+                                        asymmetricEncryptionResult.getEncryptedKeyData()));
+        }
+        return asymmetricEncryptionResult.getContentEncryptionKey();
+    }
+    
+    static byte[] asymKeyDecrypt(PrivateKey privateKey,
+                                 CBORMap innerObject,
+                                 KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+                                 ContentEncryptionAlgorithms contentEncryptionAlgorithm)
+            throws GeneralSecurityException, IOException {
+
+        // Fetch ephemeral key if applicable
+        PublicKey ephemeralKey = null;
+        if (!keyEncryptionAlgorithm.isRsa()) {
+            ephemeralKey = CBORPublicKey.decode(innerObject.getObject(EPHEMERAL_KEY_LABEL));
+        }
+        
+        // Fetch encrypted key if applicable
+        byte[] encryptedKey = null;
+        if (keyEncryptionAlgorithm.isKeyWrap()) {
+            encryptedKey = innerObject.getObject(CIPHER_TEXT_LABEL).getByteString();
+        }
+        return keyEncryptionAlgorithm.isRsa() ?
+            EncryptionCore.rsaDecryptKey(keyEncryptionAlgorithm, 
+                                         encryptedKey,
+                                         privateKey)
+                                              :
+            EncryptionCore.receiverKeyAgreement(true,
+                                                keyEncryptionAlgorithm,
+                                                contentEncryptionAlgorithm,
+                                                ephemeralKey,
+                                                privateKey,
+                                                encryptedKey);
     }
 
     static void asymKeySignatureValidation(PublicKey publicKey,

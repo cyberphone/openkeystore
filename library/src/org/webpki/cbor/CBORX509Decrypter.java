@@ -20,7 +20,8 @@ import java.io.IOException;
 
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
-import java.security.PublicKey;
+
+import java.security.cert.X509Certificate;
 
 import org.webpki.crypto.ContentEncryptionAlgorithms;
 import org.webpki.crypto.KeyEncryptionAlgorithms;
@@ -28,7 +29,7 @@ import org.webpki.crypto.KeyEncryptionAlgorithms;
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
 /**
- * Class for CBOR asymmetric key decryption.
+ * Class for CBOR X509 decryption.
  * 
  * It uses COSE algorithms but relies on CEF for the packaging.
  * 
@@ -36,7 +37,7 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
  * (assuming that the same parameters are valid).  They are also
  * thread-safe. 
  */
-public class CBORAsymKeyDecrypter extends CBORDecrypter {
+public class CBORX509Decrypter extends CBORDecrypter {
     
     /**
      * For dynamic key retrieval.
@@ -48,16 +49,14 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
 
          * This interface also enables encryption parameter validation.
          * 
-         * @param optionalPublicKey Optional public key found in the encryption object
-         * @param optionalKeyId Optional key Id found in the encryption object
+         * @param certificatePath Certificate path in the encryption object
          * @param keyEncryptionAlgorithm The requested key encryption algorithm
          * @param contentEncryptionAlgorithm The requested content encryption algorithm
          * @return Private key for decryption
          * @throws IOException
          * @throws GeneralSecurityException
          */
-        PrivateKey locate(PublicKey optionalPublicKey, 
-                          CBORObject optionalKeyId,
+        PrivateKey locate(X509Certificate[] certificatePath,
                           KeyEncryptionAlgorithms keyEncryptionAlgorithm,
                           ContentEncryptionAlgorithms contentEncryptionAlgorithm)
             throws IOException, GeneralSecurityException;
@@ -70,15 +69,14 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
      * 
      * @param privateKey The anticipated private key to decrypt with
      */
-    public CBORAsymKeyDecrypter(PrivateKey privateKey) {
+    public CBORX509Decrypter(PrivateKey privateKey) {
         this(new KeyLocator() {
 
             @Override
-            public PrivateKey locate(PublicKey optionalPublicKey,
-                                     CBORObject optionalKeyId,
+            public PrivateKey locate(X509Certificate[] certificatePath, 
                                      KeyEncryptionAlgorithms keyEncryptionAlgorithm,
                                      ContentEncryptionAlgorithms contentEncryptionAlgorithm)
-                    throws IOException, GeneralSecurityException {
+                   throws IOException, GeneralSecurityException {
                 return privateKey;
             }
             
@@ -90,7 +88,7 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
      * 
      * @param keyLocator The call back
      */
-    public CBORAsymKeyDecrypter(KeyLocator keyLocator) {
+    public CBORX509Decrypter(KeyLocator keyLocator) {
         this.keyLocator = keyLocator;
     }
     
@@ -104,22 +102,20 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
                                    ContentEncryptionAlgorithms contentEncryptionAlgorithm,
                                    CBORObject optionalKeyId) throws IOException,
                                                                     GeneralSecurityException {
+        // keyId and certificates? Never!
+        CBORCryptoUtils.checkKeyId(optionalKeyId);
+
         // Mandatory algorithm
         KeyEncryptionAlgorithms keyEncryptionAlgorithm =
                 KeyEncryptionAlgorithms.getAlgorithmFromId(
                         innerObject.getObject(ALGORITHM_LABEL).getInt());
  
-        // Fetch public key if there is one
-        PublicKey optionalPublicKey = null;
-        if (innerObject.hasKey(PUBLIC_KEY_LABEL)) {
-            optionalPublicKey = CBORPublicKey.decode(innerObject.getObject(PUBLIC_KEY_LABEL));
-            // Please select ONE method for identifying the decryption key.
-            CBORCryptoUtils.checkKeyId(optionalKeyId);
-        }
+        // Fetch certificate path
+        X509Certificate[] certificatePath = CBORCryptoUtils.decodeCertificateArray(
+                innerObject.getObject(CERT_PATH_LABEL).getArray());
 
         // Now we have what it takes for finding the proper private key
-        PrivateKey privateKey = keyLocator.locate(optionalPublicKey,
-                                                  optionalKeyId,
+        PrivateKey privateKey = keyLocator.locate(certificatePath,
                                                   keyEncryptionAlgorithm,
                                                   contentEncryptionAlgorithm);
         return CBORCryptoUtils.asymKeyDecrypt(privateKey,

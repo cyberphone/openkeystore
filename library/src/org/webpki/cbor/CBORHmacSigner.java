@@ -25,6 +25,7 @@ import org.webpki.crypto.HmacSignerInterface;
 import org.webpki.crypto.SignatureAlgorithms;
 
 /**
+ * Class for creating CBOR HMAC signatures.
  * <p>
  * See {@link CBORSigner} for details.
  * </p>

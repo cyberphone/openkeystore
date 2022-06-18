@@ -25,13 +25,20 @@ import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
+import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
+
 import java.security.interfaces.RSAKey;
+
+import java.util.ArrayList;
 
 import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORSymKeyDecrypter;
 import org.webpki.cbor.CBORSymKeyEncrypter;
 import org.webpki.cbor.CBORTest;
 import org.webpki.cbor.CBORTextString;
+import org.webpki.cbor.CBORX509Decrypter;
+import org.webpki.cbor.CBORX509Encrypter;
 import org.webpki.cbor.CBORAsymKeyDecrypter;
 import org.webpki.cbor.CBORAsymKeyEncrypter;
 import org.webpki.cbor.CBORDecrypter;
@@ -97,10 +104,15 @@ public class CborEncryption {
             if (!keyPairJwk.getPublic().equals(keyStorePem.getCertificate("mykey").getPublicKey())) {
                 throw new IOException("PEM KS fail at public " + key);
             }
+            ArrayList<X509Certificate> certPath = new ArrayList<>();
+            for (Certificate certificate : keyStorePem.getCertificateChain("mykey")) {
+                certPath.add((X509Certificate) certificate);
+            }
             for (KeyEncryptionAlgorithms kea : KeyEncryptionAlgorithms.values()) {
                 if (keyPairJwk.getPublic() instanceof RSAKey == kea.isRsa()) {
                     for (ContentEncryptionAlgorithms cea : ContentEncryptionAlgorithms.values()) {
                         asymKeyAllVariations(key, cea, kea);
+                        certEncryption(key, certPath.toArray(new X509Certificate[0]), cea, kea);
                     }
                 }
             }
@@ -125,6 +137,48 @@ public class CborEncryption {
         demoDocEncryption("demo-doc-encryption");
     }
  
+    static void certEncryption(String keyType, 
+                               X509Certificate[] certificatePath,
+                               ContentEncryptionAlgorithms contentEncryptionAlgorithm,
+                               KeyEncryptionAlgorithms keyEncryptionAlgorithm) throws Exception {
+        KeyPair keyPair = readJwk(keyType);
+        CBORX509Encrypter encrypter = 
+                new CBORX509Encrypter(certificatePath, keyEncryptionAlgorithm, contentEncryptionAlgorithm);
+        byte[] encryptedData = encrypter.encrypt(dataToBeEncrypted).encode();
+        CBORX509Decrypter decrypter = new CBORX509Decrypter(keyPair.getPrivate());
+        compareResults(decrypter, encryptedData);
+        decrypter = new CBORX509Decrypter(new CBORX509Decrypter.KeyLocator() {
+
+            @Override
+            public PrivateKey locate(X509Certificate[] cp,
+                                     KeyEncryptionAlgorithms kea,
+                                     ContentEncryptionAlgorithms cea)
+                    throws IOException, GeneralSecurityException {
+                if (certificatePath.length != cp.length) {
+                    throw new GeneralSecurityException("cer mismatch");
+                }
+                for (int i = 0; i < cp.length ; i++) {
+                    if (!certificatePath[i].equals(cp[i])) {
+                        throw new GeneralSecurityException("cer2 mismatch");
+                    }
+                }
+                if (keyEncryptionAlgorithm != kea) {
+                    throw new GeneralSecurityException("kea mismatch");
+                }
+                if (contentEncryptionAlgorithm != cea) {
+                    throw new GeneralSecurityException("cea mismatch");
+                }
+                return keyPair.getPrivate();
+            }
+            
+        });
+        compareResults(decrypter, encryptedData);
+        optionalUpdate(decrypter, 
+                       baseEncryption + keyType + "#" + keyEncryptionAlgorithm.getJoseAlgorithmId().toLowerCase() + 
+                               "@" + contentEncryptionAlgorithm.getJoseAlgorithmId().toLowerCase() + '@' +
+                       "cer.cbor", encryptedData);
+    }
+
     static void asymKeyAllVariations(String key,
                                      ContentEncryptionAlgorithms cea,
                                      KeyEncryptionAlgorithms kea) throws Exception {
@@ -262,17 +316,17 @@ public class CborEncryption {
             @Override
             public PrivateKey locate(PublicKey optionalPublicKey,
                                      CBORObject optionalKeyId, 
-                                     ContentEncryptionAlgorithms cea,
-                                     KeyEncryptionAlgorithms kea)
+                                     KeyEncryptionAlgorithms kea,
+                                     ContentEncryptionAlgorithms cea)
                     throws IOException, GeneralSecurityException {
                 if (wantKeyId && !CBORTest.compareKeyId(keyId, optionalKeyId)) {
                     throw new GeneralSecurityException("missing key");
                 }
                 if (keyEncryptionAlgorithm != kea) {
-                    throw new GeneralSecurityException("alg mismatch");
+                    throw new GeneralSecurityException("kea mismatch");
                 }
                 if (contentEncryptionAlgorithm != cea) {
-                    throw new GeneralSecurityException("alg mismatch");
+                    throw new GeneralSecurityException("cea mismatch");
                 }
                 return keyPair.getPrivate();
             }

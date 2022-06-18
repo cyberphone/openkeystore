@@ -19,7 +19,8 @@ package org.webpki.cbor;
 import java.io.IOException;
 
 import java.security.GeneralSecurityException;
-import java.security.PublicKey;
+
+import java.security.cert.X509Certificate;
 
 import org.webpki.crypto.ContentEncryptionAlgorithms;
 import org.webpki.crypto.KeyEncryptionAlgorithms;
@@ -27,59 +28,47 @@ import org.webpki.crypto.KeyEncryptionAlgorithms;
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
 /**
- * Class for creating CBOR asymmetric key encryptions.
+ * Class for creating CBOR X509 encryptions.
  * 
 
  */
-public class CBORAsymKeyEncrypter extends CBOREncrypter {
+public class CBORX509Encrypter extends CBOREncrypter {
 
     KeyEncryptionAlgorithms keyEncryptionAlgorithm;
 
-    boolean wantPublicKey;
-    PublicKey publicKey;
+    X509Certificate[] certificatePath;
     
     /**
      * Initializes an encrypter object.
      * 
-     * @param publicKey The key to encrypt with
+     * @param certificatePath The certificate path to encrypt with
      * @param keyEncryptionAlgorithm KEK algorithm
      * @param contentEncryptionAlgorithm Actual encryption algorithm
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public CBORAsymKeyEncrypter(PublicKey publicKey,
-                                KeyEncryptionAlgorithms keyEncryptionAlgorithm,
-                                ContentEncryptionAlgorithms contentEncryptionAlgorithm) 
+    public CBORX509Encrypter(X509Certificate[] certificatePath,
+                             KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+                             ContentEncryptionAlgorithms contentEncryptionAlgorithm) 
             throws IOException, GeneralSecurityException {
         super(contentEncryptionAlgorithm);
-        this.publicKey = publicKey;
+        this.certificatePath = certificatePath;
         this.keyEncryptionAlgorithm = keyEncryptionAlgorithm;
     }
 
-    /**
-     * Defines if public key should be included.
-     * 
-     * @param wantPublicKey Flag.  Default: false.
-     * @return this
-     */
-    public CBORAsymKeyEncrypter setPublicKeyOption(boolean wantPublicKey) {
-        this.wantPublicKey = wantPublicKey;
-        return this;
-    }
- 
     @Override
     byte[] getContentEncryptionKey(CBORMap keyEncryption)
             throws IOException, GeneralSecurityException {
         
-        // We may want to include the public key as well
-        if (wantPublicKey) {
-            keyEncryption.setObject(PUBLIC_KEY_LABEL, CBORPublicKey.encode(publicKey));
-            // Which does not go together with a keyId
-            CBORCryptoUtils.checkKeyId(optionalKeyId);
-        }
-        
+        // X509 encryptions mandate a certificate path.
+        keyEncryption.setObject(CERT_PATH_LABEL, 
+                                CBORCryptoUtils.encodeCertificateArray(certificatePath));
+
+        // Key IDs are not permitted.
+        CBORCryptoUtils.checkKeyId(optionalKeyId);
+         
         // Create common key encryption data and return content encryption key. 
-        return CBORCryptoUtils.setupBasicKeyEncryption(publicKey,
+        return CBORCryptoUtils.setupBasicKeyEncryption(certificatePath[0].getPublicKey(),
                                                        keyEncryption,
                                                        keyEncryptionAlgorithm,
                                                        contentEncryptionAlgorithm);

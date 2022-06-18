@@ -1277,8 +1277,8 @@ public class CBORTest {
                     public PrivateKey locate(
                             PublicKey optionalPublicKey,
                             CBORObject optionalKeyId,
-                            ContentEncryptionAlgorithms contentEncryptionAlgorithm,
-                            KeyEncryptionAlgorithms keyEncryptionAlgorithm)
+                            KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+                            ContentEncryptionAlgorithms contentEncryptionAlgorithm)
                             throws IOException, GeneralSecurityException {
                         return compareKeyId(keyId, optionalKeyId) ? p256.getPrivate() : null;
                     }
@@ -1320,6 +1320,43 @@ public class CBORTest {
         } catch (Exception e) {
             checkException(e, "Missing key: 1");
         }
+
+        CBORObject p256CertEncrypted = new CBORX509Encrypter(p256CertPath,
+                                                             KeyEncryptionAlgorithms.ECDH_ES_A128KW,
+                                                             ContentEncryptionAlgorithms.A256GCM)
+                .encrypt(dataToEncrypt);
+        assertTrue("enc/dec", 
+                ArrayUtil.compare(new CBORX509Decrypter(
+                                  p256.getPrivate()).decrypt(p256CertEncrypted),
+                                  dataToEncrypt));
+ 
+        assertTrue("enc/dec", 
+                ArrayUtil.compare(new CBORX509Decrypter(new CBORX509Decrypter.KeyLocator() {
+
+                    @Override
+                    public PrivateKey locate(X509Certificate[] certificatePath,
+                            KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+                            ContentEncryptionAlgorithms contentEncryptionAlgorithm)
+                            throws IOException, GeneralSecurityException {
+                        assertTrue("pub", certificatePath[0].getPublicKey().equals(p256.getPublic()));
+                        assertTrue("kea", keyEncryptionAlgorithm == 
+                                          KeyEncryptionAlgorithms.ECDH_ES_A128KW);
+                        assertTrue("cea", contentEncryptionAlgorithm == 
+                                          ContentEncryptionAlgorithms.A256GCM);
+                        return p256.getPrivate();
+                    }
+                }).decrypt(p256CertEncrypted), dataToEncrypt));
+        
+        try {
+            new CBORX509Encrypter(p256CertPath,
+                    KeyEncryptionAlgorithms.ECDH_ES_A128KW,
+                    ContentEncryptionAlgorithms.A256GCM)
+                .setKeyId("illigal").encrypt(dataToEncrypt);
+            fail("must not run");
+        } catch (Exception e) {
+            checkException(e, CBORCryptoUtils.STDERR_KEY_ID_PUBLIC);
+        }
+
         CBORObject a256Encrypted = new CBORSymKeyEncrypter(symmetricKeys.getValue(256),
                                             ContentEncryptionAlgorithms.A256GCM)
                                                 .encrypt(dataToEncrypt);
