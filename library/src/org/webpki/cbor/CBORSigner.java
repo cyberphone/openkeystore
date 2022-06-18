@@ -91,7 +91,7 @@ public abstract class CBORSigner {
      * See {@link #setKeyId(CBORObject)} for details.
      * </p>
      * 
-     * @param keyId A CBOR key Id
+     * @param keyId Key Id
      * @return this
      * 
      */
