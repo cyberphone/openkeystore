@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.webpki.cbor.CBORInteger;
 import org.webpki.cbor.CBORMap;
+import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORPublicKey;
 
 import org.webpki.crypto.AlgorithmPreferences;
@@ -40,8 +41,6 @@ import org.webpki.json.JSONParser;
 
 import org.webpki.tools.KeyStore2JWKConverter;
 
-import org.webpki.util.Base64URL;
-import org.webpki.util.HexaDecimal;
 import org.webpki.util.PEMDecoder;
 
 import org.webpki.webutil.ServletUtil;
@@ -51,32 +50,6 @@ public class CoseKeyServlet extends CoreRequestServlet {
     private static final long serialVersionUID = 1L;
     
     static final String KEY_IN      = "keyin";
-    static final String CBOR_OUT    = "cborout";
-    static final String ERROR       = "error";
-    
-    static final String SEL_OUT     = "selout";
-    
-    static final String DIAG        = "diag";
-    static final String HEXA        = "hexa";
-    static final String CSTYLE      = "cstyle";
-    static final String B64U        = "b64u";
-    
-    String selector(String name, boolean primary) {
-        return
-            "<table style='margin-bottom:0.3em;border-spacing:0'>" +
-            "<tr><td><input type='radio' name='" + name + "' " +
-            "value='" + DIAG + "'" + (primary ? " checked" : "") + 
-              "></td><td>Diagnostic notation</td></tr>" +
-            "<tr><td><input type='radio' name='" + name + "' " +
-            "value='" + HEXA + "'" + (primary ? "" : " checked") +
-            "></td><td>Hexadecimal notation" + (primary ? " (including possible #-comments)" 
-                                                        : "") + "</td></tr>" +
-            "<tr><td><input type='radio' name='" + name + "' " +
-            "value='" + CSTYLE + "'></td><td><code>0xhh, 0xhh...</code> notation</td></tr>" +
-            "<tr><td><input type='radio' name='" + name + "' " +
-            "value='" + B64U + "'></td><td>Base64Url notation</td></tr>" +
-            "</table>";
-     }
     
     void setRSAParameter(JSONObjectReader jwk, String jsonArgument, CBORMap cbor, int cborLabel)
             throws IOException {
@@ -165,34 +138,8 @@ public class CoseKeyServlet extends CoreRequestServlet {
                         cbor.setByteString(new CBORInteger(-4), jwk.getBinary("d"));
                 }
             }
-            String outData;
-            switch (parsedJson.getString(SEL_OUT)) {
-                case DIAG:
-                    outData = HTML.encode(cbor.toString()).replace("\n", "<br>")
-                                                          .replace(" ","&nbsp;");
-                    break;
-    
-                case HEXA:
-                    outData = HexaDecimal.encode(cbor.encode());
-                    break;
-                    
-                case CSTYLE:
-                    outData = HexaDecimal.encode(cbor.encode());
-                    StringBuilder cstyle = new StringBuilder();
-                    for (int i = 0; i < outData.length(); ) {
-                    if (i > 0) {
-                        cstyle.append(", ");
-                    }
-                    cstyle.append("0x").append(outData.charAt(i++)).append(outData.charAt(i++));
-                    }
-                    outData = cstyle.toString();
-                    break;
-    
-                default:
-                    outData = Base64URL.encode(cbor.encode());
-                    break;
-            }
-            jsonResponse.setString(CBOR_OUT, outData);
+            jsonResponse.setString(CBOR_OUT, 
+                                   getFormattedCbor(parsedJson, new CBORObject[] {cbor}));
         } catch (Exception e) {
             jsonResponse.setString(ERROR, HTML.encode(e.getMessage()).replace("\n", "<br>")
                                                                      .replace(" ","&nbsp;"));

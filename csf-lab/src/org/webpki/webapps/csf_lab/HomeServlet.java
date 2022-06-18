@@ -31,7 +31,7 @@ public class HomeServlet extends HttpServlet {
     static final String SUPPORTED_CBOR = "This implementation supports the " +
             "following subset of CBOR primitives: " +
             "<i>text&nbsp;string</i>, <i>byte&nbsp;string</i>, " +
-            "<i>integer</i>, <i>big&nbsp;number</i>, <i>floating&nbsp;point</i> (16/32/64 bit), " +
+            "<i>integer</i>, <i>big&nbsp;integer</i>, <i>floating&nbsp;point</i> (16/32/64 bit), " +
             "<code>true</code>, <code>false</code>, and <code>null</code>. " +
             "In addition, this implementation supports <i>tagged data</i> (CBOR major type 6).";
 

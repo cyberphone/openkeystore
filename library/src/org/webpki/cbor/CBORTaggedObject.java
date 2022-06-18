@@ -23,7 +23,7 @@ import org.webpki.util.ArrayUtil;
  * 
  * Tagged objects are based on CBOR major type 6.
  * <p>
- * Note that the <code>big number</code> type is dealt with
+ * Note that the <code>big&nbsp;integer</code> type is dealt with
  * as a specific primitive, in spite of being a tagged object.
  * </p>
  */

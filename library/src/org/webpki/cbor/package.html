@@ -4,18 +4,17 @@ This package contains java support for CBOR (RFC 8949).
 <h3>Currently Supported Primitives</h3>
 <table>
 <tr><th>CBOR Data Type</th><th>&nbsp;&nbsp;</th><th>Java Counterpart</th></tr>
-<tr><td><code>unsigned integer</code></td><td></td><td><code>long</code></td></tr>
-<tr><td><code>negative integer</code></td><td></td><td><code>long</code></td></tr>
-<tr><td><code>unsigned bignum</code></td><td></td><td><code>BigInteger</code></td></tr>
-<tr><td><code>negative bignum</code></td><td></td><td><code>BigInteger</code></td></tr>
-<tr><td><code>floating point</code> *</td><td></td><td><code>double</code></td></tr>
+<tr><td><code>integer</code> [1]</td><td></td><td><code>long</code></td></tr>
+<tr><td><code>big integer</code> [1]</td><td></td><td><code>BigInteger</code></td></tr>
+<tr><td><code>floating point</code> [2]</td><td></td><td><code>double</code></td></tr>
 <tr><td><code>byte string</code></td><td></td><td><code>byte[]</code></td></tr>
 <tr><td><code>text string</code></td><td></td><td><code>String</code></td></tr>
 <tr><td><code>true</code></td><td></td><td><code>boolean</code></td></tr>
 <tr><td><code>false</code></td><td></td><td><code>boolean</code></td></tr>
 <tr><td><code>null</code></td><td></td><td><code>null</code></td></tr>
 </table>
-<p>*) Note that floating point data covers the 16, 32, and 64-bit IEEE 754 variants.</p>
+<p>1] The distinction between unsigned and negative values is dealt with automatically.<br>
+2] Floating point data covers the 16, 32, and 64-bit IEEE 754 variants.</p>
 <p>
 In addition to the primitives above, this implementation also supports
 arbitrary tagged objects
@@ -27,7 +26,7 @@ work, it is (by design) quite picky when decoding CBOR data
 and does (by default) not accept:
 <ul>
 <li>Integer data with <i>leading zeros</i>.</li>
-<li><code>bignum</code> objects
+<li><code>big&nbsp;integer</code> objects
 that due to their value could equally well be provided in the
 shorter <code>integer</code> format.</li>
 <li>Floating point data that could equally well be properly represented by a
@@ -80,7 +79,7 @@ enabling constructs like the following:
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-3: h'9826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d8'<br>
 &nbsp;&nbsp;&nbsp;&nbsp;},<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Signature value /</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;7: h'39c9668236007d617afd195886c9a07fdf4b7832539c639843701af33c1e301b76cbfdf2b8965bac0593664fbadaf27211186d6c89fab4ae8bb01bca1fa2e429'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;6: h'08f9696fcbdb924d2e676351c7f24fc3b0417e9ec151e6b140d02efa09a7247688db8ccf209944efce1ebd5c36563eec2a8e2e92dfcd8abf1d01c5052f14c220'<br>
 &nbsp;&nbsp;}<br>
 }
 </code></div>
@@ -89,7 +88,7 @@ The same object expressed as hex-encoded CBOR:
 </p>
 <p>
 <div style='word-break:break-all'><code>
-a801a3016a53706163652053686f7002663433352e30300363555344026d737061636573686f702e636f6d03781b465237363330303032313131313130303230303530303134333832047668747470733a2f2f62616e6b6469726563742e6f726705683035373638343031067819323032322d30312d31345430393a33343a30382d30353a303007a201fb404371b089a0275202fb405341460aa64c3008a3012604a401022001215820e812b1a6dcbc708f9ec43cc2921fa0a14e9d5eadcc6dc63471dd4b680c6236b52258209826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d807584039c9668236007d617afd195886c9a07fdf4b7832539c639843701af33c1e301b76cbfdf2b8965bac0593664fbadaf27211186d6c89fab4ae8bb01bca1fa2e429
+a801a3016a53706163652053686f7002663433352e30300363555344026d737061636573686f702e636f6d03781b465237363330303032313131313130303230303530303134333832047668747470733a2f2f62616e6b6469726563742e6f726705683035373638343031067819323032322d30312d31345430393a33343a30382d30353a303007a201fb404371b089a0275202fb405341460aa64c3008a3012604a401022001215820e812b1a6dcbc708f9ec43cc2921fa0a14e9d5eadcc6dc63471dd4b680c6236b52258209826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d806584008f9696fcbdb924d2e676351c7f24fc3b0417e9ec151e6b140d02efa09a7247688db8ccf209944efce1ebd5c36563eec2a8e2e92dfcd8abf1d01c5052f14c220
 </code></div>
 </p>
 <p>
@@ -120,13 +119,13 @@ Note that <code>keyId</code> <b>must not</b> be used together with
 Note that ECDSA public keys <b>must</b> be supplied with a <i>value parameter</i> for the y-coordinate as well.</td></tr>
 </td></tr>
 
-<tr><td style='text-align:center'><code>6</code></td><td><code>certificatePath</code></td><td><code>array</code></td><td><i>Optional</i> certificate path supplied 
+<tr><td style='text-align:center'><code>5</code></td><td><code>certificatePath</code></td><td><code>array</code></td><td><i>Optional</i> certificate path supplied 
 as an array of <code>byte&nbsp;string</code> objects holding X.509 certificates in DER format, 
 where the first object <b>must</b> be the signature certificate.
 Signature objects <b>must not</b> contain both <code>certificatePath</code> and <code>publicKey</code> elements.
 </td></tr>
 
-<tr><td style='text-align:center'><code>7</code></td><td><code>signature</code></td><td><code>byte&nbsp;string</code></td><td>Signature value.</td></tr>
+<tr><td style='text-align:center'><code>6</code></td><td><code>signature</code></td><td><code>byte&nbsp;string</code></td><td>Signature value.</td></tr>
 </table>
 <p>
 CSF signatures are validated by running the signature validation 
@@ -197,30 +196,30 @@ The following is a CEF object (here expressed in CBOR diagnostic notation), usin
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Key Id /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;3: "example.com:x25519",<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Ephemeral public key descriptor in COSE format /</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;5: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;7: {<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ kty = OKP /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: 1,<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ crv = X25519 /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-1: 4,<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ x /</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-2: h'bb167a278ad989b871e7becd18ce9e028c57cdd79a4c7f1ce3d3b4c2ccdc2547'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-2: h'c219e35a9c09bfcf1bd6c6dcd1e05ecb36cb6f465d9caeb101795e33fd7db112'<br>
 &nbsp;&nbsp;&nbsp;&nbsp;},<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ CipherText (Encrypted key) /</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;10: h'79bb27fb0936e5800046243906b032215526168f8a160897c95e91cce18946856c7a8ccb8733df00'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;10: h'842916c5c81f8a815ec5ef2a472981b7300bc33fe748928c26e8c4dfff7a4747ecff9caea7040585'<br>
 &nbsp;&nbsp;},<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Tag /</span><br>
-&nbsp;&nbsp;8: h'2168e17d7d8ca3bf4baed2055442ca4d',<br>
+&nbsp;&nbsp;8: h'84ad6926aa92d0de56e4674abf863390',<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Initialization Vector (IV) /</span><br>
-&nbsp;&nbsp;9: h'5e2005f95590c53357291b04',<br>
+&nbsp;&nbsp;9: h'c7cc6f77b9f984c15bc3cbeb',<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Ciphertext (Encrypted Content) /</span><br>
-&nbsp;&nbsp;10: h'8e45a77ae37c82f3b1585bbff8ff1b697f25a4bac590'<br>
+&nbsp;&nbsp;10: h'625c2b2a41907547b2210624e1e818991c00790aed16'<br>
 }
 </code></div>
 <p>
 The same object expressed as hex-encoded CBOR:
 </p>
 <div style='word-break:break-all'><code>
-a5010302a401381e03726578616d706c652e636f6d3a78323535313905a301012004215820bb167a278ad989b871e7becd18ce9e028c57cdd79a4c7f1ce3d3b4c2ccdc25470a582879bb27fb0936e5800046243906b032215526168f8a160897c95e91cce18946856c7a8ccb8733df0008502168e17d7d8ca3bf4baed2055442ca4d094c5e2005f95590c53357291b040a568e45a77ae37c82f3b1585bbff8ff1b697f25a4bac590
+a5010302a401381e03726578616d706c652e636f6d3a78323535313907a301012004215820c219e35a9c09bfcf1bd6c6dcd1e05ecb36cb6f465d9caeb101795e33fd7db1120a5828842916c5c81f8a815ec5ef2a472981b7300bc33fe748928c26e8c4dfff7a4747ecff9caea7040585085084ad6926aa92d0de56e4674abf863390094cc7cc6f77b9f984c15bc3cbeb0a56625c2b2a41907547b2210624e1e818991c00790aed16
 </code></div>
 <p>
 Decryption of this object using the private key (here in JWK format)
@@ -274,7 +273,8 @@ Properly designed CEF objects <b>must</b> adhere to the following rules:
 any other information than the public key itself
 and associated parameters.</li>
 <li>ECDSA public keys <b>must</b> be supplied with a <i>value parameter</i> for the y-coordinate as well.</li>
-<li><code class='webpkicode'>publicKey</code> and <code class='webpkicode'>keyId</code>
+<li><code class='webpkicode'>keyId</code>, <code class='webpkicode'>publicKey</code> 
+and <code class='webpkicode'>certificatePath</code>
 <b>must not</b> be combined.</li>
 <li>If a <code class='webpkicode'>keyId</code> is used it <b>must</b> be supplied in the main map for
 symmetric encryption schemes, and in the sub map for schemes using key encryption.</li>

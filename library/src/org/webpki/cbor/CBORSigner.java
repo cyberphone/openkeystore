@@ -75,7 +75,7 @@ public abstract class CBORSigner {
      * is equivalent to the default (= no <code>keyId</code>).
      * </p>
      * 
-     * @param keyId A CBOR key Id or <code>null</code>
+     * @param keyId Key Id or <code>null</code>
      * @return this
      */
     public CBORSigner setKeyId(CBORObject keyId) {
@@ -108,7 +108,7 @@ public abstract class CBORSigner {
      * See {@link #setKeyId(CBORObject)} for details.
      * </p>
      * 
-     * @param keyId A CBOR key Id
+     * @param keyId Key Id
      * @return this
      *
      */

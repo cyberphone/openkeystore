@@ -20,6 +20,8 @@ import java.io.IOException;
 
 import java.math.BigInteger;
 
+import java.util.ArrayList;
+
 import org.webpki.cbor.CBORArray;
 import org.webpki.cbor.CBORInteger;
 import org.webpki.cbor.CBORBoolean;
@@ -38,9 +40,11 @@ public class CBORDiagnosticParser {
 
     char[] cborDiagnostic;
     int index;
+    boolean sequence;
     
-    CBORDiagnosticParser(String cborDiagnostic) {
+    CBORDiagnosticParser(String cborDiagnostic, boolean sequence) {
         this.cborDiagnostic = cborDiagnostic.toCharArray();
+        this.sequence = sequence;
     }
     
     /**
@@ -51,7 +55,18 @@ public class CBORDiagnosticParser {
      * @throws IOException
      */
     public static CBORObject parse(String cborDiagnostic) throws IOException {
-        return new CBORDiagnosticParser(cborDiagnostic).readToEOF();
+        return new CBORDiagnosticParser(cborDiagnostic, false).readToEOF();
+    }
+
+    /**
+     * Parse Diagnostic CBOR sequence to array of CBOR.
+     * 
+     * @param cborDiagnostic String holding diagnostic (textual) CBOR
+     * @return CBORObject
+     * @throws IOException
+     */
+    public static CBORObject[] parseSequence(String cborDiagnostic) throws IOException {
+        return new CBORDiagnosticParser(cborDiagnostic, true).readSequenceToEOF();
     }
 
     private void reportError(String error) throws IOException {
@@ -103,6 +118,18 @@ public class CBORDiagnosticParser {
             reportError("Unexpected data after token");
         }
         return cborObject;
+    }
+
+    private CBORObject[] readSequenceToEOF() throws IOException {
+        ArrayList<CBORObject> sequence = new ArrayList<>();
+        while (true) {
+            sequence.add(getObject());
+            if (index < cborDiagnostic.length) {
+                scanFor(",");
+            } else {
+                return sequence.toArray(new CBORObject[0]);
+            }
+        }
     }
 
     private CBORObject getObject() throws IOException {

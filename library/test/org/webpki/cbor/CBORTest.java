@@ -31,6 +31,7 @@ import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+
 import java.security.cert.X509Certificate;
 
 import java.util.Locale;
@@ -258,7 +259,7 @@ public class CBORTest {
         try {
             CBORObject cborObject = parseCborHex(hex);
             assertFalse("Double should fail", mustFail == 1);
-            Double d = cborObject.getFloatingPoint();
+            Double d = cborObject.getDouble();
             assertTrue("Equal d=" + d + " v=" + v, (d.compareTo(v)) == 0 ^ (mustFail != 0));
         } catch (Exception e) {
             assertTrue("Ok fail", mustFail != 0);
@@ -708,7 +709,7 @@ public class CBORTest {
                 "Is type: INTEGER, requested: BYTE_STRING");
         }
         try {
-            cborObject.getFloatingPoint();  
+            cborObject.getDouble();  
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
@@ -1474,19 +1475,28 @@ public class CBORTest {
 
     void parseStrangeCborHex(String hexInput,
                              String hexExpectedResult,
-                             boolean ignoreAdditionalData, 
-                             boolean ignoreKeySortingOrder) throws IOException {
+                             boolean sequenceFlag, 
+                             boolean acceptNonDeterministic) throws IOException {
         String result = HexaDecimal.encode(
                 CBORObject.decodeWithOptions(new ByteArrayInputStream(HexaDecimal.decode(hexInput)),
-                                             ignoreAdditionalData,
-                                             ignoreKeySortingOrder).encode()).toUpperCase();
+                                             sequenceFlag,
+                                             acceptNonDeterministic).encode()).toUpperCase();
         assertTrue("Strange=" + result, hexExpectedResult.equals(result));
     }
 
     @Test
     public void decodeWithOptions() throws Exception {
         parseStrangeCborHex("A204616B026166", "A202616604616B", false, true);
-        parseStrangeCborHex("A202616604616B01", "A202616604616B", true, false);
+        parseStrangeCborHex("1817", "17", false, true);
+        parseStrangeCborHex("1900D0", "18D0", false, true);
+        parseStrangeCborHex("1A000080D0", "1980D0", false, true);
+        parseStrangeCborHex("1B00000000800080D0", "1A800080D0", false, true);
+        parseStrangeCborHex("C24D00431E0FAE6A7217CA9FFFFFFF", "C24C431E0FAE6A7217CA9FFFFFFF", false, true);
+        parseStrangeCborHex("C242431E", "19431E", false, true);
+        parseStrangeCborHex("C240", "00", false, true);
+
+        // Note: read one object but don't care of the next which in this case is invalid as well
+        parseStrangeCborHex("A202616604616BFF", "A202616604616B", true, false);
     }
 
 
@@ -1521,20 +1531,26 @@ public class CBORTest {
         } catch (Exception e) {
         }
     }
-    
+
     @Test
     public void cborSequences() throws Exception {
-        byte[] cborBytes = HexaDecimal.decode("00A104F58105");
-        InputStream sequence = new ByteArrayInputStream(cborBytes);
-        int pos = 0;
-        for (int length : new int[] {1, 3, 2}) {
-            byte[] part = CBORObject.decodeWithOptions(sequence, true, false).encode();
-            assertTrue("Seq", ArrayUtil.compare(part, 0, cborBytes, pos, length));
-            pos += length;
+        byte[] totalBytes = HexaDecimal.decode("00A104F58105A1056464617461");
+        InputStream inputStream = new ByteArrayInputStream(totalBytes);
+        int position = 0;
+        CBORObject cborObject;
+        while ((cborObject = CBORObject.decodeWithOptions(inputStream, true, false)) != null) {
+            byte[] rawCbor = cborObject.encode();
+            assertTrue("Seq", ArrayUtil.compare(rawCbor, 0, totalBytes, position, rawCbor.length));
+            position += rawCbor.length;
         }
-        assertTrue("SeqEnd", sequence.read() == -1);
+        assertTrue("SeqEnd", totalBytes.length == position);
+
+        assertTrue("SeqNull", 
+                   CBORObject.decodeWithOptions(new ByteArrayInputStream(new byte[0]),
+                                                true, 
+                                                false) == null);
     }
-    
+
     @Test
     public void json2CborConversions() throws Exception {
         String[] jsonTokens = new String[] {

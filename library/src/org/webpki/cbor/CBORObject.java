@@ -174,8 +174,7 @@ public abstract class CBORObject {
      * {@link CBORInteger}, otherwise an exception will be thrown.
      * </p>
      * <p>
-     * Note that due to the deterministic serialization mode, this method
-     * is independent of the underlying CBOR integer type.
+     * Note that this method is independent of the underlying CBOR integer type.
      * </p>
      * 
      * @return BigInteger
@@ -234,7 +233,7 @@ public abstract class CBORObject {
     }
 
     /**
-     * Returns <code>floating point</code> value.
+     * Returns <code>double</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORFloatingPoint}, otherwise an exception will be thrown.
@@ -243,7 +242,7 @@ public abstract class CBORObject {
      * @return Double
      * @throws IOException
      */
-    public double getFloatingPoint() throws IOException {
+    public double getDouble() throws IOException {
         checkTypeAndMarkAsRead(CBORTypes.FLOATING_POINT);
         return ((CBORFloatingPoint) this).value;
     }
@@ -345,7 +344,7 @@ public abstract class CBORObject {
      * {@link CBORTaggedObject}, otherwise an exception will be thrown.
      * </p>
      * <p>
-     * Note that the <code>big number</code> type is dealt with
+     * Note that the <code>big&nbsp;integer</code> type is dealt with
      * as a specific primitive, in spite of being a tagged object.
      * </p>
      * @param tagNumber Expected tag number
@@ -432,11 +431,16 @@ public abstract class CBORObject {
         private static final byte[] ZERO_BYTE = {0};
 
         private InputStream inputStream;
-        private boolean checkKeySortingOrder;
+        private boolean deterministicCheck;
+        private boolean sequenceFlag;
+        private boolean atFirstByte = true;
          
-        private CBORDecoder(InputStream inputStream, boolean ignoreKeySortingOrder) {
+        private CBORDecoder(InputStream inputStream,
+                            boolean sequenceFlag,
+                            boolean acceptNonDeterministic) {
             this.inputStream = inputStream;
-            this.checkKeySortingOrder = !ignoreKeySortingOrder;
+            this.sequenceFlag = sequenceFlag;
+            this.deterministicCheck = !acceptNonDeterministic;
         }
         
         private void eofError() throws IOException {
@@ -446,8 +450,12 @@ public abstract class CBORObject {
         private int readByte() throws IOException {
             int i = inputStream.read();
             if (i < 0) {
+                if (sequenceFlag && atFirstByte) {
+                    return MT_NULL;
+                }
                 eofError();
             }
+            atFirstByte = false;
             return i;
         }
         
@@ -486,7 +494,7 @@ public abstract class CBORObject {
         private CBORFloatingPoint checkDoubleConversion(int tag, long bitFormat, long rawDouble)
                 throws IOException {
             CBORFloatingPoint value = new CBORFloatingPoint(Double.longBitsToDouble(rawDouble));
-            if (value.tag != tag || value.bitFormat != bitFormat) {
+            if ((value.tag != tag || value.bitFormat != bitFormat) && deterministicCheck) {
                 reportError(String.format(
                         "Non-deterministic encoding of floating point value, tag: %2x", tag & 0xff));
             }
@@ -503,7 +511,7 @@ public abstract class CBORObject {
                     byte[] byteArray = getObject().getByteString();
                     if (byteArray.length == 0) {
                         byteArray = ZERO_BYTE;  // Zero length byte string => n == 0.
-                    } else if (byteArray[0] == 0) {
+                    } else if (byteArray[0] == 0 && deterministicCheck) {
                         reportError("Non-deterministic encoding: leading zero byte");
                     }
                     BigInteger bigInteger = 
@@ -511,7 +519,7 @@ public abstract class CBORObject {
                             new BigInteger(-1, byteArray).subtract(BigInteger.ONE)
                                                :
                             new BigInteger(1, byteArray);
-                    if (CBORInteger.fitsAnInteger(bigInteger)) {
+                    if (CBORInteger.fitsAnInteger(bigInteger) && deterministicCheck) {
                         reportError("Non-deterministic encoding: bignum fits integer");
                     }
                     return new CBORInteger(bigInteger);
@@ -600,7 +608,7 @@ public abstract class CBORObject {
                 // If the upper half (for 2, 4, 8 byte N) of N or a single byte
                 // N is zero, a shorter variant should have been used.
                 // In addition, a single byte N must be > 23. 
-                if ((n & mask) == 0 || (n > 0 && n < 24)) {
+                if (((n & mask) == 0 || (n > 0 && n < 24)) && deterministicCheck) {
                     reportError("Non-deterministic encoding of N");
                 }
             }
@@ -634,7 +642,7 @@ public abstract class CBORObject {
                     CBORMap cborMap = new CBORMap();
                     while (--n >= 0) {
                         cborMap.setObject(getObject(), getObject());
-                        cborMap.parsingMode = checkKeySortingOrder;
+                        cborMap.parsingMode = deterministicCheck;
                     }
                     cborMap.parsingMode = false;
                     return cborMap;
@@ -644,31 +652,30 @@ public abstract class CBORObject {
             }
             return null;  // For the compiler only...
         }
-
-        private void checkForUnexpectedInput() throws IOException {
-            if (inputStream.read() != -1) {
-                reportError("Unexpected data found after CBOR object");
-            }
-        }
     }
 
     /**
      * Decodes CBOR data with options.
      * 
      * @param inputStream Stream holding CBOR data
-     * @param ignoreAdditionalData Stop reading after parsing a valid CBOR object
-     * @param ignoreKeySortingOrder Do not enforce any particular sorting order
+     * @param sequenceFlag Stop reading after parsing a valid CBOR object (no object returns <code>null</code>)
+     * @param acceptNonDeterministic Do not check data for deterministic representation
      * @return CBORObject
      * @throws IOException
      */
     public static CBORObject decodeWithOptions(InputStream inputStream,
-                                               boolean ignoreAdditionalData,
-                                               boolean ignoreKeySortingOrder) throws IOException {
-        CBORDecoder cborDecoder = new CBORDecoder(inputStream, ignoreKeySortingOrder);
+                                               boolean sequenceFlag,
+                                               boolean acceptNonDeterministic) throws IOException {
+        CBORDecoder cborDecoder = new CBORDecoder(inputStream, 
+                                                  sequenceFlag, 
+                                                  acceptNonDeterministic);
         CBORObject cborObject = cborDecoder.getObject();
-        // https://github.com/w3c/webauthn/issues/1614
-        if (!ignoreAdditionalData) {
-            cborDecoder.checkForUnexpectedInput();
+        if (sequenceFlag) {
+            if (cborDecoder.atFirstByte) {
+                return null;
+            }
+        } else if (inputStream.read() != -1) {
+            reportError("Unexpected data found after CBOR object");
         }
         return cborObject;
     }
@@ -683,7 +690,7 @@ public abstract class CBORObject {
     public static CBORObject decode(InputStream inputStream) throws IOException {
         return decodeWithOptions(inputStream, false, false);
     }
-    
+
     /**
      * Decodes CBOR data.
      * 

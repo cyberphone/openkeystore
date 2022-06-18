@@ -16,7 +16,10 @@
  */
 package org.webpki.webapps.csf_lab;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+
+import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 
@@ -30,7 +33,6 @@ import org.webpki.json.JSONObjectWriter;
 import org.webpki.json.JSONParser;
 
 import org.webpki.util.Base64URL;
-import org.webpki.util.HexaDecimal;
 
 import org.webpki.webutil.ServletUtil;
 
@@ -39,34 +41,8 @@ public class ConvertServlet extends CoreRequestServlet {
     private static final long serialVersionUID = 1L;
     
     static final String CBOR_IN     = "cborin";
-    static final String CBOR_OUT    = "cborout";
-    static final String ERROR       = "error";
-    
     static final String SEL_IN      = "selin";
-    static final String SEL_OUT     = "selout";
-    
-    static final String DIAG        = "diag";
-    static final String HEXA        = "hexa";
-    static final String CSTYLE      = "cstyle";
-    static final String B64U        = "b64u";
-    
-    String selector(String name, boolean primary) {
-        return
-            "<table style='margin-bottom:0.3em;border-spacing:0'>" +
-            "<tr><td><input type='radio' name='" + name + "' " +
-            "value='" + DIAG + "'" + (primary ? " checked" : "") + 
-              "></td><td>Diagnostic notation</td></tr>" +
-            "<tr><td><input type='radio' name='" + name + "' " +
-            "value='" + HEXA + "'" + (primary ? "" : " checked") +
-            "></td><td>Hexadecimal notation" + (primary ? " (including possible #-comments)" 
-                                                        : "") + "</td></tr>" +
-            "<tr><td><input type='radio' name='" + name + "' " +
-            "value='" + CSTYLE + "'></td><td><code>0xhh, 0xhh...</code> notation</td></tr>" +
-            "<tr><td><input type='radio' name='" + name + "' " +
-            "value='" + B64U + "'></td><td>Base64Url notation</td></tr>" +
-            "</table>";
-    }
-
+        
     public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         JSONObjectWriter jsonResponse = new JSONObjectWriter();
@@ -76,51 +52,40 @@ public class ConvertServlet extends CoreRequestServlet {
                 throw new IOException("Unexpected MIME type:" + request.getContentType());
             }
             JSONObjectReader parsedJson = JSONParser.parse(ServletUtil.getData(request));
+            boolean sequenceFlag = parsedJson.getBoolean(SEQUENCE);
             String inData = parsedJson.getString(CBOR_IN);
-            CBORObject cbor;
+            byte[] cborBytes;
             switch (parsedJson.getString(SEL_IN)) {
                 case DIAG:
-                    cbor = CBORObject.decode(CBORDiagnosticParser.parse(inData).encode());
+                    if (sequenceFlag) {
+                        cborBytes = getBytesFromCborSequence(CBORDiagnosticParser.parseSequence(inData));
+                        break;
+                    }
+                    cborBytes = CBORDiagnosticParser.parse(inData).encode();
                     break;
     
                 case CSTYLE:
                     inData = inData.toLowerCase().replace("0x", "").replace(',', ' ');
                 case HEXA:
-                    cbor = hexDecodedCbor(inData);
+                    cborBytes = getBytesFromCborHex(inData);
                     break;
     
                 default:
-                    cbor = CBORObject.decode(Base64URL.decode(inData));
+                    cborBytes = Base64URL.decode(inData);
                     break;
             }
-            String outData;
-            switch (parsedJson.getString(SEL_OUT)) {
-                case DIAG:
-                    outData = HTML.encode(cbor.toString()).replace("\n", "<br>")
-                                                          .replace(" ","&nbsp;");
-                    break;
-    
-                case HEXA:
-                    outData = HexaDecimal.encode(cbor.encode());
-                    break;
-                    
-                case CSTYLE:
-                    outData = HexaDecimal.encode(cbor.encode());
-                    StringBuilder cstyle = new StringBuilder();
-                    for (int i = 0; i < outData.length(); ) {
-                    if (i > 0) {
-                        cstyle.append(", ");
-                    }
-                    cstyle.append("0x").append(outData.charAt(i++)).append(outData.charAt(i++));
-                    }
-                    outData = cstyle.toString();
-                    break;
-    
-                default:
-                    outData = Base64URL.encode(cbor.encode());
-                    break;
+            ArrayList<CBORObject> sequence = new ArrayList<>();
+            if (sequenceFlag) {
+                ByteArrayInputStream bais = new ByteArrayInputStream(cborBytes);
+                CBORObject cborObject;
+                while ((cborObject = CBORObject.decodeWithOptions(bais, true, false)) != null) {
+                    sequence.add(cborObject);
+                }
+            } else {
+                sequence.add(CBORObject.decode(cborBytes));
             }
-            jsonResponse.setString(CBOR_OUT, outData);
+            jsonResponse.setString(CBOR_OUT, 
+                                   getFormattedCbor(parsedJson, sequence.toArray(new CBORObject[0])));
         } catch (Exception e) {
             jsonResponse.setString(ERROR, HTML.encode(e.getMessage()).replace("\n", "<br>")
                                                                      .replace(" ","&nbsp;"));
@@ -151,7 +116,8 @@ public class ConvertServlet extends CoreRequestServlet {
                 "  let jsonObject = {" +
                    CBOR_IN + ": document.getElementById('" + CBOR_IN + "').children[1].value," +
                    SEL_IN + ": getRadioValue('" + SEL_IN + "')," +
-                   SEL_OUT + ": getRadioValue('" + SEL_OUT + "')" +
+                   SEL_OUT + ": getRadioValue('" + SEL_OUT + "')," +
+                   SEQUENCE + ": document.getElementById('" + SEQUENCE + "').checked" +
                    "};\n" +
                 "  let html = 'unknown error';\n" +
                 "  try {\n" +

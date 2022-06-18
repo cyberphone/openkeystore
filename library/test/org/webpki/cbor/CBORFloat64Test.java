@@ -29,7 +29,7 @@ public class CBORFloat64Test {
                 default:
                     throw new RuntimeException("BUG");
             }
-            Double v = CBORObject.decode(cbor.encode()).getFloatingPoint();
+            Double v = CBORObject.decode(cbor.encode()).getDouble();
             if (v.compareTo(d) != 0) {
                 throw new RuntimeException ("Fail");
             }

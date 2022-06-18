@@ -146,15 +146,6 @@ public class HTML {
         HTML.output(response, HTML.getHTML(javaScript, html.toString()));
     }
 
-    public static void noWebCryptoPage(HttpServletResponse response)
-            throws IOException, ServletException {
-        HTML.output(
-                response,
-                HTML.getHTML(
-                        null,
-                        "Your Browser Doesn't Support WebCrypto :-("));
-    }
-
     static String javaScript(String string) {
         StringBuilder html = new StringBuilder();
         for (char c : string.toCharArray()) {

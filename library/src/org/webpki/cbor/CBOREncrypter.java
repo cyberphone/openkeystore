@@ -28,7 +28,8 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
 /**
  * Base class for creating CBOR encryption objects.
  * 
- * It uses COSE algorithms but relies on CEF for the packaging.
+ * This implementation supports signatures using CEF (CBOR Encryption Format) packaging,
+ * while algorithms are derived from COSE.
  */
 public abstract class CBOREncrypter {
 
@@ -120,7 +121,7 @@ public abstract class CBOREncrypter {
      * is equivalent to the default (= no <code>keyId</code>).
      * </p>
      * 
-     * @param keyId A CBOR key Id or <code>null</code>
+     * @param keyId Key Id or <code>null</code>
      * @return this
      */
     public CBOREncrypter setKeyId(CBORObject keyId) {
@@ -133,7 +134,7 @@ public abstract class CBOREncrypter {
      * 
      * The <code>keyId</code> will be represented as a CBOR <code>integer</code>.
      * 
-     * @param keyId A CBOR key Id
+     * @param keyId Key Id
      * @return this
      */
     public CBOREncrypter setKeyId(int keyId) {
@@ -145,7 +146,7 @@ public abstract class CBOREncrypter {
      * 
      * The <code>keyId</code> will be represented as a CBOR <code>text&nbsp;string</code>.
      * 
-     * @param keyId A CBOR key Id
+     * @param keyId Key Id
      * @return this
      */
     public CBOREncrypter setKeyId(String keyId) {

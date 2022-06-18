@@ -153,20 +153,20 @@ public interface CBORCryptoConstants {
     CBORInteger PUBLIC_KEY_LABEL     = new CBORInteger(4);
 
     /**
-     * CEF "ephemeralKey" label (5).
-     * Note: This label is only used in key encryption sub-maps.
+     * CSF/CEF "certificatePath" label (5).
      */
-    CBORInteger EPHEMERAL_KEY_LABEL  = new CBORInteger(5);
+    CBORInteger CERT_PATH_LABEL      = new CBORInteger(5);
 
     /**
-     * CSF "certificatePath" label (6).
+     * CSF "signature" label (6).
      */
-    CBORInteger CERT_PATH_LABEL      = new CBORInteger(6);
+    CBORInteger SIGNATURE_LABEL      = new CBORInteger(6);
     
     /**
-     * CSF "signature" label (7).
+     * CEF "ephemeralKey" label (7).
+     * Note: This label is only used in key encryption sub-maps.
      */
-    CBORInteger SIGNATURE_LABEL      = new CBORInteger(7);
+    CBORInteger EPHEMERAL_KEY_LABEL  = new CBORInteger(7);
 
     /**
      * CEF "tag" label (8).

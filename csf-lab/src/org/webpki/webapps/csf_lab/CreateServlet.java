@@ -287,7 +287,7 @@ public class CreateServlet extends CoreRequestServlet {
             CBORObject cbor = Boolean.valueOf(getParameter(request, PRM_INPUT_TYPE)) ? 
                     CBORDiagnosticParser.parse(getParameterTextarea(request, PRM_CBOR_DATA))
                                         :
-                    hexDecodedCbor(getParameter(request, PRM_CBOR_DATA));
+                    getCborFromHex(getParameter(request, PRM_CBOR_DATA));
             CBORCryptoUtils.getContainerMap(cbor);
             CBORObject signatureLabel = getSignatureLabel(request);
             boolean keyInlining = request.getParameter(FLG_PUB_INLINE) != null;

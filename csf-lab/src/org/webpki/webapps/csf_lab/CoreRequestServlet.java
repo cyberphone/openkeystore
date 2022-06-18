@@ -16,6 +16,7 @@
  */
 package org.webpki.webapps.csf_lab;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import java.util.logging.Logger;
@@ -27,10 +28,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.webpki.cbor.CBORObject;
-
+import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONObjectWriter;
 import org.webpki.json.JSONOutputFormats;
-
+import org.webpki.util.Base64URL;
 import org.webpki.util.HexaDecimal;
 
 
@@ -78,15 +79,47 @@ public class CoreRequestServlet extends HttpServlet {
             "onchange='setInputMode(false)' value='false'></td> " +
             "<td>Hexadecimal notation (including possible #-comments)</td></tr>" +
             "</table>";
+
+    // Key and CBOR conversion
+    static final String CBOR_OUT           = "cborout";
+    static final String ERROR              = "error";
     
+    static final String SEL_OUT            = "selout";
+    
+    static final String DIAG               = "diag";
+    static final String HEXA               = "hexa";
+    static final String CSTYLE             = "cstyle";
+    static final String B64U               = "b64u";
+    static final String SEQUENCE           = "seq";
+    
+    // HTTP
     static final String HTTP_PRAGMA              = "Pragma";
     static final String HTTP_EXPIRES             = "Expires";
     static final String HTTP_ACCEPT_HEADER       = "Accept";
     static final String HTTP_CONTENT_TYPE_HEADER = "Content-Type";
-
     static final String JSON_CONTENT_TYPE        = "application/json";
     
- 
+
+    
+    String selector(String name, boolean input) {
+        return
+            "<table style='margin-bottom:0.3em;border-spacing:0'>" +
+            "<tr><td><input type='radio' name='" + name + "' " +
+            "value='" + DIAG + "'" + (input ? " checked" : "") + 
+              "></td><td>Diagnostic notation</td></tr>" +
+            "<tr><td><input type='radio' name='" + name + "' " +
+            "value='" + HEXA + "'" + (input ? "" : " checked") +
+            "></td><td>Hexadecimal notation" + (input ? " (including possible #-comments)" 
+                                                        : "") + "</td></tr>" +
+            "<tr><td><input type='radio' name='" + name + "' " +
+            "value='" + CSTYLE + "'></td><td><code>0xhh, 0xhh...</code> notation</td></tr>" +
+            "<tr><td><input type='radio' name='" + name + "' " +
+            "value='" + B64U + "'></td><td>Base64Url notation</td></tr>" +
+            (input ? "<tr><td><input type='checkbox' id='" + SEQUENCE + "'>" +
+                    "</td><td>Sequence</td></tr>": "") +
+            "</table>";
+    }
+
     String getParameterTextarea(HttpServletRequest request, String parameter) throws IOException {
         String string = request.getParameter(parameter);
         if (string == null) {
@@ -103,10 +136,60 @@ public class CoreRequestServlet extends HttpServlet {
         return getParameter(request, parameter).getBytes("utf-8");
     }
 
-    CBORObject hexDecodedCbor(String hexAndOptionalComments) throws IOException {
-        return CBORObject.decode(HexaDecimal.decode(
+    byte[] getBytesFromCborHex(String hexAndOptionalComments) throws IOException {
+        return HexaDecimal.decode(
                 hexAndOptionalComments.replaceAll("#.*(\r|\n|$)", "")
-                                      .replaceAll("( |\n|\r)", "")));
+                                      .replaceAll("( |\n|\r)", ""));
+    }
+    
+    byte[] getBytesFromCborSequence(CBORObject[] cborObjects) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        for (CBORObject cborObject : cborObjects) {
+            baos.write(cborObject.encode());
+        }
+        return baos.toByteArray();        
+    }
+
+    String getFormattedCbor(JSONObjectReader parsedJson, CBORObject[] cborObjects) 
+            throws IOException {
+        String selected = parsedJson.getString(SEL_OUT);
+        if (selected.equals(DIAG)) {
+            boolean next = false;
+            StringBuilder diagnosticNotation = new StringBuilder();
+            for (CBORObject cborObject : cborObjects) {
+                if (next) {
+                    diagnosticNotation.append(", ");
+                }
+                next = true;
+                diagnosticNotation.append(cborObject.toString());
+            }
+            return HTML.encode(diagnosticNotation.toString()).replace("\n", "<br>")
+                                                             .replace(" ","&nbsp;");
+        } else {
+            byte[] cborBytes = getBytesFromCborSequence(cborObjects);
+            switch (selected) {
+                case HEXA:
+                    return HexaDecimal.encode(cborBytes);
+                    
+                case CSTYLE:
+                    String hex = HexaDecimal.encode(cborBytes);
+                    StringBuilder cstyle = new StringBuilder();
+                    for (int i = 0; i < hex.length(); ) {
+                        if (i > 0) {
+                            cstyle.append(", ");
+                        }
+                        cstyle.append("0x").append(hex.charAt(i++)).append(hex.charAt(i++));
+                    }
+                    return cstyle.toString();
+    
+                default:
+                    return Base64URL.encode(cborBytes);
+            }
+        }
+    }
+
+    CBORObject getCborFromHex(String hexAndOptionalComments) throws IOException {
+        return CBORObject.decode(getBytesFromCborHex(hexAndOptionalComments));
     }
 
     CBORObject getCborAttribute(String attribute, String errorHelpText) throws IOException {

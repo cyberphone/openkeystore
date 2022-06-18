@@ -21,7 +21,7 @@ import java.math.BigInteger;
 import org.webpki.util.ArrayUtil;
 
 /**
- * Class for holding CBOR <code>integer</code> and <code>big number</code>.
+ * Class for holding CBOR <code>integer</code> and <code>big&nbsp;integer</code>.
  * 
  * Note that the encoder is adaptive, selecting the shortest possible
  * representation in order to produce a fully deterministic result.
@@ -50,7 +50,7 @@ public class CBORInteger extends CBORObject {
     }
     
     /**
-     * Create a CBOR <code>unsigned</code> or <code>negative integer</code>.
+     * Create a CBOR <code>unsigned&nbsp;integer</code> or <code>negative&nbsp;integer</code>.
      * 
      * To cope with the entire 65-bit integer span supported by CBOR
      * you must use this constructor.  Unsigned integers
@@ -82,7 +82,7 @@ public class CBORInteger extends CBORObject {
      * <p>
      * If <code>value</code> is within the CBOR <code>integer</code> range,
      * the <code>integer</code> type will be used, otherwise serializations
-     * will use the <code>big&nbsp;number</code> type.
+     * will use the <code>big&nbsp;integer</code> type.
      * </p>
      * 
      * @param value Integer in BigInteger format
@@ -109,7 +109,7 @@ public class CBORInteger extends CBORObject {
             // Fits in "int65" decoding
             return encodeTagAndN(unsigned ? MT_UNSIGNED : MT_NEGATIVE, cborAdjusted.longValue());
         }
-        // Does not fit "int65" so we must use big number encoding
+        // Does not fit "int65" so we must use big integer encoding
         byte[] encoded = cborAdjusted.toByteArray();
         if (encoded[0] == 0) {
             // Remove leading zero
