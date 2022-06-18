@@ -95,11 +95,6 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
     }
     
     @Override
-    CBORMap getOptionalKeyEncryptionObject(CBORMap encryptionObject) throws IOException {
-        return encryptionObject.getObject(KEY_ENCRYPTION_LABEL).getMap(); 
-     }
- 
-    @Override
     byte[] getContentEncryptionKey(CBORMap innerObject,
                                    ContentEncryptionAlgorithms contentEncryptionAlgorithm,
                                    CBORObject optionalKeyId) throws IOException,
@@ -114,7 +109,7 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
         if (innerObject.hasKey(PUBLIC_KEY_LABEL)) {
             optionalPublicKey = CBORPublicKey.decode(innerObject.getObject(PUBLIC_KEY_LABEL));
             // Please select ONE method for identifying the decryption key.
-            CBORCryptoUtils.checkKeyId(optionalKeyId);
+            CBORCryptoUtils.rejectPossibleKeyId(optionalKeyId);
         }
 
         // Now we have what it takes for finding the proper private key

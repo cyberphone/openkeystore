@@ -82,11 +82,6 @@ public abstract class CBOREncrypter {
     abstract byte[] getContentEncryptionKey(CBORMap encryptionObject)
             throws IOException, GeneralSecurityException;
     
-    // Overridden by key encryption encrypters
-    CBORMap getEncryptionObject(CBORMap original) throws IOException {
-        return original;
-    }
-    
     /**
      * Sets optional Intercepter.
      * 
@@ -94,10 +89,10 @@ public abstract class CBOREncrypter {
      * See {@link CBORCryptoUtils#getContainerMap(CBORObject)} for details.
      * </p>
      * 
-     * @param intercepter An instance of TagWrapper
+     * @param intercepter An instance of Intercepter
      * @return this
      */
-    public CBOREncrypter setTagWrapper(Intercepter intercepter) {
+    public CBOREncrypter setIntercepter(Intercepter intercepter) {
         this.intercepter = intercepter;
         return this;
     }
@@ -181,7 +176,15 @@ public abstract class CBOREncrypter {
                                            contentEncryptionAlgorithm.getCoseAlgorithmId()));
 
         // Possible key encryption kicks in here.
-        CBORMap innerObject = getEncryptionObject(encryptionObject);
+        CBORMap innerObject;
+        if (this instanceof CBORSymKeyEncrypter) {
+            innerObject = encryptionObject;
+        } else {
+            innerObject = new CBORMap();
+            encryptionObject.setObject(KEY_ENCRYPTION_LABEL, innerObject);
+        }
+
+        // Get the content encryption key which also may be encrypted.
         byte[] contentEncryptionKey = getContentEncryptionKey(innerObject);
 
         // Add a key Id if there is one.

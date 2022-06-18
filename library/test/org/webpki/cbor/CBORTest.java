@@ -1380,7 +1380,7 @@ public class CBORTest {
                                          KeyEncryptionAlgorithms.ECDH_ES_A256KW,
                                          ContentEncryptionAlgorithms.A256GCM)
             .setKeyId("mykey")
-            .setTagWrapper(new CBOREncrypter.Intercepter() {
+            .setIntercepter(new CBOREncrypter.Intercepter() {
                 
                 @Override
                 public CBORObject wrap(CBORMap encryptionObject)
@@ -1397,7 +1397,7 @@ public class CBORTest {
                                          KeyEncryptionAlgorithms.ECDH_ES_A256KW,
                                          ContentEncryptionAlgorithms.A256GCM)
             .setKeyId("mykey")
-            .setTagWrapper(new CBOREncrypter.Intercepter() {
+            .setIntercepter(new CBOREncrypter.Intercepter() {
                 
                 @Override
                 public CBORObject wrap(CBORMap encryptionObject)
@@ -1424,7 +1424,7 @@ public class CBORTest {
                                          KeyEncryptionAlgorithms.ECDH_ES_A256KW,
                                          ContentEncryptionAlgorithms.A256GCM)
             .setKeyId("mykey")
-            .setTagWrapper(new CBOREncrypter.Intercepter() {
+            .setIntercepter(new CBOREncrypter.Intercepter() {
                 
                 @Override
                 public CBORObject wrap(CBORMap encryptionObject)

@@ -65,19 +65,12 @@ public class CBORX509Encrypter extends CBOREncrypter {
                                 CBORCryptoUtils.encodeCertificateArray(certificatePath));
 
         // Key IDs are not permitted.
-        CBORCryptoUtils.checkKeyId(optionalKeyId);
+        CBORCryptoUtils.rejectPossibleKeyId(optionalKeyId);
          
         // Create common key encryption data and return content encryption key. 
         return CBORCryptoUtils.setupBasicKeyEncryption(certificatePath[0].getPublicKey(),
                                                        keyEncryption,
                                                        keyEncryptionAlgorithm,
                                                        contentEncryptionAlgorithm);
-    }
-    
-    @Override
-    CBORMap getEncryptionObject(CBORMap original) throws IOException {
-        CBORMap keyEncryption = new CBORMap();
-        original.setObject(KEY_ENCRYPTION_LABEL, keyEncryption);
-        return keyEncryption;
     }
 }

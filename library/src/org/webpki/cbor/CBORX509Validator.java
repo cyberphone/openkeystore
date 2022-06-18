@@ -79,7 +79,7 @@ public class CBORX509Validator extends CBORValidator {
                         byte[] signedData) throws IOException, GeneralSecurityException {
 
         // keyId and certificates? Never!
-        CBORCryptoUtils.checkKeyId(optionalKeyId);
+        CBORCryptoUtils.rejectPossibleKeyId(optionalKeyId);
         
         // Get signature algorithm.
         AsymSignatureAlgorithms signatureAlgorithm =

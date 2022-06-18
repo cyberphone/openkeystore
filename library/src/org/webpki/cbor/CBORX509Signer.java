@@ -122,7 +122,7 @@ public class CBORX509Signer extends CBORSigner {
         signatureObject.setObject(CERT_PATH_LABEL, CBORCryptoUtils.encodeCertificateArray(
                 signer.getCertificatePath()));
         // Key IDs are not permitted.
-        CBORCryptoUtils.checkKeyId(optionalKeyId);
+        CBORCryptoUtils.rejectPossibleKeyId(optionalKeyId);
     }
 
     @Override

@@ -223,7 +223,7 @@ public class CBORCryptoUtils {
         }
     }
    
-    static void checkKeyId(CBORObject optionalKeyId) throws GeneralSecurityException {
+    static void rejectPossibleKeyId(CBORObject optionalKeyId) throws GeneralSecurityException {
         if (optionalKeyId != null) {
             throw new GeneralSecurityException(STDERR_KEY_ID_PUBLIC);
         }

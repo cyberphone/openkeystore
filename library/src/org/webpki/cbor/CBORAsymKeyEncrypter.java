@@ -75,7 +75,7 @@ public class CBORAsymKeyEncrypter extends CBOREncrypter {
         if (wantPublicKey) {
             keyEncryption.setObject(PUBLIC_KEY_LABEL, CBORPublicKey.encode(publicKey));
             // Which does not go together with a keyId
-            CBORCryptoUtils.checkKeyId(optionalKeyId);
+            CBORCryptoUtils.rejectPossibleKeyId(optionalKeyId);
         }
         
         // Create common key encryption data and return content encryption key. 
@@ -83,12 +83,5 @@ public class CBORAsymKeyEncrypter extends CBOREncrypter {
                                                        keyEncryption,
                                                        keyEncryptionAlgorithm,
                                                        contentEncryptionAlgorithm);
-    }
-    
-    @Override
-    CBORMap getEncryptionObject(CBORMap original) throws IOException {
-        CBORMap keyEncryption = new CBORMap();
-        original.setObject(KEY_ENCRYPTION_LABEL, keyEncryption);
-        return keyEncryption;
     }
 }

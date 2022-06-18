@@ -39,10 +39,6 @@ public abstract class CBORDecrypter {
                                             CBORObject optionalKeyId) 
             throws IOException, GeneralSecurityException;
     
-    CBORMap getOptionalKeyEncryptionObject(CBORMap encryptionObject) throws IOException {
-        return encryptionObject;
-    }
-    
     /**
      * Decrypts data.
      * 
@@ -63,8 +59,9 @@ public abstract class CBORDecrypter {
                         encryptionMap.getObject(ALGORITHM_LABEL).getInt());
 
         // Possible key encryption begins to kick in here.
-        CBORMap innerObject = getOptionalKeyEncryptionObject(encryptionMap);
-             
+        CBORMap innerObject = this instanceof CBORSymKeyDecrypter ? 
+                encryptionMap : encryptionMap.getObject(KEY_ENCRYPTION_LABEL).getMap();
+              
         // Get the key Id if there is one.
         CBORObject optionalKeyId = innerObject.hasKey(KEY_ID_LABEL) ?
                          innerObject.getObject(KEY_ID_LABEL).scan() : null;

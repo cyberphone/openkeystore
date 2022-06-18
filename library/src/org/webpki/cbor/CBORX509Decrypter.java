@@ -93,17 +93,12 @@ public class CBORX509Decrypter extends CBORDecrypter {
     }
     
     @Override
-    CBORMap getOptionalKeyEncryptionObject(CBORMap encryptionObject) throws IOException {
-        return encryptionObject.getObject(KEY_ENCRYPTION_LABEL).getMap(); 
-     }
- 
-    @Override
     byte[] getContentEncryptionKey(CBORMap innerObject,
                                    ContentEncryptionAlgorithms contentEncryptionAlgorithm,
                                    CBORObject optionalKeyId) throws IOException,
                                                                     GeneralSecurityException {
         // keyId and certificates? Never!
-        CBORCryptoUtils.checkKeyId(optionalKeyId);
+        CBORCryptoUtils.rejectPossibleKeyId(optionalKeyId);
 
         // Mandatory algorithm
         KeyEncryptionAlgorithms keyEncryptionAlgorithm =
