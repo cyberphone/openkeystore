@@ -30,7 +30,7 @@ import org.webpki.cbor.CBORFloatingPoint;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORNull;
 import org.webpki.cbor.CBORObject;
-import org.webpki.cbor.CBORTaggedObject;
+import org.webpki.cbor.CBORTag;
 import org.webpki.cbor.CBORTextString;
 
 /**
@@ -265,10 +265,10 @@ public class CBORDiagnosticParser {
                     reportError("Tag syntax error");
                 }
                 readChar();
-                CBORTaggedObject cborTaggedObject = 
-                        new CBORTaggedObject(Long.parseUnsignedLong(number), getObject());
+                CBORTag cborTag = 
+                        new CBORTag(Long.parseUnsignedLong(number), getObject());
                 scanFor(")");
-                return cborTaggedObject;
+                return cborTag;
             }
             return new CBORInteger(new BigInteger(number));
         } catch (IllegalArgumentException e) {

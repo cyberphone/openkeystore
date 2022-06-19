@@ -75,14 +75,15 @@ public class ConvertServlet extends CoreRequestServlet {
                     break;
             }
             ArrayList<CBORObject> sequence = new ArrayList<>();
-            if (sequenceFlag) {
-                ByteArrayInputStream bais = new ByteArrayInputStream(cborBytes);
-                CBORObject cborObject;
-                while ((cborObject = CBORObject.decodeWithOptions(bais, true, false)) != null) {
-                    sequence.add(cborObject);
+            ByteArrayInputStream bais = new ByteArrayInputStream(cborBytes);
+            CBORObject cborObject;
+            while ((cborObject = CBORObject.decodeWithOptions(bais, 
+                                                              sequenceFlag,
+                                                              false)) != null) {
+                sequence.add(cborObject);
+                if (!sequenceFlag) {
+                    break;
                 }
-            } else {
-                sequence.add(CBORObject.decode(cborBytes));
             }
             jsonResponse.setString(CBOR_OUT, 
                                    getFormattedCbor(parsedJson, sequence.toArray(new CBORObject[0])));

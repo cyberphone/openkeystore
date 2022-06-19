@@ -27,7 +27,7 @@ import org.webpki.util.ArrayUtil;
  * as a specific primitive, in spite of being a tagged object.
  * </p>
  */
-public class CBORTaggedObject extends CBORObject {
+public class CBORTag extends CBORObject {
 
     /**
      * CBOR representation.
@@ -41,20 +41,36 @@ public class CBORTaggedObject extends CBORObject {
      * @param tagNumber Tag number
      * @param object Object
      */
-    public CBORTaggedObject(long tagNumber, CBORObject object) {
+    public CBORTag(long tagNumber, CBORObject object) {
         this.tagNumber = tagNumber;
         this.object = object;
         nullCheck(object);
     }
 
+    /**
+     * Returns tagged object.
+     * @return CBOR object
+     */
+    public CBORObject getObject() {
+        return object;
+    }
+
+    /**
+     * Returns tag number.
+     * @return Tag number
+     */
+    public long getTagNumber() {
+        return tagNumber;
+    }
+
     @Override
     CBORTypes internalGetType() {
-        return CBORTypes.TAGGED_OBJECT;
+        return CBORTypes.TAG;
     }
     
     @Override
     byte[] internalEncode() {
-        return ArrayUtil.add(encodeTagAndN(MT_TAG_EXTENSION, tagNumber), object.internalEncode());
+        return ArrayUtil.add(encodeTagAndN(MT_TAG, tagNumber), object.internalEncode());
 
     }
     

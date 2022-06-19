@@ -116,8 +116,8 @@ public class CBORCryptoUtils {
      * @throws IOException
      */
     public static CBORMap getContainerMap(CBORObject container) throws IOException {
-        if (container.getType() == CBORTypes.TAGGED_OBJECT) {
-            CBORObject tagged = container.getTaggedObject(container.getTagNumber());
+        if (container.getType() == CBORTypes.TAG) {
+            CBORObject tagged = container.getTag().getObject();;
             if (tagged.getType() == CBORTypes.ARRAY) {
                 CBORArray holder = tagged.getArray();
                 if (holder.size() != 2 ||

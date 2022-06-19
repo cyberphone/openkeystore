@@ -45,7 +45,7 @@ public abstract class CBORObject {
     static final int MT_TEXT_STRING   = 0x60;
     static final int MT_ARRAY         = 0x80;
     static final int MT_MAP           = 0xa0;
-    static final int MT_TAG_EXTENSION = 0xc0;
+    static final int MT_TAG           = 0xc0;
     static final int MT_BIG_UNSIGNED  = 0xc2;
     static final int MT_BIG_SIGNED    = 0xc3;
     static final int MT_FALSE         = 0xf4;
@@ -338,44 +338,22 @@ public abstract class CBORObject {
     }
     
     /**
-     * Returns tagged object.
+     * Returns tag object.
      * <p>
      * This method requires that the object is a
-     * {@link CBORTaggedObject}, otherwise an exception will be thrown.
+     * {@link CBORTag}, otherwise an exception will be thrown.
      * </p>
      * <p>
      * Note that the <code>big&nbsp;integer</code> type is dealt with
      * as a specific primitive, in spite of being a tagged object.
      * </p>
-     * @param tagNumber Expected tag number
-     * 
-     * @return CBOR object
-     * @throws IOException
-     */
-    public CBORObject getTaggedObject(long tagNumber) throws IOException {
-        long actualTagNumber = getTagNumber();
-        if (actualTagNumber != tagNumber) {
-            reportError("Tag number mismatch, requested=" +
-                        Long.toUnsignedString(tagNumber) +
-                        ", actual=" +
-                        Long.toUnsignedString(actualTagNumber));
-        }
-        return ((CBORTaggedObject) this).object;
-    }
 
-    /**
-     * Returns tag number.
-     * <p>
-     * This method requires that the object is a
-     * {@link CBORTaggedObject}, otherwise an exception will be thrown.
-     * </p>
-     * 
-     * @return Tag number
+     * @return Tag object
      * @throws IOException
      */
-    public long getTagNumber() throws IOException {
-        checkTypeAndMarkAsRead(CBORTypes.TAGGED_OBJECT);
-        return ((CBORTaggedObject) this).tagNumber;
+    public CBORTag getTag() throws IOException {
+        checkTypeAndMarkAsRead(CBORTypes.TAG);
+        return (CBORTag) this;
     }
 
     /**
@@ -410,8 +388,8 @@ public abstract class CBORObject {
                 }
                 break;
         
-            case TAGGED_OBJECT:
-                scan(((CBORTaggedObject) this).object);
+            case TAG:
+                scan(((CBORTag) this).object);
                 break;
 
             default:
@@ -614,8 +592,8 @@ public abstract class CBORObject {
             }
             // N successfully decoded, now switch on major type (upper three bits).
             switch (tag & 0xe0) {
-                case MT_TAG_EXTENSION:
-                    return new CBORTaggedObject(n, getObject());
+                case MT_TAG:
+                    return new CBORTag(n, getObject());
 
                 case MT_UNSIGNED:
                     return new CBORInteger(n, true);
@@ -733,8 +711,8 @@ public abstract class CBORObject {
                 }
                 break;
         
-            case TAGGED_OBJECT:
-                CBORTaggedObject cborTaggedObject = (CBORTaggedObject) this;
+            case TAG:
+                CBORTag cborTaggedObject = (CBORTag) this;
                 cborTaggedObject.object.checkForUnread(cborTaggedObject);
                 break;
 
@@ -743,8 +721,9 @@ public abstract class CBORObject {
         if (!readFlag) {
             reportError((holderObject == null ? "Data" : 
                         holderObject instanceof CBORArray ? "Array element" :
-                            holderObject instanceof CBORTaggedObject ?
-                            "Tagged object " + Long.toUnsignedString(holderObject.getTagNumber()) : 
+                            holderObject instanceof CBORTag ?
+                            "Tagged object " +
+                            Long.toUnsignedString(((CBORTag)holderObject).tagNumber) : 
                             "Map key " + holderObject.toString()) +                    
                         " of type=" + getClass().getSimpleName() + 
                         " with value=" + toString() + " was never read");
