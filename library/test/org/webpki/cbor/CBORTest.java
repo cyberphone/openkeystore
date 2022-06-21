@@ -70,7 +70,7 @@ public class CBORTest {
         Locale.setDefault(Locale.FRANCE);  // Should create HUGE problems :-)
         baseKey = System.clearProperty("test.keys") + File.separator;
         CustomCryptoProvider.forcedLoad(false);
-        dataToEncrypt = "The brown fox jumps over the lazy bear".getBytes("utf-8");
+        dataToEncrypt = "The quick brown fox jumps over the lazy bear".getBytes("utf-8");
         symmetricKeys = new SymmetricKeys(baseKey);
         p256 = readJwk("p256");
         keyIdP256 = keyId;
@@ -1370,7 +1370,8 @@ public class CBORTest {
             checkException(e, "Map key 1 of type=CBORInteger with value=600 was never read");
         }
         
-        CBOREncrypter taggedX25519Encrypter =  new CBORAsymKeyEncrypter(x25519.getPublic(),
+        String objectId = "https://example.com/myobject";
+        CBOREncrypter taggedX25519Encrypter = new CBORAsymKeyEncrypter(x25519.getPublic(),
                                          KeyEncryptionAlgorithms.ECDH_ES_A256KW,
                                          ContentEncryptionAlgorithms.A256GCM)
             .setKeyId("mykey")
@@ -1379,16 +1380,14 @@ public class CBORTest {
                 @Override
                 public CBORObject wrap(CBORMap encryptionObject)
                         throws IOException, GeneralSecurityException {
-                    return new CBORTag(211, 
-                                                new CBORArray()
-                            .addObject(new CBORTextString("https://example.com/myobject"))
+                    return new CBORTag(211, new CBORArray()
+                            .addObject(new CBORTextString(objectId))
                             .addObject(encryptionObject));
                 }
                 
             });
 
-        String objectId = "https://example.com/myobject";
-        taggedX25519Encrypter =  new CBORAsymKeyEncrypter(x25519.getPublic(),
+        taggedX25519Encrypter = new CBORAsymKeyEncrypter(x25519.getPublic(),
                                          KeyEncryptionAlgorithms.ECDH_ES_A256KW,
                                          ContentEncryptionAlgorithms.A256GCM)
             .setKeyId("mykey")
@@ -1397,8 +1396,7 @@ public class CBORTest {
                 @Override
                 public CBORObject wrap(CBORMap encryptionObject)
                         throws IOException, GeneralSecurityException {
-                    return new CBORTag(211, 
-                                                new CBORArray()
+                    return new CBORTag(211, new CBORArray()
                             .addObject(new CBORTextString(objectId))
                             .addObject(encryptionObject));
                 }
@@ -1419,7 +1417,7 @@ public class CBORTest {
         CBORArray cborArray = cborTag.getObject().getArray();
         assertTrue("arr2", cborArray.size() == 2);
         assertTrue("arr[0]", cborArray.getObject(0).getTextString().equals(objectId));
-         assertTrue("arr[1]", cborArray.getObject(1).getMap()
+        assertTrue("arr[1]", cborArray.getObject(1).getMap()
                  .getObject(CUSTOM_DATA_LABEL).getArray().getObject(0).getInt() == 500);
                       
         taggedX25519Encrypter = new CBORAsymKeyEncrypter(x25519.getPublic(),
@@ -1516,11 +1514,11 @@ public class CBORTest {
     void parseStrangeCborHex(String hexInput,
                              String hexExpectedResult,
                              boolean sequenceFlag, 
-                             boolean acceptNonDeterministic) throws IOException {
+                             boolean nonDeterministic) throws IOException {
         String result = HexaDecimal.encode(
                 CBORObject.decodeWithOptions(new ByteArrayInputStream(HexaDecimal.decode(hexInput)),
                                              sequenceFlag,
-                                             acceptNonDeterministic).encode()).toUpperCase();
+                                             nonDeterministic).encode()).toUpperCase();
         assertTrue("Strange=" + result, hexExpectedResult.equals(result));
     }
 

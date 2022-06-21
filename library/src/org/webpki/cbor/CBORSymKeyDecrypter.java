@@ -49,7 +49,7 @@ public class CBORSymKeyDecrypter extends CBORDecrypter {
          * 
          * @param optionalKeyId Optional key Id found in the encryption object
          * @param contentEncryptionAlgorithm The requested content encryption algorithm
-         * @return Secret key
+         * @return Decryption key
          * @throws IOException
          * @throws GeneralSecurityException
          */
@@ -63,7 +63,7 @@ public class CBORSymKeyDecrypter extends CBORDecrypter {
     /**
      * Initializes a decrypter with a secret key.
      * 
-     * @param secretKey The anticipated secret key to decrypt with
+     * @param secretKey Decryption key
      */
     public CBORSymKeyDecrypter(byte[] secretKey) {
         this(new KeyLocator() {

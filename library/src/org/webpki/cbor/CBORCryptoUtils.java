@@ -145,7 +145,7 @@ public class CBORCryptoUtils {
         byte[] contentEncryptionKey = keyEncryptionAlgorithm.isKeyWrap() ?
             CryptoRandom.generateRandom(contentEncryptionAlgorithm.getKeyLength()) : null;
                                                                          
-        // The real stuff...
+        // The core
         EncryptionCore.AsymmetricEncryptionResult asymmetricEncryptionResult =
                 keyEncryptionAlgorithm.isRsa() ?
                     EncryptionCore.rsaEncryptKey(contentEncryptionKey,
@@ -167,7 +167,7 @@ public class CBORCryptoUtils {
             // Encrypted key
             keyEncryption.setObject(CIPHER_TEXT_LABEL,
                                     new CBORByteString(
-                                        asymmetricEncryptionResult.getEncryptedKeyData()));
+                                        asymmetricEncryptionResult.getEncryptedKey()));
         }
         return asymmetricEncryptionResult.getContentEncryptionKey();
     }
@@ -178,17 +178,11 @@ public class CBORCryptoUtils {
                                  ContentEncryptionAlgorithms contentEncryptionAlgorithm)
             throws GeneralSecurityException, IOException {
 
-        // Fetch ephemeral key if applicable
-        PublicKey ephemeralKey = null;
-        if (!keyEncryptionAlgorithm.isRsa()) {
-            ephemeralKey = CBORPublicKey.decode(innerObject.getObject(EPHEMERAL_KEY_LABEL));
-        }
-        
         // Fetch encrypted key if applicable
-        byte[] encryptedKey = null;
-        if (keyEncryptionAlgorithm.isKeyWrap()) {
-            encryptedKey = innerObject.getObject(CIPHER_TEXT_LABEL).getByteString();
-        }
+        byte[] encryptedKey = keyEncryptionAlgorithm.isKeyWrap() ?
+            innerObject.getObject(CIPHER_TEXT_LABEL).getByteString() : null;
+
+        // The core
         return keyEncryptionAlgorithm.isRsa() ?
             EncryptionCore.rsaDecryptKey(keyEncryptionAlgorithm, 
                                          encryptedKey,
@@ -197,7 +191,8 @@ public class CBORCryptoUtils {
             EncryptionCore.receiverKeyAgreement(true,
                                                 keyEncryptionAlgorithm,
                                                 contentEncryptionAlgorithm,
-                                                ephemeralKey,
+                                                CBORPublicKey.decode(
+                                                    innerObject.getObject(EPHEMERAL_KEY_LABEL)),
                                                 privateKey,
                                                 encryptedKey);
     }

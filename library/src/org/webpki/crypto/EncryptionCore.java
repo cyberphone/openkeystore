@@ -83,14 +83,14 @@ public class EncryptionCore {
     public static class AsymmetricEncryptionResult {
 
         private byte[] contentEncryptionKey;
-        private byte[] encryptedKeyData;
+        private byte[] encryptedKey;
         private PublicKey ephemeralKey;
 
         AsymmetricEncryptionResult(byte[] contentEncryptionKey,
-                                   byte[] encryptedKeyData,
+                                   byte[] encryptedKey,
                                    PublicKey ephemeralKey) {
             this.contentEncryptionKey = contentEncryptionKey;
-            this.encryptedKeyData = encryptedKeyData;
+            this.encryptedKey = encryptedKey;
             this.ephemeralKey = ephemeralKey;
         }
 
@@ -98,8 +98,8 @@ public class EncryptionCore {
             return contentEncryptionKey;
         }
 
-        public byte[] getEncryptedKeyData() {
-            return encryptedKeyData;
+        public byte[] getEncryptedKey() {
+            return encryptedKey;
         }
 
         public PublicKey getEphemeralKey() {
@@ -240,10 +240,10 @@ public class EncryptionCore {
 
     /**
      * Perform a symmetric key encryption.
-     * @param contentEncryptionAlgorithm Algorithm to use
+     * @param contentEncryptionAlgorithm Encryption algorithm
      * @param key Encryption key
      * @param iv Initialization vector
-     * @param plainText The data to be encrypted
+     * @param plainText Data to be encrypted
      * @param authData Additional input factor for authentication
      * @return A composite object including encrypted data
      * @throws GeneralSecurityException
@@ -278,13 +278,13 @@ public class EncryptionCore {
 
     /**
      * Decrypt using a symmetric key.
-     * @param contentEncryptionAlgorithm Algorithm to use
-     * @param key The encryption key
-     * @param cipherText The data to be decrypted
+     * @param contentEncryptionAlgorithm Encryption algorithm
+     * @param key Encryption key
+     * @param cipherText Encrypted data
      * @param iv Initialization Vector
      * @param authData Additional input used for authentication purposes
      * @param tag Authentication tag
-     * @return The data in clear
+     * @return Decrypted data
      * @throws GeneralSecurityException
      */
     public static byte[] contentDecryption(ContentEncryptionAlgorithms contentEncryptionAlgorithm,
@@ -495,7 +495,7 @@ public class EncryptionCore {
      * @param contentEncryptionAlgorithm The designated content encryption algorithm
      * @param receivedPublicKey The sender's (usually ephemeral) public key
      * @param privateKey The receiver's private key
-     * @param encryptedKeyData For ECDH+KW based operations only
+     * @param encryptedKey For ECDH+KW based operations only
      * @return Shared secret
      * @throws GeneralSecurityException
      * @throws IOException
@@ -506,11 +506,11 @@ public class EncryptionCore {
             ContentEncryptionAlgorithms contentEncryptionAlgorithm,
             PublicKey receivedPublicKey,
             PrivateKey privateKey,
-            byte[] encryptedKeyData) throws GeneralSecurityException, IOException {
+            byte[] encryptedKey) throws GeneralSecurityException, IOException {
         // Sanity check
-        if (keyEncryptionAlgorithm.keyWrap ^ (encryptedKeyData != null)) {
-            throw new GeneralSecurityException("\"encryptedKeyData\" must " + 
-                    (encryptedKeyData == null ? "not be null" : "be null") + " for algorithm: " +
+        if (keyEncryptionAlgorithm.keyWrap ^ (encryptedKey != null)) {
+            throw new GeneralSecurityException("\"encryptedKey\" must " + 
+                    (encryptedKey == null ? "not be null" : "be null") + " for algorithm: " +
                     keyEncryptionAlgorithm.toString());
         }
         byte[] derivedKey = coreKeyAgreement(coseMode,
@@ -521,7 +521,7 @@ public class EncryptionCore {
         if (keyEncryptionAlgorithm.keyWrap) {
             Cipher cipher = getAesCipher(AES_KEY_WRAP_JCENAME);
             cipher.init(Cipher.UNWRAP_MODE, new SecretKeySpec(derivedKey, "AES"));
-            derivedKey = cipher.unwrap(encryptedKeyData, "AES", Cipher.SECRET_KEY).getEncoded();
+            derivedKey = cipher.unwrap(encryptedKey, "AES", Cipher.SECRET_KEY).getEncoded();
         }
         return derivedKey;
     }
@@ -569,15 +569,15 @@ public class EncryptionCore {
                                              contentEncryptionAlgorithm,
                                              staticKey,
                                              keyPair.getPrivate());
-        byte[] encryptedKeyData = null;
+        byte[] encryptedKey = null;
         if (keyEncryptionAlgorithm.keyWrap) {
             Cipher cipher = getAesCipher(AES_KEY_WRAP_JCENAME);
             cipher.init(Cipher.WRAP_MODE, new SecretKeySpec(derivedKey, "AES"));
-            encryptedKeyData = cipher.wrap(new SecretKeySpec(contentEncryptionKey, "AES"));
+            encryptedKey = cipher.wrap(new SecretKeySpec(contentEncryptionKey, "AES"));
             derivedKey = contentEncryptionKey;
         }
         return new AsymmetricEncryptionResult(derivedKey, 
-                                              encryptedKeyData,
+                                              encryptedKey,
                                               keyPair.getPublic());
     }
 }

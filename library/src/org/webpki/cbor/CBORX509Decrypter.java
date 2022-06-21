@@ -52,7 +52,7 @@ public class CBORX509Decrypter extends CBORDecrypter {
          * @param certificatePath Certificate path in the encryption object
          * @param keyEncryptionAlgorithm The requested key encryption algorithm
          * @param contentEncryptionAlgorithm The requested content encryption algorithm
-         * @return Private key for decryption
+         * @return Decryption key
          * @throws IOException
          * @throws GeneralSecurityException
          */
@@ -67,7 +67,7 @@ public class CBORX509Decrypter extends CBORDecrypter {
     /**
      * Initializes a decrypter with a private key.
      * 
-     * @param privateKey The anticipated private key to decrypt with
+     * @param privateKey Decryption key
      */
     public CBORX509Decrypter(PrivateKey privateKey) {
         this(new KeyLocator() {

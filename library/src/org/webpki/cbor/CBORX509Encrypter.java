@@ -41,9 +41,9 @@ public class CBORX509Encrypter extends CBOREncrypter {
     /**
      * Initializes an encrypter object.
      * 
-     * @param certificatePath The certificate path to encrypt with
-     * @param keyEncryptionAlgorithm KEK algorithm
-     * @param contentEncryptionAlgorithm Actual encryption algorithm
+     * @param certificatePath Encryption certificate path
+     * @param keyEncryptionAlgorithm Key encryption algorithm
+     * @param contentEncryptionAlgorithm Content encryption algorithm
      * @throws IOException
      * @throws GeneralSecurityException
      */

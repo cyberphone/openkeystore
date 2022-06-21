@@ -114,7 +114,7 @@ public abstract class JSONEncrypter {
                 }
                 if (encrypter.keyEncryptionAlgorithm.isKeyWrap()) {
                     currentRecipient.setBinary(JSONCryptoHelper.ENCRYPTED_KEY_JSON,
-                                               asymmetricEncryptionResult.getEncryptedKeyData());
+                                               asymmetricEncryptionResult.getEncryptedKey());
                 }
             }
 

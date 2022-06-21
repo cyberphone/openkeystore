@@ -366,37 +366,67 @@ public abstract class CBORObject {
      * @see #checkForUnread()
      * 
      * @return <code>this</code>
+     * @throws IOException 
      */
-    public CBORObject scan() {
-        scan(this);
+    public CBORObject scan() throws IOException {
+        traverse(null, false);
         return this;
     }
-    
-    private void scan(CBORObject currentObject) {
-        switch (currentObject.internalGetType()) {
+
+    /**
+     * Checks for unread CBOR data.
+     * 
+     * Checks if all data from the current object including
+     * possible child objects have been read
+     * and throws an exception if this is not the case.
+     * 
+     * @see #scan()
+     * 
+     * @throws IOException
+     */
+    public void checkForUnread() throws IOException {
+        traverse(null, true);
+    }
+
+    private void traverse(CBORObject holderObject, boolean check) throws IOException {
+        switch (internalGetType()) {
             case MAP:
-                CBORMap cborMap = (CBORMap) currentObject;
+                CBORMap cborMap = (CBORMap) this;
                 for (CBORObject key : cborMap.keys.keySet()) {
-                     scan(cborMap.keys.get(key));
+                     cborMap.keys.get(key).traverse(key, check);
                 }
                 break;
         
             case ARRAY:
-                CBORArray cborArray = (CBORArray) currentObject;
+                CBORArray cborArray = (CBORArray) this;
                 for (CBORObject object : cborArray.getObjects()) {
-                    scan(object);
+                    object.traverse(cborArray, check);
                 }
                 break;
         
             case TAG:
-                scan(((CBORTag) this).object);
+                CBORTag cborTag = (CBORTag) this;
+                cborTag.object.traverse(cborTag, check);
                 break;
 
             default:
         }
-        currentObject.readFlag = true;
+        if (check) {
+            if (!readFlag) {
+                reportError((holderObject == null ? "Data" : 
+                            holderObject instanceof CBORArray ? "Array element" :
+                                holderObject instanceof CBORTag ?
+                                "Tagged object " +
+                                Long.toUnsignedString(((CBORTag)holderObject).tagNumber) : 
+                                "Map key " + holderObject.toString()) +                    
+                            " of type=" + getClass().getSimpleName() + 
+                            " with value=" + toString() + " was never read");
+            }
+        } else {
+            readFlag = true;
+        }
     }
-    
+
     static class CBORDecoder {
 
          // The purpose of using a buffer to protect against
@@ -637,16 +667,16 @@ public abstract class CBORObject {
      * 
      * @param inputStream Stream holding CBOR data
      * @param sequenceFlag Stop reading after parsing a valid CBOR object (no object returns <code>null</code>)
-     * @param acceptNonDeterministic Do not check data for deterministic representation
+     * @param nonDeterministic Do not check data for deterministic representation
      * @return CBORObject
      * @throws IOException
      */
     public static CBORObject decodeWithOptions(InputStream inputStream,
                                                boolean sequenceFlag,
-                                               boolean acceptNonDeterministic) throws IOException {
+                                               boolean nonDeterministic) throws IOException {
         CBORDecoder cborDecoder = new CBORDecoder(inputStream, 
                                                   sequenceFlag, 
-                                                  acceptNonDeterministic);
+                                                  nonDeterministic);
         CBORObject cborObject = cborDecoder.getObject();
         if (sequenceFlag) {
             if (cborDecoder.atFirstByte) {
@@ -678,56 +708,6 @@ public abstract class CBORObject {
      */
     public static CBORObject decode(byte[] encodedCborData) throws IOException {
         return decode(new ByteArrayInputStream(encodedCborData));
-    }
-
-    /**
-     * Checks for unread CBOR data.
-     * 
-     * Checks if all data from the current object including
-     * possible child objects have been read
-     * and throws an exception if this is not the case.
-     * 
-     * @see #scan()
-     * 
-     * @throws IOException
-     */
-    public void checkForUnread() throws IOException {
-        checkForUnread(null);
-    }
-
-    private void checkForUnread(CBORObject holderObject) throws IOException {
-        switch (internalGetType()) {
-            case MAP:
-                CBORMap cborMap = (CBORMap) this;
-                for (CBORObject key : cborMap.keys.keySet()) {
-                     cborMap.keys.get(key).checkForUnread(key);
-                }
-                break;
-        
-            case ARRAY:
-                CBORArray cborArray = (CBORArray) this;
-                for (CBORObject object : cborArray.getObjects()) {
-                    object.checkForUnread(cborArray);
-                }
-                break;
-        
-            case TAG:
-                CBORTag cborTaggedObject = (CBORTag) this;
-                cborTaggedObject.object.checkForUnread(cborTaggedObject);
-                break;
-
-            default:
-        }
-        if (!readFlag) {
-            reportError((holderObject == null ? "Data" : 
-                        holderObject instanceof CBORArray ? "Array element" :
-                            holderObject instanceof CBORTag ?
-                            "Tagged object " +
-                            Long.toUnsignedString(((CBORTag)holderObject).tagNumber) : 
-                            "Map key " + holderObject.toString()) +                    
-                        " of type=" + getClass().getSimpleName() + 
-                        " with value=" + toString() + " was never read");
-        }
     }
 
     class DiagnosticNotation {
@@ -789,7 +769,7 @@ public abstract class CBORObject {
     }
 
     /**
-     * Returns CBOR object as a string in diagnostic notation.
+     * Returns CBOR object in pretty-printed diagnostic notation.
      */
     @Override
     public String toString() {
