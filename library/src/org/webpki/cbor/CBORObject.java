@@ -357,7 +357,7 @@ public abstract class CBORObject {
     }
 
     /**
-     * Scans object.
+     * Scans object node and marks as read.
      * <p>
      * This method sets the status of this object as well as to possible
      * child objects to &quot;read&quot;.
@@ -366,10 +366,12 @@ public abstract class CBORObject {
      * @see #checkForUnread()
      * 
      * @return <code>this</code>
-     * @throws IOException 
      */
-    public CBORObject scan() throws IOException {
-        traverse(null, false);
+    public CBORObject scan() {
+        try {
+            traverse(null, false);
+            // Never happens so we "neutralize" the declaration
+        } catch (IOException e) {} 
         return this;
     }
 
