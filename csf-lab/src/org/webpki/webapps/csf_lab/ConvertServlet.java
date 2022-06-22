@@ -53,12 +53,14 @@ public class ConvertServlet extends CoreRequestServlet {
             }
             JSONObjectReader parsedJson = JSONParser.parse(ServletUtil.getData(request));
             boolean sequenceFlag = parsedJson.getBoolean(SEQUENCE);
+            boolean deterministicFlag = parsedJson.getBoolean(DETERMINISTIC);
             String inData = parsedJson.getString(CBOR_IN);
             byte[] cborBytes;
             switch (parsedJson.getString(SEL_IN)) {
                 case DIAG:
                     if (sequenceFlag) {
-                        cborBytes = getBytesFromCborSequence(CBORDiagnosticParser.parseSequence(inData));
+                        cborBytes = getBytesFromCborSequence(
+                                CBORDiagnosticParser.parseSequence(inData));
                         break;
                     }
                     cborBytes = CBORDiagnosticParser.parse(inData).encode();
@@ -77,7 +79,9 @@ public class ConvertServlet extends CoreRequestServlet {
             ArrayList<CBORObject> sequence = new ArrayList<>();
             ByteArrayInputStream bais = new ByteArrayInputStream(cborBytes);
             CBORObject cborObject;
-            while ((cborObject = CBORObject.decode(bais, sequenceFlag, false)) != null) {
+            while ((cborObject = CBORObject.decode(bais, 
+                                                   sequenceFlag,
+                                                   !deterministicFlag)) != null) {
                 sequence.add(cborObject);
                 if (!sequenceFlag) {
                     break;
@@ -116,7 +120,8 @@ public class ConvertServlet extends CoreRequestServlet {
                    CBOR_IN + ": document.getElementById('" + CBOR_IN + "').children[1].value," +
                    SEL_IN + ": getRadioValue('" + SEL_IN + "')," +
                    SEL_OUT + ": getRadioValue('" + SEL_OUT + "')," +
-                   SEQUENCE + ": document.getElementById('" + SEQUENCE + "').checked" +
+                   SEQUENCE + ": document.getElementById('" + SEQUENCE + "').checked," +
+                   DETERMINISTIC + ": document.getElementById('" + DETERMINISTIC + "').checked" +
                    "};\n" +
                 "  let html = 'unknown error';\n" +
                 "  try {\n" +
@@ -142,7 +147,7 @@ public class ConvertServlet extends CoreRequestServlet {
         StringBuilder html = new StringBuilder(
                 "<div class='header'>CBOR Conversion Utility</div>" +
                 "<div style='padding-top:15pt'>" + HomeServlet.SUPPORTED_CBOR + "</div>" +
-                "<div style='padding-top:0.5em'>Note that hexadecimal and base64url encoded data must use " +
+                "<div style='padding-top:0.5em'>Note that hexadecimal and base64url encoded data must (by default) use " +
                 "<i>deterministic representation</i>.</div>")
             .append(HTML.fancyText(
                         true,

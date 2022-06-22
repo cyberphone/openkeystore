@@ -91,6 +91,7 @@ public class CoreRequestServlet extends HttpServlet {
     static final String CSTYLE             = "cstyle";
     static final String B64U               = "b64u";
     static final String SEQUENCE           = "seq";
+    static final String DETERMINISTIC      = "det";
     
     // HTTP
     static final String HTTP_PRAGMA              = "Pragma";
@@ -116,7 +117,9 @@ public class CoreRequestServlet extends HttpServlet {
             "<tr><td><input type='radio' name='" + name + "' " +
             "value='" + B64U + "'></td><td>Base64Url notation</td></tr>" +
             (input ? "<tr><td><input type='checkbox' id='" + SEQUENCE + "'>" +
-                    "</td><td>Sequence</td></tr>": "") +
+                    "</td><td>Sequence</td></tr>" +
+                    "<tr><td><input type='checkbox' checked id='" + DETERMINISTIC + "'>" +
+                    "</td><td>Require deterministic representation</td></tr>": "") +
             "</table>";
     }
 
