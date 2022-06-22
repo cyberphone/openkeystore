@@ -49,7 +49,7 @@ public abstract class CBORSigner {
     
     abstract byte[] coreSigner(byte[] dataToSign) throws IOException, GeneralSecurityException;
     
-    abstract SignatureAlgorithms getSignatureAlgorithm()
+    abstract SignatureAlgorithms getAlgorithm()
             throws IOException,GeneralSecurityException;
     
     abstract void additionalItems(CBORMap signatureObject)
@@ -159,7 +159,7 @@ public abstract class CBORSigner {
         
         // Add the mandatory signature algorithm.
         signatureObject.setObject(ALGORITHM_LABEL, 
-                                  new CBORInteger(getSignatureAlgorithm().getCoseAlgorithmId()));
+                                  new CBORInteger(getAlgorithm().getCoseAlgorithmId()));
         
         // Add a keyId if there is one.
         if (optionalKeyId != null) {

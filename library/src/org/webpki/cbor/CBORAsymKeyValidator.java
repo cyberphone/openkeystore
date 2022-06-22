@@ -48,14 +48,14 @@ public class CBORAsymKeyValidator extends CBORValidator {
          * 
          * @param optionalPublicKey Optional public key found in the signature object
          * @param optionalKeyId KeyId or <code>null</code>
-         * @param signatureAlgorithm The specified signature algorithm
-         * @return Public key for signature validation
+         * @param algorithm Signature algorithm
+         * @return Validation key
          * @throws IOException
          * @throws GeneralSecurityException
          */
         PublicKey locate(PublicKey optionalPublicKey, 
                          CBORObject optionalKeyId, 
-                         AsymSignatureAlgorithms signatureAlgorithm)
+                         AsymSignatureAlgorithms algorithm)
             throws IOException, GeneralSecurityException;
     }
     
@@ -72,7 +72,7 @@ public class CBORAsymKeyValidator extends CBORValidator {
             @Override
             public PublicKey locate(PublicKey optionalPublicKey,
                                     CBORObject optionalKeyId,
-                                    AsymSignatureAlgorithms signatureAlgorithm)
+                                    AsymSignatureAlgorithms algorithm)
                     throws IOException, GeneralSecurityException {
                 return publicKey;
             }
@@ -116,7 +116,7 @@ public class CBORAsymKeyValidator extends CBORValidator {
                         byte[] signedData) throws IOException, GeneralSecurityException {
         
         // Get signature algorithm.
-        AsymSignatureAlgorithms signatureAlgorithm =
+        AsymSignatureAlgorithms algorithm =
                 AsymSignatureAlgorithms.getAlgorithmFromId(coseAlgorithmId);
         
         // Fetch public key if there is one.
@@ -128,11 +128,11 @@ public class CBORAsymKeyValidator extends CBORValidator {
 
         // If we have no in-line public key we need to call the key locator.
         PublicKey publicKey = inLinePublicKey == null ?
-                 keyLocator.locate(null, optionalKeyId, signatureAlgorithm) : inLinePublicKey;
+                 keyLocator.locate(null, optionalKeyId, algorithm) : inLinePublicKey;
         
         // Now we have everything needed for validating the signature.
         CBORCryptoUtils.asymKeySignatureValidation(publicKey,
-                                                   signatureAlgorithm, 
+                                                   algorithm, 
                                                    signedData, 
                                                    signatureValue);
 
@@ -140,7 +140,7 @@ public class CBORAsymKeyValidator extends CBORValidator {
         if (inLinePublicKey != null && 
             !inLinePublicKey.equals(keyLocator.locate(inLinePublicKey, 
                                                       optionalKeyId, 
-                                                      signatureAlgorithm))) {
+                                                      algorithm))) {
             throw new GeneralSecurityException("Public keys not identical");
         }
     }

@@ -46,12 +46,12 @@ public class CBORHmacValidator extends CBORValidator {
          * </p>
          * 
          * @param optionalKeyId KeyId or null
-         * @param hmacAlgorithm The found HMAC algorithm
-         * @return Secret key for validation 
+         * @param algorithm HMAC algorithm
+         * @return Validation key 
          * @throws IOException
          * @throws GeneralSecurityException
          */
-        byte[] locate(CBORObject optionalKeyId, HmacAlgorithms hmacAlgorithm)
+        byte[] locate(CBORObject optionalKeyId, HmacAlgorithms algorithm)
             throws IOException, GeneralSecurityException;
     }
     
@@ -64,7 +64,7 @@ public class CBORHmacValidator extends CBORValidator {
      * producer is supposed to be correct.  The alternative
      * constructor gives the validator full control.
      * 
-     * @param secretKey The anticipated secret key
+     * @param secretKey Validation key
      */
     public CBORHmacValidator(byte[] secretKey) {
         this(new KeyLocator() {

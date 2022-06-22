@@ -40,10 +40,10 @@ public class CBORX509Validator extends CBORValidator {
     /**
      * For checking signature parameters.
      */
-    public interface SignatureParameters {
+    public interface Parameters {
 
         /**
-         * Checks signature data.
+         * Checks signature meta data.
          * <p>
          * A relying party is supposed to verify that the
          * certificate(path) is trusted and that the supplied
@@ -52,23 +52,23 @@ public class CBORX509Validator extends CBORValidator {
          * </p>
          * 
          * @param certificatePath Path to be verified
-         * @param signatureAlgorithm The specified signature algorithm
+         * @param algorithm Signature algorithm
          * @throws IOException
          * @throws GeneralSecurityException
          */
-        void check(X509Certificate[] certificatePath, AsymSignatureAlgorithms signatureAlgorithm)
+        void check(X509Certificate[] certificatePath, AsymSignatureAlgorithms algorithm)
             throws IOException, GeneralSecurityException;
     }
     
-    SignatureParameters checker;
+    Parameters parameters;
 
     /**
      * Initializes X509 validator with a parameter checker.
      * 
-     * @param checker The checker interface
+     * @param parameters The checker interface
      */
-    public CBORX509Validator(SignatureParameters checker) {
-        this.checker = checker;
+    public CBORX509Validator(Parameters parameters) {
+        this.parameters = parameters;
     }
  
     @Override
@@ -82,7 +82,7 @@ public class CBORX509Validator extends CBORValidator {
         CBORCryptoUtils.rejectPossibleKeyId(optionalKeyId);
         
         // Get signature algorithm.
-        AsymSignatureAlgorithms signatureAlgorithm =
+        AsymSignatureAlgorithms algorithm =
                 AsymSignatureAlgorithms.getAlgorithmFromId(coseAlgorithmId);
         
         // Fetch certificate(path).
@@ -91,11 +91,11 @@ public class CBORX509Validator extends CBORValidator {
         
         // Now we have everything needed for validating the signature.
         CBORCryptoUtils.asymKeySignatureValidation(certificatePath[0].getPublicKey(),
-                                                   signatureAlgorithm, 
+                                                   algorithm, 
                                                    signedData, 
                                                    signatureValue);
 
         // Finally, check certificate(path) and signature algorithm.
-        checker.check(certificatePath, signatureAlgorithm);
+        parameters.check(certificatePath, algorithm);
     }
 }

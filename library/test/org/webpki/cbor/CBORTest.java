@@ -982,7 +982,7 @@ public class CBORTest {
             }));
 
         signAndVerify(new CBORX509Signer(p256.getPrivate(), p256CertPath),
-            new CBORX509Validator(new CBORX509Validator.SignatureParameters() {
+            new CBORX509Validator(new CBORX509Validator.Parameters() {
 
                 @Override
                 public void check(X509Certificate[] certificatePath,
@@ -1011,7 +1011,7 @@ public class CBORTest {
                     return p256CertPath;
                 }
                 
-            }), new CBORX509Validator(new CBORX509Validator.SignatureParameters() {
+            }), new CBORX509Validator(new CBORX509Validator.Parameters() {
 
                 @Override
                 public void check(X509Certificate[] certificatePath,
@@ -1041,7 +1041,7 @@ public class CBORTest {
                         return p256CertPath;
                     }
                     
-                }), new CBORX509Validator(new CBORX509Validator.SignatureParameters() {
+                }), new CBORX509Validator(new CBORX509Validator.Parameters() {
     
                     @Override
                     public void check(X509Certificate[] certificatePath,
@@ -1056,7 +1056,7 @@ public class CBORTest {
 
         try {
             signAndVerify(new CBORX509Signer(p256.getPrivate(), p256CertPath).setKeyId(keyId),
-                new CBORX509Validator(new CBORX509Validator.SignatureParameters() {
+                new CBORX509Validator(new CBORX509Validator.Parameters() {
     
                     @Override
                     public void check(X509Certificate[] certificatePath,
@@ -1072,7 +1072,7 @@ public class CBORTest {
         
         try {
             signAndVerify(new CBORX509Signer(p256_2.getPrivate(), p256CertPath),
-                new CBORX509Validator(new CBORX509Validator.SignatureParameters() {
+                new CBORX509Validator(new CBORX509Validator.Parameters() {
 
                     @Override
                     public void check(X509Certificate[] certificatePath,
@@ -1117,8 +1117,7 @@ public class CBORTest {
         }
 
         try {
-            signAndVerify(new CBORAsymKeySigner(p256.getPrivate())
-                    .setAlgorithm(AsymSignatureAlgorithms.ED25519)
+            signAndVerify(new CBORAsymKeySigner(p256.getPrivate(), AsymSignatureAlgorithms.ED25519)
                     .setPublicKey(p256.getPublic()), 
                     new CBORAsymKeyValidator(p256.getPublic()));
             fail("must not execute");

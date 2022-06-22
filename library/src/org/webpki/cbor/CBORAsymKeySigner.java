@@ -38,8 +38,6 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
  */
 public class CBORAsymKeySigner extends CBORSigner {
 
-    AsymSignatureAlgorithms algorithm;
-    
     PublicKey optionalPublicKey;
     
     AsymKeySignerInterface signer;
@@ -54,7 +52,6 @@ public class CBORAsymKeySigner extends CBORSigner {
     public CBORAsymKeySigner(AsymKeySignerInterface signer) throws IOException,
                                                                    GeneralSecurityException {
         this.signer = signer;
-        setAlgorithm(signer.getAlgorithm());
     }
     
     /**
@@ -63,11 +60,25 @@ public class CBORAsymKeySigner extends CBORSigner {
      * The default signature algorithm to use is based on the recommendations
      * in RFC 7518.
      * 
-     * @param privateKey The key to sign with
+     * @param privateKey Signature key
      * @throws IOException 
      * @throws GeneralSecurityException 
      */
     public CBORAsymKeySigner(PrivateKey privateKey) throws IOException, GeneralSecurityException {
+        this(privateKey, 
+             KeyAlgorithms.getKeyAlgorithm(privateKey).getRecommendedSignatureAlgorithm());
+    }
+
+    /**
+     * Initializes a signer with a private key.
+     * 
+     * @param privateKey Signature key
+     * @param algorithm Signature algorithm
+     * @throws IOException 
+     * @throws GeneralSecurityException 
+     */
+    public CBORAsymKeySigner(PrivateKey privateKey, AsymSignatureAlgorithms algorithm) 
+            throws IOException, GeneralSecurityException {
         
         signer = new AsymKeySignerInterface() {
 
@@ -85,7 +96,6 @@ public class CBORAsymKeySigner extends CBORSigner {
             }
             
         };
-        setAlgorithm(KeyAlgorithms.getKeyAlgorithm(privateKey).getRecommendedSignatureAlgorithm());
     }
 
     /**
@@ -105,19 +115,6 @@ public class CBORAsymKeySigner extends CBORSigner {
         return this;
     }
     
-    /**
-     * Sets signature algorithm.
-     * 
-     * @param algorithm The algorithm
-     * @return this
-     * @throws GeneralSecurityException 
-     * @throws IOException 
-     */
-    public CBORAsymKeySigner setAlgorithm(AsymSignatureAlgorithms algorithm) throws IOException {
-        this.algorithm = algorithm;
-        return this;
-    }    
-
     @Override
     byte[] coreSigner(byte[] dataToBeSigned) throws IOException, GeneralSecurityException {
         return signer.signData(dataToBeSigned);
@@ -132,7 +129,7 @@ public class CBORAsymKeySigner extends CBORSigner {
     }
 
     @Override
-    SignatureAlgorithms getSignatureAlgorithm() throws IOException, GeneralSecurityException {
+    SignatureAlgorithms getAlgorithm() throws IOException, GeneralSecurityException {
         return signer.getAlgorithm();
     }
 }

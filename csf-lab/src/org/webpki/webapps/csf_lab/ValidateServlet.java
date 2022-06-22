@@ -84,7 +84,7 @@ public class ValidateServlet extends CoreRequestServlet {
                     PEMDecoder.getPublicKey(validationKey.getBytes("utf-8"));
                 if (x509flag) {
 
-                    new CBORX509Validator(new CBORX509Validator.SignatureParameters() {
+                    new CBORX509Validator(new CBORX509Validator.Parameters() {
 
                     @Override
                     public void check(X509Certificate[] certificatePath,

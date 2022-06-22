@@ -37,8 +37,8 @@ public class CBORHmacSigner extends CBORSigner {
     /**
      * Initializes a signer with a secret key.
      * 
-     * @param secretKey The key to sign with
-     * @param algorithm The algorithm to use
+     * @param secretKey Signature key
+     * @param algorithm HMAC algorithm
      * @throws IOException 
      * @throws GeneralSecurityException 
      */
@@ -83,7 +83,7 @@ public class CBORHmacSigner extends CBORSigner {
     }
 
     @Override
-    SignatureAlgorithms getSignatureAlgorithm() throws IOException, GeneralSecurityException {
+    SignatureAlgorithms getAlgorithm() throws IOException, GeneralSecurityException {
         return signer.getAlgorithm();
     }
 }

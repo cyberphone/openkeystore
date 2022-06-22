@@ -42,8 +42,6 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
  */
 public class CBORX509Signer extends CBORSigner {
 
-    AsymSignatureAlgorithms algorithm;
-    
     X509SignerInterface signer;
     
     /**
@@ -56,13 +54,12 @@ public class CBORX509Signer extends CBORSigner {
     public CBORX509Signer(X509SignerInterface signer) throws IOException,
                                                              GeneralSecurityException {
         this.signer = signer;
-        setAlgorithm(signer.getAlgorithm());
     }
     
     /**
      * Initializes an X509 signer with a private key.
      * 
-     * The default signature algorithm to use is based on the recommendations
+     * The signature algorithm to use is based on the recommendations
      * in RFC 7518.
      * 
      * @param privateKey The key to sign with
@@ -70,8 +67,27 @@ public class CBORX509Signer extends CBORSigner {
      * @throws IOException 
      * @throws GeneralSecurityException 
      */
-    public CBORX509Signer(PrivateKey privateKey, X509Certificate[] certificatePath) 
-            throws IOException, GeneralSecurityException {
+    public CBORX509Signer(PrivateKey privateKey,
+                          X509Certificate[] certificatePath) throws IOException, 
+                                                                    GeneralSecurityException {
+        this(privateKey, 
+             certificatePath, 
+             KeyAlgorithms.getKeyAlgorithm(privateKey).getRecommendedSignatureAlgorithm());
+    }
+
+    /**
+     * Initializes an X509 signer with a private key.
+     * 
+     * @param privateKey The key to sign with
+     * @param certificatePath A matching non-null certificate path
+     * @param algorithm Signature algorithm
+     * @throws IOException 
+     * @throws GeneralSecurityException 
+     */
+    public CBORX509Signer(PrivateKey privateKey,
+                          X509Certificate[] certificatePath,
+                          AsymSignatureAlgorithms algorithm) throws IOException,
+                                                                    GeneralSecurityException {
         signer = new X509SignerInterface() {
 
             @Override
@@ -94,21 +110,7 @@ public class CBORX509Signer extends CBORSigner {
             }
             
         };
-        setAlgorithm(KeyAlgorithms.getKeyAlgorithm(privateKey).getRecommendedSignatureAlgorithm());
     }
-
-     /**
-     * Sets signature algorithm.
-     * 
-     * @param algorithm The algorithm
-     * @return this
-     * @throws GeneralSecurityException 
-     * @throws IOException 
-     */
-    public CBORX509Signer setAlgorithm(AsymSignatureAlgorithms algorithm) throws IOException {
-        this.algorithm = algorithm;
-        return this;
-    }    
 
     @Override
     byte[] coreSigner(byte[] dataToBeSigned) throws IOException, GeneralSecurityException {
@@ -126,7 +128,7 @@ public class CBORX509Signer extends CBORSigner {
     }
 
     @Override
-    SignatureAlgorithms getSignatureAlgorithm() throws IOException, GeneralSecurityException {
+    SignatureAlgorithms getAlgorithm() throws IOException, GeneralSecurityException {
         return signer.getAlgorithm();
     }
 }

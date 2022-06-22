@@ -338,11 +338,10 @@ public class CreateServlet extends CoreRequestServlet {
                 if (certOption) {
                     signer = new CBORX509Signer(
                             keyPair.getPrivate(),
-                            PEMDecoder.getCertificatePath(getBinaryParameter(request, PRM_CERT_PATH)))
-                                .setAlgorithm(asymSignatureAlgorithm);
+                            PEMDecoder.getCertificatePath(getBinaryParameter(request, PRM_CERT_PATH)),
+                            asymSignatureAlgorithm);
                 } else {
-                    signer = new CBORAsymKeySigner(keyPair.getPrivate())
-                                .setAlgorithm(asymSignatureAlgorithm)
+                    signer = new CBORAsymKeySigner(keyPair.getPrivate(), asymSignatureAlgorithm)
                                 .setPublicKey(keyInlining ? keyPair.getPublic() : null);
                 }
             }
