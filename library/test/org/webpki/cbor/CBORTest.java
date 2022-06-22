@@ -1516,7 +1516,7 @@ public class CBORTest {
                              boolean sequenceFlag, 
                              boolean nonDeterministic) throws IOException {
         String result = HexaDecimal.encode(
-                CBORObject.decodeWithOptions(new ByteArrayInputStream(HexaDecimal.decode(hexInput)),
+                CBORObject.decode(new ByteArrayInputStream(HexaDecimal.decode(hexInput)),
                                              sequenceFlag,
                                              nonDeterministic).encode()).toUpperCase();
         assertTrue("Strange=" + result, hexExpectedResult.equals(result));
@@ -1576,7 +1576,7 @@ public class CBORTest {
         InputStream inputStream = new ByteArrayInputStream(totalBytes);
         int position = 0;
         CBORObject cborObject;
-        while ((cborObject = CBORObject.decodeWithOptions(inputStream, true, false)) != null) {
+        while ((cborObject = CBORObject.decode(inputStream, true, false)) != null) {
             byte[] rawCbor = cborObject.encode();
             assertTrue("Seq", ArrayUtil.compare(rawCbor, 0, totalBytes, position, rawCbor.length));
             position += rawCbor.length;
@@ -1584,7 +1584,7 @@ public class CBORTest {
         assertTrue("SeqEnd", totalBytes.length == position);
 
         assertTrue("SeqNull", 
-                   CBORObject.decodeWithOptions(new ByteArrayInputStream(new byte[0]),
+                   CBORObject.decode(new ByteArrayInputStream(new byte[0]),
                                                 true, 
                                                 false) == null);
     }

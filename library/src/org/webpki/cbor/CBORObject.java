@@ -673,9 +673,9 @@ public abstract class CBORObject {
      * @return CBORObject
      * @throws IOException
      */
-    public static CBORObject decodeWithOptions(InputStream inputStream,
-                                               boolean sequenceFlag,
-                                               boolean nonDeterministic) throws IOException {
+    public static CBORObject decode(InputStream inputStream,
+                                    boolean sequenceFlag,
+                                    boolean nonDeterministic) throws IOException {
         CBORDecoder cborDecoder = new CBORDecoder(inputStream, 
                                                   sequenceFlag, 
                                                   nonDeterministic);
@@ -692,13 +692,16 @@ public abstract class CBORObject {
 
     /**
      * Decodes CBOR data.
+     * <p>
+     * This method is equivalent to {@code decode(InputStream, false, false)}.
+     * </p>
      * 
      * @param inputStream Holds CBOR data
      * @return CBORObject
      * @throws IOException
      */
     public static CBORObject decode(InputStream inputStream) throws IOException {
-        return decodeWithOptions(inputStream, false, false);
+        return decode(inputStream, false, false);
     }
 
     /**

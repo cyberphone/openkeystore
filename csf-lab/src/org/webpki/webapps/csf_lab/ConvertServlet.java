@@ -77,9 +77,7 @@ public class ConvertServlet extends CoreRequestServlet {
             ArrayList<CBORObject> sequence = new ArrayList<>();
             ByteArrayInputStream bais = new ByteArrayInputStream(cborBytes);
             CBORObject cborObject;
-            while ((cborObject = CBORObject.decodeWithOptions(bais, 
-                                                              sequenceFlag,
-                                                              false)) != null) {
+            while ((cborObject = CBORObject.decode(bais, sequenceFlag, false)) != null) {
                 sequence.add(cborObject);
                 if (!sequenceFlag) {
                     break;
