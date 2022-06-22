@@ -134,8 +134,8 @@ public abstract class CBORSigner {
      * Adds an enveloped CSF object (signature) to a CBOR map.
      * </p>
      * <p>
-     * Note that if <code>objectToSign</code> holds a CBOR
-     * tag object the tag must in turn contain the map to be signed,
+     * Note that if <code>objectToSign</code> holds a {@link CBORTag}
+     * object the tag must in turn contain the map to be signed,
      * and the tag will also be included in the data to be signed.
      * </p>
      * <p>
