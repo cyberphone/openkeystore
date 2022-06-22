@@ -58,11 +58,11 @@ public class CBORX509Signer extends CBORSigner {
     
     /**
      * Initializes an X509 signer with a private key.
-     * 
+     * <p>
      * The signature algorithm to use is based on the recommendations
      * in RFC 7518.
-     * 
-     * @param privateKey The key to sign with
+     * </p>
+     * @param privateKey Signature key
      * @param certificatePath A matching non-null certificate path
      * @throws IOException 
      * @throws GeneralSecurityException 
@@ -78,7 +78,7 @@ public class CBORX509Signer extends CBORSigner {
     /**
      * Initializes an X509 signer with a private key.
      * 
-     * @param privateKey The key to sign with
+     * @param privateKey Signature key
      * @param certificatePath A matching non-null certificate path
      * @param algorithm Signature algorithm
      * @throws IOException 

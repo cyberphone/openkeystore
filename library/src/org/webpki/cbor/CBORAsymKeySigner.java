@@ -56,10 +56,10 @@ public class CBORAsymKeySigner extends CBORSigner {
     
     /**
      * Initializes a signer with a private key.
-     * 
+     * <p>
      * The default signature algorithm to use is based on the recommendations
      * in RFC 7518.
-     * 
+     * </p>
      * @param privateKey Signature key
      * @throws IOException 
      * @throws GeneralSecurityException 
