@@ -273,7 +273,7 @@ public class CborSignatures {
         byte[] signedData = createSignature(signer);
         final SaveAlgorithm saveAlgorithm = new SaveAlgorithm();
         CBORX509Validator validator = new CBORX509Validator(
-            new CBORX509Validator.SignatureParameters() {
+            new CBORX509Validator.Parameters() {
 
                 @Override
                 public void check(X509Certificate[] certificatePath,
@@ -287,7 +287,7 @@ public class CborSignatures {
         validator.validate(SIGNATURE_LABEL, decoded);
         String fileName = baseSignatures + prefix(keyType)
                 + getAlgorithm(saveAlgorithm.algorithm) + "@cer.cbor";
-        new CBORX509Validator(new CBORX509Validator.SignatureParameters() {
+        new CBORX509Validator(new CBORX509Validator.Parameters() {
 
             @Override
             public void check(X509Certificate[] certificatePath,
@@ -305,14 +305,13 @@ public class CborSignatures {
                              boolean wantPublicKey,
                              AsymSignatureAlgorithms pssAlg) throws Exception {
         KeyPair keyPair = readJwk(keyType);
-        CBORAsymKeySigner signer = 
-                new CBORAsymKeySigner(keyPair.getPrivate());
         final AsymSignatureAlgorithms algorithm = pssAlg == null ? 
                 KeyAlgorithms.getKeyAlgorithm(
                         keyPair.getPublic()).getRecommendedSignatureAlgorithm() : pssAlg;
-        if (pssAlg != null) {
-            signer.setAlgorithm(pssAlg);
-        }
+       CBORAsymKeySigner signer = pssAlg == null ?
+                new CBORAsymKeySigner(keyPair.getPrivate())
+                                                 :
+                new CBORAsymKeySigner(keyPair.getPrivate(), pssAlg);
         if (wantKeyId) {
             signer.setKeyId(keyId);
         }
