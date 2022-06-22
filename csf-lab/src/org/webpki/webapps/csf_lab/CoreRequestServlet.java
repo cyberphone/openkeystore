@@ -119,7 +119,7 @@ public class CoreRequestServlet extends HttpServlet {
             (input ? "<tr><td><input type='checkbox' id='" + SEQUENCE + "'>" +
                     "</td><td>Sequence</td></tr>" +
                     "<tr><td><input type='checkbox' checked id='" + DETERMINISTIC + "'>" +
-                    "</td><td>Require deterministic representation</td></tr>": "") +
+                    "</td><td>Require <i>deterministic representation</i> for hex/b64u data</td></tr>": "") +
             "</table>";
     }
 

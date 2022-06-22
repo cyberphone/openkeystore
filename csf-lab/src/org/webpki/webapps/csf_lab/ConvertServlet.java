@@ -146,9 +146,7 @@ public class ConvertServlet extends CoreRequestServlet {
 
         StringBuilder html = new StringBuilder(
                 "<div class='header'>CBOR Conversion Utility</div>" +
-                "<div style='padding-top:15pt'>" + HomeServlet.SUPPORTED_CBOR + "</div>" +
-                "<div style='padding-top:0.5em'>Note that hexadecimal and base64url encoded data (by default) require " +
-                "<i>deterministic representation</i>.</div>")
+                "<div style='padding-top:15pt'>" + HomeServlet.SUPPORTED_CBOR + "</div>")
             .append(HTML.fancyText(
                         true,
                         CBOR_IN,
