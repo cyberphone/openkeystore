@@ -125,9 +125,13 @@ public class CBORCryptoUtils {
      * {@link CBORDecrypter}.
      * </p>
      * <p>
-     * To enable the creation of wrapped data you must use
+     * To enable the <i>creation</i> of wrapped data you must implement
      * {@link CBORSigner.Intercepter#wrap(CBORMap)} and
      * {@link CBOREncrypter.Intercepter#wrap(CBORMap)}
+     * for signatures and encryptions respectively.
+     * The implementation must then be set using 
+     * {@link CBORSigner#setIntercepter(CBORSigner.Intercepter)} and
+     * {@link CBOREncrypter#setIntercepter(BOREncrypter.Intercepter)}
      * respectively.
      * </p>
      * 
