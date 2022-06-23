@@ -1460,7 +1460,7 @@ public class CBORTest {
         assertTrue("arr[1]", cborArray.getObject(1).getMap()
                  .getObject(CUSTOM_DATA_LABEL).getArray().getObject(0).getInt() == 500);
         assertTrue("utl", cborArray.getObject(1).equals(
-                CBORCryptoUtils.getContainerMap(taggedX25519Encrypted)));
+                CBORCryptoUtils.unwrapContainerMap(taggedX25519Encrypted)));
  
         taggedX25519Encrypter = new CBORAsymKeyEncrypter(x25519.getPublic(),
                                          KeyEncryptionAlgorithms.ECDH_ES_A256KW,

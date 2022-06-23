@@ -100,22 +100,42 @@ public class CBORCryptoUtils {
     }
 
     /**
-     * Retrieves the container map object.
+     * Unwraps a container map object.
  
      * <p>
-     * This method is intended for CBOR map objects that <i>optionally</i>
+     * This method is intended for CBOR <code>map</code> objects that <i>optionally</i>
      * are wrapped in a tag.  This implementation accepts two variants of tags:
      * </p>
+     * <code>&nbsp;&nbsp;&nbsp;&nbsp;nnn(</code><i>CBOR&nbsp;map</i><code>)</code><br>
+     * <code>&nbsp;&nbsp;&nbsp;&nbsp;nnn([</code><i>CBOR&nbsp;text&nbsp;string</i><code>,&nbsp;</code><i>CBOR&nbsp;map</i><code>])</code>
+     * <p>
+     * The purpose of the second construct is to provide a
+     * generic way of adding an object type identifier in the
+     * form of a URL to CBOR <code>map</code> objects.
+     * The CBOR tag (<code>nnn</code>) would in this case be <i>constant</i>. 
+     * Example:
+     * </p>
      * <pre>
-     *     nnn({})
-     *     nnn(["string data", {}])
-     * </pre>
+     *     211(["https://example.com/myobject", {
+     *       "amount": "145.00",
+     *       "currency": "USD"
+     *     }])</pre><p>
+     * Both wrapping methods are intrinsically
+     * supported by {@link CBORValidator} and
+     * {@link CBORDecrypter}.
+     * </p>
+     * <p>
+     * To enable the creation of wrapped data you must use
+     * {@link CBORSigner.Intercepter#wrap(CBORMap)} and
+     * {@link CBOREncrypter.Intercepter#wrap(CBORMap)}
+     * respectively.
+     * </p>
      * 
      * @param container A map optionally enclosed in a tag 
      * @return The map object without the tag
      * @throws IOException
      */
-    public static CBORMap getContainerMap(CBORObject container) throws IOException {
+    public static CBORMap unwrapContainerMap(CBORObject container) throws IOException {
         if (container.getType() == CBORTypes.TAG) {
             CBORObject tagged = container.getTag().getObject();;
             if (tagged.getType() == CBORTypes.ARRAY) {

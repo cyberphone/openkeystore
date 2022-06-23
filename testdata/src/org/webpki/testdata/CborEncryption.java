@@ -200,7 +200,7 @@ public class CborEncryption {
 
     static String cleanEncryption(byte[] cefData) throws IOException {
         CBORObject cborObject = CBORObject.decode(cefData);
-        CBORMap decoded = CBORCryptoUtils.getContainerMap(cborObject);
+        CBORMap decoded = CBORCryptoUtils.unwrapContainerMap(cborObject);
         decoded.removeObject(CBORCryptoConstants.IV_LABEL);
         decoded.removeObject(CBORCryptoConstants.TAG_LABEL);
         decoded.removeObject(CBORCryptoConstants.CIPHER_TEXT_LABEL);

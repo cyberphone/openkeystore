@@ -41,7 +41,17 @@ public abstract class CBORDecrypter {
     
     /**
      * Decrypts data.
-     * 
+     * <p>
+     * This method presumes that <code>encryptionObject</code> holds
+     * an encryption object according to CEF.
+     * </p>
+     * <p>
+     * Note that if <code>encryptionObject</code> holds a CBOR
+     * <code>tag</code> object the <code>tag</code> must in turn contain the actual
+     * encryption object.
+     * Such a <code>tag</code> is also included in the authenticated data.
+     * See {@link CBORCryptoUtils#unwrapContainerMap(CBORObject)} for details.
+     * </p>
      * @param encryptionObject CBOR encryption object
      * @return Decrypted data
      * @throws IOException
@@ -51,7 +61,7 @@ public abstract class CBORDecrypter {
                                                               GeneralSecurityException {
 
         // There may be a tag holding the encryption map.
-        CBORMap encryptionMap = CBORCryptoUtils.getContainerMap(encryptionObject);
+        CBORMap encryptionMap = CBORCryptoUtils.unwrapContainerMap(encryptionObject);
 
         // Get the mandatory content encryption algorithm.
         ContentEncryptionAlgorithms contentEncryptionAlgorithm =

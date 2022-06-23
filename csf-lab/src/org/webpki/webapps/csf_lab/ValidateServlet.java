@@ -65,7 +65,7 @@ public class ValidateServlet extends CoreRequestServlet {
             
             // This is certainly not what you would do in an application...
             CBORMap signatureObject = 
-                    CBORCryptoUtils.getContainerMap(signedCborObject)
+                    CBORCryptoUtils.unwrapContainerMap(signedCborObject)
                         .getObject(signatureLabel).getMap();
             boolean hmacSignature = 
                     signatureObject.getObject(CBORCryptoConstants.ALGORITHM_LABEL).getInt() > 0;

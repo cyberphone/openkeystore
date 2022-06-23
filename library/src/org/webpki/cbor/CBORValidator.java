@@ -53,16 +53,14 @@ public abstract class CBORValidator {
      * </p>
      * <p>
      * Note that if <code>signedObject</code> holds a CBOR
-     * tag object the tag must in turn contain the signed map,
-     * and the tag as also included in the signed data.
-     * </p>
-     * <p>
-     * See {@link CBORCryptoUtils#getContainerMap(CBORObject)} for details.
+     * <code>tag</code> object the <code>tag</code> must in turn contain the signed <code>map</code>.
+     * Such a <code>tag</code> is also included in the signed data.
+     * See {@link CBORCryptoUtils#unwrapContainerMap(CBORObject)} for details.
      * </p>
      * 
      * @param key Key in map holding signature
      * @param signedObject Signed CBOR object
-     * @return The signed object
+     * @return The original <code>signedObject</code>
      * @throws IOException
      * @throws GeneralSecurityException
      */
@@ -70,7 +68,7 @@ public abstract class CBORValidator {
             throws IOException, GeneralSecurityException {
 
         // There may be a tag holding the signed map.
-        CBORMap signedMap = CBORCryptoUtils.getContainerMap(signedObject);
+        CBORMap signedMap = CBORCryptoUtils.unwrapContainerMap(signedObject);
 
         // Fetch signature object
         CBORMap signatureObject = signedMap.getObject(key).getMap();
@@ -108,7 +106,7 @@ public abstract class CBORValidator {
      * 
      * @param key Key in map holding signature
      * @param signedObject Signed CBOR object
-     * @return The signed object
+     * @return The original <code>signedObject</code>
      * @throws IOException
      * @throws GeneralSecurityException
      */
@@ -125,7 +123,7 @@ public abstract class CBORValidator {
      * 
      * @param key Key in map holding signature
      * @param signedObject Signed CBOR object
-     * @return The signed object
+     * @return The original <code>signedObject</code>
      * @throws IOException
      * @throws GeneralSecurityException
      */

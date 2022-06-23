@@ -145,7 +145,7 @@ public class CborSignatures {
     
     static String cleanSignature(byte[] csfData) throws IOException {
         CBORObject signedObject = CBORObject.decode(csfData); 
-        CBORMap decoded = CBORCryptoUtils.getContainerMap(signedObject);
+        CBORMap decoded = CBORCryptoUtils.unwrapContainerMap(signedObject);
         CBORObject[] keys = decoded.getMap().getKeys();
         for (CBORObject key : keys) {
             CBORObject value = decoded.getMap().getObject(key);
@@ -178,7 +178,7 @@ public class CborSignatures {
         try {
             oldSignature = ArrayUtil.readFile(fileName);
             try {
-                validator.validate(SIGNATURE_LABEL, CBORObject.decode(oldSignature).getMap());
+                validator.validate(SIGNATURE_LABEL, CBORObject.decode(oldSignature));
             } catch (Exception e) {
                 throw new GeneralSecurityException("ERROR - Old signature '" + fileName + "' did not validate");
             }

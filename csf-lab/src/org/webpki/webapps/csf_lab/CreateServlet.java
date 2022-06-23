@@ -19,7 +19,7 @@ package org.webpki.webapps.csf_lab;
 import java.io.IOException;
 
 import java.net.URLEncoder;
-
+import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 
 import javax.servlet.ServletException;
@@ -33,6 +33,7 @@ import org.webpki.cbor.CBORHmacSigner;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORSigner;
+import org.webpki.cbor.CBORTypes;
 import org.webpki.cbor.CBORX509Signer;
 
 import org.webpki.crypto.AlgorithmPreferences;
@@ -285,11 +286,13 @@ public class CreateServlet extends CoreRequestServlet {
             throws IOException, ServletException {
          try {
             request.setCharacterEncoding("utf-8");
-            CBORMap cbor = (Boolean.valueOf(getParameter(request, PRM_INPUT_TYPE)) ? 
+            final CBORObject rawCbor = (Boolean.valueOf(getParameter(request, PRM_INPUT_TYPE)) ? 
                     CBORDiagnosticParser.parse(getParameterTextarea(request, PRM_CBOR_DATA))
                                         :
-                    getCborFromHex(getParameter(request, PRM_CBOR_DATA))).getMap();
-            CBORCryptoUtils.getContainerMap(cbor);
+                    getCborFromHex(getParameter(request, PRM_CBOR_DATA)));
+            CBORMap mapToSign = rawCbor.getType() == CBORTypes.TAG ?
+                CBORCryptoUtils.unwrapContainerMap(rawCbor) : rawCbor.getMap();
+
             CBORObject signatureLabel = getSignatureLabel(request);
             boolean keyInlining = request.getParameter(FLG_PUB_INLINE) != null;
             boolean certOption = request.getParameter(FLG_CERT_PATH) != null;
@@ -348,7 +351,13 @@ public class CreateServlet extends CoreRequestServlet {
             }
 
             signer.setKeyId(optionalKeyId);
-            CBORObject signedCborObject = signer.sign(signatureLabel, cbor);
+            signer.setIntercepter(new CBORSigner.Intercepter() {
+                public CBORObject wrap(CBORMap mapToSign) 
+                        throws IOException, GeneralSecurityException {
+                    return rawCbor;
+                }
+            });
+            CBORObject signedCborObject = signer.sign(signatureLabel, mapToSign);
             // We terminate by validating the signature as well
             request.getRequestDispatcher("validate?" +
                 CSF_OBJECT_IN_HEX +

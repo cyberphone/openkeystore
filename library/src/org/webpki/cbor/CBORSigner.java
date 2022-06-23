@@ -47,7 +47,7 @@ public abstract class CBORSigner {
         /**
          * Optionally wraps a map in a tag.
          * <p>
-         * See {@link CBORCryptoUtils#getContainerMap(CBORObject)} for details
+         * See {@link CBORCryptoUtils#unwrapContainerMap(CBORObject)} for details
          * on the syntax for wrapped maps.
          * </p>
          * 
@@ -175,7 +175,7 @@ public abstract class CBORSigner {
      * and the tag will also be included in the data to be signed.
      * </p>
      * <p>
-     * See {@link CBORCryptoUtils#getContainerMap(CBORObject)} for details.
+     * See {@link CBORCryptoUtils#unwrapContainerMap(CBORObject)} for details.
      * </p>
      * 
      * @param key Key holding the signature in the CBOR map to sign

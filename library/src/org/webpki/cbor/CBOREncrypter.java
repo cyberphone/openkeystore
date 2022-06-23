@@ -41,7 +41,7 @@ public abstract class CBOREncrypter {
         /**
          * Optionally wraps a map in a tag.
          * <p>
-         * See {@link CBORCryptoUtils#getContainerMap(CBORObject)} for details
+         * See {@link CBORCryptoUtils#unwrapContainerMap(CBORObject)} for details
          * on the syntax for wrapped maps.
          * </p>
          * 
@@ -57,6 +57,10 @@ public abstract class CBOREncrypter {
 
         /**
          * Optionally adds custom data to the map.
+         * <p>
+         * Custom data may be any valid CBOR object.  This data is assigned
+         * to the CEF specific label {@link CBORCryptoConstants#CUSTOM_DATA_LABEL}.
+         * </p>
          * 
          * @return <code>null</code> (default) or custom data object.
          * @throws IOException
