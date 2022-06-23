@@ -290,6 +290,8 @@ public class CreateServlet extends CoreRequestServlet {
                     CBORDiagnosticParser.parse(getParameterTextarea(request, PRM_CBOR_DATA))
                                         :
                     getCborFromHex(getParameter(request, PRM_CBOR_DATA)));
+            
+            // This is certainly not something you would do in a normal case...
             CBORMap mapToSign = rawCbor.getType() == CBORTypes.TAG ?
                 CBORCryptoUtils.unwrapContainerMap(rawCbor) : rawCbor.getMap();
 
@@ -350,14 +352,16 @@ public class CreateServlet extends CoreRequestServlet {
                 }
             }
 
-            signer.setKeyId(optionalKeyId);
-            signer.setIntercepter(new CBORSigner.Intercepter() {
+            signer.setKeyId(optionalKeyId).setIntercepter(new CBORSigner.Intercepter() {
                 public CBORObject wrap(CBORMap mapToSign) 
                         throws IOException, GeneralSecurityException {
                     return rawCbor;
                 }
             });
+
+            // Finally, sign!
             CBORObject signedCborObject = signer.sign(signatureLabel, mapToSign);
+
             // We terminate by validating the signature as well
             request.getRequestDispatcher("validate?" +
                 CSF_OBJECT_IN_HEX +
