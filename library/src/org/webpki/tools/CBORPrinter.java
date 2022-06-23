@@ -42,7 +42,7 @@ public class CBORPrinter {
     /**
      * Run CBOR printer.
      * <p>
-     * <code>java -cp webpki.org-libext-1.00.jar org.webpki.tools.CBORPrinter bin</code> <i>CBORfile</i>
+     * <code>java -cp </code><i>path</i><code>/webpki.org-libext-1.00.jar org.webpki.tools.CBORPrinter bin </code><i>CBORfile</i>
      * </p>
      * @param args Command line interface
      * 
