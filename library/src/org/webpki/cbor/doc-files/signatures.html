@@ -1,0 +1,138 @@
+<body>
+<h2>Signature Support</h3>
+The CBOR library contains support for creating and validating
+signatures using a specific scheme called
+&quot;CBOR Signature Format&quot; (CSF). 
+<p>
+Note that unlike COSE (RFC 8152), CSF
+leverages <i>deterministic serialization</i>,
+enabling constructs like the following:
+</p>
+<div style='word-break:break-all'><code>
+{<br>
+&nbsp;&nbsp;1: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;1: "Space Shop",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;2: "435.00",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;3: "USD"<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;2: "spaceshop.com",<br>
+&nbsp;&nbsp;3: "FR7630002111110020050014382",<br>
+&nbsp;&nbsp;4: "https://bankdirect.org",<br>
+&nbsp;&nbsp;5: "05768401",<br>
+&nbsp;&nbsp;6: "2022-01-14T09:34:08-05:00",<br>
+&nbsp;&nbsp;7: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;1: 38.8882,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;2: 77.0199<br>
+&nbsp;&nbsp;},<br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Enveloped signature object /</span><br>
+&nbsp;&nbsp;8: {<br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Signature algorithm = ES256 /</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;1: -7,<br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Public key descriptor in COSE format /</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;4: {<br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ kty = EC /</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: 2,<br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ crv = P-256 /</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-1: 1,<br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ x /</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-2: h'e812b1a6dcbc708f9ec43cc2921fa0a14e9d5eadcc6dc63471dd4b680c6236b5',<br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ y /</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-3: h'9826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d8'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Signature value /</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;6: h'08f9696fcbdb924d2e676351c7f24fc3b0417e9ec151e6b140d02efa09a7247688db8ccf209944efce1ebd5c36563eec2a8e2e92dfcd8abf1d01c5052f14c220'<br>
+&nbsp;&nbsp;}<br>
+}
+</code></div>
+<p>
+The same object expressed as hex-encoded CBOR:
+</p>
+<p>
+<div style='word-break:break-all'><code>
+a801a3016a53706163652053686f7002663433352e30300363555344026d737061636573686f702e636f6d03781b465237363330303032313131313130303230303530303134333832047668747470733a2f2f62616e6b6469726563742e6f726705683035373638343031067819323032322d30312d31345430393a33343a30382d30353a303007a201fb404371b089a0275202fb405341460aa64c3008a3012604a401022001215820e812b1a6dcbc708f9ec43cc2921fa0a14e9d5eadcc6dc63471dd4b680c6236b52258209826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d806584008f9696fcbdb924d2e676351c7f24fc3b0417e9ec151e6b140d02efa09a7247688db8ccf209944efce1ebd5c36563eec2a8e2e92dfcd8abf1d01c5052f14c220
+</code></div>
+</p>
+<p>
+<i>Explanation: </i>
+Labels <code>1</code>-<code>7</code> represent application data
+(which <b>must</b> be supplied in a CBOR <code>map</code>),
+while the <i>application-specific</i> label <code>8</code>
+holds an associated <i>enveloped</i> signature.
+Signatures <b>must</b> for compatibility with CSF,
+be provided as a CBOR <code>map</code> having a fixed set of labels 
+according to the following table:
+</p>
+<table class='webpkitable'>
+<tr><th>Label</th><th>Name</th><th>Argument</th><th>Function</th></tr>
+
+<tr><td style='text-align:center'><code>1</code></td><td><code>algorithm</code></td>
+<td><code>integer</code></td><td>Signature algorithm using COSE identifiers.</td></tr>
+
+<tr><td style='text-align:center'><code>3</code></td><td><code>keyId</code></td>
+<td>&quot;Any&quot;</td><td><i>Optional</i> key identifier using any CBOR construct,
+compatible with this implementation. 
+Note that <code>keyId</code> <b>must not</b> be used together with 
+<code>publicKey</code> or <code>certificatePath</code>.
+
+<tr><td style='text-align:center'><code>4</code></td><td><code>publicKey</code></td>
+<td><code>map</code></td>
+<td><i>Optional</i> public key in COSE format.  
+Note that ECDSA public keys <b>must</b> be supplied with a <i>value parameter</i> for the y-coordinate as well.</td></tr>
+</td></tr>
+
+<tr><td style='text-align:center'><code>5</code></td><td><code>certificatePath</code></td><td><code>array</code></td><td><i>Optional</i> certificate path supplied 
+as an array of <code>byte&nbsp;string</code> objects holding X.509 certificates in DER format, 
+where the first object <b>must</b> be the signature certificate.
+Signature objects <b>must not</b> contain both <code>certificatePath</code> and <code>publicKey</code> elements.
+</td></tr>
+
+<tr><td style='text-align:center'><code>6</code></td><td><code>signature</code></td><td><code>byte&nbsp;string</code></td><td>Signature value.</td></tr>
+</table>
+<p>
+CSF signatures are validated by running the signature validation 
+algorithm over the CBOR binary representation of
+the <code>map</code> holding the application data including the enveloped signature object,
+with the <code>signature</code> (label <code>7</code>) and
+its associated argument as the sole exception. Note that the length
+of the signature object <code>map</code> <b>must</b>
+be updated (to reflect the removal of an element) during validation.</p>
+<p>
+The sample was signed using the following private key (here in JWK format)
+</p>
+<pre>
+{
+  "kty": "EC",
+  "crv": "P-256",
+  "x": "6BKxpty8cI-exDzCkh-goU6dXq3MbcY0cd1LaAxiNrU",
+  "y": "mCbcvUzm44j3Lt2b5BPyQloQ91tf2D2V-gzeUxWaUdg",
+  "d": "6XxMFXhcYT5QN9w5TIg2aSKsbcj-pj4BnZkK7ZOt4B8"
+}
+</pre>
+<p id='csf-algorithms'>
+Currently supported signature algorithms:
+</p>
+<table class='webpkitable'>
+<tr><th>Name</th><th>Identifier</th><th>Compatibility</th></tr>
+<tr style='text-align:center'><td><code>HS256</code></td><td>5</td><td>COSE, JOSE</td></tr>
+<tr style='text-align:center'><td><code>HS384</code></td><td>6</td><td>COSE, JOSE</td></tr>
+<tr style='text-align:center'><td><code>HS512</code></td><td>7</td><td>COSE, JOSE</td></tr>
+<tr style='text-align:center'><td><code>Ed25519</code></td><td>-8</td><td>FIDO, PKIX [1]</td></tr>
+<tr style='text-align:center'><td><code>Ed448</code></td><td>-9</td><td>PKIX [2]</td></tr>
+<tr style='text-align:center'><td><code>ES256</code></td><td>-7</td><td>COSE, JOSE</td></tr>
+<tr style='text-align:center'><td><code>ES384</code></td><td>-35</td><td>COSE, JOSE</td></tr>
+<tr style='text-align:center'><td><code>ES512</code></td><td>-36</td><td>COSE, JOSE</td></tr>
+<tr style='text-align:center'><td><code>PS256</code></td><td>-37</td><td>COSE, JOSE</td></tr>
+<tr style='text-align:center'><td><code>PS384</code></td><td>-38</td><td>COSE, JOSE</td></tr>
+<tr style='text-align:center'><td><code>PS512</code></td><td>-39</td><td>COSE, JOSE</td></tr>
+<tr style='text-align:center'><td><code>RS256</code></td><td>-257</td><td>COSE, JOSE</td></tr>
+<tr style='text-align:center'><td><code>RS384</code></td><td>-258</td><td>COSE, JOSE</td></tr>
+<tr style='text-align:center'><td><code>RS512</code></td><td>-259</td><td>COSE, JOSE</td></tr>
+</table>
+<p>[1] Unfortunately, different standards groups did not in due time realize that
+existing cryptographic APIs only rarely accept &quot;EdDSA&quot; as a valid signature algorithm.
+In current FIDO alliance specifications the COSE <code>EdDSA</code> algorithm identifier has
+therefore been redefined to rather mean EdDSA with an Ed25519 key which is also what CSF follows.
+PKIX' RFC&nbsp;8410 makes the same distinction.</p>
+<p>[2] CSF extends the scheme used for <code>Ed25519</code> to <code>Ed448</code> as well.</p>
+</body>
+

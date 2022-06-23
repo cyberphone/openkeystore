@@ -1,0 +1,153 @@
+<body>
+<h2>Encryption Support</h3>
+The CBOR library contains support for encrypting and decrypting
+arbitrary binary data using a specific scheme called
+&quot;CBOR Encryption Format&quot; (CEF).
+In similarity to <a href='signatures.html'>CSF</a>, CEF also depends on <i>deterministic serialization</i>
+which is used to create authentication data to content encryption
+algorithms like GCM.
+<p>
+The following is a CEF object (here expressed in CBOR diagnostic notation), using the algorithms
+<code>A256GCM</code> and <code>ECDH-ES+A256KW</code> for content- respectively key-wrapping:
+</p>
+<div style='word-break:break-all'><code>
+{<br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Content encryption algorithm = A256GCM /</span><br>
+&nbsp;&nbsp;1: 3,<br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Key encryption object /</span><br>
+&nbsp;&nbsp;2: {<br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Key encryption algorithm = ECDH-ES+A256KW /</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;1: -31,<br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Key Id /</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;3: "example.com:x25519",<br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Ephemeral public key descriptor in COSE format /</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;7: {<br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ kty = OKP /</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: 1,<br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ crv = X25519 /</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-1: 4,<br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ x /</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-2: h'c219e35a9c09bfcf1bd6c6dcd1e05ecb36cb6f465d9caeb101795e33fd7db112'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ CipherText (Encrypted key) /</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;10: h'842916c5c81f8a815ec5ef2a472981b7300bc33fe748928c26e8c4dfff7a4747ecff9caea7040585'<br>
+&nbsp;&nbsp;},<br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Tag /</span><br>
+&nbsp;&nbsp;8: h'84ad6926aa92d0de56e4674abf863390',<br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Initialization Vector (IV) /</span><br>
+&nbsp;&nbsp;9: h'c7cc6f77b9f984c15bc3cbeb',<br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Ciphertext (Encrypted Content) /</span><br>
+&nbsp;&nbsp;10: h'625c2b2a41907547b2210624e1e818991c00790aed16'<br>
+}
+</code></div>
+<p>
+The same object expressed as hex-encoded CBOR:
+</p>
+<div style='word-break:break-all'><code>
+a5010302a401381e03726578616d706c652e636f6d3a78323535313907a301012004215820c219e35a9c09bfcf1bd6c6dcd1e05ecb36cb6f465d9caeb101795e33fd7db1120a5828842916c5c81f8a815ec5ef2a472981b7300bc33fe748928c26e8c4dfff7a4747ecff9caea7040585085084ad6926aa92d0de56e4674abf863390094cc7cc6f77b9f984c15bc3cbeb0a56625c2b2a41907547b2210624e1e818991c00790aed16
+</code></div>
+<p>
+Decryption of this object using the private key (here in JWK format)
+</p>
+<pre>
+{
+  "kid": "example.com:x25519",
+  "kty": "OKP",
+  "crv": "X25519",
+  "x": "6ZoM7yBYlJYNmxwFl4UT3MtCoTv7ztUjpRuKEXrV8Aw",
+  "d": "cxfl86EVmcqrR07mWENCf1F_5Ni5mt1ViGyERB6Q1vA"
+}
+</pre>
+should return the UTF-8 encoded string <code>&quot;Hello encrypted world!&quot;</code>.
+<p>
+The CEF decryption process is as follows:
+</p>
+<ul>
+<li>Read and save the content encryption parameters <code class='webpkicode'>tag</code>,
+<code class='webpkicode'>iv</code>, and <code class='webpkicode'>ciphertext</code>.</li>
+<li>Remove the <code class='webpkicode'>tag</code>,
+<code class='webpkicode'>iv</code>, and <code class='webpkicode'>ciphertext</code> elements from the
+encryption object.
+Note that the top level <code>map</code> object <b>must</b> be updated
+as well to reflect the changed number of elements.
+<li>Serialize the remaining CBOR encryption object and set the result to 
+Additional Authentication Data (<code>AAD</code>).</li>
+<li>Recover the content encryption key using the elements in the
+key encryption object (featured in label <code>2</code>).</li>
+<li>Apply the content encryption algorithm (featured in label <code>1</code>)
+to the recovered content encryption key,
+the input parameters read in the first step, and <code>AAD</code>.
+The result is the decrypted content.</li>
+</ul>
+Symmetric key encryption CEF objects are processed as above, but
+since they do not have a key encryption component, content encryption 
+keys must be known by recipients.
+<p id='cef-layout'>
+The following figure shows the layout of CEF objects:
+</p>
+<div class='webpkicef'>
+<img src='cbor-crypto.svg' style='height:20em'/>
+</div>
+<p>
+The numbers in paranthesis denote the actual label (map key) value.
+Properly designed CEF objects <b>must</b> adhere to the following rules:
+</p>
+<ul>
+<li><code class='webpkicode'>publicKey</code> and <code class='webpkicode'>ephemeralKey</code> elements
+<b>must</b> be compliant with COSE, but <b>must not</b> contain
+any other information than the public key itself
+and associated parameters.</li>
+<li>ECDSA public keys <b>must</b> be supplied with a <i>value parameter</i> for the y-coordinate as well.</li>
+<li><code class='webpkicode'>keyId</code>, <code class='webpkicode'>publicKey</code> 
+and <code class='webpkicode'>certificatePath</code>
+<b>must not</b> be combined.</li>
+<li>If a <code class='webpkicode'>keyId</code> is used it <b>must</b> be supplied in the main map for
+symmetric encryption schemes, and in the sub map for schemes using key encryption.</li>
+<li>The currently supported key encryption algorithms except for <code>ECDH-ES</code>
+<b>require</b> that the encrypted key is provided in the <code class='webpkicode'>chipherText</code>
+element in the sub map.</li>
+<li>All ECDH-ES variants <b>must</b> include an <code class='webpkicode'>ephemeralKey</code>
+element.</li>
+</ul>
+ECDH based key encryption schemes <b>must</b> use a Key Derivation Function (KDF)
+according to HKDF (RFC&nbsp;5869), profiled as follows:
+<ul>
+<li><code>hmac</code>: The HKDF implementation <b>must</b> use HMAC with SHA-256</li>
+<li><code>salt</code>: N/A. The default extract mode handling <b>must</b> be implemented.</li>
+<li><code>info</code>: This parameter <b>must</b> consist of the actual
+COSE key encryption algorithm,
+expressed as a 32-bit (4 byte) signed big-endian integer.</li>
+</ul>
+<p id='cef-content-encryption-algorithms'>
+Currently supported content encryption algorithms:
+</p>
+
+<table class='webpkitable' style='margin-bottom:1em'>
+<tr><th>Name</th><th>Identifier</th><th>Compatibility</th></tr>
+<tr style='text-align:center'><td><code>A128GCM</code></td><td>1</td><td>COSE, JOSE</td></tr>
+<tr style='text-align:center'><td><code>A192GCM</code></td><td>2</td><td>COSE, JOSE</td></tr>
+<tr style='text-align:center'><td><code>A256GCM</code></td><td>3</td><td>COSE, JOSE</td></tr>
+<tr style='text-align:center'><td><code>A128CBC-HS256</code></td><td>200</td><td>JOSE</td></tr>
+<tr style='text-align:center'><td><code>A192CBC-HS384</code></td><td>201</td><td>JOSE</td></tr>
+<tr style='text-align:center'><td><code>A256CBC-HS512</code></td><td>202</td><td>JOSE</td></tr>
+</table>
+<p id='cef-key-encryption-algorithms' style='padding-top:1em'>
+Currently supported key encryption algorithms:
+</p>
+<table class='webpkitable'>
+<tr><th>Name</th><th>Identifier</th><th>Compatibility</th></tr>
+<tr style='text-align:center'><td><code>ECDH-ES</code></td><td>-25</td><td>COSE, JOSE [1]</td></tr>
+<tr style='text-align:center'><td><code>ECDH-ES+A128KW</code></td><td>-29</td><td>COSE, JOSE [1]</td></tr>
+<tr style='text-align:center'><td><code>ECDH-ES+A192KW</code></td><td>-30</td><td>COSE, JOSE [1]</td></tr>
+<tr style='text-align:center'><td><code>ECDH-ES+A256KW</code></td><td>-31</td><td>COSE, JOSE [1]</td></tr>
+<tr style='text-align:center'><td><code>RSA-OAEP</code></td><td>-40</td><td>COSE, JOSE</td></tr>
+<tr style='text-align:center'><td><code>RSA-OAEP-256</code></td><td>-41</td><td>COSE, JOSE</td></tr>
+</table>
+<p>
+[1] Note that COSE and JOSE do no use the same Key Derivation Function (KDF).
+</p>
+An extensive set of test vectors is currently available at: 
+<a href='https://github.com/cyberphone/openkeystore/tree/master/testdata/cbor-encryption'>
+https://github.com/cyberphone/openkeystore/tree/master/testdata/cbor-encryption
+</a>.
+</body>
