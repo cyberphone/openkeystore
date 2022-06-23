@@ -28,12 +28,14 @@ import java.security.interfaces.RSAKey;
 
 import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORSigner;
+import org.webpki.cbor.CBORTag;
 import org.webpki.cbor.CBORTest;
 import org.webpki.cbor.CBORTextString;
 import org.webpki.cbor.CBORTypes;
 import org.webpki.cbor.CBORValidator;
 import org.webpki.cbor.CBORX509Signer;
 import org.webpki.cbor.CBORX509Validator;
+import org.webpki.cbor.CBORArray;
 import org.webpki.cbor.CBORAsymKeySigner;
 import org.webpki.cbor.CBORAsymKeyValidator;
 import org.webpki.cbor.CBORFloatingPoint;
@@ -42,7 +44,7 @@ import org.webpki.cbor.CBORHmacValidator;
 import org.webpki.cbor.CBORInteger;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORCryptoConstants;
-
+import org.webpki.cbor.CBORCryptoUtils;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.HmacAlgorithms;
@@ -125,13 +127,16 @@ public class CborSignatures {
             symKeySign(512, HmacAlgorithms.HMAC_SHA512, i == 0);
         }
         
+        asymSignCore("p256",    false, true, 1, null);
+        asymSignCore("ed25519", false, true, 2, null);
+        
         demoDocSignature(baseSignatures + "demo-doc-signature.cbor");
     }
     
     static void asymKeyAllVariations(String key, AsymSignatureAlgorithms pssAlg) throws Exception {
-        asymSignCore(key, false, false, pssAlg);
-        asymSignCore(key, false, true,  pssAlg);
-        asymSignCore(key, true,  false, pssAlg);
+        asymSignCore(key, false, false, 0, pssAlg);
+        asymSignCore(key, false, true,  0, pssAlg);
+        asymSignCore(key, true,  false, 0, pssAlg);
    }
 
     static String prefix(String keyType) {
@@ -139,7 +144,8 @@ public class CborSignatures {
     }
     
     static String cleanSignature(byte[] csfData) throws IOException {
-        CBORObject decoded = CBORObject.decode(csfData);
+        CBORObject signedObject = CBORObject.decode(csfData); 
+        CBORMap decoded = CBORCryptoUtils.getContainerMap(signedObject);
         CBORObject[] keys = decoded.getMap().getKeys();
         for (CBORObject key : keys) {
             CBORObject value = decoded.getMap().getObject(key);
@@ -157,7 +163,7 @@ public class CborSignatures {
                 }
                 // This is with 99% certainty a CSF signature.  Bump the signature value.
                 possibleSignature.removeObject(CBORCryptoConstants.SIGNATURE_LABEL);
-                return decoded.toString();
+                return signedObject.toString();
             }
         }
         throw new IOException("Signature not found");
@@ -225,7 +231,7 @@ public class CborSignatures {
         }).validate(SIGNATURE_LABEL, decoded);
         optionalUpdate(validator, 
                        baseSignatures + prefix("a" + keyBits) + 
-                           getAlgorithm(algorithm) + '@' + keyIndicator(wantKeyId, false),
+                           getAlgorithm(algorithm) + '@' + keyIndicator(wantKeyId, false, 0),
                        signedData,
                        false);
     }
@@ -255,8 +261,9 @@ public class CborSignatures {
     }
     
     
-    static String keyIndicator(boolean wantKeyId, boolean wantPublicKey) {
-        return (wantKeyId ? (wantPublicKey ? "pub+kid" : "kid") : wantPublicKey ? "pub" : "imp") + ".cbor";
+    static String keyIndicator(boolean wantKeyId, boolean wantPublicKey, int tagged) {
+        return (tagged == 1 ? "tag1Dim." : tagged == 2 ? "tag2Dim." : "") + 
+               (wantKeyId ? "kid" : wantPublicKey ? "pub" : "imp") + ".cbor";
     }
     
     static String getAlgorithm(SignatureAlgorithms algorithm) throws IOException {
@@ -283,7 +290,7 @@ public class CborSignatures {
                 }
                 
             });
-        CBORMap decoded = CBORObject.decode(signedData).getMap();
+        CBORObject decoded = CBORObject.decode(signedData);
         validator.validate(SIGNATURE_LABEL, decoded);
         String fileName = baseSignatures + prefix(keyType)
                 + getAlgorithm(saveAlgorithm.algorithm) + "@cer.cbor";
@@ -303,6 +310,7 @@ public class CborSignatures {
     static void asymSignCore(String keyType, 
                              boolean wantKeyId,
                              boolean wantPublicKey,
+                             int tagged,
                              AsymSignatureAlgorithms pssAlg) throws Exception {
         KeyPair keyPair = readJwk(keyType);
         final AsymSignatureAlgorithms algorithm = pssAlg == null ? 
@@ -318,13 +326,30 @@ public class CborSignatures {
         if (wantPublicKey) {
             signer.setPublicKey(keyPair.getPublic());
         }
+        if (tagged != 0) {
+            signer.setIntercepter(new CBORSigner.Intercepter() {
+                
+                @Override
+                public CBORObject wrap(CBORMap mapToSign) 
+                        throws IOException, GeneralSecurityException {
+                    
+                    // 1-dimensional or 2-dimensional tag
+                    return new CBORTag(211, tagged == 1 ? 
+                            mapToSign : new CBORArray()
+                                .addObject(new CBORTextString("https://example.com/myobject"))
+                                .addObject(mapToSign));
+                    
+                }
+                
+            });
+        }        
         byte[] signedData = createSignature(signer);
         CBORAsymKeyValidator validator = new CBORAsymKeyValidator(keyPair.getPublic());
-        CBORMap decoded = CBORObject.decode(signedData).getMap();
+        CBORObject decoded = CBORObject.decode(signedData);
         validator.validate(SIGNATURE_LABEL, decoded);
         String fileName = baseSignatures + prefix(keyType) +
                 getAlgorithm(algorithm) + '@' +  
-                keyIndicator(wantKeyId, wantPublicKey);
+                keyIndicator(wantKeyId, wantPublicKey, tagged);
         new CBORAsymKeyValidator(new CBORAsymKeyValidator.KeyLocator() {
             
             @Override

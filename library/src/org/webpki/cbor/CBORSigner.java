@@ -39,6 +39,31 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
  */
 public abstract class CBORSigner {
  
+    /**
+     * For customizing signature map objects.
+     */
+    public interface Intercepter {
+
+        /**
+         * Optionally wraps a map in a tag.
+         * <p>
+         * See {@link CBORCryptoUtils#getContainerMap(CBORObject)} for details
+         * on the syntax for wrapped maps.
+         * </p>
+         * 
+         * @param mapToSign Unwrapped map
+         * @return Original (default) or wrapped map
+         * @throws IOException
+         * @throws GeneralSecurityException
+         */
+        default CBORObject wrap(CBORMap mapToSign) throws IOException, GeneralSecurityException {
+            return mapToSign;
+        }
+    }
+    
+    // The default is to use a map without tagging and custom data.
+    Intercepter intercepter = new Intercepter() { };
+
     // Set by implementing classes
     String provider;
     
@@ -54,6 +79,17 @@ public abstract class CBORSigner {
     
     abstract void additionalItems(CBORMap signatureObject)
             throws IOException, GeneralSecurityException;
+    
+    /**
+     * Sets optional Intercepter.
+     * 
+     * @param intercepter An instance of Intercepter
+     * @return this
+     */
+    public CBORSigner setIntercepter(Intercepter intercepter) {
+        this.intercepter = intercepter;
+        return this;
+    }
     
     /**
      * Sets signature <code>keyId</code>.
@@ -143,16 +179,16 @@ public abstract class CBORSigner {
      * </p>
      * 
      * @param key Key holding the signature in the CBOR map to sign
-     * @param objectToSign CBOR map to be signed
+     * @param mapToSign CBOR map to be signed
      * @return Signed object
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public CBORObject sign(CBORObject key, CBORObject objectToSign) 
-        throws IOException, GeneralSecurityException {
+    public CBORObject sign(CBORObject key, CBORMap mapToSign) throws IOException, 
+                                                                     GeneralSecurityException {
 
         // There may be a tag holding the map to be signed.
-        CBORMap mapToSign = CBORCryptoUtils.getContainerMap(objectToSign);
+        CBORObject objectToSign = intercepter.wrap(mapToSign);
 
         // Create empty signature object.
         CBORMap signatureObject = new CBORMap();
@@ -189,14 +225,14 @@ public abstract class CBORSigner {
      * </p>
      * 
      * @param key Key holding the signature in the CBOR map to sign
-     * @param objectToSign CBOR map to be signed
+     * @param mapToSign CBOR map to be signed
      * @return Signed object
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public CBORObject sign(int key, CBORObject objectToSign) throws IOException,
-                                                                    GeneralSecurityException {
-        return sign(new CBORInteger(key), objectToSign);
+    public CBORObject sign(int key, CBORMap mapToSign) throws IOException,
+                                                              GeneralSecurityException {
+        return sign(new CBORInteger(key), mapToSign);
     }
 
     /**
@@ -206,13 +242,13 @@ public abstract class CBORSigner {
      * </p>
      * 
      * @param key Key holding the signature in the CBOR map to sign
-     * @param objectToSign CBOR map to be signed
+     * @param mapToSign CBOR map to be signed
      * @return Signed object
      * @throws IOException
      * @throws GeneralSecurityException
       */
-    public CBORObject sign(String key, CBORObject objectToSign) throws IOException, 
-                                                                       GeneralSecurityException {
-        return sign(new CBORTextString(key), objectToSign);
+    public CBORObject sign(String key, CBORMap mapToSign) throws IOException, 
+                                                                 GeneralSecurityException {
+        return sign(new CBORTextString(key), mapToSign);
     }
 }

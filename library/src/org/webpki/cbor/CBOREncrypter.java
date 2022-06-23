@@ -39,13 +39,14 @@ public abstract class CBOREncrypter {
     public interface Intercepter {
 
         /**
-         * Optionally wraps map in a tag.
+         * Optionally wraps a map in a tag.
          * <p>
-         * See {@link CBORCryptoUtils#getContainerMap(CBORObject)} for details.
+         * See {@link CBORCryptoUtils#getContainerMap(CBORObject)} for details
+         * on the syntax for wrapped maps.
          * </p>
          * 
          * @param encryptionObject Unwrapped map
-         * @return Original or wrapped map
+         * @return Original (default) or wrapped map
          * @throws IOException
          * @throws GeneralSecurityException
          */
@@ -57,7 +58,7 @@ public abstract class CBOREncrypter {
         /**
          * Optionally adds custom data to the map.
          * 
-         * @return <code>null</code> or customData object.
+         * @return <code>null</code> (default) or custom data object.
          * @throws IOException
          * @throws GeneralSecurityException
          */
@@ -84,10 +85,6 @@ public abstract class CBOREncrypter {
     
     /**
      * Sets optional Intercepter.
-     * 
-     * <p>
-     * See {@link CBORCryptoUtils#getContainerMap(CBORObject)} for details.
-     * </p>
      * 
      * @param intercepter An instance of Intercepter
      * @return this

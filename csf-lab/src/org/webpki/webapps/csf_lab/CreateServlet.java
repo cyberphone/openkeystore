@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.webpki.cbor.CBORAsymKeySigner;
 import org.webpki.cbor.CBORCryptoUtils;
 import org.webpki.cbor.CBORHmacSigner;
+import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORSigner;
 import org.webpki.cbor.CBORX509Signer;
@@ -284,10 +285,10 @@ public class CreateServlet extends CoreRequestServlet {
             throws IOException, ServletException {
          try {
             request.setCharacterEncoding("utf-8");
-            CBORObject cbor = Boolean.valueOf(getParameter(request, PRM_INPUT_TYPE)) ? 
+            CBORMap cbor = (Boolean.valueOf(getParameter(request, PRM_INPUT_TYPE)) ? 
                     CBORDiagnosticParser.parse(getParameterTextarea(request, PRM_CBOR_DATA))
                                         :
-                    getCborFromHex(getParameter(request, PRM_CBOR_DATA));
+                    getCborFromHex(getParameter(request, PRM_CBOR_DATA))).getMap();
             CBORCryptoUtils.getContainerMap(cbor);
             CBORObject signatureLabel = getSignatureLabel(request);
             boolean keyInlining = request.getParameter(FLG_PUB_INLINE) != null;

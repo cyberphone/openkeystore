@@ -40,7 +40,12 @@ public class CBORPrinter {
     }
 
     /**
+     * Run CBOR printer.
+     * <p>
+     * <code>java -cp webpki.org-libext-1.00.jar org.webpki.tools.CBORPrinter bin</code> <i>CBORfile</i>
+     * </p>
      * @param args Command line interface
+     * 
      * @throws Exception If anything unexpected happens...
      */
     public static void main(String[] args) throws Exception {

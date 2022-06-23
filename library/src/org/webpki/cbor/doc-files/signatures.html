@@ -108,6 +108,7 @@ The sample was signed using the following private key (here in JWK format)
   "d": "6XxMFXhcYT5QN9w5TIg2aSKsbcj-pj4BnZkK7ZOt4B8"
 }
 </pre>
+<h3 style='padding:1em 0 0 0'>Signature Algorithms</h3>
 <p id='csf-algorithms'>
 Currently supported signature algorithms:
 </p>
@@ -134,5 +135,13 @@ In current FIDO alliance specifications the COSE <code>EdDSA</code> algorithm id
 therefore been redefined to rather mean EdDSA with an Ed25519 key which is also what CSF follows.
 PKIX' RFC&nbsp;8410 makes the same distinction.</p>
 <p>[2] CSF extends the scheme used for <code>Ed25519</code> to <code>Ed448</code> as well.</p>
+<h3 style='padding:1em 0 0 0'>Test Vectors</h3>
+An extensive set of test vectors is currently available at: 
+<a href='https://github.com/cyberphone/openkeystore/tree/master/testdata/cbor-encryption'>
+https://github.com/cyberphone/openkeystore/tree/master/testdata/cbor-signatures
+</a>.
+<p>
+Use {@link org.webpki.tools.CBORPrinter} to list contents in a human.friendly way.
+</p>
 </body>
 

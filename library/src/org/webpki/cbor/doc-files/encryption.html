@@ -118,6 +118,13 @@ according to HKDF (RFC&nbsp;5869), profiled as follows:
 COSE key encryption algorithm,
 expressed as a 32-bit (4 byte) signed big-endian integer.</li>
 </ul>
+<h3 id='custom-data' style='padding:1em 0 0 0'>Custom Data Extension</h3>
+In addition to encrypted data, CEF also supports an extension
+element ({@link CBORCryptoConstants#CUSTOM_DATA_LABEL}) 
+which permits arbitrary CBOR objects to be included &quot;as&nbsp;is&quot; while
+still being protected by the authentication scheme.
+To simplify the use of this feature, see {@link CBOREncrypter#setIntercepter(CBOREncrypter.Intercepter)}.
+<h3 style='padding:1em 0 0 0'>Content Encryption Algorithms</h3>
 <p id='cef-content-encryption-algorithms'>
 Currently supported content encryption algorithms:
 </p>
@@ -131,7 +138,8 @@ Currently supported content encryption algorithms:
 <tr style='text-align:center'><td><code>A192CBC-HS384</code></td><td>201</td><td>JOSE</td></tr>
 <tr style='text-align:center'><td><code>A256CBC-HS512</code></td><td>202</td><td>JOSE</td></tr>
 </table>
-<p id='cef-key-encryption-algorithms' style='padding-top:1em'>
+<h3 style='padding:1em 0 0 0'>Key Encryption Algorithms</h3>
+<p id='cef-key-encryption-algorithms'>
 Currently supported key encryption algorithms:
 </p>
 <table class='webpkitable'>
@@ -146,8 +154,12 @@ Currently supported key encryption algorithms:
 <p>
 [1] Note that COSE and JOSE do no use the same Key Derivation Function (KDF).
 </p>
+<h3 style='padding:1em 0 0 0'>Test Vectors</h3>
 An extensive set of test vectors is currently available at: 
 <a href='https://github.com/cyberphone/openkeystore/tree/master/testdata/cbor-encryption'>
 https://github.com/cyberphone/openkeystore/tree/master/testdata/cbor-encryption
 </a>.
+<p>
+Use {@link org.webpki.tools.CBORPrinter} to list contents in a human.friendly way.
+</p>
 </body>

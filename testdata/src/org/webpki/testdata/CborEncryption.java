@@ -35,14 +35,18 @@ import java.util.ArrayList;
 import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORSymKeyDecrypter;
 import org.webpki.cbor.CBORSymKeyEncrypter;
+import org.webpki.cbor.CBORTag;
 import org.webpki.cbor.CBORTest;
 import org.webpki.cbor.CBORTextString;
 import org.webpki.cbor.CBORX509Decrypter;
 import org.webpki.cbor.CBORX509Encrypter;
+import org.webpki.cbor.CBORArray;
 import org.webpki.cbor.CBORAsymKeyDecrypter;
 import org.webpki.cbor.CBORAsymKeyEncrypter;
 import org.webpki.cbor.CBORDecrypter;
+import org.webpki.cbor.CBOREncrypter;
 import org.webpki.cbor.CBORCryptoConstants;
+import org.webpki.cbor.CBORCryptoUtils;
 import org.webpki.cbor.CBORMap;
 
 import org.webpki.crypto.CustomCryptoProvider;
@@ -117,7 +121,14 @@ public class CborEncryption {
                 }
             }
         }
-      
+        
+        asymEncCore("p256", false, true, 1, false, 
+                    ContentEncryptionAlgorithms.A256GCM, KeyEncryptionAlgorithms.ECDH_ES_A256KW);
+        asymEncCore("p256", false, true, 2, false, 
+                ContentEncryptionAlgorithms.A256GCM, KeyEncryptionAlgorithms.ECDH_ES_A256KW);
+        asymEncCore("x25519", false, true, 0, true, 
+                    ContentEncryptionAlgorithms.A256GCM, KeyEncryptionAlgorithms.ECDH_ES);
+             
         for (int i = 0; i < 2; i++) {
             for (ContentEncryptionAlgorithms alg : ContentEncryptionAlgorithms.values()) {
                 for (int keySize : new int[] {128, 256, 384, 512})
@@ -182,17 +193,14 @@ public class CborEncryption {
     static void asymKeyAllVariations(String key,
                                      ContentEncryptionAlgorithms cea,
                                      KeyEncryptionAlgorithms kea) throws Exception {
-        asymEncCore(key, false, false, cea, kea);
-        asymEncCore(key, false, true,  cea, kea);
-        asymEncCore(key, true,  false, cea, kea);
+        asymEncCore(key, false, false, 0, false, cea, kea);
+        asymEncCore(key, false, true,  0, false, cea, kea);
+        asymEncCore(key, true,  false, 0, false, cea, kea);
     }
 
-    static String prefix(String keyType) {
-        return keyType + '#';
-    }
-    
     static String cleanEncryption(byte[] cefData) throws IOException {
-        CBORMap decoded = CBORObject.decode(cefData).getMap();
+        CBORObject cborObject = CBORObject.decode(cefData);
+        CBORMap decoded = CBORCryptoUtils.getContainerMap(cborObject);
         decoded.removeObject(CBORCryptoConstants.IV_LABEL);
         decoded.removeObject(CBORCryptoConstants.TAG_LABEL);
         decoded.removeObject(CBORCryptoConstants.CIPHER_TEXT_LABEL);
@@ -206,7 +214,7 @@ public class CborEncryption {
                 keyEncryption.removeObject(CBORCryptoConstants.EPHEMERAL_KEY_LABEL);
             }
         }
-        return decoded.toString();
+        return cborObject.toString();
     }
     
     static void optionalUpdate(CBORDecrypter decrypter,
@@ -275,9 +283,9 @@ public class CborEncryption {
         });
         compareResults(decrypter, encryptedData);
         optionalUpdate(decrypter, 
-                       baseEncryption + prefix("a" + keyBits) + 
+                       baseEncryption + "a" + keyBits + "#" + 
                        algorithm.getJoseAlgorithmId().toLowerCase() + '@' + 
-                       keyIndicator(wantKeyId, false), encryptedData);
+                       keyIndicator(wantKeyId, false, 0, false), encryptedData);
     }
 
     
@@ -290,13 +298,19 @@ public class CborEncryption {
     }
     
     
-    static String keyIndicator(boolean wantKeyId, boolean wantPublicKey) {
-        return (wantKeyId ? (wantPublicKey ? "pub+kid" : "kid") : wantPublicKey ? "pub" : "imp") + ".cbor";
+    static String keyIndicator(boolean wantKeyId, 
+                               boolean wantPublicKey,
+                               int tagged,
+                               boolean customData) {
+        return  (tagged == 1 ? "tag1Dim." : tagged == 2 ? "tag2Dim." : "") + (customData ? "customData." : "") +
+                (wantKeyId ? "kid" : wantPublicKey ? "pub" : "imp") + ".cbor";
     }
     
     static void asymEncCore(String keyType, 
                             boolean wantKeyId,
                             boolean wantPublicKey,
+                            int tagged,
+                            boolean customData,
                             ContentEncryptionAlgorithms contentEncryptionAlgorithm,
                             KeyEncryptionAlgorithms keyEncryptionAlgorithm) throws Exception {
         KeyPair keyPair = readJwk(keyType);
@@ -307,6 +321,33 @@ public class CborEncryption {
         }
         if (wantPublicKey) {
             encrypter.setPublicKeyOption(true);
+        }
+        if (tagged != 0) {
+            encrypter.setIntercepter(new CBOREncrypter.Intercepter() {
+                
+                @Override
+                public CBORObject wrap(CBORMap encryptionObject) 
+                        throws IOException, GeneralSecurityException {
+                    
+                    // 1-dimensional or 2-dimensional tag
+                    return new CBORTag(211, tagged == 1 ? 
+                            encryptionObject : new CBORArray()
+                                .addObject(new CBORTextString("https://example.com/myobject"))
+                                .addObject(encryptionObject));
+                    
+                }
+                
+            });
+        }
+        if (customData) {
+            encrypter.setIntercepter(new CBOREncrypter.Intercepter() {
+                
+                @Override
+                public CBORObject getCustomData() throws IOException, GeneralSecurityException {
+                    return new CBORTextString("Any valid CBOR object");
+                }
+
+            });
         }
         byte[] encryptedData = encrypter.encrypt(dataToBeEncrypted).encode();
         CBORAsymKeyDecrypter decrypter = new CBORAsymKeyDecrypter(keyPair.getPrivate());
@@ -336,7 +377,7 @@ public class CborEncryption {
         optionalUpdate(decrypter, 
                        baseEncryption + keyType + "#" + keyEncryptionAlgorithm.getJoseAlgorithmId().toLowerCase() + 
                                "@" + contentEncryptionAlgorithm.getJoseAlgorithmId().toLowerCase() + '@' +
-                       keyIndicator(wantKeyId, wantPublicKey), encryptedData);
+                       keyIndicator(wantKeyId, wantPublicKey, tagged, customData), encryptedData);
     }
     
     static void demoDocEncryption(String fileName) throws IOException {
