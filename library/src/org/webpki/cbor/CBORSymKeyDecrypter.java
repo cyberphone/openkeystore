@@ -34,7 +34,7 @@ import org.webpki.crypto.ContentEncryptionAlgorithms;
 public class CBORSymKeyDecrypter extends CBORDecrypter {
     
     /**
-     * For dynamic key retrieval.
+     * Interface for dynamic key retrieval.
      */
     public interface KeyLocator {
 

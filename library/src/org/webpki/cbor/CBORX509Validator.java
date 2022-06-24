@@ -38,7 +38,7 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
 public class CBORX509Validator extends CBORValidator {
     
     /**
-     * For checking signature parameters.
+     * Interface for checking signature parameters.
      */
     public interface Parameters {
 

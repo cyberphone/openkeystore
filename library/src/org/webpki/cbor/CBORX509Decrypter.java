@@ -40,7 +40,7 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
 public class CBORX509Decrypter extends CBORDecrypter {
     
     /**
-     * For dynamic key retrieval.
+     * Interface for dynamic key retrieval.
      */
     public interface KeyLocator {
 

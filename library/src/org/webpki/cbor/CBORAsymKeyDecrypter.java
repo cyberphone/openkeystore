@@ -39,7 +39,7 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
 public class CBORAsymKeyDecrypter extends CBORDecrypter {
     
     /**
-     * For dynamic key retrieval.
+     * Interface for dynamic key retrieval.
      */
     public interface KeyLocator {
 

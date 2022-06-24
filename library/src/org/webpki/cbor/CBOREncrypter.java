@@ -34,7 +34,11 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
 public abstract class CBOREncrypter {
 
     /**
-     * For customizing encryption map objects.
+     * Interface for customizing encryption map objects.
+     * <p>
+     * Implementations of this interface must be set by calling
+     * {@link CBOREncrypter#setIntercepter(Intercepter)}.
+     * </p>
      */
     public interface Intercepter {
 

@@ -40,7 +40,11 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
 public abstract class CBORSigner {
  
     /**
-     * For customizing signature map objects.
+     * Interface for customizing signature map objects.
+     * <p>
+     * Implementations of this interface must be set by calling
+     * {@link CBORSigner#setIntercepter(Intercepter)}.
+     * </p>
      */
     public interface Intercepter {
 
