@@ -128,6 +128,8 @@ public class CborEncryption {
                 ContentEncryptionAlgorithms.A256GCM, KeyEncryptionAlgorithms.ECDH_ES_A256KW);
         asymEncCore("x25519", false, true, 0, true, 
                     ContentEncryptionAlgorithms.A256GCM, KeyEncryptionAlgorithms.ECDH_ES);
+        asymEncCore("x25519", false, true, 1, true, 
+                ContentEncryptionAlgorithms.A256GCM, KeyEncryptionAlgorithms.ECDH_ES);
              
         for (int i = 0; i < 2; i++) {
             for (ContentEncryptionAlgorithms alg : ContentEncryptionAlgorithms.values()) {
@@ -337,9 +339,13 @@ public class CborEncryption {
                     
                 }
                 
+                @Override
+                public CBORObject getCustomData() throws IOException, GeneralSecurityException {
+                    return customData ? new CBORTextString("Any valid CBOR object") : null;
+                }
+
             });
-        }
-        if (customData) {
+        } else if (customData) {
             encrypter.setIntercepter(new CBOREncrypter.Intercepter() {
                 
                 @Override
