@@ -81,8 +81,8 @@ public class HTML {
             "style='cursor:pointer;height:25pt;padding-bottom:10pt;margin-right:30pt'" +
             " onclick=\"document.location.href='home'\" title='Home of the lab...'/></div>" +
             "<div style='display:flex;padding-bottom:10pt'>" +
-            "<a href='https://cyberphone.github.io/javaapi/org/webpki/cbor/package-summary." +
-            "html#csf' target='_blank'><img src='csf.svg' " +
+            "<a href='https://cyberphone.github.io/javaapi/org/webpki/cbor/doc-files/signatures." +
+            "html' target='_blank'><img src='csf.svg' " +
             "style='height:22pt' " +
             "title='CSF Specification'/></a>" +
             "</div>" +
