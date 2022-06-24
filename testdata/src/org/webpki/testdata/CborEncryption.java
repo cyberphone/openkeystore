@@ -158,9 +158,7 @@ public class CborEncryption {
         CBORX509Encrypter encrypter = 
                 new CBORX509Encrypter(certificatePath, keyEncryptionAlgorithm, contentEncryptionAlgorithm);
         byte[] encryptedData = encrypter.encrypt(dataToBeEncrypted).encode();
-        CBORX509Decrypter decrypter = new CBORX509Decrypter(keyPair.getPrivate());
-        compareResults(decrypter, encryptedData);
-        decrypter = new CBORX509Decrypter(new CBORX509Decrypter.KeyLocator() {
+        CBORX509Decrypter decrypter = new CBORX509Decrypter(new CBORX509Decrypter.KeyLocator() {
 
             @Override
             public PrivateKey locate(X509Certificate[] cp,

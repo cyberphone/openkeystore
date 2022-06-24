@@ -58,26 +58,7 @@ public class CBORX509Decrypter extends CBORDecrypter {
     
     KeyLocator keyLocator;
     
-    /**
-     * Initializes a decrypter with a private key.
-     * 
-     * @param privateKey Decryption key
-     */
-    public CBORX509Decrypter(PrivateKey privateKey) {
-        this(new KeyLocator() {
-
-            @Override
-            public PrivateKey locate(X509Certificate[] certificatePath, 
-                                     KeyEncryptionAlgorithms keyEncryptionAlgorithm,
-                                     ContentEncryptionAlgorithms contentEncryptionAlgorithm)
-                   throws IOException, GeneralSecurityException {
-                return privateKey;
-            }
-            
-        });
-    }
-
-    /**
+   /**
      * Initializes a decrypter with a key locator.
      * 
      * @param keyLocator The call back

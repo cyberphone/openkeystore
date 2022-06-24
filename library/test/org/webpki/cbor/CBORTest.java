@@ -1357,20 +1357,18 @@ public class CBORTest {
                                                              KeyEncryptionAlgorithms.ECDH_ES_A128KW,
                                                              ContentEncryptionAlgorithms.A256GCM)
                 .encrypt(dataToEncrypt);
-        assertTrue("enc/dec", 
-                ArrayUtil.compare(new CBORX509Decrypter(
-                                  p256.getPrivate()).decrypt(p256CertEncrypted),
-                                  dataToEncrypt));
  
         assertTrue("enc/dec", 
                 ArrayUtil.compare(new CBORX509Decrypter(new CBORX509Decrypter.KeyLocator() {
 
                     @Override
                     public PrivateKey locate(X509Certificate[] certificatePath,
-                            KeyEncryptionAlgorithms keyEncryptionAlgorithm,
-                            ContentEncryptionAlgorithms contentEncryptionAlgorithm)
+                                             KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+                                             ContentEncryptionAlgorithms contentEncryptionAlgorithm)
                             throws IOException, GeneralSecurityException {
-                        assertTrue("pub", certificatePath[0].getPublicKey().equals(p256.getPublic()));
+                        assertTrue("cert", 
+                                CBORCryptoUtils.encodeCertificateArray(certificatePath)
+                                  .equals(CBORCryptoUtils.encodeCertificateArray(p256CertPath)));
                         assertTrue("kea", keyEncryptionAlgorithm == 
                                           KeyEncryptionAlgorithms.ECDH_ES_A128KW);
                         assertTrue("cea", contentEncryptionAlgorithm == 
