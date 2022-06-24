@@ -25,10 +25,12 @@ import org.webpki.crypto.SignatureAlgorithms;
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
 /**
- * Base class for creating CBOR signatures.
+ * Base class for signing data.
  * <p>
- * This implementation supports signatures using CSF (CBOR Signature Format) packaging,
- * while algorithms are derived from COSE.
+ * This implementation supports signatures using 
+ * <a title='CSF' target='_blank'
+ * href='https://cyberphone.github.io/javaapi/org/webpki/cbor/doc-files/signatures.html'>CSF</a>
+ * (CBOR Signature Format) packaging, while algorithms are derived from COSE.
  * </p>
  * <p>
  * Note that signer objects may be used any number of times

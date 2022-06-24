@@ -1,6 +1,7 @@
 <body>
 <h2>Encryption Support</h3>
-The CBOR library contains support for encrypting and decrypting
+The CBOR library contains support for {@link CBOREncrypter encrypting} 
+and {@link CBORDecrypter decrypting}
 arbitrary binary data using a specific scheme called
 &quot;CBOR Encryption Format&quot; (CEF).
 In similarity to <a href='signatures.html'>CSF</a>, CEF also depends on <i>deterministic serialization</i>
@@ -10,7 +11,7 @@ algorithms like GCM.
 The following is a CEF object (here expressed in CBOR diagnostic notation), using the algorithms
 <code>A256GCM</code> and <code>ECDH-ES+A256KW</code> for content- respectively key-wrapping:
 </p>
-<div style='word-break:break-all'><code>
+<div class='webpkibox'><code>
 {<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Content encryption algorithm = A256GCM /</span><br>
 &nbsp;&nbsp;1: 3,<br>
@@ -43,22 +44,24 @@ The following is a CEF object (here expressed in CBOR diagnostic notation), usin
 <p>
 The same object expressed as hex-encoded CBOR:
 </p>
-<div style='word-break:break-all'><code>
+<div class='webpkibox'><code>
 a5010302a401381e03726578616d706c652e636f6d3a78323535313907a301012004215820c219e35a9c09bfcf1bd6c6dcd1e05ecb36cb6f465d9caeb101795e33fd7db1120a5828842916c5c81f8a815ec5ef2a472981b7300bc33fe748928c26e8c4dfff7a4747ecff9caea7040585085084ad6926aa92d0de56e4674abf863390094cc7cc6f77b9f984c15bc3cbeb0a56625c2b2a41907547b2210624e1e818991c00790aed16
 </code></div>
 <p>
 Decryption of this object using the private key (here in JWK format)
 </p>
-<pre>
-{
-  "kid": "example.com:x25519",
-  "kty": "OKP",
-  "crv": "X25519",
-  "x": "6ZoM7yBYlJYNmxwFl4UT3MtCoTv7ztUjpRuKEXrV8Aw",
-  "d": "cxfl86EVmcqrR07mWENCf1F_5Ni5mt1ViGyERB6Q1vA"
+<div class='webpkibox'><code>
+{<br>
+&nbsp;&nbsp;&quot;kid&quot;:&nbsp;&quot;example.com:x25519&quot;,<br>
+&nbsp;&nbsp;&quot;kty&quot;:&nbsp;&quot;OKP&quot;,<br>
+&nbsp;&nbsp;&quot;crv&quot;:&nbsp;&quot;X25519&quot;,<br>
+&nbsp;&nbsp;&quot;x&quot;:&nbsp;&quot;6ZoM7yBYlJYNmxwFl4UT3MtCoTv7ztUjpRuKEXrV8Aw&quot;,<br>
+&nbsp;&nbsp;&quot;d&quot;:&nbsp;&quot;cxfl86EVmcqrR07mWENCf1F_5Ni5mt1ViGyERB6Q1vA&quot;<br>
 }
-</pre>
+</code></div>
+<p>
 should return the UTF-8 encoded string <code>&quot;Hello encrypted world!&quot;</code>.
+</p>
 <p>
 The CEF decryption process is as follows:
 </p>
@@ -85,8 +88,8 @@ keys must be known by recipients.
 <p id='cef-layout'>
 The following figure shows the layout of CEF objects:
 </p>
-<div class='webpkicef'>
-<img src='cbor-crypto.svg' style='height:20em'/>
+<div class='webpkisvg'>
+<img src='cbor-crypto.svg' style='height:20em;padding:0.2em 0.6em'/>
 </div>
 <p>
 The numbers in paranthesis denote the actual label (map key) value.

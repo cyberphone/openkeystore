@@ -26,9 +26,15 @@ import org.webpki.crypto.EncryptionCore;
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
 /**
- * Base class for creating CBOR decryption objects.
- * 
- * It uses COSE algorithms but relies on CEF for the packaging.
+ * Base class for decrypting data.
+ * <p>
+ * See {@link CBOREncrypter} for details.
+ * </p>
+  * <p>
+ * Note that decrypter objects may be used any number of times
+ * (assuming that the same parameters are valid).  They are also
+ * thread-safe.
+ * </p>
  */
 public abstract class CBORDecrypter {
 

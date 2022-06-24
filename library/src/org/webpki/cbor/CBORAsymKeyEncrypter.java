@@ -27,9 +27,7 @@ import org.webpki.crypto.KeyEncryptionAlgorithms;
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
 /**
- * Class for creating CBOR asymmetric key encryptions.
- * 
-
+ * Class for asymmetric key encryption.
  */
 public class CBORAsymKeyEncrypter extends CBOREncrypter {
 

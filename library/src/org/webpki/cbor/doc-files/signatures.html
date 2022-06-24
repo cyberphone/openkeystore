@@ -1,6 +1,7 @@
 <body>
 <h2>Signature Support</h3>
-The CBOR library contains support for creating and validating
+The CBOR library contains support for {@link CBORSigner creating} 
+and {@link CBORValidator validating}
 signatures using a specific scheme called
 &quot;CBOR Signature Format&quot; (CSF). 
 <p>
@@ -8,7 +9,7 @@ Note that unlike COSE (RFC 8152), CSF
 leverages <i>deterministic serialization</i>,
 enabling constructs like the following:
 </p>
-<div style='word-break:break-all'><code>
+<div class='webpkibox'><code>
 {<br>
 &nbsp;&nbsp;1: {<br>
 &nbsp;&nbsp;&nbsp;&nbsp;1: "Space Shop",<br>
@@ -48,7 +49,7 @@ enabling constructs like the following:
 The same object expressed as hex-encoded CBOR:
 </p>
 <p>
-<div style='word-break:break-all'><code>
+<div class='webpkibox'><code>
 a801a3016a53706163652053686f7002663433352e30300363555344026d737061636573686f702e636f6d03781b465237363330303032313131313130303230303530303134333832047668747470733a2f2f62616e6b6469726563742e6f726705683035373638343031067819323032322d30312d31345430393a33343a30382d30353a303007a201fb404371b089a0275202fb405341460aa64c3008a3012604a401022001215820e812b1a6dcbc708f9ec43cc2921fa0a14e9d5eadcc6dc63471dd4b680c6236b52258209826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d806584008f9696fcbdb924d2e676351c7f24fc3b0417e9ec151e6b140d02efa09a7247688db8ccf209944efce1ebd5c36563eec2a8e2e92dfcd8abf1d01c5052f14c220
 </code></div>
 </p>
@@ -97,17 +98,17 @@ its associated argument as the sole exception. Note that the length
 of the signature object <code>map</code> <b>must</b>
 be updated (to reflect the removal of an element) during validation.</p>
 <p>
-The sample was signed using the following private key (here in JWK format)
+The sample was signed using the following private key (here in JWK format):
 </p>
-<pre>
-{
-  "kty": "EC",
-  "crv": "P-256",
-  "x": "6BKxpty8cI-exDzCkh-goU6dXq3MbcY0cd1LaAxiNrU",
-  "y": "mCbcvUzm44j3Lt2b5BPyQloQ91tf2D2V-gzeUxWaUdg",
-  "d": "6XxMFXhcYT5QN9w5TIg2aSKsbcj-pj4BnZkK7ZOt4B8"
+<div class='webpkibox'><code>
+{<br>
+&nbsp;&nbsp;&quot;kty&quot;:&nbsp;&quot;EC&quot;,<br>
+&nbsp;&nbsp;&quot;crv&quot;:&nbsp;&quot;P-256&quot;,<br>
+&nbsp;&nbsp;&quot;x&quot;:&nbsp;&quot;6BKxpty8cI-exDzCkh-goU6dXq3MbcY0cd1LaAxiNrU&quot;,<br>
+&nbsp;&nbsp;&quot;y&quot;:&nbsp;&quot;mCbcvUzm44j3Lt2b5BPyQloQ91tf2D2V-gzeUxWaUdg&quot;,<br>
+&nbsp;&nbsp;&quot;d&quot;:&nbsp;&quot;6XxMFXhcYT5QN9w5TIg2aSKsbcj-pj4BnZkK7ZOt4B8&quot;<br>
 }
-</pre>
+</code></div>
 <h3 style='padding:1em 0 0 0'>Tagged Signature Data</h3>
 CSF permits signing <code>map</code> objects that are enclosed by a CBOR tag.
 Such tags are included in the data to be signed.

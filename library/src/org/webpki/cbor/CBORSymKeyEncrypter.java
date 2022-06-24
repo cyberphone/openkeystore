@@ -23,13 +23,7 @@ import java.security.GeneralSecurityException;
 import org.webpki.crypto.ContentEncryptionAlgorithms;
 
 /**
- * Class for creating CBOR symmetric key encryptions.
- * 
- * It uses COSE algorithms but relies on CEF for the packaging.
- * 
- * Note that encrypters may be used any number of times
- * (assuming that the same parameters are valid).  They are also
- * thread-safe.
+ * Class for symmetric key encryption.
  */
 public class CBORSymKeyEncrypter extends CBOREncrypter {
 

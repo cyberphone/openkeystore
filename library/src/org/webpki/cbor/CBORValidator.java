@@ -23,17 +23,15 @@ import java.security.GeneralSecurityException;
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
 /**
- * Base class for validating CBOR signatures.
+ * Base class for validating signatures.
  * <p>
- * This implementation supports signatures using CSF (CBOR Signature Format) packaging,
- * while algorithms are derived from COSE.
+ * See {@link CBORSigner} for details.
  * </p>
  * <p>
  * Note that validator objects may be used any number of times
  * (assuming that the same parameters are valid).  They are also
  * thread-safe.
  * </p>
- * @see CBORSigner
  */
 public abstract class CBORValidator {
     

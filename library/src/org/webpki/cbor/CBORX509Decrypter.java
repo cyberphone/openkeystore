@@ -29,13 +29,7 @@ import org.webpki.crypto.KeyEncryptionAlgorithms;
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
 /**
- * Class for CBOR X509 decryption.
- * 
- * It uses COSE algorithms but relies on CEF for the packaging.
- * 
- * Note that decrypter objects may be used any number of times
- * (assuming that the same parameters are valid).  They are also
- * thread-safe. 
+ * Class for X509 decryption.
  */
 public class CBORX509Decrypter extends CBORDecrypter {
     

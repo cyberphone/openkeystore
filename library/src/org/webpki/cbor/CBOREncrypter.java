@@ -26,10 +26,19 @@ import org.webpki.crypto.EncryptionCore;
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
 /**
- * Base class for creating CBOR encryption objects.
- * 
- * This implementation supports signatures using CEF (CBOR Encryption Format) packaging,
- * while algorithms are derived from COSE.
+ * Base class for encrypting data.
+ * <p>
+ * This implementation supports encryptions using 
+ * <a title='CEF' target='_blank'
+ * href='https://cyberphone.github.io/javaapi/org/webpki/cbor/doc-files/encryption.html'>CEF</a>
+ * (CBOR Encryption Format) packaging, while algorithms are derived from COSE.
+ * </p>
+ * <p>
+ * Note that encrypter objects may be used any number of times
+ * (assuming that the same parameters are valid).  They are also
+ * thread-safe.
+ * </p>
+ * @see CBORDecrypter
  */
 public abstract class CBOREncrypter {
 

@@ -28,9 +28,7 @@ import org.webpki.crypto.KeyEncryptionAlgorithms;
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
 /**
- * Class for creating CBOR X509 encryptions.
- * 
-
+ * Class for X509 encryption.
  */
 public class CBORX509Encrypter extends CBOREncrypter {
 
