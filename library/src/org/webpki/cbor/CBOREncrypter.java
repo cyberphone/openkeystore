@@ -155,6 +155,10 @@ public abstract class CBOREncrypter {
 
     /**
      * Encrypts data.
+     * <p>
+     * Note that a {@link CBORTag} may embed the encryption object.
+     * See {@link CBORCryptoUtils#unwrapContainerMap(CBORObject)} for details.
+     * </p>
      * 
      * @param dataToEncrypt The data to encrypt
      * @return CBOR encryption object
