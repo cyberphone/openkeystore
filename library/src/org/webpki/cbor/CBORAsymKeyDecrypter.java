@@ -61,7 +61,9 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
     
     /**
      * Initializes a decrypter with a private key.
-     * 
+     * <p>
+     * This constructor presumes that the decryption key is given by the context.
+     * </p>
      * @param privateKey Decryption key
      */
     public CBORAsymKeyDecrypter(PrivateKey privateKey) {

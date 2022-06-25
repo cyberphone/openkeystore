@@ -39,7 +39,7 @@ public class CBORAsymKeyValidator extends CBORValidator {
     public interface KeyLocator {
 
         /**
-         * Checks signature data and retrieves validation key.
+         * Retrieves validation key and checks validation meta data.
          * <p>
          * An implementation is supposed to throw an exception if it
          * does not find a matching key or if the supplied algorithm does
@@ -63,7 +63,11 @@ public class CBORAsymKeyValidator extends CBORValidator {
 
     /**
      * Initializes a validator with a public key.
-     * 
+     * <p>
+     * This constructor presumes that the validation key is given by the context
+     * and that the supplied algorithm meets the policy.
+     * </p>
+     * @see CBORAsymKeyValidator(KeyLocator)
      * @param publicKey The anticipated public key
      */
     public CBORAsymKeyValidator(PublicKey publicKey) {
@@ -82,9 +86,10 @@ public class CBORAsymKeyValidator extends CBORValidator {
 
     /**
      * Initializes a validator with a key locator.
-     * 
-     * This option provides full control for the verifier
+     * <p>
+     * This constructor provides full control for the verifier
      * regarding in-lined public keys and key identifiers.
+     * </p>
      * <p>
      * If no public key is found in the signature object, 
      * the {@link KeyLocator} will be called BEFORE signature validation

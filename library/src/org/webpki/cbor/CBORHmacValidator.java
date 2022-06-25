@@ -38,7 +38,7 @@ public class CBORHmacValidator extends CBORValidator {
     public interface KeyLocator {
 
         /**
-         * Check signature data and retrieve validation key.
+         * Retrieves validation key and check signature meta data.
          * <p>
          * An implementation is supposed to throw an exception if it
          * does not find a matching key or if the supplied algorithm does
@@ -59,10 +59,10 @@ public class CBORHmacValidator extends CBORValidator {
 
     /**
      * Initializes a validator with a secret key.
-     * 
-     * Using this option the algorithm provided by the
-     * producer is supposed to be correct.  The alternative
-     * constructor gives the validator full control.
+     * <p>
+     * This constructor presumes that the validation key is given by the context
+     * and that the supplied algorithm meets the policy.
+     * </p>
      * 
      * @param secretKey Validation key
      */
@@ -79,9 +79,10 @@ public class CBORHmacValidator extends CBORValidator {
 
     /**
      * Initializes a validator with a key locator.
-     * 
-     * This option provides full control for the verifier
+     * <p>
+     * This constructor provides full control for the verifier
      * regarding key identifiers and HMAC algorithms.
+     * </p>
      *
      * @param keyLocator The call back
      */

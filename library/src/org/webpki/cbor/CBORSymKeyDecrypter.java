@@ -56,6 +56,9 @@ public class CBORSymKeyDecrypter extends CBORDecrypter {
     
     /**
      * Initializes a decrypter with a secret key.
+     * <p>
+     * This constructor presumes that the decryption key is given by the context.
+     * </p>
      * 
      * @param secretKey Decryption key
      */
