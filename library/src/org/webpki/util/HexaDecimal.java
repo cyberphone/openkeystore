@@ -19,6 +19,9 @@ package org.webpki.util;
 
 import java.io.IOException;
 
+/**
+ * Encodes/decodes hexadecimal data.
+ */
 public class HexaDecimal {
 
     private HexaDecimal() {}

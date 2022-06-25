@@ -33,7 +33,7 @@ import org.webpki.util.ArrayUtil;
 public class CBORHmacValidator extends CBORValidator {
     
     /**
-     * For dynamic key retrieval.
+     * Interface for dynamic key retrieval.
      */
     public interface KeyLocator {
 

@@ -377,10 +377,12 @@ public abstract class CBORObject {
 
     /**
      * Checks for unread CBOR data.
-     * 
-     * Checks if all data from the current object including
+     * <p>
+     * Verifies that all data from the current object including
      * possible child objects have been read
+     * (through calling {@link #getByteString()} etc.),
      * and throws an exception if this is not the case.
+     * </p>
      * 
      * @see #scan()
      * 

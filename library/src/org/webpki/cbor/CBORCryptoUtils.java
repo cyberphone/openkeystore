@@ -122,7 +122,8 @@ public class CBORCryptoUtils {
      *     }])</pre><p>
      * Both wrapping methods are intrinsically
      * supported by {@link CBORValidator} and
-     * {@link CBORDecrypter}.
+     * {@link CBORDecrypter}
+     * for signatures and encryptions respectively.
      * </p>
      * <p>
      * To enable the <i>creation</i> of wrapped data you must implement

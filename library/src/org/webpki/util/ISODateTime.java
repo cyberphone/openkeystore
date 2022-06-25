@@ -29,12 +29,15 @@ import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 /**
- * Useful functions for ISO time.
+ * Encodes/decodes ISO time data.
  */
 public class ISODateTime {
 
     private ISODateTime() {}  // No instantiation please
     
+    /**
+     * Enumeration of ISO time features.
+     */
     public static enum DatePatterns {UTC,
                                      LOCAL,
                                      MILLISECONDS,
