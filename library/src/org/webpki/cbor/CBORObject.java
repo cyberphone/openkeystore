@@ -471,13 +471,13 @@ public abstract class CBORObject {
             return i;
         }
         
-        private byte[] readBytes(long length) throws IOException {
+        private byte[] readBytes(int length) throws IOException {
             ByteArrayOutputStream baos = new ByteArrayOutputStream(BUFFER_SIZE);
             byte[] buffer = new byte[BUFFER_SIZE];
             while (length != 0) {
                 int bytesRead = inputStream.read(buffer,
                                                  0, 
-                                                 length < BUFFER_SIZE ? (int)length : BUFFER_SIZE);
+                                                 length < BUFFER_SIZE ? length : BUFFER_SIZE);
                 if (bytesRead == -1) {
                     eofError();
                 }
@@ -496,11 +496,11 @@ public abstract class CBORObject {
             return value;
         }
 
-        private long checkLength(long length) throws IOException {
-            if (length < 0) {
-                reportError("Length < 0");
+        private int checkLength(long n) throws IOException {
+            if (n < 0 || n > Integer.MAX_VALUE) {
+                reportError("N out of range: " + n);
             }
-            return length;
+            return (int)n;
         }
 
         private CBORFloatingPoint checkDoubleConversion(int tag, long bitFormat, long rawDouble)
@@ -642,17 +642,15 @@ public abstract class CBORObject {
                     return new CBORTextString(new String(readBytes(checkLength(n)), "utf-8"));
     
                 case MT_ARRAY:
-                    n = checkLength(n);
                     CBORArray cborArray = new CBORArray();
-                    while (--n >= 0) {
+                    for (int q = checkLength(n); --q >= 0; ) {
                         cborArray.addObject(getObject());
                     }
                     return cborArray;
     
                 case MT_MAP:
-                    n = checkLength(n);
                     CBORMap cborMap = new CBORMap();
-                    while (--n >= 0) {
+                    for (int q = checkLength(n); --q >= 0; ) {
                         cborMap.setObject(getObject(), getObject());
                         cborMap.parsingMode = deterministicCheck;
                     }
