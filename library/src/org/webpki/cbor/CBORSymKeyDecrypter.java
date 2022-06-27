@@ -78,7 +78,7 @@ public class CBORSymKeyDecrypter extends CBORDecrypter {
     /**
      * Initializes a decrypter with a key locator.
      * 
-     * @param keyLocator The call back
+     * @param keyLocator KeyLocator implementation
      */
     public CBORSymKeyDecrypter(KeyLocator keyLocator) {
         this.keyLocator = keyLocator;

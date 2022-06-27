@@ -39,7 +39,7 @@ public class CBORAsymKeyValidator extends CBORValidator {
     public interface KeyLocator {
 
         /**
-         * Retrieves validation key and checks validation meta data.
+         * Retrieves validation key and verifies meta data.
          * <p>
          * An implementation is supposed to throw an exception if it
          * does not find a matching key or if the supplied algorithm does
@@ -107,7 +107,7 @@ public class CBORAsymKeyValidator extends CBORValidator {
      * simplify database design. 
      * </p>
      * 
-     * @param keyLocator The call back
+     * @param keyLocator KeyLocator implementation
      */
     public CBORAsymKeyValidator(KeyLocator keyLocator) {
         this.keyLocator = keyLocator;

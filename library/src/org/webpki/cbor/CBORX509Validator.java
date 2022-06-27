@@ -38,12 +38,12 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
 public class CBORX509Validator extends CBORValidator {
     
     /**
-     * Interface for checking signature parameters.
+     * Interface for verifying signature meta data.
      */
     public interface Parameters {
 
         /**
-         * Checks signature meta data.
+         * Verifies signature meta data.
          * <p>
          * A relying party is supposed to verify that the
          * certificate(path) is trusted and that the supplied
@@ -56,16 +56,16 @@ public class CBORX509Validator extends CBORValidator {
          * @throws IOException
          * @throws GeneralSecurityException
          */
-        void check(X509Certificate[] certificatePath, AsymSignatureAlgorithms algorithm)
+        void verify(X509Certificate[] certificatePath, AsymSignatureAlgorithms algorithm)
             throws IOException, GeneralSecurityException;
     }
     
     Parameters parameters;
 
     /**
-     * Initializes X509 validator with a parameter checker.
+     * Initializes X509 validator with a parameter verifier.
      * 
-     * @param parameters The checker interface
+     * @param parameters Parameters implementation
      */
     public CBORX509Validator(Parameters parameters) {
         this.parameters = parameters;
@@ -96,6 +96,6 @@ public class CBORX509Validator extends CBORValidator {
                                                    signatureValue);
 
         // Finally, check certificate(path) and signature algorithm.
-        parameters.check(certificatePath, algorithm);
+        parameters.verify(certificatePath, algorithm);
     }
 }

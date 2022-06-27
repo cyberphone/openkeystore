@@ -38,7 +38,7 @@ public class CBORHmacValidator extends CBORValidator {
     public interface KeyLocator {
 
         /**
-         * Retrieves validation key and check signature meta data.
+         * Retrieves validation key and verifies signature meta data.
          * <p>
          * An implementation is supposed to throw an exception if it
          * does not find a matching key or if the supplied algorithm does
@@ -84,7 +84,7 @@ public class CBORHmacValidator extends CBORValidator {
      * regarding key identifiers and HMAC algorithms.
      * </p>
      *
-     * @param keyLocator The call back
+     * @param keyLocator KeyLocator implementation
      */
     public CBORHmacValidator(KeyLocator keyLocator) {
         this.keyLocator = keyLocator;

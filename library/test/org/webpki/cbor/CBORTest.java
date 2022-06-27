@@ -1009,7 +1009,7 @@ public class CBORTest {
             new CBORX509Validator(new CBORX509Validator.Parameters() {
 
                 @Override
-                public void check(X509Certificate[] certificatePath,
+                public void verify(X509Certificate[] certificatePath,
                                   AsymSignatureAlgorithms signatureAlgorithm)
                         throws IOException, GeneralSecurityException {
                 }
@@ -1038,7 +1038,7 @@ public class CBORTest {
             }), new CBORX509Validator(new CBORX509Validator.Parameters() {
 
                 @Override
-                public void check(X509Certificate[] certificatePath,
+                public void verify(X509Certificate[] certificatePath,
                                   AsymSignatureAlgorithms signatureAlgorithm)
                         throws IOException, GeneralSecurityException {
                 }
@@ -1068,7 +1068,7 @@ public class CBORTest {
                 }), new CBORX509Validator(new CBORX509Validator.Parameters() {
     
                     @Override
-                    public void check(X509Certificate[] certificatePath,
+                    public void verify(X509Certificate[] certificatePath,
                                       AsymSignatureAlgorithms signatureAlgorithm)
                             throws IOException, GeneralSecurityException {
                     }
@@ -1083,7 +1083,7 @@ public class CBORTest {
                 new CBORX509Validator(new CBORX509Validator.Parameters() {
     
                     @Override
-                    public void check(X509Certificate[] certificatePath,
+                    public void verify(X509Certificate[] certificatePath,
                                       AsymSignatureAlgorithms signatureAlgorithm)
                             throws IOException, GeneralSecurityException {
                     }
@@ -1099,7 +1099,7 @@ public class CBORTest {
                 new CBORX509Validator(new CBORX509Validator.Parameters() {
 
                     @Override
-                    public void check(X509Certificate[] certificatePath,
+                    public void verify(X509Certificate[] certificatePath,
                                       AsymSignatureAlgorithms signatureAlgorithm)
                             throws IOException, GeneralSecurityException {
                     }

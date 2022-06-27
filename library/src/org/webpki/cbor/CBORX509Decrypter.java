@@ -61,7 +61,7 @@ public class CBORX509Decrypter extends CBORDecrypter {
    /**
      * Initializes a decrypter with a key locator.
      * 
-     * @param keyLocator The call back
+     * @param keyLocator KeyLocator implementation
      */
     public CBORX509Decrypter(KeyLocator keyLocator) {
         this.keyLocator = keyLocator;

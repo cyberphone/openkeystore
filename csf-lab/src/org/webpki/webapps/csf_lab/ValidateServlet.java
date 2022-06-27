@@ -87,8 +87,8 @@ public class ValidateServlet extends CoreRequestServlet {
                     new CBORX509Validator(new CBORX509Validator.Parameters() {
 
                     @Override
-                    public void check(X509Certificate[] certificatePath,
-                                      AsymSignatureAlgorithms asymSignatureAlgorithm)
+                    public void verify(X509Certificate[] certificatePath,
+                                       AsymSignatureAlgorithms asymSignatureAlgorithm)
                             throws IOException, GeneralSecurityException {
                         for (X509Certificate certificate : certificatePath) {
                             if (!certificatePath[0].getPublicKey().equals(externalPublicKey)) {

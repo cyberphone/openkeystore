@@ -283,8 +283,8 @@ public class CborSignatures {
             new CBORX509Validator.Parameters() {
 
                 @Override
-                public void check(X509Certificate[] certificatePath,
-                                  AsymSignatureAlgorithms asymSignatureAlgorithm)
+                public void verify(X509Certificate[] certificatePath,
+                                   AsymSignatureAlgorithms asymSignatureAlgorithm)
                         throws IOException, GeneralSecurityException {
                     saveAlgorithm.algorithm = asymSignatureAlgorithm;
                 }
@@ -297,8 +297,8 @@ public class CborSignatures {
         new CBORX509Validator(new CBORX509Validator.Parameters() {
 
             @Override
-            public void check(X509Certificate[] certificatePath,
-                              AsymSignatureAlgorithms asymSignatureAlgorithm)
+            public void verify(X509Certificate[] certificatePath,
+                               AsymSignatureAlgorithms asymSignatureAlgorithm)
                     throws IOException, GeneralSecurityException {
             }
             
