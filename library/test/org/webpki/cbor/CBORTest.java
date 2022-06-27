@@ -526,25 +526,51 @@ public class CBORTest {
     public void mapperTest() throws Exception {
         sortingTest(RFC8949_SORTING);
     }
+    
+    class StrangeReader extends InputStream {
+        
+        byte[] data;
+        int position;
+        
+        StrangeReader(byte[] data) {
+            this.data = data;
+        }
+
+        @Override
+        public int read() throws IOException {
+            assertTrue("pos", position <= data.length);
+            int value = position == data.length ? -1 : data[position] & 0xff;
+            position++;
+            return value;
+        }
+        
+        @Override
+        public int read(byte[] b, int off, int len) throws IOException {
+            int actual = 0;
+            while (--len >= 0 && actual < 5) {
+                int value = read();
+                if (value < 0) {
+                    return value;
+                }
+                b[off++] = (byte) value;
+                actual++;
+            }
+            return actual;
+        }
+    }
 
     @Test
     public void bufferTest() throws Exception {
-        // To not "accidently" allocate potentially GBs of memory the
-        // decoder uses a buffer scheme.
-        // The assumption is that the receiver has already checked
-        // that the CBOR code itself is within reason size-wise.
-        int length = CBORObject.CBORDecoder.BUFFER_SIZE - 2;
-        while (length < CBORObject.CBORDecoder.BUFFER_SIZE + 2) {
-            byte[] byteString = new byte[length];
-            for (int i = 0; i < length; i++) {
-                byteString[i] = (byte) i;
-            }
-            byte[] cborData = new CBORByteString(byteString).encode();
-            assertTrue("buf", 
-                ArrayUtil.compare(byteString,
-                                  ((CBORByteString)CBORObject.decode(cborData)).getByteString()));
-            length++;
-        }
+        byte[] cbor = HexaDecimal.decode(
+   "782c74686520717569636b2062726f776e20666f78206a756d7073206f76657220746865206c617a792062656172");
+        assertTrue("bt", 
+                ArrayUtil.compare(cbor,
+                          CBORObject.decode(new StrangeReader(cbor), false, false, null).encode()));
+
+        assertTrue("bt", 
+                ArrayUtil.compare(cbor,
+                          CBORObject.decode(new StrangeReader(cbor), 
+                                            false, false, cbor.length).encode()));
     }
  
     @Test
@@ -717,8 +743,7 @@ public class CBORTest {
             parseCborHex("83");
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, 
-                "Malformed CBOR, trying to read past EOF");
+            checkException(e, "Malformed CBOR, trying to read past EOF");
         }
         try {
             parseCborHex("a363666d74646e6f6e656761747453746d74a0686175746844617461590" +
@@ -726,8 +751,7 @@ public class CBORTest {
                          "337be5bd410000000000000000000000000000000000000202d4db1c");
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, 
-                "Malformed CBOR, trying to read past EOF");
+            checkException(e, "Reading past input limit");
         }
     }
 
@@ -1559,7 +1583,8 @@ public class CBORTest {
         String result = HexaDecimal.encode(
                 CBORObject.decode(new ByteArrayInputStream(HexaDecimal.decode(hexInput)),
                                              sequenceFlag,
-                                             nonDeterministic).encode()).toUpperCase();
+                                             nonDeterministic,
+                                             null).encode()).toUpperCase();
         assertTrue("Strange=" + result, hexExpectedResult.equals(result));
     }
 
@@ -1617,7 +1642,7 @@ public class CBORTest {
         InputStream inputStream = new ByteArrayInputStream(totalBytes);
         int position = 0;
         CBORObject cborObject;
-        while ((cborObject = CBORObject.decode(inputStream, true, false)) != null) {
+        while ((cborObject = CBORObject.decode(inputStream, true, false, null)) != null) {
             byte[] rawCbor = cborObject.encode();
             assertTrue("Seq", ArrayUtil.compare(rawCbor, 0, totalBytes, position, rawCbor.length));
             position += rawCbor.length;
@@ -1627,7 +1652,8 @@ public class CBORTest {
         assertTrue("SeqNull", 
                    CBORObject.decode(new ByteArrayInputStream(new byte[0]),
                                                 true, 
-                                                false) == null);
+                                                false,
+                                                null) == null);
     }
 
     @Test

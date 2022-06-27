@@ -17,7 +17,6 @@
 package org.webpki.cbor;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -433,30 +432,33 @@ public abstract class CBORObject {
 
     static class CBORDecoder {
 
-         // The purpose of using a buffer to protect against
-         // allocating huge amounts of memory due to malformed
-         // CBOR data. That is, even if you verified that the CBOR
-         // input data is < 100kbytes, individual objects could ask
-         // for megabytes.
-        static final int BUFFER_SIZE = 10000;
-
         private static final byte[] ZERO_BYTE = {0};
 
         private InputStream inputStream;
         private boolean deterministicCheck;
         private boolean sequenceFlag;
         private boolean atFirstByte = true;
+        private int maxLength;
+        private int byteCount;
          
         private CBORDecoder(InputStream inputStream,
                             boolean sequenceFlag,
-                            boolean acceptNonDeterministic) {
+                            boolean acceptNonDeterministic,
+                            int maxLength) {
             this.inputStream = inputStream;
             this.sequenceFlag = sequenceFlag;
             this.deterministicCheck = !acceptNonDeterministic;
+            this.maxLength = maxLength;
         }
         
         private void eofError() throws IOException {
             reportError("Malformed CBOR, trying to read past EOF");
+        }
+        
+        private void outOfLimitTest(int increment) throws IOException {
+            if ((byteCount += increment) > maxLength) {
+                reportError("Reading past input limit");
+            }
         }
         
         private int readByte() throws IOException {
@@ -467,24 +469,24 @@ public abstract class CBORObject {
                 }
                 eofError();
             }
+            outOfLimitTest(1);
             atFirstByte = false;
             return i;
         }
         
         private byte[] readBytes(int length) throws IOException {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream(BUFFER_SIZE);
-            byte[] buffer = new byte[BUFFER_SIZE];
+            outOfLimitTest(length);
+            byte[] result = new byte[length];
+            int position = 0;
             while (length != 0) {
-                int bytesRead = inputStream.read(buffer,
-                                                 0, 
-                                                 length < BUFFER_SIZE ? length : BUFFER_SIZE);
-                if (bytesRead == -1) {
+                int n = inputStream.read(result, position, length);
+                if (n == -1) {
                     eofError();
                 }
-                baos.write(buffer, 0, bytesRead);
-                length -= bytesRead;
+                length -= n;
+                position += n;
             }
-            return baos.toByteArray();
+            return result;
         }
 
         private long getLongFromBytes(int length) throws IOException {
@@ -670,15 +672,18 @@ public abstract class CBORObject {
      * @param inputStream Stream holding CBOR data
      * @param sequenceFlag Stop reading after parsing a valid CBOR object (no object returns <code>null</code>)
      * @param nonDeterministic Do not check data for deterministic representation
+     * @param maxLength Holds maximum size in bytes.  If <code>null</code> {@link Integer#MAX_VALUE} is assumed.
      * @return CBORObject
      * @throws IOException
      */
     public static CBORObject decode(InputStream inputStream,
                                     boolean sequenceFlag,
-                                    boolean nonDeterministic) throws IOException {
+                                    boolean nonDeterministic,
+                                    Integer maxLength) throws IOException {
         CBORDecoder cborDecoder = new CBORDecoder(inputStream, 
                                                   sequenceFlag, 
-                                                  nonDeterministic);
+                                                  nonDeterministic,
+                                                  maxLength == null ? Integer.MAX_VALUE : maxLength);
         CBORObject cborObject = cborDecoder.getObject();
         if (sequenceFlag) {
             if (cborDecoder.atFirstByte) {
@@ -693,26 +698,23 @@ public abstract class CBORObject {
     /**
      * Decodes CBOR data.
      * <p>
-     * This method is equivalent to {@code decode(InputStream, false, false)}.
+     * This method is identical to:
+     * <pre>  decode(new ByteArrayInputStream(encodedCborData),
+     *        false, 
+     *        false, 
+     *        encodedCborData.length);
+     *</pre>
      * </p>
-     * 
-     * @param inputStream Holds CBOR data
-     * @return CBORObject
-     * @throws IOException
-     */
-    public static CBORObject decode(InputStream inputStream) throws IOException {
-        return decode(inputStream, false, false);
-    }
-
-    /**
-     * Decodes CBOR data.
      * 
      * @param encodedCborData
      * @return CBORObject
      * @throws IOException
      */
     public static CBORObject decode(byte[] encodedCborData) throws IOException {
-        return decode(new ByteArrayInputStream(encodedCborData));
+        return decode(new ByteArrayInputStream(encodedCborData),
+                      false, 
+                      false, 
+                      encodedCborData.length);
     }
 
     class DiagnosticNotation {

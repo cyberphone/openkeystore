@@ -81,7 +81,8 @@ public class ConvertServlet extends CoreRequestServlet {
             CBORObject cborObject;
             while ((cborObject = CBORObject.decode(bais, 
                                                    sequenceFlag,
-                                                   !deterministicFlag)) != null) {
+                                                   !deterministicFlag,
+                                                   cborBytes.length)) != null) {
                 sequence.add(cborObject);
                 if (!sequenceFlag) {
                     break;
