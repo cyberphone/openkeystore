@@ -672,7 +672,7 @@ public abstract class CBORObject {
      * @param inputStream Stream holding CBOR data
      * @param sequenceFlag Stop reading after parsing a valid CBOR object (no object returns <code>null</code>)
      * @param nonDeterministic Do not check data for deterministic representation
-     * @param maxLength Holds maximum size in bytes.  If <code>null</code> {@link Integer#MAX_VALUE} is assumed.
+     * @param maxLength Holds maximum input size in bytes(if <code>null</code> => {@link Integer#MAX_VALUE} is assumed)
      * @return CBORObject
      * @throws IOException
      */
