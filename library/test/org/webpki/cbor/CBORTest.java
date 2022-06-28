@@ -571,6 +571,27 @@ public class CBORTest {
                 ArrayUtil.compare(cbor,
                           CBORObject.decode(new StrangeReader(cbor), 
                                             false, false, cbor.length).encode()));
+        try {
+            CBORObject.decode(new ByteArrayInputStream(HexaDecimal.decode("7BFFFFFFFFFFFFFFFF00")), 
+                              false, false, null);
+            fail("Not valid");
+        } catch (Exception e) {
+            checkException(e, "N out of range: -1");
+        }
+        try {
+            CBORObject.decode(new ByteArrayInputStream(HexaDecimal.decode("7AFFFFFFFF00")), 
+                              false, false, null);
+            fail("Not valid");
+        } catch (Exception e) {
+            checkException(e, "N out of range: 4294967295");
+        }
+        try {
+            CBORObject.decode(new ByteArrayInputStream(HexaDecimal.decode("797FFF00")), 
+                              false, false, 100);
+            fail("Not valid");
+        } catch (Exception e) {
+            checkException(e, "Reading past input limit");
+        }
     }
  
     @Test
