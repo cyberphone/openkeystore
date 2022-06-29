@@ -592,6 +592,13 @@ public class CBORTest {
         } catch (Exception e) {
             checkException(e, "Reading past input limit");
         }
+        try {
+            CBORObject.decode(new ByteArrayInputStream(HexaDecimal.decode("7A7FFFFFFF00")), 
+                              false, false, null);
+            fail("Not valid");
+        } catch (Exception e) {
+            checkException(e, "Reading past input limit");
+        }
     }
  
     @Test

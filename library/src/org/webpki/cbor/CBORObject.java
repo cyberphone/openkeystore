@@ -444,11 +444,14 @@ public abstract class CBORObject {
         private CBORDecoder(InputStream inputStream,
                             boolean sequenceFlag,
                             boolean acceptNonDeterministic,
-                            int maxLength) {
+                            int maxLength) throws IOException {
             this.inputStream = inputStream;
             this.sequenceFlag = sequenceFlag;
             this.deterministicCheck = !acceptNonDeterministic;
             this.maxLength = maxLength;
+            if (maxLength < 1) {
+                reportError("Invalid \"maxLength\"");
+            }
         }
         
         private void eofError() throws IOException {
@@ -456,7 +459,7 @@ public abstract class CBORObject {
         }
         
         private void outOfLimitTest(int increment) throws IOException {
-            if ((byteCount += increment) > maxLength) {
+            if ((byteCount += increment) > maxLength || byteCount < 0) {
                 reportError("Reading past input limit");
             }
         }
