@@ -1749,4 +1749,37 @@ public class CBORTest {
         conversionError("{\"6\",8}");
         conversionError("{} 6");
     }
+    
+    @Test
+    public void keySerializing() throws Exception {
+        for (KeyPair keyPair : new KeyPair[] {p256, x25519, ed25519, p521, r2048}) {
+            CBORMap cborPrivateKey = CBORKeyPair.encode(keyPair);
+            assertTrue("priv", 
+                       CBORKeyPair.decode(cborPrivateKey)
+                           .getPrivate().equals(keyPair.getPrivate()));
+            assertTrue("pub", 
+                       CBORKeyPair.decode(cborPrivateKey)
+                           .getPublic().equals(keyPair.getPublic()));
+            CBORMap cborPublicKey = CBORPublicKey.encode(keyPair.getPublic());
+            assertTrue("pub", 
+                       CBORPublicKey.decode(cborPublicKey).equals(keyPair.getPublic()));
+            try {
+                cborPrivateKey.setObject("key", new CBORTextString("value"));
+                CBORKeyPair.decode(cborPrivateKey);
+                fail("must not execute");
+            } catch (Exception e) {
+                checkException(e, 
+                    "Map key \"key\" of type=CBORTextString with value=\"value\" was never read");
+            }
+            try {
+                cborPublicKey.setObject("key", new CBORTextString("value"));
+                CBORPublicKey.decode(cborPublicKey);
+                fail("must not execute");
+            } catch (Exception e) {
+                checkException(e, 
+                    "Map key \"key\" of type=CBORTextString with value=\"value\" was never read");
+            }
+        }
+    }
+    
 }

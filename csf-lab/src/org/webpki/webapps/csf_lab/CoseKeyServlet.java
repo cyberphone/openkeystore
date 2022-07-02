@@ -27,19 +27,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.webpki.cbor.CBORInteger;
+import org.webpki.cbor.CBORKeyPair;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORPublicKey;
 
 import org.webpki.crypto.AlgorithmPreferences;
-import org.webpki.crypto.KeyAlgorithms;
 
 import org.webpki.json.JSONCryptoHelper;
 import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONObjectWriter;
 import org.webpki.json.JSONParser;
-
-import org.webpki.tools.KeyStore2JWKConverter;
 
 import org.webpki.util.PEMDecoder;
 
@@ -86,7 +84,6 @@ public class CoseKeyServlet extends CoreRequestServlet {
                 byte[] keyInBinary = inData.getBytes("utf-8");
                 try {
                     keyPair = PEMDecoder.getKeyPair(keyInBinary);
-                    publicKey = keyPair.getPublic();
                 } catch (Exception e) {
                     try {
                         publicKey = PEMDecoder.getPublicKey(keyInBinary);
@@ -95,49 +92,10 @@ public class CoseKeyServlet extends CoreRequestServlet {
                     }
                 }
             }
-/*
-            https://datatracker.ietf.org/doc/html/rfc8230
-   +-------+-------+-------+-------+-----------------------------------+
-   | Key   | Name  | Label | CBOR  | Description                       |
-   | Type  |       |       | Type  |                                   |
-   +-------+-------+-------+-------+-----------------------------------+
-   | 3     | n     | -1    | bstr  | the RSA modulus n                 |
-   | 3     | e     | -2    | bstr  | the RSA public exponent e         |
-   | 3     | d     | -3    | bstr  | the RSA private exponent d        |
-   | 3     | p     | -4    | bstr  | the prime factor p of n           |
-   | 3     | q     | -5    | bstr  | the prime factor q of n           |
-   | 3     | dP    | -6    | bstr  | dP is d mod (p - 1)               |
-   | 3     | dQ    | -7    | bstr  | dQ is d mod (q - 1)               |
-   | 3     | qInv  | -8    | bstr  | qInv is the CRT coefficient       |
-   |       |       |       |       | q^(-1) mod p                      |
-   | 3     | other | -9    | array | other prime infos, an array       |
-   | 3     | r_i   | -10   | bstr  | a prime factor r_i of n, where i  |
-   |       |       |       |       | >= 3                              |
-   | 3     | d_i   | -11   | bstr  | d_i = d mod (r_i - 1)             |
-   | 3     | t_i   | -12   | bstr  | the CRT coefficient t_i = (r_1 *  |
-   |       |       |       |       | r_2 * ... * r_(i-1))^(-1) mod r_i |
-   +-------+-------+-------+-------+-----------------------------------+
- */
             
             // Now we have either just a public key or a key pair
-            CBORMap cbor = CBORPublicKey.encode(publicKey);
-            if (keyPair != null) {
-                JSONObjectReader jwk = JSONParser.parse(
-                new KeyStore2JWKConverter().writePrivateKey(keyPair.getPrivate(), publicKey));
-                switch (KeyAlgorithms.getKeyAlgorithm(publicKey).getKeyType()) {
-                    case RSA:
-                        setRSAParameter(jwk, "d", cbor, -3);
-                        setRSAParameter(jwk, "p", cbor, -4);
-                        setRSAParameter(jwk, "q", cbor, -5);
-                        setRSAParameter(jwk, "dp", cbor, -6);
-                        setRSAParameter(jwk, "dq", cbor, -7);
-                        setRSAParameter(jwk, "qi", cbor, -8);
-                    break;
-                    
-                    default:
-                        cbor.setByteString(new CBORInteger(-4), jwk.getBinary("d"));
-                }
-            }
+            CBORMap cbor = keyPair == null ? 
+                    CBORPublicKey.encode(publicKey) : CBORKeyPair.encode(keyPair);
             jsonResponse.setString(CBOR_OUT, 
                                    getFormattedCbor(parsedJson, new CBORObject[] {cbor}));
         } catch (Exception e) {
