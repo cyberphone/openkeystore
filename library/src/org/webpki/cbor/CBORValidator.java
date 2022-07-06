@@ -99,7 +99,7 @@ public abstract class CBORValidator {
     /**
      * Validates signed CBOR object.
      * <p>
-     * See {@link #validate(CBORObject, CBORMap)} for details.
+     * See {@link #validate(CBORObject, CBORObject)} for details.
      * </p>
      * 
      * @param key Key in map holding signature
@@ -116,7 +116,7 @@ public abstract class CBORValidator {
     /**
      * Validates signed CBOR object.
      * <p>
-     * See {@link #validate(CBORObject, CBORMap)} for details.
+     * See {@link #validate(CBORObject, CBORObject)} for details.
      * </p>
      * 
      * @param key Key in map holding signature
