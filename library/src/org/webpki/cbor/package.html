@@ -35,10 +35,13 @@ As an example <code>0.0</code> must be encoded as a 16-bit floating point type.
 Note that floating point and integer objects must be treated as distinct types.</li>
 <li>Maps with keys that are not sorted according to section 4.2.1 of RFC 8949.</li>
 </ul>
-On output (encode) the preferred serialization format is always used
+On output (encode) deterministic serialization is always used
 regardless how it was provided.
 <h3>Cryptographic Support</h3>
 To aid the use of cryptography, 
 <a href='doc-files/signatures.html'>signatures</a> and 
-<a href='doc-files/encryption.html'>encryption</a> is integrated in the package as well.
+<a href='doc-files/encryption.html'>encryption</a> is integrated in the package.
+<h3>Diagnostic CBOR</h3>
+Through {@link CBORDiagnosticParser} CBOR in diagnostic (textual) notation 
+can also be processed. 
 </body>

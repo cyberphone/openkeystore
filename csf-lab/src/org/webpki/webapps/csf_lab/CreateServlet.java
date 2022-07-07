@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.webpki.cbor.CBORAsymKeySigner;
 import org.webpki.cbor.CBORCryptoUtils;
+import org.webpki.cbor.CBORDiagnosticParser;
 import org.webpki.cbor.CBORHmacSigner;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;

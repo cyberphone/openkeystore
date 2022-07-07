@@ -27,10 +27,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.webpki.cbor.CBORDiagnosticParser;
 import org.webpki.cbor.CBORObject;
 import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONObjectWriter;
 import org.webpki.json.JSONOutputFormats;
+
 import org.webpki.util.Base64URL;
 import org.webpki.util.HexaDecimal;
 

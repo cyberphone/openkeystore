@@ -26,6 +26,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.webpki.cbor.CBORDiagnosticParser;
 import org.webpki.cbor.CBORObject;
 
 import org.webpki.json.JSONObjectReader;

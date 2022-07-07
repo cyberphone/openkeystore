@@ -35,6 +35,8 @@ import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORX509Validator;
 import org.webpki.cbor.CBORCryptoConstants;
 import org.webpki.cbor.CBORCryptoUtils;
+import org.webpki.cbor.CBORDiagnosticParser;
+
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.CertificateInfo;
