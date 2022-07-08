@@ -23,7 +23,7 @@ based on CBOR major type 6.
 <h3>Deterministic Serialization</h3>
 Since this package is intended for security related
 work, it is (by design) quite picky when decoding CBOR data
-and does (by default) not accept:
+and does ({@link CBORObject#decode(byte[]) by default}) not accept:
 <ul>
 <li>Integer data with <i>leading zeros</i>.</li>
 <li><code>big&nbsp;integer</code> objects
