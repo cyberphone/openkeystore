@@ -51,8 +51,18 @@ To create a source distribution for Android perform:
 $ cd library
 $ ant android-json
 ```
-Now you should have a file <code>library/dist/webpki.android.json.zip</code> which can be imported in an Android project.
-It has only been verified to work with Android API 24 (V7) and upwards.
+Now you should have a file <code>library/dist/android.json.zip</code> which can be imported in an Android project.
 
 An Android demo/test project is available at:<br>
 https://github.com/cyberphone/android-json
+
+## Android CBOR, CSF, and CEF support
+To create a source distribution for Android perform:
+```
+$ cd library
+$ ant android-cbor
+```
+Now you should have a file <code>library/dist/android.cbor.zip</code> which can be imported in an Android project.
+
+An Android demo/test project is available at:<br>
+https://github.com/cyberphone/android-cbor
