@@ -125,8 +125,9 @@ public interface CBORCryptoConstants {
     /////////////////////////////////////////////////////////////////
  
     /**
-     * CEF "customData" label (0).
-     * Passes through and is protected by being a part of AAD.
+     * CSF/CEF "customData" label (0).
+     * Passes through <i>without any interpretation</i> and is protected by 
+     * being a part of the signed data respectively AAD.
      */
     CBORInteger CUSTOM_DATA_LABEL    = new CBORInteger(0);
     

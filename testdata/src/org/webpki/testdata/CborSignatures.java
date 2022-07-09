@@ -328,7 +328,7 @@ public class CborSignatures {
             signer.setPublicKey(keyPair.getPublic());
         }
         if (tagged != 0) {
-            signer.setIntercepter(new CBORSigner.Intercepter() {
+            signer.setIntercepter(new CBORCryptoUtils.Intercepter() {
                 
                 @Override
                 public CBORObject wrap(CBORMap mapToSign) 

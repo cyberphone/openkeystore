@@ -1242,7 +1242,7 @@ public class CBORTest {
         
         // 2-dimensional tag
         CBORSigner tagSigner = new CBORAsymKeySigner(p256.getPrivate())
-            .setIntercepter(new CBORSigner.Intercepter() {
+            .setIntercepter(new CBORCryptoUtils.Intercepter() {
                 
                 @Override
                 public CBORObject wrap(CBORMap mapToSign) 
@@ -1262,7 +1262,7 @@ public class CBORTest {
 
         // 1-dimensional tag
         tagSigner = new CBORAsymKeySigner(p256.getPrivate())
-                .setIntercepter(new CBORSigner.Intercepter() {
+                .setIntercepter(new CBORCryptoUtils.Intercepter() {
                     
                     @Override
                     public CBORObject wrap(CBORMap mapToSign) 
@@ -1463,7 +1463,7 @@ public class CBORTest {
                                          KeyEncryptionAlgorithms.ECDH_ES_A256KW,
                                          ContentEncryptionAlgorithms.A256GCM)
             .setKeyId("mykey")
-            .setIntercepter(new CBOREncrypter.Intercepter() {
+            .setIntercepter(new CBORCryptoUtils.Intercepter() {
                 
                 @Override
                 public CBORObject wrap(CBORMap encryptionObject)
@@ -1479,7 +1479,7 @@ public class CBORTest {
                                          KeyEncryptionAlgorithms.ECDH_ES_A256KW,
                                          ContentEncryptionAlgorithms.A256GCM)
             .setKeyId("mykey")
-            .setIntercepter(new CBOREncrypter.Intercepter() {
+            .setIntercepter(new CBORCryptoUtils.Intercepter() {
                 
                 @Override
                 public CBORObject wrap(CBORMap encryptionObject)
@@ -1516,7 +1516,7 @@ public class CBORTest {
                                          KeyEncryptionAlgorithms.ECDH_ES_A256KW,
                                          ContentEncryptionAlgorithms.A256GCM)
             .setKeyId("mykey")
-            .setIntercepter(new CBOREncrypter.Intercepter() {
+            .setIntercepter(new CBORCryptoUtils.Intercepter() {
                 
                 @Override
                 public CBORObject wrap(CBORMap encryptionObject)

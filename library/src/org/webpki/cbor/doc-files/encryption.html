@@ -1,5 +1,5 @@
 <body>
-<h2>Encryption Support</h3>
+<h2>Encryption Support</h2>
 The CBOR library contains support for {@link CBOREncrypter encrypting} 
 and {@link CBORDecrypter decrypting}
 arbitrary binary data using a specific scheme called
@@ -11,7 +11,7 @@ algorithms like GCM.
 The following is a CEF object (here expressed in CBOR diagnostic notation), using the algorithms
 <code>A256GCM</code> and <code>ECDH-ES+A256KW</code> for content- respectively key-wrapping:
 </p>
-<div class='webpkibox'><code>
+<div class='webpkibox'>
 {<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Content encryption algorithm = A256GCM /</span><br>
 &nbsp;&nbsp;1: 3,<br>
@@ -40,7 +40,7 @@ The following is a CEF object (here expressed in CBOR diagnostic notation), usin
 <div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Ciphertext (Encrypted Content) /</span><br>
 &nbsp;&nbsp;10: h'625c2b2a41907547b2210624e1e818991c00790aed16'<br>
 }
-</code></div>
+</div>
 <p>
 The same object expressed as hex-encoded CBOR:
 </p>
@@ -50,7 +50,7 @@ a5010302a401381e03726578616d706c652e636f6d3a78323535313907a301012004215820c219e3
 <p>
 Decryption of this object using the private key (here in JWK format)
 </p>
-<div class='webpkibox'><code>
+<div class='webpkibox'>
 {<br>
 &nbsp;&nbsp;&quot;kid&quot;:&nbsp;&quot;example.com:x25519&quot;,<br>
 &nbsp;&nbsp;&quot;kty&quot;:&nbsp;&quot;OKP&quot;,<br>
@@ -58,7 +58,7 @@ Decryption of this object using the private key (here in JWK format)
 &nbsp;&nbsp;&quot;x&quot;:&nbsp;&quot;6ZoM7yBYlJYNmxwFl4UT3MtCoTv7ztUjpRuKEXrV8Aw&quot;,<br>
 &nbsp;&nbsp;&quot;d&quot;:&nbsp;&quot;cxfl86EVmcqrR07mWENCf1F_5Ni5mt1ViGyERB6Q1vA&quot;<br>
 }
-</code></div>
+</div>
 <p>
 should return the UTF-8 encoded string <code>&quot;Hello encrypted world!&quot;</code>.
 </p>
@@ -85,11 +85,11 @@ The result is the decrypted content.</li>
 Symmetric key encryption CEF objects are processed as above, but
 since they do not have a key encryption component, content encryption 
 keys must be known by recipients.
-<p id='cef-layout'>
+<p id='parameters'>
 The following figure shows the layout of CEF objects:
 </p>
 <div class='webpkisvg'>
-<img src='cbor-crypto.svg' style='height:20em;padding:0.2em 0.6em'/>
+<img src='cbor-crypto.svg' alt='CEF object layout' style='height:20em;padding:0.2em 0.6em'/>
 </div>
 <p>
 The numbers in paranthesis denote the actual label (map key) value.
@@ -105,7 +105,8 @@ and associated parameters.</li>
 and <code class='webpkicode'>certificatePath</code>
 <b>must not</b> be combined.</li>
 <li>If a <code class='webpkicode'>keyId</code> is used it <b>must</b> be supplied in the main map for
-symmetric encryption schemes, and in the sub map for schemes using key encryption.</li>
+symmetric encryption schemes, and in the sub map for schemes using key encryption.
+A compliant <code>keyId</code> <b>must</b> uniquely identify a specific encryption key.</li>
 <li>The currently supported key encryption algorithms except for <code>ECDH-ES</code>
 <b>require</b> that the encrypted key is provided in the <code class='webpkicode'>chipherText</code>
 element in the sub map.</li>
@@ -133,7 +134,7 @@ In addition to encrypted data, CEF also supports an extension
 element ({@link CBORCryptoConstants#CUSTOM_DATA_LABEL}) 
 which permits arbitrary CBOR objects to be included &quot;as&nbsp;is&quot; while
 still being protected by the authentication scheme.
-To simplify the use of this feature, see {@link CBOREncrypter.Intercepter#getCustomData()}.
+To simplify the use of this feature, see {@link CBORCryptoUtils.Intercepter#getCustomData()}.
 <h3 style='padding:1em 0 0 0'>Content Encryption Algorithms</h3>
 <p id='cef-content-encryption-algorithms'>
 Currently supported content encryption algorithms:

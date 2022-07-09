@@ -25,6 +25,8 @@ import org.webpki.crypto.EncryptionCore;
 
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
+import org.webpki.cbor.CBORCryptoUtils.Intercepter;
+
 /**
  * Base class for encrypting data.
  * <p>
@@ -42,48 +44,6 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
  */
 public abstract class CBOREncrypter {
 
-    /**
-     * Interface for customizing encryption map objects.
-     * <p>
-     * Implementations of this interface must be set by calling
-     * {@link CBOREncrypter#setIntercepter(Intercepter)}.
-     * </p>
-     */
-    public interface Intercepter {
-
-        /**
-         * Optionally wraps a map in a tag.
-         * <p>
-         * See {@link CBORCryptoUtils#unwrapContainerMap(CBORObject)} for details
-         * on the syntax for wrapped maps.
-         * </p>
-         * 
-         * @param encryptionObject Unwrapped map
-         * @return Original (default) or wrapped map
-         * @throws IOException
-         * @throws GeneralSecurityException
-         */
-        default CBORObject wrap(CBORMap encryptionObject) 
-                throws IOException, GeneralSecurityException {
-            return encryptionObject;
-        }
-
-        /**
-         * Optionally adds custom data to the map.
-         * <p>
-         * Custom data may be any valid CBOR object.  This data is assigned
-         * to the CEF specific label {@link CBORCryptoConstants#CUSTOM_DATA_LABEL}.
-         * </p>
-         * 
-         * @return <code>null</code> (default) or custom data object.
-         * @throws IOException
-         * @throws GeneralSecurityException
-         */
-        default CBORObject getCustomData() throws IOException, GeneralSecurityException {
-            return null;
-        }
-    }
-    
     // The default is to use a map without tagging and custom data.
     Intercepter intercepter = new Intercepter() { };
     

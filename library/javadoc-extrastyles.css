@@ -17,6 +17,7 @@
 .webpkibox {
   padding: 0.8em 1em;
   word-break: break-all;
+  font-family: "Noto Mono",monospace;
 }
 
 .webpkicode {

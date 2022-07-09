@@ -19,6 +19,7 @@ package org.webpki.webapps.csf_lab;
 import java.io.IOException;
 
 import java.net.URLEncoder;
+
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 
@@ -353,7 +354,7 @@ public class CreateServlet extends CoreRequestServlet {
                 }
             }
 
-            signer.setKeyId(optionalKeyId).setIntercepter(new CBORSigner.Intercepter() {
+            signer.setKeyId(optionalKeyId).setIntercepter(new CBORCryptoUtils.Intercepter() {
                 public CBORObject wrap(CBORMap mapToSign) 
                         throws IOException, GeneralSecurityException {
                     return rawCbor;

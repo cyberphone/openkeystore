@@ -100,6 +100,50 @@ public class CBORCryptoUtils {
     }
 
     /**
+     * Interface for customizing map objects.
+     * <p>
+     * Implementations of this interface must be set by calling
+     * {@link CBORSigner#setIntercepter(Intercepter)} and
+     * {@link CBOREncrypter#setIntercepter(Intercepter)} for
+     * signatures and encryptions respectively.
+     * </p>
+     */
+    public interface Intercepter {
+
+        /**
+         * Optionally wraps a map in a tag.
+         * <p>
+         * See {@link CBORCryptoUtils#unwrapContainerMap(CBORObject)} for details
+         * on the syntax for wrapped maps.
+         * </p>
+         * 
+         * @param map Unwrapped map
+         * @return Original (default) or wrapped map
+         * @throws IOException
+         * @throws GeneralSecurityException
+         */
+        default CBORObject wrap(CBORMap map) 
+                throws IOException, GeneralSecurityException {
+            return map;
+        }
+
+        /**
+         * Optionally adds custom data to the map.
+         * <p>
+         * Custom data may be any valid CBOR object.  This data is assigned
+         * to the CEF specific label {@link CBORCryptoConstants#CUSTOM_DATA_LABEL}.
+         * </p>
+         * 
+         * @return <code>null</code> (default) or custom data object.
+         * @throws IOException
+         * @throws GeneralSecurityException
+         */
+        default CBORObject getCustomData() throws IOException, GeneralSecurityException {
+            return null;
+        }
+    }
+ 
+    /**
      * Unwraps a container map object.
  
      * <p>
@@ -127,9 +171,7 @@ public class CBORCryptoUtils {
      * </p>
      * <p>
      * To enable the <i>creation</i> of wrapped data you must implement
-     * {@link CBORSigner.Intercepter#wrap(CBORMap)} and
-     * {@link CBOREncrypter.Intercepter#wrap(CBORMap)}
-     * for signatures and encryptions respectively.
+     * {@link Intercepter#wrap(CBORMap)}.
      * </p>
      * 
      * @param container A map optionally enclosed in a tag 

@@ -44,7 +44,6 @@ import org.webpki.cbor.CBORArray;
 import org.webpki.cbor.CBORAsymKeyDecrypter;
 import org.webpki.cbor.CBORAsymKeyEncrypter;
 import org.webpki.cbor.CBORDecrypter;
-import org.webpki.cbor.CBOREncrypter;
 import org.webpki.cbor.CBORCryptoConstants;
 import org.webpki.cbor.CBORCryptoUtils;
 import org.webpki.cbor.CBORMap;
@@ -323,7 +322,7 @@ public class CborEncryption {
             encrypter.setPublicKeyOption(true);
         }
         if (tagged != 0) {
-            encrypter.setIntercepter(new CBOREncrypter.Intercepter() {
+            encrypter.setIntercepter(new CBORCryptoUtils.Intercepter() {
                 
                 @Override
                 public CBORObject wrap(CBORMap encryptionObject) 
@@ -344,7 +343,7 @@ public class CborEncryption {
 
             });
         } else if (customData) {
-            encrypter.setIntercepter(new CBOREncrypter.Intercepter() {
+            encrypter.setIntercepter(new CBORCryptoUtils.Intercepter() {
                 
                 @Override
                 public CBORObject getCustomData() throws IOException, GeneralSecurityException {
