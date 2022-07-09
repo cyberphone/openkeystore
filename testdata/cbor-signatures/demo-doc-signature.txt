@@ -29,6 +29,6 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-3: h'9826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d8'<br>
 &nbsp;&nbsp;&nbsp;&nbsp;},<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Signature value /</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;6: h'08f9696fcbdb924d2e676351c7f24fc3b0417e9ec151e6b140d02efa09a7247688db8ccf209944efce1ebd5c36563eec2a8e2e92dfcd8abf1d01c5052f14c220'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class='webpkihighlite'>6: h'08f9696fcbdb924d2e676351c7f24fc3b0417e9ec151e6b140d02efa09a7247688db8ccf209944efce1ebd5c36563eec2a8e2e92dfcd8abf1d01c5052f14c220'</span><br>
 &nbsp;&nbsp;}<br>
 }

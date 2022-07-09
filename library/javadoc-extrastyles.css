@@ -22,3 +22,8 @@
 .webpkicode {
   color:maroon;
 }
+
+.webpkihighlite {
+  background: black;
+  color: white;
+}

@@ -41,7 +41,7 @@ enabling constructs like the following:
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-3: h'9826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d8'<br>
 &nbsp;&nbsp;&nbsp;&nbsp;},<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Signature value /</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;6: h'08f9696fcbdb924d2e676351c7f24fc3b0417e9ec151e6b140d02efa09a7247688db8ccf209944efce1ebd5c36563eec2a8e2e92dfcd8abf1d01c5052f14c220'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class='webpkihighlite'>6: h'08f9696fcbdb924d2e676351c7f24fc3b0417e9ec151e6b140d02efa09a7247688db8ccf209944efce1ebd5c36563eec2a8e2e92dfcd8abf1d01c5052f14c220'</span><br>
 &nbsp;&nbsp;}<br>
 }
 </code></div>
@@ -92,8 +92,8 @@ Signature objects <b>must not</b> contain both <code>certificatePath</code> and 
 <p>
 CSF signatures are validated by running the signature validation 
 algorithm over the CBOR binary representation of
-the <code>map</code> holding the application data including the enveloped signature object,
-with the <code>signature</code> (label <code>7</code>) and
+the <code>map</code> holding the application data <i>including the enveloped signature object</i>,
+with the <span class='webpkihighlite'>highlighted</span> <code>signature</code> (label <code>6</code>) and
 its associated argument as the sole exception. Note that the length
 of the signature object <code>map</code> <b>must</b>
 be updated (to reflect the removal of an element) during validation.</p>

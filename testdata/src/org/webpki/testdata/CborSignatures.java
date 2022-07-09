@@ -45,6 +45,7 @@ import org.webpki.cbor.CBORInteger;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORCryptoConstants;
 import org.webpki.cbor.CBORCryptoUtils;
+
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.HmacAlgorithms;
@@ -456,6 +457,8 @@ public class CborSignatures {
         }
         ArrayUtil.writeFile(fileName.replace(".cbor", ".txt"), 
                             text.toString()
+                                .replace("6: h'", "<span class='webpkihighlite'>6: h'")
+                                .replace("'\n  }\n}", "'</span>\n  }\n}")
                                 .replace("\n", "<br>\n")
                                 .replace("  ", "&nbsp;&nbsp;").getBytes("utf-8"));
     }
