@@ -1,6 +1,7 @@
 <body>
 <h2>CBOR - Encoder, Decoder, Signatures, and Encryption</h2>
-This package contains java support for CBOR (RFC 8949).
+This package contains java support for CBOR 
+[<a href='https://www.rfc-editor.org/rfc/rfc8949.html'>RFC&nbsp;8949</a>].
 <h3>Currently Supported Primitives</h3>
 <table>
 <tr><th>CBOR Data Type</th><th>&nbsp;&nbsp;</th><th>Java Counterpart</th></tr>
@@ -33,15 +34,15 @@ shorter <code>integer</code> format.</li>
 shorter variant.
 As an example <code>0.0</code> must be encoded as a 16-bit floating point type.
 Note that floating point and integer objects must be treated as distinct types.</li>
-<li>Maps with keys that are not sorted according to section 4.2.1 of RFC 8949.</li>
+<li>Maps with keys that are not sorted according to section 4.2.1 of RFC&nbsp;8949.</li>
 </ul>
 On output (encode) deterministic serialization is always used
 regardless how it was provided.
 <h3>Cryptographic Support</h3>
-To aid the use of cryptography, 
+To aid the use of cryptography, support for
 <a href='doc-files/signatures.html'>signatures</a> and 
-<a href='doc-files/encryption.html'>encryption</a> is integrated in the package.
+<a href='doc-files/encryption.html'>encryption</a> are integrated in the package.
 <h3>Diagnostic CBOR</h3>
-Through {@link CBORDiagnosticParser} CBOR in diagnostic (textual) notation 
-can also be processed. 
+Through the {@link CBORDiagnosticParser} class, CBOR in diagnostic (textual) notation 
+may also be processed. 
 </body>

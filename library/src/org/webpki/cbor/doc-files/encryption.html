@@ -76,8 +76,9 @@ as well to reflect the changed number of elements.
 <li>Serialize the remaining CBOR encryption object and set the result to 
 Additional Authentication Data (<code>AAD</code>).</li>
 <li>Recover the content encryption key using the elements in the
-key encryption object (featured in label <code>2</code>).</li>
-<li>Apply the content encryption algorithm (featured in label <code>1</code>)
+key encryption object (argument of label <code>2</code>).</li>
+<li>Apply the content encryption algorithm (argument of label <code>1</code> 
+in the main map)
 to the recovered content encryption key,
 the input parameters read in the first step, and <code>AAD</code>.
 The result is the decrypted content.</li>
