@@ -131,7 +131,11 @@ public class CBORCryptoUtils {
          * Optionally adds custom data to the map.
          * <p>
          * Custom data may be any valid CBOR object.  This data is assigned
-         * to the CEF specific label {@link CBORCryptoConstants#CUSTOM_DATA_LABEL}.
+         * to the CSF/CEF specific label {@link CBORCryptoConstants#CUSTOM_DATA_LABEL}.
+         * </p>
+         * <p>
+         * If this method returns <code>null</code>, the assumption is that there is no
+         * custom data.
          * </p>
          * 
          * @return <code>null</code> (default) or custom data object.
@@ -167,7 +171,7 @@ public class CBORCryptoUtils {
      * Both wrapping methods are intrinsically
      * supported by {@link CBORValidator} and
      * {@link CBORDecrypter}
-     * for signatures and encryptions respectively.
+     * for signatures and encryption respectively.
      * </p>
      * <p>
      * To enable the <i>creation</i> of wrapped data you must implement
@@ -192,6 +196,24 @@ public class CBORCryptoUtils {
             } else container = tagged;
         }
         return container.getMap();
+    }
+    
+    static CBORObject getOptionalKeyId(CBORMap holderMap) throws IOException {
+
+        // Get the key Id if there is one and scan() to make sure checkForUnread() won't fail
+        return holderMap.hasKey(KEY_ID_LABEL) ?
+            holderMap.getObject(KEY_ID_LABEL).scan() : null;
+    }
+    
+    static void scanCustomData(CBORMap holderMap, boolean enableCustomData) throws IOException {
+ 
+        // Access a possible customData element in order satisfy checkForUnread().
+        if (holderMap.hasKey(CUSTOM_DATA_LABEL)) {
+            if (!enableCustomData) {
+                throw new IOException("Custom data found but not enabled");
+            }
+            holderMap.getObject(CUSTOM_DATA_LABEL).scan();
+        }
     }
     
     static byte[] setupBasicKeyEncryption(PublicKey publicKey,

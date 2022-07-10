@@ -43,6 +43,22 @@ public abstract class CBORValidator {
                                  byte[] signatureValue,
                                  byte[] signedData) throws IOException, GeneralSecurityException;
  
+    boolean enableCustomData;
+    
+    /**
+     * Enables custom extension data.
+     * <p>
+     * By default custom data elements ({@link CBORCryptoConstants#CUSTOM_DATA_LABEL}) 
+     * are rejected.
+     * </p>
+     * @param flag Set to <code>true</code> if custom data is to be permitted.
+     * @return <code>this</code>
+     */
+    public CBORValidator enableCustomData(boolean flag) {
+        enableCustomData = flag;
+        return this;
+    }
+    
     /**
      * Validates signed CBOR object.
      * <p>
@@ -75,8 +91,10 @@ public abstract class CBORValidator {
         byte[] signatureValue = signatureObject.readByteStringAndRemoveKey(SIGNATURE_LABEL);
 
         // Fetch optional keyId.
-        CBORObject optionalKeyId = signatureObject.hasKey(KEY_ID_LABEL) ?
-                         signatureObject.getObject(KEY_ID_LABEL).scan() : null;
+        CBORObject optionalKeyId = CBORCryptoUtils.getOptionalKeyId(signatureObject);
+
+        // Special handling of custom data.
+        CBORCryptoUtils.scanCustomData(signatureObject, enableCustomData);
 
         // Call algorithm specific validator. The code below presumes that internalEncode()
         // returns a deterministic representation of the signed CBOR data.

@@ -44,6 +44,22 @@ public abstract class CBORDecrypter {
                                             ContentEncryptionAlgorithms contentEncryptionAlgorithm,
                                             CBORObject optionalKeyId) 
             throws IOException, GeneralSecurityException;
+
+    boolean enableCustomData;
+    
+    /**
+     * Enables custom extension data.
+     * <p>
+     * By default custom data elements ({@link CBORCryptoConstants#CUSTOM_DATA_LABEL}) 
+     * are rejected.
+     * </p>
+     * @param flag Set to <code>true</code> if custom data is to be permitted.
+     * @return <code>this</code>
+     */
+    public CBORDecrypter enableCustomData(boolean flag) {
+        enableCustomData = flag;
+        return this;
+    }
     
     /**
      * Decrypts data.
@@ -74,18 +90,15 @@ public abstract class CBORDecrypter {
                 ContentEncryptionAlgorithms.getAlgorithmFromId(
                         encryptionMap.getObject(ALGORITHM_LABEL).getInt());
 
-        // Possible key encryption begins to kick in here.
+        // Possible key encryption kicks in here.
         CBORMap innerObject = this instanceof CBORSymKeyDecrypter ? 
                 encryptionMap : encryptionMap.getObject(KEY_ENCRYPTION_LABEL).getMap();
               
-        // Get the key Id if there is one.
-        CBORObject optionalKeyId = innerObject.hasKey(KEY_ID_LABEL) ?
-                         innerObject.getObject(KEY_ID_LABEL).scan() : null;
+        // Fetch optional keyId.
+        CBORObject optionalKeyId = CBORCryptoUtils.getOptionalKeyId(innerObject);
 
-        // Access a possible customData element in order satisfy checkForUnread().
-        if (encryptionMap.hasKey(CUSTOM_DATA_LABEL)) {
-            encryptionMap.getObject(CUSTOM_DATA_LABEL).scan();
-        }
+        // Special handling of custom data.
+        CBORCryptoUtils.scanCustomData(encryptionMap, enableCustomData);
 
         // Get the content encryption key which also may be encrypted.
         byte[] contentDecryptionKey = getContentEncryptionKey(innerObject,

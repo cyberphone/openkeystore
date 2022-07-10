@@ -354,6 +354,7 @@ public class CborEncryption {
         }
         byte[] encryptedData = encrypter.encrypt(dataToBeEncrypted).encode();
         CBORAsymKeyDecrypter decrypter = new CBORAsymKeyDecrypter(keyPair.getPrivate());
+        decrypter.enableCustomData(customData);
         compareResults(decrypter, encryptedData);
         decrypter = new CBORAsymKeyDecrypter(new CBORAsymKeyDecrypter.KeyLocator() {
 
@@ -376,6 +377,7 @@ public class CborEncryption {
             }
             
         });
+        decrypter.enableCustomData(customData);
         compareResults(decrypter, encryptedData);
         optionalUpdate(decrypter, 
                        baseEncryption + keyType + "#" + keyEncryptionAlgorithm.getJoseAlgorithmId().toLowerCase() + 

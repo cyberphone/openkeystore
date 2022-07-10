@@ -1498,9 +1498,20 @@ public class CBORTest {
                 
             });
         CBORObject taggedX25519Encrypted = taggedX25519Encrypter.encrypt(dataToEncrypt);
+        try {
+            assertTrue("enc/dec", 
+                    ArrayUtil.compare(new CBORAsymKeyDecrypter(
+                                            x25519.getPrivate()).decrypt(taggedX25519Encrypted),
+                                      dataToEncrypt));
+            fail("must fail");
+        } catch (Exception e) {
+            checkException(e, "Custom data found but not enabled");
+        }
         assertTrue("enc/dec", 
                 ArrayUtil.compare(new CBORAsymKeyDecrypter(
-                                        x25519.getPrivate()).decrypt(taggedX25519Encrypted),
+                                        x25519.getPrivate())
+                        .enableCustomData(true)
+                        .decrypt(taggedX25519Encrypted),
                                   dataToEncrypt));
         CBORTag cborTag = taggedX25519Encrypted.getTag();
         assertTrue("tagn", cborTag.getTagNumber() == 211);
