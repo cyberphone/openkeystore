@@ -105,7 +105,7 @@ public class CBORCryptoUtils {
      * Implementations of this interface must be set by calling
      * {@link CBORSigner#setIntercepter(Intercepter)} and
      * {@link CBOREncrypter#setIntercepter(Intercepter)} for
-     * signatures and encryptions respectively.
+     * signatures and encryption respectively.
      * </p>
      */
     public interface Intercepter {
@@ -118,7 +118,7 @@ public class CBORCryptoUtils {
          * </p>
          * 
          * @param map Unwrapped map
-         * @return Original (default) or wrapped map
+         * @return Original (default implementation) or wrapped map
          * @throws IOException
          * @throws GeneralSecurityException
          */
@@ -138,7 +138,7 @@ public class CBORCryptoUtils {
          * custom data.
          * </p>
          * 
-         * @return <code>null</code> (default) or custom data object.
+         * @return <code>null</code> (default implementation) or custom data object.
          * @throws IOException
          * @throws GeneralSecurityException
          */
@@ -288,14 +288,14 @@ public class CBORCryptoUtils {
                                            byte[] signatureValue) 
             throws GeneralSecurityException, IOException {
 
-        // Verify that the public key matches the signature algorithm.
+        // Verify that the public key matches the signature algorithm
         KeyAlgorithms keyAlgorithm = KeyAlgorithms.getKeyAlgorithm(publicKey);
         if (signatureAlgorithm.getKeyType() != keyAlgorithm.getKeyType()) {
             throw new GeneralSecurityException("Algorithm " + signatureAlgorithm + 
                                                " does not match key type " + keyAlgorithm);
         }
         
-        // Finally, verify the signature.
+        // Finally, verify the signature
         if (!new SignatureWrapper(signatureAlgorithm, publicKey)
                  .update(signedData)
                  .verify(signatureValue)) {
