@@ -164,8 +164,8 @@ public abstract class CBORSigner {
      */
     public CBORObject sign(CBORObject key, CBORMap mapToSign) throws IOException, 
                                                                      GeneralSecurityException {
-        // Create empty signature object.
-        CBORMap signatureObject = new CBORMap();
+        // Create an empty signature container object.
+        CBORMap csfContainer = new CBORMap();
 
         // There may be a tag holding the map to be signed.
         CBORObject objectToSign = intercepter.wrap(mapToSign);
@@ -173,28 +173,28 @@ public abstract class CBORSigner {
         // Get optional custom data.
         CBORObject customData = intercepter.getCustomData();
         if (customData != null) {
-            signatureObject.setObject(CUSTOM_DATA_LABEL, customData);
+            csfContainer.setObject(CUSTOM_DATA_LABEL, customData);
         }
 
         // Add the mandatory signature algorithm.
-        signatureObject.setObject(ALGORITHM_LABEL, 
-                                  new CBORInteger(getAlgorithm().getCoseAlgorithmId()));
+        csfContainer.setObject(ALGORITHM_LABEL, 
+                               new CBORInteger(getAlgorithm().getCoseAlgorithmId()));
         
         // Add a keyId if there is one.
         if (optionalKeyId != null) {
-            signatureObject.setObject(KEY_ID_LABEL, optionalKeyId);
+            csfContainer.setObject(KEY_ID_LABEL, optionalKeyId);
         }
         
         // Asymmetric key signatures add specific items to the signature container.
-        additionalItems(signatureObject);
+        additionalItems(csfContainer);
         
         // Add the prepared signature object to the map object we want to sign. 
-        mapToSign.setObject(key, signatureObject);
+        mapToSign.setObject(key, csfContainer);
 
         // Finally, sign all but the signature label and associated value.
         // internalEncode() is supposed to produce a deterministic representation
         // of the CBOR data to be signed.
-        signatureObject.setByteString(SIGNATURE_LABEL, coreSigner(objectToSign.internalEncode()));
+        csfContainer.setByteString(SIGNATURE_LABEL, coreSigner(objectToSign.internalEncode()));
 
         // Return the now signed object.
         return objectToSign;
