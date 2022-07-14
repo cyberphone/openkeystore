@@ -108,7 +108,7 @@ public class CBORAsymKeySigner extends CBORSigner {
      * 
      * 
      * @param publicKey The public key or <code>null</code>
-     * @return this
+     * @return <code>this</code>
      */
     public CBORAsymKeySigner setPublicKey(PublicKey publicKey) {
         optionalPublicKey = publicKey;

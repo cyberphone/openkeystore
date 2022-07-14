@@ -54,7 +54,7 @@ public abstract class JSONSigner extends JSONCryptoHelper.ExtensionsEncoder {
      * This must only be done for the first signer in a multi-signature
      * scenario
      * @param names A list of permitted extensions 
-     * @return this
+     * @return <code>this</code>
      * @throws IOException
      */
     public JSONSigner setExtensionNames(String[] names) throws IOException {
@@ -65,7 +65,7 @@ public abstract class JSONSigner extends JSONCryptoHelper.ExtensionsEncoder {
     /**
      * Set specific extension data for this signature.
      * @param extensions JSON object holding the extension properties and associated values
-     * @return this
+     * @return <code>this</code>
      * @throws IOException
      */
     public JSONSigner setExtensionData(JSONObjectWriter extensions) throws IOException {
@@ -77,7 +77,7 @@ public abstract class JSONSigner extends JSONCryptoHelper.ExtensionsEncoder {
     /**
      * Set &quot;excl&quot; for this signature.
      * @param excluded Array holding the names of properties that must be excluded from the signature
-     * @return this
+     * @return <code>this</code>
      * @throws IOException
      */
     public JSONSigner setExcluded(String[] excluded) throws IOException {
@@ -90,7 +90,7 @@ public abstract class JSONSigner extends JSONCryptoHelper.ExtensionsEncoder {
      * Set optional &quot;keyId&quot; for this signature.
      * Note: default <code>null</code>.
      * @param keyId The identifier. If null no KeyId is generated
-     * @return this
+     * @return <code>this</code>
      */
     public JSONSigner setKeyId(String keyId) {
         this.keyId = keyId;

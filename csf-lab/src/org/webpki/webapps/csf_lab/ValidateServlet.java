@@ -32,6 +32,7 @@ import org.webpki.cbor.CBORAsymKeyValidator;
 import org.webpki.cbor.CBORHmacValidator;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;
+import org.webpki.cbor.CBORValidator;
 import org.webpki.cbor.CBORX509Validator;
 import org.webpki.cbor.CBORCryptoConstants;
 import org.webpki.cbor.CBORCryptoUtils;
@@ -66,52 +67,58 @@ public class ValidateServlet extends CoreRequestServlet {
             CBORObject signatureLabel = getSignatureLabel(request);
             
             // This is certainly not what you would do in an application...
-            CBORMap signatureObject = 
-                    CBORCryptoUtils.unwrapContainerMap(signedCborObject)
+            CBORMap csfContainer = 
+                    CBORCryptoUtils.unwrapContainerMap(signedCborObject,
+                                                       CBORCryptoUtils.POLICY.OPTIONAL)
                         .getObject(signatureLabel).getMap();
             boolean hmacSignature = 
-                    signatureObject.getObject(CBORCryptoConstants.ALGORITHM_LABEL).getInt() > 0;
-            boolean x509flag = signatureObject.hasKey(CBORCryptoConstants.CERT_PATH_LABEL);
+                    csfContainer.getObject(CBORCryptoConstants.ALGORITHM_LABEL).getInt() > 0;
+            boolean x509flag = csfContainer.hasKey(CBORCryptoConstants.CERT_PATH_LABEL);
             final StringBuilder certificateData = x509flag ? new StringBuilder() : null;
 
             // Validation
             boolean jwkValidationKey = validationKey.startsWith("{");
+            
+            CBORValidator validator;
             if (hmacSignature) {
-                new CBORHmacValidator(HexaDecimal.decode(validationKey))
-                    .validate(signatureLabel, signedCborObject);
+                validator = new CBORHmacValidator(HexaDecimal.decode(validationKey));
             } else {
                 PublicKey externalPublicKey =  jwkValidationKey ? 
                     JSONParser.parse(validationKey).getCorePublicKey(AlgorithmPreferences.JOSE)
                                                                 :
                     PEMDecoder.getPublicKey(validationKey.getBytes("utf-8"));
                 if (x509flag) {
+                    validator = new CBORX509Validator(new CBORX509Validator.Parameters() {
 
-                    new CBORX509Validator(new CBORX509Validator.Parameters() {
-
-                    @Override
-                    public void verify(X509Certificate[] certificatePath,
-                                       AsymSignatureAlgorithms asymSignatureAlgorithm)
-                            throws IOException, GeneralSecurityException {
-                        for (X509Certificate certificate : certificatePath) {
+                        @Override
+                        public void verify(X509Certificate[] certificatePath,
+                                           AsymSignatureAlgorithms asymSignatureAlgorithm)
+                                throws IOException, GeneralSecurityException {
                             if (!certificatePath[0].getPublicKey().equals(externalPublicKey)) {
-                                throw new IOException("Externally supplied public key does not " +
-                                                      "match signature certificate");
+                                throw new IOException("Externally supplied public key does " +
+                                                      "not match signature certificate");
                             }
-                            if (!certificateData.isEmpty()) {
-                                certificateData.append("\n\n");
+                            for (X509Certificate certificate : certificatePath) {
+                                if (!certificateData.isEmpty()) {
+                                    certificateData.append("\n\n");
+                                }
+                                certificateData.append(new CertificateInfo(certificate).toString()
+                                                           .replace("  ", ""));
                             }
-                            certificateData.append(new CertificateInfo(certificate).toString()
-                                                       .replace("  ", ""));
                         }
-                    }
-
-                }).validate(signatureLabel, signedCborObject);
-                        
+    
+                    });
                 } else {
-                    new CBORAsymKeyValidator(externalPublicKey).validate(signatureLabel, 
-                                                                         signedCborObject);
+                    validator = new CBORAsymKeyValidator(externalPublicKey);
                 }
             }
+
+            // This is it!
+            validator
+                .setCustomDataPolicy(CBORCryptoUtils.POLICY.OPTIONAL)
+                .setTagPolicy(CBORCryptoUtils.POLICY.OPTIONAL)
+                .validate(signatureLabel, signedCborObject);
+            
             StringBuilder html = new StringBuilder(
                     "<div class='header'> Signature Successfully Validated</div>")
                 .append(HTML.fancyBox(

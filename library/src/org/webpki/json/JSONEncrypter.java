@@ -155,7 +155,7 @@ public abstract class JSONEncrypter {
     /**
      * Set &quot;crit&quot; for this encryption object.
      * @param extensions JSON object holding the extension properties and associated values
-     * @return this
+     * @return <code>this</code>
      * @throws IOException
      */
     public JSONEncrypter setExtensions(JSONObjectWriter extensions) throws IOException {
@@ -167,7 +167,7 @@ public abstract class JSONEncrypter {
     /**
      * Set optional &quot;kid&quot; for this encryption object.
      * @param keyId The identifier
-     * @return this
+     * @return <code>this</code>
      */
     public JSONEncrypter setKeyId(String keyId) {
         this.keyId = keyId;
@@ -178,7 +178,7 @@ public abstract class JSONEncrypter {
      * Set if public key information should be provided in the encryption object.
      * Note: default <code>true</code>.
      * @param flag <code>true</code> if such information is to be provided
-     * @return this
+     * @return <code>this</code>
      */
     public JSONEncrypter setOutputPublicKeyInfo(boolean flag) {
         this.outputPublicKeyInfo = flag;

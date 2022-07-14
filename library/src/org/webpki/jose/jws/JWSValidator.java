@@ -37,7 +37,7 @@ public abstract class JWSValidator {
     /**
      * Set cryptographic provider.
      * @param provider Name of provider like "BC"
-     * @return this
+     * @return <code>this</code>
      */
     public JWSValidator setProvider(String provider) {
         this.provider = provider;

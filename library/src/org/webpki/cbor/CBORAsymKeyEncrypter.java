@@ -58,7 +58,7 @@ public class CBORAsymKeyEncrypter extends CBOREncrypter {
      * Defines if public key should be included.
      * 
      * @param wantPublicKey Flag.  Default: false.
-     * @return this
+     * @return <code>this</code>
      */
     public CBORAsymKeyEncrypter setPublicKeyOption(boolean wantPublicKey) {
         this.wantPublicKey = wantPublicKey;

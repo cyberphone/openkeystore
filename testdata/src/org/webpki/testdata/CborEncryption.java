@@ -199,7 +199,8 @@ public class CborEncryption {
 
     static String cleanEncryption(byte[] cefData) throws IOException {
         CBORObject cborObject = CBORObject.decode(cefData);
-        CBORMap decoded = CBORCryptoUtils.unwrapContainerMap(cborObject);
+        CBORMap decoded = CBORCryptoUtils.unwrapContainerMap(cborObject,
+                                                             CBORCryptoUtils.POLICY.OPTIONAL);
         decoded.removeObject(CBORCryptoConstants.IV_LABEL);
         decoded.removeObject(CBORCryptoConstants.TAG_LABEL);
         decoded.removeObject(CBORCryptoConstants.CIPHER_TEXT_LABEL);
@@ -353,10 +354,8 @@ public class CborEncryption {
             });
         }
         byte[] encryptedData = encrypter.encrypt(dataToBeEncrypted).encode();
-        CBORAsymKeyDecrypter decrypter = new CBORAsymKeyDecrypter(keyPair.getPrivate());
-        decrypter.enableCustomData(customData);
-        compareResults(decrypter, encryptedData);
-        decrypter = new CBORAsymKeyDecrypter(new CBORAsymKeyDecrypter.KeyLocator() {
+        CBORAsymKeyDecrypter decrypter = 
+                new CBORAsymKeyDecrypter(new CBORAsymKeyDecrypter.KeyLocator() {
 
             @Override
             public PrivateKey locate(PublicKey optionalPublicKey,
@@ -377,7 +376,12 @@ public class CborEncryption {
             }
             
         });
-        decrypter.enableCustomData(customData);
+        if (customData) {
+            decrypter.setCustomDataPolicy(CBORCryptoUtils.POLICY.MANDATORY);
+        }
+        if (tagged != 0) {
+            decrypter.setTagPolicy(CBORCryptoUtils.POLICY.MANDATORY);
+        }
         compareResults(decrypter, encryptedData);
         optionalUpdate(decrypter, 
                        baseEncryption + keyType + "#" + keyEncryptionAlgorithm.getJoseAlgorithmId().toLowerCase() + 

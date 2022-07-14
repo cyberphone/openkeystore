@@ -125,7 +125,7 @@ The sample was signed using the following private key (here in JWK format):
 CSF permits signing <code>map</code> objects that are enclosed by a CBOR tag.
 Such tags are included in the data to be signed.
 <p>
-See {@link CBORCryptoUtils#unwrapContainerMap(CBORObject)} for a detailed
+See {@link CBORCryptoUtils#unwrapContainerMap(CBORObject, POLICY tagPolicy)} for a detailed
 description.
 </p> 
 <h3 style='padding:1em 0 0 0'>Signature Algorithms</h3>

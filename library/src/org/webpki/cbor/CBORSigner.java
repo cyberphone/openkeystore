@@ -66,7 +66,7 @@ public abstract class CBORSigner {
      * Sets optional Intercepter.
      * 
      * @param intercepter An instance of Intercepter
-     * @return this
+     * @return <code>this</code>
      */
     public CBORSigner setIntercepter(Intercepter intercepter) {
         this.intercepter = intercepter;
@@ -94,7 +94,7 @@ public abstract class CBORSigner {
      * </p>
      * 
      * @param keyId Key Id or <code>null</code>
-     * @return this
+     * @return <code>this</code>
      */
     public CBORSigner setKeyId(CBORObject keyId) {
         this.optionalKeyId = keyId;
@@ -110,7 +110,7 @@ public abstract class CBORSigner {
      * </p>
      * 
      * @param keyId Key Id
-     * @return this
+     * @return <code>this</code>
      * 
      */
     public CBORSigner setKeyId(String keyId) {
@@ -127,7 +127,7 @@ public abstract class CBORSigner {
      * </p>
      * 
      * @param keyId Key Id
-     * @return this
+     * @return <code>this</code>
      *
      */
     public CBORSigner setKeyId(int keyId) {
@@ -153,7 +153,7 @@ public abstract class CBORSigner {
      * </p>
      * <p>
      * Note that a {@link CBORTag} may embed the signature object.
-     * See {@link CBORCryptoUtils#unwrapContainerMap(CBORObject)} for details.
+     * See {@link CBORCryptoUtils#unwrapContainerMap(CBORObject, POLICY tagPolicy)} for details.
      * </p>
      * 
      * @param key Key holding the signature in the CBOR map to sign

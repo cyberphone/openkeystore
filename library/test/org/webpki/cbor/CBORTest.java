@@ -896,14 +896,22 @@ public class CBORTest {
             throws IOException, GeneralSecurityException {
         CBORMap tbs = createDataToBeSigned();
         if (tagNumber != null) {
-            new CBORTag(tagNumber,
-                    objectId == null ? tbs : new CBORArray()
-                            .addObject(new CBORTextString(objectId))
-                            .addObject(tbs));
+            signer.setIntercepter(new CBORCryptoUtils.Intercepter() {
+                
+                @Override
+                public CBORObject wrap(CBORMap cborMap) {
+                    return new CBORTag(tagNumber,
+                            objectId == null ? tbs : new CBORArray()
+                                    .addObject(new CBORTextString(objectId))
+                                    .addObject(tbs));
+                }
+                
+            });
+            validator.setTagPolicy(CBORCryptoUtils.POLICY.MANDATORY);
         }
 
-        signer.sign(7, tbs);
-        byte[] sd = tbs.encode();
+        CBORObject signedData = signer.sign(7, tbs);
+        byte[] sd = signedData.encode();
         CBORObject cborSd = CBORObject.decode(sd);
         return validator.validate(7, cborSd);
      }
@@ -1253,7 +1261,16 @@ public class CBORTest {
         });
         
         CBORObject taggedSignature = tagSigner.sign(7, createDataToBeSigned());
-        new CBORAsymKeyValidator(p256.getPublic()).validate(7, taggedSignature);
+        try {
+            new CBORAsymKeyValidator(p256.getPublic()).validate(7, taggedSignature);
+            fail("must fail");
+        } catch (Exception e) {
+            checkException(e, "Tag encountered. Policy: FORBIDDEN");
+        }
+        new CBORAsymKeyValidator(p256.getPublic())
+           .setTagPolicy(CBORCryptoUtils.POLICY.OPTIONAL).validate(7, taggedSignature);
+        new CBORAsymKeyValidator(p256.getPublic())
+            .setTagPolicy(CBORCryptoUtils.POLICY.MANDATORY).validate(7, taggedSignature);
         CBORTag signTag = taggedSignature.getTag();
         assertTrue("tagn", tag == signTag.getTagNumber());
         CBORArray tagData = signTag.getObject().getArray();
@@ -1273,7 +1290,8 @@ public class CBORTest {
         });
         
         taggedSignature = tagSigner.sign(7, createDataToBeSigned());
-        new CBORAsymKeyValidator(p256.getPublic()).validate(7, taggedSignature);
+        new CBORAsymKeyValidator(p256.getPublic())
+            .setTagPolicy(CBORCryptoUtils.POLICY.MANDATORY).validate(7, taggedSignature);
         signTag = taggedSignature.getTag();
         assertTrue("tagn", tag == signTag.getTagNumber());
     }
@@ -1500,18 +1518,28 @@ public class CBORTest {
         CBORObject taggedX25519Encrypted = taggedX25519Encrypter.encrypt(dataToEncrypt);
         try {
             assertTrue("enc/dec", 
-                    ArrayUtil.compare(new CBORAsymKeyDecrypter(
-                                            x25519.getPrivate()).decrypt(taggedX25519Encrypted),
+                    ArrayUtil.compare(new CBORAsymKeyDecrypter(x25519.getPrivate())
+                                          .decrypt(taggedX25519Encrypted),
                                       dataToEncrypt));
             fail("must fail");
         } catch (Exception e) {
-            checkException(e, "Custom data found but not enabled");
+            checkException(e, "Tag encountered. Policy: FORBIDDEN");
+        }
+        try {
+            assertTrue("enc/dec", 
+                    ArrayUtil.compare(new CBORAsymKeyDecrypter(x25519.getPrivate())
+                                          .setTagPolicy(CBORCryptoUtils.POLICY.MANDATORY)
+                                          .decrypt(taggedX25519Encrypted),
+                                      dataToEncrypt));
+            fail("must fail");
+        } catch (Exception e) {
+            checkException(e, "Custom data encountered. Policy: FORBIDDEN");
         }
         assertTrue("enc/dec", 
-                ArrayUtil.compare(new CBORAsymKeyDecrypter(
-                                        x25519.getPrivate())
-                        .enableCustomData(true)
-                        .decrypt(taggedX25519Encrypted),
+                ArrayUtil.compare(new CBORAsymKeyDecrypter(x25519.getPrivate())
+                                      .setCustomDataPolicy(CBORCryptoUtils.POLICY.MANDATORY)
+                                      .setTagPolicy(CBORCryptoUtils.POLICY.MANDATORY)
+                                      .decrypt(taggedX25519Encrypted),
                                   dataToEncrypt));
         CBORTag cborTag = taggedX25519Encrypted.getTag();
         assertTrue("tagn", cborTag.getTagNumber() == 211);
@@ -1521,7 +1549,8 @@ public class CBORTest {
         assertTrue("arr[1]", cborArray.getObject(1).getMap()
                  .getObject(CUSTOM_DATA_LABEL).getArray().getObject(0).getInt() == 500);
         assertTrue("utl", cborArray.getObject(1).equals(
-                CBORCryptoUtils.unwrapContainerMap(taggedX25519Encrypted)));
+                CBORCryptoUtils.unwrapContainerMap(taggedX25519Encrypted,
+                                                   CBORCryptoUtils.POLICY.MANDATORY)));
  
         taggedX25519Encrypter = new CBORAsymKeyEncrypter(x25519.getPublic(),
                                          KeyEncryptionAlgorithms.ECDH_ES_A256KW,
@@ -1539,8 +1568,9 @@ public class CBORTest {
 
         taggedX25519Encrypted = taggedX25519Encrypter.encrypt(dataToEncrypt);
         assertTrue("enc/dec", 
-                ArrayUtil.compare(new CBORAsymKeyDecrypter(
-                                        x25519.getPrivate()).decrypt(taggedX25519Encrypted),
+                ArrayUtil.compare(new CBORAsymKeyDecrypter(x25519.getPrivate())
+                                      .setTagPolicy(CBORCryptoUtils.POLICY.MANDATORY)
+                                      .decrypt(taggedX25519Encrypted),
                                   dataToEncrypt));
         cborTag = taggedX25519Encrypted.getTag();
         assertTrue("tagn", cborTag.getTagNumber() == 9999999);

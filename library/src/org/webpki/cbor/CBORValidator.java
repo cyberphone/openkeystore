@@ -20,6 +20,8 @@ import java.io.IOException;
 
 import java.security.GeneralSecurityException;
 
+import org.webpki.cbor.CBORCryptoUtils.POLICY;
+
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
 /**
@@ -43,22 +45,37 @@ public abstract class CBORValidator {
                                  byte[] signatureValue,
                                  byte[] signedData) throws IOException, GeneralSecurityException;
  
-    boolean enableCustomData;
-    
+    POLICY customDataPolicy = POLICY.FORBIDDEN;
+
     /**
-     * Enables custom extension data.
+     * Sets custom extension data policy.
      * <p>
      * By default custom data elements ({@link CBORCryptoConstants#CUSTOM_DATA_LABEL}) 
      * are rejected.
      * </p>
-     * @param flag Set to <code>true</code> if custom data is to be permitted.
+     * @param customDataPolicy Define level of support
      * @return <code>this</code>
      */
-    public CBORValidator enableCustomData(boolean flag) {
-        enableCustomData = flag;
+    public CBORValidator setCustomDataPolicy(POLICY customDataPolicy) {
+        this.customDataPolicy = customDataPolicy;
         return this;
     }
-    
+
+    POLICY tagPolicy = POLICY.FORBIDDEN;
+
+    /**
+     * Sets tag wrapping policy.
+     * <p>
+     * See {@link CBORCryptoUtils#unwrapContainerMap(CBORObject, POLICY tagPolicy)} for details.
+     * </p>
+     * @param tagPolicy Define level of support
+     * @return <code>this</code>
+     */
+    public CBORValidator setTagPolicy(POLICY tagPolicy) {
+        this.tagPolicy = tagPolicy;
+        return this;
+    }
+
     /**
      * Validates signed CBOR object.
      * <p>
@@ -69,7 +86,7 @@ public abstract class CBORValidator {
      * Note that if <code>signedObject</code> holds a CBOR
      * <code>tag</code> object the <code>tag</code> must in turn contain the signed <code>map</code>.
      * Such a <code>tag</code> is also included in the signed data.
-     * See {@link CBORCryptoUtils#unwrapContainerMap(CBORObject)} for details.
+     * See {@link CBORCryptoUtils#unwrapContainerMap(CBORObject, POLICY tagPolicy)} for details.
      * </p>
      * 
      * @param key Key in map holding signature
@@ -82,33 +99,33 @@ public abstract class CBORValidator {
             throws IOException, GeneralSecurityException {
 
         // There may be a tag holding the signed map.
-        CBORMap signedMap = CBORCryptoUtils.unwrapContainerMap(signedObject);
+        CBORMap signedMap = CBORCryptoUtils.unwrapContainerMap(signedObject, tagPolicy);
 
-        // Fetch signature object
-        CBORMap signatureObject = signedMap.getObject(key).getMap();
+        // Fetch signature container object
+        CBORMap csfContainer = signedMap.getObject(key).getMap();
 
         // Get the signature value and remove it from the (map) object.
-        byte[] signatureValue = signatureObject.readByteStringAndRemoveKey(SIGNATURE_LABEL);
+        byte[] signatureValue = csfContainer.readByteStringAndRemoveKey(SIGNATURE_LABEL);
 
         // Fetch optional keyId.
-        CBORObject optionalKeyId = CBORCryptoUtils.getOptionalKeyId(signatureObject);
+        CBORObject optionalKeyId = CBORCryptoUtils.getOptionalKeyId(csfContainer);
 
         // Special handling of custom data.
-        CBORCryptoUtils.scanCustomData(signatureObject, enableCustomData);
+        CBORCryptoUtils.scanCustomData(csfContainer, customDataPolicy);
 
         // Call algorithm specific validator. The code below presumes that internalEncode()
         // returns a deterministic representation of the signed CBOR data.
-        coreValidation(signatureObject,
-                       signatureObject.getObject(ALGORITHM_LABEL).getInt(),
+        coreValidation(csfContainer,
+                       csfContainer.getObject(ALGORITHM_LABEL).getInt(),
                        optionalKeyId, 
                        signatureValue,
                        signedObject.internalEncode());
 
         // Check that nothing "extra" was supplied.
-        signatureObject.checkForUnread();
+        csfContainer.checkForUnread();
 
         // Restore object.
-        signatureObject.setObject(SIGNATURE_LABEL, new CBORByteString(signatureValue));
+        csfContainer.setObject(SIGNATURE_LABEL, new CBORByteString(signatureValue));
         
         // Return it as well.
         return signedObject;

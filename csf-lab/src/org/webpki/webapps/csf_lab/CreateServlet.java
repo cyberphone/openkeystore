@@ -35,7 +35,6 @@ import org.webpki.cbor.CBORHmacSigner;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORSigner;
-import org.webpki.cbor.CBORTypes;
 import org.webpki.cbor.CBORX509Signer;
 
 import org.webpki.crypto.AlgorithmPreferences;
@@ -294,8 +293,8 @@ public class CreateServlet extends CoreRequestServlet {
                     getCborFromHex(getParameter(request, PRM_CBOR_DATA)));
             
             // This is certainly not something you would do in a normal case...
-            CBORMap mapToSign = rawCbor.getType() == CBORTypes.TAG ?
-                CBORCryptoUtils.unwrapContainerMap(rawCbor) : rawCbor.getMap();
+            CBORMap mapToSign = CBORCryptoUtils.unwrapContainerMap(rawCbor, 
+                                                                   CBORCryptoUtils.POLICY.OPTIONAL);
 
             CBORObject signatureLabel = getSignatureLabel(request);
             boolean keyInlining = request.getParameter(FLG_PUB_INLINE) != null;

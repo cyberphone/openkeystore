@@ -64,7 +64,7 @@ public abstract class CBOREncrypter {
      * Sets optional Intercepter.
      * 
      * @param intercepter An instance of Intercepter
-     * @return this
+     * @return <code>this</code>
      */
     public CBOREncrypter setIntercepter(Intercepter intercepter) {
         this.intercepter = intercepter;
@@ -91,7 +91,7 @@ public abstract class CBOREncrypter {
      * </p>
      * 
      * @param keyId Key Id or <code>null</code>
-     * @return this
+     * @return <code>this</code>
      */
     public CBOREncrypter setKeyId(CBORObject keyId) {
         this.optionalKeyId = keyId;
@@ -104,7 +104,7 @@ public abstract class CBOREncrypter {
      * The <code>keyId</code> will be represented as a CBOR <code>integer</code>.
      * 
      * @param keyId Key Id
-     * @return this
+     * @return <code>this</code>
      */
     public CBOREncrypter setKeyId(int keyId) {
         return setKeyId(new CBORInteger(keyId));
@@ -116,7 +116,7 @@ public abstract class CBOREncrypter {
      * The <code>keyId</code> will be represented as a CBOR <code>text&nbsp;string</code>.
      * 
      * @param keyId Key Id
-     * @return this
+     * @return <code>this</code>
      */
     public CBOREncrypter setKeyId(String keyId) {
         return setKeyId(new CBORTextString(keyId));
@@ -126,7 +126,7 @@ public abstract class CBOREncrypter {
      * Encrypts data.
      * <p>
      * Note that a {@link CBORTag} may embed the encryption object.
-     * See {@link CBORCryptoUtils#unwrapContainerMap(CBORObject)} for details.
+     * See {@link CBORCryptoUtils#unwrapContainerMap(CBORObject, POLICY tagPolicy)} for details.
      * </p>
      * 
      * @param dataToEncrypt The data to encrypt

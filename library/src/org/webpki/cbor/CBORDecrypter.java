@@ -23,6 +23,8 @@ import java.security.GeneralSecurityException;
 import org.webpki.crypto.ContentEncryptionAlgorithms;
 import org.webpki.crypto.EncryptionCore;
 
+import org.webpki.cbor.CBORCryptoUtils.POLICY;
+
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
 /**
@@ -45,22 +47,37 @@ public abstract class CBORDecrypter {
                                             CBORObject optionalKeyId) 
             throws IOException, GeneralSecurityException;
 
-    boolean enableCustomData;
+    POLICY customDataPolicy = POLICY.FORBIDDEN;
     
     /**
-     * Enables custom extension data.
+     * Sets custom extension data policy.
      * <p>
      * By default custom data elements ({@link CBORCryptoConstants#CUSTOM_DATA_LABEL}) 
-     * are rejected.
+     * are rejected ({@link CBORCryptoUtils.POLICY#FORBIDDEN}).
      * </p>
-     * @param flag Set to <code>true</code> if custom data is to be permitted.
+     * @param customDataPolicy Define level of support
      * @return <code>this</code>
      */
-    public CBORDecrypter enableCustomData(boolean flag) {
-        enableCustomData = flag;
+    public CBORDecrypter setCustomDataPolicy(POLICY customDataPolicy) {
+        this.customDataPolicy = customDataPolicy;
         return this;
     }
-    
+
+    POLICY tagPolicy = POLICY.FORBIDDEN;
+
+    /**
+     * Sets tag wrapping policy.
+     * <p>
+     * See {@link CBORCryptoUtils#unwrapContainerMap(CBORObject, POLICY tagPolicy)} for details.
+     * </p>
+     * @param tagPolicy Define level of support
+     * @return <code>this</code>
+     */
+    public CBORDecrypter setTagPolicy(POLICY tagPolicy) {
+        this.tagPolicy = tagPolicy;
+        return this;
+    }    
+ 
     /**
      * Decrypts data.
      * <p>
@@ -72,7 +89,11 @@ public abstract class CBORDecrypter {
      * <code>tag</code> object the <code>tag</code> must in turn contain the actual
      * encryption object.
      * Such a <code>tag</code> is also included in the authenticated data.
-     * See {@link CBORCryptoUtils#unwrapContainerMap(CBORObject)} for details.
+     * See {@link CBORCryptoUtils#unwrapContainerMap(CBORObject, POLICY tagPolicy)} for details.
+     * </p>
+     * <p>
+     * Possible custom data ({@link CBORCryptoConstants#CUSTOM_DATA_LABEL})
+     * must be read directly from the <code>encryptionObject</code>.
      * </p>
      * @param encryptionObject CBOR encryption object
      * @return Decrypted data
@@ -82,23 +103,23 @@ public abstract class CBORDecrypter {
     public byte[] decrypt(CBORObject encryptionObject) throws IOException, 
                                                               GeneralSecurityException {
 
-        // There may be a tag holding the encryption map.
-        CBORMap encryptionMap = CBORCryptoUtils.unwrapContainerMap(encryptionObject);
+        // There may be a tag holding the encryption container object (main map).
+        CBORMap cefContainer = CBORCryptoUtils.unwrapContainerMap(encryptionObject, tagPolicy);
 
         // Get the mandatory content encryption algorithm.
         ContentEncryptionAlgorithms contentEncryptionAlgorithm =
                 ContentEncryptionAlgorithms.getAlgorithmFromId(
-                        encryptionMap.getObject(ALGORITHM_LABEL).getInt());
+                        cefContainer.getObject(ALGORITHM_LABEL).getInt());
 
-        // Possible key encryption kicks in here.
+        // Possible key encryption kicks in here.  That is, there is a sub map.
         CBORMap innerObject = this instanceof CBORSymKeyDecrypter ? 
-                encryptionMap : encryptionMap.getObject(KEY_ENCRYPTION_LABEL).getMap();
+                cefContainer : cefContainer.getObject(KEY_ENCRYPTION_LABEL).getMap();
               
         // Fetch optional keyId.
         CBORObject optionalKeyId = CBORCryptoUtils.getOptionalKeyId(innerObject);
 
         // Special handling of custom data.
-        CBORCryptoUtils.scanCustomData(encryptionMap, enableCustomData);
+        CBORCryptoUtils.scanCustomData(cefContainer, customDataPolicy);
 
         // Get the content encryption key which also may be encrypted.
         byte[] contentDecryptionKey = getContentEncryptionKey(innerObject,
@@ -107,13 +128,13 @@ public abstract class CBORDecrypter {
         
         // Read and remove the encryption object (map) parameters that
         // do not participate (because they cannot) in "authData".
-        byte[] iv = encryptionMap.readByteStringAndRemoveKey(IV_LABEL);
-        byte[] tag = encryptionMap.readByteStringAndRemoveKey(TAG_LABEL);
-        byte[] cipherText = encryptionMap.readByteStringAndRemoveKey(CIPHER_TEXT_LABEL);
+        byte[] iv = cefContainer.readByteStringAndRemoveKey(IV_LABEL);
+        byte[] tag = cefContainer.readByteStringAndRemoveKey(TAG_LABEL);
+        byte[] cipherText = cefContainer.readByteStringAndRemoveKey(CIPHER_TEXT_LABEL);
         
         // Check that there is no unread (illegal) data like public 
         // keys in symmetric encryption or just plain unknown elements.
-        encryptionMap.checkForUnread();
+        cefContainer.checkForUnread();
         
         // Now we should have everything for decrypting the actual data.
         // Use the remaining CBOR data as "authData".
@@ -125,9 +146,9 @@ public abstract class CBORDecrypter {
         byte[] authData = encryptionObject.internalEncode();
         
         // Be nice and restore the object as well.
-        encryptionMap.setByteString(IV_LABEL, iv);
-        encryptionMap.setByteString(TAG_LABEL, tag);
-        encryptionMap.setByteString(CIPHER_TEXT_LABEL, cipherText);
+        cefContainer.setByteString(IV_LABEL, iv);
+        cefContainer.setByteString(TAG_LABEL, tag);
+        cefContainer.setByteString(CIPHER_TEXT_LABEL, cipherText);
          
         // Perform the actual decryption.
         return EncryptionCore.contentDecryption(contentEncryptionAlgorithm,

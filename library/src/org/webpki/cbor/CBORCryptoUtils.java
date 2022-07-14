@@ -113,7 +113,7 @@ public class CBORCryptoUtils {
         /**
          * Optionally wraps a map in a tag.
          * <p>
-         * See {@link CBORCryptoUtils#unwrapContainerMap(CBORObject)} for details
+         * See {@link CBORCryptoUtils#unwrapContainerMap(CBORObject, POLICY tagPolicy)} for details
          * on the syntax for wrapped maps.
          * </p>
          * 
@@ -145,6 +145,15 @@ public class CBORCryptoUtils {
         default CBORObject getCustomData() throws IOException, GeneralSecurityException {
             return null;
         }
+    }
+    
+    /**
+     * Policy regarding additional CSF and CEF features.
+     */
+    public static enum POLICY {FORBIDDEN, OPTIONAL, MANDATORY}
+    
+    static void inputError(String text, POLICY policy) throws IOException {
+        CBORObject.reportError(String.format("%s. Policy: %s", text, policy.toString()));
     }
  
     /**
@@ -179,21 +188,27 @@ public class CBORCryptoUtils {
      * </p>
      * 
      * @param container A map optionally enclosed in a tag 
+     * @param tagPolicy Tagging policy 
      * @return The map object without the tag
      * @throws IOException
      */
-    public static CBORMap unwrapContainerMap(CBORObject container) throws IOException {
+    public static CBORMap unwrapContainerMap(CBORObject container, POLICY tagPolicy)
+            throws IOException {
         if (container.getType() == CBORTypes.TAG) {
+            if (tagPolicy == POLICY.FORBIDDEN) {
+                inputError("Tag encountered", tagPolicy);
+            }
             CBORObject tagged = container.getTag().getObject();;
             if (tagged.getType() == CBORTypes.ARRAY) {
                 CBORArray holder = tagged.getArray();
                 if (holder.size() != 2 ||
                     holder.getObject(0).getType() != CBORTypes.TEXT_STRING) {
-                    throw new IOException(
-                            "Tag syntax nnn([\"string\", {}]) expected");
+                    CBORObject.reportError("Tag syntax nnn([\"string\", {}]) expected");
                 }
                 container = holder.getObject(1);
             } else container = tagged;
+        } else if (tagPolicy == POLICY.MANDATORY) {
+            inputError("Missing tag", tagPolicy);
         }
         return container.getMap();
     }
@@ -205,14 +220,16 @@ public class CBORCryptoUtils {
             holderMap.getObject(KEY_ID_LABEL).scan() : null;
     }
     
-    static void scanCustomData(CBORMap holderMap, boolean enableCustomData) throws IOException {
+    static void scanCustomData(CBORMap holderMap, POLICY customDataPolicy) throws IOException {
  
         // Access a possible customData element in order satisfy checkForUnread().
         if (holderMap.hasKey(CUSTOM_DATA_LABEL)) {
-            if (!enableCustomData) {
-                throw new IOException("Custom data found but not enabled");
+            if (customDataPolicy == POLICY.FORBIDDEN) {
+                inputError("Custom data encountered", customDataPolicy);
             }
             holderMap.getObject(CUSTOM_DATA_LABEL).scan();
+        } else if (customDataPolicy == POLICY.MANDATORY) {
+            inputError("Missing custom data", customDataPolicy);
         }
     }
     
