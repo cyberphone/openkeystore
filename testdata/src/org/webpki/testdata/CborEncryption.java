@@ -302,7 +302,7 @@ public class CborEncryption {
                                boolean wantPublicKey,
                                int tagged,
                                boolean customData) {
-        return  (tagged == 1 ? "tag1dim." : tagged == 2 ? "tag2dim." : "") + (customData ? "customData." : "") +
+        return  (tagged == 1 ? "tag1dim." : tagged == 2 ? "tag2dim." : "") + (customData ? "custdat." : "") +
                 (wantKeyId ? "kid" : wantPublicKey ? "pub" : "imp") + ".cbor";
     }
     
