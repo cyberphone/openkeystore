@@ -132,8 +132,9 @@ public class PEMDecoder {
             return privateKey;
         }
         KeyAlgorithms keyAlgorithm = OkpSupport.getKeyAlgorithm(privateKey);
-        return OkpSupport.raw2PrivateKey(OkpSupport.private2RawKey(privateKey, keyAlgorithm), 
-                                         keyAlgorithm);
+        return OkpSupport.raw2PrivateKey(OkpSupport.private2RawKey(privateKey, 
+                                                                         keyAlgorithm), 
+                                            keyAlgorithm);
     }
 
     public static KeyPair getKeyPair(byte[] pemBlob) throws IOException, GeneralSecurityException {

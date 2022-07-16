@@ -46,9 +46,10 @@ public class JSONAsymKeyVerifier extends JSONVerifier {
     }
 
     @Override
-    void verify(JSONSignatureDecoder signatureDecoder) throws IOException {
+    void verify(JSONSignatureDecoder signatureDecoder) 
+            throws IOException, GeneralSecurityException {
         if (signatureDecoder.publicKey == null) {
-            signatureDecoder.asymmetricSignatureVerification(expectedPublicKey);
+            signatureDecoder.asymKeySignatureValidation(expectedPublicKey);
         } else if (!signatureDecoder.publicKey.equals(expectedPublicKey)) {
             throw new IOException("Provided public key differs from the signature key");
         }

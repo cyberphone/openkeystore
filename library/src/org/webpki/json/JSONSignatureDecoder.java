@@ -32,7 +32,6 @@ import org.webpki.crypto.SignatureAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.HmacAlgorithms;
-import org.webpki.crypto.KeyAlgorithms;
 
 /**
  * Decoder for JSF signatures.
@@ -160,26 +159,18 @@ public class JSONSignatureDecoder {
 
         // Signatures with in-lined keys can be verified.  Note: verified <> trusted!
         if (certificatePath != null) {
-            asymmetricSignatureVerification(certificatePath[0].getPublicKey());
+            asymKeySignatureValidation(certificatePath[0].getPublicKey());
         } else if (publicKey != null) {
-            asymmetricSignatureVerification(publicKey);
+            asymKeySignatureValidation(publicKey);
         }
     }
 
-    void asymmetricSignatureVerification(PublicKey publicKey) throws IOException {
-        if (((AsymSignatureAlgorithms) signatureAlgorithm).getKeyType() !=
-                KeyAlgorithms.getKeyAlgorithm(publicKey).getKeyType()) {
-            throw new IllegalArgumentException("Algorithm \"" + algorithmString + 
-                                  "\" doesn't match key type: " + publicKey.getAlgorithm());
-        }
-        try {
-            if (!new SignatureWrapper((AsymSignatureAlgorithms) signatureAlgorithm, publicKey)
-                         .update(normalizedData)
-                         .verify(signatureValue)) {
-                throw new IOException("Bad signature for key: " + publicKey.toString());
-            }
-        } catch (GeneralSecurityException e) {
-            throw new IOException(e);
+    void asymKeySignatureValidation(PublicKey publicKey) 
+            throws IOException, GeneralSecurityException {
+        if (!new SignatureWrapper((AsymSignatureAlgorithms) signatureAlgorithm, publicKey)
+                     .update(normalizedData)
+                     .verify(signatureValue)) {
+            throw new IOException("Bad signature for key: " + publicKey.toString());
         }
     }
 
