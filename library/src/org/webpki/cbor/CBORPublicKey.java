@@ -143,7 +143,7 @@ public class CBORPublicKey {
                 cosePublicKey.setObject(COSE_KTY_LABEL, COSE_OKP_KTY)
                              .setObject(COSE_OKP_CRV_LABEL, WEBPKI_2_COSE_CRV.get(keyAlg))
                              .setByteString(COSE_OKP_X_LABEL,
-                                            OkpSupport.public2RawOkpKey(jcePublicKey, keyAlg));
+                                            OkpSupport.public2RawKey(jcePublicKey, keyAlg));
         }
         return cosePublicKey;
     }
@@ -214,7 +214,7 @@ public class CBORPublicKey {
                 if (keyAlg.getKeyType() != KeyTypes.EDDSA && keyAlg.getKeyType() != KeyTypes.XEC) {
                     throw new GeneralSecurityException("Invalid OKP curve: " + keyAlg.toString());
                 }
-                publicKey = OkpSupport.raw2PublicOkpKey(
+                publicKey = OkpSupport.raw2PublicKey(
                     publicKeyMap.getObject(COSE_OKP_X_LABEL).getByteString(), keyAlg);
         }
         return publicKey;

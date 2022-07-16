@@ -96,7 +96,7 @@ public class PEMDecoder {
                                                                 GeneralSecurityException {
         ASN1Sequence seq = ParseUtil.sequence(DerDecoder.decode(pkcs8));
         KeyAlgorithms keyAlgorithm = 
-                getOkpKeyAlgorithm(ParseUtil.oid(ParseUtil.sequence(seq.get(1)).get(0)).oid());
+                getKeyAlgorithm(ParseUtil.oid(ParseUtil.sequence(seq.get(1)).get(0)).oid());
         byte[] content;
         try {
             content = ParseUtil.simpleContext(seq.get(seq.size() - 1), 1).encodeContent();
@@ -110,7 +110,7 @@ public class PEMDecoder {
         }
         byte[] publicKey = new byte[content.length - 1];
         System.arraycopy(content, 1, publicKey, 0, publicKey.length);
-        return OkpSupport.raw2PublicOkpKey(publicKey, keyAlgorithm);
+        return OkpSupport.raw2PublicKey(publicKey, keyAlgorithm);
 
     }
     
@@ -131,10 +131,9 @@ public class PEMDecoder {
         if (privateKey instanceof RSAKey) {
             return privateKey;
         }
-        KeyAlgorithms keyAlgorithm = OkpSupport.getOkpKeyAlgorithm(privateKey);
-        return OkpSupport.raw2PrivateOkpKey(OkpSupport.private2RawOkpKey(privateKey, 
-                                                                         keyAlgorithm), 
-                                            keyAlgorithm);
+        KeyAlgorithms keyAlgorithm = OkpSupport.getKeyAlgorithm(privateKey);
+        return OkpSupport.raw2PrivateKey(OkpSupport.private2RawKey(privateKey, keyAlgorithm), 
+                                         keyAlgorithm);
     }
 
     public static KeyPair getKeyPair(byte[] pemBlob) throws IOException, GeneralSecurityException {
@@ -152,7 +151,7 @@ public class PEMDecoder {
         return new KeyPair(okpPublicKeyFromPKCS8(pkcs8), privateKey);
     }
     
-    static KeyAlgorithms getOkpKeyAlgorithm(String oid) throws IOException {
+    static KeyAlgorithms getKeyAlgorithm(String oid) throws IOException {
         for (KeyAlgorithms keyAlgorithm : KeyAlgorithms.values()) {
             if (oid.equals(keyAlgorithm.getECDomainOID())) {
                 return keyAlgorithm;
@@ -165,7 +164,7 @@ public class PEMDecoder {
     throws IOException, GeneralSecurityException {
         String oid = ParseUtil.oid(ParseUtil.sequence(object).get(0)).oid();
         if (oid.startsWith("1.3.101.11")) {
-            return KeyFactory.getInstance(getOkpKeyAlgorithm(oid).getJceName());
+            return KeyFactory.getInstance(getKeyAlgorithm(oid).getJceName());
         }
         return KeyFactory.getInstance(oid.equals("1.2.840.113549.1.1.1") ? "RSA" : "EC");
     }

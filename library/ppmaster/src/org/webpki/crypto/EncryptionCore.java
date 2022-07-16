@@ -599,10 +599,10 @@ public class EncryptionCore {
         } else {
 //#if BOUNCYCASTLE
             paramSpec = new XDHParameterSpec(
-                    OkpSupport.getOkpKeyAlgorithm(staticKey).getJceName());
+                    OkpSupport.getKeyAlgorithm(staticKey).getJceName());
 //#else
             paramSpec = new NamedParameterSpec(
-                    OkpSupport.getOkpKeyAlgorithm(staticKey).getJceName());
+                    OkpSupport.getKeyAlgorithm(staticKey).getJceName());
 //#endif
             generator = ecProviderName == null ?
 //#if BOUNCYCASTLE

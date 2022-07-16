@@ -482,7 +482,7 @@ public class JSONCryptoHelper {
                     throw new IllegalArgumentException("\"" + JSONCryptoHelper.CRV_JSON + 
                                                        "\" is not a valid OKP type");
                 }
-                publicKey = OkpSupport.raw2PublicOkpKey(rd.getBinary(JSONCryptoHelper.X_JSON), 
+                publicKey = OkpSupport.raw2PublicKey(rd.getBinary(JSONCryptoHelper.X_JSON), 
                                                         keyAlgorithm);
                 break;
             default:
@@ -513,7 +513,7 @@ public class JSONCryptoHelper {
                                              getCryptoBinary(rd, "dq"),
                                              getCryptoBinary(rd, "qi")));
         default:
-            return OkpSupport.raw2PrivateOkpKey(rd.getBinary("d"), keyAlgorithm);
+            return OkpSupport.raw2PrivateKey(rd.getBinary("d"), keyAlgorithm);
         }
     }
  }

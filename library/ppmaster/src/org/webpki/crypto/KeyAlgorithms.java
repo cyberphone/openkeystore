@@ -362,7 +362,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
             }
             throw new IllegalArgumentException("Unsupported RSA key size: " + lengthInBits);
         }
-        return OkpSupport.getOkpKeyAlgorithm(key);
+        return OkpSupport.getKeyAlgorithm(key);
     }
 
     // Public keys read from specific security providers are not comparable to 
@@ -380,8 +380,8 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                     new RSAPublicKeySpec(((RSAPublicKey)publicKey).getModulus(),
                                          ((RSAPublicKey)publicKey).getPublicExponent()));
         }
-        KeyAlgorithms keyAlgorithm = OkpSupport.getOkpKeyAlgorithm(publicKey);
-        return OkpSupport.raw2PublicOkpKey(OkpSupport.public2RawOkpKey(publicKey, keyAlgorithm),
+        KeyAlgorithms keyAlgorithm = OkpSupport.getKeyAlgorithm(publicKey);
+        return OkpSupport.raw2PublicKey(OkpSupport.public2RawKey(publicKey, keyAlgorithm),
                                            keyAlgorithm);
     }
 

@@ -117,7 +117,7 @@ public class CBORKeyPair {
 
             default:
                 cosePrivateKey.setObject(COSE_OKP_D_LABEL, new CBORByteString(
-                        OkpSupport.private2RawOkpKey(keyPair.getPrivate(), keyAlg)));
+                        OkpSupport.private2RawKey(keyPair.getPrivate(), keyAlg)));
             
         }
         return cosePrivateKey;
@@ -161,7 +161,7 @@ public class CBORKeyPair {
                 break;
 
             default:
-                privateKey = OkpSupport.raw2PrivateOkpKey(
+                privateKey = OkpSupport.raw2PrivateKey(
                         privateKeyMap.getObject(COSE_OKP_D_LABEL).getByteString(),
                         CBORPublicKey.getKeyAlgorithmFromCurveId(
                                 privateKeyMap.getObject(COSE_OKP_CRV_LABEL)));

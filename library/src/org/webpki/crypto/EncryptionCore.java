@@ -556,7 +556,7 @@ public class EncryptionCore {
                     KeyPairGenerator.getInstance("EC", ecProviderName);
         } else {
             paramSpec = new NamedParameterSpec(
-                    OkpSupport.getOkpKeyAlgorithm(staticKey).getJceName());
+                    OkpSupport.getKeyAlgorithm(staticKey).getJceName());
             generator = ecProviderName == null ?
                     KeyPairGenerator.getInstance("XDH") 
                                               : 

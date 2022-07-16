@@ -26,7 +26,6 @@ import org.webpki.crypto.AsymKeySignerInterface;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.SignatureAlgorithms;
-import org.webpki.crypto.SignatureWrapper;
 
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
@@ -85,9 +84,10 @@ public class CBORAsymKeySigner extends CBORSigner {
             @Override
             public byte[] signData(byte[] dataToBeSigned) throws IOException,
                                                                  GeneralSecurityException {
-                return new SignatureWrapper(algorithm, privateKey, provider)
-                        .update(dataToBeSigned)
-                        .sign();            
+                return CBORCryptoUtils.asymKeySignatureGeneration(privateKey,
+                                                                  algorithm,
+                                                                  dataToBeSigned, 
+                                                                  provider);
             }
             
             @Override

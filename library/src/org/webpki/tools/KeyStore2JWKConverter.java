@@ -208,7 +208,7 @@ public class KeyStore2JWKConverter {
            }
            break;
         default:
-            addPrivateKeyElement("d", OkpSupport.private2RawOkpKey(privateKey, keyAlgorithm));
+            addPrivateKeyElement("d", OkpSupport.private2RawKey(privateKey, keyAlgorithm));
         }
         for (String key : privateKeyInfo.keySet()) {
             jwk.setString(key, privateKeyInfo.get(key));

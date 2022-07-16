@@ -97,10 +97,10 @@ public class KeyStore2PEMConverter {
                 new ASN1Integer(1),
                 new ASN1Sequence(new ASN1ObjectID(keyAlgorithm.getECDomainOID())),
                 new ASN1OctetString(new ASN1OctetString(
-                        OkpSupport.private2RawOkpKey(privateKey, keyAlgorithm)).encode()),
+                        OkpSupport.private2RawKey(privateKey, keyAlgorithm)).encode()),
                 new SimpleContextSpecific(1, 
                         ArrayUtil.add(new byte[] {0},  // BITSTRING unused bits 
-                                      OkpSupport.public2RawOkpKey(publicKey, keyAlgorithm)))
+                                      OkpSupport.public2RawKey(publicKey, keyAlgorithm)))
             }).encode();
         }
         writeObject("PRIVATE KEY", encoded);

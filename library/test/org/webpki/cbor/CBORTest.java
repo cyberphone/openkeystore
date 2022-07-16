@@ -1222,7 +1222,8 @@ public class CBORTest {
                     new CBORAsymKeyValidator(ed25519.getPublic()));
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, "Algorithm ECDSA_SHA256 does not match key type ED25519");
+            checkException(e, "Supplied key (ED25519) is incompatible " +
+                              "with specified algorithm (ECDSA_SHA256)");
         }
         
         try {

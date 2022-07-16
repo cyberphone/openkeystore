@@ -78,7 +78,7 @@ public class OkpSupport {
         }
     }
 
-    public static byte[] public2RawOkpKey(PublicKey publicKey, KeyAlgorithms keyAlgorithm)
+    public static byte[] public2RawKey(PublicKey publicKey, KeyAlgorithms keyAlgorithm)
             throws IOException {
         byte[] encoded = publicKey.getEncoded();
         int prefixLength = okpPrefix.get(keyAlgorithm).length;
@@ -90,10 +90,10 @@ public class OkpSupport {
         return rawKey;
     }
 
-    public static PublicKey raw2PublicOkpKey(byte[] x, KeyAlgorithms keyAlgorithm) 
-            throws GeneralSecurityException {
+    public static PublicKey raw2PublicKey(byte[] x, KeyAlgorithms keyAlgorithm) 
+            throws IOException, GeneralSecurityException {
         if (okpKeyLength.get(keyAlgorithm) != x.length) {
-            throw new GeneralSecurityException("Wrong public key length for: " + keyAlgorithm.toString());
+            throw new IOException("Wrong public key length for: " + keyAlgorithm.toString());
         }
         return KeyFactory.getInstance(keyAlgorithm.getJceName())
                 .generatePublic(
@@ -101,7 +101,7 @@ public class OkpSupport {
                                 ArrayUtil.add(okpPrefix.get(keyAlgorithm), x)));
     }
 
-    public static byte[] private2RawOkpKey(PrivateKey privateKey, KeyAlgorithms keyAlgorithm) 
+    public static byte[] private2RawKey(PrivateKey privateKey, KeyAlgorithms keyAlgorithm) 
             throws IOException {
         byte[] rawKey = ParseUtil.octet(
                 DerDecoder.decode(
@@ -114,7 +114,7 @@ public class OkpSupport {
         return rawKey;
     }
 
-    public static PrivateKey raw2PrivateOkpKey(byte[] d, KeyAlgorithms keyAlgorithm)
+    public static PrivateKey raw2PrivateKey(byte[] d, KeyAlgorithms keyAlgorithm)
             throws IOException, GeneralSecurityException {
         KeyFactory keyFactory = KeyFactory.getInstance(keyAlgorithm.getJceName());
         byte[] pkcs8 = new ASN1Sequence(new BaseASN1Object[] {
@@ -125,7 +125,7 @@ public class OkpSupport {
         return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(pkcs8));
     }
 
-    public static KeyAlgorithms getOkpKeyAlgorithm(Key key) {
+    public static KeyAlgorithms getKeyAlgorithm(Key key) {
         if (key instanceof XECKey) {
             return KeyAlgorithms.getKeyAlgorithmFromId(
                     ((NamedParameterSpec)((XECKey)key).getParams()).getName(),
@@ -136,6 +136,6 @@ public class OkpSupport {
                     ((EdECKey)key).getParams().getName(),
                     AlgorithmPreferences.JOSE);
         }
-        throw new IllegalArgumentException("Unknown key type: " + key.getClass().getName());
+        throw new IllegalArgumentException("Unknown OKP key type: " + key.getClass().getName());
     }
 }

@@ -26,24 +26,24 @@ import java.security.Key;
 //#if ANDROID
 
 public class OkpSupport {
-    public static byte[] public2RawOkpKey(PublicKey publicKey, KeyAlgorithms keyAlgorithm)
+    public static byte[] public2RawKey(PublicKey publicKey, KeyAlgorithms keyAlgorithm)
     throws IOException {
         throw new IOException("Feature not yet available in Android");
     }
-    public static PublicKey raw2PublicOkpKey(byte[] x, KeyAlgorithms keyAlgorithm) 
+    public static PublicKey raw2PublicKey(byte[] x, KeyAlgorithms keyAlgorithm) 
     throws IOException {
         throw new IOException("Feature not yet available in Android");
     }
 
-    public static byte[] private2RawOkpKey(PrivateKey privateKey, KeyAlgorithms keyAlgorithm) 
+    public static byte[] private2RawKey(PrivateKey privateKey, KeyAlgorithms keyAlgorithm) 
     throws IOException {
         throw new IOException("Feature not yet available in Android");
     }
-    public static PrivateKey raw2PrivateOkpKey(byte[] d, KeyAlgorithms keyAlgorithm)
+    public static PrivateKey raw2PrivateKey(byte[] d, KeyAlgorithms keyAlgorithm)
     throws IOException {
         throw new IOException("Feature not yet available in Android");
     }
-    public static KeyAlgorithms getOkpKeyAlgorithm(Key key) {
+    public static KeyAlgorithms getKeyAlgorithm(Key key) {
         throw new RuntimeException("Feature not yet available in Android");
     }
 }
@@ -116,7 +116,7 @@ public class OkpSupport {
         }
     }
 
-    public static byte[] public2RawOkpKey(PublicKey publicKey, KeyAlgorithms keyAlgorithm)
+    public static byte[] public2RawKey(PublicKey publicKey, KeyAlgorithms keyAlgorithm)
             throws IOException {
         byte[] encoded = publicKey.getEncoded();
         int prefixLength = okpPrefix.get(keyAlgorithm).length;
@@ -128,10 +128,10 @@ public class OkpSupport {
         return rawKey;
     }
 
-    public static PublicKey raw2PublicOkpKey(byte[] x, KeyAlgorithms keyAlgorithm) 
-            throws GeneralSecurityException {
+    public static PublicKey raw2PublicKey(byte[] x, KeyAlgorithms keyAlgorithm) 
+            throws IOException, GeneralSecurityException {
         if (okpKeyLength.get(keyAlgorithm) != x.length) {
-            throw new GeneralSecurityException("Wrong public key length for: " + keyAlgorithm.toString());
+            throw new IOException("Wrong public key length for: " + keyAlgorithm.toString());
         }
 //#if BOUNCYCASTLE
         return KeyFactory.getInstance(keyAlgorithm.getJceName(), "BC")
@@ -143,7 +143,7 @@ public class OkpSupport {
                                 ArrayUtil.add(okpPrefix.get(keyAlgorithm), x)));
     }
 
-    public static byte[] private2RawOkpKey(PrivateKey privateKey, KeyAlgorithms keyAlgorithm) 
+    public static byte[] private2RawKey(PrivateKey privateKey, KeyAlgorithms keyAlgorithm) 
             throws IOException {
         byte[] rawKey = ParseUtil.octet(
                 DerDecoder.decode(
@@ -156,7 +156,7 @@ public class OkpSupport {
         return rawKey;
     }
 
-    public static PrivateKey raw2PrivateOkpKey(byte[] d, KeyAlgorithms keyAlgorithm)
+    public static PrivateKey raw2PrivateKey(byte[] d, KeyAlgorithms keyAlgorithm)
             throws IOException, GeneralSecurityException {
 //#if BOUNCYCASTLE
         KeyFactory keyFactory = KeyFactory.getInstance(keyAlgorithm.getJceName(), "BC");
@@ -171,7 +171,7 @@ public class OkpSupport {
         return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(pkcs8));
     }
 
-    public static KeyAlgorithms getOkpKeyAlgorithm(Key key) {
+    public static KeyAlgorithms getKeyAlgorithm(Key key) {
 //#if BOUNCYCASTLE
         if (key instanceof EdDSAKey) {
             return KeyAlgorithms.getKeyAlgorithmFromId(((EdDSAKey)key).getAlgorithm(),
@@ -193,7 +193,7 @@ public class OkpSupport {
                     AlgorithmPreferences.JOSE);
         }
 //#endif
-        throw new IllegalArgumentException("Unknown key type: " + key.getClass().getName());
+        throw new IllegalArgumentException("Unknown OKP key type: " + key.getClass().getName());
     }
 }
 //#endif

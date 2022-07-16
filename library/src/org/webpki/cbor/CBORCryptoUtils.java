@@ -305,21 +305,26 @@ public class CBORCryptoUtils {
                                            byte[] signatureValue) 
             throws GeneralSecurityException, IOException {
 
-        // Verify that the public key matches the signature algorithm
-        KeyAlgorithms keyAlgorithm = KeyAlgorithms.getKeyAlgorithm(publicKey);
-        if (signatureAlgorithm.getKeyType() != keyAlgorithm.getKeyType()) {
-            throw new GeneralSecurityException("Algorithm " + signatureAlgorithm + 
-                                               " does not match key type " + keyAlgorithm);
-        }
-        
-        // Finally, verify the signature
+        // Verify signature using the default provider
         if (!new SignatureWrapper(signatureAlgorithm, publicKey)
                  .update(signedData)
                  .verify(signatureValue)) {
             throw new GeneralSecurityException("Bad signature for key: " + publicKey.toString());
         }
     }
-   
+
+    static byte[] asymKeySignatureGeneration(PrivateKey privateKey,
+                                             AsymSignatureAlgorithms algorithm,
+                                             byte[] dataToBeSigned,
+                                             String provider) 
+            throws GeneralSecurityException, IOException {
+
+        // Sign using the specified provider
+        return new SignatureWrapper(algorithm, privateKey, provider)
+                .update(dataToBeSigned)
+                .sign();      
+    }
+
     static void rejectPossibleKeyId(CBORObject optionalKeyId) throws GeneralSecurityException {
         if (optionalKeyId != null) {
             throw new GeneralSecurityException(STDERR_KEY_ID_PUBLIC);
