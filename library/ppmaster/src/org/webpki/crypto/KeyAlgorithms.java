@@ -236,7 +236,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
                 KeyTypes.XEC);
 
     private final String sksName;                    // As expressed in SKS
-    private final String joseName;                   // As expressed in JOSE.  Only applicable EC curves
+    private final String joseName;                   // As expressed in JOSE.  Only applicable for EC curves
     private final String jceName;                    // As expressed for JCE
     private final int lengthInBits;                  // You guessed it :-)
     private final AsymSignatureAlgorithms prefAlg;   // A sort of a "guide"
