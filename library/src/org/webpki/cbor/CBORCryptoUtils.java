@@ -31,7 +31,6 @@ import org.webpki.crypto.CertificateUtil;
 import org.webpki.crypto.ContentEncryptionAlgorithms;
 import org.webpki.crypto.CryptoRandom;
 import org.webpki.crypto.EncryptionCore;
-import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyEncryptionAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
 
