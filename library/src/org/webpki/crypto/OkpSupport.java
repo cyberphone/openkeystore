@@ -45,7 +45,7 @@ import org.webpki.util.ArrayUtil;
 import org.webpki.util.HexaDecimal;
 
 /**
- * Support methods for "OKP" (RFC 8037).
+ * Support methods for "OKP" [<a href='https://datatracker.ietf.org/doc/html/rfc8037'>RFC&nbsp;8037</a>].
  * 
  * Source configured for the JDK 17+ provider.
  */
