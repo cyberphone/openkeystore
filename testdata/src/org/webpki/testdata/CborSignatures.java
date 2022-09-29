@@ -392,9 +392,9 @@ public class CborSignatures {
                                             .setObject(3, new CBORTextString("USD")))
                              .setObject(2, new CBORTextString("spaceshop.com"))
                              .setObject(3, new CBORTextString("FR7630002111110020050014382"))
-                             .setObject(4, new CBORTextString("https://bankdirect.org"))
+                             .setObject(4, new CBORTextString("https://banknet2.org"))
                              .setObject(5, new CBORTextString("05768401"))
-                             .setObject(6, new CBORTextString("2022-01-14T09:34:08-05:00"))
+                             .setObject(6, new CBORTextString("2022-09-29T09:34:08-05:00"))
                              .setObject(7,
                                         new CBORMap()
                                             .setObject(1, new CBORFloatingPoint(38.8882))
