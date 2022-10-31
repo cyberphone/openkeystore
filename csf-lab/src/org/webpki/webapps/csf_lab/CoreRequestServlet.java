@@ -94,6 +94,7 @@ public class CoreRequestServlet extends HttpServlet {
     static final String B64U               = "b64u";
     static final String SEQUENCE           = "seq";
     static final String DETERMINISTIC      = "det";
+    static final String CONSTRAINED_MAP    = "con";
     
     // HTTP
     static final String HTTP_PRAGMA              = "Pragma";
@@ -121,7 +122,10 @@ public class CoreRequestServlet extends HttpServlet {
             (input ? "<tr><td><input type='checkbox' id='" + SEQUENCE + "'>" +
                     "</td><td>Sequence</td></tr>" +
                     "<tr><td><input type='checkbox' checked id='" + DETERMINISTIC + "'>" +
-                    "</td><td>Require <i>deterministic representation</i> for hex/b64u data</td></tr>": "") +
+                    "</td><td>Require <i>deterministic representation</i> " +
+                        "for hex/b64u data</td></tr>" +
+                    "<tr><td><input type='checkbox' id='" + CONSTRAINED_MAP + "'>" +
+                    "</td><td>Require <i>constrained map keys</i></td></tr>": "") +
             "</table>";
     }
 
