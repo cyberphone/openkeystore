@@ -97,12 +97,12 @@ public class CBORInteger extends CBORObject {
     }
     
     @Override
-    CBORTypes internalGetType() {
+    public CBORTypes getType() {
         return CBORTypes.INTEGER;
     }
 
     @Override
-    byte[] internalEncode() {
+    public byte[] encode() {
         boolean unsigned = value.compareTo(BigInteger.ZERO) >= 0;
         BigInteger cborAdjusted = unsigned ? value : value.negate().subtract(BigInteger.ONE);
         if (fitsAnInteger(value)) {
@@ -118,7 +118,7 @@ public class CBORInteger extends CBORObject {
             encoded = temp;
         }
         return ArrayUtil.add(unsigned ? UNSIGNED_BIG_INTEGER_TAG : SIGNED_BIG_INTEGER_TAG, 
-                             new CBORByteString(encoded).internalEncode());
+                             new CBORByteString(encoded).encode());
     }
     
     @Override

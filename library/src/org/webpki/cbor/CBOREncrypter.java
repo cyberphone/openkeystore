@@ -176,7 +176,7 @@ public abstract class CBOREncrypter {
         // CBOR implementation supports fully canonical (deterministic)
         // parsing and code generation! This implementation shows that
         // this is quite simple.
-        byte[] authData = outerObject.internalEncode();
+        byte[] authData = outerObject.encode();
         
         // Create an initialization vector.
         byte[] iv = EncryptionCore.createIv(contentEncryptionAlgorithm);

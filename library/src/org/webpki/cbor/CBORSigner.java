@@ -194,7 +194,7 @@ public abstract class CBORSigner {
         // Finally, sign all but the signature label and associated value.
         // internalEncode() is supposed to produce a deterministic representation
         // of the CBOR data to be signed.
-        csfContainer.setByteString(SIGNATURE_LABEL, coreSigner(objectToSign.internalEncode()));
+        csfContainer.setByteString(SIGNATURE_LABEL, coreSigner(objectToSign.encode()));
 
         // Return the now signed object.
         return objectToSign;

@@ -121,13 +121,10 @@ The sample was signed using the following private key (here in JWK format):
 &nbsp;&nbsp;&quot;d&quot;:&nbsp;&quot;6XxMFXhcYT5QN9w5TIg2aSKsbcj-pj4BnZkK7ZOt4B8&quot;<br>
 }
 </div>
-<h3 style='padding:1em 0 0 0'>Tagged Signature Data</h3>
-CSF permits signing <code>map</code> objects that are enclosed by a CBOR tag.
-Such tags are included in the data to be signed.
-<p>
-See {@link CBORCryptoUtils#unwrapContainerMap(CBORObject, POLICY tagPolicy)} for a detailed
-description.
-</p> 
+<h3 style='padding:1em 0 0 0'>Tagged and Custom Signature Data</h3>
+The CSF container can be enhanced through a couple of options
+described in <a href='crypto-options.html'>crypto-options</a>.
+Such options are included in the data to be signed.
 <h3 style='padding:1em 0 0 0'>Signature Algorithms</h3>
 <p id='csf-algorithms'>
 Currently supported signature algorithms:

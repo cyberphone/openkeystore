@@ -76,15 +76,15 @@ public class CBORArray extends CBORObject {
     }
 
     @Override
-    CBORTypes internalGetType() {
+    public CBORTypes getType() {
         return CBORTypes.ARRAY;
     }
 
     @Override
-    byte[] internalEncode() {
+    public byte[] encode() {
         byte[] encoded = encodeTagAndN(MT_ARRAY, objectList.size());
         for (CBORObject cborObject : getObjects()) {
-            encoded = ArrayUtil.add(encoded, cborObject.internalEncode());
+            encoded = ArrayUtil.add(encoded, cborObject.encode());
         }
         return encoded;
     }

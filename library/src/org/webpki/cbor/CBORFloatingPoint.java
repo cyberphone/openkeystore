@@ -141,12 +141,12 @@ public class CBORFloatingPoint extends CBORObject {
     }
 
     @Override
-    CBORTypes internalGetType() {
+    public CBORTypes getType() {
         return CBORTypes.FLOATING_POINT;
     }
     
     @Override
-    byte[] internalEncode() {
+    public byte[] encode() {
         return encodeTagAndValue(tag, 2 << (tag - MT_FLOAT16), bitFormat);
     }
     

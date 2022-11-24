@@ -20,8 +20,28 @@ import org.webpki.util.ArrayUtil;
 
 /**
  * Class for holding CBOR tagged objects.
- * 
+ * <p>
  * Tagged objects are based on CBOR major type 6.
+ * This implementation accepts two variants of tags:
+ * </p>
+ * <div style='margin-left:4em'>
+ * <code>nnn(</code><i>CBOR&nbsp;object&nbsp;</i><code>)</code><br>
+ * <code>{@value #RESERVED_TAG_COTE}([</code><i>CBOR&nbsp;text&nbsp;string</i><code>,
+ * </code><i>CBOR&nbsp;object&nbsp;</i><code>])</code>
+ * </div>
+ * <p>
+ * The purpose of the second construct is to provide a
+ * generic way of adding an object type identifier in the
+ * form of a URL or other text data to CBOR objects.
+ * The CBOR tag <b>must</b> in this case be <code>{@value #RESERVED_TAG_COTE}</code>. 
+ * Example:
+ * </p>
+ * <div style='margin-left:4em'><code>
+ * {@value #RESERVED_TAG_COTE}(["https://example.com/myobject", {<br>
+ * &nbsp;&nbsp;"amount": "145.00",<br>
+ * &nbsp;&nbsp;"currency": "USD"<br>
+ * }])</code>
+ * </div>
  * <p>
  * Note that the <code>big&nbsp;integer</code> type is dealt with
  * as a specific primitive, in spite of being a tagged object.
@@ -35,6 +55,23 @@ public class CBORTag extends CBORObject {
     long tagNumber;
     CBORObject object;
     
+    /**
+     * Current COTE tag: {@value #RESERVED_TAG_COTE}
+     */
+    public static final int RESERVED_TAG_COTE  = 211;
+
+    /**
+     * Creates a COTE-tagged object.
+     * 
+     * @param typeUrl Type URL (or other string)
+     * @param object Object
+     */
+    public CBORTag(String typeUrl, CBORObject object) {
+        this(RESERVED_TAG_COTE, new CBORArray()
+                                    .addObject(new CBORTextString(typeUrl))
+                                    .addObject(object));
+    }
+
     /**
      * Creates a CBOR tagged object.
      * 
@@ -64,13 +101,13 @@ public class CBORTag extends CBORObject {
     }
 
     @Override
-    CBORTypes internalGetType() {
+    public CBORTypes getType() {
         return CBORTypes.TAG;
     }
     
     @Override
-    byte[] internalEncode() {
-        return ArrayUtil.add(encodeTagAndN(MT_TAG, tagNumber), object.internalEncode());
+    public byte[] encode() {
+        return ArrayUtil.add(encodeTagAndN(MT_TAG, tagNumber), object.encode());
 
     }
     

@@ -86,27 +86,19 @@ public abstract class CBORObject {
 
     static final long MASK_LOWER_32           = 0x00000000ffffffffl;
     
-    abstract CBORTypes internalGetType();
-
     /**
      * Returns core CBOR type.
      * 
      * @return The CBOR core type
      */
-    public CBORTypes getType() {
-        return internalGetType();
-    }
+    public abstract CBORTypes getType();
  
-    abstract byte[] internalEncode();
-
     /**
      * Encodes CBOR object.
      * 
      * @return Byte data
      */
-    public byte[] encode() {
-        return internalEncode();
-    }
+    public abstract byte[] encode();
     
     abstract void internalToString(DiagnosticNotation outputBuffer);
 
@@ -150,8 +142,8 @@ public abstract class CBORObject {
     }
 
     void checkTypeAndMarkAsRead(CBORTypes requestedCborType) throws IOException {
-        if (internalGetType() != requestedCborType) {
-            reportError("Is type: " + internalGetType() + ", requested: " + requestedCborType);
+        if (getType() != requestedCborType) {
+            reportError("Is type: " + getType() + ", requested: " + requestedCborType);
         }
         readFlag = true;
     }
@@ -272,8 +264,8 @@ public abstract class CBORObject {
      * @throws IOException
      */
     public boolean isNull() throws IOException {
-        checkTypeAndMarkAsRead(internalGetType());
-        return internalGetType() == CBORTypes.NULL;
+        checkTypeAndMarkAsRead(getType());
+        return getType() == CBORTypes.NULL;
     }
     
     /**
@@ -392,7 +384,7 @@ public abstract class CBORObject {
     }
 
     private void traverse(CBORObject holderObject, boolean check) throws IOException {
-        switch (internalGetType()) {
+        switch (getType()) {
             case MAP:
                 CBORMap cborMap = (CBORMap) this;
                 for (CBORObject key : cborMap.keys.keySet()) {
@@ -635,7 +627,16 @@ public abstract class CBORObject {
             // N successfully decoded, now switch on major type (upper three bits).
             switch (tag & 0xe0) {
                 case MT_TAG:
-                    return new CBORTag(n, getObject());
+                    CBORObject tagData = getObject();
+                    if (n == CBORTag.RESERVED_TAG_COTE) {
+                        CBORArray holder = tagData.getArray();
+                        if (holder.size() != 2 ||
+                            holder.getObject(0).getType() != CBORTypes.TEXT_STRING) {
+                            CBORObject.reportError("Tag syntax" +  CBORTag.RESERVED_TAG_COTE +
+                                                   "([\"string\", CBOR data item]) expected");
+                        }
+                    }
+                    return new CBORTag(n, tagData);
 
                 case MT_UNSIGNED:
                     return new CBORInteger(n, true);
@@ -785,7 +786,7 @@ public abstract class CBORObject {
     @Override
     public boolean equals(Object object) {
         try {
-            return ArrayUtil.compare(((CBORObject) object).internalEncode(), internalEncode());
+            return ArrayUtil.compare(((CBORObject) object).encode(), encode());
         } catch (Exception e) {
             return false;
         }

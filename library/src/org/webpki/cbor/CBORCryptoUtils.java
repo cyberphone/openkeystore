@@ -112,8 +112,7 @@ public class CBORCryptoUtils {
         /**
          * Optionally wraps a map in a tag.
          * <p>
-         * See {@link CBORCryptoUtils#unwrapContainerMap(CBORObject, POLICY tagPolicy)} for details
-         * on the syntax for wrapped maps.
+         * See {@link CBORTag} for details on the syntax for wrapped CBOR data.
          * </p>
          * 
          * @param map Unwrapped map
@@ -145,6 +144,28 @@ public class CBORCryptoUtils {
             return null;
         }
     }
+
+    /**
+     * Interface for collecting tagged or custom data.
+     * <p>
+     * Implementations of this interface must be set by calling the
+     * {@link CBORValidator#setCustomDataPolicy(POLICY,Collector)} and
+     * {@link CBORDecrypter#setCustomDataPolicy(POLICY,Collector)} for
+     * signatures and encryption respectively.
+     * </p>
+     */
+    public interface Collector {
+
+        /**
+         * Returns tag or custom data.
+         * 
+         * @param objectOrNull If there is no tag or custom data this element is <code>null</code>
+         *
+         * @throws IOException
+         * @throws GeneralSecurityException
+         */
+        void foundData(CBORObject objectOrNull) throws IOException, GeneralSecurityException;
+    }
     
     /**
      * Policy regarding additional CSF and CEF features.
@@ -160,26 +181,7 @@ public class CBORCryptoUtils {
  
      * <p>
      * This method is intended for CBOR <code>map</code> objects that <i>optionally</i>
-     * are wrapped in a tag.  This implementation accepts two variants of tags:
-     * </p>
-     * <code>&nbsp;&nbsp;&nbsp;&nbsp;nnn(</code><i>CBOR&nbsp;map</i><code>)</code><br>
-     * <code>&nbsp;&nbsp;&nbsp;&nbsp;nnn([</code><i>CBOR&nbsp;text&nbsp;string</i><code>,&nbsp;</code><i>CBOR&nbsp;map</i><code>])</code>
-     * <p>
-     * The purpose of the second construct is to provide a
-     * generic way of adding an object type identifier in the
-     * form of a URL to CBOR <code>map</code> objects.
-     * The CBOR tag (<code>nnn</code>) would in this case be <i>constant</i>. 
-     * Example:
-     * </p>
-     * <pre>
-     *     211(["https://example.com/myobject", {
-     *       "amount": "145.00",
-     *       "currency": "USD"
-     *     }])</pre><p>
-     * Both wrapping methods are intrinsically
-     * supported by {@link CBORValidator} and
-     * {@link CBORDecrypter}
-     * for signatures and encryption respectively.
+     * are wrapped in a tag. 
      * </p>
      * <p>
      * To enable the <i>creation</i> of wrapped data you must implement
@@ -188,45 +190,52 @@ public class CBORCryptoUtils {
      * 
      * @param container A map optionally enclosed in a tag 
      * @param tagPolicy Tagging policy 
+     * @param callBackOrNull Optional collector of tag data 
      * @return The map object without the tag
      * @throws IOException
      */
-    public static CBORMap unwrapContainerMap(CBORObject container, POLICY tagPolicy)
-            throws IOException {
+    public
+    static CBORMap unwrapContainerMap(CBORObject container, 
+                                      POLICY tagPolicy,
+                                      Collector callBackOrNull)
+            throws IOException, GeneralSecurityException {
         if (container.getType() == CBORTypes.TAG) {
             if (tagPolicy == POLICY.FORBIDDEN) {
                 inputError("Tag encountered", tagPolicy);
             }
-            CBORObject tagged = container.getTag().getObject();;
-            if (tagged.getType() == CBORTypes.ARRAY) {
-                CBORArray holder = tagged.getArray();
-                if (holder.size() != 2 ||
-                    holder.getObject(0).getType() != CBORTypes.TEXT_STRING) {
-                    CBORObject.reportError("Tag syntax nnn([\"string\", {}]) expected");
-                }
-                container = holder.getObject(1);
-            } else container = tagged;
+            CBORTag tag = container.getTag();
+            container = tag.object;
+            if (tag.tagNumber == CBORTag.RESERVED_TAG_COTE) {
+                container = container.getArray().getObject(1);
+            }
+            if (callBackOrNull != null) {
+                callBackOrNull.foundData(tag);
+            }
         } else if (tagPolicy == POLICY.MANDATORY) {
             inputError("Missing tag", tagPolicy);
         }
         return container.getMap();
     }
     
-    static CBORObject getOptionalKeyId(CBORMap holderMap) throws IOException {
+    static CBORObject getKeyId(CBORMap holderMap) throws IOException {
 
         // Get the key Id if there is one and scan() to make sure checkForUnread() won't fail
         return holderMap.hasKey(KEY_ID_LABEL) ?
             holderMap.getObject(KEY_ID_LABEL).scan() : null;
     }
     
-    static void scanCustomData(CBORMap holderMap, POLICY customDataPolicy) throws IOException {
- 
-        // Access a possible customData element in order satisfy checkForUnread().
+    static void getCustomData(CBORMap holderMap, 
+                              POLICY customDataPolicy,
+                              Collector callBackOrNull) throws IOException,
+                                                               GeneralSecurityException {
+        // Get optional customData element.
         if (holderMap.hasKey(CUSTOM_DATA_LABEL)) {
             if (customDataPolicy == POLICY.FORBIDDEN) {
                 inputError("Custom data encountered", customDataPolicy);
             }
-            holderMap.getObject(CUSTOM_DATA_LABEL).scan();
+            if (callBackOrNull != null) {
+                callBackOrNull.foundData(holderMap.getObject(CUSTOM_DATA_LABEL));
+            }
         } else if (customDataPolicy == POLICY.MANDATORY) {
             inputError("Missing custom data", customDataPolicy);
         }

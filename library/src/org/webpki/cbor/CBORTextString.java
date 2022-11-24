@@ -36,12 +36,12 @@ public class CBORTextString extends CBORObject {
     }
 
     @Override
-    CBORTypes internalGetType() {
+    public CBORTypes getType() {
         return CBORTypes.TEXT_STRING;
     }
 
     @Override
-    byte[] internalEncode() {
+    public byte[] encode() {
         try {
             byte[] utf8 = textString.getBytes("utf-8");
             return ArrayUtil.add(encodeTagAndN(MT_TEXT_STRING, utf8.length), utf8);
