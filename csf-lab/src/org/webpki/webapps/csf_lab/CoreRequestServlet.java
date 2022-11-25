@@ -28,7 +28,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.webpki.cbor.CBORDiagnosticParser;
+import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;
+import org.webpki.cbor.CBORTypes;
 import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONObjectWriter;
 import org.webpki.json.JSONOutputFormats;
@@ -212,6 +214,18 @@ public class CoreRequestServlet extends HttpServlet {
     CBORObject getSignatureLabel(HttpServletRequest request) throws IOException {
         return getCborAttribute(getParameter(request, CSF_SIGN_LABEL),
                 "Signature labels must be in CBOR diagnostic notation like \"sig\" or 8");
+    }
+    
+    CBORMap unwrapOptionalTag(CBORObject rawContainer) throws IOException {
+        // It might be tagged
+        if (rawContainer.getType() == CBORTypes.TAG) {
+            CBORObject container = rawContainer.getTag().getObject();
+            if (container.getType() == CBORTypes.ARRAY) {
+                container = container.getArray().getObject(1);
+            }
+            return container.getMap();
+        }
+        return rawContainer.getMap();
     }
     
     void returnJSON(HttpServletResponse response, JSONObjectWriter json) throws IOException {

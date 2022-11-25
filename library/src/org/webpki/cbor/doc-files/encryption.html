@@ -123,19 +123,10 @@ according to HKDF (RFC&nbsp;5869), profiled as follows:
 COSE key encryption algorithm,
 expressed as a 32-bit (4 byte) signed big-endian integer.</li>
 </ul>
-<h3 style='padding:1em 0 0 0'>Tagged Encryption Objects</h3>
-CSF permits adding a CBOR tag to the generated <code>map</code> object.
-Such tags are included in the authentication scheme as well.
-<p>
-See {@link CBORCryptoUtils#unwrapContainerMap(CBORObject, POLICY tagPolicy)} for a detailed
-description.
-</p> 
-<h3 id='custom-data' style='padding:1em 0 0 0'>Custom Data Extension</h3>
-In addition to encrypted data, CEF also supports an extension
-element ({@link CBORCryptoConstants#CUSTOM_DATA_LABEL}) 
-which permits arbitrary CBOR objects to be included &quot;as&nbsp;is&quot; while
-still being protected by the authentication scheme.
-To simplify the use of this feature, see {@link CBORCryptoUtils.Intercepter#getCustomData()}.
+<h3 style='padding:1em 0 0 0'>Tagged and Custom Encryption Data</h3>
+The CEF container can be enhanced through a couple of options
+described in <a href='crypto-options.html'>crypto options</a>.
+Such options are included in the data to be authenticated. 
 <h3 style='padding:1em 0 0 0'>Content Encryption Algorithms</h3>
 <p id='cef-content-encryption-algorithms'>
 Currently supported content encryption algorithms:

@@ -224,7 +224,7 @@
       <link offline="false" href="https://docs.oracle.com/en/java/javase/17/docs/api/index.html"/>
       <link offline="false" href="https://javaee.github.io/javaee-spec/javadocs/"/>
       <doctitle><![CDATA[<h1>WebPKI.org Support</h1>]]></doctitle>
-      <bottom><![CDATA[<i>2005-2021 WebPKI.org.</i>]]></bottom>
+      <bottom><![CDATA[<i>2005-2022 WebPKI.org.</i>]]></bottom>
     </javadoc>
   	
   	<concat destfile="${doc_dir}/stylesheet.css" append="true">

@@ -38,9 +38,9 @@ import org.webpki.cbor.CBORSymKeyEncrypter;
 import org.webpki.cbor.CBORTag;
 import org.webpki.cbor.CBORTest;
 import org.webpki.cbor.CBORTextString;
+import org.webpki.cbor.CBORTypes;
 import org.webpki.cbor.CBORX509Decrypter;
 import org.webpki.cbor.CBORX509Encrypter;
-import org.webpki.cbor.CBORArray;
 import org.webpki.cbor.CBORAsymKeyDecrypter;
 import org.webpki.cbor.CBORAsymKeyEncrypter;
 import org.webpki.cbor.CBORDecrypter;
@@ -72,6 +72,8 @@ public class CborEncryption {
     static SymmetricKeys symmetricKeys;
     static CBORObject keyId;
     static byte[] dataToBeEncrypted;
+    
+    static final int NON_RESEVED_TAG = 1676326;
    
 
     public static void main(String[] args) throws Exception {
@@ -197,10 +199,21 @@ public class CborEncryption {
         asymEncCore(key, true,  false, 0, false, cea, kea);
     }
 
+    static CBORMap unwrapOptionalTag(CBORObject rawContainer) throws IOException {
+        // It might be tagged
+        if (rawContainer.getType() == CBORTypes.TAG) {
+            CBORObject container = rawContainer.getTag().getObject();
+            if (container.getType() == CBORTypes.ARRAY) {
+                container = container.getArray().getObject(1);
+            }
+            return container.getMap();
+        }
+        return rawContainer.getMap();
+    }
+    
     static String cleanEncryption(byte[] cefData) throws IOException {
         CBORObject cborObject = CBORObject.decode(cefData);
-        CBORMap decoded = CBORCryptoUtils.unwrapContainerMap(cborObject,
-                                                             CBORCryptoUtils.POLICY.OPTIONAL);
+        CBORMap decoded = unwrapOptionalTag(cborObject);
         decoded.removeObject(CBORCryptoConstants.IV_LABEL);
         decoded.removeObject(CBORCryptoConstants.TAG_LABEL);
         decoded.removeObject(CBORCryptoConstants.CIPHER_TEXT_LABEL);
@@ -330,11 +343,10 @@ public class CborEncryption {
                         throws IOException, GeneralSecurityException {
                     
                     // 1-dimensional or 2-dimensional tag
-                    return new CBORTag(211, tagged == 1 ? 
-                            encryptionObject : new CBORArray()
-                                .addObject(new CBORTextString("https://example.com/myobject"))
-                                .addObject(encryptionObject));
-                    
+                    return tagged == 1 ? 
+                            new CBORTag(NON_RESEVED_TAG, encryptionObject) 
+                                       : 
+                            new CBORTag("https://example.com/myobject", encryptionObject);
                 }
                 
                 @Override
@@ -377,10 +389,25 @@ public class CborEncryption {
             
         });
         if (customData) {
-            decrypter.setCustomDataPolicy(CBORCryptoUtils.POLICY.MANDATORY);
+            decrypter.setCustomDataPolicy(CBORCryptoUtils.POLICY.MANDATORY,
+                    new CBORCryptoUtils.Collector() {
+
+                        @Override
+                        public void foundData(CBORObject customData)
+                                throws IOException, GeneralSecurityException {
+                            customData.getTextString();
+                        }});
         }
         if (tagged != 0) {
-            decrypter.setTagPolicy(CBORCryptoUtils.POLICY.MANDATORY);
+            decrypter.setTagPolicy(CBORCryptoUtils.POLICY.MANDATORY,
+                    new CBORCryptoUtils.Collector() {
+                        
+                        @Override
+                        public void foundData(CBORObject tag)
+                                throws IOException, GeneralSecurityException {
+                            tag.getTag();
+                        }
+                    });
         }
         compareResults(decrypter, encryptedData);
         optionalUpdate(decrypter, 

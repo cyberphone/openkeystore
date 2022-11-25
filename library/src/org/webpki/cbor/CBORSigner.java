@@ -31,7 +31,7 @@ import org.webpki.cbor.CBORCryptoUtils.Intercepter;
  * <p>
  * This implementation supports signatures using 
  * <a title='CSF' target='_blank'
- * href='https://cyberphone.github.io/javaapi/org/webpki/cbor/doc-files/signatures.html'>CSF</a>
+ * href='doc-files/signatures.html'>CSF</a>
  * (CBOR Signature Format) packaging, while algorithms are derived from COSE.
  * </p>
  * <p>
@@ -150,10 +150,6 @@ public abstract class CBORSigner {
      * 
      * <p>
      * Adds an enveloped CSF object (signature) to a CBOR map.
-     * </p>
-     * <p>
-     * Note that a {@link CBORTag} may embed the signature object.
-     * See {@link CBORCryptoUtils#unwrapContainerMap(CBORObject, POLICY tagPolicy)} for details.
      * </p>
      * 
      * @param key Key holding the signature in the CBOR map to sign

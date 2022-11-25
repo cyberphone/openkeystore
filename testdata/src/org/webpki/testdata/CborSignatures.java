@@ -35,7 +35,6 @@ import org.webpki.cbor.CBORTypes;
 import org.webpki.cbor.CBORValidator;
 import org.webpki.cbor.CBORX509Signer;
 import org.webpki.cbor.CBORX509Validator;
-import org.webpki.cbor.CBORArray;
 import org.webpki.cbor.CBORAsymKeySigner;
 import org.webpki.cbor.CBORAsymKeyValidator;
 import org.webpki.cbor.CBORFloatingPoint;
@@ -128,16 +127,18 @@ public class CborSignatures {
             symKeySign(512, HmacAlgorithms.HMAC_SHA512, i == 0);
         }
         
-        asymSignCore("p256",    false, true, 1, null);
-        asymSignCore("ed25519", false, true, 2, null);
+        asymSignCore("p256",    false, true, 1, false, null);
+        asymSignCore("ed25519", false, true, 2, false, null);
+        asymSignCore("ed25519", false, true, 0, true, null);
+        asymSignCore("ed25519", false, true, 2, true, null);
         
         demoDocSignature(baseSignatures + "demo-doc-signature.cbor");
     }
     
     static void asymKeyAllVariations(String key, AsymSignatureAlgorithms pssAlg) throws Exception {
-        asymSignCore(key, false, false, 0, pssAlg);
-        asymSignCore(key, false, true,  0, pssAlg);
-        asymSignCore(key, true,  false, 0, pssAlg);
+        asymSignCore(key, false, false, 0, false, pssAlg);
+        asymSignCore(key, false, true,  0, false, pssAlg);
+        asymSignCore(key, true,  false, 0, false, pssAlg);
    }
 
     static String prefix(String keyType) {
@@ -146,8 +147,7 @@ public class CborSignatures {
     
     static String cleanSignature(byte[] csfData) throws IOException {
         CBORObject signedObject = CBORObject.decode(csfData); 
-        CBORMap decoded = CBORCryptoUtils.unwrapContainerMap(signedObject,
-                                                             CBORCryptoUtils.POLICY.OPTIONAL);
+        CBORMap decoded = CborEncryption.unwrapOptionalTag(signedObject);
         CBORObject[] keys = decoded.getMap().getKeys();
         for (CBORObject key : keys) {
             CBORObject value = decoded.getMap().getObject(key);
@@ -233,7 +233,7 @@ public class CborSignatures {
         }).validate(SIGNATURE_LABEL, decoded);
         optionalUpdate(validator, 
                        baseSignatures + prefix("a" + keyBits) + 
-                           getAlgorithm(algorithm) + '@' + keyIndicator(wantKeyId, false, 0),
+                           getAlgorithm(algorithm) + '@' + keyIndicator(wantKeyId, false, 0, false),
                        signedData,
                        false);
     }
@@ -263,8 +263,12 @@ public class CborSignatures {
     }
     
     
-    static String keyIndicator(boolean wantKeyId, boolean wantPublicKey, int tagged) {
+    static String keyIndicator(boolean wantKeyId, 
+                               boolean wantPublicKey, 
+                               int tagged, 
+                               boolean customData) {
         return (tagged == 1 ? "tag1Dim." : tagged == 2 ? "tag2Dim." : "") + 
+               (customData ? "custom." : "") +
                (wantKeyId ? "kid" : wantPublicKey ? "pub" : "imp") + ".cbor";
     }
     
@@ -312,7 +316,8 @@ public class CborSignatures {
     static void asymSignCore(String keyType, 
                              boolean wantKeyId,
                              boolean wantPublicKey,
-                             int additional,
+                             int tagged,
+                             boolean customData,
                              AsymSignatureAlgorithms pssAlg) throws Exception {
         KeyPair keyPair = readJwk(keyType);
         final AsymSignatureAlgorithms algorithm = pssAlg == null ? 
@@ -328,7 +333,7 @@ public class CborSignatures {
         if (wantPublicKey) {
             signer.setPublicKey(keyPair.getPublic());
         }
-        if (additional != 0) {
+        if (tagged != 0) {
             signer.setIntercepter(new CBORCryptoUtils.Intercepter() {
                 
                 @Override
@@ -336,25 +341,84 @@ public class CborSignatures {
                         throws IOException, GeneralSecurityException {
                     
                     // 1-dimensional or 2-dimensional tag
-                    return new CBORTag(211, additional == 1 ? 
-                            mapToSign : new CBORArray()
-                                .addObject(new CBORTextString("https://example.com/myobject"))
-                                .addObject(mapToSign));
-                    
+                    return tagged == 1 ?
+                            new CBORTag(CborEncryption.NON_RESEVED_TAG, mapToSign)
+                                       :
+                            new CBORTag("https://example.com/myobject", mapToSign);
                 }
                 
+                @Override
+                public CBORObject getCustomData() throws IOException, GeneralSecurityException {
+                    return customData ? new CBORTextString("Any valid CBOR object") : null;
+                }                
             });
-        }        
+        } else if (customData ) {
+            signer.setIntercepter(new CBORCryptoUtils.Intercepter() {
+                
+                @Override
+                public CBORObject getCustomData() throws IOException, GeneralSecurityException {
+                    return new CBORTextString("Any valid CBOR object");
+                }     
+                
+            });
+        }
         byte[] signedData = createSignature(signer);
         CBORAsymKeyValidator validator = new CBORAsymKeyValidator(keyPair.getPublic());
-        if (additional != 0) {
-            validator.setTagPolicy(CBORCryptoUtils.POLICY.MANDATORY);
+        if (tagged != 0) {
+            validator.setTagPolicy(CBORCryptoUtils.POLICY.MANDATORY,
+                    new CBORCryptoUtils.Collector() {
+                        
+                        @Override
+                        public void foundData(CBORObject tag)
+                                throws IOException, GeneralSecurityException {
+                            tag.getTag();
+                        }
+                    });
+        }
+        if (customData) {
+            validator.setCustomDataPolicy(CBORCryptoUtils.POLICY.MANDATORY,
+                    new CBORCryptoUtils.Collector() {
+                        
+                        @Override
+                        public void foundData(CBORObject customData)
+                                throws IOException, GeneralSecurityException {
+                            customData.getTextString();
+                        }
+                    });
         }
         CBORObject decoded = CBORObject.decode(signedData);
         validator.validate(SIGNATURE_LABEL, decoded);
         String fileName = baseSignatures + prefix(keyType) +
                 getAlgorithm(algorithm) + '@' +  
-                keyIndicator(wantKeyId, wantPublicKey, additional);
+                keyIndicator(wantKeyId, wantPublicKey, tagged, customData);
+        CBORCryptoUtils.Collector tagCollector = null;
+        CBORCryptoUtils.POLICY tagPolicy = CBORCryptoUtils.POLICY.FORBIDDEN;
+        if (tagged != 0) {
+            tagPolicy = CBORCryptoUtils.POLICY.MANDATORY;
+            tagCollector = new CBORCryptoUtils.Collector() {
+
+                @Override
+                public void foundData(CBORObject tag)
+                        throws IOException, GeneralSecurityException {
+ 
+                }
+                
+            };
+        }
+        CBORCryptoUtils.Collector customDataCollector = null;
+        CBORCryptoUtils.POLICY customDataPolicy = CBORCryptoUtils.POLICY.FORBIDDEN;
+        if (customData) {
+            customDataPolicy = CBORCryptoUtils.POLICY.MANDATORY;
+            customDataCollector = new CBORCryptoUtils.Collector() {
+
+                @Override
+                public void foundData(CBORObject tag)
+                        throws IOException, GeneralSecurityException {
+ 
+                }
+                
+            };
+        }
         new CBORAsymKeyValidator(new CBORAsymKeyValidator.KeyLocator() {
             
             @Override
@@ -373,8 +437,9 @@ public class CborSignatures {
                 }
                 return keyPair.getPublic();
             }
-        }).setTagPolicy(additional == 0 ? CBORCryptoUtils.POLICY.FORBIDDEN :
-                CBORCryptoUtils.POLICY.MANDATORY ).validate(SIGNATURE_LABEL, decoded);
+        }).setTagPolicy(tagPolicy, tagCollector)
+          .setCustomDataPolicy(customDataPolicy, customDataCollector)
+          .validate(SIGNATURE_LABEL, decoded);
         optionalUpdate(validator, fileName, signedData, 
                 algorithm.getMGF1ParameterSpec() != null ||
                 algorithm.getKeyType() == KeyTypes.EC);

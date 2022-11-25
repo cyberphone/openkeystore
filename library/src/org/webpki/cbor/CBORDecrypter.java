@@ -57,8 +57,11 @@ public abstract class CBORDecrypter {
      * By default custom data elements ({@link CBORCryptoConstants#CUSTOM_DATA_LABEL}) 
      * are rejected ({@link CBORCryptoUtils.POLICY#FORBIDDEN}).
      * </p>
+     * <p>
+     * See <a href='doc-files/crypto-options.html'>crypto options</a> for details.
+     * </p>
      * @param customDataPolicy Define level of support
-     * @param customDataCallBack Interface for reading optional custom data
+     * @param customDataCallBack Interface for reading custom data
      * @return <code>this</code>
      */
     public CBORDecrypter setCustomDataPolicy(POLICY customDataPolicy, 
@@ -74,10 +77,13 @@ public abstract class CBORDecrypter {
     /**
      * Sets tag wrapping policy.
      * <p>
-     * See {@link CBORCryptoUtils#unwrapContainerMap(CBORObject, POLICY tagPolicy)} for details.
+     * By default wrapped containers are rejected ({@link CBORCryptoUtils.POLICY#FORBIDDEN}).
+     * </p>
+     * <p>
+     * See <a href='doc-files/crypto-options.html'>crypto options</a> for details.
      * </p>
      * @param tagPolicy Define level of support
-     * @param tagCallBack Interface for reading optional tag
+     * @param tagCallBack Interface for reading tag
      * @return <code>this</code>
      */
     public CBORDecrypter setTagPolicy(POLICY tagPolicy, Collector tagCallBack) {
@@ -92,17 +98,7 @@ public abstract class CBORDecrypter {
      * This method presumes that <code>encryptionObject</code> holds
      * an encryption object according to CEF.
      * </p>
-     * <p>
-     * Note that if <code>encryptionObject</code> holds a CBOR
-     * <code>tag</code> object the <code>tag</code> must in turn contain the actual
-     * encryption object.
-     * Such a <code>tag</code> is also included in the authenticated data.
-     * See {@link CBORCryptoUtils#unwrapContainerMap(CBORObject, POLICY tagPolicy)} for details.
-     * </p>
-     * <p>
-     * Possible custom data ({@link CBORCryptoConstants#CUSTOM_DATA_LABEL})
-     * must be read directly from the <code>encryptionObject</code>.
-     * </p>
+     * 
      * @param encryptionObject CBOR encryption object
      * @return Decrypted data
      * @throws IOException

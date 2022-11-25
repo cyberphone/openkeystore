@@ -51,16 +51,16 @@ public abstract class CBORValidator {
     
 
     /**
-     * Sets custom extension data policy.
+     * Sets custom data policy.
      * <p>
      * By default custom data elements ({@link CBORCryptoConstants#CUSTOM_DATA_LABEL}) 
-     * are rejected.
+     * are rejected ({@link CBORCryptoUtils.POLICY#FORBIDDEN}).
      * </p>
      * <p>
      * See <a href='doc-files/crypto-options.html'>crypto options</a> for details.
      * </p>
      * @param customDataPolicy Define level of support
-     * @param customDataCollector Interface for reading optional custom data
+     * @param customDataCollector Interface for reading custom data
      * @return <code>this</code>
      */
     public CBORValidator setCustomDataPolicy(POLICY customDataPolicy, 
@@ -76,13 +76,13 @@ public abstract class CBORValidator {
     /**
      * Sets tag wrapping policy.
      * <p>
-     * By default tagged CSF containers are rejected.
+     * By default tagged CSF containers are rejected ({@link CBORCryptoUtils.POLICY#FORBIDDEN}).
      * </p>
      * <p>
      * See <a href='doc-files/crypto-options.html'>crypto options</a> for details.
      * </p>
      * @param tagPolicy Define level of support
-     * @param tagCollector Interface for reading optional tag
+     * @param tagCollector Interface for reading tag
      * @return <code>this</code>
      */
     public CBORValidator setTagPolicy(POLICY tagPolicy, Collector tagCollector) {
@@ -96,12 +96,6 @@ public abstract class CBORValidator {
      * <p>
      * This method presumes that <code>signedObject</code> holds
      * an enveloped signature according to CSF.
-     * </p>
-     * <p>
-     * Note that if <code>signedObject</code> holds a CBOR
-     * <code>tag</code> object the <code>tag</code> must in turn contain the signed <code>map</code>.
-     * Such a <code>tag</code> is also included in the signed data.
-     * See {@link CBORCryptoUtils#unwrapContainerMap(CBORObject, POLICY tagPolicy)} for details.
      * </p>
      * 
      * @param key Key in map holding signature

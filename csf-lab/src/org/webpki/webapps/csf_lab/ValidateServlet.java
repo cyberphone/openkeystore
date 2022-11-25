@@ -67,9 +67,7 @@ public class ValidateServlet extends CoreRequestServlet {
             CBORObject signatureLabel = getSignatureLabel(request);
             
             // This is certainly not what you would do in an application...
-            CBORMap csfContainer = 
-                    CBORCryptoUtils.unwrapContainerMap(signedCborObject,
-                                                       CBORCryptoUtils.POLICY.OPTIONAL)
+            CBORMap csfContainer = unwrapOptionalTag(signedCborObject)
                         .getObject(signatureLabel).getMap();
             boolean hmacSignature = 
                     csfContainer.getObject(CBORCryptoConstants.ALGORITHM_LABEL).getInt() > 0;
@@ -114,9 +112,18 @@ public class ValidateServlet extends CoreRequestServlet {
             }
 
             // This is it!
-            validator
-                .setCustomDataPolicy(CBORCryptoUtils.POLICY.OPTIONAL)
-                .setTagPolicy(CBORCryptoUtils.POLICY.OPTIONAL)
+            validator.setCustomDataPolicy(CBORCryptoUtils.POLICY.OPTIONAL, 
+                                          new CBORCryptoUtils.Collector() {
+                    
+                    @Override
+                    public void foundData(CBORObject data)
+                            throws IOException, GeneralSecurityException {
+                        if (data != null) {
+                            data.scan();
+                        }
+                    }
+                })
+                .setTagPolicy(CBORCryptoUtils.POLICY.OPTIONAL, null)
                 .validate(signatureLabel, signedCborObject);
             
             StringBuilder html = new StringBuilder(

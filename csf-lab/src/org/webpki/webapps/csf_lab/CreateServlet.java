@@ -293,9 +293,8 @@ public class CreateServlet extends CoreRequestServlet {
                     getCborFromHex(getParameter(request, PRM_CBOR_DATA)));
             
             // This is certainly not something you would do in a normal case...
-            CBORMap mapToSign = CBORCryptoUtils.unwrapContainerMap(rawCbor, 
-                                                                   CBORCryptoUtils.POLICY.OPTIONAL);
-
+            
+            CBORMap mapToSign = unwrapOptionalTag(rawCbor);
             CBORObject signatureLabel = getSignatureLabel(request);
             boolean keyInlining = request.getParameter(FLG_PUB_INLINE) != null;
             boolean certOption = request.getParameter(FLG_CERT_PATH) != null;

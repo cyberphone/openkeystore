@@ -176,25 +176,6 @@ public class CBORCryptoUtils {
         CBORObject.reportError(String.format("%s. Policy: %s", text, policy.toString()));
     }
  
-    /**
-     * Unwraps a container map object.
- 
-     * <p>
-     * This method is intended for CBOR <code>map</code> objects that <i>optionally</i>
-     * are wrapped in a tag. 
-     * </p>
-     * <p>
-     * To enable the <i>creation</i> of wrapped data you must implement
-     * {@link Intercepter#wrap(CBORMap)}.
-     * </p>
-     * 
-     * @param container A map optionally enclosed in a tag 
-     * @param tagPolicy Tagging policy 
-     * @param callBackOrNull Optional collector of tag data 
-     * @return The map object without the tag
-     * @throws IOException
-     */
-    public
     static CBORMap unwrapContainerMap(CBORObject container, 
                                       POLICY tagPolicy,
                                       Collector callBackOrNull)
