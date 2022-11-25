@@ -632,8 +632,8 @@ public abstract class CBORObject {
                         CBORArray holder = tagData.getArray();
                         if (holder.size() != 2 ||
                             holder.getObject(0).getType() != CBORTypes.TEXT_STRING) {
-                            CBORObject.reportError("Tag syntax" +  CBORTag.RESERVED_TAG_COTE +
-                                                   "([\"string\", CBOR data item]) expected");
+                            CBORObject.reportError("Tag syntax " +  CBORTag.RESERVED_TAG_COTE +
+                                                   "([\"string\", CBOR object]) expected");
                         }
                     }
                     return new CBORTag(n, tagData);
