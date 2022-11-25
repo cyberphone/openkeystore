@@ -129,8 +129,9 @@ public class CborSignatures {
         
         asymSignCore("p256",    false, true, 1, false, null);
         asymSignCore("ed25519", false, true, 2, false, null);
-        asymSignCore("ed25519", false, true, 0, true, null);
-        asymSignCore("ed25519", false, true, 2, true, null);
+        asymSignCore("ed25519", false, true, 0, true,  null);
+        asymSignCore("ed25519", false, true, 2, true,  null);
+        asymSignCore("p256",    false, true, 2, true,  null);
         
         demoDocSignature(baseSignatures + "demo-doc-signature.cbor");
     }
