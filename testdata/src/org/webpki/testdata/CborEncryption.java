@@ -74,6 +74,19 @@ public class CborEncryption {
     static byte[] dataToBeEncrypted;
     
     static final int NON_RESEVED_TAG = 1676326;
+    static final CBORObject CUSTOM_DATA = new CBORTextString("Any valid CBOR object");
+    static final String OBJECT_ID = "https://example.com/myobject";
+    
+    static void verifyTag(CBORObject wrapperTag) throws IOException {
+        CBORTag tag = wrapperTag.getTag();
+        if (tag.getTagNumber() == CBORTag.RESERVED_TAG_COTE) {
+            if (!tag.getObject().getArray().getObject(0).getTextString().equals(OBJECT_ID)) {
+                throw new IOException("ID mismatch");
+            }
+        } else if (tag.getTagNumber() != NON_RESEVED_TAG) {
+            throw new IOException("Tag mismatch");
+        }
+    }
    
 
     public static void main(String[] args) throws Exception {
@@ -346,12 +359,12 @@ public class CborEncryption {
                     return tagged == 1 ? 
                             new CBORTag(NON_RESEVED_TAG, encryptionObject) 
                                        : 
-                            new CBORTag("https://example.com/myobject", encryptionObject);
+                            new CBORTag(OBJECT_ID, encryptionObject);
                 }
                 
                 @Override
                 public CBORObject getCustomData() throws IOException, GeneralSecurityException {
-                    return customData ? new CBORTextString("Any valid CBOR object") : null;
+                    return customData ? CUSTOM_DATA : null;
                 }
 
             });
@@ -360,7 +373,7 @@ public class CborEncryption {
                 
                 @Override
                 public CBORObject getCustomData() throws IOException, GeneralSecurityException {
-                    return new CBORTextString("Any valid CBOR object");
+                    return CUSTOM_DATA;
                 }
 
             });
@@ -403,9 +416,9 @@ public class CborEncryption {
                     new CBORCryptoUtils.Collector() {
                         
                         @Override
-                        public void foundData(CBORObject tag)
+                        public void foundData(CBORObject wrappingTag)
                                 throws IOException, GeneralSecurityException {
-                            tag.getTag();
+                            verifyTag(wrappingTag);
                         }
                     });
         }

@@ -214,8 +214,10 @@ public class CBORCryptoUtils {
             if (customDataPolicy == POLICY.FORBIDDEN) {
                 inputError("Custom data encountered", customDataPolicy);
             }
+            // It is OK to not read customData during validation.
+            CBORObject customData = holderMap.getObject(CUSTOM_DATA_LABEL).scan();
             if (callBackOrNull != null) {
-                callBackOrNull.foundData(holderMap.getObject(CUSTOM_DATA_LABEL));
+                callBackOrNull.foundData(customData);
             }
         } else if (customDataPolicy == POLICY.MANDATORY) {
             inputError("Missing custom data", customDataPolicy);

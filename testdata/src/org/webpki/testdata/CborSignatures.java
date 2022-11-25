@@ -182,7 +182,8 @@ public class CborSignatures {
             try {
                 validator.validate(SIGNATURE_LABEL, CBORObject.decode(oldSignature));
             } catch (Exception e) {
-                throw new GeneralSecurityException("ERROR - Old signature '" + fileName + "' did not validate");
+                throw new GeneralSecurityException(
+                        "ERROR - Old signature '" + fileName + "' did not validate");
             }
         } catch (IOException e) {
             changed = false;  // New file
@@ -205,7 +206,9 @@ public class CborSignatures {
         return;
     }
 
-    static void symKeySign(int keyBits, HmacAlgorithms algorithm, boolean wantKeyId) throws Exception {
+    static void symKeySign(int keyBits, 
+                           HmacAlgorithms algorithm, 
+                           boolean wantKeyId) throws Exception {
         byte[] key = symmetricKeys.getValue(keyBits);
         CBORObject keyName = new CBORTextString(symmetricKeys.getName(keyBits));
         CBORHmacSigner signer = new CBORHmacSigner(key, algorithm);
@@ -233,7 +236,10 @@ public class CborSignatures {
         }).validate(SIGNATURE_LABEL, decoded);
         optionalUpdate(validator, 
                        baseSignatures + prefix("a" + keyBits) + 
-                           getAlgorithm(algorithm) + '@' + keyIndicator(wantKeyId, false, 0, false),
+                           getAlgorithm(algorithm) + '@' + keyIndicator(wantKeyId, 
+                                                                        false,
+                                                                        0,
+                                                                        false),
                        signedData,
                        false);
     }
@@ -255,8 +261,10 @@ public class CborSignatures {
     }
     
     static KeyPair readJwk(String keyType) throws Exception {
-        JSONObjectReader jwkPlus = JSONParser.parse(ArrayUtil.readFile(baseKey + keyType + "privatekey.jwk"));
-        // Note: The built-in JWK decoder does not accept "kid" since it doesn't have a meaning in JSF or JEF. 
+        JSONObjectReader jwkPlus = JSONParser.parse(ArrayUtil.readFile(
+                baseKey + keyType + "privatekey.jwk"));
+        // Note: The built-in JWK decoder does not accept "kid" since it
+        // doesn't have a meaning in JSF or JEF. 
         keyId = new CBORTextString(jwkPlus.getString("kid"));
         jwkPlus.removeProperty("kid");
         return jwkPlus.getKeyPair();
@@ -349,7 +357,7 @@ public class CborSignatures {
                 
                 @Override
                 public CBORObject getCustomData() throws IOException, GeneralSecurityException {
-                    return customData ? new CBORTextString("Any valid CBOR object") : null;
+                    return customData ? CborEncryption.CUSTOM_DATA : null;
                 }                
             });
         } else if (customData ) {
@@ -357,7 +365,7 @@ public class CborSignatures {
                 
                 @Override
                 public CBORObject getCustomData() throws IOException, GeneralSecurityException {
-                    return new CBORTextString("Any valid CBOR object");
+                    return CborEncryption.CUSTOM_DATA;
                 }     
                 
             });
@@ -369,9 +377,9 @@ public class CborSignatures {
                     new CBORCryptoUtils.Collector() {
                         
                         @Override
-                        public void foundData(CBORObject tag)
+                        public void foundData(CBORObject wrapperTafg)
                                 throws IOException, GeneralSecurityException {
-                            tag.getTag();
+                            CborEncryption.verifyTag(wrapperTafg);
                         }
                     });
         }
@@ -398,9 +406,9 @@ public class CborSignatures {
             tagCollector = new CBORCryptoUtils.Collector() {
 
                 @Override
-                public void foundData(CBORObject tag)
+                public void foundData(CBORObject wrapperTag)
                         throws IOException, GeneralSecurityException {
- 
+                    CborEncryption.verifyTag(wrapperTag);
                 }
                 
             };
@@ -412,7 +420,7 @@ public class CborSignatures {
             customDataCollector = new CBORCryptoUtils.Collector() {
 
                 @Override
-                public void foundData(CBORObject tag)
+                public void foundData(CBORObject customData)
                         throws IOException, GeneralSecurityException {
  
                 }
@@ -422,11 +430,11 @@ public class CborSignatures {
         new CBORAsymKeyValidator(new CBORAsymKeyValidator.KeyLocator() {
             
             @Override
-            public PublicKey locate(PublicKey arg0, 
+            public PublicKey locate(PublicKey optionalPublicKey, 
                                     CBORObject optionalKeyId, 
                                     AsymSignatureAlgorithms arg2)
                     throws IOException, GeneralSecurityException {
-                if (wantPublicKey && !keyPair.getPublic().equals(arg0)) {
+                if (wantPublicKey && !keyPair.getPublic().equals(optionalPublicKey)) {
                     throw new GeneralSecurityException("Missing public key");
                 }
                 if (wantKeyId && !CBORTest.compareKeyId(keyId, optionalKeyId)) {
@@ -473,7 +481,8 @@ public class CborSignatures {
             try {
                 validator.validate(8, CBORObject.decode(oldSignature).getMap());
             } catch (Exception e) {
-                throw new GeneralSecurityException("ERROR - Old signature '" + fileName + "' did not validate");
+                throw new GeneralSecurityException(
+                        "ERROR - Old signature '" + fileName + "' did not validate");
             }
         } catch (IOException e) {
             changed = false;  // New file

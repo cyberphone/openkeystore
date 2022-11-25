@@ -124,7 +124,7 @@ public abstract class CBORValidator {
         // Special handling of custom data.
         CBORCryptoUtils.getCustomData(csfContainer, customDataPolicy, customDataCollector);
 
-        // Call algorithm specific validator. The code below presumes that internalEncode()
+        // Call algorithm specific validator. The code below presumes that encode()
         // returns a deterministic representation of the signed CBOR data.
         coreValidation(csfContainer,
                        csfContainer.getObject(ALGORITHM_LABEL).getInt(),
