@@ -25,7 +25,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Run the Ant jar target
+      - name: Run the Ant build target
         run: ant build
 
       - name: Test the JSON funtionality
