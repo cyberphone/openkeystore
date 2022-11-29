@@ -14,17 +14,19 @@ jobs:
   ci:
     name: Run CI
     runs-on: ubuntu-latest
-    
-steps:
-  - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # v3.1.0
-    with:
-        persist-credentials: false
 
-  - uses: actions/setup-java@de1bb2b0c5634f0fc4438d7aa9944e68f9bf86cc # v3.6.0
-    with:
-      java-version: '17'
-      distribution: 'temurin'
+    steps:
+      - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # v3.1.0
+        with:
+          persist-credentials: false
 
-  - name: Run the Ant jar target
-    run: ant build
-    run: ant testjson
+      - uses: actions/setup-java@de1bb2b0c5634f0fc4438d7aa9944e68f9bf86cc # v3.6.0
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Run the Ant jar target
+        run: ant build
+
+      - name: Test the JSON funtionality
+        run: ant testjson
