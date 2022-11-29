@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: Run CI
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # v3.1.0
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@de1bb2b0c5634f0fc4438d7aa9944e68f9bf86cc # v3.6.0
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install Ant
+        shell: bash
+        run: |
+          wget -O - https://dlcdn.apache.org//ant/binaries/apache-ant-1.10.12-bin.zip > /tmp/ant.zip
+          unzip /tmp/ant.zip -x */manual/* -d /usr/local
+          echo "ANT_HOME=/usr/local/apache-ant-1.10.12" >> $GITHUB_ENV
+          echo "/usr/local/apache-ant-1.10.12/bin" >> $GITHUB_PATH
+
+      - name: Run the Ant build target
+        shell: bash
+        run: |
+          cd library
+          ant build
+
+      - name: Test the results
+        shell: bash
+        run: |
+          cd library
+          ant testsks
+          ant testkeygen2
+          ant testjson
+          ant testcbor
+
+      - uses: actions/upload-artifact@83fd05a356d7e2593de66fc9913b3002723633cb # v3.1.1
+        with:
+          name: openkeystore_jar
+          path: library/dist/webpki.org-libext-*.jar
