@@ -25,14 +25,6 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install Ant
-        shell: bash
-        run: |
-          wget -O - https://dlcdn.apache.org//ant/binaries/apache-ant-1.10.12-bin.zip > /tmp/ant.zip
-          unzip /tmp/ant.zip -x */manual/* -d /usr/local
-          echo "ANT_HOME=/usr/local/apache-ant-1.10.12" >> $GITHUB_ENV
-          echo "/usr/local/apache-ant-1.10.12/bin" >> $GITHUB_PATH
-
       - name: Run the Ant build target
         shell: bash
         run: |
