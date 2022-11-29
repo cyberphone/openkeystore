@@ -7,8 +7,7 @@ https://cyberphone.github.io/doc/security/sks-api-arch.pdf
 
 The project also defines KeyGen2 which is a credential provisioning and management system
 for SKS:<br>
-https://cyberphone.github.io/doc/security/keygen2.html
-
+https://cyberphone.github.io/doc/security/k
 ## JSON Support
 The JSON library supports a clear text signature system called JSF:<br>
 https://cyberphone.github.io/doc/security/jsf.html<br>
