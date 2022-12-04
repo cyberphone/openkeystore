@@ -628,11 +628,11 @@ public abstract class CBORObject {
             switch (tag & 0xe0) {
                 case MT_TAG:
                     CBORObject tagData = getObject();
-                    if (n == CBORTag.RESERVED_TAG_COTE) {
+                    if (n == CBORTag.RESERVED_TAG_COTX) {
                         CBORArray holder = tagData.getArray();
                         if (holder.size() != 2 ||
                             holder.getObject(0).getType() != CBORTypes.TEXT_STRING) {
-                            CBORObject.reportError("Tag syntax " +  CBORTag.RESERVED_TAG_COTE +
+                            CBORObject.reportError("Tag syntax " +  CBORTag.RESERVED_TAG_COTX +
                                                    "([\"string\", CBOR object]) expected");
                         }
                     }

@@ -1016,7 +1016,7 @@ public class CBORTest {
 
         signAndVerify(new CBORAsymKeySigner(r2048.getPrivate()).setPublicKey(r2048.getPublic()), 
                       new CBORAsymKeyValidator(r2048.getPublic()), 
-                                               (long)CBORTag.RESERVED_TAG_COTE, 
+                                               (long)CBORTag.RESERVED_TAG_COTX, 
                                                "https://example.com/myobject");
 
         signAndVerify(new CBORAsymKeySigner(p256.getPrivate()), 

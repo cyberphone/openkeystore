@@ -26,18 +26,18 @@ import org.webpki.util.ArrayUtil;
  * </p>
  * <div style='margin-left:4em'>
  * <code>nnn(</code><i>CBOR&nbsp;object&nbsp;</i><code>)</code><br>
- * <code>{@value #RESERVED_TAG_COTE}([</code><i>CBOR&nbsp;text&nbsp;string</i><code>,
+ * <code>{@value #RESERVED_TAG_COTX}([</code><i>CBOR&nbsp;text&nbsp;string</i><code>,
  * </code><i>CBOR&nbsp;object&nbsp;</i><code>])</code>
  * </div>
  * <p>
  * The purpose of the second construct is to provide a
  * generic way of adding an object type identifier in the
  * form of a URL or other text data to CBOR objects.
- * The CBOR tag <b>must</b> in this case be <code>{@value #RESERVED_TAG_COTE}</code>. 
+ * The CBOR tag <b>must</b> in this case be <code>{@value #RESERVED_TAG_COTX}</code>. 
  * Example:
  * </p>
  * <div style='margin-left:4em'><code>
- * {@value #RESERVED_TAG_COTE}(["https://example.com/myobject", {<br>
+ * {@value #RESERVED_TAG_COTX}(["https://example.com/myobject", {<br>
  * &nbsp;&nbsp;"amount": "145.00",<br>
  * &nbsp;&nbsp;"currency": "USD"<br>
  * }])</code>
@@ -56,9 +56,9 @@ public class CBORTag extends CBORObject {
     CBORObject object;
     
     /**
-     * Current COTE tag: {@value #RESERVED_TAG_COTE}
+     * Current COTE tag: {@value #RESERVED_TAG_COTX}
      */
-    public static final int RESERVED_TAG_COTE  = 211;
+    public static final int RESERVED_TAG_COTX  = 1010;
 
     /**
      * Creates a COTE-tagged object.
@@ -67,7 +67,7 @@ public class CBORTag extends CBORObject {
      * @param object Object
      */
     public CBORTag(String typeUrl, CBORObject object) {
-        this(RESERVED_TAG_COTE, new CBORArray()
+        this(RESERVED_TAG_COTX, new CBORArray()
                                     .addObject(new CBORTextString(typeUrl))
                                     .addObject(object));
     }

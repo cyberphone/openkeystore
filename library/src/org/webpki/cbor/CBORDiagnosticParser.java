@@ -255,8 +255,18 @@ public class CBORDiagnosticParser {
                     reportError("Tag syntax error");
                 }
                 readChar();
+                long tagNumber = Long.parseUnsignedLong(number);
+                CBORObject taggedObject = getObject();
+                if (tagNumber == CBORTag.RESERVED_TAG_COTX) {
+                    CBORArray array;
+                    if (taggedObject.getType() != CBORTypes.ARRAY ||
+                        (array = taggedObject.getArray()).size() != 2 ||
+                        (array.getObject(0).getType() != CBORTypes.TEXT_STRING)) {
+                        reportError("Special tag " + CBORTag.RESERVED_TAG_COTX + " syntax error");
+                    }
+                }
                 CBORTag cborTag = 
-                        new CBORTag(Long.parseUnsignedLong(number), getObject());
+                        new CBORTag(tagNumber, taggedObject);
                 scanFor(")");
                 return cborTag;
             }
