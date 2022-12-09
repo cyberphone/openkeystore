@@ -138,8 +138,7 @@ public class CBORMap extends CBORObject {
         }
         if (constrainedMapKeys &&
             key.getType() != CBORTypes.TEXT_STRING &&
-            (key.getType() != CBORTypes.INTEGER || !CBORInteger.fitsAnInteger(
-                    key.getBigInteger()))) {
+            (key.getType() != CBORTypes.INTEGER || !((CBORInteger)key).fitsAnInteger())) {
             reportError(STDERR_CONSTRAINED_MAP_KEYS + key);
         }
         if (lastKey != null) {

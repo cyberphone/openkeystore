@@ -526,15 +526,15 @@ public abstract class CBORObject {
                     } else if (byteArray[0] == 0 && deterministicMode) {
                         reportError("Non-deterministic encoding: leading zero byte");
                     }
-                    BigInteger bigInteger = 
+                    CBORInteger cborInteger = new CBORInteger(
                         (tag == MT_BIG_SIGNED) ?
                             new BigInteger(-1, byteArray).subtract(BigInteger.ONE)
                                                :
-                            new BigInteger(1, byteArray);
-                    if (CBORInteger.fitsAnInteger(bigInteger) && deterministicMode) {
+                            new BigInteger(1, byteArray));
+                    if (cborInteger.fitsAnInteger() && deterministicMode) {
                         reportError("Non-deterministic encoding: bignum fits integer");
                     }
-                    return new CBORInteger(bigInteger);
+                    return cborInteger;
 
                 case MT_FLOAT16:
                     long float16 = getLongFromBytes(2);

@@ -92,7 +92,7 @@ public class CBORInteger extends CBORObject {
         nullCheck(value);
     }
 
-    static boolean fitsAnInteger(BigInteger value) {
+    boolean fitsAnInteger() {
         return value.compareTo(MAX_INT64) <= 0 && value.compareTo(MIN_INT64) >= 0;
     }
     
@@ -105,7 +105,7 @@ public class CBORInteger extends CBORObject {
     public byte[] encode() {
         boolean unsigned = value.compareTo(BigInteger.ZERO) >= 0;
         BigInteger cborAdjusted = unsigned ? value : value.negate().subtract(BigInteger.ONE);
-        if (fitsAnInteger(value)) {
+        if (fitsAnInteger()) {
             // Fits in "int65" decoding
             return encodeTagAndN(unsigned ? MT_UNSIGNED : MT_NEGATIVE, cborAdjusted.longValue());
         }
