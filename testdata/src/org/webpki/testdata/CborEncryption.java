@@ -79,7 +79,7 @@ public class CborEncryption {
     
     static void verifyTag(CBORObject wrapperTag) throws IOException {
         CBORTag tag = wrapperTag.getTag();
-        if (tag.getTagNumber() == CBORTag.RESERVED_TAG_COTE) {
+        if (tag.getTagNumber() == CBORTag.RESERVED_TAG_COTX) {
             if (!tag.getObject().getArray().getObject(0).getTextString().equals(OBJECT_ID)) {
                 throw new IOException("ID mismatch");
             }
