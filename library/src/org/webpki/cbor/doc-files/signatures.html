@@ -27,7 +27,7 @@ enabling constructs like the following:
 &nbsp;&nbsp;&nbsp;&nbsp;2: 77.0199<br>
 &nbsp;&nbsp;},<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Enveloped signature object /</span><br>
-&nbsp;&nbsp;8: {<br>
+&nbsp;&nbsp;-1: {<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Signature algorithm = ES256 /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;1: -7,<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Public key descriptor in COSE format /</span><br>
@@ -42,7 +42,7 @@ enabling constructs like the following:
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-3: h'9826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d8'<br>
 &nbsp;&nbsp;&nbsp;&nbsp;},<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Signature value /</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class='webpkihighlite'>6: h'a2556c72d87a292f689c90b86b90c1110a2b5cdb7193bf30a06c75db1c60eacfd78bbe31c06edce6735285f2c803b0923833a81721fa1b54d79753ba1eb6dd28'</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class='webpkihighlite'>6: h'5f21112b9f5c1a93743409596421e673f88e59cf34610d53a7cd00f4017327c8f603ea7344a9286db26c52c2a661dff6e4fabc0f2384fe7d1de6c0a23a3f5c21'</span><br>
 &nbsp;&nbsp;}<br>
 }
 </div>
@@ -50,13 +50,13 @@ enabling constructs like the following:
 The same object expressed as hex-encoded CBOR:
 </p>
 <div class='webpkibox'>
-a801a3016a53706163652053686f7002663433352e30300363555344026d737061636573686f702e636f6d03781b465237363330303032313131313130303230303530303134333832047468747470733a2f2f62616e6b6e6574322e6f726705683035373638343031067819323032322d30392d32395430393a33343a30382d30353a303007a201fb404371b089a0275202fb405341460aa64c3008a3012604a401022001215820e812b1a6dcbc708f9ec43cc2921fa0a14e9d5eadcc6dc63471dd4b680c6236b52258209826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d8065840a2556c72d87a292f689c90b86b90c1110a2b5cdb7193bf30a06c75db1c60eacfd78bbe31c06edce6735285f2c803b0923833a81721fa1b54d79753ba1eb6dd28
+a801a3016a53706163652053686f7002663433352e30300363555344026d737061636573686f702e636f6d03781b465237363330303032313131313130303230303530303134333832047468747470733a2f2f62616e6b6e6574322e6f726705683035373638343031067819323032322d30392d32395430393a33343a30382d30353a303007a201fb404371b089a0275202fb405341460aa64c3020a3012604a401022001215820e812b1a6dcbc708f9ec43cc2921fa0a14e9d5eadcc6dc63471dd4b680c6236b52258209826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d80658405f21112b9f5c1a93743409596421e673f88e59cf34610d53a7cd00f4017327c8f603ea7344a9286db26c52c2a661dff6e4fabc0f2384fe7d1de6c0a23a3f5c21
 </div>
 <p>
 <i>Explanation: </i>
 Labels <code>1</code>-<code>7</code> represent application data
 (which <b>must</b> be supplied in a CBOR <code>map</code>),
-while the <i>application-specific</i> label <code>8</code>
+while the <i>application-specific</i> label <code>-1</code>
 holds an associated <i>enveloped</i> signature.
 </p>
 <p>

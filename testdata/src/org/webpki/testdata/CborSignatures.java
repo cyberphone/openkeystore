@@ -458,7 +458,7 @@ public class CborSignatures {
         KeyPair keyPair = readJwk("p256");
         CBORAsymKeySigner signer = 
                 new CBORAsymKeySigner(keyPair.getPrivate()).setPublicKey(keyPair.getPublic());
-        byte[] signedData = signer.sign(8, 
+        byte[] signedData = signer.sign(-1, 
                 new CBORMap().setObject(1, 
                                         new CBORMap()
                                             .setObject(1, new CBORTextString("Space Shop"))
@@ -480,7 +480,7 @@ public class CborSignatures {
         try {
             oldSignature = ArrayUtil.readFile(fileName);
             try {
-                validator.validate(8, CBORObject.decode(oldSignature).getMap());
+                validator.validate(-1, CBORObject.decode(oldSignature).getMap());
             } catch (Exception e) {
                 throw new GeneralSecurityException(
                         "ERROR - Old signature '" + fileName + "' did not validate");
@@ -506,7 +506,7 @@ public class CborSignatures {
         ArrayUtil.writeFile(fileName.replace(".cbor", ".hex"), 
                             HexaDecimal.encode(signature).getBytes("utf-8"));
         StringBuilder text = new StringBuilder(CBORObject.decode(signature).toString());
-        int i = text.indexOf("\n  8:");
+        int i = text.indexOf("\n  -1:");
         for (String comment : new String[]{"Enveloped signature object",
                                            "Signature algorithm = ES256",
                                            "Public key descriptor in COSE format",

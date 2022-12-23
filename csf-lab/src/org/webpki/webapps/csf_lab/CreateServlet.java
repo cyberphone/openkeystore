@@ -60,7 +60,6 @@ public class CreateServlet extends CoreRequestServlet {
                                            "  / some other data /\\n" +
                                            "  2: [2.0, true]\\n" +
                                            "}";
-    static final String DEFAULT_SIG_LBL  = "3";
     
     class SelectAlg {
 
@@ -154,7 +153,7 @@ public class CreateServlet extends CoreRequestServlet {
             "<input type='text' name='" + CSF_SIGN_LABEL + 
               "' id='" + CSF_SIGN_LABEL + "' " +
             "style='padding:0 3pt;width:7em;font-family:monospace' " +
-            "maxlength='100' value='" + DEFAULT_SIG_LBL + "'>" +
+            "maxlength='100' value='" + CSFService.sampleLabel + "'>" +
             "<div style='display:inline-block'>&nbsp;Signature label in <i>diagnostic notation</i></div></div>" +
             "<div style='margin-top:0.3em;display:flex;align-items:center'>" +
             "<input type='text' name='" + PRM_KEY_ID + "' id='" + PRM_KEY_ID + "' " +
@@ -257,7 +256,8 @@ public class CreateServlet extends CoreRequestServlet {
             "  document.getElementById('" + FLG_DIAGNOSTIC + "').checked = true;\n" +
             "  document.getElementById('" + FLG_CERT_PATH + "').checked = false;\n" +
             "  document.getElementById('" + FLG_PUB_INLINE + "').checked = false;\n" +
-            "  document.getElementById('" + CSF_SIGN_LABEL + "').value = '" + DEFAULT_SIG_LBL + "';\n" +
+            "  document.getElementById('" + CSF_SIGN_LABEL + "').value = '" +
+                                                        CSFService.sampleLabel + "';\n" +
             "  document.getElementById('" + PRM_KEY_ID + "').value = '';\n" +
             "  showCert(false);\n" +
             "  setUserData(true);\n" +
