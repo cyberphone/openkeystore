@@ -134,7 +134,7 @@ public class CBORMap extends CBORObject {
      */
     public CBORMap setObject(CBORObject key, CBORObject value) throws IOException {
         if (keys.put(key, value) != null) {
-            reportError("Duplicate key: " + key);
+            reportError(STDERR_DUPLICATE_KEY + key);
         }
         if (constrainedMapKeys &&
             key.getType() != CBORTypes.TEXT_STRING &&
@@ -143,7 +143,7 @@ public class CBORMap extends CBORObject {
         }
         if (lastKey != null) {
             if (deterministicMode && comparator.compare(lastKey, key) > 0) {
-                reportError("Non-deterministic sort order for map key: " + key);
+                reportError(STDERR_NON_DET_SORT_ORDER + key);
             }
             if (constrainedMapKeys && lastKey.getType() != key.getType()) {
                 reportError(STDERR_CONSTRAINED_MAP_KEYS + key);
@@ -359,5 +359,11 @@ public class CBORMap extends CBORObject {
     }
     
     static final String STDERR_CONSTRAINED_MAP_KEYS = 
-            "Constraind mode type error for map key: ";
+            "Constrained mode type error for map key: ";
+    
+    static final String STDERR_NON_DET_SORT_ORDER =
+            "Non-deterministic sort order for map key: ";
+    
+    static final String STDERR_DUPLICATE_KEY = 
+            "Duplicate key: ";
 }
