@@ -300,11 +300,11 @@ public class CBORMap extends CBORObject {
      * of enveloped cryptographic constructs like CSF and CEF.
      * </p>
      * 
-     * @param key Integer key
+     * @param key Key
      * @return byte string
      * @throws IOException
      */
-    public byte[] readByteStringAndRemoveKey(CBORInteger key) throws IOException {
+    public byte[] readByteStringAndRemoveKey(CBORObject key) throws IOException {
         byte[] data = getObject(key).getByteString();
         removeObject(key);
         return data;
@@ -320,12 +320,12 @@ public class CBORMap extends CBORObject {
      * cryptographic constructs like CSF and CEF.
      * </p>
      * 
-     * @param key Integer key
+     * @param key Key
      * @param byteString Byte string
      * @return <code>this</code>
      * @throws IOException
      */
-    public CBORMap setByteString(CBORInteger key, byte[] byteString) throws IOException {
+    public CBORMap setByteString(CBORObject key, byte[] byteString) throws IOException {
         return setObject(key, new CBORByteString(byteString));
     }
     
