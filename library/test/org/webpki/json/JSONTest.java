@@ -3183,7 +3183,7 @@ public class JSONTest {
         public_key2 = JSONParser.parse(ow.setPublicKey(public_key2).setInt("OK", 5).toString()).getPublicKey();
         assertTrue("Public key2+", ArrayUtil.compare(public_key2.getEncoded(), spki_bin));
         JSONObjectReader pub_key_object = or.getObject(JSONCryptoHelper.PUBLIC_KEY_JSON);
-        boolean rsaFlag = pub_key_object.getString(JSONCryptoHelper.KTY_JSON).equals(JSONCryptoHelper.RSA_PUBLIC_KEY);
+        boolean rsaFlag = pub_key_object.getString(JSONCryptoHelper.KTY_JSON).equals(KeyTypes.RSA.getJoseKty());
         String key_parm = rsaFlag ? JSONCryptoHelper.N_JSON : JSONCryptoHelper.Y_JSON;
         byte[] parm_bytes = pub_key_object.getBinary(key_parm);
         boolean must_fail = true;

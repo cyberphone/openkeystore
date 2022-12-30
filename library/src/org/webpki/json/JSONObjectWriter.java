@@ -43,6 +43,7 @@ import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.ContentEncryptionAlgorithms;
 import org.webpki.crypto.OkpSupport;
 import org.webpki.crypto.KeyAlgorithms;
+
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.Base64URL;
 import org.webpki.util.ISODateTime;
@@ -791,28 +792,26 @@ import org.webpki.json.JSONSignatureDecoder;
     throws IOException {
         JSONObjectWriter corePublicKey = new JSONObjectWriter();
         KeyAlgorithms keyAlg = KeyAlgorithms.getKeyAlgorithm(publicKey);
+        corePublicKey.setString(JSONCryptoHelper.KTY_JSON, keyAlg.getKeyType().getJoseKty());
         switch (keyAlg.getKeyType()) {
-        case RSA:
-            corePublicKey.setString(JSONCryptoHelper.KTY_JSON, JSONCryptoHelper.RSA_PUBLIC_KEY);
-            RSAPublicKey rsaPublicKey = (RSAPublicKey) publicKey;
-            corePublicKey.setCryptoBinary(rsaPublicKey.getModulus(), JSONCryptoHelper.N_JSON);
-            corePublicKey.setCryptoBinary(rsaPublicKey.getPublicExponent(), 
-                                          JSONCryptoHelper.E_JSON);
-            break;
-        case EC:
-            corePublicKey.setString(JSONCryptoHelper.KTY_JSON, JSONCryptoHelper.EC_PUBLIC_KEY);
-            corePublicKey.setString(JSONCryptoHelper.CRV_JSON, 
-                                    keyAlg.getAlgorithmId(algorithmPreferences));
-            ECPoint ecPoint = ((ECPublicKey) publicKey).getW();
-            corePublicKey.setCurvePoint(ecPoint.getAffineX(), JSONCryptoHelper.X_JSON, keyAlg);
-            corePublicKey.setCurvePoint(ecPoint.getAffineY(), JSONCryptoHelper.Y_JSON, keyAlg);
-            break;
-        default:  // EDDSA and XEC
-            corePublicKey.setString(JSONCryptoHelper.KTY_JSON, JSONCryptoHelper.OKP_PUBLIC_KEY);
-            corePublicKey.setString(JSONCryptoHelper.CRV_JSON, 
-                                    keyAlg.getAlgorithmId(algorithmPreferences));
-            corePublicKey.setBinary(JSONCryptoHelper.X_JSON,
-                                    OkpSupport.public2RawKey(publicKey, keyAlg));
+            case RSA:
+                RSAPublicKey rsaPublicKey = (RSAPublicKey) publicKey;
+                corePublicKey.setCryptoBinary(rsaPublicKey.getModulus(), JSONCryptoHelper.N_JSON);
+                corePublicKey.setCryptoBinary(rsaPublicKey.getPublicExponent(), 
+                                              JSONCryptoHelper.E_JSON);
+                break;
+            case EC:
+                corePublicKey.setString(JSONCryptoHelper.CRV_JSON, 
+                                        keyAlg.getAlgorithmId(algorithmPreferences));
+                ECPoint ecPoint = ((ECPublicKey) publicKey).getW();
+                corePublicKey.setCurvePoint(ecPoint.getAffineX(), JSONCryptoHelper.X_JSON, keyAlg);
+                corePublicKey.setCurvePoint(ecPoint.getAffineY(), JSONCryptoHelper.Y_JSON, keyAlg);
+                break;
+            default:  // EDDSA and XEC
+                corePublicKey.setString(JSONCryptoHelper.CRV_JSON, 
+                                        keyAlg.getAlgorithmId(algorithmPreferences));
+                corePublicKey.setBinary(JSONCryptoHelper.X_JSON,
+                                        OkpSupport.public2RawKey(publicKey, keyAlg));
         }
         return corePublicKey;
     }

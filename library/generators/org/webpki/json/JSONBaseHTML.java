@@ -1364,13 +1364,13 @@ public class JSONBaseHTML  {
           .newColumn()
           .newColumn()
             .addString("Key type indicator.  Currently the following types are recognized:<ul>" +
-                       "<li>" + JSONBaseHTML.codeVer(JSONCryptoHelper.EC_PUBLIC_KEY, 6) + "See: ")
+                       "<li>" + JSONBaseHTML.codeVer(KeyTypes.EC.getJoseKty(), 6) + "See: ")
                     .addLink (JSF_PUBLIC_KEY_EC)
             .addString("</li>" +
-                       "<li>" + JSONBaseHTML.codeVer(JSONCryptoHelper.OKP_PUBLIC_KEY, 6) + "See: ")
+                       "<li>" + JSONBaseHTML.codeVer(KeyTypes.EDDSA.getJoseKty(), 6) + "See: ")
             .addLink (JSF_PUBLIC_KEY_OKP)
             .addString("</li>" +
-                    "<li>" + JSONBaseHTML.codeVer(JSONCryptoHelper.RSA_PUBLIC_KEY, 6) + "See: ")
+                    "<li>" + JSONBaseHTML.codeVer(KeyTypes.RSA.getJoseKty(), 6) + "See: ")
          .addLink (JSF_PUBLIC_KEY_RSA)
          .addString("</li>" +
                        "</ul>")

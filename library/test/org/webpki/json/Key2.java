@@ -46,7 +46,6 @@ public class Key2 {
     static KeyAlgorithms[] ec_curves;
     static int ec_index;
 
-    @SuppressWarnings("serial")
     public static class Reader extends JSONDecoder {
         PublicKey publicKey;
 
@@ -66,7 +65,6 @@ public class Key2 {
         }
     }
 
-    @SuppressWarnings("serial")
     static class Writer extends JSONEncoder {
         PublicKey publicKey;
 

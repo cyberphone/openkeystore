@@ -50,13 +50,6 @@ public class JSONCryptoHelper {
 
     private JSONCryptoHelper() {}
 
-    // Arguments
-    public static final String OKP_PUBLIC_KEY          = "OKP";
-
-    public static final String EC_PUBLIC_KEY           = "EC";
-
-    public static final String RSA_PUBLIC_KEY          = "RSA";
-
     // JSON properties
     public static final String ALGORITHM_JSON          = "algorithm";
 
@@ -452,15 +445,15 @@ public class JSONCryptoHelper {
                                             AlgorithmPreferences algorithmPreferences) 
             throws IOException, GeneralSecurityException {
         PublicKey publicKey = null;
-            String kty = rd.getString(JSONCryptoHelper.KTY_JSON);
-            KeyAlgorithms keyAlgorithm;
-            switch (kty) {
-            case JSONCryptoHelper.RSA_PUBLIC_KEY:
+        KeyAlgorithms keyAlgorithm;
+        String kty = rd.getString(JSONCryptoHelper.KTY_JSON);
+        switch (KeyTypes.getKeyTypeFromKty(kty)) {
+            case RSA:
                 publicKey = KeyFactory.getInstance("RSA").generatePublic(
                         new RSAPublicKeySpec(getCryptoBinary(rd, JSONCryptoHelper.N_JSON),
                                              getCryptoBinary(rd, JSONCryptoHelper.E_JSON)));
                 break;
-            case JSONCryptoHelper.EC_PUBLIC_KEY:
+            case EC:
                 keyAlgorithm = KeyAlgorithms.getKeyAlgorithmFromId(
                         rd.getString(JSONCryptoHelper.CRV_JSON),
                         algorithmPreferences);
@@ -473,23 +466,19 @@ public class JSONCryptoHelper {
                 publicKey = KeyFactory.getInstance("EC")
                         .generatePublic(new ECPublicKeySpec(w, keyAlgorithm.getECParameterSpec()));
                 break;
-            case JSONCryptoHelper.OKP_PUBLIC_KEY:
+            case EDDSA:
+            case XEC:
                 keyAlgorithm = KeyAlgorithms.getKeyAlgorithmFromId(
                         rd.getString(JSONCryptoHelper.CRV_JSON),
                         algorithmPreferences);
-                if (keyAlgorithm.getKeyType() != KeyTypes.EDDSA &&
-                    keyAlgorithm.getKeyType() != KeyTypes.XEC) {
-                    throw new IllegalArgumentException("\"" + JSONCryptoHelper.CRV_JSON + 
-                                                       "\" is not a valid OKP type");
-                }
                 publicKey = OkpSupport.raw2PublicKey(rd.getBinary(JSONCryptoHelper.X_JSON), 
-                                                        keyAlgorithm);
+                                                     keyAlgorithm);
                 break;
             default:
                 throw new IllegalArgumentException("Unrecognized \"" + 
                                                    JSONCryptoHelper.KTY_JSON + "\": " + kty);
-            }
-            return publicKey;
+        }
+        return publicKey;
 
     }
 

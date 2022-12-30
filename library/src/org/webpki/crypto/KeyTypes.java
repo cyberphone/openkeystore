@@ -19,4 +19,29 @@ package org.webpki.crypto;
 /**
  * Basic key types.
  */
-public enum KeyTypes {RSA, EC, EDDSA, XEC, SYM};
+public enum KeyTypes {
+    RSA   ("RSA"), 
+    EC    ("EC"),
+    EDDSA ("OKP"), 
+    XEC   ("OKP"),
+    SYM   ("Sym");
+    
+    String joseKty;
+    
+    KeyTypes(String joseKty) {
+        this.joseKty = joseKty;
+    }
+    
+    public static KeyTypes getKeyTypeFromKty(String joseKty) {
+        for (KeyTypes keyType : KeyTypes.values()) {
+            if (keyType.joseKty.equals(joseKty)) {
+                return keyType;
+            }
+        }
+        throw new IllegalArgumentException("Unknown kty: " + joseKty);
+    }
+    
+    public String getJoseKty() {
+        return joseKty;
+    }
+}

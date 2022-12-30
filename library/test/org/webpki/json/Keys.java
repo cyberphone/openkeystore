@@ -52,7 +52,6 @@ public class Keys {
         CustomCryptoProvider.conditionalLoad(true);
     }
 
-    @SuppressWarnings("serial")
     public static class Reader extends JSONDecoder {
         PublicKey publicKey;
 
@@ -72,7 +71,6 @@ public class Keys {
         }
     }
 
-    @SuppressWarnings("serial")
     static class Writer extends JSONEncoder {
         PublicKey publicKey;
         AlgorithmPreferences jose_curve;

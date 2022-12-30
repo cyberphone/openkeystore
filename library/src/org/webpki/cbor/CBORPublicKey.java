@@ -184,14 +184,11 @@ public class CBORPublicKey {
         return keyType;
     }
     
-    static PublicKey getPublicKey(CBORMap publicKeyMap) throws IOException, 
-                                                               GeneralSecurityException {
-        
-        KeyTypes keyType = getKeyType(publicKeyMap);
+    static PublicKey getPublicKey(CBORMap publicKeyMap) 
+            throws IOException, GeneralSecurityException {
         KeyAlgorithms keyAlg;
         PublicKey publicKey;
-
-        switch (keyType) {
+        switch (getKeyType(publicKeyMap)) {
             case RSA:
                 publicKey = KeyFactory.getInstance("RSA").generatePublic(new RSAPublicKeySpec(
                     getCryptoBinary(publicKeyMap, COSE_RSA_N_LABEL),

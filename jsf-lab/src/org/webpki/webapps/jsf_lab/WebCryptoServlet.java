@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
+import org.webpki.crypto.KeyTypes;
 
 import org.webpki.json.JSONCryptoHelper;
 
@@ -244,7 +245,7 @@ public class WebCryptoServlet extends HttpServlet {
                 "    publicKeyObject." + 
                 JSONCryptoHelper.KTY_JSON + 
                 " = '" + 
-                JSONCryptoHelper.RSA_PUBLIC_KEY + 
+                KeyTypes.RSA.getJoseKty() + 
                 "';\n" + 
                 "    publicKeyObject." + 
                 JSONCryptoHelper.N_JSON + 
