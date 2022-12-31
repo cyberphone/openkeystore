@@ -45,7 +45,7 @@ public class CBORMap extends CBORObject {
         CBORObject key;
         CBORObject value;
         byte[] encodedKey;
-        Entry successor;
+        Entry next;
         
         Entry(CBORObject key, CBORObject value) {
             this.key = key;
@@ -84,7 +84,7 @@ public class CBORMap extends CBORObject {
      */
     public int size() {
         int i = 0;
-        for (Entry entry = root; entry != null; entry = entry.successor) {
+        for (Entry entry = root; entry != null; entry = entry.next) {
             i++;
         }
         return i;
@@ -98,7 +98,7 @@ public class CBORMap extends CBORObject {
      */
     public boolean hasKey(CBORObject key) {
         byte[] testKey = key.encode();
-        for (Entry entry = root; entry != null; entry = entry.successor) {
+        for (Entry entry = root; entry != null; entry = entry.next) {
             if (entry.compare(testKey) == 0) {
                 return true;
             }
@@ -163,29 +163,29 @@ public class CBORMap extends CBORObject {
                     reportError((diff == 0 ? 
                       STDERR_DUPLICATE_KEY : STDERR_NON_DET_SORT_ORDER) + key);
                 }
-                lastEntry.successor = newEntry;
+                lastEntry.next = newEntry;
              } else {
                 // Now we have to test and sort.
                 Entry  precedingEntry = null;
                 int diff = -1;
-                for (Entry entry = root; entry != null; entry = entry.successor) {
+                for (Entry entry = root; entry != null; entry = entry.next) {
                     diff = entry.compare(newEntry.encodedKey);
                     if (diff == 0) {
                         reportError(STDERR_DUPLICATE_KEY + key);                      
                     } else if (diff > 0) {
                         if (precedingEntry == null) {
-                            newEntry.successor = root;
+                            newEntry.next = root;
                             root = newEntry;
                         } else {
-                            newEntry.successor = entry;
-                            precedingEntry.successor = newEntry;
+                            newEntry.next = entry;
+                            precedingEntry.next = newEntry;
                         }
                         break;
                     }
                     precedingEntry = entry;
                 }
                 if (diff < 0) {
-                    precedingEntry.successor = newEntry;
+                    precedingEntry.next = newEntry;
                 }
             }
         }
@@ -237,7 +237,7 @@ public class CBORMap extends CBORObject {
      */
     public CBORObject getObject(CBORObject key) throws IOException {
         byte[] testKey = key.encode();
-        for (Entry entry = root; entry != null; entry = entry.successor) {
+        for (Entry entry = root; entry != null; entry = entry.next) {
             if (entry.compare(testKey) == 0) {
                 return entry.value;
             }
@@ -287,13 +287,13 @@ public class CBORMap extends CBORObject {
     public CBORMap removeObject(CBORObject key) throws IOException {
         byte[] testKey = key.encode();
         Entry precedingEntry = null;
-        for (Entry entry = root; entry != null; entry = entry.successor) {
+        for (Entry entry = root; entry != null; entry = entry.next) {
             int diff = entry.compare(testKey);
             if (diff == 0) {
                 if (precedingEntry == null) {
-                    root = entry.successor;
+                    root = entry.next;
                 } else {
-                    precedingEntry.successor = entry.successor;
+                    precedingEntry.next = entry.next;
                 }
                 return this;
             }
@@ -341,7 +341,7 @@ public class CBORMap extends CBORObject {
     public CBORObject[] getKeys() {
         CBORObject[] keys = new CBORObject[size()];
         int i = 0;
-        for (Entry entry = root; entry != null; entry = entry.successor) {
+        for (Entry entry = root; entry != null; entry = entry.next) {
             keys[i++] = entry.key;
         }
         return keys;
@@ -391,7 +391,7 @@ public class CBORMap extends CBORObject {
     @Override
     public byte[] encode() {
         byte[] encoded = encodeTagAndN(MT_MAP, size());
-        for (Entry entry = root; entry != null; entry = entry.successor) {
+        for (Entry entry = root; entry != null; entry = entry.next) {
             encoded = ArrayUtil.add(encoded,
                                     ArrayUtil.add(entry.encodedKey, entry.value.encode()));
         }
@@ -402,7 +402,7 @@ public class CBORMap extends CBORObject {
     void internalToString(CBORObject.DiagnosticNotation cborPrinter) {
         cborPrinter.beginMap();
         boolean notFirst = false;
-        for (Entry entry = root; entry != null; entry = entry.successor) {
+        for (Entry entry = root; entry != null; entry = entry.next) {
             if (notFirst) {
                 cborPrinter.append(',');
             }

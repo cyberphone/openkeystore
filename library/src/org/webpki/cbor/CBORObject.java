@@ -387,7 +387,7 @@ public abstract class CBORObject {
         switch (getType()) {
             case MAP:
                 CBORMap cborMap = (CBORMap) this;
-                for (CBORMap.Entry entry = cborMap.root; entry != null; entry = entry.successor) {
+                for (CBORMap.Entry entry = cborMap.root; entry != null; entry = entry.next) {
                      entry.value.traverse(entry.key, check);
                 }
                 break;
