@@ -18,10 +18,6 @@ package org.webpki.cbor;
 
 import java.io.IOException;
 
-import java.util.Comparator;
-import java.util.Map;
-import java.util.TreeMap;
-
 import org.webpki.util.ArrayUtil;
 
 /**
@@ -42,29 +38,34 @@ public class CBORMap extends CBORObject {
 
     boolean deterministicMode;
     boolean constrainedMapKeys;
-    CBORObject lastKey;
-
-    private static Comparator<CBORObject> comparator = new Comparator<CBORObject>() {
-
-        @Override
-        public int compare(CBORObject o1, CBORObject o2) {
-            byte[] key1 = o1.encode();
-            byte[] key2 = o2.encode();
-            int minIndex = Math.min(key1.length, key2.length);
+    Entry root;
+    private Entry lastEntry;
+    
+    static class Entry {
+        CBORObject key;
+        CBORObject value;
+        byte[] encodedKey;
+        Entry successor;
+        
+        Entry(CBORObject key, CBORObject value) {
+            this.key = key;
+            this.value = value;
+            this.encodedKey = key.encode();
+        }
+        
+        int compare(byte[] testKey) {
+            int minIndex = Math.min(encodedKey.length, testKey.length);
             for (int i = 0; i < minIndex; i++) {
-                int diff = (key1[i] & 0xff) - (key2[i] & 0xff);
+                int diff = (encodedKey[i] & 0xff) - (testKey[i] & 0xff);
                 if (diff != 0) {
                     return diff;
                 }
             }
-            return key1.length - key2.length;
+            return encodedKey.length - testKey.length;
         }
-        
-    };
+    }
 
-    Map<CBORObject, CBORObject> keys = new TreeMap<>(comparator);
-
-   /**
+    /**
      * Creates an empty CBOR <code>map</code>.
      */
     public CBORMap() {
@@ -82,7 +83,11 @@ public class CBORMap extends CBORObject {
      * @return The number of entries (keys) in the map
      */
     public int size() {
-        return keys.size();
+        int i = 0;
+        for (Entry entry = root; entry != null; entry = entry.successor) {
+            i++;
+        }
+        return i;
     }
 
     /**
@@ -92,7 +97,13 @@ public class CBORMap extends CBORObject {
      * @return <code>true</code> if the key is present
      */
     public boolean hasKey(CBORObject key) {
-        return keys.containsKey(key);
+        byte[] testKey = key.encode();
+        for (Entry entry = root; entry != null; entry = entry.successor) {
+            if (entry.compare(testKey) == 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -133,23 +144,52 @@ public class CBORMap extends CBORObject {
      * @throws IOException
      */
     public CBORMap setObject(CBORObject key, CBORObject value) throws IOException {
-        if (keys.put(key, value) != null) {
-            reportError(STDERR_DUPLICATE_KEY + key);
-        }
         if (constrainedMapKeys &&
             key.getType() != CBORTypes.TEXT_STRING &&
             (key.getType() != CBORTypes.INTEGER || !((CBORInteger)key).fitsAnInteger())) {
-            reportError(STDERR_CONSTRAINED_MAP_KEYS + key);
+                reportError(STDERR_CONSTRAINED_MAP_KEYS + key);
         }
-        if (lastKey != null) {
-            if (deterministicMode && comparator.compare(lastKey, key) > 0) {
-                reportError(STDERR_NON_DET_SORT_ORDER + key);
-            }
-            if (constrainedMapKeys && lastKey.getType() != key.getType()) {
+        Entry newEntry = new Entry(key, value);
+        if (root == null) {
+            root = newEntry;
+        } else {
+            if (constrainedMapKeys && lastEntry.key.getType() != key.getType()) {
                 reportError(STDERR_CONSTRAINED_MAP_KEYS + key);
             }
+            if (deterministicMode) {
+                // Normal case for parsing.
+                int diff = lastEntry.compare(newEntry.encodedKey);
+                if (diff >= 0) {
+                    reportError((diff == 0 ? 
+                      STDERR_DUPLICATE_KEY : STDERR_NON_DET_SORT_ORDER) + key);
+                }
+                lastEntry.successor = newEntry;
+             } else {
+                // Now we have to test and sort.
+                Entry  precedingEntry = null;
+                int diff = -1;
+                for (Entry entry = root; entry != null; entry = entry.successor) {
+                    diff = entry.compare(newEntry.encodedKey);
+                    if (diff == 0) {
+                        reportError(STDERR_DUPLICATE_KEY + key);                      
+                    } else if (diff > 0) {
+                        if (precedingEntry == null) {
+                            newEntry.successor = root;
+                            root = newEntry;
+                        } else {
+                            newEntry.successor = entry;
+                            precedingEntry.successor = newEntry;
+                        }
+                        break;
+                    }
+                    precedingEntry = entry;
+                }
+                if (diff < 0) {
+                    precedingEntry.successor = newEntry;
+                }
+            }
         }
-        lastKey = key;
+        lastEntry = newEntry;
         return this;
     }
 
@@ -196,11 +236,14 @@ public class CBORMap extends CBORObject {
      * @throws IOException
      */
     public CBORObject getObject(CBORObject key) throws IOException {
-        CBORObject cborObject = keys.get(key);
-        if (cborObject == null) {
-            reportError("Missing key: " + key.toString());
+        byte[] testKey = key.encode();
+        for (Entry entry = root; entry != null; entry = entry.successor) {
+            if (entry.compare(testKey) == 0) {
+                return entry.value;
+            }
         }
-        return cborObject;
+        reportError(STDERR_MISSING_KEY + key);
+        return null;
     }
 
     /**
@@ -242,11 +285,22 @@ public class CBORMap extends CBORObject {
      * @throws IOException
      */
     public CBORMap removeObject(CBORObject key) throws IOException {
-        if (!keys.containsKey(key)) {
-            reportError("No such key: " + key.toString());
+        byte[] testKey = key.encode();
+        Entry precedingEntry = null;
+        for (Entry entry = root; entry != null; entry = entry.successor) {
+            int diff = entry.compare(testKey);
+            if (diff == 0) {
+                if (precedingEntry == null) {
+                    root = entry.successor;
+                } else {
+                    precedingEntry.successor = entry.successor;
+                }
+                return this;
+            }
+            precedingEntry = entry;
         }
-        keys.remove(key);
-        return this;
+        reportError(STDERR_MISSING_KEY + key);
+        return null;
     }
 
     /**
@@ -285,7 +339,12 @@ public class CBORMap extends CBORObject {
      * @return Array of keys
      */
     public CBORObject[] getKeys() {
-        return keys.keySet().toArray(new CBORObject[0]);
+        CBORObject[] keys = new CBORObject[size()];
+        int i = 0;
+        for (Entry entry = root; entry != null; entry = entry.successor) {
+            keys[i++] = entry.key;
+        }
+        return keys;
     }
 
     /**
@@ -331,11 +390,10 @@ public class CBORMap extends CBORObject {
     
     @Override
     public byte[] encode() {
-        byte[] encoded = encodeTagAndN(MT_MAP, keys.size());
-        for (CBORObject key : keys.keySet()) {
+        byte[] encoded = encodeTagAndN(MT_MAP, size());
+        for (Entry entry = root; entry != null; entry = entry.successor) {
             encoded = ArrayUtil.add(encoded,
-                                    ArrayUtil.add(key.encode(), 
-                                                  keys.get(key).encode()));
+                                    ArrayUtil.add(entry.encodedKey, entry.value.encode()));
         }
         return encoded;
     }
@@ -344,16 +402,15 @@ public class CBORMap extends CBORObject {
     void internalToString(CBORObject.DiagnosticNotation cborPrinter) {
         cborPrinter.beginMap();
         boolean notFirst = false;
-        for (CBORObject key : keys.keySet()) {
-            CBORObject value = keys.get(key);
+        for (Entry entry = root; entry != null; entry = entry.successor) {
             if (notFirst) {
                 cborPrinter.append(',');
             }
             notFirst = true;
             cborPrinter.newlineAndIndent();
-            key.internalToString(cborPrinter);
+            entry.key.internalToString(cborPrinter);
             cborPrinter.append(": ");
-            value.internalToString(cborPrinter);
+            entry.value.internalToString(cborPrinter);
         }
         cborPrinter.endMap(notFirst);
     }
@@ -366,4 +423,7 @@ public class CBORMap extends CBORObject {
     
     static final String STDERR_DUPLICATE_KEY = 
             "Duplicate key: ";
+
+    static final String STDERR_MISSING_KEY = 
+            "Missing key: ";
 }

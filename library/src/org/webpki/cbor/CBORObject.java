@@ -387,8 +387,8 @@ public abstract class CBORObject {
         switch (getType()) {
             case MAP:
                 CBORMap cborMap = (CBORMap) this;
-                for (CBORObject key : cborMap.keys.keySet()) {
-                     cborMap.keys.get(key).traverse(key, check);
+                for (CBORMap.Entry entry = cborMap.root; entry != null; entry = entry.successor) {
+                     entry.value.traverse(entry.key, check);
                 }
                 break;
         
@@ -733,7 +733,7 @@ public abstract class CBORObject {
                       false,
                       encodedCborData.length);
     }
-
+    
     class DiagnosticNotation {
  
         static final String INDENT = "  ";

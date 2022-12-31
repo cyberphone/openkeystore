@@ -155,16 +155,16 @@ public class CBORKeyPair {
                         CBORPublicKey.getCurvePoint(privateKeyMap,
                                                     COSE_EC2_D_LABEL, 
                                                     CBORPublicKey.getKeyAlgorithmFromCurveId(
-                                                            privateKeyMap.getObject(
-                                                                    COSE_EC2_CRV_LABEL))),
+                                                                    privateKeyMap,
+                                                                    COSE_EC2_CRV_LABEL)),
                         ((ECKey)publicKey).getParams()));
                 break;
 
             default:
                 privateKey = OkpSupport.raw2PrivateKey(
                         privateKeyMap.getObject(COSE_OKP_D_LABEL).getByteString(),
-                        CBORPublicKey.getKeyAlgorithmFromCurveId(
-                                privateKeyMap.getObject(COSE_OKP_CRV_LABEL)));
+                        CBORPublicKey.getKeyAlgorithmFromCurveId(privateKeyMap, 
+                                                                 COSE_OKP_CRV_LABEL));
         }
         privateKeyMap.checkForUnread();
         return new KeyPair(publicKey, privateKey);
