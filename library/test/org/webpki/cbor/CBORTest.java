@@ -498,27 +498,15 @@ public class CBORTest {
          .insert(new CBORTextString("aaa"))
          .insert(new CBORTextString("z"))
          .insert(new CBORTextString("aa"));
-        String total = m.toString().replace(" ", "").replace("\n","");
-        Vector<String> keys = new Vector<>();
-        int i = 1;
-        int stop;
-        while (true) {
-            stop = total.indexOf(':', i);
-            if (stop < 0) {
-                break;
+        assertTrue("size", m.size() == expectedOrder.length);
+        while (m.size() > 0) {
+            CBORObject removed = m.getKeys()[m.size() - 1];
+            int i = 0;
+            for (CBORObject key : m.getKeys()) {
+                String expected = expectedOrder[i++];
+                assertTrue("key=" + key + " exp=" + expected, key.toString().equals(expected));
             }
-            keys.add(total.substring(i, stop));
-            i = total.indexOf(',', stop);
-            if (i > 0) {
-                i++;
-            } else {
-                break;
-            }
-        }
-        i = 0;
-        for (String key : keys) {
-            String expected = expectedOrder[i++];
-            assertTrue("key=" + key + " exp=" + expected, key.equals(expected));
+            m.removeObject(removed);
         }
     }
     

@@ -297,8 +297,10 @@ public class CBORMap extends CBORObject {
             int diff = entry.compare(testKey);
             if (diff == 0) {
                 if (precedingEntry == null) {
+                    // Remove root key.  It may be alone.
                     root = entry.next;
                 } else {
+                    // Remove key above root.  It may be the top most.
                     precedingEntry.next = entry.next;
                 }
                 return this;
