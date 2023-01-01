@@ -56,12 +56,12 @@ public class CBORTag extends CBORObject {
     CBORObject object;
     
     /**
-     * Current COTE tag: {@value #RESERVED_TAG_COTX}
+     * Current COTX tag: {@value #RESERVED_TAG_COTX}
      */
     public static final int RESERVED_TAG_COTX  = 1010;
 
     /**
-     * Creates a COTE-tagged object.
+     * Creates a COTX-tagged object.
      * 
      * @param typeUrl Type URL (or other string)
      * @param object Object
