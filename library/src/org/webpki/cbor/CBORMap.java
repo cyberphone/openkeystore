@@ -40,7 +40,8 @@ public class CBORMap extends CBORObject {
     boolean constrainedMapKeys;
     Entry root;
     private Entry lastEntry;
-    
+
+    // Similar to the Java Map.Entry but optimized for CBOR. 
     static class Entry {
         CBORObject key;
         CBORObject value;
@@ -153,6 +154,8 @@ public class CBORMap extends CBORObject {
         if (root == null) {
             root = newEntry;
         } else {
+            // Note: the keys are always sorted, making the verification process simple.
+            // This is also the reason why the Java "TreeMap" was not used. 
             if (constrainedMapKeys && lastEntry.key.getType() != key.getType()) {
                 reportError(STDERR_CONSTRAINED_MAP_KEYS + key);
             }
@@ -167,16 +170,19 @@ public class CBORMap extends CBORObject {
              } else {
                 // Now we have to test and sort.
                 Entry  precedingEntry = null;
-                int diff = -1;
+                int diff = 0;
                 for (Entry entry = root; entry != null; entry = entry.next) {
                     diff = entry.compare(newEntry.encodedKey);
                     if (diff == 0) {
                         reportError(STDERR_DUPLICATE_KEY + key);                      
                     } else if (diff > 0) {
+                        // New key is less than a current entry.
                         if (precedingEntry == null) {
+                            // Less than root, means the root must be redefined.
                             newEntry.next = root;
                             root = newEntry;
                         } else {
+                            // Somewhere above root. Insert after preceding entry.
                             newEntry.next = entry;
                             precedingEntry.next = newEntry;
                         }
