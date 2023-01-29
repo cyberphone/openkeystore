@@ -1300,10 +1300,10 @@ public class SEReferenceImplementation {
 
     ////////////////////////////////////////////////////////////////////////////////
     //                                                                            //
-    //                            executeSignHash                                 //
+    //                            executeSignData                                 //
     //                                                                            //
     ////////////////////////////////////////////////////////////////////////////////
-    public static SEByteArrayData executeSignHash(byte[] osInstanceKey,
+    public static SEByteArrayData executeSignData(byte[] osInstanceKey,
                                                   byte[] sealedKey,
                                                   int keyHandle,
                                                   String algorithm,

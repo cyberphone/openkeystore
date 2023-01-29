@@ -23,31 +23,6 @@ import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Key;
-//#if ANDROID
-
-public class OkpSupport {
-    public static byte[] public2RawKey(PublicKey publicKey, KeyAlgorithms keyAlgorithm)
-    throws IOException {
-        throw new IOException("Feature not yet available in Android");
-    }
-    public static PublicKey raw2PublicKey(byte[] x, KeyAlgorithms keyAlgorithm) 
-    throws IOException {
-        throw new IOException("Feature not yet available in Android");
-    }
-
-    public static byte[] private2RawKey(PrivateKey privateKey, KeyAlgorithms keyAlgorithm) 
-    throws IOException {
-        throw new IOException("Feature not yet available in Android");
-    }
-    public static PrivateKey raw2PrivateKey(byte[] d, KeyAlgorithms keyAlgorithm)
-    throws IOException {
-        throw new IOException("Feature not yet available in Android");
-    }
-    public static KeyAlgorithms getKeyAlgorithm(Key key) {
-        throw new RuntimeException("Feature not yet available in Android");
-    }
-}
-//#else
 
 //#if BOUNCYCASTLE
 import org.bouncycastle.jcajce.interfaces.EdDSAKey;
@@ -196,4 +171,3 @@ public class OkpSupport {
         throw new IllegalArgumentException("Unknown OKP key type: " + key.getClass().getName());
     }
 }
-//#endif

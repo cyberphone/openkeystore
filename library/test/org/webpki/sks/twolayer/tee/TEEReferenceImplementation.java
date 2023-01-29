@@ -1217,16 +1217,16 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
 
     ////////////////////////////////////////////////////////////////////////////////
     //                                                                            //
-    //                             signHashedData                                 //
+    //                                signData                                    //
     //                                                                            //
     ////////////////////////////////////////////////////////////////////////////////
     @Override
-    public synchronized byte[] signHashedData(int keyHandle,
-                                              String algorithm,
-                                              byte[] parameters,
-                                              boolean biometricAuth,
-                                              byte[] authorization,
-                                              byte[] data) {
+    public synchronized byte[] signData(int keyHandle,
+                                        String algorithm,
+                                        byte[] parameters,
+                                        boolean biometricAuth,
+                                        byte[] authorization,
+                                        byte[] data) {
         try {
             ///////////////////////////////////////////////////////////////////////////////////
             // Get key (which must belong to an already fully provisioned session)
@@ -1251,7 +1251,7 @@ public class TEEReferenceImplementation implements SecureKeyStore, Serializable 
             ///////////////////////////////////////////////////////////////////////////////////
             // Execute it!
             ///////////////////////////////////////////////////////////////////////////////////
-            return SEReferenceImplementation.executeSignHash(OS_INSTANCE_KEY,
+            return SEReferenceImplementation.executeSignData(OS_INSTANCE_KEY,
                                                              keyEntry.sealedKey,
                                                              keyHandle,
                                                              algorithm,

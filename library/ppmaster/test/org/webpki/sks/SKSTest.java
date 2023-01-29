@@ -1046,14 +1046,10 @@ public class SKSTest {
         ProvSess sess = new ProvSess(device);
         int i = 1;
         for (KeyAlgorithms keyAlgorithm : KeyAlgorithms.values()) {
-            if (!keyAlgorithm.isMandatorySksAlgorithm() &&
-                !device.device_info.getSupportedAlgorithms().contains(
+            if (!device.device_info.getSupportedAlgorithms().contains(
                     keyAlgorithm.getAlgorithmId(AlgorithmPreferences.SKS))) {
                 continue;
             }
-//#if !BOUNCYCASTLE
-            if (keyAlgorithm == KeyAlgorithms.BRAINPOOL_P_256) continue;
-//#endif
             sess.setKeyParameters((keyAlgorithm.getKeyType() == KeyTypes.RSA && 
                                    keyAlgorithm.hasParameters()) ?
                     new byte[]{0, 0, 0, 3} : null);
@@ -3224,10 +3220,20 @@ public class SKSTest {
                 KeyAlgorithms.RSA2048,
                 new KeyProtectionSpec(),
                 AppUsage.AUTHENTICATION).setCertificate(cn());
+        GenKey eddsa = null;
+        if (supported_algorithms.contains(
+                KeyAlgorithms.ED25519.getAlgorithmId(AlgorithmPreferences.SKS))) {
+            eddsa = sess.createKey("Key.3",
+                KeyAlgorithms.ED25519,
+                new KeyProtectionSpec(),
+                AppUsage.AUTHENTICATION).setCertificate(cn());
+        }
+        
         sess.closeSession();
-
         for (AsymSignatureAlgorithms alg : AsymSignatureAlgorithms.values()) {
-            GenKey tk = alg.getKeyType() == KeyTypes.RSA ? rsa : ec;
+            GenKey tk = alg.getKeyType() == KeyTypes.RSA ? rsa : 
+                alg.getKeyType() == KeyTypes.EC ? ec : eddsa;
+            if (tk == null) continue;
             try {
                 byte[] result = tk.signData(alg, 
                                             new KeyAuthorization(),

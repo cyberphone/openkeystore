@@ -326,12 +326,12 @@ public interface SecureKeyStore {
     // "User" API
     ///////////////////////////////////////////////////////////////////////////////////
 
-    byte[] signHashedData(int keyHandle,
-                          String algorithm,
-                          byte[] parameters,    // Must be null if not applicable
-                          boolean biometricAuth,
-                          byte[] authorization, // Must be null if not applicable
-                          byte[] data);
+    byte[] signData(int keyHandle,
+                    String algorithm,
+                    byte[] parameters,    // Must be null if not applicable
+                    boolean biometricAuth,
+                    byte[] authorization, // Must be null if not applicable
+                    byte[] data);
 
     byte[] performHmac(int keyHandle,
                        String algorithm,

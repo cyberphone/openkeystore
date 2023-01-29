@@ -202,12 +202,12 @@ public class GenKey {
     public byte[] signData(AsymSignatureAlgorithms alg_id,
                            KeyAuthorization keyAuthorization,
                            byte[] data) throws IOException, SKSException, GeneralSecurityException {
-        return prov_sess.sks.signHashedData(keyHandle,
+        return prov_sess.sks.signData(keyHandle,
                 alg_id.getAlgorithmId(AlgorithmPreferences.SKS),
                 null,
                 keyAuthorization.biometricAuth,
                 getConditionalAuthorization(keyAuthorization.pin),
-                alg_id.getDigestAlgorithm() == null ? data : alg_id.getDigestAlgorithm().digest(data));
+                data);
     }
 
     public byte[] asymmetricKeyDecrypt(AsymEncryptionAlgorithms alg_id, 

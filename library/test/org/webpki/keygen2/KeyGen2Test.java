@@ -1341,19 +1341,19 @@ public class KeyGen2Test {
         ecc_key = true;
         doer.perform();
         int keyHandle = doer.getFirstKey();
-        sks.signHashedData(keyHandle,
+        sks.signData(keyHandle,
                 AsymSignatureAlgorithms.ECDSA_SHA256.getAlgorithmId(AlgorithmPreferences.SKS),
                 null,
                 BIOMETRIC_NONE,
                 USER_DEFINED_PIN,
-                HashAlgorithms.SHA256.digest(TEST_STRING));
+                TEST_STRING);
         if (sks.getKeyProtectionInfo(keyHandle).getBiometricProtection() != BiometricProtection.NONE) {
-            sks.signHashedData(keyHandle,
+            sks.signData(keyHandle,
                     AsymSignatureAlgorithms.ECDSA_SHA256.getAlgorithmId(AlgorithmPreferences.SKS),
                     null,
                     true,
                     null,
-                    HashAlgorithms.SHA256.digest(TEST_STRING));
+                    TEST_STRING);
         }
     }
 
@@ -1519,12 +1519,12 @@ public class KeyGen2Test {
             if (ek.getProvisioningHandle() == doer2.client.provisioning_handle) {
                 j++;
                 KeyAttributes ka = sks.getKeyAttributes(ek.getKeyHandle());
-                byte[] result = sks.signHashedData(ek.getKeyHandle(),
+                byte[] result = sks.signData(ek.getKeyHandle(),
                         AsymSignatureAlgorithms.RSA_SHA256.getAlgorithmId(AlgorithmPreferences.SKS),
                         null,
                         BIOMETRIC_NONE,
                         USER_DEFINED_PIN,
-                        HashAlgorithms.SHA256.digest(TEST_STRING));
+                        TEST_STRING);
                 assertTrue("Bad signature",
                         new SignatureWrapper(AsymSignatureAlgorithms.RSA_SHA256, ka.getCertificatePath()[0].getPublicKey())
                                 .update(TEST_STRING)
@@ -1548,12 +1548,12 @@ public class KeyGen2Test {
         doer2.perform();
         int keyHandle = doer2.getFirstKey();
         KeyAttributes ka = sks.getKeyAttributes(keyHandle);
-        byte[] result = sks.signHashedData(keyHandle,
+        byte[] result = sks.signData(keyHandle,
                 AsymSignatureAlgorithms.RSA_SHA256.getAlgorithmId(AlgorithmPreferences.SKS),
                 null,
                 BIOMETRIC_NONE,
                 USER_DEFINED_PIN,
-                HashAlgorithms.SHA256.digest(TEST_STRING));
+                TEST_STRING);
         assertTrue("Bad signature",
                 new SignatureWrapper(AsymSignatureAlgorithms.RSA_SHA256, ka.getCertificatePath()[0].getPublicKey())
                         .update(TEST_STRING)
@@ -1576,12 +1576,12 @@ public class KeyGen2Test {
         doer2.perform();
         int keyHandle = doer2.getFirstKey();
         KeyAttributes ka = sks.getKeyAttributes(keyHandle);
-        byte[] result = sks.signHashedData(keyHandle,
+        byte[] result = sks.signData(keyHandle,
                 AsymSignatureAlgorithms.RSA_SHA256.getAlgorithmId(AlgorithmPreferences.SKS),
                 null,
                 BIOMETRIC_NONE,
                 USER_DEFINED_PIN,
-                HashAlgorithms.SHA256.digest(TEST_STRING));
+                TEST_STRING);
         assertTrue("Bad signature",
                 new SignatureWrapper(AsymSignatureAlgorithms.RSA_SHA256, ka.getCertificatePath()[0].getPublicKey())
                         .update(TEST_STRING)
@@ -1614,12 +1614,12 @@ public class KeyGen2Test {
         pin_protection = true;
         doer.perform();
         int keyHandle = doer.getFirstKey();
-        byte[] result = sks.signHashedData(keyHandle,
+        byte[] result = sks.signData(keyHandle,
                 AsymSignatureAlgorithms.RSA_SHA256.getAlgorithmId(AlgorithmPreferences.SKS),
                 null,
                 BIOMETRIC_NONE,
                 USER_DEFINED_PIN,
-                HashAlgorithms.SHA256.digest(TEST_STRING));
+                TEST_STRING);
         SignatureWrapper sign = new SignatureWrapper(AsymSignatureAlgorithms.RSA_SHA256, doer.server.gen_private_key);
         sign.update(TEST_STRING);
         assertTrue("Bad signature", ArrayUtil.compare(sign.sign(), result));
@@ -1689,12 +1689,12 @@ public class KeyGen2Test {
         int keyHandle = doer1.getFirstKey();
         for (int i = 1; i <= doer1.server.pin_retry_limit; i++) {
             try {
-                sks.signHashedData(keyHandle,
+                sks.signData(keyHandle,
                         AsymSignatureAlgorithms.ECDSA_SHA256.getAlgorithmId(AlgorithmPreferences.SKS),
                         null,
                         BIOMETRIC_NONE,
                         BAD_PIN,
-                        HashAlgorithms.SHA256.digest(TEST_STRING));
+                        TEST_STRING);
                 fail("Bad PIN should not work");
             } catch (SKSException e) {
                 assertFalse("Locked", sks.getKeyProtectionInfo(keyHandle).isPinBlocked() ^ (i == doer1.server.pin_retry_limit));
@@ -1721,12 +1721,12 @@ public class KeyGen2Test {
         int keyHandle = doer1.getFirstKey();
         for (int i = 1; i <= doer1.server.pin_retry_limit; i++) {
             try {
-                sks.signHashedData(keyHandle,
+                sks.signData(keyHandle,
                         AsymSignatureAlgorithms.ECDSA_SHA256.getAlgorithmId(AlgorithmPreferences.SKS),
                         null,
                         BIOMETRIC_NONE,
                         BAD_PIN,
-                        HashAlgorithms.SHA256.digest(TEST_STRING));
+                        TEST_STRING);
                 fail("Bad PIN should not work");
             } catch (SKSException e) {
                 assertFalse("Locked", sks.getKeyProtectionInfo(keyHandle).isPinBlocked() ^ (i == doer1.server.pin_retry_limit));

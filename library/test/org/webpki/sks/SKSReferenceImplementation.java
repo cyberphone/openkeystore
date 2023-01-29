@@ -41,6 +41,8 @@ import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.security.interfaces.XECKey;
+import java.security.interfaces.EdECKey;
 
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.ECGenParameterSpec;
@@ -48,6 +50,7 @@ import java.security.spec.ECParameterSpec;
 import java.security.spec.MGF1ParameterSpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.RSAKeyGenParameterSpec;
+import java.security.spec.NamedParameterSpec;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -432,12 +435,20 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             }
         }
 
+        boolean isSymmetric() {
+            return symmetricKey != null;
+        }
+        
         boolean isRsa() {
             return publicKey instanceof RSAKey;
         }
+        
+        boolean isEdDsa() {
+            return publicKey instanceof EdECKey;
+        }
 
-        boolean isSymmetric() {
-            return symmetricKey != null;
+        boolean isXDH() {
+            return publicKey instanceof XECKey;
         }
 
         void checkCryptoDataSize(byte[] data) {
@@ -742,14 +753,14 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         static final int LEADING_ZERO = 0x00;
 
         Signature instance;
-        boolean rsaFlag;
+        boolean modifySignature;
         int extendTo;
 
         public SignatureWrapper(String algorithm, PublicKey publicKey) throws GeneralSecurityException {
             instance = Signature.getInstance(algorithm);
             instance.initVerify(publicKey);
-            rsaFlag = publicKey instanceof RSAKey;
-            if (!rsaFlag) {
+            modifySignature = publicKey instanceof ECKey;
+            if (modifySignature) {
                 extendTo = getEcPointLength((ECKey) publicKey);
             }
         }
@@ -757,8 +768,8 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         public SignatureWrapper(String algorithm, PrivateKey privateKey) throws GeneralSecurityException {
             instance = Signature.getInstance(algorithm);
             instance.initSign(privateKey);
-            rsaFlag = privateKey instanceof RSAKey;
-            if (!rsaFlag) {
+            modifySignature = privateKey instanceof ECKey;
+            if (modifySignature) {
                 extendTo = getEcPointLength((ECKey) privateKey);
             }
         }
@@ -774,7 +785,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         }
 
         public boolean verify(byte[] signature) throws GeneralSecurityException {
-            if (rsaFlag) {
+            if (!modifySignature) {
                 return instance.verify(signature);
             }
             if (extendTo != signature.length / 2) {
@@ -823,7 +834,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
 
         byte[] sign() throws GeneralSecurityException {
             byte[] signature = instance.sign();
-            if (rsaFlag) {
+            if (!modifySignature) {
                 return signature;
             }
             int index = 2;
@@ -868,7 +879,6 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
 
         int mask;
         String jceName;
-        byte[] pkcs1DigestInfo;
         ECParameterSpec ecParameterSpec;
         int ecPointLength;
 
@@ -895,29 +905,27 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         return alg;
     }
 
-    static final int ALG_SYM_ENC  = 0x00000001;
-    static final int ALG_IV_REQ   = 0x00000002;
-    static final int ALG_IV_INT   = 0x00000004;
-    static final int ALG_SYML_128 = 0x00000008;
-    static final int ALG_SYML_192 = 0x00000010;
-    static final int ALG_SYML_256 = 0x00000020;
-    static final int ALG_HMAC     = 0x00000040;
-    static final int ALG_ASYM_ENC = 0x00000080;
-    static final int ALG_ASYM_SGN = 0x00000100;
-    static final int ALG_RSA_KEY  = 0x00004000;
-    static final int ALG_RSA_GMSK = 0x00003FFF;
-    static final int ALG_RSA_EXP  = 0x00008000;
-    static final int ALG_HASH_256 = 0x00200000;
-    static final int ALG_HASH_384 = 0x00300000;
-    static final int ALG_HASH_512 = 0x00400000;
-    static final int ALG_HASH_DIV = 0x00010000;
-    static final int ALG_HASH_MSK = 0x0000007F;
-    static final int ALG_NONE     = 0x00800000;
-    static final int ALG_ASYM_KA  = 0x01000000;
-    static final int ALG_AES_PAD  = 0x02000000;
-    static final int ALG_EC_KEY   = 0x04000000;
-    static final int ALG_KEY_GEN  = 0x08000000;
-    static final int ALG_KEY_PARM = 0x10000000;
+    static final int ALG_SYM_ENC   = 0x00000001;
+    static final int ALG_IV_REQ    = 0x00000002;
+    static final int ALG_IV_INT    = 0x00000004;
+    static final int ALG_SYML_128  = 0x00000008;
+    static final int ALG_SYML_192  = 0x00000010;
+    static final int ALG_SYML_256  = 0x00000020;
+    static final int ALG_HMAC      = 0x00000040;
+    static final int ALG_ASYM_ENC  = 0x00000080;
+    static final int ALG_ASYM_SGN  = 0x00000100;
+    static final int ALG_RSA_KEY   = 0x00004000;
+    static final int ALG_RSA_GMSK  = 0x00003FFF;
+    static final int ALG_RSA_EXP   = 0x00008000;
+    static final int ALG_EDDSA_KEY = 0x00010000;
+    static final int ALG_MFG1_256  = 0x00200000;
+    static final int ALG_NONE      = 0x00800000;
+    static final int ALG_ASYM_KA   = 0x01000000;
+    static final int ALG_AES_PAD   = 0x02000000;
+    static final int ALG_EC_KEY    = 0x04000000;
+    static final int ALG_KEY_GEN   = 0x08000000;
+    static final int ALG_KEY_PARM  = 0x10000000;
+    static final int ALG_SYM_KEY   = 0x20000000;
 
     static {
         //////////////////////////////////////////////////////////////////////////////////////
@@ -925,34 +933,44 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         //////////////////////////////////////////////////////////////////////////////////////
         addAlgorithm("http://www.w3.org/2001/04/xmlenc#aes128-cbc",
                      "AES/CBC/PKCS5Padding",
-                     ALG_SYM_ENC | ALG_IV_INT | ALG_IV_REQ | ALG_SYML_128);
+                     ALG_SYM_KEY | ALG_SYM_ENC | ALG_IV_INT | ALG_IV_REQ | ALG_SYML_128);
 
         addAlgorithm("http://www.w3.org/2001/04/xmlenc#aes192-cbc",
                      "AES/CBC/PKCS5Padding",
-                     ALG_SYM_ENC | ALG_IV_INT | ALG_IV_REQ | ALG_SYML_192);
+                     ALG_SYM_KEY | ALG_SYM_ENC | ALG_IV_INT | ALG_IV_REQ | ALG_SYML_192);
 
         addAlgorithm("http://www.w3.org/2001/04/xmlenc#aes256-cbc",
                      "AES/CBC/PKCS5Padding",
-                     ALG_SYM_ENC | ALG_IV_INT | ALG_IV_REQ | ALG_SYML_256);
+                     ALG_SYM_KEY | ALG_SYM_ENC | ALG_IV_INT | ALG_IV_REQ | ALG_SYML_256);
 
         addAlgorithm("https://webpki.github.io/sks/algorithm#aes.ecb.nopad",
                      "AES/ECB/NoPadding",
-                     ALG_SYM_ENC | ALG_SYML_128 | ALG_SYML_192 | ALG_SYML_256 | ALG_AES_PAD);
+                     ALG_SYM_KEY | ALG_SYM_ENC | ALG_SYML_128 | ALG_SYML_192 | ALG_SYML_256 |
+                     ALG_AES_PAD);
 
         addAlgorithm("https://webpki.github.io/sks/algorithm#aes.cbc",
                      "AES/CBC/PKCS5Padding",
-                     ALG_SYM_ENC | ALG_IV_REQ | ALG_SYML_128 | ALG_SYML_192 | ALG_SYML_256);
+                     ALG_SYM_KEY | ALG_SYM_ENC | ALG_IV_REQ | ALG_SYML_128 | ALG_SYML_192 | 
+                     ALG_SYML_256);
 
         //////////////////////////////////////////////////////////////////////////////////////
         //  HMAC Operations
         //////////////////////////////////////////////////////////////////////////////////////
-        addAlgorithm("http://www.w3.org/2000/09/xmldsig#hmac-sha1", "HmacSHA1", ALG_HMAC);
+        addAlgorithm("http://www.w3.org/2000/09/xmldsig#hmac-sha1", 
+                     "HmacSHA1", 
+                     ALG_SYM_KEY | ALG_HMAC);
 
-        addAlgorithm("http://www.w3.org/2001/04/xmldsig-more#hmac-sha256", "HmacSHA256", ALG_HMAC);
+        addAlgorithm("http://www.w3.org/2001/04/xmldsig-more#hmac-sha256", 
+                     "HmacSHA256", 
+                     ALG_SYM_KEY | ALG_HMAC);
 
-        addAlgorithm("http://www.w3.org/2001/04/xmldsig-more#hmac-sha384", "HmacSHA384", ALG_HMAC);
+        addAlgorithm("http://www.w3.org/2001/04/xmldsig-more#hmac-sha384", 
+                     "HmacSHA384", 
+                     ALG_SYM_KEY | ALG_HMAC);
 
-        addAlgorithm("http://www.w3.org/2001/04/xmldsig-more#hmac-sha512", "HmacSHA512", ALG_HMAC);
+        addAlgorithm("http://www.w3.org/2001/04/xmldsig-more#hmac-sha512",
+                     "HmacSHA512", 
+                     ALG_SYM_KEY | ALG_HMAC);
 
         //////////////////////////////////////////////////////////////////////////////////////
         //  Asymmetric Key Decryption
@@ -967,7 +985,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
 
         addAlgorithm("https://webpki.github.io/sks/algorithm#rsa.oaep.sha256",
                      "RSA/ECB/OAEPWithSHA-256AndMGF1Padding",
-                     ALG_ASYM_ENC | ALG_RSA_KEY | ALG_HASH_256);
+                     ALG_ASYM_ENC | ALG_RSA_KEY | ALG_MFG1_256);
 
         //////////////////////////////////////////////////////////////////////////////////////
         //  Diffie-Hellman Key Agreement
@@ -980,34 +998,28 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         //  Asymmetric Key Signatures
         //////////////////////////////////////////////////////////////////////////////////////
         addAlgorithm("http://www.w3.org/2001/04/xmldsig-more#rsa-sha256",
-                     "NONEwithRSA",
-                     ALG_ASYM_SGN | ALG_RSA_KEY | ALG_HASH_256).pkcs1DigestInfo =
-                         new byte[]{0x30, 0x31, 0x30, 0x0d, 0x06, 0x09, 0x60, (byte)0x86, 0x48,
-                                    0x01, 0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00, 0x04, 0x20};
+                     "SHA256withRSA",
+                     ALG_ASYM_SGN | ALG_RSA_KEY);
 
         addAlgorithm("http://www.w3.org/2001/04/xmldsig-more#rsa-sha384",
-                     "NONEwithRSA",
-                      ALG_ASYM_SGN | ALG_RSA_KEY | ALG_HASH_384).pkcs1DigestInfo =
-                          new byte[]{0x30, 0x41, 0x30, 0x0d, 0x06, 0x09, 0x60, (byte)0x86, 0x48,
-                                     0x01, 0x65, 0x03, 0x04, 0x02, 0x02, 0x05, 0x00, 0x04, 0x30};
+                     "SHA384withRSA",
+                      ALG_ASYM_SGN | ALG_RSA_KEY);
 
         addAlgorithm("http://www.w3.org/2001/04/xmldsig-more#rsa-sha512",
-                     "NONEwithRSA",
-                     ALG_ASYM_SGN | ALG_RSA_KEY | ALG_HASH_512).pkcs1DigestInfo =
-                         new byte[]{0x30, 0x51, 0x30, 0x0d, 0x06, 0x09, 0x60, (byte)0x86, 0x48,
-                                    0x01, 0x65, 0x03, 0x04, 0x02, 0x03, 0x05, 0x00, 0x04, 0x40};
+                     "SHA512withRSA",
+                     ALG_ASYM_SGN | ALG_RSA_KEY);
 
         addAlgorithm("http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256",
-                     "NONEwithECDSA",
-                     ALG_ASYM_SGN | ALG_EC_KEY | ALG_HASH_256);
+                     "SHA256withECDSA",
+                     ALG_ASYM_SGN | ALG_EC_KEY);
 
         addAlgorithm("http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha384",
-                     "NONEwithECDSA",
-                     ALG_ASYM_SGN | ALG_EC_KEY | ALG_HASH_384);
+                     "SHA384withECDSA",
+                     ALG_ASYM_SGN | ALG_EC_KEY);
 
         addAlgorithm("http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha512",
-                     "NONEwithECDSA",
-                     ALG_ASYM_SGN | ALG_EC_KEY | ALG_HASH_512);
+                     "SHA512withECDSA",
+                     ALG_ASYM_SGN | ALG_EC_KEY);
 
         //////////////////////////////////////////////////////////////////////////////////////
         //  Asymmetric Key Generation
@@ -1022,11 +1034,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
 
         addAlgorithm("https://webpki.github.io/sks/algorithm#ec.nist.p521",
                      "secp521r1",
-                      ALG_EC_KEY | ALG_KEY_GEN).addEcCurve(66);
-
-        addAlgorithm("https://webpki.github.io/sks/algorithm#ec.brainpool.p256r1",
-                     "brainpoolP256r1",
-                     ALG_EC_KEY | ALG_KEY_GEN).addEcCurve(32);
+                     ALG_EC_KEY | ALG_KEY_GEN).addEcCurve(66);
 
         for (short rsa_size : SKS_DEFAULT_RSA_SUPPORT) {
             addAlgorithm("https://webpki.github.io/sks/algorithm#rsa" + rsa_size,
@@ -1036,7 +1044,10 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                              null, ALG_KEY_PARM | ALG_RSA_KEY | ALG_KEY_GEN | rsa_size);
             }
         }
-
+            addAlgorithm("https://webpki.github.io/sks/algorithm#ed25519",
+                         "Ed25519",
+                         ALG_ASYM_SGN | ALG_EDDSA_KEY | ALG_KEY_GEN).addEcCurve(32);
+        
         //////////////////////////////////////////////////////////////////////////////////////
         //  Special Algorithms
         //////////////////////////////////////////////////////////////////////////////////////
@@ -1401,17 +1412,21 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
     Algorithm checkKeyAndAlgorithm(KeyEntry keyEntry, String inputAlgorithm, int expectedType) {
         Algorithm alg = getAlgorithm(inputAlgorithm);
         if ((alg.mask & expectedType) == 0) {
-            abort("Algorithm does not match operation: " + inputAlgorithm, SKSException.ERROR_ALGORITHM);
+            abort("Algorithm does not match operation: " + 
+                  inputAlgorithm, SKSException.ERROR_ALGORITHM);
         }
-        if (((alg.mask & (ALG_SYM_ENC | ALG_HMAC)) != 0) ^ keyEntry.isSymmetric()) {
-            abort((keyEntry.isSymmetric() ? "S" : "As") + "ymmetric key #" + keyEntry.keyHandle + " is incompatible with: " + inputAlgorithm, SKSException.ERROR_ALGORITHM);
+        if (((alg.mask & ALG_SYM_KEY) != 0) ^ keyEntry.isSymmetric()) {
+            abort((keyEntry.isSymmetric() ? "S" : "As") + 
+                  "ymmetric key #" + keyEntry.keyHandle + " is incompatible with: " +
+                  inputAlgorithm, SKSException.ERROR_ALGORITHM);
         }
         if (keyEntry.isSymmetric()) {
             testAESKey(inputAlgorithm, keyEntry.symmetricKey, "#" + keyEntry.keyHandle);
         } else if (keyEntry.isRsa() ^ (alg.mask & ALG_RSA_KEY) != 0) {
             abort((keyEntry.isRsa() ? "RSA" : "EC") + " key #" + keyEntry.keyHandle + " is incompatible with: " + inputAlgorithm, SKSException.ERROR_ALGORITHM);
         }
-        if (keyEntry.endorsedAlgorithms.isEmpty() || keyEntry.endorsedAlgorithms.contains(inputAlgorithm)) {
+        if (keyEntry.endorsedAlgorithms.isEmpty() || 
+            keyEntry.endorsedAlgorithms.contains(inputAlgorithm)) {
             return alg;
         }
         abort("\"" + VAR_ENDORSED_ALGORITHMS + "\" for key #" + keyEntry.keyHandle + " does not include: " + inputAlgorithm, SKSException.ERROR_ALGORITHM);
@@ -1798,7 +1813,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
         ///////////////////////////////////////////////////////////////////////////////////
         try {
             Cipher cipher = Cipher.getInstance(alg.jceName);
-            if ((alg.mask & ALG_HASH_256) != 0) {
+            if ((alg.mask & ALG_MFG1_256) != 0) {
                 cipher.init(Cipher.DECRYPT_MODE, keyEntry.privateKey,
                     new OAEPParameterSpec(
                         "SHA-256", "MGF1", MGF1ParameterSpec.SHA256, PSource.PSpecified.DEFAULT));
@@ -1815,16 +1830,16 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
 
     ////////////////////////////////////////////////////////////////////////////////
     //                                                                            //
-    //                             signHashedData                                 //
+    //                                signData                                    //
     //                                                                            //
     ////////////////////////////////////////////////////////////////////////////////
     @Override
-    public synchronized byte[] signHashedData(int keyHandle,
-                                              String algorithm,
-                                              byte[] parameters,
-                                              boolean biometricAuth,
-                                              byte[] authorization,
-                                              byte[] data) {
+    public synchronized byte[] signData(int keyHandle,
+                                        String algorithm,
+                                        byte[] parameters,
+                                        boolean biometricAuth,
+                                        byte[] authorization,
+                                        byte[] data) {
         try {
             ///////////////////////////////////////////////////////////////////////////////////
             // Get key (which must belong to an already fully provisioned session)
@@ -1845,10 +1860,6 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             // Check that the signature algorithm is known and applicable
             ///////////////////////////////////////////////////////////////////////////////////
             Algorithm alg = checkKeyAndAlgorithm(keyEntry, algorithm, ALG_ASYM_SGN);
-            int hashLen = (alg.mask / ALG_HASH_DIV) & ALG_HASH_MSK;
-            if (hashLen > 0 && hashLen != data.length) {
-                abort("Incorrect length of \"" + VAR_DATA + "\": " + data.length);
-            }
             if (parameters != null)  // Only supports non-parameterized operations yet...
             {
                 abort("\"" + VAR_PARAMETERS + "\" for key #" + keyHandle + " do not match algorithm");
@@ -1857,9 +1868,6 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             ///////////////////////////////////////////////////////////////////////////////////
             // Finally, perform operation
             ///////////////////////////////////////////////////////////////////////////////////
-            if (keyEntry.isRsa() && hashLen > 0) {
-                data = addArrays(alg.pkcs1DigestInfo, data);
-            }
             return new SignatureWrapper(alg.jceName, keyEntry.privateKey).update(data).sign();
         } catch (Exception e) {
             abort(e);
@@ -2409,16 +2417,19 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                     // Check public versus private key match
                     ///////////////////////////////////////////////////////////////////////////////////
                     coreCompatibilityCheck(keyEntry);
-                    String signatureAlgorithm = keyEntry.isRsa() ? "NONEwithRSA" : "NONEwithECDSA";
-                    Signature sign = Signature.getInstance(signatureAlgorithm);
-                    sign.initSign(keyEntry.privateKey);
-                    sign.update(RSA_ENCRYPTION_OID);  // Any data could be used...
-                    byte[] signedData = sign.sign();
-                    Signature verify = Signature.getInstance(signatureAlgorithm);
-                    verify.initVerify(keyEntry.publicKey);
-                    verify.update(RSA_ENCRYPTION_OID);
-                    if (!verify.verify(signedData)) {
-                        abort("Public/private key mismatch for: " + keyEntry.id);
+                    if (!keyEntry.isXDH() && !keyEntry.isEdDsa()) {
+                        String signatureAlgorithm = keyEntry.isRsa() ?
+                                "NONEwithRSA" : "NONEwithECDSA";
+                        Signature sign = Signature.getInstance(signatureAlgorithm);
+                        sign.initSign(keyEntry.privateKey);
+                        sign.update(RSA_ENCRYPTION_OID);  // Any data could be used...
+                        byte[] signedData = sign.sign();
+                        Signature verify = Signature.getInstance(signatureAlgorithm);
+                        verify.initVerify(keyEntry.publicKey);
+                        verify.update(RSA_ENCRYPTION_OID);
+                        if (!verify.verify(signedData)) {
+                            abort("Public/private key mismatch for: " + keyEntry.id);
+                        }
                     }
     
                     ///////////////////////////////////////////////////////////////////////////////////
@@ -2451,7 +2462,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                             ///////////////////////////////////////////////////////////////////////////////////
                             // A non-null endorsed algorithm found.  Symmetric or asymmetric key?
                             ///////////////////////////////////////////////////////////////////////////////////
-                            if (((alg.mask & (ALG_SYM_ENC | ALG_HMAC)) == 0) ^ keyEntry.isSymmetric()) {
+                            if (((alg.mask & ALG_SYM_KEY) == 0) ^ keyEntry.isSymmetric()) {
                                 if (keyEntry.isSymmetric()) {
                                     ///////////////////////////////////////////////////////////////////////////////////
                                     // Symmetric. AES algorithms only operates on 128, 192, and 256 bit keys
@@ -2467,7 +2478,8 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                                     }
                                 }
                             }
-                            abort((keyEntry.isSymmetric() ? "Symmetric" : keyEntry.isRsa() ? "RSA" : "EC") +
+                            abort((keyEntry.isSymmetric() ? 
+                                    "Symmetric" : keyEntry.isRsa() ? "RSA" : "EC") +
                                     " key " + keyEntry.id + " does not match algorithm: " + algorithm);
                         }
                     }
@@ -2950,16 +2962,17 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             // Update public key value.  It has no use after "setCertificatePath" anyway...
             ///////////////////////////////////////////////////////////////////////////////////
             keyEntry.publicKey = certificatePath[0].getPublicKey();
-    
+            
             ///////////////////////////////////////////////////////////////////////////////////
             // Check key material for SKS compliance
             ///////////////////////////////////////////////////////////////////////////////////
             if (keyEntry.publicKey instanceof RSAKey) {
                 checkRsaKeyCompatibility((RSAPublicKey) keyEntry.publicKey, keyEntry.id);
-            } else {
+            } else if (keyEntry.publicKey instanceof ECKey) {
                 checkEcKeyCompatibility((ECPublicKey) keyEntry.publicKey, keyEntry.id);
             }
-    
+//TODO X/ED
+
             ///////////////////////////////////////////////////////////////////////////////////
             // Store certificate path
             ///////////////////////////////////////////////////////////////////////////////////
@@ -3145,10 +3158,14 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                     exponent = new BigInteger(keyParameters);
                 }
                 algParSpec = new RSAKeyGenParameterSpec(rsaKeySize, exponent);
-            } else {
+            } else if ((kalg.mask & ALG_EC_KEY) == ALG_EC_KEY) {
                 keyFactory = "EC";
                 algParSpec = new ECGenParameterSpec(kalg.jceName);
+            } else {
+                keyFactory = ((kalg.mask & ALG_EDDSA_KEY) == ALG_EDDSA_KEY) ? "EdDSA" : "XDH";
+                algParSpec = new NamedParameterSpec(kalg.jceName);
             }
+
 
             ///////////////////////////////////////////////////////////////////////////////////
             //Reserve a key entry
