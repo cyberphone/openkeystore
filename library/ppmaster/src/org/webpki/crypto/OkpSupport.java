@@ -16,6 +16,10 @@
  */
 package org.webpki.crypto;
 
+//#if ANDROID
+import androidx.annotation.RequiresApi;
+//#endif
+
 import java.io.IOException;
 
 import java.security.GeneralSecurityException;
@@ -59,7 +63,11 @@ import org.webpki.util.HexaDecimal;
  * Note that JDK and BouncyCastle are incompatible with respect to "OKP" keys
  * and that this module only forces BouncyCastle for OKP keys.
 #else
+#if ANDROID
+ * Source configured for Android 13+
+#else
  * Source configured for the JDK 17+ provider.
+#endif
 #endif
  */
 public class OkpSupport {
@@ -146,6 +154,9 @@ public class OkpSupport {
         return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(pkcs8));
     }
 
+//#if ANDROID
+    @RequiresApi(api = 33)
+//#endif
     public static KeyAlgorithms getKeyAlgorithm(Key key) {
 //#if BOUNCYCASTLE
         if (key instanceof EdDSAKey) {
