@@ -57,9 +57,12 @@ import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
 import android.security.keystore.KeyProtection;
 
+import androidx.annotation.RequiresApi;
+
 // This class holds all interfaces between SKS and the AndroidKeyStore.
 // It also provides SKS/AndroidKeyStore initialization and serialization support. 
 
+@RequiresApi(api = 33)
 public abstract class HardwareKeyStore {
 
     private static final String PERSISTENCE_SKS   = "SKS";  // SKS persistence file
@@ -215,7 +218,10 @@ public abstract class HardwareKeyStore {
         KeyProtection.Builder builder =
             new KeyProtection.Builder(KeyProperties.PURPOSE_SIGN |
                                       (rsaFlag ?  KeyProperties.PURPOSE_DECRYPT : 0))
-                .setDigests(KeyProperties.DIGEST_NONE);
+                .setDigests(KeyProperties.DIGEST_NONE,
+                            KeyProperties.DIGEST_SHA256,
+                            KeyProperties.DIGEST_SHA384,
+                            KeyProperties.DIGEST_SHA512);
         if (rsaFlag) {
             builder.setSignaturePaddings(KeyProperties.SIGNATURE_PADDING_RSA_PKCS1)
                    .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1,

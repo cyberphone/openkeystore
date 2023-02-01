@@ -17,6 +17,8 @@
 //#if ANDROID
 package org.webpki.mobile.android.sks;
 
+import androidx.annotation.RequiresApi;
+
 import android.os.Build;
 
 import android.util.Log;
@@ -110,6 +112,7 @@ import org.webpki.sks.SecureKeyStore;
  *
  *  Author: Anders Rundgren
  */
+@RequiresApi(api = 33)
 public class AndroidSKSImplementation implements SecureKeyStore, Serializable, GrantInterface {
 //#else
 /*
@@ -554,6 +557,11 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
 //#if BOUNCYCASTLE
             return false;
 //#else
+//#if ANDROID
+            if (Build.VERSION.SDK_INT < 33) {
+                return false;
+            }
+//#endif
             return publicKey instanceof EdECKey;
 //#endif
         }
@@ -562,6 +570,11 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
 //#if BOUNCYCASTLE
             return false;
 //#else
+//#if ANDROID
+            if (Build.VERSION.SDK_INT < 33) {
+                return false;
+            }
+//#endif
             return publicKey instanceof XECKey;
 //#endif
         }
