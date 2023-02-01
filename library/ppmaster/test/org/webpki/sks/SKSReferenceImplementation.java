@@ -17,8 +17,6 @@
 //#if ANDROID
 package org.webpki.mobile.android.sks;
 
-import androidx.annotation.RequiresApi;
-
 import android.os.Build;
 
 import android.util.Log;
@@ -53,10 +51,6 @@ import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-//#if !BOUNCYCASTLE
-import java.security.interfaces.XECKey;
-import java.security.interfaces.EdECKey;
-//#endif
 
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.ECGenParameterSpec;
@@ -65,7 +59,9 @@ import java.security.spec.MGF1ParameterSpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.RSAKeyGenParameterSpec;
 //#if !BOUNCYCASTLE
+//#if !ANDROID
 import java.security.spec.NamedParameterSpec;
+//#endif
 //#endif
 //#if ANDROID
 import java.security.spec.X509EncodedKeySpec;
@@ -112,7 +108,6 @@ import org.webpki.sks.SecureKeyStore;
  *
  *  Author: Anders Rundgren
  */
-@RequiresApi(api = 33)
 public class AndroidSKSImplementation implements SecureKeyStore, Serializable, GrantInterface {
 //#else
 /*
@@ -553,30 +548,8 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             return publicKey instanceof RSAKey;
         }
         
-        boolean isEdDsa() {
-//#if BOUNCYCASTLE
-            return false;
-//#else
-//#if ANDROID
-            if (Build.VERSION.SDK_INT < 33) {
-                return false;
-            }
-//#endif
-            return publicKey instanceof EdECKey;
-//#endif
-        }
-
-        boolean isXDH() {
-//#if BOUNCYCASTLE
-            return false;
-//#else
-//#if ANDROID
-            if (Build.VERSION.SDK_INT < 33) {
-                return false;
-            }
-//#endif
-            return publicKey instanceof XECKey;
-//#endif
+        boolean isEc() {
+            return publicKey instanceof ECKey;
         }
 
         void checkCryptoDataSize(byte[] data) {
@@ -2615,7 +2588,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
 //#else
                     coreCompatibilityCheck(keyEntry);
 //#endif
-                    if (!keyEntry.isXDH() && !keyEntry.isEdDsa()) {
+                    if (keyEntry.isEc() || keyEntry.isRsa()) {
                         String signatureAlgorithm = keyEntry.isRsa() ?
                                 "NONEwithRSA" : "NONEwithECDSA";
                         Signature sign = Signature.getInstance(signatureAlgorithm);
@@ -3394,8 +3367,13 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                 keyFactory = null;
                 abort("BC support for " + kalg.jceName + " not implemented");
 //#else
+//#if ANDROID
+                keyFactory = "EC";
+                algParSpec = new ECGenParameterSpec(kalg.jceName);
+//#else
                 keyFactory = ((kalg.mask & ALG_EDDSA_KEY) == ALG_EDDSA_KEY) ? "EdDSA" : "XDH";
                 algParSpec = new NamedParameterSpec(kalg.jceName);
+//#endif
 //#endif
             }
 
@@ -3414,7 +3392,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             if (exportProtection == EXPORT_DELETE_PROTECTION_NOT_ALLOWED) {
                 publicKey = HardwareKeyStore.createSecureKeyPair(keyEntry.getKeyId(),
                                                          algParSpec,
-                                                         keyFactory.equals("RSA"));
+                                                         keyFactory);
             } else {
                 SecureRandom secureRandom = serverSeed.length == 0 ? 
                                                 new SecureRandom() : new SecureRandom(serverSeed);

@@ -62,7 +62,6 @@ import androidx.annotation.RequiresApi;
 // This class holds all interfaces between SKS and the AndroidKeyStore.
 // It also provides SKS/AndroidKeyStore initialization and serialization support. 
 
-@RequiresApi(api = 33)
 public abstract class HardwareKeyStore {
 
     private static final String PERSISTENCE_SKS   = "SKS";  // SKS persistence file
@@ -177,18 +176,22 @@ public abstract class HardwareKeyStore {
 
     static PublicKey createSecureKeyPair(String keyId, 
                                          AlgorithmParameterSpec algParSpec,
-                                         boolean rsaFlag) throws GeneralSecurityException {
-        KeyPairGenerator kpg = KeyPairGenerator.getInstance(rsaFlag ? 
-                                    KeyProperties.KEY_ALGORITHM_RSA : KeyProperties.KEY_ALGORITHM_EC, 
+                                         String keyFactory) throws GeneralSecurityException {
+        boolean rsaFlag = keyFactory.equals("RSA");
+        KeyPairGenerator kpg = KeyPairGenerator.getInstance(keyFactory,
                                                             ANDROID_KEYSTORE);
         KeyGenParameterSpec.Builder builder = 
             new KeyGenParameterSpec.Builder(keyId,
                     KeyProperties.PURPOSE_SIGN | (rsaFlag ?  KeyProperties.PURPOSE_DECRYPT : 0))
-                .setAlgorithmParameterSpec(algParSpec)
-                .setDigests(KeyProperties.DIGEST_NONE,
-                            KeyProperties.DIGEST_SHA256,
-                            KeyProperties.DIGEST_SHA384,
-                            KeyProperties.DIGEST_SHA512);
+                .setAlgorithmParameterSpec(algParSpec);
+        if (rsaFlag || !((ECGenParameterSpec)algParSpec).getName().startsWith("Ed")) {
+            builder.setDigests(KeyProperties.DIGEST_NONE,
+                               KeyProperties.DIGEST_SHA256,
+                               KeyProperties.DIGEST_SHA384,
+                               KeyProperties.DIGEST_SHA512);
+        } else {
+            builder.setDigests(KeyProperties.DIGEST_NONE);
+        }
         if (rsaFlag) {
             builder.setSignaturePaddings(KeyProperties.SIGNATURE_PADDING_RSA_PKCS1)
                    .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1,

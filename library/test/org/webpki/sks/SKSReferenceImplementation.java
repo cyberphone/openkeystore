@@ -41,8 +41,6 @@ import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-import java.security.interfaces.XECKey;
-import java.security.interfaces.EdECKey;
 
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.ECGenParameterSpec;
@@ -443,12 +441,8 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
             return publicKey instanceof RSAKey;
         }
         
-        boolean isEdDsa() {
-            return publicKey instanceof EdECKey;
-        }
-
-        boolean isXDH() {
-            return publicKey instanceof XECKey;
+        boolean isEc() {
+            return publicKey instanceof ECKey;
         }
 
         void checkCryptoDataSize(byte[] data) {
@@ -2417,7 +2411,7 @@ public class SKSReferenceImplementation implements SecureKeyStore, Serializable 
                     // Check public versus private key match
                     ///////////////////////////////////////////////////////////////////////////////////
                     coreCompatibilityCheck(keyEntry);
-                    if (!keyEntry.isXDH() && !keyEntry.isEdDsa()) {
+                    if (keyEntry.isEc() || keyEntry.isRsa()) {
                         String signatureAlgorithm = keyEntry.isRsa() ?
                                 "NONEwithRSA" : "NONEwithECDSA";
                         Signature sign = Signature.getInstance(signatureAlgorithm);
