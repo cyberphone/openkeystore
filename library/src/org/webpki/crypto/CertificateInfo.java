@@ -24,6 +24,7 @@ import java.security.GeneralSecurityException;
 
 import java.security.cert.X509Certificate;
 
+import java.security.interfaces.ECKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAKey;
 
@@ -327,9 +328,15 @@ public class CertificateInfo {
             return DerDecoder.decode(
                     ((ASN1BitString) (
                             (ASN1Sequence) DerDecoder.decode(
-                                    certificate.getPublicKey().getEncoded())).get(1)).value()).encode();
+                                    certificate.getPublicKey().getEncoded())).get(1))
+                                        .value()).encode();
         }
-        return ParseUtil.bitstring(ParseUtil.sequence(DerDecoder.decode(((ECPublicKey) certificate.getPublicKey()).getEncoded()), 2).get(1));
+        if (certificate.getPublicKey() instanceof ECKey) {
+            return ParseUtil.bitstring(ParseUtil.sequence(DerDecoder.decode(
+                    ((ECPublicKey) certificate.getPublicKey()).getEncoded()), 2).get(1));
+        }
+        return OkpSupport.public2RawKey(certificate.getPublicKey(),
+                                        KeyAlgorithms.getKeyAlgorithm(certificate.getPublicKey()));
     }
 
 
