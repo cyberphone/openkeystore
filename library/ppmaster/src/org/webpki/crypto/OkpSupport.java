@@ -179,6 +179,11 @@ public class OkpSupport {
                     AlgorithmPreferences.JOSE);
         }
 //#endif
+//#if ANDROID
+        // Ugly fix while waiting for Google to implement everything...
+        return KeyAlgorithms.ED25519;
+//#else
         throw new IllegalArgumentException("Unknown OKP key type: " + key.getClass().getName());
+//#endif
     }
 }
