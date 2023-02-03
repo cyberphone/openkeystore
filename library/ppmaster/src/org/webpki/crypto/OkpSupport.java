@@ -168,6 +168,9 @@ public class OkpSupport {
                                                        AlgorithmPreferences.JOSE);
         }
 //#else
+//#if ANDROID
+/*
+//#endif
         if (key instanceof XECKey) {
             return KeyAlgorithms.getKeyAlgorithmFromId(
                     ((NamedParameterSpec)((XECKey)key).getParams()).getName(),
@@ -179,11 +182,13 @@ public class OkpSupport {
                     AlgorithmPreferences.JOSE);
         }
 //#endif
+        throw new IllegalArgumentException("Unknown OKP key type: " + key.getClass().getName());
 //#if ANDROID
+*/
+
         // Ugly fix while waiting for Google to implement everything...
         return KeyAlgorithms.ED25519;
-//#else
-        throw new IllegalArgumentException("Unknown OKP key type: " + key.getClass().getName());
+
 //#endif
     }
 }
