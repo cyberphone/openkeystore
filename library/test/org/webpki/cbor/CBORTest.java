@@ -182,15 +182,25 @@ public class CBORTest {
     
     void integerTest(String value, IntegerVariations variation, boolean mustFail)
             throws Exception {
-        CBORObject bigInteger = new CBORBigInteger(new BigInteger(value));
-        byte[] cbor = bigInteger.encode();
+        BigInteger bigInteger = new BigInteger(value);
+        CBORObject cborBigInteger = new CBORBigInteger(bigInteger);
+        byte[] cbor = cborBigInteger.encode();
         CBORObject res = CBORObject.decode(cbor);
-        assertTrue("int", res.equals(bigInteger));
+        assertTrue("int", res.equals(cborBigInteger));
         if (res.getType() == CBORTypes.INTEGER) {
             CBORInteger cborInteger = (CBORInteger)res;
             assertTrue("int", 
                        new CBORInteger(cborInteger.value, 
-                                       cborInteger.unsigned).equals(bigInteger));
+                                       cborInteger.unsigned).equals(cborBigInteger));
+            if (bigInteger.compareTo(BigInteger.ZERO)< 0) {
+                assertTrue("sint", 
+                           new CBORInteger(~bigInteger.longValue(), 
+                                           false).equals(cborBigInteger));
+            } else {
+                assertTrue("uint", 
+                        new CBORInteger(bigInteger.longValue(), 
+                                        true).equals(cborBigInteger));
+            }
         }
         assertTrue("intBig", res.toString().equals(value));
         if (mustFail) {
