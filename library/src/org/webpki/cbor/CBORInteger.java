@@ -18,36 +18,22 @@ package org.webpki.cbor;
 
 import java.math.BigInteger;
 
-import org.webpki.util.ArrayUtil;
-
 /**
- * Class for holding CBOR <code>integer</code> and <code>big&nbsp;integer</code>.
+ * Class for holding CBOR <code>integer</code>.
  * 
  * Note that the encoder is adaptive, selecting the shortest possible
  * representation in order to produce a fully deterministic result.
  */
 public class CBORInteger extends CBORObject {
 
-    static final BigInteger MAX_INT64 = new BigInteger("18446744073709551615");
-    static final BigInteger MIN_INT64 = new BigInteger("-18446744073709551616");
+    static final byte[] UNSIGNED_INTEGER_TAG = {(byte)MT_UNSIGNED};
+    static final byte[] NEGATIVE_INTEGER_TAG = {(byte)MT_NEGATIVE};
     
-    static final byte[] UNSIGNED_BIG_INTEGER_TAG = {(byte)MT_BIG_UNSIGNED};
-    static final byte[] SIGNED_BIG_INTEGER_TAG   = {(byte)MT_BIG_SIGNED};
+    static final BigInteger LONG_SIGN_BIT = new BigInteger("9223372036854775808");
+    static final long LONG_UNSIGNED_PART = 0x7fffffffffffffffl;
 
-    BigInteger value;
- 
-    /**
-     * Create a CBOR <code>integer</code>.
-     * <p>
-     * Note: this constructor assumes that value is a <i>signed</i> long.
-     * </p>
-     * See {@link CBORInteger(long, boolean)}.
-     * 
-     * @param value Integer in long format
-      */
-    public CBORInteger(long value) {
-        this(BigInteger.valueOf(value));
-    }
+    long value;
+    boolean unsigned;
     
     /**
      * Create a CBOR <code>unsigned&nbsp;integer</code> or <code>negative&nbsp;integer</code>.
@@ -65,35 +51,26 @@ public class CBORInteger extends CBORObject {
      * A special case is the value <code>0xffffffffffffffffL</code>
      * (long <code>-1</code>), which corresponds to <code>-2^64</code>.
      * </p>
-     * See {@link CBORInteger(long)} and {@link #CBORInteger(BigInteger)}.
+     * See {@link CBORInteger(long)} and {@link CBORBigInteger#CBORBigInteger(BigInteger)}.
      *
      * @param value long value
      * @param unsigned <code>true</code> if value should be considered as unsigned
      */
     public CBORInteger(long value, boolean unsigned) {
-        this(unsigned ? 
-            BigInteger.valueOf(value).and(MAX_INT64) 
-                      : 
-            BigInteger.valueOf(value).and(MAX_INT64).add(BigInteger.ONE).negate());
+        this.value = value;
+        this.unsigned = unsigned;
     }
 
     /**
-     * Creates a CBOR integer value of any size.
+     * Creates a CBOR integer value from a Java long.
      * <p>
-     * If <code>value</code> is within the CBOR <code>integer</code> range,
-     * the <code>integer</code> type will be used, otherwise serializations
-     * will use the <code>big&nbsp;integer</code> type.
+     * See {@link CBORInteger(long, boolean)} and {@link CBORBigInteger#CBORBigInteger(BigInteger)}.
      * </p>
      * 
-     * @param value Integer in BigInteger format
+     * @param value Java (signed) long type
      */
-    public CBORInteger(BigInteger value) {
-        this.value = value;
-        nullCheck(value);
-    }
-
-    boolean fitsAnInteger() {
-        return value.compareTo(MAX_INT64) <= 0 && value.compareTo(MIN_INT64) >= 0;
+    public CBORInteger(long value) {
+        this(value >= 0 ? value : ~value, value >= 0);
     }
     
     @Override
@@ -103,26 +80,20 @@ public class CBORInteger extends CBORObject {
 
     @Override
     public byte[] encode() {
-        boolean unsigned = value.compareTo(BigInteger.ZERO) >= 0;
-        BigInteger cborAdjusted = unsigned ? value : value.negate().subtract(BigInteger.ONE);
-        if (fitsAnInteger()) {
-            // Fits in "int65" decoding
-            return encodeTagAndN(unsigned ? MT_UNSIGNED : MT_NEGATIVE, cborAdjusted.longValue());
-        }
-        // Does not fit "int65" so we must use big integer encoding
-        byte[] encoded = cborAdjusted.toByteArray();
-        if (encoded[0] == 0) {
-            // Remove leading zero
-            byte[] temp = new byte[encoded.length - 1];
-            System.arraycopy(encoded, 1, temp, 0, temp.length);
-            encoded = temp;
-        }
-        return ArrayUtil.add(unsigned ? UNSIGNED_BIG_INTEGER_TAG : SIGNED_BIG_INTEGER_TAG, 
-                             new CBORByteString(encoded).encode());
+       return encodeTagAndN(unsigned ? MT_UNSIGNED : MT_NEGATIVE, value);
     }
-    
+
+    BigInteger toBigInteger() {
+        // Don't you hate 65-bit integers?
+        BigInteger bigInteger = BigInteger.valueOf(value & LONG_UNSIGNED_PART);
+        if (value < 0) {
+            bigInteger = bigInteger.add(LONG_SIGN_BIT);
+        }
+        return unsigned ? bigInteger : bigInteger.negate().subtract(BigInteger.ONE);
+    }
+
     @Override
     void internalToString(CBORObject.DiagnosticNotation cborPrinter) {
-        cborPrinter.append(value.toString());
+        cborPrinter.append(toBigInteger().toString());
     }
 }

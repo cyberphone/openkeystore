@@ -270,7 +270,8 @@ public class CBORDiagnosticParser {
                 scanFor(")");
                 return cborTag;
             }
-            return new CBORInteger(new BigInteger(number));
+            // Slight quirk to get the proper CBOR integer type  
+            return CBORObject.decode(new CBORBigInteger(new BigInteger(number)).encode());
         } catch (IllegalArgumentException e) {
             reportError(e.getMessage());
         }

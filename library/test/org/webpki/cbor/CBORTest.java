@@ -35,7 +35,6 @@ import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 
 import java.util.Locale;
-import java.util.Vector;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -102,7 +101,17 @@ public class CBORTest {
     static KeyPair ed25519;
     static CBORObject keyId;
     
-    enum IntegerVariations {LONG, ULONG, INT};
+    enum IntegerVariations {
+        LONG(CBORObject.STDERR_INCOMPATIBLE_LONG), 
+        ULONG(CBORObject.STDERR_INCOMPATIBLE_UNSIGNED_LONG),
+        INT(CBORObject.STDERR_INCOMPATIBLE_INT);
+        
+        String error;
+        
+        IntegerVariations(String error) {
+            this.error = error;
+        }
+    };
     
     static KeyPair readJwk(String keyType) throws Exception {
         JSONObjectReader jwkPlus = JSONParser.parse(ArrayUtil.readFile(baseKey + keyType + "privatekey.jwk"));
@@ -173,30 +182,37 @@ public class CBORTest {
     
     void integerTest(String value, IntegerVariations variation, boolean mustFail)
             throws Exception {
-        CBORObject bigInteger = new CBORInteger(new BigInteger(value));
+        CBORObject bigInteger = new CBORBigInteger(new BigInteger(value));
         byte[] cbor = bigInteger.encode();
-        CBORInteger res = (CBORInteger)CBORObject.decode(cbor);
+        CBORObject res = CBORObject.decode(cbor);
+        assertTrue("int", res.equals(bigInteger));
+        if (res.getType() == CBORTypes.INTEGER) {
+            CBORInteger cborInteger = (CBORInteger)res;
+            assertTrue("int", 
+                       new CBORInteger(cborInteger.value, 
+                                       cborInteger.unsigned).equals(bigInteger));
+        }
         assertTrue("intBig", res.toString().equals(value));
         if (mustFail) {
             try {
                 switch (variation) {
-                case LONG:
-                    res.getLong();
-                    break;
-                    
-                case ULONG:
-                    res.getUnsignedLong();
-                    break;
-                    
-                default:
-                    res.getInt();
-                    break;
+                    case LONG:
+                        res.getLong();
+                        break;
+                        
+                    case ULONG:
+                        res.getUnsignedLong();
+                        break;
+                        
+                    default:
+                        res.getInt();
+                        break;
                 }
                 fail("Must not execute");
             } catch (Exception e) {
-                checkException(e, "Value out of range for '" + 
-                                  (variation == IntegerVariations.ULONG ? "unsigned " :"") +
-                                  (variation == IntegerVariations.INT ? "int" : "long") + "'"); 
+                if (res.getType() == CBORTypes.INTEGER) {
+                    checkException(e, variation.error); 
+                }
             }
             assertTrue("cbor65", res.getBigInteger().toString().equals(value));
         } else {
@@ -219,7 +235,7 @@ public class CBORTest {
     }
 
     void bigIntegerTest(String value, String hex) throws Exception {
-        byte[] cbor = new CBORInteger(new BigInteger(value)).encode();
+        byte[] cbor = new CBORBigInteger(new BigInteger(value)).encode();
         String calc = HexaDecimal.encode(cbor);
         assertTrue("big int=" + value + " c=" + calc + " h=" + hex,
                 hex.equals(HexaDecimal.encode(cbor)));
@@ -340,6 +356,8 @@ public class CBORTest {
         
         integerTest("18446744073709551615", IntegerVariations.ULONG, false);
         integerTest("0", IntegerVariations.ULONG, false);
+        integerTest("18446744073709551615", IntegerVariations.ULONG, false);
+        integerTest("18446744073709551616", IntegerVariations.ULONG, true);
         integerTest("-1", IntegerVariations.ULONG, true);
 
         integerTest("-2147483648", IntegerVariations.INT, false);
@@ -1842,8 +1860,8 @@ public class CBORTest {
         assertTrue("json", new CBORInteger(234).equals(serializeJson("234")));
         assertTrue("json", new CBORInteger(1).equals(serializeJson("1")));
         assertTrue("json", new CBORInteger(987654321).equals(serializeJson("0987654321")));
-        assertTrue("json", new CBORInteger(new BigInteger("9007199254740992")).equals(serializeJson(
-                                                          "9007199254740992")));
+        assertTrue("json", new CBORBigInteger(new BigInteger("9007199254740992")).equals(serializeJson(
+                                                             "9007199254740992")));
         
         CBORArray cborArray = new CBORArray()
             .addObject(new CBORTextString("hi"));

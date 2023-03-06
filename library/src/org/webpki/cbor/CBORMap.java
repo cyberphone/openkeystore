@@ -21,7 +21,7 @@ import java.io.IOException;
 import org.webpki.util.ArrayUtil;
 
 /**
- * Class for holding CBOR maps.
+ * Class for holding <code>CBOR</code> map.
  * <p>
  * In addition to supporting the generic {@link CBORObject} type for key identifiers,
  * there are convenience methods for 
@@ -147,7 +147,7 @@ public class CBORMap extends CBORObject {
     public CBORMap setObject(CBORObject key, CBORObject value) throws IOException {
         if (constrainedMapKeys &&
             key.getType() != CBORTypes.TEXT_STRING &&
-            (key.getType() != CBORTypes.INTEGER || !((CBORInteger)key).fitsAnInteger())) {
+            key.getType() != CBORTypes.INTEGER) {
                 reportError(STDERR_CONSTRAINED_MAP_KEYS + key);
         }
         Entry newEntry = new Entry(key, value);
