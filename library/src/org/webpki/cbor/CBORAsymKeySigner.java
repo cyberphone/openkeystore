@@ -34,6 +34,11 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
  * <p>
  * See {@link CBORSigner} for details.
  * </p>
+ * <p> 
+ * Note that asymmetric key signatures do not permit using
+ * both a <code>keyId</code> and an in-line public key.
+ * See {@link CBORSigner#setKeyId(CBORObject)} and {@link #setPublicKey(PublicKey)}.
+ * </p>
  */
 public class CBORAsymKeySigner extends CBORSigner {
 

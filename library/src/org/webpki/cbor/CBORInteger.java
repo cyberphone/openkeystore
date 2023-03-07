@@ -43,11 +43,14 @@ public class CBORInteger extends CBORObject {
      * range from <code>0</code> to <code>2^64-1</code>,
      * while negative integers range from <code>-1</code> to <code>-2^64</code>.
      * <p>
-     * If the <code>unsigned</code> flag is set to <code>false</code>, this constructor
-     * assumes CBOR native encoding mode for negative integers.  That is, <code>value</code> is treated as
+     * If the <code>unsigned</code> flag is set to <code>false</code>, 
+     * this constructor assumes CBOR native encoding mode for negative integers.
+     * That is, <code>value</code> is treated as
      * an unsigned magnitude which is subsequently negated and subtracted by <code>1</code>.
-     * This means that the input values <code>0</code>, <code>43</code>, and <code>-9223372036854775808L</code>,
-     * actually represent <code>-1</code>, <code>-44</code>, and <code>-9223372036854775809</code> respectively.
+     * This means that the input values <code>0</code>, <code>43</code>, 
+     * and <code>-9223372036854775808L</code>,
+     * actually represent <code>-1</code>, <code>-44</code>,
+     * and <code>-9223372036854775809</code> respectively.
      * A special case is the value <code>0xffffffffffffffffL</code>
      * (long <code>-1</code>), which corresponds to <code>-2^64</code>.
      * </p>
@@ -64,7 +67,8 @@ public class CBORInteger extends CBORObject {
     /**
      * Creates a CBOR integer value from a Java long.
      * <p>
-     * See {@link CBORInteger(long, boolean)} and {@link CBORBigInteger#CBORBigInteger(BigInteger)}.
+     * See {@link CBORInteger(long, boolean)} and 
+     * {@link CBORBigInteger#CBORBigInteger(BigInteger)}.
      * </p>
      * 
      * @param value Java (signed) long type
@@ -84,7 +88,7 @@ public class CBORInteger extends CBORObject {
     }
 
     BigInteger toBigInteger() {
-        // Don't you hate 65-bit integers?
+        // "int65", really?!
         BigInteger bigInteger = BigInteger.valueOf(value & LONG_UNSIGNED_PART);
         if (value < 0) {
             bigInteger = bigInteger.add(LONG_SIGN_BIT);

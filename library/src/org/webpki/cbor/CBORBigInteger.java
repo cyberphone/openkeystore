@@ -32,7 +32,7 @@ public class CBORBigInteger extends CBORObject {
     static final BigInteger MIN_INT64 = new BigInteger("-18446744073709551616");
     
     static final byte[] UNSIGNED_BIG_INTEGER_TAG = {(byte)MT_BIG_UNSIGNED};
-    static final byte[] SIGNED_BIG_INTEGER_TAG   = {(byte)MT_BIG_SIGNED};
+    static final byte[] NEGATIVE_BIG_INTEGER_TAG = {(byte)MT_BIG_NEGATIVE};
 
     BigInteger value;
  
@@ -76,7 +76,7 @@ public class CBORBigInteger extends CBORObject {
             System.arraycopy(encoded, 1, temp, 0, temp.length);
             encoded = temp;
         }
-        return ArrayUtil.add(unsigned ? UNSIGNED_BIG_INTEGER_TAG : SIGNED_BIG_INTEGER_TAG, 
+        return ArrayUtil.add(unsigned ? UNSIGNED_BIG_INTEGER_TAG : NEGATIVE_BIG_INTEGER_TAG, 
                              new CBORByteString(encoded).encode());
     }
     

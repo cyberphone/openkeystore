@@ -36,7 +36,7 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
  * See {@link CBORSigner} for details.
  * </p>
  * <p> 
- * Note that X509 signatures do not permit the use of a keyId.
+ * Note that X509 signatures do not permit the use of a <code>keyId</code>.
  * </p>
  */
 public class CBORX509Signer extends CBORSigner {
@@ -123,7 +123,7 @@ public class CBORX509Signer extends CBORSigner {
         // X509 signatures mandate a certificate path.
         signatureObject.setObject(CERT_PATH_LABEL, CBORCryptoUtils.encodeCertificateArray(
                 signer.getCertificatePath()));
-        // Key IDs are not permitted.
+        // Key IDs are always rejected.
         CBORCryptoUtils.rejectPossibleKeyId(optionalKeyId);
     }
 

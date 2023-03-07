@@ -46,7 +46,7 @@ public abstract class CBORObject {
     static final int MT_MAP           = 0xa0;
     static final int MT_TAG           = 0xc0;
     static final int MT_BIG_UNSIGNED  = 0xc2;
-    static final int MT_BIG_SIGNED    = 0xc3;
+    static final int MT_BIG_NEGATIVE  = 0xc3;
     static final int MT_FALSE         = 0xf4;
     static final int MT_TRUE          = 0xf5;
     static final int MT_NULL          = 0xf6;
@@ -524,7 +524,7 @@ public abstract class CBORObject {
 
             // Begin with CBOR types that are uniquely defined by the tag byte.
             switch (tag) {
-                case MT_BIG_SIGNED:
+                case MT_BIG_NEGATIVE:
                 case MT_BIG_UNSIGNED:
                     byte[] byteArray = getObject().getByteString();
                     if (byteArray.length == 0) {
@@ -533,7 +533,7 @@ public abstract class CBORObject {
                         reportError("Non-deterministic encoding: leading zero byte");
                     }
                     CBORBigInteger cborBigInteger = new CBORBigInteger(
-                        (tag == MT_BIG_SIGNED) ?
+                        (tag == MT_BIG_NEGATIVE) ?
                             new BigInteger(-1, byteArray).subtract(BigInteger.ONE)
                                                :
                             new BigInteger(1, byteArray));
