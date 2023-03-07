@@ -6,8 +6,8 @@ This package contains java support for CBOR
 <table>
 <tr><th>CBOR Data Type</th><th>&nbsp;&nbsp;</th><th>Java Counterpart</th></tr>
 <tr><td><code>integer</code> [1]</td><td></td><td><code>long</code></td></tr>
-<tr><td><code>big integer</code> [1]</td><td></td><td><code>BigInteger</code></td></tr>
-<tr><td><code>floating point</code> [2]</td><td></td><td><code>double</code></td></tr>
+<tr><td><code>big integer</code> [1, 2]</td><td></td><td><code>BigInteger</code></td></tr>
+<tr><td><code>floating point</code> [3]</td><td></td><td><code>double</code></td></tr>
 <tr><td><code>byte string</code></td><td></td><td><code>byte[]</code></td></tr>
 <tr><td><code>text string</code></td><td></td><td><code>String</code></td></tr>
 <tr><td><code>true</code></td><td></td><td><code>boolean</code></td></tr>
@@ -15,7 +15,8 @@ This package contains java support for CBOR
 <tr><td><code>null</code></td><td></td><td><code>null</code></td></tr>
 </table>
 <p>1] The distinction between unsigned and negative values is dealt with automatically.<br>
-2] Floating point data covers the 16, 32, and 64-bit IEEE 754 variants.</p>
+2] <code>big integer</code> is in this implementation identical to "Bignums" in the RFC.<br>
+3] Floating point data covers the 16, 32, and 64-bit IEEE 754 variants.</p>
 <p>
 In addition to the primitives above, this implementation also supports
 arbitrary tagged objects
