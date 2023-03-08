@@ -21,13 +21,21 @@ package org.webpki.cbor;
  * 
  * Note: the types supported by this implementation.
  */
-public enum CBORTypes {ARRAY, 
-                       MAP,
-                       INTEGER,
-                       BIG_INTEGER,
-                       TAG, 
-                       FLOATING_POINT, 
-                       BYTE_STRING,
-                       TEXT_STRING, 
-                       BOOLEAN, 
-                       NULL};
+public enum CBORTypes {
+    ARRAY           (false), 
+    MAP             (false),
+    INTEGER         (true),
+    BIG_INTEGER     (false),
+    TAG             (false), 
+    FLOATING_POINT  (false), 
+    BYTE_STRING     (false),
+    TEXT_STRING     (true), 
+    BOOLEAN         (false), 
+    NULL            (false);
+    
+    boolean permittedConstrainedKey;
+    
+    CBORTypes(boolean permittedConstrainedKey) {
+        this.permittedConstrainedKey = permittedConstrainedKey;
+    }
+};

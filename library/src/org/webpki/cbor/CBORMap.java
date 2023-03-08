@@ -37,7 +37,7 @@ import org.webpki.util.ArrayUtil;
 public class CBORMap extends CBORObject {
 
     boolean deterministicMode;
-    boolean constrainedMapKeys;
+    boolean constrainedKeys;
     Entry root;
     private Entry lastEntry;
 
@@ -145,10 +145,8 @@ public class CBORMap extends CBORObject {
      * @throws IOException
      */
     public CBORMap setObject(CBORObject key, CBORObject value) throws IOException {
-        if (constrainedMapKeys &&
-            key.getType() != CBORTypes.TEXT_STRING &&
-            key.getType() != CBORTypes.INTEGER) {
-                reportError(STDERR_CONSTRAINED_MAP_KEYS + key);
+        if (constrainedKeys && !key.getType().permittedConstrainedKey) {
+            reportError(STDERR_CONSTRAINED_KEYS + key);
         }
         Entry newEntry = new Entry(key, value);
         if (root == null) {
@@ -156,8 +154,8 @@ public class CBORMap extends CBORObject {
         } else {
             // Note: the keys are always sorted, making the verification process simple.
             // This is also the reason why the Java "TreeMap" was not used. 
-            if (constrainedMapKeys && lastEntry.key.getType() != key.getType()) {
-                reportError(STDERR_CONSTRAINED_MAP_KEYS + key);
+            if (constrainedKeys && lastEntry.key.getType() != key.getType()) {
+                reportError(STDERR_CONSTRAINED_KEYS + key);
             }
             if (deterministicMode) {
                 // Normal case for parsing.
@@ -168,7 +166,8 @@ public class CBORMap extends CBORObject {
                 }
                 lastEntry.next = newEntry;
              } else {
-                // Now we have to test and sort.
+                // Programmatically created key or the result of unconstrained parsing.
+                // Then we need to test and sort (always produce deterministic CBOR).
                 Entry  precedingEntry = null;
                 int diff = 0;
                 for (Entry entry = root; entry != null; entry = entry.next) {
@@ -423,7 +422,7 @@ public class CBORMap extends CBORObject {
         cborPrinter.endMap(notFirst);
     }
     
-    static final String STDERR_CONSTRAINED_MAP_KEYS = 
+    static final String STDERR_CONSTRAINED_KEYS = 
             "Constrained mode type error for map key: ";
     
     static final String STDERR_NON_DET_SORT_ORDER =

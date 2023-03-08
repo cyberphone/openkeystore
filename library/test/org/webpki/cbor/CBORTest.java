@@ -1749,7 +1749,7 @@ public class CBORTest {
             assertTrue("Should not execute", ok);
         } catch (Exception e) {
             assertFalse("Should not fail", ok);
-            checkException(e, CBORMap.STDERR_CONSTRAINED_MAP_KEYS);
+            checkException(e, CBORMap.STDERR_CONSTRAINED_KEYS);
         }
     }
 

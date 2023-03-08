@@ -666,7 +666,7 @@ public abstract class CBORObject {
                 case MT_MAP:
                     CBORMap cborMap = new CBORMap();
                     cborMap.deterministicMode = deterministicMode;
-                    cborMap.constrainedMapKeys = constrainedMapKeys;
+                    cborMap.constrainedKeys = constrainedMapKeys;
                     for (int q = checkLength(n); --q >= 0; ) {
                         cborMap.setObject(getObject(), getObject());
                     }
@@ -688,7 +688,7 @@ public abstract class CBORObject {
      * @param sequenceFlag Stop reading after parsing a valid CBOR object
      * (no object returns <code>null</code>)
      * @param nonDeterministic Do not check data for deterministic representation
-     * @param constrainedMapKeys Limit map keys to text string and integer types,
+     * @param constrainedKeys Limit map keys to text string and integer types,
      * including flagging mixing of these types in map
      * @param maxLength Holds maximum input size in 
      * bytes or <code>null</code> ({@link Integer#MAX_VALUE} is assumed)
@@ -698,12 +698,12 @@ public abstract class CBORObject {
     public static CBORObject decode(InputStream inputStream,
                                     boolean sequenceFlag,
                                     boolean nonDeterministic,
-                                    boolean constrainedMapKeys,
+                                    boolean constrainedKeys,
                                     Integer maxLength) throws IOException {
         CBORDecoder cborDecoder = new CBORDecoder(inputStream, 
                                                   sequenceFlag, 
                                                   nonDeterministic,
-                                                  constrainedMapKeys,
+                                                  constrainedKeys,
                                                   maxLength == null ? Integer.MAX_VALUE : maxLength);
         CBORObject cborObject = cborDecoder.getObject();
         if (sequenceFlag) {
