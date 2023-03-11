@@ -795,6 +795,24 @@ public class CBORTest {
             checkException(e, 
                 "Is type: INTEGER, requested: FLOATING_POINT");
         }
+        try {
+            new CBORMap().setObject(null, new CBORInteger(1));
+            fail("must not execute");
+        } catch (Exception e) {
+            checkException(e, CBORObject.STDERR_ARGUMENT_IS_NULL);
+        }
+        try {
+            new CBORMap().setObject(new CBORInteger(1), null);
+            fail("must not execute");
+        } catch (Exception e) {
+            checkException(e, CBORObject.STDERR_ARGUMENT_IS_NULL);
+        }
+        try {
+            new CBORMap().getObject(null);
+            fail("must not execute");
+        } catch (Exception e) {
+            checkException(e, CBORObject.STDERR_ARGUMENT_IS_NULL);
+        }
     }
 
     @Test

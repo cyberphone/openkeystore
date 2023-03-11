@@ -106,7 +106,7 @@ public abstract class CBORObject {
 
     void nullCheck(Object object) {
         if (object == null) {
-            throw new IllegalArgumentException("Null argument");
+            throw new IllegalArgumentException(STDERR_ARGUMENT_IS_NULL);
         }
     }
 
@@ -843,6 +843,7 @@ public abstract class CBORObject {
     static final String STDERR_READING_LIMIT =
             "Reading past input limit";
     
-}
-    
+    static final String STDERR_ARGUMENT_IS_NULL =
+            "Argument \"null\" is not permitted";
 
+}
