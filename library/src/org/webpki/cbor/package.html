@@ -80,11 +80,11 @@ would actually yield two bytes less using the <code>big&nbsp;integer</code> type
 including the following special values and their proper CBOR encoding:
 <table class='webpkitable' style='margin:0.5em 0 0.7em 2em'>
 <tr><th>Value</th><th>Encoding</th></tr>
-<tr><td><code>&nbsp;0.0</code></td><td style='text-align:center'><code>f90000</code></td></tr>
-<tr><td><code>-0.0</code></td><td style='text-align:center'><code>f98000</code></td></tr>
-<tr><td><code>&nbsp;Infinity</code></td><td style='text-align:center'><code>f97c00</code></td></tr>
-<tr><td><code>-Infinity</code></td><td style='text-align:center'><code>f9fc00</code></td></tr>
-<tr><td><code>&nbsp;NaN</code></td><td style='text-align:center'><code>f97e00</code></td></tr>
+<tr style='text-align:right'><td><code>0.0</code></td><td><code>f90000</code></td></tr>
+<tr style='text-align:right'><td><code>-0.0</code></td><td><code>f98000</code></td></tr>
+<tr style='text-align:right'><td><code>Infinity</code></td><td><code>f97c00</code></td></tr>
+<tr style='text-align:right'><td><code>-Infinity</code></td><td><code>f9fc00</code></td></tr>
+<tr style='text-align:right'><td><code>NaN</code></td><td><code>f97e00</code></td></tr>
 </table>
 Note that <code>NaN</code> "signaling" (like <code>f97e01</code>),
 <b>must</b> be flagged as an <i>error</i>.
