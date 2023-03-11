@@ -78,7 +78,7 @@ would actually yield two bytes less using the <code>big&nbsp;integer</code> type
 <li class='webpkilistspacing'>
   RFC+: Floating point data <b>must</b> use the shortest variant
 including the following special values and their proper CBOR encoding:
-<table class='webpkitable' style='margin:0.5em 0 0.7em 2em'>
+<table class='webpkitable' style='margin:0.5em 0 0 2em'>
 <tr><th>Value</th><th>Encoding</th></tr>
 <tr style='text-align:right'><td><code>0.0</code></td><td><code>f90000</code></td></tr>
 <tr style='text-align:right'><td><code>-0.0</code></td><td><code>f98000</code></td></tr>
@@ -86,8 +86,10 @@ including the following special values and their proper CBOR encoding:
 <tr style='text-align:right'><td><code>-Infinity</code></td><td><code>f9fc00</code></td></tr>
 <tr style='text-align:right'><td><code>NaN</code></td><td><code>f97e00</code></td></tr>
 </table>
+<div style='margin:0.7em 0 0.3em 0'>
 Note that <code>NaN</code> "signaling" (like <code>f97e01</code>),
 <b>must</b> be flagged as an <i>error</i>.
+</div>
 <li class='webpkilistspacing'>
   RFC+: Floating point and integer objects <b>must</b> be treated as <i>distinct types</i>
 regardless of their numeric value (Rule&nbsp;2 in section 4.2.2 of RFC&nbsp;8949).</li>
@@ -102,8 +104,14 @@ maintains CBOR type uniqueness, there are no specific restrictions or
 tests needed in order to determine map key equivalence.  
 As an example, the floating point numbers <code>0.0</code> and
 <code>-0.0</code>, and the integer number <code>0</code>
-represent the distinct keys, 
+represent the distinct keys
 <code>f90000</code>, <code>f98000</code>, and <code>00</code> respectively.
+</table>
+<div style='margin:0.5em 0 0.3em 0'>
+However, for maximum interoperability, map key types <b>should</b> be
+limited to <code>integer</code> and <code>text&nbsp;string</code>,
+as well as not being mixed in the same map.
+</div>
 </li>
 </ul>
 Any deviation from the rules above will throw
