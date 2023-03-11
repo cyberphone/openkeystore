@@ -62,6 +62,7 @@ public class CBORArray extends CBORObject {
      * @return <code>this</code>
      */
     public CBORArray addObject(CBORObject cborObject) {
+        nullCheck(cborObject);
         objectList.add(cborObject);
         return this;
     }

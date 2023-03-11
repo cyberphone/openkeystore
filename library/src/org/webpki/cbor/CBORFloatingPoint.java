@@ -40,7 +40,7 @@ public class CBORFloatingPoint extends CBORObject {
     /**
      * Creates a CBOR <code>floating point</code>.
      * 
-     * @param value
+     * @param value The double
      */
     public CBORFloatingPoint(double value) {
         this.value = value;

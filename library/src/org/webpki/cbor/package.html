@@ -16,7 +16,7 @@ This package contains Java support for CBOR
 <tr><td><code>null</code></td><td></td><td><code>null</code></td><td>{@link CBORNull}</td></tr>
 </table>
 <p>1] The distinction between unsigned and negative values is dealt with automatically.<br>
-2] <code>big integer</code> is in this implementation identical to "Bignums" in the RFC.<br>
+2] <code>big integer</code> is in this implementation identical to "<code>Bignums</code>" in the RFC.<br>
 3] Floating point data covers the 16, 32, and 64-bit IEEE 754 variants.</p>
 <p>
 In addition to the primitives above, this implementation also supports
@@ -25,26 +25,35 @@ arbitrary tagged objects based on CBOR major type 6 ({@link CBORTag}).
 <h3 id='deterministic-serialization'>Deterministic Serialization</h3>
 This package is also intended to be used for security related
 applications where "raw" CBOR data is subjected to cryptographic operations
-like hashing and signatures as well as to comparisons.
+like hashing and signatures.
 To make this possible without additional processing,
 data must be in a stable form "on the wire".
 This can either be achieved by using the binary "as is", or through
 deterministic serialization.
 This section describes a variant of latter, making compliant CBOR systems
 less dependent on specific encoder and decoder designs.
+Deterministic serialization also makes comparisons easier since they can
+be performed at the binary level.
 <div style='margin-top:0.7em'>
 It is in this context worth noting that XML and JSON do not support
 deterministic serialization.
 </div>
-<div class='webpkicomment'>
+<div id='standards-proposal' class='webpkicomment'>
 Although APIs may be quite different,
 the deterministic serialization scheme described here
 is intended as a <i>standard</i>,
 not in any way limited to the Java platform.
 </div>
-The scheme used adhere to section 4.2 of RFC&nbsp;8949, but adds
+<div id='adoption-criterion'>
+To facilitate mainstream adoption, the serialization scheme is
+deliberately rather conservative, and should with
+moderate efforts work with most existing CBOR encoders and decoders.
+</div>
+<div style='margin-top:0.8em'>
+The serialization scheme adhere to section 4.2 of RFC&nbsp;8949, but adds
 a few constraints (denoted by RFC+), where the RFC offers choices.
-The rules are as follows:
+The serialization rules are as follows:
+</div>
 <ul>
 <li class='webpkilistspacing'>
   RFC: Integers, represented by the <code>integer</code> and 
@@ -66,7 +75,7 @@ The following table holds a few sample values and their proper CBOR encoding:
 </table>
 Note that integers <b>must not</b> be supplied with 
 <i>leading zero bytes</i> (like <code>1900ff</code>) unless the
-CBOR representation offers no alternative (like <code>1b0000ffffffffffff</code>).
+CBOR representation offers no alternative (like <code>1b000000ffffffffff</code>).
 <div style='margin:0.7em 0 0.3em 0'>
 Note that the integer serialization scheme above does not always return the
 most compact representation; the value 
@@ -94,12 +103,13 @@ including the following special values and their proper CBOR encoding:
 <tr style='text-align:right'><td><code>10.559999942779541</code></td><td><code>fb40251eb850000000</code></td></tr>
 <tr style='text-align:right'><td><code>3.4028234663852886e+38</code></td><td><code>fa7f7fffff</code></td></tr>
 <tr style='text-align:right'><td><code>3.402823466385289e+38</code></td><td><code>fb47efffffe0000001</code></td></tr>
+<tr style='text-align:right'><td><code>5.0e-324</code></td><td><code>fb0000000000000001</code></td></tr>
 </table>
 <div style='margin:0.7em 0 0.3em 0'>
 Note that <code>NaN</code> "signaling" (like <code>f97e01</code>),
 <b>must</b> be flagged as an <i>error</i>.
 </div>
-<li class='webpkilistspacing'>
+<li id='number-serialization' class='webpkilistspacing'>
   RFC+: Floating point and integer objects <b>must</b> be treated as <i>distinct types</i>
 regardless of their numeric value (Rule&nbsp;2 in section 4.2.2 of RFC&nbsp;8949).</li>
 <li class='webpkilistspacing'>
@@ -107,7 +117,7 @@ regardless of their numeric value (Rule&nbsp;2 in section 4.2.2 of RFC&nbsp;8949
 order of their deterministic encoding.
 Duplicate keys <b>must</b> be rejected.
 </li>
-<li>
+<li id='map-key-equivalence'>
   RFC+: Since CBOR encoding according to this specification
 maintains CBOR type uniqueness, there are no specific restrictions or
 tests needed in order to determine map key equivalence.  
@@ -116,7 +126,7 @@ As an example, the floating point numbers <code>0.0</code> and
 represent the distinct keys
 <code>f90000</code>, <code>f98000</code>, and <code>00</code> respectively.
 </table>
-<div style='margin:0.5em 0 0.3em 0'>
+<div id='map-key-constraints' style='margin:0.5em 0 0.3em 0'>
 However, for maximum interoperability with <i>other</i> CBOR implementations,
 map key types <b>should</b> be limited to <code>integer</code> and
 <code>text&nbsp;string</code>,

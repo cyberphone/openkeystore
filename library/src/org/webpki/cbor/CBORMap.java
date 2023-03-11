@@ -96,6 +96,10 @@ public class CBORMap extends CBORObject {
         return false;
     }
 
+    private CBORObject getKey(CBORObject key) {
+        nullCheck(key);
+        return key;
+    }
     /**
      * Sets map object.
      * <p>
@@ -108,6 +112,8 @@ public class CBORMap extends CBORObject {
      * @throws IOException
      */
     public CBORMap setObject(CBORObject key, CBORObject value) throws IOException {
+        key = getKey(key);
+        nullCheck(value);
         if (constrainedKeys && !key.getType().permittedConstrainedKey) {
             reportError(STDERR_CONSTRAINED_KEYS + key);
         }
@@ -172,7 +178,7 @@ public class CBORMap extends CBORObject {
      * @throws IOException
      */
     public CBORObject getObject(CBORObject key) throws IOException {
-        byte[] testKey = key.encode();
+        byte[] testKey = getKey(key).encode();
         for (Entry entry = root; entry != null; entry = entry.next) {
             if (entry.compare(testKey) == 0) {
                 return entry.value;
@@ -193,7 +199,7 @@ public class CBORMap extends CBORObject {
      * @throws IOException
      */
     public CBORMap removeObject(CBORObject key) throws IOException {
-        byte[] testKey = key.encode();
+        byte[] testKey = getKey(key).encode();
         Entry precedingEntry = null;
         for (Entry entry = root; entry != null; entry = entry.next) {
             int diff = entry.compare(testKey);
@@ -244,7 +250,7 @@ public class CBORMap extends CBORObject {
      * @throws IOException
      */
     public byte[] readByteStringAndRemoveKey(CBORObject key) throws IOException {
-        byte[] data = getObject(key).getByteString();
+        byte[] data = getObject(getKey(key)).getByteString();
         removeObject(key);
         return data;
     }

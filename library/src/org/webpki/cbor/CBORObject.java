@@ -90,7 +90,7 @@ public abstract class CBORObject {
     /**
      * Encodes CBOR object.
      * 
-     * @return Byte data
+     * @return CBOR bytes
      */
     public abstract byte[] encode();
     

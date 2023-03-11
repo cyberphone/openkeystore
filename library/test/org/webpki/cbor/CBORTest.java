@@ -473,6 +473,7 @@ public class CBORTest {
         floatTest("-5.960465188081798e-8",      "FAB3800001");
         floatTest("3.4028234663852886e+38",     "FA7F7FFFFF");
         floatTest("3.402823466385289e+38",      "FB47EFFFFFE0000001");
+        floatTest("5.0e-324",                   "FB0000000000000001");
         
         floatTest("65504.0",                    "F97BFF");
         floatTest("65504.00390625",             "FA477FE001");
