@@ -61,7 +61,7 @@ The serialization rules are as follows:
 type if the value is between -2^64 and 2^64-1, otherwise the
 <code>big&nbsp;integer</code> type <b>must</b> be used.
 The following table holds a few sample values and their proper CBOR encoding:
-<table class='webpkitable' style='margin:0.5em 0 0.7em 2em'>
+<table class='webpkitable' style='margin:0.7em 0 0.7em 2em'>
 <tr><th>Value</th><th>Encoding</th></tr>
 <tr style='text-align:right'><td><code>0</code></td><td><code>00</code></td></tr>
 <tr style='text-align:right'><td><code>-1</code></td><td><code>20</code></td></tr>
@@ -87,7 +87,7 @@ would actually yield two bytes less using the <code>big&nbsp;integer</code> type
 <li id='floating-point-serialization' class='webpkilistspacing'>
   RFC+: Floating point data <b>must</b> use the shortest variant
 including the following special values and their proper CBOR encoding:
-<table class='webpkitable' style='margin:0.5em 0 0 2em'>
+<table class='webpkitable' style='margin:0.7em 0 0.7em 2em'>
 <tr><th>Value</th><th>Encoding</th></tr>
 <tr style='text-align:right'><td><code>0.0</code></td><td><code>f90000</code></td></tr>
 <tr style='text-align:right'><td><code>-0.0</code></td><td><code>f98000</code></td></tr>
@@ -106,7 +106,7 @@ including the following special values and their proper CBOR encoding:
 <tr style='text-align:right'><td><code>5.0e-324</code></td><td><code>fb0000000000000001</code></td></tr>
 <tr style='text-align:right'><td><code>-1.7976931348623157e+308</code></td><td><code>fbffefffffffffffff</code></td></tr>
 </table>
-<div style='margin-top:0.7em'>
+<div>
 Note that <code>NaN</code> "signaling" (like <code>f97e01</code>),
 <b>must</b> be flagged as an <i>error</i>.
 </div>
@@ -130,7 +130,6 @@ As an example, the floating point numbers <code>0.0</code> and
 <code>-0.0</code>, and the integer number <code>0</code>
 represent the distinct keys
 <code>f90000</code>, <code>f98000</code>, and <code>00</code> respectively.
-</table>
 <div id='map-key-constraints' style='margin:0.5em 0 0.3em 0'>
 However, for maximum interoperability with <i>other</i> CBOR implementations,
 map key types <b>should</b> be limited to <code>integer</code> and
