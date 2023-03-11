@@ -101,7 +101,7 @@ public abstract class CBORObject {
     }
 
     static void unsupportedTag(int tag) throws IOException {
-        reportError(String.format("Unsupported tag: %02x", tag));
+        reportError(String.format(STDERR_UNSUPPORTED_TAG + "%02x", tag));
     }
 
     void nullCheck(Object object) {
@@ -456,12 +456,12 @@ public abstract class CBORObject {
         }
         
         private void eofError() throws IOException {
-            reportError("Malformed CBOR, trying to read past EOF");
+            reportError(STDERR_CBOR_EOF);
         }
         
         private void outOfLimitTest(int increment) throws IOException {
             if ((byteCount += increment) > maxLength || byteCount < 0) {
-                reportError("Reading past input limit");
+                reportError(STDERR_READING_LIMIT);
             }
         }
         
@@ -504,7 +504,7 @@ public abstract class CBORObject {
 
         private int checkLength(long n) throws IOException {
             if (n < 0 || n > Integer.MAX_VALUE) {
-                reportError("N out of range: " + n);
+                reportError(STDERR_N_RANGE_ERROR + n);
             }
             return (int)n;
         }
@@ -513,8 +513,7 @@ public abstract class CBORObject {
                 throws IOException {
             CBORFloatingPoint value = new CBORFloatingPoint(Double.longBitsToDouble(rawDouble));
             if ((value.tag != tag || value.bitFormat != bitFormat) && deterministicMode) {
-                reportError(String.format(
-                        "Non-deterministic encoding of floating point value, tag: %2x", tag & 0xff));
+                reportError(String.format(STDERR_NON_DETERMINISTIC_FLOAT + "%2x", tag & 0xff));
             }
             return value;
         }
@@ -530,7 +529,7 @@ public abstract class CBORObject {
                     if (byteArray.length == 0) {
                         byteArray = ZERO_BYTE;  // Zero length byte string => n == 0.
                     } else if (byteArray[0] == 0 && deterministicMode) {
-                        reportError("Non-deterministic encoding: leading zero byte");
+                        reportError(STDERR_LEADING_ZERO);
                     }
                     CBORBigInteger cborBigInteger = new CBORBigInteger(
                         (tag == MT_BIG_NEGATIVE) ?
@@ -538,7 +537,7 @@ public abstract class CBORObject {
                                                :
                             new BigInteger(1, byteArray));
                     if (cborBigInteger.fitsAnInteger() && deterministicMode) {
-                        reportError("Non-deterministic encoding: bignum fits integer");
+                        reportError(STDERR_NON_DETERMINISTIC_INT);
                     }
                     return cborBigInteger;
 
@@ -627,7 +626,7 @@ public abstract class CBORObject {
                 // N is zero, a shorter variant should have been used.
                 // In addition, a single byte N must be > 23. 
                 if (((n & mask) == 0 || (n > 0 && n < 24)) && deterministicMode) {
-                    reportError("Non-deterministic encoding of N");
+                    reportError(STDERR_NON_DETERMINISTIC_CODING_OF_N);
                 }
             }
             // N successfully decoded, now switch on major type (upper three bits).
@@ -711,7 +710,7 @@ public abstract class CBORObject {
                 return null;
             }
         } else if (inputStream.read() != -1) {
-            reportError("Unexpected data found after CBOR object");
+            reportError(STDERR_UNEXPECTED_DATA);
         }
         return cborObject;
     }
@@ -811,9 +810,39 @@ public abstract class CBORObject {
     static final String STDERR_INCOMPATIBLE_UNSIGNED_LONG =
             "CBOR negative integer does not match Java \"unsigned long\"";
 
+    static final String STDERR_UNSUPPORTED_TAG =
+            "Unsupported tag: ";
+
+    static final String STDERR_N_RANGE_ERROR =
+            "N out of range: ";
+
     static final String STDERR_INCOMPATIBLE_LONG =
             "CBOR integer does not fit a Java \"long\"";
 
     static final String STDERR_INCOMPATIBLE_INT =
             "CBOR integer does not fit a Java \"int\"";
+
+    static final String STDERR_NON_DETERMINISTIC_INT =
+            "Non-deterministic encoding: big integer fits integer";
+
+    static final String STDERR_NON_DETERMINISTIC_FLOAT =
+            "Non-deterministic encoding of floating point value, tag: ";
+
+    static final String STDERR_NON_DETERMINISTIC_CODING_OF_N =
+            "Non-deterministic encoding of N";
+
+    static final String STDERR_LEADING_ZERO =
+            "Non-deterministic encoding: leading zero byte";
+    
+    static final String STDERR_CBOR_EOF =
+            "Malformed CBOR, trying to read past EOF";
+    
+    static final String STDERR_UNEXPECTED_DATA =
+            "Unexpected data found after CBOR object";
+    
+    static final String STDERR_READING_LIMIT =
+            "Reading past input limit";
+    
 }
+    
+

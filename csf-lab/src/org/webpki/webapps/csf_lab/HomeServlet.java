@@ -32,8 +32,8 @@ public class HomeServlet extends HttpServlet {
             "following subset of CBOR primitives: " +
             "<i>text&nbsp;string</i>, <i>byte&nbsp;string</i>, " +
             "<i>integer</i>, <i>big&nbsp;integer</i>, <i>floating&nbsp;point</i> (16/32/64 bit), " +
-            "<code>true</code>, <code>false</code>, and <code>null</code>. " +
-            "In addition, this implementation supports <i>tagged data</i> (CBOR major type 6).";
+            "<code>true</code>, <code>false</code>, <code>null</code>, " +
+            "and <i>tagged data</i> (CBOR major type 6).";
 
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {

@@ -80,7 +80,8 @@ public class CBORTest {
         x25519 = readJwk("x25519");
         ed448 = readJwk("ed448");
         ed25519 = readJwk("ed25519");
-        p256CertPath = PEMDecoder.getCertificatePath(ArrayUtil.readFile(baseKey + "p256certpath.pem"));
+        p256CertPath = PEMDecoder.getCertificatePath(ArrayUtil.readFile(baseKey +
+                                                                        "p256certpath.pem"));
     }
     
     static byte[] dataToEncrypt;
@@ -114,8 +115,10 @@ public class CBORTest {
     };
     
     static KeyPair readJwk(String keyType) throws Exception {
-        JSONObjectReader jwkPlus = JSONParser.parse(ArrayUtil.readFile(baseKey + keyType + "privatekey.jwk"));
-        // Note: The built-in JWK decoder does not accept "kid" since it doesn't have a meaning in JSF or JEF. 
+        JSONObjectReader jwkPlus = JSONParser.parse(
+                ArrayUtil.readFile(baseKey + keyType + "privatekey.jwk"));
+        // Note: The built-in JWK decoder does not accept "kid" since
+        // it doesn't have a meaning in JSF or JEF. 
         keyId = new CBORTextString(jwkPlus.getString("kid"));
         jwkPlus.removeProperty("kid");
         return jwkPlus.getKeyPair();
@@ -155,7 +158,10 @@ public class CBORTest {
         return cborObject;
     }
 
-    void integerTest(long value, boolean forceUnsigned, boolean set, String hex) throws Exception {
+    void integerTest(long value, 
+                     boolean forceUnsigned, 
+                     boolean set, 
+                     String hex) throws Exception {
         CBORObject cborObject = set ? 
                 new CBORInteger(value, forceUnsigned) : new CBORInteger(value);
         byte[] cbor = cborObject.encode();
@@ -163,7 +169,10 @@ public class CBORTest {
         assertTrue("int=" + value + " c=" + calc + " h=" + hex, hex.equals(calc));
         CBORObject decodedInteger = CBORObject.decode(cbor);
         if (value != -1 || forceUnsigned) {
-            long dv = forceUnsigned ? decodedInteger.getUnsignedLong() : decodedInteger.getLong();
+            long dv = forceUnsigned ? 
+                    decodedInteger.getUnsignedLong()
+                                    :
+                    decodedInteger.getLong();
             assertTrue("Decoded value dv=" + dv + " v=" + value, dv == value);
         }
         String decString = decodedInteger.toString();
@@ -273,7 +282,8 @@ public class CBORTest {
             parseCborHex(hex);
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, "Unsupported tag: " + hex.substring(0, 2).toLowerCase());
+            checkException(e, 
+                           CBORObject.STDERR_UNSUPPORTED_TAG + hex.substring(0, 2).toLowerCase());
         }
     }
     
@@ -289,7 +299,7 @@ public class CBORTest {
             assertTrue("Equal d=" + d + " v=" + v, (d.compareTo(v)) == 0 ^ (mustFail != 0));
         } catch (Exception e) {
             assertTrue("Ok fail", mustFail != 0);
-            checkException(e, "Non-deterministic encoding of floating point value");
+            checkException(e, CBORObject.STDERR_NON_DETERMINISTIC_FLOAT);
         }
     }
 
@@ -310,9 +320,9 @@ public class CBORTest {
         cborArray = new CBORArray()
             .addObject(new CBORInteger(1))
             .addObject(new CBORMap()
-                .setObject("best", new CBORInteger(2))
-                .setObject("best2", new CBORInteger(3))
-                .setObject("another", new CBORInteger(4)))
+                .setObject(new CBORTextString("best"), new CBORInteger(2))
+                .setObject(new CBORTextString("best2"), new CBORInteger(3))
+                .setObject(new CBORTextString("another"), new CBORInteger(4)))
             .addObject(new CBORArray()
                 .addObject(new CBORInteger(5))
                 .addObject(new CBORInteger(6)));
@@ -324,10 +334,10 @@ public class CBORTest {
         cborArray = new CBORArray()
             .addObject(new CBORInteger(1))
             .addObject(new CBORMap()
-                .setObject(8, new CBORInteger(2))
-                .setObject(58, new CBORInteger(3))
-                .setObject(-90, new CBORNull())
-                .setObject(-4, new CBORArray()
+                .setObject(new CBORInteger(8), new CBORInteger(2))
+                .setObject(new CBORInteger(58), new CBORInteger(3))
+                .setObject(new CBORInteger(-90), new CBORNull())
+                .setObject(new CBORInteger(-4), new CBORArray()
                     .addObject(new CBORBoolean(true))
                     .addObject(new CBORBoolean(false))))
             .addObject(new CBORArray()
@@ -593,28 +603,28 @@ public class CBORTest {
                               false, false, false, null);
             fail("Not valid");
         } catch (Exception e) {
-            checkException(e, "N out of range: -1");
+            checkException(e, CBORObject.STDERR_N_RANGE_ERROR + "-1");
         }
         try {
             CBORObject.decode(new ByteArrayInputStream(HexaDecimal.decode("7AFFFFFFFF00")), 
                               false, false, false, null);
             fail("Not valid");
         } catch (Exception e) {
-            checkException(e, "N out of range: 4294967295");
+            checkException(e, CBORObject.STDERR_N_RANGE_ERROR + "4294967295");
         }
         try {
             CBORObject.decode(new ByteArrayInputStream(HexaDecimal.decode("797FFF00")), 
                               false, false, false, 100);
             fail("Not valid");
         } catch (Exception e) {
-            checkException(e, "Reading past input limit");
+            checkException(e, CBORObject.STDERR_READING_LIMIT);
         }
         try {
             CBORObject.decode(new ByteArrayInputStream(HexaDecimal.decode("7A7FFFFFFF00")), 
                               false, false, false, null);
             fail("Not valid");
         } catch (Exception e) {
-            checkException(e, "Reading past input limit");
+            checkException(e, CBORObject.STDERR_READING_LIMIT);
         }
     }
  
@@ -629,13 +639,15 @@ public class CBORTest {
         }
 
         try {
-            ((CBORArray) cbor).getObject(1).getMap().getObject(-91).getInt();
+            ((CBORArray) cbor).getObject(1).getMap()
+                    .getObject(new CBORInteger(-91)).getInt();
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, "Missing key: -91");
         }
  
-        assertTrue("v1", ((CBORArray) cbor).getObject(1).getMap().getObject(58).getInt() == 3);
+        assertTrue("v1", ((CBORArray) cbor).getObject(1).getMap()
+                .getObject(new CBORInteger(58)).getInt() == 3);
 
         assertTrue("tag5", parseCborHex("C5626869").getTag().getTagNumber() == 5);
     }
@@ -656,9 +668,9 @@ public class CBORTest {
         try {
             unread = parseCborHex("8301a40802183a032382f5f43859f6820405");
             unread = ((CBORArray) unread).getObject(1).getMap();
-            ((CBORMap)unread).getObject(8).getInt();
-            ((CBORMap)unread).getObject(58).getInt();
-            ((CBORArray)((CBORMap)unread).getObject(-4)).getObject(0).getBoolean();
+            ((CBORMap)unread).getObject(new CBORInteger(8)).getInt();
+            ((CBORMap)unread).getObject(new CBORInteger(58)).getInt();
+            ((CBORArray)((CBORMap)unread).getObject(new CBORInteger(-4))).getObject(0).getBoolean();
             unread.checkForUnread();
             fail("must not execute");
         } catch (Exception e) {
@@ -693,9 +705,9 @@ public class CBORTest {
         try {
             unread = parseCborHex("8301a40802183a032382f5f43859f6820405");
             unread = ((CBORArray) unread).getObject(1).getMap();
-            ((CBORMap)unread).getObject(8).getInt();
-            ((CBORMap)unread).getObject(58).getInt();
-            ((CBORArray)((CBORMap)unread).getObject(-4)).getObject(0).scan();
+            ((CBORMap)unread).getObject(new CBORInteger(8)).getInt();
+            ((CBORMap)unread).getObject(new CBORInteger(58)).getInt();
+            ((CBORArray)((CBORMap)unread).getObject(new CBORInteger(-4))).getObject(0).scan();
             unread.checkForUnread();
             fail("must not execute");
         } catch (Exception e) {
@@ -707,9 +719,9 @@ public class CBORTest {
         try {
             unread = parseCborHex("8301a40802183a032382f5f43859f6820405");
             unread = ((CBORArray) unread).getObject(1).getMap();
-            ((CBORMap)unread).getObject(8).getInt();
-            ((CBORMap)unread).getObject(58).getInt();
-            ((CBORArray)((CBORMap)unread).getObject(-4)).getObject(0);
+            ((CBORMap)unread).getObject(new CBORInteger(8)).getInt();
+            ((CBORMap)unread).getObject(new CBORInteger(58)).getInt();
+            ((CBORArray)((CBORMap)unread).getObject(new CBORInteger(-4))).getObject(0);
             unread.checkForUnread();
             fail("must not execute");
         } catch (Exception e) {
@@ -788,7 +800,7 @@ public class CBORTest {
             parseCborHex("83");
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, "Malformed CBOR, trying to read past EOF");
+            checkException(e, CBORObject.STDERR_CBOR_EOF);
         }
         try {
             parseCborHex("a363666d74646e6f6e656761747453746d74a0686175746844617461590" +
@@ -796,7 +808,7 @@ public class CBORTest {
                          "337be5bd410000000000000000000000000000000000000202d4db1c");
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, "Reading past input limit");
+            checkException(e, CBORObject.STDERR_READING_LIMIT);
         }
     }
 
@@ -807,32 +819,28 @@ public class CBORTest {
             parseCborHex("3800");
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, 
-                "Non-deterministic encoding of N");
+            checkException(e, CBORObject.STDERR_NON_DETERMINISTIC_CODING_OF_N);
         }
 
         try {
             parseCborHex("c24900ffffffffffffffff");
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, 
-                "Non-deterministic encoding: leading zero byte");
+            checkException(e, CBORObject.STDERR_LEADING_ZERO);
         }
 
         try {
             parseCborHex("c24101");
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, 
-                "Non-deterministic encoding: bignum fits integer");
+            checkException(e, CBORObject.STDERR_NON_DETERMINISTIC_INT);
         }
         
         try {
             parseCborHex("A204616B026166");
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, 
-                "Non-deterministic sort order for map key: 2");
+            checkException(e, CBORMap.STDERR_NON_DET_SORT_ORDER + "2");
         }
         
         for (String value : new String[]{"1B8000000000000000", 
@@ -880,24 +888,24 @@ public class CBORTest {
             } catch (Exception e) {
                 checkException(e, 
                         e.getMessage().contains("float") ?
-                    "Non-deterministic encoding of floating point value, tag:"
+                    CBORObject.STDERR_NON_DETERMINISTIC_FLOAT
                                                          :
-                    "Non-deterministic encoding of N");
+                    CBORObject.STDERR_NON_DETERMINISTIC_CODING_OF_N);
             }
         }
     }
     
     CBORMap createDataToBeSigned() throws IOException {
         return new CBORMap()
-        .setObject(1, new CBORMap()
-                .setObject(1, new CBORTextString("Space Shop"))
-                .setObject(2, new CBORTextString("100.00"))
-                .setObject(3, new CBORTextString("EUR")))
-            .setObject(2, new CBORTextString("spaceshop.com"))
-            .setObject(3, new CBORTextString("FR7630002111110020050014382"))
-            .setObject(4, new CBORTextString("https://europeanpaymentsinitiative.eu/fwp"))
-            .setObject(5, new CBORTextString("62932"))
-            .setObject(6, new CBORTextString("2021-05-03T09:50:08Z"));
+        .setObject(new CBORInteger(1), new CBORMap()
+                .setObject(new CBORInteger(1), new CBORTextString("Space Shop"))
+                .setObject(new CBORInteger(2), new CBORTextString("100.00"))
+                .setObject(new CBORInteger(3), new CBORTextString("EUR")))
+            .setObject(new CBORInteger(2), new CBORTextString("spaceshop.com"))
+            .setObject(new CBORInteger(3), new CBORTextString("FR7630002111110020050014382"))
+            .setObject(new CBORInteger(4), new CBORTextString("https://europeanpaymentsinitiative.eu/fwp"))
+            .setObject(new CBORInteger(5), new CBORTextString("62932"))
+            .setObject(new CBORInteger(6), new CBORTextString("2021-05-03T09:50:08Z"));
     }
     
     void backAndForth(KeyPair keyPair) throws Exception {
@@ -1468,7 +1476,8 @@ public class CBORTest {
             new CBORAsymKeyDecrypter(
                         p256.getPrivate()).decrypt(
                             
-                                    p256Encrypted.getMap().setObject(-2, new CBORInteger(5)));
+                                    p256Encrypted.getMap()
+                                        .setObject(new CBORInteger(-2), new CBORInteger(5)));
             fail("must not run");
         } catch (Exception e) {
             checkException(e, "Map key -2 of type=CBORInteger with value=5 was never read");
@@ -1842,7 +1851,7 @@ public class CBORTest {
                 "{", "\"lab\"", ":", "true", "}"
         };
         CBORMap cborMap = new CBORMap()
-            .setObject("lab", new CBORBoolean(true));
+            .setObject(new CBORTextString("lab"), new CBORBoolean(true));
         assertTrue("json", cborMap.equals(serializeJson(jsonTokens)));
         
         assertTrue("json", new CBORMap().equals(serializeJson(new String[] {"{","}"})));
@@ -1851,8 +1860,8 @@ public class CBORTest {
                 "{", "\"lab\"", ":", "true", "," ,"\"j\"",":", "2000", "}"
         };
         cborMap = new CBORMap()
-            .setObject("lab", new CBORBoolean(true))
-            .setObject("j", new CBORInteger(2000));
+            .setObject(new CBORTextString("lab"), new CBORBoolean(true))
+            .setObject(new CBORTextString("j"), new CBORInteger(2000));
         assertTrue("json", cborMap.equals(serializeJson(jsonTokens)));
         
         assertTrue("json", new CBORArray().equals(serializeJson(new String[] {"[","]"})));
@@ -1880,7 +1889,8 @@ public class CBORTest {
                  .addObject(new CBORInteger(4));
         assertTrue("json", cborArray.equals(serializeJson(new String[] {
                 "[","\"hi\"",",","{","}",",","4","]"})));
-        cborArray.getObject(1).getMap().setObject("kurt", new CBORTextString("murt"));
+        cborArray.getObject(1).getMap().setObject(new CBORTextString("kurt"),
+                                                  new CBORTextString("murt"));
         assertTrue("json", cborArray.equals(serializeJson(new String[] {
                 "[","\"hi\"",",","{","\"kurt\"",":","\"murt\"","}",",","4","]"})));
         
@@ -1916,7 +1926,7 @@ public class CBORTest {
             assertTrue("pub", 
                        CBORPublicKey.decode(cborPublicKey).equals(keyPair.getPublic()));
             try {
-                cborPrivateKey.setObject("key", new CBORTextString("value"));
+                cborPrivateKey.setObject(new CBORTextString("key"), new CBORTextString("value"));
                 CBORKeyPair.decode(cborPrivateKey);
                 fail("must not execute");
             } catch (Exception e) {
@@ -1924,7 +1934,7 @@ public class CBORTest {
                     "Map key \"key\" of type=CBORTextString with value=\"value\" was never read");
             }
             try {
-                cborPublicKey.setObject("key", new CBORTextString("value"));
+                cborPublicKey.setObject(new CBORTextString("key"), new CBORTextString("value"));
                 CBORPublicKey.decode(cborPublicKey);
                 fail("must not execute");
             } catch (Exception e) {

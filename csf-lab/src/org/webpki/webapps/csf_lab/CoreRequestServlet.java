@@ -169,7 +169,7 @@ public class CoreRequestServlet extends HttpServlet {
             StringBuilder diagnosticNotation = new StringBuilder();
             for (CBORObject cborObject : cborObjects) {
                 if (next) {
-                    diagnosticNotation.append(", ");
+                    diagnosticNotation.append(",\n");
                 }
                 next = true;
                 diagnosticNotation.append(cborObject.toString());

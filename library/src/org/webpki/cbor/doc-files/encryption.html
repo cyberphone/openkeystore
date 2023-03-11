@@ -66,16 +66,16 @@ should return the UTF-8 encoded string <code>&quot;Hello encrypted world!&quot;<
 The CEF decryption process is as follows:
 </p>
 <ul>
-<li>Read and save the content encryption parameters <code class='webpkicode'>tag</code>,
+<li class='webpkilistspacing'>Read and save the content encryption parameters <code class='webpkicode'>tag</code>,
 <code class='webpkicode'>iv</code>, and <code class='webpkicode'>ciphertext</code>.</li>
-<li>Remove the <code class='webpkicode'>tag</code>,
+<li class='webpkilistspacing'>Remove the <code class='webpkicode'>tag</code>,
 <code class='webpkicode'>iv</code>, and <code class='webpkicode'>ciphertext</code> elements from the
 encryption object.
 Note that the top level <code>map</code> object <b>must</b> be updated
 as well to reflect the changed number of elements.
-<li>Serialize the remaining CBOR encryption object and set the result to 
+<li class='webpkilistspacing'>Serialize the remaining CBOR encryption object and set the result to 
 Additional Authentication Data (<code>AAD</code>).</li>
-<li>Recover the content encryption key using the elements in the
+<li class='webpkilistspacing'>Recover the content encryption key using the elements in the
 key encryption object (argument of label <code>2</code>).</li>
 <li>Apply the content encryption algorithm (argument of label <code>1</code> 
 in the main map)
@@ -97,18 +97,18 @@ The numbers in paranthesis denote the actual label (map key) value.
 Properly designed CEF objects <b>must</b> adhere to the following rules:
 </p>
 <ul>
-<li><code class='webpkicode'>publicKey</code> and <code class='webpkicode'>ephemeralKey</code> elements
+<li class='webpkilistspacing'><code class='webpkicode'>publicKey</code> and <code class='webpkicode'>ephemeralKey</code> elements
 <b>must</b> be compliant with COSE, but <b>must not</b> contain
 any other information than the public key itself
 and associated parameters.</li>
-<li>ECDSA public keys <b>must</b> be supplied with a <i>value parameter</i> for the y-coordinate as well.</li>
-<li><code class='webpkicode'>keyId</code>, <code class='webpkicode'>publicKey</code> 
+<li class='webpkilistspacing'>ECDSA public keys <b>must</b> be supplied with a <i>value parameter</i> for the y-coordinate as well.</li>
+<li class='webpkilistspacing'><code class='webpkicode'>keyId</code>, <code class='webpkicode'>publicKey</code> 
 and <code class='webpkicode'>certificatePath</code>
 <b>must not</b> be combined.</li>
-<li>If a <code class='webpkicode'>keyId</code> is used it <b>must</b> be supplied in the main map for
+<li class='webpkilistspacing'>If a <code class='webpkicode'>keyId</code> is used it <b>must</b> be supplied in the main map for
 symmetric encryption schemes, and in the sub map for schemes using key encryption.
 A compliant <code>keyId</code> <b>must</b> uniquely identify a specific encryption key.</li>
-<li>The currently supported key encryption algorithms except for <code>ECDH-ES</code>
+<li class='webpkilistspacing'>The currently supported key encryption algorithms except for <code>ECDH-ES</code>
 <b>require</b> that the encrypted key is provided in the <code class='webpkicode'>chipherText</code>
 element in the sub map.</li>
 <li>All ECDH-ES variants <b>must</b> include an <code class='webpkicode'>ephemeralKey</code>
@@ -117,8 +117,8 @@ element.</li>
 ECDH based key encryption schemes <b>must</b> use a Key Derivation Function (KDF)
 according to HKDF (RFC&nbsp;5869), profiled as follows:
 <ul>
-<li><code>hmac</code>: The HKDF implementation <b>must</b> use HMAC with SHA-256</li>
-<li><code>salt</code>: N/A. The default extract mode handling <b>must</b> be implemented.</li>
+<li class='webpkilistspacing'><code>hmac</code>: The HKDF implementation <b>must</b> use HMAC with SHA-256</li>
+<li class='webpkilistspacing'><code>salt</code>: N/A. The default extract mode handling <b>must</b> be implemented.</li>
 <li><code>info</code>: This parameter <b>must</b> consist of the actual
 COSE key encryption algorithm,
 expressed as a 32-bit (4 byte) signed big-endian integer.</li>

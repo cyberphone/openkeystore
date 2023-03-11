@@ -22,17 +22,6 @@ import org.webpki.util.ArrayUtil;
 
 /**
  * Class for holding <code>CBOR</code> map.
- * <p>
- * In addition to supporting the generic {@link CBORObject} type for key identifiers,
- * there are convenience methods for 
- * retrieving (<code>getObject</code>), 
- * setting (<code>setObject</code>),
- * testing (<code>hasKey</code>), and
- * removing (<code>removeObject</code>)
- * objects using the Java <code>String</code> and <code>int</code> types for key identifiers.
- * The latter maps to the CBOR <code>text&nbsp;string</code> and <code>integer</code>
- * type respectively.
- * </p>
  */
 public class CBORMap extends CBORObject {
 
@@ -108,32 +97,6 @@ public class CBORMap extends CBORObject {
     }
 
     /**
-     * Checks map for key presence.
-     * <p>
-     * See {@link #hasKey(CBORObject)} for details.
-     * </p>
-     * 
-     * @param key Key
-     * @return <code>true</code> if the key is present
-     */
-    public boolean hasKey(int key) {
-        return hasKey(new CBORInteger(key));
-    }
-    
-    /**
-     * Checks map for key presence.
-     * <p>
-     * See {@link #hasKey(CBORObject)} for details.
-     * </p>
-     * 
-     * @param key Key
-     * @return <code>true</code> if the key is present
-     */
-    public boolean hasKey(String key) {
-        return hasKey(new CBORTextString(key));
-    }
-    
-    /**
      * Sets map object.
      * <p>
      * If <code>key</code> is already present, an exception is thrown.
@@ -198,38 +161,6 @@ public class CBORMap extends CBORObject {
         return this;
     }
 
-    /**
-     * Sets map object.
-     * <p>
-     * See {@link #setObject(CBORObject, CBORObject)} for details.
-     * </p>
-     * 
-     * @param key Key
-     * @param value Object
-     * @return <code>this</code>
-     * @throws IOException
-     */
-    public CBORMap setObject(int key, CBORObject value) throws IOException {
-        setObject(new CBORInteger(key), value);
-        return this;
-    }
-
-    /**
-     * Sets map object.
-     * <p>
-     * See {@link #setObject(CBORObject, CBORObject)} for details.
-     * </p>
-     * 
-     * @param key Key
-     * @param value Object
-     * @return <code>this</code>
-     * @throws IOException
-     */
-    public CBORMap setObject(String key, CBORObject value) throws IOException {
-        setObject(new CBORTextString(key), value);
-        return this;
-    }
-    
      /**
      * Retrieves map object.
      * <p>
@@ -251,34 +182,6 @@ public class CBORMap extends CBORObject {
         return null;
     }
 
-    /**
-     * Retrieves map object.
-     * <p>
-     * See {@link #getObject(CBORObject)} for details.
-     * </p>
-     * 
-     * @param key Key
-     * @return Object
-     * @throws IOException
-     */
-    public CBORObject getObject(int key) throws IOException {
-        return getObject(new CBORInteger(key));
-    }
-    
-    /**
-     * Retrieves map object.
-     * <p>
-     * See {@link #getObject(CBORObject)} for details.
-     * </p>
-     * 
-     * @param key Key
-     * @return Object
-     * @throws IOException
-     */
-    public CBORObject getObject(String key) throws IOException {
-        return getObject(new CBORTextString(key));
-    }
-    
     /**
      * Removes mapped object.
      * <p>
@@ -308,36 +211,6 @@ public class CBORMap extends CBORObject {
         }
         reportError(STDERR_MISSING_KEY + key);
         return null;
-    }
-
-    /**
-     * Removes mapped object.
-     * <p>
-     * See {@link #removeObject(CBORObject)} for details.
-     * </p>
-     * 
-     * @param key Key
-     * @return <code>this</code>
-     * @throws IOException
-     */
-    public CBORMap removeObject(int key) throws IOException {
-        removeObject(new CBORInteger(key));
-        return this;
-    }
-
-    /**
-     * Removes mapped object.
-     * <p>
-     * See {@link #removeObject(CBORObject)} for details.
-     * </p>
-     * 
-     * @param key Key
-     * @return <code>this</code>
-     * @throws IOException
-     */
-    public CBORMap removeObject(String key) throws IOException {
-        removeObject(new CBORTextString(key));
-        return this;
     }
 
     /**
