@@ -55,7 +55,7 @@ a few constraints (denoted by RFC+), where the RFC offers choices.
 The serialization rules are as follows:
 </div>
 <ul>
-<li class='webpkilistspacing'>
+<li id='integer-serialization' class='webpkilistspacing'>
   RFC: Integers, represented by the <code>integer</code> and 
 <code>big&nbsp;integer</code> types, <b>must</b> use the <code>integer</code>
 type if the value is between -2^64 and 2^64-1, otherwise the
@@ -84,7 +84,7 @@ most compact representation; the value
 would actually yield two bytes less using the <code>big&nbsp;integer</code> type. 
 </div>
 </li>
-<li class='webpkilistspacing'>
+<li id='floating-point-serialization' class='webpkilistspacing'>
   RFC+: Floating point data <b>must</b> use the shortest variant
 including the following special values and their proper CBOR encoding:
 <table class='webpkitable' style='margin:0.5em 0 0 2em'>
@@ -104,10 +104,15 @@ including the following special values and their proper CBOR encoding:
 <tr style='text-align:right'><td><code>3.4028234663852886e+38</code></td><td><code>fa7f7fffff</code></td></tr>
 <tr style='text-align:right'><td><code>3.402823466385289e+38</code></td><td><code>fb47efffffe0000001</code></td></tr>
 <tr style='text-align:right'><td><code>5.0e-324</code></td><td><code>fb0000000000000001</code></td></tr>
+<tr style='text-align:right'><td><code>-1.7976931348623157e+308</code></td><td><code>fbffefffffffffffff</code></td></tr>
 </table>
-<div style='margin:0.7em 0 0.3em 0'>
+<div style='margin-top:0.7em'>
 Note that <code>NaN</code> "signaling" (like <code>f97e01</code>),
 <b>must</b> be flagged as an <i>error</i>.
+</div>
+<div style='margin:0.7em 0 0.3em 0'>
+Note that the shortest encoding may result in <i>subnormal</i>
+numbers like <code>f98001</code>.
 </div>
 <li id='number-serialization' class='webpkilistspacing'>
   RFC+: Floating point and integer objects <b>must</b> be treated as <i>distinct types</i>
