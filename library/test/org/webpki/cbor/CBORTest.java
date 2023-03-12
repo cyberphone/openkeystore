@@ -114,12 +114,14 @@ public class CBORTest {
         }
     };
     
+    static CBORInteger SIGNATURE_LABEL = new CBORInteger(-1);
+    
     static KeyPair readJwk(String keyType) throws Exception {
         JSONObjectReader jwkPlus = JSONParser.parse(
                 ArrayUtil.readFile(baseKey + keyType + "privatekey.jwk"));
         // Note: The built-in JWK decoder does not accept "kid" since
         // it doesn't have a meaning in JSF or JEF. 
-        keyId = new CBORTextString(jwkPlus.getString("kid"));
+        keyId = new CBORString(jwkPlus.getString("kid"));
         jwkPlus.removeProperty("kid");
         return jwkPlus.getKeyPair();
     }
@@ -264,7 +266,7 @@ public class CBORTest {
     }
 
     void stringTest(String string, String hex) throws Exception {
-        byte[] cbor = new CBORTextString(string).encode();
+        byte[] cbor = new CBORString(string).encode();
         String calc = HexaDecimal.encode(cbor);
         assertTrue("string=" + string + " c=" + calc + " h=" + hex, hex.equals(calc));
         assertTrue("string 2", CBORObject.decode(cbor).toString().equals("\"" + string + "\""));
@@ -320,9 +322,9 @@ public class CBORTest {
         cborArray = new CBORArray()
             .addObject(new CBORInteger(1))
             .addObject(new CBORMap()
-                .setObject(new CBORTextString("best"), new CBORInteger(2))
-                .setObject(new CBORTextString("best2"), new CBORInteger(3))
-                .setObject(new CBORTextString("another"), new CBORInteger(4)))
+                .setObject(new CBORString("best"), new CBORInteger(2))
+                .setObject(new CBORString("best2"), new CBORInteger(3))
+                .setObject(new CBORString("another"), new CBORInteger(4)))
             .addObject(new CBORArray()
                 .addObject(new CBORInteger(5))
                 .addObject(new CBORInteger(6)));
@@ -491,7 +493,7 @@ public class CBORTest {
         floatTest("NaN",                        "FB8000000000000000",   1);
         floatTest("65504.00390625",             "F97BFF",               2);
         
-        assertTrue("Tag", new CBORTag(5, new CBORTextString("hi"))
+        assertTrue("Tag", new CBORTag(5, new CBORString("hi"))
                         .equals(parseCborHex("C5626869")));
         
         assertFalse("comp", parseCborHex("C5626869").equals(null));
@@ -536,9 +538,9 @@ public class CBORTest {
          .insert(new CBORBoolean(false))
          .insert(new CBORArray().addObject(new CBORInteger(-1)))
          .insert(new CBORInteger(100))
-         .insert(new CBORTextString("aaa"))
-         .insert(new CBORTextString("z"))
-         .insert(new CBORTextString("aa"));
+         .insert(new CBORString("aaa"))
+         .insert(new CBORString("z"))
+         .insert(new CBORString("aa"));
         assertTrue("size", m.size() == expectedOrder.length);
         while (m.size() > 0) {
             CBORObject removed = m.getKeys()[m.size() - 1];
@@ -688,9 +690,9 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Data of type=CBORTextString with value=\"hi\" was never read");
+                "Data of type=CBORString with value=\"hi\" was never read");
         }
-        unread.getTextString();
+        unread.getString();
         unread.checkForUnread();
         
         /*
@@ -747,7 +749,7 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Map key 7 of type=CBORTextString with value=\"mydata\" was never read");
+                "Map key 7 of type=CBORString with value=\"mydata\" was never read");
         }
 
         try {
@@ -782,7 +784,7 @@ public class CBORTest {
                 "Is type: INTEGER, requested: BOOLEAN");
         }
         try {
-            cborObject.getByteString();  
+            cborObject.getBytes();  
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
@@ -919,14 +921,14 @@ public class CBORTest {
     CBORMap createDataToBeSigned() throws IOException {
         return new CBORMap()
         .setObject(new CBORInteger(1), new CBORMap()
-                .setObject(new CBORInteger(1), new CBORTextString("Space Shop"))
-                .setObject(new CBORInteger(2), new CBORTextString("100.00"))
-                .setObject(new CBORInteger(3), new CBORTextString("EUR")))
-            .setObject(new CBORInteger(2), new CBORTextString("spaceshop.com"))
-            .setObject(new CBORInteger(3), new CBORTextString("FR7630002111110020050014382"))
-            .setObject(new CBORInteger(4), new CBORTextString("https://europeanpaymentsinitiative.eu/fwp"))
-            .setObject(new CBORInteger(5), new CBORTextString("62932"))
-            .setObject(new CBORInteger(6), new CBORTextString("2021-05-03T09:50:08Z"));
+                .setObject(new CBORInteger(1), new CBORString("Space Shop"))
+                .setObject(new CBORInteger(2), new CBORString("100.00"))
+                .setObject(new CBORInteger(3), new CBORString("EUR")))
+            .setObject(new CBORInteger(2), new CBORString("spaceshop.com"))
+            .setObject(new CBORInteger(3), new CBORString("FR7630002111110020050014382"))
+            .setObject(new CBORInteger(4), new CBORString("https://europeanpaymentsinitiative.eu/fwp"))
+            .setObject(new CBORInteger(5), new CBORString("62932"))
+            .setObject(new CBORInteger(6), new CBORString("2021-05-03T09:50:08Z"));
     }
     
     void backAndForth(KeyPair keyPair) throws Exception {
@@ -948,7 +950,7 @@ public class CBORTest {
                 public CBORObject wrap(CBORMap cborMap) {
                     return new CBORTag(tagNumber,
                             objectId == null ? tbs : new CBORArray()
-                                    .addObject(new CBORTextString(objectId))
+                                    .addObject(new CBORString(objectId))
                                     .addObject(tbs));
                 }
                 
@@ -966,17 +968,17 @@ public class CBORTest {
                                        .getObject()
                                            .getArray()
                                                .getObject(0)
-                                                   .getTextString().equals(objectId));
+                                                   .getString().equals(objectId));
                         
                     }
                 }
             });
         }
 
-        CBORObject signedData = signer.sign(7, tbs);
+        CBORObject signedData = signer.sign(SIGNATURE_LABEL, tbs);
         byte[] sd = signedData.encode();
         CBORObject cborSd = CBORObject.decode(sd);
-        return validator.validate(7, cborSd);
+        return validator.validate(SIGNATURE_LABEL, cborSd);
      }
 
     CBORObject signAndVerify(CBORSigner signer, CBORValidator validator) 
@@ -987,10 +989,11 @@ public class CBORTest {
     void hmacTest(final int size, final HmacAlgorithms algorithm) throws IOException,
                                                                          GeneralSecurityException {
         CBORMap tbs = createDataToBeSigned();
-        new CBORHmacSigner(symmetricKeys.getValue(size), algorithm).sign(7, tbs);
+        new CBORHmacSigner(symmetricKeys.getValue(size),
+                           algorithm).sign(SIGNATURE_LABEL, tbs);
         byte[] sd = tbs.encode();
         CBORObject cborSd = CBORObject.decode(sd);
-        new CBORHmacValidator(symmetricKeys.getValue(size)).validate(7, cborSd);
+        new CBORHmacValidator(symmetricKeys.getValue(size)).validate(SIGNATURE_LABEL, cborSd);
         
         tbs = createDataToBeSigned();
          new CBORHmacSigner(new HmacSignerInterface() {
@@ -1005,15 +1008,15 @@ public class CBORTest {
                 return algorithm;
             }
             
-        }).sign(7, tbs);
+        }).sign(SIGNATURE_LABEL, tbs);
         sd = tbs.encode();
         cborSd = CBORObject.decode(sd);
-        new CBORHmacValidator(symmetricKeys.getValue(size)).validate(7, cborSd);
+        new CBORHmacValidator(symmetricKeys.getValue(size)).validate(SIGNATURE_LABEL, cborSd);
 
         tbs = createDataToBeSigned();
-        CBORObject keyId = new CBORTextString(symmetricKeys.getName(size));
+        CBORObject keyId = new CBORString(symmetricKeys.getName(size));
         new CBORHmacSigner(symmetricKeys.getValue(size), algorithm).setKeyId(keyId)
-            .sign(7, tbs); 
+            .sign(SIGNATURE_LABEL, tbs); 
         sd = tbs.encode();
         cborSd = CBORObject.decode(sd);
         new CBORHmacValidator(
@@ -1031,7 +1034,7 @@ public class CBORTest {
                     return symmetricKeys.getValue(size);
                 }
                 
-            }).validate(7, cborSd.getMap());
+            }).validate(SIGNATURE_LABEL, cborSd.getMap());
     }
 
     @Test
@@ -1263,7 +1266,7 @@ public class CBORTest {
             new CBORAsymKeySigner(p256.getPrivate())
                 .setPublicKey(p256.getPublic())
                 .setKeyId(keyId)
-                .sign(7, createDataToBeSigned().getMap()); 
+                .sign(SIGNATURE_LABEL, createDataToBeSigned().getMap()); 
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, CBORCryptoUtils.STDERR_KEY_ID_PUBLIC);
@@ -1300,7 +1303,7 @@ public class CBORTest {
                                             CBORObject optionalKeyId,
                                             AsymSignatureAlgorithms signatureAlgorithm)
                             throws IOException, GeneralSecurityException {
-                        if (compareKeyId(new CBORTextString("otherkey"), optionalKeyId)) {
+                        if (compareKeyId(new CBORString("otherkey"), optionalKeyId)) {
                             return p256_2.getPublic();
                         }
                         throw new IOException("KeyId = " + optionalKeyId);
@@ -1325,9 +1328,10 @@ public class CBORTest {
             
         });
         
-        CBORObject taggedSignature = tagSigner.sign(7, createDataToBeSigned());
+        CBORObject taggedSignature = tagSigner.sign(SIGNATURE_LABEL,
+                                                    createDataToBeSigned());
         try {
-            new CBORAsymKeyValidator(p256.getPublic()).validate(7, taggedSignature);
+            new CBORAsymKeyValidator(p256.getPublic()).validate(SIGNATURE_LABEL, taggedSignature);
             fail("must fail");
         } catch (Exception e) {
             checkException(e, "Tag encountered. Policy: FORBIDDEN");
@@ -1343,9 +1347,9 @@ public class CBORTest {
                                    .getObject()
                                        .getArray()
                                            .getObject(0)
-                                               .getTextString().equals(objectId));
+                                               .getString().equals(objectId));
                 }
-            }).validate(7, taggedSignature);
+            }).validate(SIGNATURE_LABEL, taggedSignature);
         new CBORAsymKeyValidator(p256.getPublic())
             .setTagPolicy(CBORCryptoUtils.POLICY.MANDATORY, new CBORCryptoUtils.Collector() {
                 
@@ -1357,9 +1361,9 @@ public class CBORTest {
                                    .getObject()
                                        .getArray()
                                            .getObject(0)
-                                               .getTextString().equals(objectId));
+                                               .getString().equals(objectId));
                 }
-            }).validate(7, taggedSignature);
+            }).validate(SIGNATURE_LABEL, taggedSignature);
 
         long tag = 18;
         // 1-dimensional tag
@@ -1374,7 +1378,7 @@ public class CBORTest {
                 
         });
         
-        taggedSignature = tagSigner.sign(7, createDataToBeSigned());
+        taggedSignature = tagSigner.sign(SIGNATURE_LABEL, createDataToBeSigned());
         new CBORAsymKeyValidator(p256.getPublic())
             .setTagPolicy(CBORCryptoUtils.POLICY.MANDATORY, new CBORCryptoUtils.Collector() {
                 
@@ -1383,7 +1387,7 @@ public class CBORTest {
                         throws IOException, GeneralSecurityException {
                     assertTrue("tagn", tag == objectOrNull.getTag().getTagNumber());
                 }
-            }).validate(7, taggedSignature);
+            }).validate(SIGNATURE_LABEL, taggedSignature);
     }
 
     void enumerateEncryptions(KeyEncryptionAlgorithms[] keas,
@@ -1651,7 +1655,7 @@ public class CBORTest {
                                                .getObject()
                                                    .getArray()
                                                        .getObject(0)
-                                                           .getTextString().equals(objectId));
+                                                           .getString().equals(objectId));
                             }
                               
                         })
@@ -1872,7 +1876,7 @@ public class CBORTest {
                 "{", "\"lab\"", ":", "true", "}"
         };
         CBORMap cborMap = new CBORMap()
-            .setObject(new CBORTextString("lab"), new CBORBoolean(true));
+            .setObject(new CBORString("lab"), new CBORBoolean(true));
         assertTrue("json", cborMap.equals(serializeJson(jsonTokens)));
         
         assertTrue("json", new CBORMap().equals(serializeJson(new String[] {"{","}"})));
@@ -1881,17 +1885,17 @@ public class CBORTest {
                 "{", "\"lab\"", ":", "true", "," ,"\"j\"",":", "2000", "}"
         };
         cborMap = new CBORMap()
-            .setObject(new CBORTextString("lab"), new CBORBoolean(true))
-            .setObject(new CBORTextString("j"), new CBORInteger(2000));
+            .setObject(new CBORString("lab"), new CBORBoolean(true))
+            .setObject(new CBORString("j"), new CBORInteger(2000));
         assertTrue("json", cborMap.equals(serializeJson(jsonTokens)));
         
         assertTrue("json", new CBORArray().equals(serializeJson(new String[] {"[","]"})));
                
-        assertTrue("json", new CBORTextString("hi").equals(serializeJson("\"hi\"")));
-        assertTrue("json", new CBORTextString("").equals(serializeJson("\"\"")));
-        assertTrue("json", new CBORTextString("\u20ac$\n\b\r\t\"\\ ").equals(serializeJson(
+        assertTrue("json", new CBORString("hi").equals(serializeJson("\"hi\"")));
+        assertTrue("json", new CBORString("").equals(serializeJson("\"\"")));
+        assertTrue("json", new CBORString("\u20ac$\n\b\r\t\"\\ ").equals(serializeJson(
                                               "\"\\u20ac$\\u000a\\b\\r\\t\\\"\\\\ \"")));
-        assertTrue("json", new CBORTextString("\u0123\u4567\u89ab\ucdef\uABCD\uEF00").equals(serializeJson(
+        assertTrue("json", new CBORString("\u0123\u4567\u89ab\ucdef\uABCD\uEF00").equals(serializeJson(
                                               "\"\\u0123\\u4567\\u89ab\\ucdef\\uABCD\\uEF00\"")));
         assertTrue("json", new CBORBoolean(true).equals(serializeJson("true")));
         assertTrue("json", new CBORBoolean(false).equals(serializeJson("false")));
@@ -1904,14 +1908,14 @@ public class CBORTest {
                                                              "9007199254740992")));
         
         CBORArray cborArray = new CBORArray()
-            .addObject(new CBORTextString("hi"));
+            .addObject(new CBORString("hi"));
         assertTrue("json", cborArray.equals(serializeJson(new String[] {"[","\"hi\"","]"})));
         cborArray.addObject(new CBORMap())
                  .addObject(new CBORInteger(4));
         assertTrue("json", cborArray.equals(serializeJson(new String[] {
                 "[","\"hi\"",",","{","}",",","4","]"})));
-        cborArray.getObject(1).getMap().setObject(new CBORTextString("kurt"),
-                                                  new CBORTextString("murt"));
+        cborArray.getObject(1).getMap().setObject(new CBORString("kurt"),
+                                                  new CBORString("murt"));
         assertTrue("json", cborArray.equals(serializeJson(new String[] {
                 "[","\"hi\"",",","{","\"kurt\"",":","\"murt\"","}",",","4","]"})));
         
@@ -1947,20 +1951,20 @@ public class CBORTest {
             assertTrue("pub", 
                        CBORPublicKey.decode(cborPublicKey).equals(keyPair.getPublic()));
             try {
-                cborPrivateKey.setObject(new CBORTextString("key"), new CBORTextString("value"));
+                cborPrivateKey.setObject(new CBORString("key"), new CBORString("value"));
                 CBORKeyPair.decode(cborPrivateKey);
                 fail("must not execute");
             } catch (Exception e) {
                 checkException(e, 
-                    "Map key \"key\" of type=CBORTextString with value=\"value\" was never read");
+                    "Map key \"key\" of type=CBORString with value=\"value\" was never read");
             }
             try {
-                cborPublicKey.setObject(new CBORTextString("key"), new CBORTextString("value"));
+                cborPublicKey.setObject(new CBORString("key"), new CBORString("value"));
                 CBORPublicKey.decode(cborPublicKey);
                 fail("must not execute");
             } catch (Exception e) {
                 checkException(e, 
-                    "Map key \"key\" of type=CBORTextString with value=\"value\" was never read");
+                    "Map key \"key\" of type=CBORString with value=\"value\" was never read");
             }
         }
     }

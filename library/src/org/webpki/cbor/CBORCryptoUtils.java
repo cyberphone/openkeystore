@@ -65,7 +65,7 @@ public class CBORCryptoUtils {
         ArrayList<byte[]> blobs = new ArrayList<>();
         int index = 0;
         do {
-            blobs.add(array.objectList.get(index).getByteString());
+            blobs.add(array.objectList.get(index).getBytes());
         } while (++index < array.objectList.size());
         return CertificateUtil.makeCertificatePath(blobs);
     }
@@ -93,7 +93,7 @@ public class CBORCryptoUtils {
             throws IOException, GeneralSecurityException {
         CBORArray array = new CBORArray();
         for (X509Certificate certificate : CertificateUtil.checkCertificatePath(certificatePath)) {
-            array.addObject(new CBORByteString(certificate.getEncoded()));
+            array.addObject(new CBORBytes(certificate.getEncoded()));
         }
         return array;
     }
@@ -259,7 +259,7 @@ public class CBORCryptoUtils {
         if (keyEncryptionAlgorithm.isKeyWrap()) {
             // Encrypted key
             keyEncryption.setObject(CIPHER_TEXT_LABEL,
-                                    new CBORByteString(
+                                    new CBORBytes(
                                         asymmetricEncryptionResult.getEncryptedKey()));
         }
         return asymmetricEncryptionResult.getContentEncryptionKey();
@@ -273,7 +273,7 @@ public class CBORCryptoUtils {
 
         // Fetch encrypted key if applicable
         byte[] encryptedKey = keyEncryptionAlgorithm.isKeyWrap() ?
-            innerObject.getObject(CIPHER_TEXT_LABEL).getByteString() : null;
+            innerObject.getObject(CIPHER_TEXT_LABEL).getBytes() : null;
 
         // The core
         return keyEncryptionAlgorithm.isRsa() ?

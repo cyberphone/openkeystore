@@ -9,7 +9,7 @@ public class CBORFloat32Test {
     static void convert (int i) {
         try {
             double d = Float.intBitsToFloat(i);
-            CBORFloatingPoint cbor = new CBORFloatingPoint(d);
+            CBORDouble cbor = new CBORDouble(d);
             switch (cbor.tag) {
                 case CBORObject.MT_FLOAT16:
                     float16++;

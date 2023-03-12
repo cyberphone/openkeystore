@@ -23,14 +23,14 @@ import org.webpki.util.ArrayUtil;
 /**
  * Class for holding CBOR text strings.
  */
-public class CBORTextString extends CBORObject {
+public class CBORString extends CBORObject {
 
     String textString;
 
     /**
      * Creates a CBOR <code>text string</code>.
      */
-    public CBORTextString(String textString) {
+    public CBORString(String textString) {
         this.textString = textString;
         nullCheck(textString);
     }

@@ -37,7 +37,7 @@ import org.webpki.cbor.CBORSymKeyDecrypter;
 import org.webpki.cbor.CBORSymKeyEncrypter;
 import org.webpki.cbor.CBORTag;
 import org.webpki.cbor.CBORTest;
-import org.webpki.cbor.CBORTextString;
+import org.webpki.cbor.CBORString;
 import org.webpki.cbor.CBORTypes;
 import org.webpki.cbor.CBORX509Decrypter;
 import org.webpki.cbor.CBORX509Encrypter;
@@ -74,13 +74,13 @@ public class CborEncryption {
     static byte[] dataToBeEncrypted;
     
     static final int NON_RESEVED_TAG = 1676326;
-    static final CBORObject CUSTOM_DATA = new CBORTextString("Any valid CBOR object");
+    static final CBORObject CUSTOM_DATA = new CBORString("Any valid CBOR object");
     static final String OBJECT_ID = "https://example.com/myobject";
     
     static void verifyTag(CBORObject wrapperTag) throws IOException {
         CBORTag tag = wrapperTag.getTag();
         if (tag.getTagNumber() == CBORTag.RESERVED_TAG_COTX) {
-            if (!tag.getObject().getArray().getObject(0).getTextString().equals(OBJECT_ID)) {
+            if (!tag.getObject().getArray().getObject(0).getString().equals(OBJECT_ID)) {
                 throw new IOException("ID mismatch");
             }
         } else if (tag.getTagNumber() != NON_RESEVED_TAG) {
@@ -283,7 +283,7 @@ public class CborEncryption {
                               ContentEncryptionAlgorithms algorithm, 
                               boolean wantKeyId) throws Exception {
         byte[] key = symmetricKeys.getValue(keyBits);
-        CBORObject keyName = new CBORTextString(symmetricKeys.getName(keyBits));
+        CBORObject keyName = new CBORString(symmetricKeys.getName(keyBits));
         CBORSymKeyEncrypter encrypter = new CBORSymKeyEncrypter(key, algorithm);
         if (wantKeyId) {
             encrypter.setKeyId(keyName);
@@ -318,7 +318,7 @@ public class CborEncryption {
     static KeyPair readJwk(String keyType) throws Exception {
         JSONObjectReader jwkPlus = JSONParser.parse(ArrayUtil.readFile(baseKey + keyType + "privatekey.jwk"));
         // Note: The built-in JWK decoder does not accept "kid" since it doesn't have a meaning in JSF or JEF. 
-        keyId = new CBORTextString(jwkPlus.getString("kid"));
+        keyId = new CBORString(jwkPlus.getString("kid"));
         jwkPlus.removeProperty("kid");
         return jwkPlus.getKeyPair();
     }
@@ -408,7 +408,7 @@ public class CborEncryption {
                         @Override
                         public void foundData(CBORObject customData)
                                 throws IOException, GeneralSecurityException {
-                            customData.getTextString();
+                            customData.getString();
                         }});
         }
         if (tagged != 0) {

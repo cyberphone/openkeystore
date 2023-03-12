@@ -22,7 +22,7 @@ import org.webpki.util.HexaDecimal;
 /**
  * Class for holding CBOR byte strings.
  */
-public class CBORByteString extends CBORObject {
+public class CBORBytes extends CBORObject {
 
     byte[] byteString;
 
@@ -31,7 +31,7 @@ public class CBORByteString extends CBORObject {
      * 
      * @param byteString The bytes constituting the string
      */
-    public CBORByteString(byte[] byteString) {
+    public CBORBytes(byte[] byteString) {
         this.byteString = byteString;
         nullCheck(byteString);
    }

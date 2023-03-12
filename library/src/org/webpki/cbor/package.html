@@ -3,21 +3,23 @@
 This package contains Java support for CBOR 
 [<a href='https://www.rfc-editor.org/rfc/rfc8949.html'>RFC&nbsp;8949</a>].
 <h3 id='supported-primitives'>Supported Primitives</h3>
-<table class='webpkitable'>
+The following table shows the currently supported CBOR
+primitives and their mapping to Java:
+<table class='webpkitable' style='margin:0.8em 1em 0 2em'>
 <tr><th>CBOR Data Type</th><th>Notes</th><th>Java&nbsp;Mapping</th>
 <th>Implementation</th></tr>
 <tr><td><code>integer</code></td><td>1</td><td><code>long</code></td><td>{@link CBORInteger}</td></tr>
-<tr><td><code>big integer</code></td><td>1, 2</td><td><code>BigInteger</code></td><td>{@link CBORBigInteger}</td></tr>
-<tr><td><code>floating point</code></td><td>3</td><td><code>double</code></td><td>{@link CBORFloatingPoint}</td></tr>
-<tr><td><code>byte string</code></td><td></td><td><code>byte[]</code></td><td>{@link CBORByteString}</td></tr>
-<tr><td><code>text string</code></td><td></td><td><code>String</code></td><td>{@link CBORTextString}</td></tr>
+<tr><td><code>big&nbsp;integer</code></td><td>1, 2</td><td><code>BigInteger</code></td><td>{@link CBORBigInteger}</td></tr>
+<tr><td><code>floating&nbsp;point</code></td><td>3</td><td><code>double</code></td><td>{@link CBORDouble}</td></tr>
+<tr><td><code>byte&nbsp;string</code></td><td></td><td><code>byte[]</code></td><td>{@link CBORBytes}</td></tr>
+<tr><td><code>text&nbsp;string</code></td><td></td><td><code>String</code></td><td>{@link CBORString}</td></tr>
 <tr><td><code>true</code></td><td></td><td><code>boolean</code></td><td>{@link CBORBoolean}</td></tr>
 <tr><td><code>false</code></td><td></td><td><code>boolean</code></td><td>{@link CBORBoolean}</td></tr>
 <tr><td><code>null</code></td><td></td><td><code>null</code></td><td>{@link CBORNull}</td></tr>
 </table>
 <p>1] The distinction between unsigned and negative values is dealt with automatically.<br>
-2] <code>big integer</code> is in this implementation identical to "<code>Bignums</code>" in the RFC.<br>
-3] Floating point data covers the 16, 32, and 64-bit IEEE 754 variants.</p>
+2] <code>big&nbsp;integer</code> is in this implementation identical to "<code>Bignums</code>" in the RFC.<br>
+3] Floating point data covers the 16, 32, and 64-bit IEEE&nbsp;754 variants.</p>
 <p>
 In addition to the primitives above, this implementation also supports
 arbitrary tagged objects based on CBOR major type 6 ({@link CBORTag}).
@@ -27,8 +29,8 @@ This package is also intended to be used for security related
 applications where "raw" CBOR data is subjected to cryptographic operations
 like hashing and signatures.
 To make this possible without additional processing,
-data must be in a stable form "on the wire".
-This can either be achieved by using the binary "as is", or through
+data must be in a stable form "on&nbsp;the&nbsp;wire".
+This can either be achieved by using the binary "as&nbsp;is", or through
 deterministic serialization.
 This section describes a variant of latter, making compliant CBOR systems
 less dependent on specific encoder and decoder designs.
@@ -38,7 +40,7 @@ be performed at the binary level.
 It is in this context worth noting that XML and JSON do not support
 deterministic serialization.
 </div>
-<div id='standards-proposal' class='webpkicomment'>
+<div id='standards-proposal' class='webpkicomment' style='margin:1.5em 0'>
 Although APIs may be quite different,
 the deterministic serialization scheme described here
 is intended as a <i>standard</i>,
@@ -50,7 +52,7 @@ deliberately rather conservative, and should with
 moderate efforts work with most existing CBOR encoders and decoders.
 </div>
 <div style='margin-top:0.8em'>
-The serialization scheme adhere to section 4.2 of RFC&nbsp;8949, but adds
+The serialization scheme adheres to section 4.2 of RFC&nbsp;8949, but adds
 a few constraints (denoted by RFC+), where the RFC offers choices.
 The serialization rules are as follows:
 </div>
@@ -61,7 +63,7 @@ The serialization rules are as follows:
 type if the value is between -2^64 and 2^64-1, otherwise the
 <code>big&nbsp;integer</code> type <b>must</b> be used.
 The following table holds a few sample values and their proper CBOR encoding:
-<table class='webpkitable' style='margin:0.7em 0 0.7em 2em'>
+<table class='webpkitable' style='margin:0.8em 1em 0.7em 2em'>
 <tr><th>Value</th><th>Encoding</th></tr>
 <tr style='text-align:right'><td><code>0</code></td><td><code>00</code></td></tr>
 <tr style='text-align:right'><td><code>-1</code></td><td><code>20</code></td></tr>
@@ -85,15 +87,18 @@ would actually yield two bytes less using the <code>big&nbsp;integer</code> type
 </div>
 </li>
 <li id='floating-point-serialization' class='webpkilistspacing'>
-  RFC+: Floating point data <b>must</b> use the shortest variant
-including the following special values and their proper CBOR encoding:
-<table class='webpkitable' style='margin:0.7em 0 0.7em 2em'>
+  RFC+: Floating point data <b>must</b> use the shortest IEEE&nbsp;754
+  variant and associated CBOR encoding.
+The following table holds floating point values needing special considerations
+as well as a small set of "edge&nbsp;cases":
+<table class='webpkitable' style='margin:0.8em 1em 0.7em 2em'>
 <tr><th>Value</th><th>Encoding</th></tr>
 <tr style='text-align:right'><td><code>0.0</code></td><td><code>f90000</code></td></tr>
 <tr style='text-align:right'><td><code>-0.0</code></td><td><code>f98000</code></td></tr>
 <tr style='text-align:right'><td><code>Infinity</code></td><td><code>f97c00</code></td></tr>
 <tr style='text-align:right'><td><code>-Infinity</code></td><td><code>f9fc00</code></td></tr>
 <tr style='text-align:right'><td><code>NaN</code></td><td><code>f97e00</code></td></tr>
+<tr><th colspan='2'>Assorted Edge Cases</th></tr>
 <tr style='text-align:right'><td><code>-5.9604644775390625e-8</code></td><td><code>f98001</code></td></tr>
 <tr style='text-align:right'><td><code>-5.960465188081798e-8</code></td><td><code>fab3800001</code></td></tr>
 <tr style='text-align:right'><td><code>65504.0</code></td><td><code>f97bff</code></td></tr>
@@ -130,12 +135,6 @@ As an example, the floating point numbers <code>0.0</code> and
 <code>-0.0</code>, and the integer number <code>0</code>
 represent the distinct keys
 <code>f90000</code>, <code>f98000</code>, and <code>00</code> respectively.
-<div id='map-key-constraints' style='margin:0.5em 0 0.3em 0'>
-However, for maximum interoperability with <i>other</i> CBOR implementations,
-map key types <b>should</b> be limited to <code>integer</code> and
-<code>text&nbsp;string</code>,
-as well as not being mixed in the same map.
-</div>
 </li>
 </ul>
 Any deviation from the rules above will throw
@@ -146,6 +145,49 @@ exceptions using the standard decoder
 On output ({@link CBORObject#encode()})
 deterministic serialization is always used
 regardless of if CBOR data was parsed or created programmatically.
+</p>
+<div id='map-key-constraints' class='webpkicomment' style='margin-bottom:0.3em'>
+For maximum interoperability with <i>other</i> CBOR implementations,
+map key types <b>should</b> be limited to <code>integer</code> and
+<code>text&nbsp;string</code>,
+as well as not being mixed in the same map.
+</div>
+<h3 id='input-data-validation'>Input Data Validation</h3>
+A properly designed system validates input data before acting upon it.
+This section describes how this can be achieved using this particular
+CBOR implementation.
+<p>
+During {@link CBORObject#decode(byte[])}, CBOR data is checked for
+well-formedness as well as by default, adhering to the determinism scheme.
+</p>
+<p>
+After successful decoding, the CBOR data is available as a tree of nodes.
+For extracting the actual data in Java format, access methods such as 
+{@link CBORObject#getInt()} and {@link CBORObject#getString()}
+must be used.
+If the tree holds structured CBOR objects, these must be accessed
+through methods such as {@link CBORObject#getMap()} and
+{@link CBORObject#getArray()}.
+</p>
+<p>
+If the underlying CBOR data type does not match the access method
+(like performing {@link CBORObject#getInt()} on a {@link CBORBigInteger}),
+an exception is thrown.
+That is, this implementation performs strict type checking. 
+However, you typically also want to verify
+that {@link CBORMap} objects do not contain unexpected keys,
+or that {@link CBORArray} objects contain unread elements.
+This can be achieved by calling {@link CBORObject#checkForUnread()},
+<i>after</i> all expected objects have been read.
+This method verifies that the current CBOR object (including
+possible child objects), have been accessed, otherwise
+an exception will be thrown.
+</p>
+<p>
+Built-in cryptographic support classes like {@link CBORValidator}
+and {@link CBORPublicKey} perform strict type checking
+as well as verifying that there are no unexpected objects
+inside of their respective containers.
 </p>
 <h3 id='cryptographic-support'>Cryptographic Support</h3>
 To aid the use of cryptography, support for

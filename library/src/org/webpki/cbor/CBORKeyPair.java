@@ -95,28 +95,28 @@ public class CBORKeyPair {
             case RSA:
                 RSAPrivateCrtKey rsaPrivateKey = (RSAPrivateCrtKey)keyPair.getPrivate();
                 cosePrivateKey
-                    .setByteString(COSE_RSA_D_LABEL, 
+                    .setBytes(COSE_RSA_D_LABEL, 
                                    CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrivateExponent()))
-                    .setByteString(COSE_RSA_P_LABEL, 
+                    .setBytes(COSE_RSA_P_LABEL, 
                                    CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrimeP()))
-                    .setByteString(COSE_RSA_Q_LABEL, 
+                    .setBytes(COSE_RSA_Q_LABEL, 
                                    CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrimeQ()))
-                    .setByteString(COSE_RSA_DP_LABEL, 
+                    .setBytes(COSE_RSA_DP_LABEL, 
                                    CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrimeExponentP()))
-                    .setByteString(COSE_RSA_DQ_LABEL, 
+                    .setBytes(COSE_RSA_DQ_LABEL, 
                                    CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrimeExponentQ()))
-                    .setByteString(COSE_RSA_QINV_LABEL,
+                    .setBytes(COSE_RSA_QINV_LABEL,
                                    CBORPublicKey.cryptoBinary(rsaPrivateKey.getCrtCoefficient()));
                 break;
 
             case EC:
-                cosePrivateKey.setObject(COSE_EC2_D_LABEL, new CBORByteString(
+                cosePrivateKey.setObject(COSE_EC2_D_LABEL, new CBORBytes(
                         CBORPublicKey.curvePoint(((ECPrivateKey)keyPair.getPrivate()).getS(), 
                                                  keyAlg)));
                 break;
 
             default:
-                cosePrivateKey.setObject(COSE_OKP_D_LABEL, new CBORByteString(
+                cosePrivateKey.setObject(COSE_OKP_D_LABEL, new CBORBytes(
                         OkpSupport.private2RawKey(keyPair.getPrivate(), keyAlg)));
             
         }
@@ -162,7 +162,7 @@ public class CBORKeyPair {
 
             default:
                 privateKey = OkpSupport.raw2PrivateKey(
-                        privateKeyMap.getObject(COSE_OKP_D_LABEL).getByteString(),
+                        privateKeyMap.getObject(COSE_OKP_D_LABEL).getBytes(),
                         CBORPublicKey.getKeyAlgorithmFromCurveId(privateKeyMap, 
                                                                  COSE_OKP_CRV_LABEL));
         }

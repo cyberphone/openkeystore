@@ -77,7 +77,7 @@ public class CBORBigInteger extends CBORObject {
             encoded = temp;
         }
         return ArrayUtil.add(unsigned ? UNSIGNED_BIG_INTEGER_TAG : NEGATIVE_BIG_INTEGER_TAG, 
-                             new CBORByteString(encoded).encode());
+                             new CBORBytes(encoded).encode());
     }
     
     @Override

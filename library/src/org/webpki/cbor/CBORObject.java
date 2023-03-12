@@ -233,7 +233,7 @@ public abstract class CBORObject {
      * Returns <code>double</code> value.
      * <p>
      * This method requires that the object is a
-     * {@link CBORFloatingPoint}, otherwise an exception will be thrown.
+     * {@link CBORDouble}, otherwise an exception will be thrown.
      * </p>
      * 
      * @return Double
@@ -241,7 +241,7 @@ public abstract class CBORObject {
      */
     public double getDouble() throws IOException {
         checkTypeAndMarkAsRead(CBORTypes.FLOATING_POINT);
-        return ((CBORFloatingPoint) this).value;
+        return ((CBORDouble) this).value;
     }
  
     /**
@@ -278,30 +278,30 @@ public abstract class CBORObject {
      * Returns <code>text string</code> value.
      * <p>
      * This method requires that the object is a
-     * {@link CBORTextString}, otherwise an exception will be thrown.
+     * {@link CBORString}, otherwise an exception will be thrown.
      * </p>
      * 
      * @return String
      * @throws IOException
      */
-    public String getTextString() throws IOException {
+    public String getString() throws IOException {
         checkTypeAndMarkAsRead(CBORTypes.TEXT_STRING);
-        return ((CBORTextString) this).textString;
+        return ((CBORString) this).textString;
     }
 
     /**
      * Returns <code>byte string</code> value.
      * <p>
      * This method requires that the object is a
-     * {@link CBORByteString}, otherwise an exception will be thrown.
+     * {@link CBORBytes}, otherwise an exception will be thrown.
      * </p>
      * 
      * @return Byte array
      * @throws IOException
      */
-    public byte[] getByteString() throws IOException {
+    public byte[] getBytes() throws IOException {
         checkTypeAndMarkAsRead(CBORTypes.BYTE_STRING);
-        return ((CBORByteString) this).byteString;
+        return ((CBORBytes) this).byteString;
     }
 
     /**
@@ -377,7 +377,7 @@ public abstract class CBORObject {
      * <p>
      * Verifies that all data from the current object including
      * possible child objects have been read
-     * (through calling {@link #getByteString()} etc.),
+     * (through calling {@link #getBytes()} etc.),
      * and throws an exception if this is not the case.
      * </p>
      * 
@@ -509,9 +509,9 @@ public abstract class CBORObject {
             return (int)n;
         }
 
-        private CBORFloatingPoint checkDoubleConversion(int tag, long bitFormat, long rawDouble)
+        private CBORDouble checkDoubleConversion(int tag, long bitFormat, long rawDouble)
                 throws IOException {
-            CBORFloatingPoint value = new CBORFloatingPoint(Double.longBitsToDouble(rawDouble));
+            CBORDouble value = new CBORDouble(Double.longBitsToDouble(rawDouble));
             if ((value.tag != tag || value.bitFormat != bitFormat) && deterministicMode) {
                 reportError(String.format(STDERR_NON_DETERMINISTIC_FLOAT + "%2x", tag & 0xff));
             }
@@ -525,7 +525,7 @@ public abstract class CBORObject {
             switch (tag) {
                 case MT_BIG_NEGATIVE:
                 case MT_BIG_UNSIGNED:
-                    byte[] byteArray = getObject().getByteString();
+                    byte[] byteArray = getObject().getBytes();
                     if (byteArray.length == 0) {
                         byteArray = ZERO_BYTE;  // Zero length byte string => n == 0.
                     } else if (byteArray[0] == 0 && deterministicMode) {
@@ -650,10 +650,10 @@ public abstract class CBORObject {
                     return new CBORInteger(n, false);
     
                 case MT_BYTE_STRING:
-                    return new CBORByteString(readBytes(checkLength(n)));
+                    return new CBORBytes(readBytes(checkLength(n)));
     
                 case MT_TEXT_STRING:
-                    return new CBORTextString(new String(readBytes(checkLength(n)), "utf-8"));
+                    return new CBORString(new String(readBytes(checkLength(n)), "utf-8"));
     
                 case MT_ARRAY:
                     CBORArray cborArray = new CBORArray();

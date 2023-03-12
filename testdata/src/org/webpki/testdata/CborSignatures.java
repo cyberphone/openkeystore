@@ -30,14 +30,14 @@ import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORSigner;
 import org.webpki.cbor.CBORTag;
 import org.webpki.cbor.CBORTest;
-import org.webpki.cbor.CBORTextString;
+import org.webpki.cbor.CBORString;
 import org.webpki.cbor.CBORTypes;
 import org.webpki.cbor.CBORValidator;
 import org.webpki.cbor.CBORX509Signer;
 import org.webpki.cbor.CBORX509Validator;
 import org.webpki.cbor.CBORAsymKeySigner;
 import org.webpki.cbor.CBORAsymKeyValidator;
-import org.webpki.cbor.CBORFloatingPoint;
+import org.webpki.cbor.CBORDouble;
 import org.webpki.cbor.CBORHmacSigner;
 import org.webpki.cbor.CBORHmacValidator;
 import org.webpki.cbor.CBORInteger;
@@ -63,7 +63,7 @@ import org.webpki.util.HexaDecimal;
 import org.webpki.util.PEMDecoder;
 
 /*
- * Create JSF test vectors
+ * Create CSF test vectors
  */
 public class CborSignatures {
     static String baseKey;
@@ -72,7 +72,7 @@ public class CborSignatures {
     static SymmetricKeys symmetricKeys;
     static CBORObject keyId;
     
-    static final String SIGNATURE_LABEL = "signature";
+    static final CBORString SIGNATURE_LABEL = new CBORString("signature");
     
 
     public static void main(String[] args) throws Exception {
@@ -211,7 +211,7 @@ public class CborSignatures {
                            HmacAlgorithms algorithm, 
                            boolean wantKeyId) throws Exception {
         byte[] key = symmetricKeys.getValue(keyBits);
-        CBORObject keyName = new CBORTextString(symmetricKeys.getName(keyBits));
+        CBORObject keyName = new CBORString(symmetricKeys.getName(keyBits));
         CBORHmacSigner signer = new CBORHmacSigner(key, algorithm);
         if (wantKeyId) {
             signer.setKeyId(keyName);
@@ -247,9 +247,9 @@ public class CborSignatures {
 
     static byte[] getDataToSign() throws Exception {
         return new CBORMap()
-            .setObject("instant", new CBORTextString("2021-06-10T11:23:06Z"))
-            .setObject("name", new CBORTextString("John Doe"))
-            .setObject("id", new CBORInteger(123456))
+            .setObject(new CBORString("instant"), new CBORString("2021-06-10T11:23:06Z"))
+            .setObject(new CBORString("name"), new CBORString("John Doe"))
+            .setObject(new CBORString("id"), new CBORInteger(123456))
             .encode();
     }
     
@@ -266,7 +266,7 @@ public class CborSignatures {
                 baseKey + keyType + "privatekey.jwk"));
         // Note: The built-in JWK decoder does not accept "kid" since it
         // doesn't have a meaning in JSF or JEF. 
-        keyId = new CBORTextString(jwkPlus.getString("kid"));
+        keyId = new CBORString(jwkPlus.getString("kid"));
         jwkPlus.removeProperty("kid");
         return jwkPlus.getKeyPair();
     }
@@ -391,7 +391,7 @@ public class CborSignatures {
                         @Override
                         public void foundData(CBORObject customData)
                                 throws IOException, GeneralSecurityException {
-                            customData.getTextString();
+                            customData.getString();
                         }
                     });
         }
@@ -458,21 +458,21 @@ public class CborSignatures {
         KeyPair keyPair = readJwk("p256");
         CBORAsymKeySigner signer = 
                 new CBORAsymKeySigner(keyPair.getPrivate()).setPublicKey(keyPair.getPublic());
-        byte[] signedData = signer.sign(-1, 
-                new CBORMap().setObject(1, 
+        byte[] signedData = signer.sign(new CBORInteger(-1), 
+                new CBORMap().setObject(new CBORInteger(1), 
                                         new CBORMap()
-                                            .setObject(1, new CBORTextString("Space Shop"))
-                                            .setObject(2, new CBORTextString("435.00"))
-                                            .setObject(3, new CBORTextString("USD")))
-                             .setObject(2, new CBORTextString("spaceshop.com"))
-                             .setObject(3, new CBORTextString("FR7630002111110020050014382"))
-                             .setObject(4, new CBORTextString("https://banknet2.org"))
-                             .setObject(5, new CBORTextString("05768401"))
-                             .setObject(6, new CBORTextString("2022-09-29T09:34:08-05:00"))
-                             .setObject(7,
+                                            .setObject(new CBORInteger(1), new CBORString("Space Shop"))
+                                            .setObject(new CBORInteger(2), new CBORString("435.00"))
+                                            .setObject(new CBORInteger(3), new CBORString("USD")))
+                             .setObject(new CBORInteger(2), new CBORString("spaceshop.com"))
+                             .setObject(new CBORInteger(3), new CBORString("FR7630002111110020050014382"))
+                             .setObject(new CBORInteger(4), new CBORString("https://banknet2.org"))
+                             .setObject(new CBORInteger(5), new CBORString("05768401"))
+                             .setObject(new CBORInteger(6), new CBORString("2022-09-29T09:34:08-05:00"))
+                             .setObject(new CBORInteger(7),
                                         new CBORMap()
-                                            .setObject(1, new CBORFloatingPoint(38.8882))
-                                            .setObject(2, new CBORFloatingPoint(77.0199))))
+                                            .setObject(new CBORInteger(1), new CBORDouble(38.8882))
+                                            .setObject(new CBORInteger(2), new CBORDouble(77.0199))))
                 .encode();
         CBORAsymKeyValidator validator = new CBORAsymKeyValidator(keyPair.getPublic());
         boolean changed = true;
@@ -480,7 +480,7 @@ public class CborSignatures {
         try {
             oldSignature = ArrayUtil.readFile(fileName);
             try {
-                validator.validate(-1, CBORObject.decode(oldSignature).getMap());
+                validator.validate(new CBORInteger(-1), CBORObject.decode(oldSignature).getMap());
             } catch (Exception e) {
                 throw new GeneralSecurityException(
                         "ERROR - Old signature '" + fileName + "' did not validate");

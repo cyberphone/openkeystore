@@ -51,7 +51,7 @@ public class CoseKeyServlet extends CoreRequestServlet {
     
     void setRSAParameter(JSONObjectReader jwk, String jsonArgument, CBORMap cbor, int cborLabel)
             throws IOException {
-        cbor.setByteString(new CBORInteger(cborLabel), jwk.getBinary(jsonArgument));
+        cbor.setBytes(new CBORInteger(cborLabel), jwk.getBinary(jsonArgument));
     }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response)

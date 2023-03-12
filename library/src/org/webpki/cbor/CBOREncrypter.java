@@ -119,7 +119,7 @@ public abstract class CBOREncrypter {
      * @return <code>this</code>
      */
     public CBOREncrypter setKeyId(String keyId) {
-        return setKeyId(new CBORTextString(keyId));
+        return setKeyId(new CBORString(keyId));
     }
 
     /**
@@ -188,13 +188,13 @@ public abstract class CBOREncrypter {
         // Complement the encryption object with the result of the content encryption.
         
         // Authentication Data (tag).
-        cefContainer.setObject(TAG_LABEL, new CBORByteString(result.getTag()));
+        cefContainer.setObject(TAG_LABEL, new CBORBytes(result.getTag()));
 
         // Initialization Vector.
-        cefContainer.setObject(IV_LABEL, new CBORByteString(iv));
+        cefContainer.setObject(IV_LABEL, new CBORBytes(iv));
 
         // The encrypted data.
-        cefContainer.setObject(CIPHER_TEXT_LABEL, new CBORByteString(result.getCipherText()));
+        cefContainer.setObject(CIPHER_TEXT_LABEL, new CBORBytes(result.getCipherText()));
 
         // Finally, the thing we all longed(?) for!
         return outerObject;

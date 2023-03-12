@@ -147,7 +147,7 @@ public class CBORFromJSON {
                 return map;
        
             case '"':
-                return getTextString();
+                return getString();
                 
             case 't':
                 scanFor("rue");
@@ -223,7 +223,7 @@ public class CBORFromJSON {
         }
     }
 
-    private CBORObject getTextString() throws IOException {
+    private CBORObject getString() throws IOException {
         StringBuilder s = new StringBuilder();
         while (true) {
             char c;
@@ -267,7 +267,7 @@ public class CBORFromJSON {
                     break;
  
                 case '"':
-                    return new CBORTextString(s.toString());
+                    return new CBORString(s.toString());
                     
                 default:
                     if (c < ' ') {

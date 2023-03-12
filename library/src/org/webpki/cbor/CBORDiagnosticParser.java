@@ -147,7 +147,7 @@ public class CBORDiagnosticParser {
                 scanFor("<");
                 CBORObject embedded = getObject();
                 scanFor(">>");
-                return new CBORByteString(embedded.encode());
+                return new CBORBytes(embedded.encode());
     
             case '[':
                 CBORArray array = new CBORArray();
@@ -174,10 +174,10 @@ public class CBORDiagnosticParser {
                 return map;
        
             case '"':
-                return getTextString();
+                return getString();
                 
             case 'h':
-                return getByteString();
+                return getBytes();
                 
             case 't':
                 scanFor("rue");
@@ -194,7 +194,7 @@ public class CBORDiagnosticParser {
             case '-':
                 if (nextChar() == 'I') {
                     scanFor("Infinity");
-                    return new CBORFloatingPoint(Double.NEGATIVE_INFINITY);
+                    return new CBORDouble(Double.NEGATIVE_INFINITY);
                 }
 
             case '0':
@@ -213,11 +213,11 @@ public class CBORDiagnosticParser {
 
             case 'N':
                 scanFor("aN");
-                return new CBORFloatingPoint(Double.NaN);
+                return new CBORDouble(Double.NaN);
 
             case 'I':
                 scanFor("nfinity");
-                return new CBORFloatingPoint(Double.POSITIVE_INFINITY);
+                return new CBORDouble(Double.POSITIVE_INFINITY);
                 
             default:
                 index--;
@@ -247,7 +247,7 @@ public class CBORDiagnosticParser {
                 if (value.isInfinite()) {
                     reportError("Floating point value out of range");
                 }
-                return new CBORFloatingPoint(value);
+                return new CBORDouble(value);
             }
             if (c == '(') {
                 // Do not accept '+', '-', or leading zeros
@@ -298,7 +298,7 @@ public class CBORDiagnosticParser {
         }
     }
 
-    private CBORObject getTextString() throws IOException {
+    private CBORObject getString() throws IOException {
         StringBuilder s = new StringBuilder();
         while (true) {
             char c;
@@ -342,7 +342,7 @@ public class CBORDiagnosticParser {
                     break;
  
                 case '"':
-                    return new CBORTextString(s.toString());
+                    return new CBORString(s.toString());
                     
                 default:
                     if (c < ' ') {
@@ -353,7 +353,7 @@ public class CBORDiagnosticParser {
         }
     }
     
-    private CBORObject getByteString() throws IOException {
+    private CBORObject getBytes() throws IOException {
         StringBuilder s = new StringBuilder();
         scanFor("'");
         char c;
@@ -371,7 +371,7 @@ public class CBORDiagnosticParser {
         while (q < l) {
             bytes[i++] = (byte)((hex.charAt(q++) << 4) + hex.charAt(q++));
         }
-        return new CBORByteString(bytes);
+        return new CBORBytes(bytes);
     }
 
     private char hexCharToChar(char c) throws IOException {

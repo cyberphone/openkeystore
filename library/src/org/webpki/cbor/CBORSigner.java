@@ -102,39 +102,6 @@ public abstract class CBORSigner {
     }
 
     /**
-     * Sets signature <code>keyId</code>.
-     * 
-     * The <code>keyId</code> will be represented as a CBOR <code>text&nbsp;string</code>.
-     * <p>
-     * See {@link #setKeyId(CBORObject)} for details.
-     * </p>
-     * 
-     * @param keyId Key Id
-     * @return <code>this</code>
-     * 
-     */
-    public CBORSigner setKeyId(String keyId) {
-        return setKeyId(new CBORTextString(keyId));
-    }
-
-    /**
-     * Sets signature <code>keyId</code>.
-     * 
-     * The <code>keyId</code> will be represented as a CBOR <code>integer</code>.
-     * 
-     * <p>
-     * See {@link #setKeyId(CBORObject)} for details.
-     * </p>
-     * 
-     * @param keyId Key Id
-     * @return <code>this</code>
-     *
-     */
-    public CBORSigner setKeyId(int keyId) {
-        return setKeyId(new CBORInteger(keyId));
-    }
-
-    /**
      * Sets cryptographic provider.
      * 
      * @param provider Name of provider like "BC"
@@ -190,44 +157,10 @@ public abstract class CBORSigner {
         // Finally, sign all but the signature label and associated value.
         // internalEncode() is supposed to produce a deterministic representation
         // of the CBOR data to be signed.
-        csfContainer.setByteString(SIGNATURE_LABEL, coreSigner(objectToSign.encode()));
+        csfContainer.setBytes(SIGNATURE_LABEL, coreSigner(objectToSign.encode()));
 
         // Return the now signed object.
         return objectToSign;
     }
 
-    /**
-     * Signs CBOR object.
-     * 
-     * <p>
-     * See {@link #sign(CBORObject, CBORMap)} for details.
-     * </p>
-     * 
-     * @param key Key holding the signature in the CBOR map to sign
-     * @param mapToSign CBOR map to be signed
-     * @return Signed object
-     * @throws IOException
-     * @throws GeneralSecurityException
-     */
-    public CBORObject sign(int key, CBORMap mapToSign) throws IOException,
-                                                              GeneralSecurityException {
-        return sign(new CBORInteger(key), mapToSign);
-    }
-
-    /**
-     * Signs CBOR object.
-     * <p>
-     * See {@link #sign(CBORObject, CBORMap)} for details.
-     * </p>
-     * 
-     * @param key Key holding the signature in the CBOR map to sign
-     * @param mapToSign CBOR map to be signed
-     * @return Signed object
-     * @throws IOException
-     * @throws GeneralSecurityException
-      */
-    public CBORObject sign(String key, CBORMap mapToSign) throws IOException, 
-                                                                 GeneralSecurityException {
-        return sign(new CBORTextString(key), mapToSign);
-    }
 }

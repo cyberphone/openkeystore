@@ -116,7 +116,7 @@ public abstract class CBORValidator {
         CBORMap csfContainer = signedMap.getObject(key).getMap();
 
         // Get the signature value and remove it from the (map) object.
-        byte[] signatureValue = csfContainer.readByteStringAndRemoveKey(SIGNATURE_LABEL);
+        byte[] signatureValue = csfContainer.readBytesAndRemoveKey(SIGNATURE_LABEL);
 
         // Fetch optional keyId.
         CBORObject optionalKeyId = CBORCryptoUtils.getKeyId(csfContainer);
@@ -136,43 +136,9 @@ public abstract class CBORValidator {
         csfContainer.checkForUnread();
 
         // Restore object.
-        csfContainer.setObject(SIGNATURE_LABEL, new CBORByteString(signatureValue));
+        csfContainer.setObject(SIGNATURE_LABEL, new CBORBytes(signatureValue));
         
         // Return it as well.
         return signedObject;
-    }
-
-    /**
-     * Validates signed CBOR object.
-     * <p>
-     * See {@link #validate(CBORObject, CBORObject)} for details.
-     * </p>
-     * 
-     * @param key Key in map holding signature
-     * @param signedObject Signed CBOR object
-     * @return The original <code>signedObject</code>
-     * @throws IOException
-     * @throws GeneralSecurityException
-     */
-    public CBORObject validate(int key, CBORObject signedObject) throws IOException, 
-                                                                        GeneralSecurityException {
-        return validate(new CBORInteger(key), signedObject);
-    }
-    
-    /**
-     * Validates signed CBOR object.
-     * <p>
-     * See {@link #validate(CBORObject, CBORObject)} for details.
-     * </p>
-     * 
-     * @param key Key in map holding signature
-     * @param signedObject Signed CBOR object
-     * @return The original <code>signedObject</code>
-     * @throws IOException
-     * @throws GeneralSecurityException
-     */
-    public CBORObject validate(String key, CBORObject signedObject) throws IOException, 
-                                                                           GeneralSecurityException {
-        return validate(new CBORTextString(key), signedObject);
     }
 }

@@ -249,8 +249,8 @@ public class CBORMap extends CBORObject {
      * @return byte string
      * @throws IOException
      */
-    public byte[] readByteStringAndRemoveKey(CBORObject key) throws IOException {
-        byte[] data = getObject(getKey(key)).getByteString();
+    public byte[] readBytesAndRemoveKey(CBORObject key) throws IOException {
+        byte[] data = getObject(getKey(key)).getBytes();
         removeObject(key);
         return data;
     }
@@ -270,8 +270,8 @@ public class CBORMap extends CBORObject {
      * @return <code>this</code>
      * @throws IOException
      */
-    public CBORMap setByteString(CBORObject key, byte[] byteString) throws IOException {
-        return setObject(key, new CBORByteString(byteString));
+    public CBORMap setBytes(CBORObject key, byte[] byteString) throws IOException {
+        return setObject(key, new CBORBytes(byteString));
     }
     
     @Override
