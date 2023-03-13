@@ -96,17 +96,17 @@ public class CBORKeyPair {
                 RSAPrivateCrtKey rsaPrivateKey = (RSAPrivateCrtKey)keyPair.getPrivate();
                 cosePrivateKey
                     .setBytes(COSE_RSA_D_LABEL, 
-                                   CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrivateExponent()))
+                              CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrivateExponent()))
                     .setBytes(COSE_RSA_P_LABEL, 
-                                   CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrimeP()))
+                              CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrimeP()))
                     .setBytes(COSE_RSA_Q_LABEL, 
-                                   CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrimeQ()))
+                              CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrimeQ()))
                     .setBytes(COSE_RSA_DP_LABEL, 
-                                   CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrimeExponentP()))
+                              CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrimeExponentP()))
                     .setBytes(COSE_RSA_DQ_LABEL, 
-                                   CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrimeExponentQ()))
+                              CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrimeExponentQ()))
                     .setBytes(COSE_RSA_QINV_LABEL,
-                                   CBORPublicKey.cryptoBinary(rsaPrivateKey.getCrtCoefficient()));
+                              CBORPublicKey.cryptoBinary(rsaPrivateKey.getCrtCoefficient()));
                 break;
 
             case EC:

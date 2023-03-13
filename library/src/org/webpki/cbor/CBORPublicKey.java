@@ -124,26 +124,24 @@ public class CBORPublicKey {
                 RSAPublicKey rsaPublicKey = (RSAPublicKey) jcePublicKey;
                 cosePublicKey.setObject(COSE_KTY_LABEL, COSE_RSA_KTY)
                              .setBytes(COSE_RSA_N_LABEL,
-                                            cryptoBinary(rsaPublicKey.getModulus()))
+                                       cryptoBinary(rsaPublicKey.getModulus()))
                              .setBytes(COSE_RSA_E_LABEL, 
-                                            cryptoBinary(rsaPublicKey.getPublicExponent()));
+                                       cryptoBinary(rsaPublicKey.getPublicExponent()));
                 break;
     
             case EC:
                 ECPoint ecPoint = ((ECPublicKey) jcePublicKey).getW();
                 cosePublicKey.setObject(COSE_KTY_LABEL, COSE_EC2_KTY)
                              .setObject(COSE_EC2_CRV_LABEL, WEBPKI_2_COSE_CRV.get(keyAlg))
-                             .setBytes(COSE_EC2_X_LABEL,
-                                            curvePoint(ecPoint.getAffineX(), keyAlg))
-                             .setBytes(COSE_EC2_Y_LABEL,
-                                            curvePoint(ecPoint.getAffineY(), keyAlg));
+                             .setBytes(COSE_EC2_X_LABEL, curvePoint(ecPoint.getAffineX(), keyAlg))
+                             .setBytes(COSE_EC2_Y_LABEL, curvePoint(ecPoint.getAffineY(), keyAlg));
                 break;
      
             default:  // EDDSA and XEC
                 cosePublicKey.setObject(COSE_KTY_LABEL, COSE_OKP_KTY)
                              .setObject(COSE_OKP_CRV_LABEL, WEBPKI_2_COSE_CRV.get(keyAlg))
                              .setBytes(COSE_OKP_X_LABEL,
-                                            OkpSupport.public2RawKey(jcePublicKey, keyAlg));
+                                       OkpSupport.public2RawKey(jcePublicKey, keyAlg));
         }
         return cosePublicKey;
     }

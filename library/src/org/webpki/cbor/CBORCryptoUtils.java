@@ -259,8 +259,7 @@ public class CBORCryptoUtils {
         if (keyEncryptionAlgorithm.isKeyWrap()) {
             // Encrypted key
             keyEncryption.setObject(CIPHER_TEXT_LABEL,
-                                    new CBORBytes(
-                                        asymmetricEncryptionResult.getEncryptedKey()));
+                                    new CBORBytes(asymmetricEncryptionResult.getEncryptedKey()));
         }
         return asymmetricEncryptionResult.getContentEncryptionKey();
     }
