@@ -5,8 +5,9 @@ This package contains Java support for CBOR
 <h3 id='supported-primitives'>Supported Primitives</h3>
 The following table shows the currently supported CBOR
 primitives and their mapping to Java:
-<table class='webpkitable' style='margin:0.8em 1em 0 2em'>
-<tr><th>CBOR Data Type</th><th>Notes</th><th>Java&nbsp;Mapping</th>
+<div style='overflow-x:auto;padding-right:1em'>
+<table class='webpkitable' style='margin:0.8em 0 0 2em'>
+<tr><th>CBOR&nbsp;Primitive</th><th>Notes</th><th>Java&nbsp;Mapping</th>
 <th>Implementation</th></tr>
 <tr><td><code>integer</code></td><td>1</td><td><code>long</code></td><td>{@link CBORInteger}</td></tr>
 <tr><td><code>big&nbsp;integer</code></td><td>1, 2</td><td><code>BigInteger</code></td><td>{@link CBORBigInteger}</td></tr>
@@ -17,6 +18,7 @@ primitives and their mapping to Java:
 <tr><td><code>false</code></td><td></td><td><code>boolean</code></td><td>{@link CBORBoolean}</td></tr>
 <tr><td><code>null</code></td><td></td><td><code>null</code></td><td>{@link CBORNull}</td></tr>
 </table>
+</div>
 <p>1] The distinction between unsigned and negative values is dealt with automatically.<br>
 2] <code>big&nbsp;integer</code> is in this implementation identical to "<code>Bignums</code>" in the RFC.<br>
 3] Floating point data covers the 16, 32, and 64-bit IEEE&nbsp;754 variants.</p>
@@ -25,9 +27,8 @@ In addition to the primitives above, this implementation also supports
 arbitrary tagged objects based on CBOR major type 6 ({@link CBORTag}).
 </p>
 <h3 id='deterministic-serialization'>Deterministic Serialization</h3>
-This package is also intended to be used for security related
-applications where "raw" CBOR data is subjected to cryptographic operations
-like hashing and signatures.
+In some security related applications, "raw" CBOR data is subjected
+to cryptographic operations like hashing and signatures.
 To make this possible without additional processing,
 data must be in a stable form "on&nbsp;the&nbsp;wire".
 This can either be achieved by using the binary "as&nbsp;is", or through
@@ -41,15 +42,22 @@ It is in this context worth noting that XML and JSON do not support
 deterministic serialization.
 </div>
 <div id='standards-proposal' class='webpkicomment' style='margin:1.5em 0'>
-Although APIs may be quite different,
+Although APIs may be quite different compared to the API of this package,
 the deterministic serialization scheme described here
-is intended as a <i>standard</i>,
-not in any way limited to the Java platform.
+is intended as a <i>standard</i>, not limited to specific platforms.
 </div>
 <div id='adoption-criterion'>
 To facilitate mainstream adoption, the serialization scheme is
 deliberately rather conservative, and should with
 moderate efforts work with most existing CBOR encoders and decoders.
+In fact, having a <i>single</i> way of representing CBOR data should
+simplify both implementations and associated testing.
+The serialization scheme has been verified to also be usable in highly
+constrained systems, albeit requiring detailed knowledge of how
+the specific tools deal with CBOR objects. Note that
+there is no requirement to support all CBOR primitives,
+it is sufficient that those that actually are supported,
+conform to this specification.
 </div>
 <div style='margin-top:0.8em'>
 The serialization scheme adheres to section 4.2 of RFC&nbsp;8949, but adds
@@ -63,7 +71,8 @@ The serialization rules are as follows:
 type if the value is between -2^64 and 2^64-1, otherwise the
 <code>big&nbsp;integer</code> type <b>must</b> be used.
 The following table holds a few sample values and their proper CBOR encoding:
-<table class='webpkitable' style='margin:0.8em 1em 0.7em 2em'>
+<div style='overflow-x:auto;padding-right:1em'>
+<table class='webpkitable' style='margin:0.8em 0 0.7em 2em'>
 <tr><th>Value</th><th>Encoding</th></tr>
 <tr style='text-align:right'><td><code>0</code></td><td><code>00</code></td></tr>
 <tr style='text-align:right'><td><code>-1</code></td><td><code>20</code></td></tr>
@@ -75,6 +84,7 @@ The following table holds a few sample values and their proper CBOR encoding:
 <tr style='text-align:right'><td><code>18446744073709551615</code></td><td><code>1bffffffffffffffff</code></td></tr>
 <tr style='text-align:right'><td><code>18446744073709551616</code></td><td><code>c249010000000000000000</code></td></tr>
 </table>
+</div>
 Note that integers <b>must not</b> be supplied with 
 <i>leading zero bytes</i> (like <code>1900ff</code>) unless the
 CBOR representation offers no alternative (like <code>1b000000ffffffffff</code>).
@@ -91,7 +101,8 @@ would actually yield two bytes less using the <code>big&nbsp;integer</code> type
   variant and associated CBOR encoding.
 The following table holds floating point values needing special considerations
 as well as a small set of "edge&nbsp;cases":
-<table class='webpkitable' style='margin:0.8em 1em 0.7em 2em'>
+<div style='overflow-x:auto;padding-right:1em'>
+<table class='webpkitable' style='margin:0.8em 0 0.7em 2em'>
 <tr><th>Value</th><th>Encoding</th></tr>
 <tr style='text-align:right'><td><code>0.0</code></td><td><code>f90000</code></td></tr>
 <tr style='text-align:right'><td><code>-0.0</code></td><td><code>f98000</code></td></tr>
@@ -111,6 +122,7 @@ as well as a small set of "edge&nbsp;cases":
 <tr style='text-align:right'><td><code>5.0e-324</code></td><td><code>fb0000000000000001</code></td></tr>
 <tr style='text-align:right'><td><code>-1.7976931348623157e+308</code></td><td><code>fbffefffffffffffff</code></td></tr>
 </table>
+</div>
 <div>
 Note that <code>NaN</code> "signaling" (like <code>f97e01</code>),
 <b>must</b> be flagged as an <i>error</i>.
@@ -143,7 +155,7 @@ exceptions using the standard decoder
 {@link CBORObject#decode(inputStream, boolean, boolean, boolean, Integer) CBOR decoding options}.
 <p>
 On output ({@link CBORObject#encode()})
-deterministic serialization is always used
+deterministic serialization is always performed
 regardless of if CBOR data was parsed or created programmatically.
 </p>
 <div id='map-key-constraints' class='webpkicomment' style='margin-bottom:0.3em'>
@@ -161,13 +173,16 @@ During {@link CBORObject#decode(byte[])}, CBOR data is checked for
 well-formedness as well as by default, adhering to the determinism scheme.
 </p>
 <p>
-After successful decoding, the CBOR data is available as a tree of nodes.
-For extracting the actual data in Java format, access methods such as 
+After successful decoding, the CBOR data is provided as a tree of nodes.
+For extracting the data of CBOR primitives in a Java compatible way,
+access methods such as 
 {@link CBORObject#getInt()} and {@link CBORObject#getString()}
 must be used.
-If the tree holds structured CBOR objects, these must be accessed
+Structured CBOR objects must be accessed
 through methods such as {@link CBORObject#getMap()} and
-{@link CBORObject#getArray()}.
+{@link CBORObject#getArray()},
+returning container objects which in turn facilitate
+access to individual CBOR objects of the structure.
 </p>
 <p>
 If the underlying CBOR data type does not match the access method
