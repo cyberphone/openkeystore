@@ -149,10 +149,11 @@ represent the distinct keys
 <code>f90000</code>, <code>f98000</code>, and <code>00</code> respectively.
 </li>
 </ul>
-Any deviation from the rules above will throw
-exceptions using the standard decoder
-({@link CBORObject#decode(byte[])}).  See also
-{@link CBORObject#decode(inputStream, boolean, boolean, boolean, Integer) CBOR decoding options}.
+Any deviation from the rules above will throw exceptions using the standard decoder
+({@link CBORObject#decode(byte[])}).
+For more control of the decoding process including dealing with CBOR sequences, see:
+{@link CBORObject#decode(inputStream, boolean, boolean, boolean, Integer)
+CBOR&nbsp;decoding&nbsp;options}.
 <p>
 On output ({@link CBORObject#encode()})
 deterministic serialization is always performed
