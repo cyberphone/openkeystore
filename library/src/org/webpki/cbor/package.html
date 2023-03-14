@@ -47,16 +47,16 @@ the deterministic serialization scheme described here
 is intended as a <i>standard</i>, not limited to specific platforms.
 </div>
 <div id='adoption-criterion'>
-To facilitate mainstream adoption, the serialization scheme is
-aligned with current best practices, and should with moderate
-efforts work with most existing CBOR encoders and decoders.
-As a long term goal, having a <i>single</i> way of representing
-CBOR data should simplify both implementations and associated testing.
+To facilitate mainstream adoption, the serialization scheme is aligned with
+current best practices for serializing CBOR primitives and should
+with moderate efforts work with most existing CBOR encoders and decoders.
+In fact, having a <i>single</i> way of representing CBOR data
+should simplify both implementations and associated testing.
 The serialization scheme has been verified to also be usable in highly
 constrained systems, albeit requiring detailed knowledge of how
-a specific tool addresses serialization of CBOR objects. Note that
-there is no requirement to support all CBOR primitives,
-it is sufficient that those that actually are supported,
+a specific tool addresses serialization of CBOR objects.
+Note that a compliant implementation does not have to support all CBOR primitives,
+it is sufficient that the ones that actually are used by the associated applications,
 conform to this specification.
 </div>
 <div style='margin-top:0.8em'>
