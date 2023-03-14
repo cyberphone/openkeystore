@@ -7,7 +7,7 @@ signatures using a specific scheme called
 <p>
 Note that unlike COSE 
 [<a href='https://datatracker.ietf.org/doc/html/rfc8152'>RFC&nbsp;8152</a>], CSF
-leverages <i>deterministic serialization</i>,
+leverages <a href='../package-summary.html#deterministic-serialization'>deterministic&nbsp;serialization</a>,
 enabling constructs like the following:
 </p>
 <div class='webpkibox'>
@@ -69,6 +69,7 @@ Signatures <b>must</b> for compatibility with CSF,
 be provided as a CBOR <code>map</code> having a fixed set of labels 
 according to the following table:
 </p>
+<div style='overflow-x:auto;padding-right:1em'>
 <table class='webpkitable'>
 <tr><th>Label</th><th>Name</th><th>Argument</th><th>Function</th></tr>
 
@@ -101,6 +102,7 @@ Signature objects <b>must not</b> contain both <code>certificatePath</code> and 
 <td><code>byte&nbsp;string</code></td><td>Signature value.
 </td></tr>
 </table>
+</div>
 <p>
 CSF signatures are validated by running the signature validation 
 algorithm over the CBOR binary representation of
@@ -110,15 +112,15 @@ its associated argument as the sole exception. Note that the length
 of the signature object <code>map</code> <b>must</b>
 be updated (to reflect the removal of an element) during validation.</p>
 <p>
-The sample was signed using the following private key (here in JWK format):
+The sample was signed using the following COSE private key (here in diagnostic notation):
 </p>
 <div class='webpkibox'>
 {<br>
-&nbsp;&nbsp;&quot;kty&quot;:&nbsp;&quot;EC&quot;,<br>
-&nbsp;&nbsp;&quot;crv&quot;:&nbsp;&quot;P-256&quot;,<br>
-&nbsp;&nbsp;&quot;x&quot;:&nbsp;&quot;6BKxpty8cI-exDzCkh-goU6dXq3MbcY0cd1LaAxiNrU&quot;,<br>
-&nbsp;&nbsp;&quot;y&quot;:&nbsp;&quot;mCbcvUzm44j3Lt2b5BPyQloQ91tf2D2V-gzeUxWaUdg&quot;,<br>
-&nbsp;&nbsp;&quot;d&quot;:&nbsp;&quot;6XxMFXhcYT5QN9w5TIg2aSKsbcj-pj4BnZkK7ZOt4B8&quot;<br>
+&nbsp;&nbsp;1:&nbsp;2,<br>
+&nbsp;&nbsp;-1:&nbsp;1,<br>
+&nbsp;&nbsp;-2:&nbsp;h'e812b1a6dcbc708f9ec43cc2921fa0a14e9d5eadcc6dc63471dd4b680c6236b5',<br>
+&nbsp;&nbsp;-3:&nbsp;h'9826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d8',<br>
+&nbsp;&nbsp;-4:&nbsp;h'e97c4c15785c613e5037dc394c88366922ac6dc8fea63e019d990aed93ade01f'<br>
 }
 </div>
 <h3 style='padding:1em 0 0 0'>Tagged and Custom Signature Data</h3>

@@ -335,6 +335,27 @@ public abstract class CBORObject {
     }
     
     /**
+     * Returns a fixed-length <code>array</code> object.
+     * <p>
+     * This method requires that the object is a
+     * {@link CBORArray} as well as holding
+     * <code>requiredLength</code> number of elements, 
+     * otherwise an exception will be thrown.
+     * </p>
+     * 
+     * @param requiredLength Required number of elements
+     * @return Array object
+     * @throws IOException
+     */
+    public CBORArray getArray(int requiredLength) throws IOException {
+        CBORArray cborArray = getArray();
+        if (cborArray.size() != requiredLength) {
+            reportError(STDERR_ARRAY_LENGTH);
+        }
+        return cborArray;
+    }
+    
+    /**
      * Returns tag object.
      * <p>
      * This method requires that the object is a
@@ -634,9 +655,8 @@ public abstract class CBORObject {
                 case MT_TAG:
                     CBORObject tagData = getObject();
                     if (n == CBORTag.RESERVED_TAG_COTX) {
-                        CBORArray holder = tagData.getArray();
-                        if (holder.size() != 2 ||
-                            holder.getObject(0).getType() != CBORTypes.TEXT_STRING) {
+                        CBORArray holder = tagData.getArray(2);
+                        if (holder.getObject(0).getType() != CBORTypes.TEXT_STRING) {
                             CBORObject.reportError("Tag syntax " +  CBORTag.RESERVED_TAG_COTX +
                                                    "([\"string\", CBOR object]) expected");
                         }
@@ -845,5 +865,8 @@ public abstract class CBORObject {
     
     static final String STDERR_ARGUMENT_IS_NULL =
             "Argument \"null\" is not permitted";
+
+    static final String STDERR_ARRAY_LENGTH =
+            "Array length does not march request";
 
 }
