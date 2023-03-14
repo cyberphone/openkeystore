@@ -48,13 +48,13 @@ is intended as a <i>standard</i>, not limited to specific platforms.
 </div>
 <div id='adoption-criterion'>
 To facilitate mainstream adoption, the serialization scheme is
-deliberately rather conservative, and should with
-moderate efforts work with most existing CBOR encoders and decoders.
-In fact, having a <i>single</i> way of representing CBOR data should
-simplify both implementations and associated testing.
+aligned with current best practices, and should with moderate
+efforts work with most existing CBOR encoders and decoders.
+As a long term goal, having a <i>single</i> way of representing
+CBOR data should simplify both implementations and associated testing.
 The serialization scheme has been verified to also be usable in highly
 constrained systems, albeit requiring detailed knowledge of how
-the specific tools deal with CBOR objects. Note that
+a specific tool addresses serialization of CBOR objects. Note that
 there is no requirement to support all CBOR primitives,
 it is sufficient that those that actually are supported,
 conform to this specification.
