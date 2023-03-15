@@ -441,7 +441,7 @@ public abstract class CBORObject {
                                 "Tagged object " +
                                 Long.toUnsignedString(((CBORTag)holderObject).tagNumber) : 
                                 "Map key " + holderObject.toString() + " with argument") +                    
-                            " of type=" + getClass().getSimpleName() + 
+                            " of type=" + getType() + 
                             " with value=" + toString() + " was never read");
             }
         } else {
