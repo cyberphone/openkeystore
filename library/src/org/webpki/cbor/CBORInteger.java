@@ -16,10 +16,7 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
 import java.math.BigInteger;
-
-import org.webpki.json.JSONObjectWriter;
 
 /**
  * Class for holding CBOR <code>integer</code>.
@@ -109,17 +106,17 @@ public class CBORInteger extends CBORObject {
     }
 
     /**
-     * Creates a 53 bit <code>integer</code>.
+     * Creates a JavaScript compatible integer.
      * <p>
-     * Creates an <code>integer</code> that is compatible with
+     * Creates an integer that is compatible with
      * the JavaScript <code>Number</code> type which is limited
-     * to 2^53.
+     * to &pm;2^53. A value outside of this range throws an exception.
      * </p>
      * <p>
      * See {@link CBORObject#getInt53()}.
      * </p>
      * 
-     * @param value Signed 53-bit long
+     * @param value Signed long
      * @return CBORInteger
      * @throws IllegalArgumentException
      */

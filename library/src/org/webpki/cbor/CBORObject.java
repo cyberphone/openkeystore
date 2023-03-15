@@ -230,17 +230,17 @@ public abstract class CBORObject {
     }
 
     /**
-     * Returns JavaScript compatible <code>long</code> value.
+     * Returns JavaScript compatible integer value.
      * <p>
      * This method requires that the object is a
-     * {@link CBORInteger} and fits a JavaScript <code>Number</code>, 
-     * otherwise an exception will be thrown.
+     * {@link CBORInteger} and fits a JavaScript <code>Number</code> 
+     * (&pm;2^53), otherwise an exception will be thrown.
      * </p>
      * <p>
      * See {@link CBORInteger#createInt53(long)}.
      * </p>
      * 
-     * @return Signed 53-bit long
+     * @return Signed long
      * @throws IOException
      * @throws IllegalArgumentException
      */
