@@ -170,7 +170,7 @@ public abstract class CBORObject {
     }
 
     /**
-     * Returns <code>long</code> value.
+     * Returns Java <code>long</code> value.
       * <p>
      * This method requires that the object is a
      * {@link CBORInteger} and fits a Java (<i>signed</i>) long, 
@@ -191,14 +191,14 @@ public abstract class CBORObject {
     }
 
     /**
-     * Returns <i>unsigned</i> <code>long</code> value.
+     * Returns Jave <i>unsigned</i> <code>long</code> value.
       * <p>
      * This method requires that the object is an unsigned
-     * {@link CBORInteger} and fits a Java long (sign bit is used as well),
+     * {@link CBORInteger} and fits a Java <code>long</code> (sign bit is used as well),
      * otherwise an exception will be thrown.
      * </p>
      * 
-     * @return Long
+     * @return Java <code>long</code>
      * @throws IOException
      */
     public long getUnsignedLong() throws IOException {
@@ -210,15 +210,15 @@ public abstract class CBORObject {
     }
 
     /**
-     * Returns <code>integer</code> value.
+     * Returns Java <code>int</code> value.
      * <p>
      * This method requires that the object is a
-     * {@link CBORInteger} and fits a Java (<i>signed</i>) int, 
+     * {@link CBORInteger} and fits a Java (<i>signed</i>) <code>int</code>, 
      * otherwise an exception will be thrown.
      * </p>
      * Also see {@link #getBigInteger()}.
      * 
-     * @return Integer
+     * @return Java <code>int</code>
      * @throws IOException
      */
     public int getInt() throws IOException {
@@ -229,6 +229,25 @@ public abstract class CBORObject {
         return (int)value;
     }
 
+    /**
+     * Returns JavaScript compatible <code>long</code> value.
+     * <p>
+     * This method requires that the object is a
+     * {@link CBORInteger} and fits a JavaScript <code>Number</code>, 
+     * otherwise an exception will be thrown.
+     * </p>
+     * <p>
+     * See {@link CBORInteger#createInt53(long)}.
+     * </p>
+     * 
+     * @return Signed 53-bit long
+     * @throws IOException
+     * @throws IllegalArgumentException
+     */
+    public long getInt53() throws IOException {
+        return CBORInteger.checkInt53(getLong());
+    }
+    
     /**
      * Returns <code>double</code> value.
      * <p>

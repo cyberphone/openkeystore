@@ -1841,14 +1841,19 @@ public class CBORTest {
         return serializeJson(new String[] {jsonToken});
     }
     
-    private void conversionError(String badJson) throws Exception {
+    private void conversionError(String badJson, boolean mustFail) throws Exception {
         try {
             CBORFromJSON.convert(badJson);
-            fail("Should fail on: " + badJson);
+            assertFalse("Should fail on: " + badJson, mustFail);
         } catch (Exception e) {
+            assertTrue("Should not fail on: " + badJson, mustFail);
         }
     }
 
+    private void conversionError(String badJson) throws Exception {
+        conversionError(badJson, true);
+    }
+    
     @Test
     public void cborSequences() throws Exception {
         byte[] totalBytes = HexaDecimal.decode("00A104F58105A1056464617461");
@@ -1930,11 +1935,15 @@ public class CBORTest {
         conversionError("[");
         conversionError("[] 6");
         conversionError("9007199254740993");
+        conversionError("-9007199254740993");
         conversionError("[6,]");
         conversionError("{6:8}");
         conversionError("{\"6\":8,}");
         conversionError("{\"6\",8}");
         conversionError("{} 6");
+        conversionError("18446744073709551615");
+        conversionError("9007199254740992", false);
+        conversionError("-9007199254740992", false);
     }
     
     @Test

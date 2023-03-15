@@ -29,9 +29,6 @@ public class CBORFromJSON {
     char[] json;
     int index;
 
-    // 2^53 ("53-bit precision")
-    static final long MAX_JSON_INTEGER = 9007199254740992l;
-
     CBORFromJSON(String json) {
         this.json = json.toCharArray();
     }
@@ -192,11 +189,7 @@ public class CBORFromJSON {
             c = nextChar();
         } while ((c >= '0' && c <= '9') || c == '.');
         try {
-            long value = Long.valueOf(token.toString());
-            if (Math.abs(value) > MAX_JSON_INTEGER) {
-                reportError("JSON integer exceeded 2^53");
-            }
-            return new CBORInteger(value);
+            return CBORInteger.createInt53(Long.valueOf(token.toString()));
         } catch (IllegalArgumentException e) {
             reportError(e.getMessage());
         }

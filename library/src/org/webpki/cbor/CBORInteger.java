@@ -16,7 +16,10 @@
  */
 package org.webpki.cbor;
 
+import java.io.IOException;
 import java.math.BigInteger;
+
+import org.webpki.json.JSONObjectWriter;
 
 /**
  * Class for holding CBOR <code>integer</code>.
@@ -30,7 +33,9 @@ public class CBORInteger extends CBORObject {
     static final byte[] NEGATIVE_INTEGER_TAG = {(byte)MT_NEGATIVE};
     
     static final BigInteger LONG_SIGN_BIT = new BigInteger("9223372036854775808");
-    static final long LONG_UNSIGNED_PART = 0x7fffffffffffffffl;
+    static final long LONG_UNSIGNED_PART  = 0x7fffffffffffffffl;
+    
+    static final long MAX_JS_INTEGER      = 0x0020000000000000l; // 2^53 ("53-bit precision")
 
     long value;
     boolean unsigned;
@@ -54,7 +59,14 @@ public class CBORInteger extends CBORObject {
      * A special case is the value <code>0xffffffffffffffffL</code>
      * (long <code>-1</code>), which corresponds to <code>-2^64</code>.
      * </p>
-     * See {@link CBORInteger(long)} and {@link CBORBigInteger#CBORBigInteger(BigInteger)}.
+     * <div class='webpkicomment'>
+     * Applications that are intended to work with multiple platforms
+     * <b>should&nbsp;not</b> exploit {@link CBORInteger} numbers outside of
+     * the 64-bit unsigned and 64-bit signed ranges.
+     * </div>
+     * <p>
+     * See {@link CBORBigInteger#CBORBigInteger(BigInteger)}.
+     * </p>
      *
      * @param value long value
      * @param unsigned <code>true</code> if value should be considered as unsigned
@@ -84,9 +96,37 @@ public class CBORInteger extends CBORObject {
 
     @Override
     public byte[] encode() {
-       return encodeTagAndN(unsigned ? MT_UNSIGNED : MT_NEGATIVE, value);
+        return encodeTagAndN(unsigned ? MT_UNSIGNED : MT_NEGATIVE, value);
     }
 
+    static long checkInt53(long value) {
+        if (Math.abs(value) > MAX_JS_INTEGER) {
+            throw new IllegalArgumentException(STDERR_INT53_OUT_OF_RANGE +
+                    MAX_JS_INTEGER +
+                    "), found: " + value);
+        }
+        return value;
+    }
+
+    /**
+     * Creates a 53 bit <code>integer</code>.
+     * <p>
+     * Creates an <code>integer</code> that is compatible with
+     * the JavaScript <code>Number</code> type which is limited
+     * to 2^53.
+     * </p>
+     * <p>
+     * See {@link CBORObject#getInt53()}.
+     * </p>
+     * 
+     * @param value Signed 53-bit long
+     * @return CBORInteger
+     * @throws IllegalArgumentException
+     */
+    public static CBORInteger createInt53(long value) {
+        return new CBORInteger(checkInt53(value));
+    }
+    
     BigInteger toBigInteger() {
         // "int65", really?!
         BigInteger bigInteger = BigInteger.valueOf(value & LONG_UNSIGNED_PART);
@@ -100,4 +140,8 @@ public class CBORInteger extends CBORObject {
     void internalToString(CBORObject.DiagnosticNotation cborPrinter) {
         cborPrinter.append(toBigInteger().toString());
     }
+    
+    static final String STDERR_INT53_OUT_OF_RANGE =
+            "Int53 values must not exceeed abs(";
+
 }
