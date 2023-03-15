@@ -62,7 +62,7 @@ public class CBORInteger extends CBORObject {
      * the 64-bit unsigned and 64-bit signed ranges.
      * </div>
      * <p>
-     * See {@link CBORBigInteger#CBORBigInteger(BigInteger)}.
+     * See {@link CBORBigInteger}.
      * </p>
      *
      * @param value long value
