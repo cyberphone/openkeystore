@@ -62,10 +62,11 @@ public class CBORInteger extends CBORObject {
      * Applications that are intended to work with multiple platforms
      * <b>should&nbsp;not</b> exploit {@link CBORInteger} numbers outside of
      * the 64-bit unsigned and 64-bit signed ranges.
+     * Applications needing the extended range <b>should</b> preferably 
+     * declare associated protocol items as {@link CBORBigInteger} compatible,
+     * although some numbers would use the 65-bit scheme to adhere with
+     * CBOR integer encoding rules.
      * </div>
-     * <p>
-     * See {@link CBORBigInteger}.
-     * </p>
      *
      * @param value long value
      * @param unsigned <code>true</code> if value should be considered as unsigned
