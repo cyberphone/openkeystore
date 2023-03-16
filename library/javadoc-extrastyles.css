@@ -1,9 +1,27 @@
 
-.webpkitable {border-collapse:collapse;box-shadow:0.2em 0.2em 0.2em #d0d0d0;margin:0.6em 0 0 0}
-.webpkitable td {background-color: #fffdf2;padding: 0.4em 0.5em;border-width: 1px;border-style: solid; border-color: black}
-.webpkitable th {padding: 0.4em 0.5em;background-color: #f8f8f8;text-align: center;border-width: 1px;border-style: solid; border-color: black}
+.webpkitable {
+  display: inline-block;
+  border-collapse: collapse;
+  box-shadow: 0.2em 0.2em 0.2em #d0d0d0;
+  margin: 0 1em 1em 0;
+}
+.webpkitable td {
+  background-color: #fffdf2;
+  padding: 0.4em 0.5em;
+  border-width: 1px;
+  border-style: solid;
+  border-color: black;
+}
+.webpkitable th {
+  padding: 0.4em 0.5em;
+  background-color: #f8f8f8;
+  text-align: center;
+  border-width: 1px;
+  border-style: solid;
+  border-color: black;
+}
 
-.webpkisvg, .webpkibox, .webpkicomment  {
+.webpkisvg, .webpkibox, .webpkicomment, .webpkihexbox  {
   box-shadow: 0.2em 0.2em 0.2em #d0d0d0;
   border-width: 1px;
   border-style: solid;
@@ -24,10 +42,23 @@
   display: inline-block;
 }
 
-.webpkibox {
+.webpkibox, .webpkihexbox {
   padding: 0.8em 1em;
-  word-break: break-all;
   font-family: "Noto Mono",monospace;
+  margin:0 1em 1em 0;
+}
+
+.webpkibox {
+  display: inline-block;
+  white-space: nowrap;
+ }
+
+.webpkifloat {
+  overflow-x: auto;
+}
+
+.webpkihexbox {
+  word-break: break-all;
 }
 
 .webpkicode {

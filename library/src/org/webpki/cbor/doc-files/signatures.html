@@ -10,6 +10,7 @@ Note that unlike COSE
 leverages <a href='../package-summary.html#deterministic-serialization'>deterministic&nbsp;serialization</a>,
 enabling constructs like the following:
 </p>
+<div class='webpkifloat'>
 <div class='webpkibox'>
 {<br>
 &nbsp;&nbsp;1: {<br>
@@ -46,10 +47,11 @@ enabling constructs like the following:
 &nbsp;&nbsp;}<br>
 }
 </div>
+</div>
 <p>
 The same object expressed as hex-encoded CBOR:
 </p>
-<div class='webpkibox'>
+<div class='webpkihexbox'>
 a801a3016a53706163652053686f7002663433352e30300363555344026d737061636573686f702e636f6d03781b465237363330303032313131313130303230303530303134333832047468747470733a2f2f62616e6b6e6574322e6f726705683035373638343031067819323032322d30392d32395430393a33343a30382d30353a303007a201fb404371b089a0275202fb405341460aa64c3020a3012604a401022001215820e812b1a6dcbc708f9ec43cc2921fa0a14e9d5eadcc6dc63471dd4b680c6236b52258209826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d80658405f21112b9f5c1a93743409596421e673f88e59cf34610d53a7cd00f4017327c8f603ea7344a9286db26c52c2a661dff6e4fabc0f2384fe7d1de6c0a23a3f5c21
 </div>
 <p>
@@ -69,9 +71,9 @@ Signatures <b>must</b> for compatibility with CSF,
 be provided as a CBOR <code>map</code> having a fixed set of labels 
 according to the following table:
 </p>
-<div style='overflow-x:auto;padding-right:1em'>
+<div class='webpkifloat'>
 <table class='webpkitable'>
-<tr><th>Label</th><th>Name</th><th>Argument</th><th>Function</th></tr>
+<tr><th>Label</th><th>Name</th><th>Argument</th><th style='min-width:30em'>Description</th></tr>
 
 <tr><td style='text-align:center'><code>1</code></td><td><code>algorithm</code></td>
 <td><code>integer</code></td><td>Signature algorithm using COSE identifiers.
@@ -114,6 +116,7 @@ be updated (to reflect the removal of an element) during validation.</p>
 <p>
 The sample was signed using the following COSE private key (here in diagnostic notation):
 </p>
+<div class='webpkifloat'>
 <div class='webpkibox'>
 {<br>
 &nbsp;&nbsp;1:&nbsp;2,<br>
@@ -123,11 +126,12 @@ The sample was signed using the following COSE private key (here in diagnostic n
 &nbsp;&nbsp;-4:&nbsp;h'e97c4c15785c613e5037dc394c88366922ac6dc8fea63e019d990aed93ade01f'<br>
 }
 </div>
-<h3 style='padding:1em 0 0 0'>Tagged and Custom Signature Data</h3>
+</div>
+<h3>Tagged and Custom Signature Data</h3>
 The CSF container can be enhanced through a couple of options
 described in <a href='crypto-options.html'>crypto options</a>.
 Such options are included in the data to be signed.
-<h3 style='padding:1em 0 0 0'>Signature Algorithms</h3>
+<h3>Signature Algorithms</h3>
 <p id='csf-algorithms'>
 Currently supported signature algorithms:
 </p>
@@ -154,7 +158,7 @@ In current FIDO alliance specifications the COSE <code>EdDSA</code> algorithm id
 therefore been redefined to rather mean EdDSA with an Ed25519 key which is also what CSF follows.
 PKIX' RFC&nbsp;8410 makes the same distinction.</p>
 <p>[2] CSF extends the scheme used for <code>Ed25519</code> to <code>Ed448</code> as well.</p>
-<h3 style='padding:1em 0 0 0'>Test Vectors</h3>
+<h3>Test Vectors</h3>
 An extensive set of test vectors is currently available at: 
 <a href='https://github.com/cyberphone/openkeystore/tree/master/testdata/cbor-encryption'>
 https://github.com/cyberphone/openkeystore/tree/master/testdata/cbor-signatures
