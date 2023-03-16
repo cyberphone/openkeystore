@@ -20,9 +20,10 @@ import java.math.BigInteger;
 
 /**
  * Class for holding CBOR <code>integer</code>.
- * 
+ * <p>
  * Note that the encoder is adaptive, selecting the shortest possible
  * representation in order to produce a fully deterministic result.
+ * </p>
  */
 public class CBORInteger extends CBORObject {
 
@@ -38,12 +39,13 @@ public class CBORInteger extends CBORObject {
     boolean unsigned;
     
     /**
-     * Create a CBOR <code>unsigned&nbsp;integer</code> or <code>negative&nbsp;integer</code>.
-     * 
+     * Creates a CBOR unsigned or negative <code>integer</code>.
+     * <p>
      * To cope with the entire 65-bit integer span supported by CBOR
      * you must use this constructor.  Unsigned integers
      * range from <code>0</code> to <code>2^64-1</code>,
      * while negative integers range from <code>-1</code> to <code>-2^64</code>.
+     * </p>
      * <p>
      * If the <code>unsigned</code> flag is set to <code>false</code>, 
      * this constructor assumes CBOR native encoding mode for negative integers.
@@ -74,7 +76,7 @@ public class CBORInteger extends CBORObject {
     }
 
     /**
-     * Creates a CBOR integer value from a Java long.
+     * Creates a CBOR signed <code>integer</code> value.
      * <p>
      * See {@link CBORInteger(long, boolean)} and 
      * {@link CBORBigInteger#CBORBigInteger(BigInteger)}.

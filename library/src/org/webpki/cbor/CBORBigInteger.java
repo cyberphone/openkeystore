@@ -22,9 +22,10 @@ import org.webpki.util.ArrayUtil;
 
 /**
  * Class for holding CBOR <code>big&nbsp;integer</code>.
- * 
+ * <p>
  * Note that the encoder is adaptive, selecting the shortest possible
  * representation in order to produce a fully deterministic result.
+ * </p>
  */
 public class CBORBigInteger extends CBORObject {
 
