@@ -26,10 +26,10 @@ public class CBORFloat16Test {
                     return;
                 }
                 double value = cbor.getDouble();
-                if (!cbor.equals(new CBORDouble(value))) {
+                if (!cbor.equals(new CBORFloatingPoint(value))) {
                     throw new RuntimeException("Diff for: " + value);
                 }
-                if (!cbor.equals(new CBORDouble(Double.valueOf(cbor.toString())))) {
+                if (!cbor.equals(new CBORFloatingPoint(Double.valueOf(cbor.toString())))) {
                     throw new RuntimeException("Diff2 for: " + value);
                 }
                 System.out.println("V=" + value + " D=" + org.webpki.util.HexaDecimal.encode(encoded));

@@ -37,7 +37,7 @@ import org.webpki.cbor.CBORX509Signer;
 import org.webpki.cbor.CBORX509Validator;
 import org.webpki.cbor.CBORAsymKeySigner;
 import org.webpki.cbor.CBORAsymKeyValidator;
-import org.webpki.cbor.CBORDouble;
+import org.webpki.cbor.CBORFloatingPoint;
 import org.webpki.cbor.CBORHmacSigner;
 import org.webpki.cbor.CBORHmacValidator;
 import org.webpki.cbor.CBORInteger;
@@ -471,8 +471,8 @@ public class CborSignatures {
                              .setObject(new CBORInteger(6), new CBORString("2022-09-29T09:34:08-05:00"))
                              .setObject(new CBORInteger(7),
                                         new CBORMap()
-                                            .setObject(new CBORInteger(1), new CBORDouble(38.8882))
-                                            .setObject(new CBORInteger(2), new CBORDouble(77.0199))))
+                                            .setObject(new CBORInteger(1), new CBORFloatingPoint(38.8882))
+                                            .setObject(new CBORInteger(2), new CBORFloatingPoint(77.0199))))
                 .encode();
         CBORAsymKeyValidator validator = new CBORAsymKeyValidator(keyPair.getPublic());
         boolean changed = true;

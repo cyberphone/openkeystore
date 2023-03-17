@@ -24,10 +24,10 @@ package org.webpki.cbor;
  * length to use is governed by the size and precision 
  * required to (minimally) correctly represent a number.
  * API-wise numbers are only communicated as
- * 64-bit items (Java double).
+ * 64-bit items (Java <code>double</code>).
  * </p>
  */
-public class CBORDouble extends CBORObject {
+public class CBORFloatingPoint extends CBORObject {
 
     double value;
     
@@ -39,10 +39,18 @@ public class CBORDouble extends CBORObject {
     
     /**
      * Creates a CBOR <code>floating point</code>.
+     * <p>
+     * Note that this implementation does not provide a specific constructor
+     * for Java <code>float</code> values.
+     * Due to the CBOR normalization algorithm, numbers are still correctly encoded.
+     * </p>
+     * <p>
+     * See {@link CBORObject#getDouble()} and {@link CBORObject#getFloat()}
+     * </p>
      * 
-     * @param value The double
+     * @param value Java double
      */
-    public CBORDouble(double value) {
+    public CBORFloatingPoint(double value) {
         this.value = value;
 
         // Initial assumption: the number is a plain vanilla 64-bit double.

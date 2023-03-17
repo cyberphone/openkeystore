@@ -16,8 +16,6 @@
  */
 package org.webpki.jose.jws;
 
-import java.io.IOException;
-
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.SecureRandom;
@@ -45,21 +43,13 @@ public class Benchmark {
         "  \"otherProperties\": [2000, true]\n" +
         "}";
     
-    static final byte[] SECRET_KEY;
-    
     static final String SIGNATURE_PROPERTY = "signature";
     
     static final int TURNS = 10000;
     
-    static {
-        try {
-            SECRET_KEY = HexaDecimal.decode(
+    static final byte[] SECRET_KEY = HexaDecimal.decode(
                     "7fdd851a3b9d2dafc5f0d00030e22b9343900cd42ede4948568a4a2ee655291a");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    
+
     public static void main(String[] argc) {
         try {
             JSONObjectReader json = JSONParser.parse(JSON_TO_BE_SIGNED);

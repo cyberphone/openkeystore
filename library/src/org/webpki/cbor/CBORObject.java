@@ -252,17 +252,37 @@ public abstract class CBORObject {
      * Returns <code>double</code> value.
      * <p>
      * This method requires that the object is a
-     * {@link CBORDouble}, otherwise an exception will be thrown.
+     * {@link CBORFloatingPoint}, otherwise an exception will be thrown.
      * </p>
      * 
-     * @return Double
+     * @return Java double
      * @throws IOException
      */
     public double getDouble() throws IOException {
         checkTypeAndMarkAsRead(CBORTypes.FLOATING_POINT);
-        return ((CBORDouble) this).value;
+        return ((CBORFloatingPoint) this).value;
     }
  
+    /**
+     * Returns <code>float</code> value.
+     * <p>
+     * This method requires that the object is a
+     * {@link CBORFloatingPoint} and fits in a Java float, 
+     * otherwise an exception will be thrown.
+     * </p>
+     * 
+     * @return Java float
+     * @throws IOException
+     */
+    public float getFloat() throws IOException {
+        checkTypeAndMarkAsRead(CBORTypes.FLOATING_POINT);
+        CBORFloatingPoint floatingPoint = (CBORFloatingPoint) this;
+        if (floatingPoint.tag == MT_FLOAT64) {
+            reportError(STDERR_FLOAT_RANGE);
+        }
+        return (float)floatingPoint.value;
+    }
+
     /**
      * Returns <code>boolean</code> value.
      * <p>
@@ -549,9 +569,9 @@ public abstract class CBORObject {
             return (int)n;
         }
 
-        private CBORDouble checkDoubleConversion(int tag, long bitFormat, long rawDouble)
+        private CBORFloatingPoint checkDoubleConversion(int tag, long bitFormat, long rawDouble)
                 throws IOException {
-            CBORDouble value = new CBORDouble(Double.longBitsToDouble(rawDouble));
+            CBORFloatingPoint value = new CBORFloatingPoint(Double.longBitsToDouble(rawDouble));
             if ((value.tag != tag || value.bitFormat != bitFormat) && deterministicMode) {
                 reportError(String.format(STDERR_NON_DETERMINISTIC_FLOAT + "%2x", tag & 0xff));
             }
@@ -887,5 +907,8 @@ public abstract class CBORObject {
 
     static final String STDERR_ARRAY_LENGTH =
             "Array length does not march request";
+
+    static final String STDERR_FLOAT_RANGE =
+            "Value out of range for\"float\"";
 
 }

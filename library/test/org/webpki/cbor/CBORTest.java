@@ -289,10 +289,10 @@ public class CBORTest {
         }
     }
     
-    void floatTest(String asText, String hex) {
-        floatTest(asText, hex, 0);
+    void doubleTest(String asText, String hex) {
+        doubleTest(asText, hex, 0);
     }
-    void floatTest(String asText, String hex, int mustFail) {
+    void doubleTest(String asText, String hex, int mustFail) {
         double v = Double.valueOf(asText);
         try {
             CBORObject cborObject = parseCborHex(hex);
@@ -302,6 +302,22 @@ public class CBORTest {
         } catch (Exception e) {
             assertTrue("Ok fail", mustFail != 0);
             checkException(e, CBORObject.STDERR_NON_DETERMINISTIC_FLOAT);
+        }
+    }
+    
+    void floatTest(String asText, String hex, boolean mustFail) throws IOException {
+        double v = Double.valueOf(asText);
+        CBORObject cborObject = parseCborHex(hex);
+        try {
+            float f = cborObject.getFloat();
+            assertFalse("Should fail", mustFail);
+            if (Float.isNaN(f) && Double.isNaN(v)) {
+                return;
+            }
+            assertTrue("Comp", v == f);
+        } catch (Exception e) {
+            assertTrue("Ok fail", mustFail);
+            checkException(e, CBORObject.STDERR_FLOAT_RANGE);
         }
     }
 
@@ -431,67 +447,72 @@ public class CBORTest {
         unsupportedTag("1C");
         
         // These numbers are supposed to be tie-breakers...
-        floatTest("10.55999755859375",          "FA4128F5C0");
-        floatTest("-1.401298464324817e-45",     "FA80000001");
-        floatTest("-9.183549615799121e-41",     "FA80010000");
-        floatTest("-1.8367099231598242e-40",    "FA80020000");
-        floatTest("-3.6734198463196485e-40",    "FA80040000");
-        floatTest("-7.346839692639297e-40",     "FA80080000");
-        floatTest("-1.4693679385278594e-39",    "FA80100000");
-        floatTest("-2.938735877055719e-39",     "FA80200000");
-        floatTest("-5.877471754111438e-39",     "FA80400000");
-        floatTest("-1.1754943508222875e-38",    "FA80800000");
-        floatTest("-5.9604644775390625e-8",     "F98001");
+        doubleTest("10.55999755859375",          "FA4128F5C0");
+        doubleTest("-1.401298464324817e-45",     "FA80000001");
+        doubleTest("-9.183549615799121e-41",     "FA80010000");
+        doubleTest("-1.8367099231598242e-40",    "FA80020000");
+        doubleTest("-3.6734198463196485e-40",    "FA80040000");
+        doubleTest("-7.346839692639297e-40",     "FA80080000");
+        doubleTest("-1.4693679385278594e-39",    "FA80100000");
+        doubleTest("-2.938735877055719e-39",     "FA80200000");
+        doubleTest("-5.877471754111438e-39",     "FA80400000");
+        doubleTest("-1.1754943508222875e-38",    "FA80800000");
+        doubleTest("-5.9604644775390625e-8",     "F98001");
 
-        floatTest("-2.9387358770557184e-39",    "FBB7EFFFFFFFFFFFFF");
-        floatTest("-2.9387358770557188e-39",    "FA80200000");
+        doubleTest("-2.9387358770557184e-39",    "FBB7EFFFFFFFFFFFFF");
+        doubleTest("-2.9387358770557188e-39",    "FA80200000");
 
-        floatTest("-5.8774717541114375e-39",    "FA80400000");
-        floatTest("-1.1754943508222875e-38",    "FA80800000");
-        floatTest("-3.1691265005705735e+29",    "FAF0800000");
-        floatTest("-2.076918743413931e+34",     "FAF8800000");
-        floatTest("-5.3169119831396635e+36",    "FAFC800000");
-        floatTest("-2.1267647932558654e+37",    "FAFD800000");
+        doubleTest("-5.8774717541114375e-39",    "FA80400000");
+        doubleTest("-1.1754943508222875e-38",    "FA80800000");
+        doubleTest("-3.1691265005705735e+29",    "FAF0800000");
+        doubleTest("-2.076918743413931e+34",     "FAF8800000");
+        doubleTest("-5.3169119831396635e+36",    "FAFC800000");
+        doubleTest("-2.1267647932558654e+37",    "FAFD800000");
         
-        floatTest("3.4028234663852886e+38",     "FA7F7FFFFF");
-        floatTest("3.4028234663852889e+38",     "FB47EFFFFFE0000001");
+        doubleTest("3.4028234663852886e+38",     "FA7F7FFFFF");
+        doubleTest("3.4028234663852889e+38",     "FB47EFFFFFE0000001");
 
-        floatTest("-8.507059173023462e+37",     "FAFE800000");
-        floatTest("-3.090948894593554e+30",     "FAF21C0D94");
-        floatTest("10.559999942779541",         "FB40251EB850000000");
-        floatTest("10.559998512268066",         "FA4128F5C1");
-        floatTest("1.0e+48",                    "FB49E5E531A0A1C873");
-        floatTest("18440.0",                    "FA46901000");
-        floatTest("18448.0",                    "F97481");
-        floatTest("3.0517578125e-5",            "F90200");
-        floatTest("3.057718276977539e-5",       "F90201");
-        floatTest("6.097555160522461e-5",       "F903FF");
-        floatTest("6.103515625e-5",             "F90400");
-        floatTest("3.0547380447387695e-5",      "FA38002000");
-        floatTest("3.0584633350372314e-5",      "FA38004800");
-        floatTest("5.9604644775390625e-8",      "F90001");
-        floatTest("5.960465188081798e-8",       "FA33800001");
-        floatTest("-5.9604644775390625e-8",     "F98001");
-        floatTest("-5.960465188081798e-8",      "FAB3800001");
-        floatTest("3.4028234663852886e+38",     "FA7F7FFFFF");
-        floatTest("3.402823466385289e+38",      "FB47EFFFFFE0000001");
-        floatTest("5.0e-324",                   "FB0000000000000001");
+        doubleTest("-8.507059173023462e+37",     "FAFE800000");
+        doubleTest("-3.090948894593554e+30",     "FAF21C0D94");
+        doubleTest("10.559999942779541",         "FB40251EB850000000");
+        doubleTest("10.559998512268066",         "FA4128F5C1");
+        doubleTest("1.0e+48",                    "FB49E5E531A0A1C873");
+        doubleTest("18440.0",                    "FA46901000");
+        doubleTest("18448.0",                    "F97481");
+        doubleTest("3.0517578125e-5",            "F90200");
+        doubleTest("3.057718276977539e-5",       "F90201");
+        doubleTest("6.097555160522461e-5",       "F903FF");
+        doubleTest("6.103515625e-5",             "F90400");
+        doubleTest("3.0547380447387695e-5",      "FA38002000");
+        doubleTest("3.0584633350372314e-5",      "FA38004800");
+        doubleTest("5.9604644775390625e-8",      "F90001");
+        doubleTest("5.960465188081798e-8",       "FA33800001");
+        doubleTest("-5.9604644775390625e-8",     "F98001");
+        doubleTest("-5.960465188081798e-8",      "FAB3800001");
+        doubleTest("3.4028234663852886e+38",     "FA7F7FFFFF");
+        doubleTest("3.402823466385289e+38",      "FB47EFFFFFE0000001");
+        doubleTest("5.0e-324",                   "FB0000000000000001");
         
-        floatTest("65504.0",                    "F97BFF");
-        floatTest("65504.00390625",             "FA477FE001");
-        floatTest("-65504.00390625",            "FAC77FE001");
-        floatTest("65505.0",                    "FA477FE100");
+        doubleTest("65504.0",                    "F97BFF");
+        doubleTest("65504.00390625",             "FA477FE001");
+        doubleTest("-65504.00390625",            "FAC77FE001");
+        doubleTest("65505.0",                    "FA477FE100");
 
-        floatTest("65536.0",                    "FA47800000");
-        floatTest("NaN",                        "F97E00");
-        floatTest("Infinity",                   "F97C00");
-        floatTest("-Infinity",                  "F9FC00");
-        floatTest("0.0",                        "F90000");
-        floatTest("-0.0",                       "F98000");
+        doubleTest("65536.0",                    "FA47800000");
+        doubleTest("NaN",                        "F97E00");
+        doubleTest("Infinity",                   "F97C00");
+        doubleTest("-Infinity",                  "F9FC00");
+        doubleTest("0.0",                        "F90000");
+        doubleTest("-0.0",                       "F98000");
         
-        floatTest("NaN",                        "FA80000000",           1);
-        floatTest("NaN",                        "FB8000000000000000",   1);
-        floatTest("65504.00390625",             "F97BFF",               2);
+        doubleTest("NaN",                        "FA80000000",           1);
+        doubleTest("NaN",                        "FB8000000000000000",   1);
+        doubleTest("65504.00390625",             "F97BFF",               2);
+        
+        floatTest("NaN",                    "F97E00",             false);
+        floatTest("0.0",                    "F90000",             false);
+        floatTest("3.4028234663852886e+38", "FA7F7FFFFF",         false);
+        floatTest("3.4028234663852889e+38", "FB47EFFFFFE0000001", true);
         
         assertTrue("Tag", new CBORTag(5, new CBORString("hi"))
                         .equals(parseCborHex("C5626869")));

@@ -4,7 +4,7 @@
   <property name="sks.implementation" value="org.webpki.sks.SKSReferenceImplementation"/>
   <property name="sks.debug" value="true"/>
   <property name="src_dir" value="src"/>
-  <property name="src_generators" value="generators"/>
+  <property name="src_generators" location="generators"/>
   <property name="src_test" value="test"/>
   <property name="dot_net_dir" value="sks-ws-dotnet"/>
   <property name="cpp_dir" value="sks-ws-cpp"/>
@@ -234,6 +234,15 @@
     <fixcrlf srcdir="${doc_dir}"
        eol="lf"
        includes="**/*.html, **/*.js, **/*.css, element-list"/>
+  	
+    <!-- HTML Doc task for CSF -->
+    <antcall target="_java2html">
+       <param name="doc.class" value="cbor_api_demo.SignatureDemo"/>
+       <param name="doc.file" value="${doc_dir}/org/webpki/cbor/doc-files/signatures.html"/>
+       <param name="file.base1" value="${src_generators}/cbor_api_demo/SignatureDemo.java"/>
+       <param name="file.base2" value=""/>
+       <param name="file.base3" value=""/>
+     </antcall>
   	<!-- HTML Doc task for KeyGen2 -->
     <antcall target="_java2html">
        <param name="doc.class" value="org.webpki.keygen2.KeyGen2HTMLReference"/>

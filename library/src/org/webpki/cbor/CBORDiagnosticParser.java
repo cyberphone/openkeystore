@@ -194,7 +194,7 @@ public class CBORDiagnosticParser {
             case '-':
                 if (nextChar() == 'I') {
                     scanFor("Infinity");
-                    return new CBORDouble(Double.NEGATIVE_INFINITY);
+                    return new CBORFloatingPoint(Double.NEGATIVE_INFINITY);
                 }
 
             case '0':
@@ -213,11 +213,11 @@ public class CBORDiagnosticParser {
 
             case 'N':
                 scanFor("aN");
-                return new CBORDouble(Double.NaN);
+                return new CBORFloatingPoint(Double.NaN);
 
             case 'I':
                 scanFor("nfinity");
-                return new CBORDouble(Double.POSITIVE_INFINITY);
+                return new CBORFloatingPoint(Double.POSITIVE_INFINITY);
                 
             default:
                 index--;
@@ -247,7 +247,7 @@ public class CBORDiagnosticParser {
                 if (value.isInfinite()) {
                     reportError("Floating point value out of range");
                 }
-                return new CBORDouble(value);
+                return new CBORFloatingPoint(value);
             }
             if (c == '(') {
                 // Do not accept '+', '-', or leading zeros

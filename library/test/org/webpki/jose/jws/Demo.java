@@ -16,8 +16,6 @@
  */
 package org.webpki.jose.jws;
 
-import java.io.IOException;
-
 import org.webpki.crypto.HmacAlgorithms;
 
 import org.webpki.json.JSONObjectWriter;
@@ -33,19 +31,11 @@ public class Demo {
         "  \"otherProperties\": [2000, true]\n" +
         "}";
     
-    static final byte[] SECRET_KEY;
-    
     static final String SIGNATURE_PROPERTY = "signature";
     
-    static {
-        try {
-            SECRET_KEY = HexaDecimal.decode(
-                    "7fdd851a3b9d2dafc5f0d00030e22b9343900cd42ede4948568a4a2ee655291a");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    
+    static final byte[] SECRET_KEY = HexaDecimal.decode(
+            "7fdd851a3b9d2dafc5f0d00030e22b9343900cd42ede4948568a4a2ee655291a");
+
     public static void main(String[] argc) {
         try {
             JWSHmacSigner signer = new JWSHmacSigner(SECRET_KEY,

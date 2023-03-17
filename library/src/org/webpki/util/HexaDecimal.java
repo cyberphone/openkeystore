@@ -16,7 +16,6 @@
  */
 package org.webpki.util;
 
-
 import java.io.IOException;
 
 /**
@@ -126,7 +125,7 @@ public class HexaDecimal {
         return new HexaDecimal().toHexString(binaryBlob);
     }
 
-    public static int toHex(char c) throws IOException {
+    public static int toHex(char c) {
         if (c >= '0') {
             if (c <= '9') return c - '0';
             if (c >= 'a') {
@@ -136,13 +135,13 @@ public class HexaDecimal {
                 if (c <= 'F') return c - ('A' - 10);
             }
         }
-        throw new IOException("Bad hexchar: " + c);
+        throw new IllegalArgumentException("Bad hexchar: " + c);
     }
 
-    public static byte[] decode(String hexString) throws IOException {
+    public static byte[] decode(String hexString) {
         int l = hexString.length();
         int bl;
-        if (l == 0 || l % 2 != 0) throw new IOException("Bad hexstring: " + hexString);
+        if (l == 0 || l % 2 != 0) throw new IllegalArgumentException("Bad hexstring: " + hexString);
         byte[] data = new byte[bl = l / 2];
         while (--bl >= 0) {
             data[bl] = (byte) (toHex(hexString.charAt(--l)) + (toHex(hexString.charAt(--l)) << 4));

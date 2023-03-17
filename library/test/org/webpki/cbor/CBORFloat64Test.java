@@ -12,7 +12,7 @@ public class CBORFloat64Test {
     static void convert (long l, boolean float32Flag) {
         try {
             double d = float32Flag ? Float.intBitsToFloat((int) l) : Double.longBitsToDouble(l);
-            CBORDouble cbor = new CBORDouble(d);
+            CBORFloatingPoint cbor = new CBORFloatingPoint(d);
             switch (cbor.tag) {
                 case CBORObject.MT_FLOAT16:
                     float16++;
