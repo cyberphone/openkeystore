@@ -66,11 +66,11 @@ Note that the application-specific labels (including the one holding the
 signature object), may be of any CBOR type.  The only requirement is that
 they are unique.
 </p>
-<p id='parameters'>
+<div id='parameters'>
 Signatures <b>must</b> for compatibility with CSF,
 be provided as a CBOR <code>map</code> having a fixed set of labels 
 according to the following table:
-</p>
+</div>
 <div class='webpkifloat'>
 <table class='webpkitable'>
 <tr><th>Label</th><th>Name</th><th>Argument</th><th style='min-width:30em'>Description</th></tr>
@@ -105,14 +105,13 @@ Signature objects <b>must not</b> contain both <code>certificatePath</code> and 
 </td></tr>
 </table>
 </div>
-<p>
 CSF signatures are validated by running the signature validation 
 algorithm over the CBOR binary representation of
 the <code>map</code> holding the application data <i>including the enveloped signature object</i>,
 with the <span class='webpkihighlite'>highlighted</span> <code>signature</code> (label <code>6</code>) and
 its associated argument as the sole exception. Note that the length
 of the signature object <code>map</code> <b>must</b>
-be updated (to reflect the removal of an element) during validation.</p>
+be updated (to reflect the removal of an element) during validation.
 <p>
 The sample was signed using the following COSE private key (here in diagnostic notation):
 </p>
@@ -132,9 +131,10 @@ The CSF container can be enhanced through a couple of options
 described in <a href='crypto-options.html'>crypto options</a>.
 Such options are included in the data to be signed.
 <h3>Signature Algorithms</h3>
-<p id='csf-algorithms'>
+<div id='csf-algorithms'>
 Currently supported signature algorithms:
-</p>
+</div>
+<div class='webpkifloat'>
 <table class='webpkitable'>
 <tr><th>Name</th><th>Identifier</th><th>Compatibility</th></tr>
 <tr style='text-align:center'><td><code>HS256</code></td><td>5</td><td>COSE, JOSE</td></tr>
@@ -152,11 +152,12 @@ Currently supported signature algorithms:
 <tr style='text-align:center'><td><code>RS384</code></td><td>-258</td><td>COSE, JOSE</td></tr>
 <tr style='text-align:center'><td><code>RS512</code></td><td>-259</td><td>COSE, JOSE</td></tr>
 </table>
-<p>[1] Unfortunately, different standards groups did not in due time realize that
+</div>
+[1] Unfortunately, different standards groups did not in due time realize that
 existing cryptographic APIs only rarely accept &quot;EdDSA&quot; as a valid signature algorithm.
 In current FIDO alliance specifications the COSE <code>EdDSA</code> algorithm identifier has
 therefore been redefined to rather mean EdDSA with an Ed25519 key which is also what CSF follows.
-PKIX' RFC&nbsp;8410 makes the same distinction.</p>
+PKIX' RFC&nbsp;8410 makes the same distinction.
 <p>[2] CSF extends the scheme used for <code>Ed25519</code> to <code>Ed448</code> as well.</p>
 <h3>Test Vectors</h3>
 An extensive set of test vectors is currently available at: 
