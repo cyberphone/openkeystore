@@ -158,7 +158,7 @@ public abstract class CBORObject {
      * Note that this method is independent of the underlying CBOR integer type.
      * </p>
      * 
-     * @return BigInteger
+     * @return <code>BigInteger</code>
      * @throws IOException
      */
     public BigInteger getBigInteger() throws IOException {
@@ -178,7 +178,7 @@ public abstract class CBORObject {
      * </p>
      * Also see {@link #getBigInteger()}.
      * 
-     * @return Long
+     * @return Java <code>long</code>
      * @throws IOException
      */
     public long getLong() throws IOException {
@@ -191,7 +191,7 @@ public abstract class CBORObject {
     }
 
     /**
-     * Returns Jave <i>unsigned</i> <code>long</code> value.
+     * Returns Java <i>unsigned</i> <code>long</code> value.
       * <p>
      * This method requires that the object is an unsigned
      * {@link CBORInteger} and fits a Java <code>long</code> (sign bit is used as well),
@@ -267,7 +267,7 @@ public abstract class CBORObject {
      * Returns <code>float</code> value.
      * <p>
      * This method requires that the object is a
-     * {@link CBORFloatingPoint} and fits in a Java float, 
+     * {@link CBORFloatingPoint} holding a 16 or 32-bit IEEE 754 value, 
      * otherwise an exception will be thrown.
      * </p>
      * 

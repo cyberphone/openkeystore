@@ -4,13 +4,15 @@ The CBOR library contains support for {@link CBOREncrypter encrypting}
 and {@link CBORDecrypter decrypting}
 arbitrary binary data using a specific scheme called
 &quot;CBOR Encryption Format&quot; (CEF).
-In similarity to <a href='signatures.html'>CSF</a>, CEF also depends on <i>deterministic serialization</i>
+In similarity to <a href='signatures.html'>CSF</a>, 
+CEF also depends on <a href='../package-summary.html#deterministic-serialization'>deterministic&nbsp;serialization</a>
 which is used to create authentication data to content encryption
 algorithms like GCM.
 <p>
 The following is a CEF object (here expressed in CBOR diagnostic notation), using the algorithms
 <code>A256GCM</code> and <code>ECDH-ES+A256KW</code> for content- respectively key-wrapping:
 </p>
+<div class='webpkifloat'>
 <div class='webpkibox'>
 {<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Content encryption algorithm = A256GCM /</span><br>
@@ -41,15 +43,17 @@ The following is a CEF object (here expressed in CBOR diagnostic notation), usin
 &nbsp;&nbsp;10: h'625c2b2a41907547b2210624e1e818991c00790aed16'<br>
 }
 </div>
+</div>
 <p>
 The same object expressed as hex-encoded CBOR:
 </p>
-<div class='webpkibox'><code>
+<div class='webpkihexbox'>
 a5010302a401381e03726578616d706c652e636f6d3a78323535313907a301012004215820c219e35a9c09bfcf1bd6c6dcd1e05ecb36cb6f465d9caeb101795e33fd7db1120a5828842916c5c81f8a815ec5ef2a472981b7300bc33fe748928c26e8c4dfff7a4747ecff9caea7040585085084ad6926aa92d0de56e4674abf863390094cc7cc6f77b9f984c15bc3cbeb0a56625c2b2a41907547b2210624e1e818991c00790aed16
-</code></div>
+</div>
 <p>
 Decryption of this object using the private key (here in JWK format)
 </p>
+<div class='webpkifloat'>
 <div class='webpkibox'>
 {<br>
 &nbsp;&nbsp;&quot;kid&quot;:&nbsp;&quot;example.com:x25519&quot;,<br>
@@ -59,9 +63,8 @@ Decryption of this object using the private key (here in JWK format)
 &nbsp;&nbsp;&quot;d&quot;:&nbsp;&quot;cxfl86EVmcqrR07mWENCf1F_5Ni5mt1ViGyERB6Q1vA&quot;<br>
 }
 </div>
-<p>
+</div>
 should return the UTF-8 encoded string <code>&quot;Hello encrypted world!&quot;</code>.
-</p>
 <p>
 The CEF decryption process is as follows:
 </p>
@@ -123,16 +126,16 @@ according to HKDF (RFC&nbsp;5869), profiled as follows:
 COSE key encryption algorithm,
 expressed as a 32-bit (4 byte) signed big-endian integer.</li>
 </ul>
-<h3 style='padding:1em 0 0 0'>Tagged and Custom Encryption Data</h3>
+<h3>Tagged and Custom Encryption Data</h3>
 The CEF container can be enhanced through a couple of options
 described in <a href='crypto-options.html'>crypto options</a>.
 Such options are included in the data to be authenticated. 
-<h3 style='padding:1em 0 0 0'>Content Encryption Algorithms</h3>
-<p id='cef-content-encryption-algorithms'>
+<h3>Content Encryption Algorithms</h3>
+<div id='cef-content-encryption-algorithms'>
 Currently supported content encryption algorithms:
-</p>
-
-<table class='webpkitable' style='margin-bottom:1em'>
+</div>
+<div class='webpkifloat'>
+<table class='webpkitable'>
 <tr><th>Name</th><th>Identifier</th><th>Compatibility</th></tr>
 <tr style='text-align:center'><td><code>A128GCM</code></td><td>1</td><td>COSE, JOSE</td></tr>
 <tr style='text-align:center'><td><code>A192GCM</code></td><td>2</td><td>COSE, JOSE</td></tr>
@@ -141,10 +144,12 @@ Currently supported content encryption algorithms:
 <tr style='text-align:center'><td><code>A192CBC-HS384</code></td><td>201</td><td>JOSE</td></tr>
 <tr style='text-align:center'><td><code>A256CBC-HS512</code></td><td>202</td><td>JOSE</td></tr>
 </table>
-<h3 style='padding:1em 0 0 0'>Key Encryption Algorithms</h3>
-<p id='cef-key-encryption-algorithms'>
+</div>
+<h3 style='margin-top:0.5em'>Key Encryption Algorithms</h3>
+<div id='cef-key-encryption-algorithms'>
 Currently supported key encryption algorithms:
-</p>
+</div>
+<div class='webpkifloat'>
 <table class='webpkitable'>
 <tr><th>Name</th><th>Identifier</th><th>Compatibility</th></tr>
 <tr style='text-align:center'><td><code>ECDH-ES</code></td><td>-25</td><td>COSE, JOSE [1]</td></tr>
@@ -154,10 +159,9 @@ Currently supported key encryption algorithms:
 <tr style='text-align:center'><td><code>RSA-OAEP</code></td><td>-40</td><td>COSE, JOSE</td></tr>
 <tr style='text-align:center'><td><code>RSA-OAEP-256</code></td><td>-41</td><td>COSE, JOSE</td></tr>
 </table>
-<p>
+</div>
 [1] Note that COSE and JOSE do no use the same Key Derivation Function (KDF).
-</p>
-<h3 style='padding:1em 0 0 0'>Test Vectors</h3>
+<h3>Test Vectors</h3>
 An extensive set of test vectors is currently available at: 
 <a href='https://github.com/cyberphone/openkeystore/tree/master/testdata/cbor-encryption'>
 https://github.com/cyberphone/openkeystore/tree/master/testdata/cbor-encryption
