@@ -92,13 +92,13 @@ keys must be known by recipients.
 <p id='parameters'>
 The following figure shows the layout of CEF objects:
 </p>
+<div class='webpkifloat'>
 <div class='webpkisvg'>
 <img src='cbor-crypto.svg' alt='CEF object layout' style='height:20em;padding:0.2em 0.6em'/>
 </div>
-<p>
+</div>
 The numbers in paranthesis denote the actual label (map key) value.
 Properly designed CEF objects <b>must</b> adhere to the following rules:
-</p>
 <ul>
 <li class='webpkilistspacing'><code class='webpkicode'>publicKey</code> and <code class='webpkicode'>ephemeralKey</code> elements
 <b>must</b> be compliant with COSE, but <b>must not</b> contain
