@@ -1,0 +1,54 @@
+package cbor_api_demo;
+
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+
+import org.webpki.cbor.CBORAsymKeyDecrypter;
+import org.webpki.cbor.CBORAsymKeyEncrypter;
+import org.webpki.cbor.CBORKeyPair;
+import org.webpki.cbor.CBORObject;
+
+import org.webpki.crypto.ContentEncryptionAlgorithms;
+import org.webpki.crypto.KeyEncryptionAlgorithms;
+
+import org.webpki.util.HexaDecimal;
+
+public class EncryptionDemo {
+    
+    // The same key as in the example but in COSE format.
+    static final byte[] x25519_PRIVATE_KEY = HexaDecimal.decode(
+            "a401012004215820e99a0cef205894960d9b1c05978513dccb" +
+            "42a13bfbced523a51b8a117ad5f00c2358207317e5f3a11599" +
+            "caab474ee65843427f517fe4d8b99add55886c84441e90d6f0");
+    
+    public static void main(String[] args) {
+        try {
+            // Get keys in Java format.
+            KeyPair keyPair = CBORKeyPair.decode(CBORObject.decode(x25519_PRIVATE_KEY));
+            PrivateKey receiverKey = keyPair.getPrivate();
+            PublicKey senderKey = keyPair.getPublic();
+            
+            // Encrypt data using CEF.
+            byte[] cborBinary = new CBORAsymKeyEncrypter(
+                    senderKey,
+                    KeyEncryptionAlgorithms.ECDH_ES,
+                    ContentEncryptionAlgorithms.A256GCM)
+                .encrypt("A very secret message".getBytes("utf-8")).encode();
+            
+            // Decrypt data.
+            byte[] decryptedData = new CBORAsymKeyDecrypter(receiverKey)
+                    .decrypt(CBORObject.decode(cborBinary));
+            
+            // Assume that the data is a string.
+            String secretMessage = new String(decryptedData, "utf-8");
+            System.out.println(secretMessage);
+new CborDocumentLog(args[0], "#sample.program.hex#", cborBinary);
+new CborDocumentLog(args[0], "#sample.program.diagnostic#", CBORObject.decode(cborBinary));
+new CborDocumentLog(args[0], args[1], "#sample.program#");
+            
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
