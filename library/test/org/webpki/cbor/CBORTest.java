@@ -1877,16 +1877,16 @@ public class CBORTest {
     
     @Test
     public void cborSequences() throws Exception {
-        byte[] totalBytes = HexaDecimal.decode("00A104F58105A1056464617461");
-        InputStream inputStream = new ByteArrayInputStream(totalBytes);
+        byte[] sequence = HexaDecimal.decode("00A104F58105A1056464617461");
+        InputStream inputStream = new ByteArrayInputStream(sequence);
         int position = 0;
         CBORObject cborObject;
         while ((cborObject = CBORObject.decode(inputStream, true, false, false, null)) != null) {
             byte[] rawCbor = cborObject.encode();
-            assertTrue("Seq", ArrayUtil.compare(rawCbor, 0, totalBytes, position, rawCbor.length));
+            assertTrue("Seq", ArrayUtil.compare(rawCbor, 0, sequence, position, rawCbor.length));
             position += rawCbor.length;
         }
-        assertTrue("SeqEnd", totalBytes.length == position);
+        assertTrue("SeqEnd", sequence.length == position);
 
         assertTrue("SeqNull", 
                    CBORObject.decode(new ByteArrayInputStream(new byte[0]),
@@ -1894,6 +1894,20 @@ public class CBORTest {
                                                 false,
                                                 false,
                                                 null) == null);
+        sequence = new CBORSequenceBuilder()
+            .addObject(new CBORString("Hello CBOR Sequence World!"))
+            .addObject(new CBORArray()
+                .addObject(new CBORFloatingPoint(4.5))
+                .addObject(new CBORBoolean(true)))
+            .encode();
+        inputStream = new ByteArrayInputStream(sequence);
+        position = 0;
+        while ((cborObject = CBORObject.decode(inputStream, true, false, false, null)) != null) {
+            byte[] rawCbor = cborObject.encode();
+            assertTrue("Seq", ArrayUtil.compare(rawCbor, 0, sequence, position, rawCbor.length));
+            position += rawCbor.length;
+        }
+        assertTrue("SeqEnd", sequence.length == position);
     }
 
     @Test

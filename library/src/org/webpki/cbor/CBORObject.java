@@ -104,7 +104,7 @@ public abstract class CBORObject {
         reportError(String.format(STDERR_UNSUPPORTED_TAG + "%02x", tag));
     }
 
-    void nullCheck(Object object) {
+    static void nullCheck(Object object) {
         if (object == null) {
             throw new IllegalArgumentException(STDERR_ARGUMENT_IS_NULL);
         }
@@ -741,6 +741,9 @@ public abstract class CBORObject {
 
     /**
      * Decodes CBOR data with options.
+     * <p>
+     * See {@link CBORSequenceBuilder}.
+     * </p>
      * 
      * @param inputStream Stream holding CBOR data
      * @param sequenceFlag Stop reading after parsing a valid CBOR object
