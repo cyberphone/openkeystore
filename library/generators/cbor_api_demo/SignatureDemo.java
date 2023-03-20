@@ -35,15 +35,19 @@ public class SignatureDemo {
             // Sign and encode CBOR.
             byte[] signedData = new CBORHmacSigner(HMAC_KEY, HmacAlgorithms.HMAC_SHA256)
                 .sign(SIGNATURE_LABEL, dataToBeSigned).encode();
-new CborDocumentLog(args[0], "#sample.program.hex#", signedData);
             
             // Decode CBOR and validate signature.
             CBORMap decodedCbor = new CBORHmacValidator(HMAC_KEY)
                 .validate(SIGNATURE_LABEL, CBORObject.decode(signedData)).getMap();
+//@begin@
+new CborDocumentLog(args[0], "#sample.program.hex#", signedData);
 new CborDocumentLog(args[0], "#sample.program.diagnostic#", decodedCbor);
 new CborDocumentLog(args[0], args[1], "#sample.program#");
+//@end@
+
             // Fetch a map item.
             String greatings = decodedCbor.getObject(HELLO_LABEL).getString();
+            System.out.println(greatings);
             
         } catch (Exception e) {
             throw new RuntimeException(e);

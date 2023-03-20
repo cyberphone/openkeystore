@@ -43,9 +43,16 @@ public class EncryptionDemo {
             // Assume that the data is a string.
             String secretMessage = new String(decryptedData, "utf-8");
             System.out.println(secretMessage);
-new CborDocumentLog(args[0], "#sample.program.hex#", cborBinary);
+//@begin@
+new CborDocumentLog(args[0], "#sample.program.hex#", cborBinary = 
+new CborDocumentLog().checkForChanges(cborBinary, HexaDecimal.decode(
+        "a5010302a201381807a3010120042158203e9c03b4e2ccb023272fe0f1a5a41" +
+        "4645a7e5a0952a3da8199ba46812603ee1a08504ac80be51285309b93b8f4cc" +
+        "38f6b8ba094c9fbd6e151bad2af177dd33820a55115b48dcffcf88dce70b217" +
+        "3d6c368b2cfe802521c")));
 new CborDocumentLog(args[0], "#sample.program.diagnostic#", CBORObject.decode(cborBinary));
 new CborDocumentLog(args[0], args[1], "#sample.program#");
+//@end@
             
         } catch (Exception e) {
             throw new RuntimeException(e);
