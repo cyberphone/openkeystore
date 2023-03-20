@@ -198,6 +198,7 @@
     		<include name="**/*"/>
     		<exclude name="README*"/>
             <exclude name="LICENSE*"/>
+            <exclude name=".gitattributes*"/>
         </fileset>
     </delete>
 
