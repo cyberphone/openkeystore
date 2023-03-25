@@ -56,7 +56,7 @@ public class CBORTag extends CBORObject {
     CBORObject object;
     
     /**
-     * Current COTX tag: {@value #RESERVED_TAG_COTX}
+     * COTX tag: {@value #RESERVED_TAG_COTX}
      */
     public static final int RESERVED_TAG_COTX  = 1010;
 

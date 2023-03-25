@@ -98,7 +98,7 @@ where the first object <b>must</b> be the signature certificate.
 Signature objects <b>must not</b> contain both <code>certificatePath</code> and <code>publicKey</code> elements.
 </td></tr>
 
-<tr><td style='text-align:center'><code>6</code></td><td><code>signature</code></td>
+<tr><td style='text-align:center'><code>6</code></td><td><code>signatureValue</code></td>
 <td><code>byte&nbsp;string</code></td><td>Signature value.
 </td></tr>
 </table>
@@ -106,7 +106,7 @@ Signature objects <b>must not</b> contain both <code>certificatePath</code> and 
 CSF signatures are validated by running the signature validation 
 algorithm over the CBOR binary representation of
 the <code>map</code> holding the application data <i>including the enveloped signature object</i>,
-with the <span class='webpkihighlite'>highlighted</span> <code>signature</code> (label <code>6</code>) and
+with the <span class='webpkihighlite'>highlighted</span> <code>signatureValue</code> (label <code>6</code>) and
 its associated argument as the sole exception. Note that the length
 of the signature object <code>map</code> <b>must</b>
 be updated (to reflect the removal of an element) during validation.
