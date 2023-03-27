@@ -131,7 +131,9 @@ numbers like <code>f98001</code>.
 </div>
 <li id='number-serialization' class='webpkilistspacing'>
   RFC+: Floating point and integer objects <b>must</b> be treated as <i>distinct types</i>
-regardless of their numeric value (Rule&nbsp;2 in section 4.2.2 of RFC&nbsp;8949).</li>
+regardless of their numeric value, which is compliant with
+Rule&nbsp;2 in section 4.2.2 as well
+as with the table in Appendix&nbsp;A of RFC&nbsp;8949.</li>
 <li class='webpkilistspacing'>
   RFC: Map keys <b>must</b> be sorted in the bytewise lexicographic 
 order of their deterministic encoding.
@@ -172,7 +174,7 @@ During {@link CBORObject#decode(byte[])}, CBOR data is checked for
 well-formedness as well as by default, adhering to the determinism scheme.
 </p>
 <p>
-After successful decoding, the CBOR data is provided as a tree of nodes.
+After successful decoding, the CBOR data is provided as a {@link CBORObject}.
 For extracting the data of CBOR primitives in a Java compatible way,
 access methods such as 
 {@link CBORObject#getInt()} and {@link CBORObject#getString()}
@@ -187,7 +189,7 @@ access to individual CBOR objects of the structure.
 If the underlying CBOR data type does not match the access method
 (like performing {@link CBORObject#getInt()} on a {@link CBORBigInteger}),
 an exception is thrown.
-That is, this implementation performs strict type checking. 
+That is, this implementation performs <i>strict type checking</i>. 
 However, you typically also want to verify
 that {@link CBORMap} objects do not contain unexpected keys,
 or that {@link CBORArray} objects contain unread elements.
