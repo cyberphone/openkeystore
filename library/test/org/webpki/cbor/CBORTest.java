@@ -2013,7 +2013,7 @@ public class CBORTest {
         }
     }
     
-    public static class ObjectOne extends CBORTypedDecoder {
+    public static class ObjectOne extends CBORTypedObjectDecoder {
 
         int number;
         
@@ -2032,7 +2032,7 @@ public class CBORTest {
         }
     }
     
-    public static class ObjectTwo extends CBORTypedDecoder {
+    public static class ObjectTwo extends CBORTypedObjectDecoder {
         
         static final String OBJECT_ID = "https://example.com/object-2";
         
@@ -2050,7 +2050,7 @@ public class CBORTest {
         }
     }
     
-    public static class ObjectThree extends CBORTypedDecoder {
+    public static class ObjectThree extends CBORTypedObjectDecoder {
         
         String justAString;
 
@@ -2067,7 +2067,7 @@ public class CBORTest {
 
     }
 
-    static final CBORTypedDecoderCache schemaCache = new CBORTypedDecoderCache()
+    static final CBORTypedObjectDecoderCache schemaCache = new CBORTypedObjectDecoderCache()
             .addToCache(ObjectOne.class)
             .addToCache(ObjectTwo.class);
 
@@ -2086,7 +2086,7 @@ public class CBORTest {
             
         }
         
-        CBORTypedDecoder sco = schemaCache.decode(objectOne);
+        CBORTypedObjectDecoder sco = schemaCache.decode(objectOne);
         assertTrue("inst", sco instanceof ObjectOne);
         assertTrue("data", ((ObjectOne)sco).number == -343);
         assertTrue("cbor", objectOne.equals(sco.getRoot()));

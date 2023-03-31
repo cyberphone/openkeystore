@@ -23,15 +23,15 @@ import java.security.GeneralSecurityException;
 /**
  * Base class for typed decoders.
  * <p>
- * Base class for CBOR decoders that can be instantiated
- * through a {@link CBORTypedDecoderCache}.
+ * Base class for CBOR object decoders that can be instantiated
+ * through a {@link CBORTypedObjectDecoderCache}.
  * The system relies on that CBOR data is prepended by a mandatory COTX tag.
  * </p>
  * <p>
- * See <a href='doc-files/typed-decoders.html'>Typed Decoders</a> for an example.
+* See <a href='doc-files/typed-objects.html'>Typed Objects</a> for an example.
  * </p>
  */
-public abstract class CBORTypedDecoder {
+public abstract class CBORTypedObjectDecoder {
     
     /**
      * Constructor.
@@ -41,7 +41,7 @@ public abstract class CBORTypedDecoder {
      * other constructor is defined).
      * </p>
      */
-    public CBORTypedDecoder() {
+    public CBORTypedObjectDecoder() {
         
     }
 
@@ -51,13 +51,13 @@ public abstract class CBORTypedDecoder {
      * INTERNAL USE ONLY.
      * <p>
      * Implementations <b>must</b> decode all elements
-     * associated with the specific typed decoder.
+     * associated with the specific object decoder.
      * </p>
      * <p>
-     * Also see {@link CBORTypedDecoderCache#setCheckForUnread(boolean)}.
+     * Also see {@link CBORTypedObjectDecoderCache#setCheckForUnread(boolean)}.
      * </p>
      *
-     * @param cborBody COTX argument of {@link CBORTypedDecoder} instance
+     * @param cborBody COTX argument of {@link CBORTypedObjectDecoder} instance
      * @throws IOException
      * @throws GeneralSecurityException 
      */
@@ -65,7 +65,7 @@ public abstract class CBORTypedDecoder {
             throws IOException, GeneralSecurityException;
 
     /**
-     * Returns typed decoder identifier.
+     * Returns typed object identifier.
      *
      * @return Object Id (COTX)
      */

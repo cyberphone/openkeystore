@@ -25,21 +25,21 @@ import java.io.IOException;
 import java.util.Hashtable;
 
 /**
- * Cache for typed decoders.
+ * Cache for typed object decoders.
  * <p>
- * Stores {@link CBORTypedDecoder} classes for automatic instantiation during decoding.
+ * Stores {@link CBORTypedObjectDecoder} classes for automatic instantiation during decoding.
  * </p>
  * <p>
- * See <a href='doc-files/typed-decoders.html'>Typed Decoders</a> for an example.
+ * See <a href='doc-files/typed-objects.html'>Typed Objects</a> for an example.
  * </p>
  */
-public class CBORTypedDecoderCache {
+public class CBORTypedObjectDecoderCache {
 
     private boolean checkForUnread = true;
 
-    private Hashtable<String, Class<? extends CBORTypedDecoder>> classMap = new Hashtable<>();
+    private Hashtable<String, Class<? extends CBORTypedObjectDecoder>> classMap = new Hashtable<>();
     
-    private CBORTypedDecoder getInstance(Class<? extends CBORTypedDecoder> decoderClass) {
+    private CBORTypedObjectDecoder getInstance(Class<? extends CBORTypedObjectDecoder> decoderClass) {
         try {
             return decoderClass.getDeclaredConstructor().newInstance();
         } catch (InstantiationException | InvocationTargetException | 
@@ -49,21 +49,21 @@ public class CBORTypedDecoderCache {
     }
     
     /**
-     * Creates empty decoder cache.
+     * Creates empty typed object decoder cache.
      */
-    public CBORTypedDecoderCache() {
+    public CBORTypedObjectDecoderCache() {
         
     }
 
     /**
-     * Decodes and instantiates typed decoder.
+     * Decodes and instantiates typed object decoder.
      * 
      * @param typedObject Typed object to be decoded
-     * @return Instantiated {@link CBORTypedDecoder}
+     * @return Instantiated {@link CBORTypedObjectDecoder}
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public CBORTypedDecoder decode(CBORObject typedObject) 
+    public CBORTypedObjectDecoder decode(CBORObject typedObject) 
             throws IOException, GeneralSecurityException {
         CBORTag tag = typedObject.getTag();
         if (tag.tagNumber != CBORTag.RESERVED_TAG_COTX) {
@@ -71,11 +71,11 @@ public class CBORTypedDecoderCache {
         }
         CBORArray cborArray = tag.getObject().getArray(2);
         String objectId = cborArray.getObject(0).getString();
-        Class<? extends CBORTypedDecoder> schemaClass = classMap.get(objectId);
+        Class<? extends CBORTypedObjectDecoder> schemaClass = classMap.get(objectId);
         if (schemaClass == null) {
             throw new IOException("Unknown ObjectId: " + objectId);
         }
-        CBORTypedDecoder decoder = getInstance(schemaClass);
+        CBORTypedObjectDecoder decoder = getInstance(schemaClass);
         decoder.root = typedObject;
         decoder.decode(cborArray.getObject(1));
         if (checkForUnread) {
@@ -86,13 +86,13 @@ public class CBORTypedDecoderCache {
     }
 
     /**
-     * Adds typed decoder class to cache.
+     * Adds typed object decoder class to cache.
      * 
      * @param decoderClass Typed decoder class
-     * @return {@link CBORTypedDecoderCache}
+     * @return {@link CBORTypedObjectDecoderCache}
      */
-    public CBORTypedDecoderCache addToCache(Class<? extends CBORTypedDecoder> decoderClass) {
-        CBORTypedDecoder schemaObject = getInstance(decoderClass);
+    public CBORTypedObjectDecoderCache addToCache(Class<? extends CBORTypedObjectDecoder> decoderClass) {
+        CBORTypedObjectDecoder schemaObject = getInstance(decoderClass);
         String objectId = schemaObject.getObjectId();
         if (classMap.put(objectId, schemaObject.getClass()) != null) {
             throw new RuntimeException("ObjectId already defined: " + objectId);

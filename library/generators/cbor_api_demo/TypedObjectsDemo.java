@@ -9,13 +9,13 @@ import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORString;
 import org.webpki.cbor.CBORTag;
-import org.webpki.cbor.CBORTypedDecoder;
-import org.webpki.cbor.CBORTypedDecoderCache;
+import org.webpki.cbor.CBORTypedObjectDecoder;
+import org.webpki.cbor.CBORTypedObjectDecoderCache;
 
-public class TypedDecoderDemo {
+public class TypedObjectsDemo {
     
-    // Typed decoder one.
-    public static class ObjectOne extends CBORTypedDecoder {
+    // Typed object decoder one.
+    public static class ObjectOne extends CBORTypedObjectDecoder {
 
         int number;
         
@@ -33,8 +33,8 @@ public class TypedDecoderDemo {
         }
     }
     
-    // Typed decoder two.
-    public static class ObjectTwo extends CBORTypedDecoder {
+    // Typed object decoder two.
+    public static class ObjectTwo extends CBORTypedObjectDecoder {
         
         static final String OBJECT_ID = "https://example.com/object-two";
         
@@ -51,8 +51,8 @@ public class TypedDecoderDemo {
         }
     }
     
-    // Register the decoders.
-    static final CBORTypedDecoderCache decoderCache = new CBORTypedDecoderCache()
+    // Register the object decoders.
+    static final CBORTypedObjectDecoderCache decoderCache = new CBORTypedObjectDecoderCache()
             .addToCache(ObjectOne.class)
             .addToCache(ObjectTwo.class);
 
@@ -69,7 +69,8 @@ public class TypedDecoderDemo {
                         .encode();
             
             // Decode and instantiate.
-            CBORTypedDecoder decodedObject = decoderCache.decode(CBORObject.decode(objectOne));
+            CBORTypedObjectDecoder decodedObject = decoderCache.decode(
+                    CBORObject.decode(objectOne));
             
             // Dispatch to the proper handler for the associated decoder.
             switch (decodedObject.getObjectId()) {
