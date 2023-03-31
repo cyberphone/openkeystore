@@ -69,12 +69,12 @@ public class TypedDecoderDemo {
                         .encode();
             
             // Decode and instantiate.
-            CBORTypedDecoder typedDecoder = schemaCache.decode(CBORObject.decode(objectOne));
+            CBORTypedDecoder decodedObject = schemaCache.decode(CBORObject.decode(objectOne));
             
             // Dispatch to the proper handler for the associated decoder.
-            switch (typedDecoder.getObjectId()) {
+            switch (decodedObject.getObjectId()) {
                 case DecoderOne.OBJECT_ID:
-                    System.out.println("Number=" + ((DecoderOne)typedDecoder).number);
+                    System.out.println("Number=" + ((DecoderOne)decodedObject).number);
                     break;
                     
                 default: 
@@ -84,6 +84,7 @@ public class TypedDecoderDemo {
 new CborDocumentLog(args[0], "#sample.program.diagnostic#", CBORObject.decode(objectOne));
 new CborDocumentLog(args[0], args[1], "#sample.program#");
 //@end@
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

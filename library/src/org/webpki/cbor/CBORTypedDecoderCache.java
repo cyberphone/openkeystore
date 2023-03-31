@@ -58,14 +58,14 @@ public class CBORTypedDecoderCache {
     /**
      * Decodes and instantiates typed decoder.
      * 
-     * @param cborObject
+     * @param typedObject Typed object to be decoded
      * @return Instantiated {@link CBORTypedDecoder}
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public CBORTypedDecoder decode(CBORObject cborObject) 
+    public CBORTypedDecoder decode(CBORObject typedObject) 
             throws IOException, GeneralSecurityException {
-        CBORTag tag = cborObject.getTag();
+        CBORTag tag = typedObject.getTag();
         if (tag.tagNumber != CBORTag.RESERVED_TAG_COTX) {
             throw new IOException("COTX expcted, got: " + tag.tagNumber);
         }
@@ -73,13 +73,13 @@ public class CBORTypedDecoderCache {
         String objectId = cborArray.getObject(0).getString();
         Class<? extends CBORTypedDecoder> schemaClass = classMap.get(objectId);
         if (schemaClass == null) {
-            throw new IOException("Unknown CBOR schema: " + objectId);
+            throw new IOException("Unknown ObjectId: " + objectId);
         }
         CBORTypedDecoder decoder = getInstance(schemaClass);
-        decoder.root = cborObject;
+        decoder.root = typedObject;
         decoder.decode(cborArray.getObject(1));
         if (checkForUnread) {
-            cborObject.checkForUnread();
+            typedObject.checkForUnread();
         }
         return decoder;
 
@@ -88,23 +88,24 @@ public class CBORTypedDecoderCache {
     /**
      * Adds typed decoder class to cache.
      * 
-     * @param schemaClass
-     * @return {@CBORTypedDecoderCache}
+     * @param schemaClass Typed decoder class
+     * @return {@link CBORTypedDecoderCache}
      */
     public CBORTypedDecoderCache addToCache(Class<? extends CBORTypedDecoder> schemaClass) {
         CBORTypedDecoder schemaObject = getInstance(schemaClass);
         String objectId = schemaObject.getObjectId();
         if (classMap.put(objectId, schemaObject.getClass()) != null) {
-            throw new RuntimeException("CBOR schema already defined: " + objectId);
+            throw new RuntimeException("ObjectId already defined: " + objectId);
         }
         return this;
     }
 
-    /*
+    /**
      * Sets the check for unread mode.
      * <p>
      * The default is <code>true</code>.
      * </p>
+     * @param flag  <code>true</code> if checks should be performed
      */
     public void setCheckForUnread(boolean flag) {
         checkForUnread = flag;
