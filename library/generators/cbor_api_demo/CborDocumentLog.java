@@ -24,7 +24,9 @@ public class CborDocumentLog {
 
     CborDocumentLog(String fileName, String sourceCodeFile, String holder) throws IOException {
         String source = ReadWriteSubstitute.readString(sourceCodeFile);
-        source = source.substring(0, source.indexOf("//@begin@")) +
+        int i;
+        while ((i = source.indexOf("//@begin@")) >= 0)
+        source = source.substring(0, i) +
                 source.substring(source.indexOf("//@end@\n") + 8);
         ReadWriteSubstitute.replace(fileName, 
                 holder,

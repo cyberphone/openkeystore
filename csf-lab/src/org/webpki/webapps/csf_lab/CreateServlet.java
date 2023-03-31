@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.webpki.cbor.CBORAsymKeySigner;
 import org.webpki.cbor.CBORCryptoUtils;
-import org.webpki.cbor.CBORDiagnosticParser;
+import org.webpki.cbor.CBORDiagnosticNotationDecoder;
 import org.webpki.cbor.CBORHmacSigner;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;
@@ -288,9 +288,9 @@ public class CreateServlet extends CoreRequestServlet {
          try {
             request.setCharacterEncoding("utf-8");
             final CBORObject rawCbor = (Boolean.valueOf(getParameter(request, PRM_INPUT_TYPE)) ? 
-                    CBORDiagnosticParser.parse(getParameterTextarea(request, PRM_CBOR_DATA))
-                                        :
-                    getCborFromHex(getParameter(request, PRM_CBOR_DATA)));
+                CBORDiagnosticNotationDecoder.decode(getParameterTextarea(request, PRM_CBOR_DATA))
+                                    :
+                getCborFromHex(getParameter(request, PRM_CBOR_DATA)));
             
             // This is certainly not something you would do in a normal case...
             

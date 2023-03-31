@@ -860,7 +860,8 @@ public abstract class CBORObject {
     }
 
     /**
-     * Returns CBOR object in pretty-printed diagnostic notation.
+     * Returns CBOR object in pretty-printed 
+     * <a href='package-summary.html#diagnostic-notation'>diagnostic notation</a>.
      */
     @Override
     public String toString() {

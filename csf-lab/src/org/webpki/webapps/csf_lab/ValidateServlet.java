@@ -36,7 +36,7 @@ import org.webpki.cbor.CBORValidator;
 import org.webpki.cbor.CBORX509Validator;
 import org.webpki.cbor.CBORCryptoConstants;
 import org.webpki.cbor.CBORCryptoUtils;
-import org.webpki.cbor.CBORDiagnosticParser;
+import org.webpki.cbor.CBORDiagnosticNotationDecoder;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
@@ -60,9 +60,9 @@ public class ValidateServlet extends CoreRequestServlet {
             }
             // Get the input data items
             CBORObject signedCborObject = (Boolean.valueOf(getParameter(request, CSF_OBJECT_IN_HEX)) ?
-                    getCborFromHex(getParameter(request, CSF_OBJECT))
-                                                :
-                    CBORDiagnosticParser.parse(getParameterTextarea(request, CSF_OBJECT)));
+                getCborFromHex(getParameter(request, CSF_OBJECT))
+                                            :
+                CBORDiagnosticNotationDecoder.decode(getParameterTextarea(request, CSF_OBJECT)));
             String validationKey = getParameter(request, CSF_VALIDATION_KEY);
             CBORObject signatureLabel = getSignatureLabel(request);
             

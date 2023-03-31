@@ -252,6 +252,14 @@
        <param name="file.base2" value=""/>
        <param name="file.base3" value=""/>
      </antcall>
+    <!-- HTML Doc task for Typed Decoders -->
+    <antcall target="_java2html">
+       <param name="doc.class" value="cbor_api_demo.TypedDecoderDemo"/>
+       <param name="doc.file" value="${doc_dir}/org/webpki/cbor/doc-files/typed-decoders.html"/>
+       <param name="file.base1" value="${src_generators}/cbor_api_demo/TypedDecoderDemo.java"/>
+       <param name="file.base2" value=""/>
+       <param name="file.base3" value=""/>
+     </antcall>
   	<!-- HTML Doc task for KeyGen2 -->
     <antcall target="_java2html">
        <param name="doc.class" value="org.webpki.keygen2.KeyGen2HTMLReference"/>

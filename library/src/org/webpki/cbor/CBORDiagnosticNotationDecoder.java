@@ -25,37 +25,37 @@ import java.util.ArrayList;
 /**
  * Class for converting diagnostic CBOR to CBOR.
  */
-public class CBORDiagnosticParser {
+public class CBORDiagnosticNotationDecoder {
 
     char[] cborDiagnostic;
     int index;
     boolean sequence;
     
-    CBORDiagnosticParser(String cborDiagnostic, boolean sequence) {
+    CBORDiagnosticNotationDecoder(String cborDiagnostic, boolean sequence) {
         this.cborDiagnostic = cborDiagnostic.toCharArray();
         this.sequence = sequence;
     }
     
     /**
-     * Parse Diagnostic CBOR to CBOR.
+     * Decodes diagnostic notation CBOR to CBOR.
      * 
      * @param cborDiagnostic String holding diagnostic (textual) CBOR
-     * @return CBORObject
+     * @return {@link CBORObject}
      * @throws IOException
      */
-    public static CBORObject parse(String cborDiagnostic) throws IOException {
-        return new CBORDiagnosticParser(cborDiagnostic, false).readToEOF();
+    public static CBORObject decode(String cborDiagnostic) throws IOException {
+        return new CBORDiagnosticNotationDecoder(cborDiagnostic, false).readToEOF();
     }
 
     /**
-     * Parse Diagnostic CBOR sequence to array of CBOR.
+     * Decodes diagnostic notation CBOR sequence to CBOR.
      * 
      * @param cborDiagnostic String holding diagnostic (textual) CBOR
-     * @return CBORObject[] Non-empty array of CBOR objects
+     * @return {@link CBORObject}[] Non-empty array of CBOR objects
      * @throws IOException
      */
-    public static CBORObject[] parseSequence(String cborDiagnostic) throws IOException {
-        return new CBORDiagnosticParser(cborDiagnostic, true).readSequenceToEOF();
+    public static CBORObject[] decodeSequence(String cborDiagnostic) throws IOException {
+        return new CBORDiagnosticNotationDecoder(cborDiagnostic, true).readSequenceToEOF();
     }
 
     private void reportError(String error) throws IOException {

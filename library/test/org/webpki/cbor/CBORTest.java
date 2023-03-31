@@ -2013,4 +2013,91 @@ public class CBORTest {
         }
     }
     
+    public static class ObjectOne extends CBORTypedDecoder {
+
+        int number;
+        
+        static final String OBJECT_ID   = "https://example.com/object-1";
+        static final CBORObject INT_KEY = new CBORInteger(1);
+        
+        @Override
+        protected void decode(CBORObject cborBody)
+                throws IOException, GeneralSecurityException {
+            number = cborBody.getMap().getObject(INT_KEY).getInt();
+        }
+
+        @Override
+        public String getObjectId() {
+            return OBJECT_ID;
+        }
+    }
+    
+    public static class ObjectTwo extends CBORTypedDecoder {
+        
+        static final String OBJECT_ID = "https://example.com/object-2";
+        
+        String justAString;
+
+        @Override
+        protected void decode(CBORObject cborBody)
+                throws IOException, GeneralSecurityException {
+            justAString = cborBody.getString();
+        }
+
+        @Override
+        public String getObjectId() {
+            return OBJECT_ID;
+        }
+    }
+    
+    public static class ObjectThree extends CBORTypedDecoder {
+        
+        String justAString;
+
+        @Override
+        protected void decode(CBORObject cborBody)
+                throws IOException, GeneralSecurityException {
+            justAString = cborBody.getString();
+        }
+
+        @Override
+        public String getObjectId() {
+            return "https://example.com/o3";
+        }
+
+    }
+
+    static final CBORTypedDecoderCache schemaCache = new CBORTypedDecoderCache()
+            .addToCache(ObjectOne.class)
+            .addToCache(ObjectTwo.class);
+
+    @Test
+    public void schemas() throws IOException, GeneralSecurityException {
+        CBORObject objectOne = new CBORTag(ObjectOne.OBJECT_ID,
+                new CBORMap().setObject(ObjectOne.INT_KEY, new CBORInteger(-343)));
+        CBORObject objectTwo = new CBORTag(ObjectTwo.OBJECT_ID, 
+                new CBORString("Hi there!"));
+        CBORObject o3 = new CBORTag("https://example.com/o3", 
+                new CBORString("Hi there!"));
+        try {
+            schemaCache.addToCache(ObjectOne.class);
+            fail("double");
+        } catch (Exception e) {
+            
+        }
+        
+        CBORTypedDecoder sco = schemaCache.decode(objectOne);
+        assertTrue("inst", sco instanceof ObjectOne);
+        assertTrue("data", ((ObjectOne)sco).number == -343);
+        assertTrue("cbor", objectOne.equals(sco.getRoot()));
+        sco = schemaCache.decode(objectTwo);
+        assertTrue("inst", sco instanceof ObjectTwo);
+        try {
+            schemaCache.decode(o3);
+            fail("should not");
+        } catch (Exception e) {
+            
+        }
+    }
+    
 }
