@@ -39,9 +39,9 @@ public class CBORTypedDecoderCache {
 
     private Hashtable<String, Class<? extends CBORTypedDecoder>> classMap = new Hashtable<>();
     
-    private CBORTypedDecoder getInstance(Class<? extends CBORTypedDecoder> schemaClass) {
+    private CBORTypedDecoder getInstance(Class<? extends CBORTypedDecoder> decoderClass) {
         try {
-            return schemaClass.getDeclaredConstructor().newInstance();
+            return decoderClass.getDeclaredConstructor().newInstance();
         } catch (InstantiationException | InvocationTargetException | 
                  NoSuchMethodException | IllegalAccessException e) {
             throw new RuntimeException(e);
@@ -49,7 +49,7 @@ public class CBORTypedDecoderCache {
     }
     
     /**
-     * Creates empty cache.
+     * Creates empty decoder cache.
      */
     public CBORTypedDecoderCache() {
         
@@ -88,11 +88,11 @@ public class CBORTypedDecoderCache {
     /**
      * Adds typed decoder class to cache.
      * 
-     * @param schemaClass Typed decoder class
+     * @param decoderClass Typed decoder class
      * @return {@link CBORTypedDecoderCache}
      */
-    public CBORTypedDecoderCache addToCache(Class<? extends CBORTypedDecoder> schemaClass) {
-        CBORTypedDecoder schemaObject = getInstance(schemaClass);
+    public CBORTypedDecoderCache addToCache(Class<? extends CBORTypedDecoder> decoderClass) {
+        CBORTypedDecoder schemaObject = getInstance(decoderClass);
         String objectId = schemaObject.getObjectId();
         if (classMap.put(objectId, schemaObject.getClass()) != null) {
             throw new RuntimeException("ObjectId already defined: " + objectId);
