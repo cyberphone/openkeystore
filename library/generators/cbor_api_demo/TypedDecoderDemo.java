@@ -14,12 +14,12 @@ import org.webpki.cbor.CBORTypedDecoderCache;
 
 public class TypedDecoderDemo {
     
-    // Typed decoder 1.
-    public static class DecoderOne extends CBORTypedDecoder {
+    // Typed decoder one.
+    public static class ObjectOne extends CBORTypedDecoder {
 
         int number;
         
-        static final String OBJECT_ID   = "https://example.com/object-1";
+        static final String OBJECT_ID   = "https://example.com/object-one";
         static final CBORObject INT_KEY = new CBORInteger(1);
         
         @Override
@@ -33,10 +33,10 @@ public class TypedDecoderDemo {
         }
     }
     
-    // Typed decoder 2.
-    public static class DecoderTwo extends CBORTypedDecoder {
+    // Typed decoder two.
+    public static class ObjectTwo extends CBORTypedDecoder {
         
-        static final String OBJECT_ID = "https://example.com/object-2";
+        static final String OBJECT_ID = "https://example.com/object-two";
         
         String justAString;
 
@@ -52,29 +52,29 @@ public class TypedDecoderDemo {
     }
     
     // Register the decoders.
-    static final CBORTypedDecoderCache schemaCache = new CBORTypedDecoderCache()
-            .addToCache(DecoderOne.class)
-            .addToCache(DecoderTwo.class);
+    static final CBORTypedDecoderCache decoderCache = new CBORTypedDecoderCache()
+            .addToCache(ObjectOne.class)
+            .addToCache(ObjectTwo.class);
 
     
     public static void main(String[] args) {
         try {
             // Create typed CBOR messages.
-            byte[] objectOne = new CBORTag(DecoderOne.OBJECT_ID,
-                    new CBORMap().setObject(DecoderOne.INT_KEY, new CBORInteger(-343)))
+            byte[] objectOne = new CBORTag(ObjectOne.OBJECT_ID,
+                    new CBORMap().setObject(ObjectOne.INT_KEY, new CBORInteger(-343)))
                         .encode();
             
-            byte[] objectTwo = new CBORTag(DecoderTwo.OBJECT_ID, 
+            byte[] objectTwo = new CBORTag(ObjectTwo.OBJECT_ID, 
                     new CBORString("Hi there!"))
                         .encode();
             
             // Decode and instantiate.
-            CBORTypedDecoder decodedObject = schemaCache.decode(CBORObject.decode(objectOne));
+            CBORTypedDecoder decodedObject = decoderCache.decode(CBORObject.decode(objectOne));
             
             // Dispatch to the proper handler for the associated decoder.
             switch (decodedObject.getObjectId()) {
-                case DecoderOne.OBJECT_ID:
-                    System.out.println("Number=" + ((DecoderOne)decodedObject).number);
+                case ObjectOne.OBJECT_ID:
+                    System.out.println("Number=" + ((ObjectOne)decodedObject).number);
                     break;
                     
                 default: 
