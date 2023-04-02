@@ -16,7 +16,7 @@ import org.webpki.util.HexaDecimal;
 
 public class EncryptionDemo {
     
-    // The same key as in the example but in COSE format.
+    // X25519 private key in COSE format.
     static final byte[] x25519_PRIVATE_KEY = HexaDecimal.decode(
             "a401012004215820e99a0cef205894960d9b1c05978513dccb" +
             "42a13bfbced523a51b8a117ad5f00c2358207317e5f3a11599" +
@@ -44,6 +44,7 @@ public class EncryptionDemo {
             String secretMessage = new String(decryptedData, "utf-8");
             System.out.println(secretMessage);
 //@begin@
+new CborDocumentLog(args[0], "#sample.program.key#", CBORObject.decode(x25519_PRIVATE_KEY));
 new CborDocumentLog(args[0], "#sample.program.hex#", cborBinary = 
 new CborDocumentLog().checkForChanges(cborBinary, HexaDecimal.decode(
         "a5010302a201381807a3010120042158203e9c03b4e2ccb023272fe0f1a5a41" +
