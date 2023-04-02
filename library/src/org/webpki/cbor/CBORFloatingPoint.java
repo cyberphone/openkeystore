@@ -29,6 +29,11 @@ package org.webpki.cbor;
  */
 public class CBORFloatingPoint extends CBORObject {
 
+    /**
+     * Underlying IEEE 754 type.  
+     */
+    public enum IeeeVariant {F16, F32, F64};
+
     double value;
     
     /**
@@ -152,7 +157,17 @@ public class CBORFloatingPoint extends CBORObject {
     public CBORTypes getType() {
         return CBORTypes.FLOATING_POINT;
     }
-    
+
+    /**
+     * Returns actual IEEE 754 type.
+     * @return {@link IeeeVariant}
+     */
+    public IeeeVariant getIeeeVariant() {
+       return tag == MT_FLOAT16 ?
+                IeeeVariant.F16 : tag == MT_FLOAT32 ? 
+                                    IeeeVariant.F32 : IeeeVariant.F64;
+    }
+
     @Override
     public byte[] encode() {
         return encodeTagAndValue(tag, 2 << (tag - MT_FLOAT16), bitFormat);

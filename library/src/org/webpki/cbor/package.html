@@ -233,6 +233,8 @@ By adhering to the
 specification above, CBOR data can be <i>bidirectionally</i>
 converted between its native (binary) format and diagnostic notation
 without getting corrupted.
+Caveat: for reliable conversions, floating point values <b>must</b>
+be aligned with IEEE&nbsp;754 serialization and rounding rules.
 </p>
 <p>
 Creating CBOR data in diagnostic notation is provided by {@link CBORObject#toString()}.

@@ -39,6 +39,8 @@ import java.util.Locale;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import org.webpki.cbor.CBORFloatingPoint.IeeeVariant;
+
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.ContentEncryptionAlgorithms;
 import org.webpki.crypto.HmacAlgorithms;
@@ -296,6 +298,21 @@ public class CBORTest {
         double v = Double.valueOf(asText);
         try {
             CBORObject cborObject = parseCborHex(hex);
+            int l;
+            if (mustFail == 0) {
+                switch (((CBORFloatingPoint) cborObject).getIeeeVariant()) {
+                    case F16:
+                        l = 3;
+                        break;
+                    case F32:
+                        l = 5;
+                        break;
+                    default:
+                        l = 9;
+                        break;
+                }
+                assertTrue("ieee", l == cborObject.encode().length);
+            }
             assertFalse("Double should fail", mustFail == 1);
             Double d = cborObject.getDouble();
             assertTrue("Equal d=" + d + " v=" + v, (d.compareTo(v)) == 0 ^ (mustFail != 0));
