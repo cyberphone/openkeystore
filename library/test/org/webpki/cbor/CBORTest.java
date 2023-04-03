@@ -39,8 +39,6 @@ import java.util.Locale;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import org.webpki.cbor.CBORFloatingPoint.IeeeVariant;
-
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.ContentEncryptionAlgorithms;
 import org.webpki.crypto.HmacAlgorithms;
@@ -56,6 +54,7 @@ import org.webpki.json.JSONParser;
 import org.webpki.json.SymmetricKeys;
 
 import org.webpki.util.ArrayUtil;
+import org.webpki.util.Base64URL;
 import org.webpki.util.HexaDecimal;
 import org.webpki.util.PEMDecoder;
 
@@ -2116,5 +2115,19 @@ public class CBORTest {
             
         }
     }
-    
+
+    @Test
+    public void diagnosticNotation() throws Exception {
+        String b64u = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+        CBORObject decoded = CBORDiagnosticNotationDecoder.decode("b64'" + b64u + "'");
+        assertTrue("b64u", b64u.equals(Base64URL.encode(decoded.getBytes())));
+        String b64 = b64u.replace('-', '+').replace('_', '/');
+        decoded = CBORDiagnosticNotationDecoder.decode("b64'" + b64 + "'");
+        assertTrue("b64", b64u.equals(Base64URL.encode(decoded.getBytes())));
+        assertTrue("dbl", CBORDiagnosticNotationDecoder.decode("3.5").getDouble() == 3.5);
+        assertTrue("int", CBORDiagnosticNotationDecoder.decode("1000").getInt() == 1000);
+        String big = "100000000000000000000000000";
+        assertTrue("big", CBORDiagnosticNotationDecoder.decode(big).getBigInteger().equals(
+                new BigInteger(big)));
+    }
 }

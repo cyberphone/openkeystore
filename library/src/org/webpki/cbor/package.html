@@ -239,4 +239,48 @@ be aligned with IEEE&nbsp;754 serialization and rounding rules.
 <p>
 Creating CBOR data in diagnostic notation is provided by {@link CBORObject#toString()}.
 </p>
+The following table shows how CBOR objects should be represented in 
+diagnostic notation:
+ <div class='webpkifloat'>
+<table class='webpkitable' style='margin-left:2em'>
+<tr><th>CBOR&nbsp;Object</th><th>Syntax</th><th>Notes</th><th>Description</th></tr>
+<tr><td><code>integer</code></td><td rowspan='2'>{<i>sign</i>}<code>n</td>
+<td rowspan='2'>1</td><td rowspan='2'>
+Arbitrary sized integers without fractional components or exponents.
+The value defines its CBOR counterpart.
+</td></tr>
+<tr><td><code>big&nbsp;integer</code></tr>
+<tr><td rowspan='3'><code>floating&nbsp;point</code></td>
+<td>{<i>sign</i>}<code>n.n</code>{<i>exponent</i>}</td>
+<td>2</td><td>Floating point values
+must include a decimal point.
+Optional exponents must be expressed as: <code>e&pm;n</code></td></tr>
+<tr><td><code>NaN</code></td><td></td><td>Not a number.</td></tr>
+<tr><td>{<i>sign</i>}<code>Infinity</code></td><td></td><td>Infinity.</td></tr>
+<tr><td rowspan='3'><code>byte&nbsp;string</code></td>
+<td><code>h'cc'</code></td><td>3</td>
+<td>Byte data provided in hexadecimal notation.</td></tr>
+<tr><td><code>b64'uu'</code></td><td>3</td>
+<td>Byte data provided in base64 or base64URL notation.</td></tr>
+<tr><td><code>'text'</code></td><td>4, 5</td>
+<td>Byte data provided as UTF-8 encoded text.</td></tr>
+<tr><td><code>text&nbsp;string</code></td>
+<td><code>&quot;text&quot;</code><td>4, 5</td><td>UTF-8 encoded text string.</td></tr>
+<tr><td><code>true</code></td><td><code>true</code></td><td></td><td><code>true</code>.</td></tr>
+<tr><td><code>false</code></td><td><code>false</code></td><td></td><td><code>false</code>.</td></tr>
+<tr><td><code>null</code></td><td><code>null</code></td><td></td><td><code>null</code>.</td></tr>
+<tr><td><code>array</code></td><td><code>[</code>&nbsp;<i>elements</i>&nbsp;<code>]</code></td>
+<td></td><td>Array with zero or more comma separated CBOR objects.</td></tr>
+<tr><td><code>map</code></td><td><code>{</code>&nbsp;<i>key</i><code>:</code><i>value</i>&nbsp;<code>}</code></td>
+<td></td><td>Map with zero or more comma separated key/value pairs.
+keys and values may be any valid CBOR objects.</td></tr>
+<tr><td><code>tag</code></td><td><code>n(</code>&nbsp;<i>object</i>&nbsp;<code>)</code></td>
+<td></td><td>Tag holding any valid CBOR object.</td></tr>
+</table>
+</div>
+1] The optional {<i>sign</i>} must be '-' only.<br>
+2] Floating point data covers the 16, 32, and 64-bit IEEE&nbsp;754 variants.<br>
+3] Whitespace including newline is permitted (<i>ignored</i>).<br> 
+4] Whitespace including newline is permitted and becomes a part of the text.<br>
+5] Strings support JavScript compatible escape sequences. 
 </body>

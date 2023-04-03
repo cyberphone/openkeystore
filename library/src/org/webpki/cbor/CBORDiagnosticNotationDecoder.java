@@ -22,6 +22,8 @@ import java.math.BigInteger;
 
 import java.util.ArrayList;
 
+import org.webpki.util.Base64URL;
+
 /**
  * Class for converting diagnostic CBOR to CBOR.
  */
@@ -173,11 +175,22 @@ public class CBORDiagnosticNotationDecoder {
                 }
                 return map;
        
-            case '"':
-                return getString();
+            case '\'':
+                return getString(true);
                 
+            case '"':
+                return getString(false);
+
             case 'h':
-                return getBytes();
+                return getBytes(false);
+
+            case 'b':
+                if (nextChar() == '3') {
+                    scanFor("32'");
+                    reportError("b32 not implemented");
+                }
+                scanFor("64");
+                return getBytes(true);
                 
             case 't':
                 scanFor("rue");
@@ -207,9 +220,7 @@ public class CBORDiagnosticNotationDecoder {
             case '7':
             case '8':
             case '9':
-
-            case '+':
-                return getNumberOrTag();
+               return getNumberOrTag();
 
             case 'N':
                 scanFor("aN");
@@ -298,13 +309,20 @@ public class CBORDiagnosticNotationDecoder {
         }
     }
 
-    private CBORObject getString() throws IOException {
+    private CBORObject getString(boolean byteString) throws IOException {
         StringBuilder s = new StringBuilder();
         while (true) {
             char c;
             switch (c = readChar()) {
+                // Multiline extension
+                case '\n':
+                case '\r':
+                case '\t':
+                    break;
+
                 case '\\':
                     switch (c = readChar()) {
+                        case '\'':
                         case '"':
                         case '\\':
                             break;
@@ -342,7 +360,16 @@ public class CBORDiagnosticNotationDecoder {
                     break;
  
                 case '"':
-                    return new CBORString(s.toString());
+                    if (!byteString) {
+                        return new CBORString(s.toString());
+                    }
+                    break;
+
+                case '\'':
+                    if (byteString) {
+                        return new CBORBytes(s.toString().getBytes("utf-8"));
+                    }
+                    break;
                     
                 default:
                     if (c < ' ') {
@@ -353,28 +380,45 @@ public class CBORDiagnosticNotationDecoder {
         }
     }
     
-    private CBORObject getBytes() throws IOException {
+    private CBORObject getBytes(boolean b64) throws IOException {
         StringBuilder s = new StringBuilder();
         scanFor("'");
-        char c;
-        while ((c = readChar()) != '\'') {
-            s.append(hexCharToChar(c));
+        while(true) {
+            char c;
+            switch (c = readChar()) {
+                case '\'':
+                    break;
+               
+                case ' ':
+                case '\r':
+                case '\n':
+                case '\t':
+                    continue;
+
+                default:
+                    s.append(b64 ? c : hexCharToChar(c));
+                    continue;
+            }
+            break;
         }
-        String hex = s.toString();
-        int l = hex.length();
-        if ((l & 1) != 0) {
+        String encoded = s.toString();
+        if (b64) {
+            return new CBORBytes(Base64URL.decode(encoded.replace('+', '-').replace('/', '_')));
+        }
+        int length = encoded.length();
+        if ((length & 1) != 0) {
             reportError("Uneven number of hex characters");
         }
-        byte[] bytes = new byte[l >> 1];
+        byte[] bytes = new byte[length >> 1];
         int q = 0;
         int i = 0;
-        while (q < l) {
-            bytes[i++] = (byte)((hex.charAt(q++) << 4) + hex.charAt(q++));
+        while (q < length) {
+            bytes[i++] = (byte)((encoded.charAt(q++) << 4) + encoded.charAt(q++));
         }
         return new CBORBytes(bytes);
     }
 
-    private char hexCharToChar(char c) throws IOException {
+     private char hexCharToChar(char c) throws IOException {
         switch (c) {
             case '0': case '1': case '2': case '3': case '4':
             case '5': case '6': case '7': case '8': case '9':
