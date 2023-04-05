@@ -30,46 +30,46 @@ identical to "<code>Bignums</code>" in the RFC.</li>
 In addition to the primitives above, this implementation also supports
 arbitrary tagged objects based on CBOR major type 6 ({@link CBORTag}).
 </p>
-<h3 id='deterministic-serialization'>Deterministic Serialization</h3>
+<h3 id='deterministic-encoding'>Deterministic Encoding</h3>
 In some security related applications, "raw" CBOR data is subjected
 to cryptographic operations like hashing and signatures.
 To make this possible without additional processing,
 data must be in a stable form "on&nbsp;the&nbsp;wire".
 This can either be achieved by using the binary "as&nbsp;is", or through
-deterministic serialization.
+deterministic encoding.
 This section describes a variant of latter, making compliant CBOR systems
 less dependent on specific encoder and decoder designs.
-Deterministic serialization also makes comparisons easier since they can
+Deterministic encoding also makes comparisons easier since they can
 be performed at the binary level.
 <div style='margin-top:0.7em'>
 It is in this context worth noting that XML and JSON do not support
-deterministic serialization.
+deterministic encoding.
 </div>
 <div id='standards-proposal' class='webpkicomment' style='margin:1.5em 0'>
 Although APIs may be quite different compared to the API of this package,
-the deterministic serialization scheme described here
+the deterministic encoding scheme described here
 is intended as a <i>standard</i>, not limited to specific platforms.
 </div>
 <div id='adoption-criterion'>
-To facilitate mainstream adoption, the serialization scheme is aligned with
-current best practices for serializing CBOR primitives and should
+To facilitate mainstream adoption, the encoding scheme is aligned with
+current best practices for encoding CBOR primitives and should
 with moderate efforts work with most existing CBOR encoders and decoders.
 In fact, having a <i>single</i> way of representing CBOR data
 should simplify both implementations and associated testing.
-The serialization scheme has been verified to also be usable in highly
+The encoding scheme has been verified to also be usable in highly
 constrained systems, albeit requiring detailed knowledge of how
-a specific tool addresses serialization of CBOR objects.
+a specific tool addresses encoding of CBOR objects.
 Note that a compliant implementation does not have to support all CBOR primitives,
 it is sufficient that the ones that actually are used by the associated applications,
 conform to this specification.
 </div>
 <div style='margin-top:0.8em'>
-The serialization scheme adheres to section 4.2 of RFC&nbsp;8949, but adds
+The encoding scheme adheres to section 4.2 of RFC&nbsp;8949, but adds
 a few constraints (denoted by RFC+), where the RFC offers choices.
-The serialization rules are as follows:
+The encoding rules are as follows:
 </div>
 <ul>
-<li id='integer-serialization' class='webpkilistspacing'>
+<li id='integer-encoding' class='webpkilistspacing'>
   RFC: Integers, represented by the <code>integer</code> and 
 <code>big&nbsp;integer</code> types, <b>must</b> use the <code>integer</code>
 type if the value is between -2^64 and 2^64-1, otherwise the
@@ -93,14 +93,14 @@ Note that integers <b>must not</b> be supplied with
 <i>leading zero bytes</i> (like <code>1900ff</code>) unless the
 CBOR representation offers no alternative (like <code>1b000000ffffffffff</code>).
 <div style='margin:0.7em 0 0.3em 0'>
-Note that the integer serialization scheme above does not always return the
+Note that the integer encoding scheme above does not always return the
 most compact representation; the value 
 <code>1099511627775</code> 
 (<code>0xffffffffff</code>)
 would actually yield two bytes less using the <code>big&nbsp;integer</code> type. 
 </div>
 </li>
-<li id='floating-point-serialization' class='webpkilistspacing'>
+<li id='floating-point-encoding' class='webpkilistspacing'>
   RFC+: Floating point data <b>must</b> use the shortest IEEE&nbsp;754
   variant and associated CBOR encoding.
 The following table holds floating point values needing special considerations
@@ -133,7 +133,7 @@ Note that <code>NaN</code> "signaling" (like <code>f97e01</code>),
 Note that the shortest encoding may result in <i>subnormal</i>
 numbers like <code>f98001</code>.
 </div>
-<li id='number-serialization' class='webpkilistspacing'>
+<li id='number-encoding' class='webpkilistspacing'>
   RFC+: Floating point and integer objects <b>must</b> be treated as <i>distinct types</i>
 regardless of their numeric value, which is compliant with
 Rule&nbsp;2 in section 4.2.2 as well
@@ -165,7 +165,7 @@ For more control of the decoding process including dealing with CBOR sequences, 
 CBOR&nbsp;decoding&nbsp;options}.
 <p>
 On output ({@link CBORObject#encode()})
-deterministic serialization is always performed
+deterministic encoding is always performed
 regardless of if CBOR data was parsed or created programmatically.
 </p>
 <div id='map-key-constraints' class='webpkicomment' style='margin-bottom:0.3em'>
@@ -233,14 +233,14 @@ in diagnostic (textual) notation (as described in section 8 of RFC&nbsp;8949),
 making CBOR useful for "config" files as well.
 <p>
 By adhering to the
-<a href='#deterministic-serialization'>Deterministic Serialization</a> 
+<a href='#deterministic-encoding'>Deterministic Encoding</a> 
 specification above, CBOR data can be <i>bidirectionally</i>
 converted between its native (binary) format and diagnostic notation
 without getting corrupted.  Note though that a text-binary-text roundtrip
 does not necessarily return identical text; only the binary
 representation needs to remain deterministic.
 Caveat: for reliable conversions, floating point values <b>must</b>
-be aligned with IEEE&nbsp;754 serialization and rounding rules.
+be aligned with IEEE&nbsp;754 encoding and rounding rules.
 </p>
 <p>
 Creating CBOR data in diagnostic notation is provided by {@link CBORObject#toString()}.

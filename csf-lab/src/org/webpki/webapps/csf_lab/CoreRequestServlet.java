@@ -73,12 +73,17 @@ public class CoreRequestServlet extends HttpServlet {
     static final String FLG_CERT_PATH      = "cerflg";
     static final String FLG_PUB_INLINE     = "pubflg";
     
+    static final String DIAG_NOT_LINK      = "<a href='" +
+                                             "https://cyberphone.github.io/javaapi/org/webpki/" +
+                                             "cbor/package-summary.html#diagnostic-notation' " +
+                                             "titl='Documentation'>Diagnostic notation</a>";
+    
     static final String DIAG_OR_HEX = 
             "<table style='margin-bottom:0.3em;border-spacing:0'>" +
             "<tr><td><input type='radio' id='" + FLG_DIAGNOSTIC + 
             "' name='" + PRM_INPUT_TYPE + "' " +
             "checked onchange='setInputMode(true)' value='true'></td>" +
-            "<td>Diagnostic notation</td>" +
+            "<td>" + DIAG_NOT_LINK + "</td>" +
             "<td><input type='radio' name='" + PRM_INPUT_TYPE + "' " +
             "onchange='setInputMode(false)' value='false'></td> " +
             "<td>Hexadecimal notation (including possible #-comments)</td></tr>" +
@@ -112,7 +117,7 @@ public class CoreRequestServlet extends HttpServlet {
             "<table style='margin-bottom:0.3em;border-spacing:0'>" +
             "<tr><td><input type='radio' name='" + name + "' " +
             "value='" + DIAG + "'" + (input ? " checked" : "") + 
-              "></td><td>Diagnostic notation</td></tr>" +
+              "></td><td>" + DIAG_NOT_LINK + "</td></tr>" +
             "<tr><td><input type='radio' name='" + name + "' " +
             "value='" + HEXA + "'" + (input ? "" : " checked") +
             "></td><td>Hexadecimal notation" + (input ? " (including possible #-comments)" 

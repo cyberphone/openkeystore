@@ -261,6 +261,7 @@ public class CBORDiagnosticNotationDecoder {
                 case '\t':
                 case ',':
                 case ':':
+                case '>':
                 case ']':
                 case '}':
                 case '/':

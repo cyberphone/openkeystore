@@ -748,7 +748,7 @@ public abstract class CBORObject {
      * @param inputStream Stream holding CBOR data
      * @param sequenceFlag Stop reading after parsing a valid CBOR object
      * (no object returns <code>null</code>)
-     * @param nonDeterministic Do not check data for deterministic representation
+     * @param nonDeterministic Disable deterministic encoding check
      * @param constrainedKeys Limit map keys to text string and integer types,
      * including flagging mixing of these types in map
      * @param maxLength Holds maximum input size in 
