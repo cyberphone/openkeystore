@@ -205,10 +205,11 @@ public class CBORDiagnosticNotationDecoder {
                 return new CBORNull();
 
             case '-':
-                if (nextChar() == 'I') {
-                    scanFor("Infinity");
+                if (readChar() == 'I') {
+                    scanFor("nfinity");
                     return new CBORFloatingPoint(Double.NEGATIVE_INFINITY);
                 }
+                return getNumberOrTag(true);
 
             case '0':
             case '1':
@@ -220,7 +221,7 @@ public class CBORDiagnosticNotationDecoder {
             case '7':
             case '8':
             case '9':
-               return getNumberOrTag();
+               return getNumberOrTag(false);
 
             case 'N':
                 scanFor("aN");
@@ -237,9 +238,19 @@ public class CBORDiagnosticNotationDecoder {
         }
     }
 
-    private CBORObject getNumberOrTag() throws IOException {
+    private CBORObject getNumberOrTag(boolean negative) throws IOException {
         StringBuilder token = new StringBuilder();
         index--;
+        boolean hexFlag = false;
+        if (readChar() == '0') {
+            if (nextChar() == 'x') {
+                hexFlag = true;
+                readChar();
+            }
+        }
+        if (!hexFlag) {
+            index--;
+        }
         char c;
         boolean floatingPoint = false;
         do  {
@@ -253,16 +264,18 @@ public class CBORDiagnosticNotationDecoder {
         String number = token.toString();
         try {
             if (floatingPoint) {
+                testForHex(hexFlag);
                 Double value = Double.valueOf(number);
                 // Implicit overflow is not permitted
                 if (value.isInfinite()) {
                     reportError("Floating point value out of range");
                 }
-                return new CBORFloatingPoint(value);
+                return new CBORFloatingPoint(negative ? -value : value);
             }
             if (c == '(') {
-                // Do not accept '+', '-', or leading zeros
-                if (number.charAt(0) < '0' || (number.charAt(0) == '0' && number.length() > 1)) {
+                // Do not accept '-', 0xhhh, or leading zeros
+                testForHex(hexFlag);
+                if (negative || (number.length() > 1 && number.charAt(0) == '0')) {
                     reportError("Tag syntax error");
                 }
                 readChar();
@@ -276,17 +289,24 @@ public class CBORDiagnosticNotationDecoder {
                         reportError("Special tag " + CBORTag.RESERVED_TAG_COTX + " syntax error");
                     }
                 }
-                CBORTag cborTag = 
-                        new CBORTag(tagNumber, taggedObject);
+                CBORTag cborTag = new CBORTag(tagNumber, taggedObject);
                 scanFor(")");
                 return cborTag;
             }
+            BigInteger bigInteger = new BigInteger(number, hexFlag ? 16 : 10);
             // Slight quirk to get the proper CBOR integer type  
-            return CBORObject.decode(new CBORBigInteger(new BigInteger(number)).encode());
+            return CBORObject.decode(new CBORBigInteger(negative ? 
+                                             bigInteger.negate() : bigInteger).encode());
         } catch (IllegalArgumentException e) {
             reportError(e.getMessage());
         }
         return null; // For the compiler...
+    }
+
+    private void testForHex(boolean hexFlag) throws IOException {
+        if (hexFlag) {
+            reportError("Hexadecimal not permitted here");
+        }
     }
 
     private char nextChar() throws IOException {
@@ -322,6 +342,9 @@ public class CBORDiagnosticNotationDecoder {
 
                 case '\\':
                     switch (c = readChar()) {
+                        case '\n':
+                            continue;
+
                         case '\'':
                         case '"':
                         case '\\':
@@ -418,7 +441,7 @@ public class CBORDiagnosticNotationDecoder {
         return new CBORBytes(bytes);
     }
 
-     private char hexCharToChar(char c) throws IOException {
+    private char hexCharToChar(char c) throws IOException {
         switch (c) {
             case '0': case '1': case '2': case '3': case '4':
             case '5': case '6': case '7': case '8': case '9':
@@ -454,6 +477,12 @@ public class CBORDiagnosticNotationDecoder {
                 case '/':
                     readChar();
                     while (readChar() != '/') {
+                    }
+                    continue;
+                    
+                case '#':
+                    readChar();
+                    while (index < cborDiagnostic.length && readChar() != '\n') {
                     }
                     continue;
 

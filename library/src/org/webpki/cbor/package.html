@@ -19,9 +19,13 @@ primitives and their mapping to Java:
 <tr><td><code>null</code></td><td></td><td><code>null</code></td><td>{@link CBORNull}</td></tr>
 </table>
 </div>
-1] The distinction between unsigned and negative values is dealt with automatically.<br>
-2] <code>big&nbsp;integer</code> is in this implementation identical to "<code>Bignums</code>" in the RFC.<br>
-3] Floating point data covers the 16, 32, and 64-bit IEEE&nbsp;754 variants.
+<ol style='margin:0 0'>
+<li>The distinction between unsigned and negative values is
+ dealt with automatically.</li>
+<li><code>big&nbsp;integer</code> is in this implementation 
+identical to "<code>Bignums</code>" in the RFC.</li>
+<li>Floating point data covers the 16, 32, and 64-bit IEEE&nbsp;754 variants.</li>
+</ol>
 <p>
 In addition to the primitives above, this implementation also supports
 arbitrary tagged objects based on CBOR major type 6 ({@link CBORTag}).
@@ -232,7 +236,9 @@ By adhering to the
 <a href='#deterministic-serialization'>Deterministic Serialization</a> 
 specification above, CBOR data can be <i>bidirectionally</i>
 converted between its native (binary) format and diagnostic notation
-without getting corrupted.
+without getting corrupted.  Note though that a text-binary-text roundtrip
+does not necessarily return identical text; only the binary
+representation needs to remain deterministic.
 Caveat: for reliable conversions, floating point values <b>must</b>
 be aligned with IEEE&nbsp;754 serialization and rounding rules.
 </p>
@@ -243,11 +249,20 @@ The following table shows how CBOR objects should be represented in
 diagnostic notation:
  <div class='webpkifloat'>
 <table class='webpkitable' style='margin-left:2em'>
-<tr><th>CBOR&nbsp;Object</th><th>Syntax</th><th>Notes</th><th>Description</th></tr>
-<tr><td><code>integer</code></td><td rowspan='2'>{<i>sign</i>}<code>n</td>
+<tr><th>CBOR&nbsp;Object</th><th>Syntax</th><th>Notes</th><th style='min-width:30em'>Description</th></tr>
+<tr><td></td><td><code>/</code>&nbsp;<i>comment&nbsp;text</i>&nbsp;<code>/</code></td>
+<td></td><td>Multiline comment.
+Multiline comments are treated as whitespace and may thus also be used 
+<i>between</i> CBOR objects.</td></tr>
+<tr><td></td><td><code>#</code>&nbsp;<i>comment&nbsp;text</i>&nbsp;<code>\n</code></td>
+<td></td><td>Single-line comment.
+Single line comments are terminated by a newline character.</td></tr>
+<tr><td><code>integer</code></td>
+<td rowspan='2'>{<i>sign</i>}{<code>0x</code>}<code>n</code></td>
 <td rowspan='2'>1</td><td rowspan='2'>
 Arbitrary sized integers without fractional components or exponents.
 The value defines its CBOR counterpart.
+Hexadecimal notation is supported by prepending numbers with <code>0x</code>.
 </td></tr>
 <tr><td><code>big&nbsp;integer</code></tr>
 <tr><td rowspan='3'><code>floating&nbsp;point</code></td>
@@ -257,30 +272,43 @@ must include a decimal point.
 Optional exponents must be expressed as: <code>e&pm;n</code></td></tr>
 <tr><td><code>NaN</code></td><td></td><td>Not a number.</td></tr>
 <tr><td>{<i>sign</i>}<code>Infinity</code></td><td></td><td>Infinity.</td></tr>
-<tr><td rowspan='3'><code>byte&nbsp;string</code></td>
-<td><code>h'cc'</code></td><td>3</td>
+<tr><td rowspan='4'><code>byte&nbsp;string</code></td>
+<td><code>h'</code><i>hex&nbsp;data</i><code>'</code></td><td>3</td>
 <td>Byte data provided in hexadecimal notation.</td></tr>
-<tr><td><code>b64'uu'</code></td><td>3</td>
+<tr><td><code>b64'</code><i>base64&nbsp;data</i><code>'</code></td><td>3</td>
 <td>Byte data provided in base64 or base64URL notation.</td></tr>
-<tr><td><code>'text'</code></td><td>4, 5</td>
+<tr><td><code>'</code><i>text</i><code>'</code></td><td>4, 5</td>
 <td>Byte data provided as UTF-8 encoded text.</td></tr>
+<tr><td><code>&lt;&lt;</code>&nbsp;<i>object</i>&nbsp;<code>&gt;&gt;</code></td><td></td>
+<td>Construct holding a CBOR object which is subsequently embedded in a byte string.</td></tr>
 <tr><td><code>text&nbsp;string</code></td>
-<td><code>&quot;text&quot;</code><td>4, 5</td><td>UTF-8 encoded text string.</td></tr>
-<tr><td><code>true</code></td><td><code>true</code></td><td></td><td><code>true</code>.</td></tr>
-<tr><td><code>false</code></td><td><code>false</code></td><td></td><td><code>false</code>.</td></tr>
-<tr><td><code>null</code></td><td><code>null</code></td><td></td><td><code>null</code>.</td></tr>
+<td><code>&quot;</code><i>text</i><code>&quot;</code><td>4, 5</td><td>UTF-8 encoded text string.</td></tr>
+<tr><td><code>true</code></td><td><code>true</code></td><td></td>
+<td rowspan='2'>Boolean value.</td></tr>
+<tr><td><code>false</code></td><td><code>false</code></td><td></td></tr>
+<tr><td><code>null</code></td><td><code>null</code></td><td></td><td>Null value.</td></tr>
 <tr><td><code>array</code></td><td><code>[</code>&nbsp;<i>elements</i>&nbsp;<code>]</code></td>
 <td></td><td>Array with zero or more comma separated CBOR objects.</td></tr>
 <tr><td><code>map</code></td><td><code>{</code>&nbsp;<i>key</i><code>:</code><i>value</i>&nbsp;<code>}</code></td>
 <td></td><td>Map with zero or more comma separated key/value pairs.
-keys and values may be any valid CBOR objects.</td></tr>
+Keys and values are expressed as CBOR objects.</td></tr>
 <tr><td><code>tag</code></td><td><code>n(</code>&nbsp;<i>object</i>&nbsp;<code>)</code></td>
-<td></td><td>Tag holding any valid CBOR object.</td></tr>
+<td></td><td>Tag holding a CBOR object.</td></tr>
 </table>
 </div>
-1] The optional {<i>sign</i>} must only be '-'.<br>
-2] Floating point data covers the 16, 32, and 64-bit IEEE&nbsp;754 variants.<br>
-3] Whitespace including newline is permitted (<i>ignored</i>).<br> 
-4] Whitespace including newline is permitted and becomes a part of the text.<br>
-5] Text strings may also include JavaScript compatible escape sequences. 
+<ol style='margin:0 0'>
+<li>The optional {<i>sign</i>} must be a single <code>'-'</code> character.</li>
+<li>Floating point data covers the 16, 32, and 64-bit IEEE&nbsp;754 variants.</li>
+<li>Whitespace
+(<code>' '</code>, <code>'\t'</code>, <code>'\r'</code>, <code>'\n'</code>) 
+is permitted and <i>ignored</i>.</li> 
+<li>Whitespace
+(<code>' '</code>, <code>'\t'</code>, <code>'\r'</code>, <code>'\n'</code>) 
+is permitted and <i>becomes a part of the text</i>.
+To <i>avoid</i> getting newline characters (<code>'\n'</code>)
+included in multiline text strings,
+a <i>line continuation marker</i> consisting of a backslash&nbsp;(<code>'\'</code>)
+immediately preceding the newline may be used.</li>
+<li>Text strings may also include JavaScript compatible escape sequences.</li>
+</ol>
 </body>

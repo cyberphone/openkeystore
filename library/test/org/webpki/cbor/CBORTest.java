@@ -2116,8 +2116,23 @@ public class CBORTest {
         }
     }
 
+    static final String DIAG_TEXT = "text\nj";
+    static final String DIAG_BIG = "100000000000000000000000000";
+    static final CBORObject DIAG_CBOR;
+    static {
+        try {
+            DIAG_CBOR = new CBORMap()
+                    .setObject(new CBORInteger(1), new CBORString("Hi!"));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
     @Test
     public void diagnosticNotation() throws Exception {
+        assertTrue("#",
+                   CBORDiagnosticNotationDecoder.decode("# hi\r\n 1#commnt").getInt() == 1);
+        assertTrue("/",
+                   CBORDiagnosticNotationDecoder.decode("/ comment\n /1").getInt() == 1);
         String b64u = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
         CBORObject decoded = CBORDiagnosticNotationDecoder.decode("b64'" + b64u + "'");
         assertTrue("b64u", b64u.equals(Base64URL.encode(decoded.getBytes())));
@@ -2126,8 +2141,34 @@ public class CBORTest {
         assertTrue("b64", b64u.equals(Base64URL.encode(decoded.getBytes())));
         assertTrue("dbl", CBORDiagnosticNotationDecoder.decode("3.5").getDouble() == 3.5);
         assertTrue("int", CBORDiagnosticNotationDecoder.decode("1000").getInt() == 1000);
-        String big = "100000000000000000000000000";
-        assertTrue("big", CBORDiagnosticNotationDecoder.decode(big).getBigInteger().equals(
-                new BigInteger(big)));
+        assertTrue("big", CBORDiagnosticNotationDecoder.decode(DIAG_BIG).getBigInteger().equals(
+                new BigInteger(DIAG_BIG)));
+        assertTrue("bigh", CBORDiagnosticNotationDecoder.decode(
+                "0x" + DIAG_BIG).getBigInteger().equals(new BigInteger(DIAG_BIG, 16)));
+        assertTrue("bigh-", CBORDiagnosticNotationDecoder.decode(
+                "-0x" + DIAG_BIG).getBigInteger().equals(new BigInteger(DIAG_BIG, 16).negate()));
+        assertTrue("bstr", 
+                    ArrayUtil.compare(
+                            CBORDiagnosticNotationDecoder.decode(
+                                    "'" + DIAG_TEXT + "'").getBytes(),
+                            DIAG_TEXT.getBytes("utf-8")));
+        assertTrue("tstr", 
+                   DIAG_TEXT.equals(CBORDiagnosticNotationDecoder.decode(
+                           "\"" + DIAG_TEXT + "\"").getString()));
+        assertTrue("emb", ArrayUtil.compare(
+                          CBORDiagnosticNotationDecoder.decode(
+                                  "<< " + DIAG_CBOR.toString() + ">>").getBytes(),
+                          DIAG_CBOR.encode()));
+        Double v = CBORDiagnosticNotationDecoder.decode("Infinity").getDouble();
+        assertTrue("inf", v == Double.POSITIVE_INFINITY);
+        v = CBORDiagnosticNotationDecoder.decode("-Infinity").getDouble();
+        assertTrue("-inf", v == Double.NEGATIVE_INFINITY);
+        v = CBORDiagnosticNotationDecoder.decode("NaN").getDouble();
+        assertTrue("nan", v.isNaN());
+        CBORObject[] seq = CBORDiagnosticNotationDecoder.decodeSequence("1,\"" + DIAG_TEXT + "\"");
+        assertTrue("seq", seq.length == 2);
+        assertTrue("seqi", seq[0].getInt() == 1);
+        assertTrue("seqs", seq[1].getString().equals(DIAG_TEXT));
+       
     }
 }
