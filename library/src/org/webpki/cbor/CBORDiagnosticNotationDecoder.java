@@ -141,7 +141,6 @@ public class CBORDiagnosticNotationDecoder {
         return false;
     }
     
-    @SuppressWarnings("fallthrough")
     private CBORObject getRawObject() throws IOException {
         switch (readChar()) {
         
@@ -251,16 +250,34 @@ public class CBORDiagnosticNotationDecoder {
         if (!hexFlag) {
             index--;
         }
-        char c;
         boolean floatingPoint = false;
-        do  {
+        while (true)  {
             token.append(readChar());
-            c = nextChar();
-            if (c == '.' || c == 'e' || c == 'E') {
-                floatingPoint = true;
-                c = '0';
+            switch (nextChar()) {
+                case 0:
+                case ' ':
+                case '\n':
+                case '\r':
+                case '\t':
+                case ',':
+                case ':':
+                case ']':
+                case '}':
+                case '/':
+                case '#':
+                case '(':
+                case ')':
+                    break;
+                    
+                case '.':
+                    floatingPoint = true;
+                    continue;
+
+                default:
+                    continue;
             }
-        } while ((c >= '0' && c <= '9') || c == '+'  || c == '-');
+            break;
+        }
         String number = token.toString();
         try {
             if (floatingPoint) {
@@ -272,7 +289,7 @@ public class CBORDiagnosticNotationDecoder {
                 }
                 return new CBORFloatingPoint(negative ? -value : value);
             }
-            if (c == '(') {
+            if (nextChar() == '(') {
                 // Do not accept '-', 0xhhh, or leading zeros
                 testForHex(hexFlag);
                 if (negative || (number.length() > 1 && number.charAt(0) == '0')) {

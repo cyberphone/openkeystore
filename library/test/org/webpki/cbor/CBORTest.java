@@ -2118,15 +2118,27 @@ public class CBORTest {
 
     static final String DIAG_TEXT = "text\nj";
     static final String DIAG_BIG = "100000000000000000000000000";
+    static final String DIAG_HEX = "1e";
     static final CBORObject DIAG_CBOR;
     static {
         try {
             DIAG_CBOR = new CBORMap()
-                    .setObject(new CBORInteger(1), new CBORString("Hi!"));
+                    .setObject(new CBORInteger(1), 
+                            new CBORArray().addObject(new CBORString("Hi!")));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+    
+    void diagFlag(String wrongs) {
+        try {
+            CBORDiagnosticNotationDecoder.decode(wrongs);
+            fail("Should not");
+        } catch (Exception e) {
+            
+        }
+    }
+
     @Test
     public void diagnosticNotation() throws Exception {
         assertTrue("#",
@@ -2147,6 +2159,8 @@ public class CBORTest {
                 "0x" + DIAG_BIG).getBigInteger().equals(new BigInteger(DIAG_BIG, 16)));
         assertTrue("bigh-", CBORDiagnosticNotationDecoder.decode(
                 "-0x" + DIAG_BIG).getBigInteger().equals(new BigInteger(DIAG_BIG, 16).negate()));
+        assertTrue("hex", CBORDiagnosticNotationDecoder.decode(
+                "-0x" + DIAG_HEX).getInt() == -30);
         assertTrue("bstr", 
                     ArrayUtil.compare(
                             CBORDiagnosticNotationDecoder.decode(
@@ -2155,6 +2169,9 @@ public class CBORTest {
         assertTrue("tstr", 
                    DIAG_TEXT.equals(CBORDiagnosticNotationDecoder.decode(
                            "\"" + DIAG_TEXT + "\"").getString()));
+        assertTrue("tstr", 
+                   DIAG_TEXT.equals(CBORDiagnosticNotationDecoder.decode(
+                        "\"" + DIAG_TEXT.replace("te", "te\\\n") + "\"").getString()));
         assertTrue("emb", ArrayUtil.compare(
                           CBORDiagnosticNotationDecoder.decode(
                                   "<< " + DIAG_CBOR.toString() + ">>").getBytes(),
@@ -2169,6 +2186,13 @@ public class CBORTest {
         assertTrue("seq", seq.length == 2);
         assertTrue("seqi", seq[0].getInt() == 1);
         assertTrue("seqs", seq[1].getString().equals(DIAG_TEXT));
-       
+        
+        diagFlag("0x ");
+        diagFlag("056(8)");  // leading zero
+        diagFlag("-56(8)");  // Neg
+        CBORDiagnosticNotationDecoder.decode("18446744073709551615(8)");
+        diagFlag("18446744073709551616(8)");  // Too large
+        CBORDiagnosticNotationDecoder.decode("1.0e+300");
+        diagFlag("1.0e+500");  // Too large
     }
 }
