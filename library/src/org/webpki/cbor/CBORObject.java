@@ -22,7 +22,7 @@ import java.io.InputStream;
 
 import java.math.BigInteger;
 
-import org.webpki.util.ArrayUtil;
+import java.util.Arrays;
 
 /**
  * Base class for all CBOR objects.
@@ -852,7 +852,7 @@ public abstract class CBORObject {
     @Override
     public boolean equals(Object object) {
         try {
-            return ArrayUtil.compare(((CBORObject) object).encode(), encode());
+            return Arrays.equals(((CBORObject) object).encode(), encode());
         } catch (Exception e) {
             return false;
         }

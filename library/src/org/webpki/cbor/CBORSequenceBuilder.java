@@ -30,7 +30,7 @@ public class CBORSequenceBuilder {
     /**
      * Creates a CBOR sequence builder.
      * <p>
-     * See {@link CBORObject#decode(InputStream, boolean, boolean, boolean, Integer)}.
+     * See {@link CBORObject#decode(java.io.InputStream, boolean, boolean, boolean, Integer)}.
      * </p>
      * 
      */
