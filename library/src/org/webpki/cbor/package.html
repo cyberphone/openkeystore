@@ -260,16 +260,16 @@ Single-line comments are terminated by a newline character (<code>'\n'</code>).<
 <td rowspan='2'>{<i>sign</i>}{<code>0x</code>}<i>n</i></td>
 <td rowspan='2'>1, 2</td><td rowspan='2'>
 Arbitrary sized integers without fractional components or exponents.
-The integer value defines its <a href='#integer-encoding'>CBOR counterpart</a>.
 Hexadecimal notation is supported by prepending numbers with <code>0x</code>.
+See <a href='#integer-encoding'>CBOR integer encoding</a>.
 </td></tr>
 <tr><td><code>big&nbsp;integer</code></tr>
 <tr><td rowspan='3'><code>floating&nbsp;point</code></td>
 <td>{<i>sign</i>}<i>n</i><code>.</code><i>n</i>{<code>e&pm;</code><i>n</i>}</td>
 <td>1, 2</td><td>Floating point values
 must include a decimal point and an <i>optional</i> exponent.
-The floating point value defines its 
-<a href='#floating-point-encoding'>CBOR counterpart</a>.</td></tr>
+See <a href='#floating-point-encoding'>CBOR floating point encoding</a>.
+</td></tr>
 <tr><td><code>NaN</code></td><td></td><td>Not a number.
 See <a href='#floating-point-encoding'>CBOR floating point encoding</a>.
 </td></tr>
@@ -302,8 +302,8 @@ Keys and values are expressed as CBOR objects.</td></tr>
 </table>
 </div>
 <ol style='margin:0 0'>
-<li>The letter <i>n</i> denotes one or more digits.</li>
-<li>The optional {<i>sign</i>} must be a single <code>'-'</code> character.</li>
+<li>The letter <i>n</i> in the <code>Syntax</code> column denotes one or more digits.</li>
+<li>The optional {<i>sign</i>} must be a single hyphen (<code>'-'</code>) character.</li>
 <li>Whitespace
 (<code>' '</code>, <code>'\t'</code>, <code>'\r'</code>, <code>'\n'</code>) 
 is permitted and <i>ignored</i>.</li> 
