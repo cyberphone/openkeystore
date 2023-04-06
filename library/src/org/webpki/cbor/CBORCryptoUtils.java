@@ -253,7 +253,7 @@ public class CBORCryptoUtils {
         if (!keyEncryptionAlgorithm.isRsa()) {
             // ECDH-ES requires the ephemeral public key
             keyEncryption.setObject(EPHEMERAL_KEY_LABEL,
-                                    CBORPublicKey.encode(
+                                    CBORPublicKey.convert(
                                         asymmetricEncryptionResult.getEphemeralKey()));
         }
         if (keyEncryptionAlgorithm.isKeyWrap()) {
@@ -283,7 +283,7 @@ public class CBORCryptoUtils {
             EncryptionCore.receiverKeyAgreement(true,
                                                 keyEncryptionAlgorithm,
                                                 contentEncryptionAlgorithm,
-                                                CBORPublicKey.decode(
+                                                CBORPublicKey.convert(
                                                     innerObject.getObject(EPHEMERAL_KEY_LABEL)),
                                                 privateKey,
                                                 encryptedKey);

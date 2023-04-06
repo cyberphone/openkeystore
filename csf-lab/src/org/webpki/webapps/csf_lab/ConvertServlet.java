@@ -162,7 +162,7 @@ public class ConvertServlet extends CoreRequestServlet {
             .append(HTML.fancyBox(
                         CBOR_OUT,
                         "",
-                        selector(SEL_OUT, false) + "Converted result in <i>deterministic representation</i>"))           
+                        selector(SEL_OUT, false) + "Converted result using " + DETERMINISTIC_LINK))           
             .append(
                 "<div style='display:flex;justify-content:center'>" +
                 "<div class='stdbtn' onclick=\"delayedConvert()\">" +

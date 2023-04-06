@@ -20,11 +20,10 @@ import java.io.IOException;
 
 import javax.servlet.ServletException;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class HomeServlet extends HttpServlet {
+public class HomeServlet extends CoreRequestServlet {
 
     private static final long serialVersionUID = 1L;
     
@@ -47,7 +46,7 @@ public class HomeServlet extends HttpServlet {
             "using digital signatures. Unlike COSE " +
             "[<a href='https://datatracker.ietf.org/doc/html/rfc8152' " +
             "target='_blank' title='cose'>RFC&nbsp;8152</a>], " +
-            "CSF utilizes <i>deterministic</i> encoding enabling signatures " +
+            "CSF utilizes " + DETERMINISTIC_LINK + " enabling signatures " +
             "to become a part of the application data, rather than embedding " +
             "such data in signatures.  For detailed technical information " +
             "click on the CSF logotype.</div>" +

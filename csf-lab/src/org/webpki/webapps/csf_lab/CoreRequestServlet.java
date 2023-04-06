@@ -76,8 +76,21 @@ public class CoreRequestServlet extends HttpServlet {
     static final String DIAG_NOT_LINK      = "<a href='" +
                                              "https://cyberphone.github.io/javaapi/org/webpki/" +
                                              "cbor/package-summary.html#diagnostic-notation' " +
-                                             "titl='Documentation'>Diagnostic notation</a>";
+                                             "target='_blank' " +
+                                             "title='Documentation'>Diagnostic Notation</a>";
     
+    static final String DETERMINISTIC_LINK = "<a href='" +
+                                             "https://cyberphone.github.io/javaapi/org/webpki/" +
+                                             "cbor/package-summary.html#deterministic-encoding' " +
+                                             "target='_blank' " +
+                                             "title='Documentation'>Deterministic Encoding</a>";
+
+    static final String KEY_CONSTRAINT_LINK = "<a href='" +
+                                             "https://cyberphone.github.io/javaapi/org/webpki/" +
+                                             "cbor/package-summary.html#map-key-constraints' " +
+                                             "target='_blank' " +
+                                             "title='Documentation'>Constrained Map Keys</a>";
+
     static final String DIAG_OR_HEX = 
             "<table style='margin-bottom:0.3em;border-spacing:0'>" +
             "<tr><td><input type='radio' id='" + FLG_DIAGNOSTIC + 
@@ -129,10 +142,9 @@ public class CoreRequestServlet extends HttpServlet {
             (input ? "<tr><td><input type='checkbox' id='" + SEQUENCE + "'>" +
                     "</td><td>Sequence</td></tr>" +
                     "<tr><td><input type='checkbox' checked id='" + DETERMINISTIC + "'>" +
-                    "</td><td>Require <i>deterministic representation</i> " +
-                        "for hex/b64u data</td></tr>" +
+                    "</td><td>Require " + DETERMINISTIC_LINK + " for hex/b64u data</td></tr>" +
                     "<tr><td><input type='checkbox' id='" + CONSTRAINED_MAP + "'>" +
-                    "</td><td>Require <i>constrained map keys</i></td></tr>": "") +
+                    "</td><td>Require " + KEY_CONSTRAINT_LINK + "</td></tr>": "") +
             "</table>";
     }
 

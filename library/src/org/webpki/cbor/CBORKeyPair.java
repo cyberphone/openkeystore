@@ -39,7 +39,10 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
 
 /**
  * Class handling CBOR/COSE private keys.
- * 
+ * <p>
+ * See {@link CBORPublicKey}.
+ * </p>
+ *
  */
 public class CBORKeyPair {
     
@@ -87,9 +90,9 @@ public class CBORKeyPair {
     * @throws IOException
     * @throws GeneralSecurityException
     */
-    public static CBORMap encode(KeyPair keyPair) 
+    public static CBORMap convert(KeyPair keyPair) 
            throws IOException, GeneralSecurityException {
-        CBORMap cosePrivateKey = CBORPublicKey.encode(keyPair.getPublic());
+        CBORMap cosePrivateKey = CBORPublicKey.convert(keyPair.getPublic());
         KeyAlgorithms keyAlg = KeyAlgorithms.getKeyAlgorithm(keyPair.getPublic());
         switch (keyAlg.getKeyType()) {
             case RSA:
@@ -131,8 +134,8 @@ public class CBORKeyPair {
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public static KeyPair decode(CBORObject cosePrivateKey) throws IOException, 
-                                                                   GeneralSecurityException {
+    public static KeyPair convert(CBORObject cosePrivateKey) throws IOException, 
+                                                                    GeneralSecurityException {
         CBORMap privateKeyMap = cosePrivateKey.getMap();
         PublicKey publicKey = CBORPublicKey.getPublicKey(privateKeyMap);
         PrivateKey privateKey = null;

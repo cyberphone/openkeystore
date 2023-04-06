@@ -969,8 +969,8 @@ public class CBORTest {
     }
     
     void backAndForth(KeyPair keyPair) throws Exception {
-        CBORObject cborPublicKey = CBORPublicKey.encode(keyPair.getPublic());
-        PublicKey publicKey = CBORPublicKey.decode(cborPublicKey);
+        CBORObject cborPublicKey = CBORPublicKey.convert(keyPair.getPublic());
+        PublicKey publicKey = CBORPublicKey.convert(cborPublicKey);
         assertTrue("PK" + cborPublicKey.toString(), publicKey.equals(keyPair.getPublic()));
     }
     
@@ -2000,19 +2000,19 @@ public class CBORTest {
     @Test
     public void keySerializing() throws Exception {
         for (KeyPair keyPair : new KeyPair[] {p256, x25519, ed25519, p521, r2048}) {
-            CBORMap cborPrivateKey = CBORKeyPair.encode(keyPair);
+            CBORMap cborPrivateKey = CBORKeyPair.convert(keyPair);
             assertTrue("priv", 
-                       CBORKeyPair.decode(cborPrivateKey)
+                       CBORKeyPair.convert(cborPrivateKey)
                            .getPrivate().equals(keyPair.getPrivate()));
             assertTrue("pub", 
-                       CBORKeyPair.decode(cborPrivateKey)
+                       CBORKeyPair.convert(cborPrivateKey)
                            .getPublic().equals(keyPair.getPublic()));
-            CBORMap cborPublicKey = CBORPublicKey.encode(keyPair.getPublic());
+            CBORMap cborPublicKey = CBORPublicKey.convert(keyPair.getPublic());
             assertTrue("pub", 
-                       CBORPublicKey.decode(cborPublicKey).equals(keyPair.getPublic()));
+                       CBORPublicKey.convert(cborPublicKey).equals(keyPair.getPublic()));
             try {
                 cborPrivateKey.setObject(new CBORString("key"), new CBORString("value"));
-                CBORKeyPair.decode(cborPrivateKey);
+                CBORKeyPair.convert(cborPrivateKey);
                 fail("must not execute");
             } catch (Exception e) {
                 checkException(e, 
@@ -2020,7 +2020,7 @@ public class CBORTest {
             }
             try {
                 cborPublicKey.setObject(new CBORString("key"), new CBORString("value"));
-                CBORPublicKey.decode(cborPublicKey);
+                CBORPublicKey.convert(cborPublicKey);
                 fail("must not execute");
             } catch (Exception e) {
                 checkException(e, 

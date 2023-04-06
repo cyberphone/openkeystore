@@ -25,7 +25,7 @@ public class EncryptionDemo {
     public static void main(String[] args) {
         try {
             // Get keys in Java format.
-            KeyPair keyPair = CBORKeyPair.decode(CBORObject.decode(x25519_PRIVATE_KEY));
+            KeyPair keyPair = CBORKeyPair.convert(CBORObject.decode(x25519_PRIVATE_KEY));
             PrivateKey receiverKey = keyPair.getPrivate();
             PublicKey senderKey = keyPair.getPublic();
             

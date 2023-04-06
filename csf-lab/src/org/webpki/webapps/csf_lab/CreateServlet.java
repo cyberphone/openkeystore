@@ -154,12 +154,12 @@ public class CreateServlet extends CoreRequestServlet {
               "' id='" + CSF_SIGN_LABEL + "' " +
             "style='padding:0 3pt;width:7em;font-family:monospace' " +
             "maxlength='100' value='" + CSFService.sampleLabel + "'>" +
-            "<div style='display:inline-block'>&nbsp;Signature label in <i>diagnostic notation</i></div></div>" +
+            "<div style='display:inline-block'>&nbsp;Signature label in " + DIAG_NOT_LINK + "</div></div>" +
             "<div style='margin-top:0.3em;display:flex;align-items:center'>" +
             "<input type='text' name='" + PRM_KEY_ID + "' id='" + PRM_KEY_ID + "' " +
             "style='padding:0 3pt;width:7em;font-family:monospace' " +
             "maxlength='100' value=''>" +
-            "<div style='display:inline-block'>&nbsp;Optional key Id in <i>diagnostic notation</i></div></div>" +
+            "<div style='display:inline-block'>&nbsp;Optional key Id in " + DIAG_NOT_LINK + "</div></div>" +
             "</div>" +
             "</div>" +
             "<div style='display:flex;justify-content:center'>" +

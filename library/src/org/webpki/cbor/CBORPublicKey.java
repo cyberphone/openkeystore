@@ -43,7 +43,9 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
 
 /**
  * Class handling CBOR/COSE public keys.
- * 
+ * <p>
+ * See {@link CBORKeyPair}.
+ * </p>
  */
 public class CBORPublicKey {
     
@@ -115,7 +117,7 @@ public class CBORPublicKey {
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public static CBORMap encode(PublicKey jcePublicKey) 
+    public static CBORMap convert(PublicKey jcePublicKey) 
             throws IOException, GeneralSecurityException {
         CBORMap cosePublicKey = new CBORMap();
         KeyAlgorithms keyAlg = KeyAlgorithms.getKeyAlgorithm(jcePublicKey);
@@ -224,7 +226,7 @@ public class CBORPublicKey {
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public static PublicKey decode(CBORObject cosePublicKey) 
+    public static PublicKey convert(CBORObject cosePublicKey) 
             throws IOException, GeneralSecurityException {
         CBORMap publicKeyMap = cosePublicKey.getMap();
         PublicKey publicKey = getPublicKey(publicKeyMap);

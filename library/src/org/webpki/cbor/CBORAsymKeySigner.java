@@ -128,7 +128,7 @@ public class CBORAsymKeySigner extends CBORSigner {
     @Override
     void additionalItems(CBORMap signatureObject) throws IOException, GeneralSecurityException {
         if (optionalPublicKey != null) {
-            signatureObject.setObject(PUBLIC_KEY_LABEL, CBORPublicKey.encode(optionalPublicKey));
+            signatureObject.setObject(PUBLIC_KEY_LABEL, CBORPublicKey.convert(optionalPublicKey));
             CBORCryptoUtils.rejectPossibleKeyId(optionalKeyId);
         }
     }

@@ -95,7 +95,7 @@ public class CoseKeyServlet extends CoreRequestServlet {
             
             // Now we have either just a public key or a key pair
             CBORMap cbor = keyPair == null ? 
-                    CBORPublicKey.encode(publicKey) : CBORKeyPair.encode(keyPair);
+                    CBORPublicKey.convert(publicKey) : CBORKeyPair.convert(keyPair);
             jsonResponse.setString(CBOR_OUT, 
                                    getFormattedCbor(parsedJson, new CBORObject[] {cbor}));
         } catch (Exception e) {

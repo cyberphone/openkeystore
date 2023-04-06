@@ -131,7 +131,8 @@ public class ValidateServlet extends CoreRequestServlet {
                 .append(HTML.fancyBox(
                             CSF_OBJECT,
                             signedCborObject.toString(),
-                            "Signed CBOR object in diagnostic notation"))           
+                            "Signed CBOR object in " + DIAG_NOT_LINK +
+                                    " and using " + DETERMINISTIC_LINK))           
                 .append(HTML.fancyBox(
                             "inhex",
                             HexaDecimal.encode(signedCborObject.encode()), 
@@ -200,7 +201,7 @@ public class ValidateServlet extends CoreRequestServlet {
                         CSF_SIGN_LABEL,
                         1, 
                         CSFService.sampleLabel,
-                        "Anticipated signature label in <i>diagnostic notation</i>"))
+                        "Anticipated signature label in " + DIAG_NOT_LINK))
             .append(
                 "<div style='display:flex;justify-content:center'>" +
                 "<div class='stdbtn' onclick=\"doVerify()\">" +

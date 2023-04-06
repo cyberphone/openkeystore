@@ -193,9 +193,8 @@ public abstract class CBORObject {
     /**
      * Returns Java <i>unsigned</i> <code>long</code> value.
       * <p>
-     * This method requires that the object is an unsigned
-     * {@link CBORInteger} and fits a Java <code>long</code> (sign bit is used as well),
-     * otherwise an exception will be thrown.
+     * This method requires that the object is an <i>unsigned</i>
+     * {@link CBORInteger}, otherwise an exception will be thrown.
      * </p>
      * 
      * @return Java <code>long</code>

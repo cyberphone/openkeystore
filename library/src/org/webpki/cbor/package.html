@@ -257,19 +257,26 @@ Multi-line comments are treated as whitespace and may thus also be used
 <td></td><td>Single-line comment.
 Single-line comments are terminated by a newline character (<code>'\n'</code>).</td></tr>
 <tr><td><code>integer</code></td>
-<td rowspan='2'>{<i>sign</i>}{<code>0x</code>}<code>n</code></td>
-<td rowspan='2'>1</td><td rowspan='2'>
+<td rowspan='2'>{<i>sign</i>}{<code>0x</code>}<i>n</i></td>
+<td rowspan='2'>1, 2</td><td rowspan='2'>
 Arbitrary sized integers without fractional components or exponents.
 The integer value defines its <a href='#integer-encoding'>CBOR counterpart</a>.
 Hexadecimal notation is supported by prepending numbers with <code>0x</code>.
 </td></tr>
 <tr><td><code>big&nbsp;integer</code></tr>
 <tr><td rowspan='3'><code>floating&nbsp;point</code></td>
-<td>{<i>sign</i>}<code>n.n</code>{<code>e&pm;n</code>}</td>
-<td>2</td><td>Floating point values
-must include a decimal point and an <i>optional</i> exponent.</td></tr>
-<tr><td><code>NaN</code></td><td></td><td>Not a number.</td></tr>
-<tr><td>{<i>sign</i>}<code>Infinity</code></td><td></td><td>Infinity.</td></tr>
+<td>{<i>sign</i>}<i>n</i><code>.</code><i>n</i>{<code>e&pm;</code><i>n</i>}</td>
+<td>1, 2</td><td>Floating point values
+must include a decimal point and an <i>optional</i> exponent.
+The floating point value defines its 
+<a href='#floating-point-encoding'>CBOR counterpart</a>.</td></tr>
+<tr><td><code>NaN</code></td><td></td><td>Not a number.
+See <a href='#floating-point-encoding'>CBOR floating point encoding</a>.
+</td></tr>
+<tr><td>{<i>sign</i>}<code>Infinity</code></td><td></td>
+<td>Infinity.
+See <a href='#floating-point-encoding'>CBOR floating point encoding</a>.
+</td></tr>
 <tr><td rowspan='4'><code>byte&nbsp;string</code></td>
 <td><code>h'</code><i>hex&nbsp;data</i><code>'</code></td><td>3</td>
 <td>Byte data provided in hexadecimal notation.</td></tr>
@@ -290,13 +297,13 @@ must include a decimal point and an <i>optional</i> exponent.</td></tr>
 <tr><td><code>map</code></td><td><code>{</code>&nbsp;<i>key</i><code>:</code><i>value</i>&nbsp;<code>}</code></td>
 <td></td><td>Map with zero or more comma separated key/value pairs.
 Keys and values are expressed as CBOR objects.</td></tr>
-<tr><td><code>tag</code></td><td><code>n(</code>&nbsp;<i>object</i>&nbsp;<code>)</code></td>
-<td></td><td>Tag holding a CBOR object.</td></tr>
+<tr><td><code>tag</code></td><td><i>n</i><code>(</code>&nbsp;<i>object</i>&nbsp;<code>)</code></td>
+<td>1</td><td>Tag holding a CBOR object.</td></tr>
 </table>
 </div>
 <ol style='margin:0 0'>
+<li>The letter <i>n</i> denotes one or more digits.</li>
 <li>The optional {<i>sign</i>} must be a single <code>'-'</code> character.</li>
-<li>Floating point data covers the 16, 32, and 64-bit IEEE&nbsp;754 variants.</li>
 <li>Whitespace
 (<code>' '</code>, <code>'\t'</code>, <code>'\r'</code>, <code>'\n'</code>) 
 is permitted and <i>ignored</i>.</li> 
