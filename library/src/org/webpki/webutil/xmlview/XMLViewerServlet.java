@@ -115,7 +115,7 @@ public abstract class XMLViewerServlet extends HttpServlet {
                 "<form name=\"shoot\" action=\"" + baseurl + "/" + getXMLViewerName() + "/" + F +
                 "\" method=\"POST\" target=\"_blank\">" +
                 "<input type=\"hidden\" name=\"data\" value=\"" +
-                new Base64(false).getBase64StringFromBinary(data) +
+                Base64.encode(data) +
                 "\"></form>" +
                 "<a href=\"javascript:document.shoot.submit ()\">Click here to get raw XML</a><p>").
                 append((getSchemaViewerName() == null ? "" : "Click on XML name-space URIs to view the associated schemas<p><hr><p>")).
@@ -137,7 +137,7 @@ public abstract class XMLViewerServlet extends HttpServlet {
             bug("<b>Error: </b>udata is incorrect", response);
             return;
         }
-        byte[] data = new Base64().getBinaryFromBase64String(udata);
+        byte[] data = Base64.decode(udata);
         response.setContentType("text/xml");
         response.setDateHeader("EXPIRES", 0);
         response.getOutputStream().write(data);

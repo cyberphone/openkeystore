@@ -18,6 +18,8 @@ package org.webpki.crypto;
 
 import java.security.SecureRandom;
 
+import org.webpki.util.Base64URL;
+
 public class CryptoRandom {
 
     private CryptoRandom() { }
@@ -26,5 +28,14 @@ public class CryptoRandom {
         byte[] random = new byte[length];
         new SecureRandom().nextBytes(random);
         return random;
+    }
+
+    /**
+     * Generates a URL friendly encoded nonce.
+     * @param length Number of characters
+     * @return Encoded nonce
+     */
+    public static String generateURLFriendlyRandom(int length) {
+        return Base64URL.encode(generateRandom(length)).substring(0, length);
     }
 }

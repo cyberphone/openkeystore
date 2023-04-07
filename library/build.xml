@@ -384,6 +384,7 @@
 
     <copy todir="${android_dir}/org/webpki" preservelastmodified="true">
       <fileset dir="${src_dir}/org/webpki">
+        <include name="**/util/Base64URL.java"/>
         <include name="**/util/HexaDecimal.java"/>
         <include name="**/util/ArrayUtil.java"/>
         <include name="**/util/StringUtil.java"/>

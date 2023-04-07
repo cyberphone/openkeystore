@@ -37,6 +37,7 @@ import java.util.ArrayList;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.CryptoAlgorithms;
+import org.webpki.crypto.CryptoRandom;
 import org.webpki.crypto.DeviceID;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyContainerTypes;
@@ -57,7 +58,6 @@ import org.webpki.sks.PatternRestriction;
 import org.webpki.sks.SecureKeyStore;
 
 import org.webpki.util.ArrayUtil;
-import org.webpki.util.Base64URL;
 import org.webpki.util.ISODateTime;
 import org.webpki.util.MIMETypedObject;
 
@@ -1187,7 +1187,7 @@ public class ServerState {
         if (optionalServerSessionId == null) {
             optionalServerSessionId = Long.toHexString(new GregorianCalendar().getTimeInMillis());
             optionalServerSessionId += 
-                    Base64URL.generateURLFriendlyRandom(
+                    CryptoRandom.generateURLFriendlyRandom(
                             SecureKeyStore.MAX_LENGTH_ID_TYPE - optionalServerSessionId.length());
         }
         serverSessionId = optionalServerSessionId;

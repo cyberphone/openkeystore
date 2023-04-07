@@ -21,12 +21,14 @@ package org.webpki.util;
  * See RFC 4648 Table 2.
  */
 public class Base64URL {
+//#if !ANDROID
 
     private static final java.util.Base64.Encoder ENCODER = 
             java.util.Base64.getUrlEncoder().withoutPadding();
 
     private static final java.util.Base64.Decoder DECODER = 
             java.util.Base64.getUrlDecoder();
+//#endif
 
     private Base64URL() {}  // No instantiation please
 
@@ -43,7 +45,11 @@ public class Base64URL {
         if (base64url.contains("=")) {
             throw new IllegalArgumentException("Padding not allowed");
         }
+//#if ANDROID
+        return android.util.Base64.decode(base64url, android.util.Base64.URL_SAFE);
+//#else
         return DECODER.decode(base64url);
+//#endif
     }
 
     /**
@@ -56,19 +62,30 @@ public class Base64URL {
      * @return Decoded data as a byte array
      */
     public static byte[] decodePadded(String base64url) {
+//#if ANDROID
+        return android.util.Base64.decode(base64url, android.util.Base64.URL_SAFE);
+//#else
         return DECODER.decode(base64url);
+//#endif
     }
 
     /**
      * Converts a byte array to a base64url String.
      * <p>
-     * This method adds no padding.
+     * This method adds no padding or line wraps.
      * </p>
      *
      * @param byteArray Binary data
      * @return Encoded data as a String
      */
     public static String encode(byte[] byteArray) {
+//#if ANDROID
+        return android.util.Base64.encodeToString(byteArray,
+                                                  android.util.Base64.URL_SAFE |
+                                                    android.util.Base64.NO_PADDING |
+                                                    android.util.Base64.NO_WRAP);
+//#else
         return ENCODER.encodeToString(byteArray);
+//#endif
     }
 }

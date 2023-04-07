@@ -230,8 +230,7 @@ public class PEMDecoder {
             }
             int end = pemString.indexOf(footer, start);
             if (end < 0) throw new IOException("Expected to find: " + footer);
-            objects.add(new Base64()
-                .getBinaryFromBase64String(pemString.substring(start + header.length(), end)));
+            objects.add(Base64.decode(pemString.substring(start + header.length(), end)));
             start = end + footer.length();
         }
         return objects;

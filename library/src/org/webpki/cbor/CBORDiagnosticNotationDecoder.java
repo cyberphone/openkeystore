@@ -22,14 +22,12 @@ import java.math.BigInteger;
 
 import java.util.ArrayList;
 
-import java.util.Base64;
+import org.webpki.util.Base64URL;
 
 /**
  * Class for converting diagnostic CBOR to CBOR.
  */
 public class CBORDiagnosticNotationDecoder {
-
-    private static final Base64.Decoder b64Decoder = Base64.getDecoder();
 
     char[] cborDiagnostic;
     int index;
@@ -446,7 +444,8 @@ public class CBORDiagnosticNotationDecoder {
         }
         String encoded = s.toString();
         if (b64) {
-            return new CBORBytes(b64Decoder.decode(encoded.replace('-', '+').replace('_', '/')));
+            return new CBORBytes(
+                    Base64URL.decodePadded(encoded.replace('+', '-').replace('/', '_')));
         }
         int length = encoded.length();
         if ((length & 1) != 0) {

@@ -96,7 +96,7 @@ abstract class XMLSignerCore {
 
 
     private void updateBase64Field(Text node, byte[] data) throws IOException {
-        node.setNodeValue(new Base64(false).getBase64StringFromBinary(data));
+        node.setNodeValue(Base64.encode(data));
     }
 
 

@@ -103,12 +103,12 @@ public class DOMAttributeReaderHelper {
     }
 
     public byte[] getBinary(String name) throws NoSuchElementException, IOException {
-        return new Base64().getBinaryFromBase64String(getString(name));
+        return Base64.decode(getString(name));
     }
 
     public byte[] getBinaryConditional(String name) throws NoSuchElementException, IOException {
         String value = getStringConditional(name);
-        return value == null ? null : new Base64().getBinaryFromBase64String(value);
+        return value == null ? null : Base64.decode(value);
     }
 
     public int getInt(String name) throws NoSuchElementException, NumberFormatException {

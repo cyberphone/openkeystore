@@ -167,7 +167,7 @@ public abstract class CertificateViewer extends HttpServlet {
                 "</table><br><form name=\"shoot\" action=\"").
                 append(request.getRequestURL().toString()).
                 append("\" method=\"POST\"><input type=\"hidden\" name=\"certblob\" value=\"").
-                append(new Base64().getBase64StringFromBinary(ci.getCertificateBlob())).
+                append(Base64.encode(ci.getCertificateBlob())).
                 append("\"></form></body></html>");
         DefaultHTML.setHTMLMode(response);
         response.getOutputStream().print(s.toString());
@@ -182,7 +182,7 @@ public abstract class CertificateViewer extends HttpServlet {
         if (ad == null) {
             throw new IOException("Missing request data");
         }
-        byte data[] = new Base64().getBinaryFromBase64String(ad);
+        byte data[] = Base64.decode(ad);
         response.setContentType("application/pkix-cert");
         response.setHeader("Content-Disposition", "inline; filename=certificate.cer");
         response.getOutputStream().write(data);

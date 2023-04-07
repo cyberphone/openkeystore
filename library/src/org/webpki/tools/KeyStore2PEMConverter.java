@@ -116,7 +116,7 @@ public class KeyStore2PEMConverter {
         }
         next = true;
         baos.write(("-----BEGIN " + string + "-----\n").getBytes("UTF-8"));
-        baos.write(new Base64().getBase64BinaryFromBinary(encoded));
+        baos.write(Base64.mimeEncode(encoded).getBytes("UTF-8"));
         baos.write(("\n-----END " + string + "-----\n").getBytes("UTF-8"));
     }
     

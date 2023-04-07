@@ -33,7 +33,7 @@ public class Random {
         if (argc[1].equals("hex")) {
             System.out.println(HexaDecimal.encode(rnd));
         } else {
-            System.out.println(new Base64().getBase64StringFromBinary(rnd));
+            System.out.println(Base64.encode(rnd));
         }
     }
 }

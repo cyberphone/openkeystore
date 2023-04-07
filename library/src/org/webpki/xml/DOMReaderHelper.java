@@ -423,16 +423,16 @@ public class DOMReaderHelper {
     }
 
     public byte[] getBinary() throws NoSuchElementException, IOException {
-        return new Base64().getBinaryFromBase64String(getString());
+        return Base64.decode(getString());
     }
 
     public byte[] getBinary(String name) throws NoSuchElementException, IOException {
-        return new Base64().getBinaryFromBase64String(getString(name));
+        return Base64.decode(getString(name));
     }
 
     public byte[] getBinaryConditional(String name) throws NoSuchElementException, IOException {
         String s = getStringConditional(name);
-        return s != null ? new Base64().getBinaryFromBase64String(s) : null;
+        return s != null ? Base64.decode(s) : null;
     }
 
 

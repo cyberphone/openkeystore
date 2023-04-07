@@ -50,7 +50,7 @@ public class xmlobject extends XMLObjectWrapper implements XMLEnvelopedInput {
 
     static {
         try {
-            symkey = new Base64().getBase64BinaryFromUnicode("sBeVJTrHwIETmlgRlvswfSjnYD34V2PdiEQadrnG8ko=");
+            symkey = Base64.decode("sBeVJTrHwIETmlgRlvswfSjnYD34V2PdiEQadrnG8ko=");
         } catch (Exception e) {
         }
     }

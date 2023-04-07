@@ -25,13 +25,13 @@ import java.util.ArrayList;
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.CertificateFilter;
+import org.webpki.crypto.CryptoRandom;
 import org.webpki.crypto.KeyContainerTypes;
 
 import org.webpki.json.JSONArrayWriter;
 import org.webpki.json.JSONObjectWriter;
 
 import org.webpki.util.ArrayUtil;
-import org.webpki.util.Base64URL;
 import org.webpki.util.ISODateTime;
 
 import static org.webpki.webauth.WebAuthConstants.*;
@@ -146,7 +146,7 @@ public class AuthenticationRequestEncoder extends ServerEncoder {
         //////////////////////////////////////////////////////////////////////////
         if (id == null) {
             id = Long.toHexString(new GregorianCalendar().getTimeInMillis());
-            id += Base64URL.generateURLFriendlyRandom(MAX_ID_LENGTH - id.length());
+            id += CryptoRandom.generateURLFriendlyRandom(MAX_ID_LENGTH - id.length());
         }
         wr.setString(ID_JSON, id);
 

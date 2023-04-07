@@ -117,7 +117,7 @@ public abstract class SchemaViewerServlet extends HttpServlet {
                 (head ? "<form name=\"shoot\" action=\"" + baseurl + "/" + getXMLViewerName() + "/" + rv.file +
                         "\" method=\"POST\" target=\"_blank\">" +
                         "<input type=\"hidden\" name=\"data\" value=\"" +
-                        new Base64(false).getBase64StringFromBinary(rv.data) +
+                        Base64.encode(rv.data) +
                         "\"></form>" +
                         "<a href=\"javascript:document.shoot.submit ()\">Click here to get raw XML</a><p>" +
                         "Click on XML name-space URIs to view the other schemas<p>" +

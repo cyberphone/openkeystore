@@ -20,6 +20,8 @@ package org.webpki.util;
  * Encodes/decodes base64 data.
  */
 public class Base64 {
+//#if !ANDROID
+
     private static final java.util.Base64.Encoder ENCODER = 
             java.util.Base64.getEncoder().withoutPadding();
 
@@ -28,6 +30,7 @@ public class Base64 {
 
     private static final java.util.Base64.Decoder DECODER = 
             java.util.Base64.getMimeDecoder();
+//#endif
 
     private Base64() {}  // No instantiation please
 
@@ -38,20 +41,30 @@ public class Base64 {
      * @return Decoded data as a byte array
      */
     public static byte[] decode(String base64) {
+//#if ANDROID
+        return android.util.Base64.decode(base64url, android.util.Base64.DEFAULT);
+//#else
         return DECODER.decode(base64);
+//#endif
     }
 
     /**
      * Converts a byte array to a base64 String.
      * <p>
-     * This method adds no padding.
+     * This method adds no padding or line wraps.
      * </p>
      *
      * @param byteArray Binary data
      * @return Encoded data as a String
      */
     public static String encode(byte[] byteArray) {
+//#if ANDROID
+        return android.util.Base64.encodeToString(byteArray,
+                                                  android.util.Base64.NO_PADDING |
+                                                    android.util.Base64.NO_WRAP);
+//#else
         return ENCODER.encodeToString(byteArray);
+//#endif
     }
     /**
      * Converts a byte array to a base64 String.
@@ -63,6 +76,10 @@ public class Base64 {
      * @return Encoded data as a String
      */
     public static String mimeEncode(byte[] byteArray) {
+//#if ANDROID
+        return android.util.Base64.encodeToString(byteArray, android.util.Base64.DEFAULT);
+//#else
         return MIME_ENCODER.encodeToString(byteArray);
+//#endif
     }
 }

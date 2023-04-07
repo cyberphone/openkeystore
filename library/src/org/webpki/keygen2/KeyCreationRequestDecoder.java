@@ -451,7 +451,7 @@ public class KeyCreationRequestDecoder extends ClientDecoder {
                 } else {
                     pin = pinStringValue.getBytes("UTF-8");
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 error.syntaxError = true;
                 return error;
             }

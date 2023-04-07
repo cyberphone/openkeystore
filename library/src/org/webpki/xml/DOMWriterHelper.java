@@ -432,7 +432,7 @@ public class DOMWriterHelper {
      * @see <a href="#current">DOMWriterHelper cursor state</a>
      */
     public void addBinary(String name, byte[] value) {
-        addString(name, new Base64(false).getBase64StringFromBinary(value));
+        addString(name, Base64.encode(value));
     }
 
 
@@ -538,7 +538,7 @@ public class DOMWriterHelper {
     }
 
     public void setBinaryAttribute(String name, byte[] value) {
-        setStringAttribute(name, new Base64(false).getBase64StringFromBinary(value));
+        setStringAttribute(name, Base64.encode(value));
     }
 
 
