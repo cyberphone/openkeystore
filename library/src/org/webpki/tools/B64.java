@@ -26,7 +26,7 @@ import org.webpki.util.Base64;
 public class B64 {
 
     static void exitCommand() {
-        System.out.println("\nUsage:\n\n  org.webpki.util.Base64 [enc|dec|encurl|decurl] <infile> <outfile>\n");
+        System.out.println("\nUsage:\n\n  B64 [enc|dec|encurl|decurl] <infile> <outfile>\n");
         System.exit(3);
     }
 

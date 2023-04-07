@@ -28,7 +28,7 @@ public class Base64 {
             java.util.Base64.getMimeEncoder(76, new byte[]{'\n'});
 
     private static final java.util.Base64.Decoder DECODER = 
-            java.util.Base64.getMimeDecoder();
+            java.util.Base64.getDecoder();
 
     private Base64() {}  // No instantiation please
 
