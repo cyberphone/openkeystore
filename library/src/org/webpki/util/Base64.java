@@ -20,6 +20,7 @@ package org.webpki.util;
  * Encodes/decodes base64 data.
  */
 public class Base64 {
+
     private static final java.util.Base64.Encoder ENCODER = 
             java.util.Base64.getEncoder().withoutPadding();
 
@@ -44,7 +45,7 @@ public class Base64 {
     /**
      * Converts a byte array to a base64 String.
      * <p>
-     * This method adds no padding.
+     * This method adds no padding or line wraps.
      * </p>
      *
      * @param byteArray Binary data

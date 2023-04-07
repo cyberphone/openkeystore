@@ -62,7 +62,7 @@ public class Base64URL {
     /**
      * Converts a byte array to a base64url String.
      * <p>
-     * This method adds no padding.
+     * This method adds no padding or line wraps.
      * </p>
      *
      * @param byteArray Binary data
