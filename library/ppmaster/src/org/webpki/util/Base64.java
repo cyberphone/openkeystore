@@ -36,8 +36,11 @@ public class Base64 {
 
     /**
      * Converts a base64 String to a byte array.
+     * <p>
+     * Note that line wraps are <b>not</p> permitted.
+     * </p>
      *
-     * @param base64url Encoded data
+     * @param base64 Encoded data
      * @return Decoded data as a byte array
      */
     public static byte[] decode(String base64) {
