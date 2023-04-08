@@ -291,14 +291,6 @@
         match="ValueExact"
         replace="Value"
         flags="g"/>
-    <replaceregexp file="${android_dir}/org/webpki/jose/jws/JWSAsymKeySigner.java"
-        match="(.*)(Base64\.getEncoder\(\)\.encodeToString\()([^(^)]*\([^(^)]*\))"
-        replace="\1Base64.encodeToString(\3, Base64.NO_WRAP"
-        flags="g"/>
-    <replaceregexp file="${android_dir}/org/webpki/jose/jws/JWSAsymKeySigner.java"
-        match="import java\.util\.Base64;"
-        replace="import android.util.Base64;"
-        flags="g"/>
     <replaceregexp file="${android_dir}/org/webpki/crypto/AsymSignatureAlgorithms.java"
         match="&quot;RSASSA-PSS&quot;,\n.*256,"
         replace="&quot;SHA256withRSA/PSS&quot;,&#10;                   null/* Android != JDK */,"
@@ -324,7 +316,6 @@
       <fileset dir="${src_dir}/org/webpki">
         <include name="**/util/ISODateTime.java"/>
         <include name="**/util/ArrayUtil.java"/>
-        <include name="**/util/Base64URL.java"/>
         <include name="**/crypto/X509VerifierInterface.java"/>
         <include name="**/crypto/HmacVerifierInterface.java"/>
         <include name="**/crypto/X509SignerInterface.java"/>
@@ -384,7 +375,6 @@
 
     <copy todir="${android_dir}/org/webpki" preservelastmodified="true">
       <fileset dir="${src_dir}/org/webpki">
-        <include name="**/util/Base64URL.java"/>
         <include name="**/util/HexaDecimal.java"/>
         <include name="**/util/ArrayUtil.java"/>
         <include name="**/util/StringUtil.java"/>
@@ -414,6 +404,7 @@
     <property name="ANDROID_PURE" value="true"/>
     <jpp destdir="${android_dir}" verbose="true" force="true">
         <fileset dir="ppmaster/src" includes="**/*.java">
+            <exclude name="**/Base64.java"/>
             <exclude name="**/PEMDecoder.java"/>
             <exclude name="**/CustomCryptoProvider.java"/>
         </fileset>

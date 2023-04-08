@@ -130,7 +130,7 @@ public abstract class CBORSigner {
         // Create an empty signature container object.
         CBORMap csfContainer = new CBORMap();
 
-        // There may be a tag holding the map to be signed.
+        // The map to sign may optionally be wrapped in a tag.
         CBORObject objectToSign = intercepter.wrap(mapToSign);
 
         // Get optional custom data.
@@ -155,8 +155,6 @@ public abstract class CBORSigner {
         mapToSign.setObject(key, csfContainer);
 
         // Finally, sign all but the signature label and associated value.
-        // internalEncode() is supposed to produce a deterministic representation
-        // of the CBOR data to be signed.
         csfContainer.setBytes(SIGNATURE_LABEL, coreSigner(objectToSign.encode()));
 
         // Return the now signed object.

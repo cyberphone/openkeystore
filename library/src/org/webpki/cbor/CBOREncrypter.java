@@ -135,7 +135,7 @@ public abstract class CBOREncrypter {
         // Create an empty encryption container object.
         CBORMap cefContainer = new CBORMap();
 
-        // The object may be wrapped in a tag as well.
+        // The encryption object may optionally be wrapped in a tag.
         CBORObject outerObject = intercepter.wrap(cefContainer);
 
         // Get optional custom data.
@@ -167,11 +167,6 @@ public abstract class CBOREncrypter {
         
         // Now we should have everything for encrypting the actual data.
         // Use current CBOR data as "AAD".
-        
-        // Note that the following operation depends on that the actual
-        // CBOR implementation supports fully canonical (deterministic)
-        // parsing and code generation! This implementation shows that
-        // this is quite simple.
         byte[] authData = outerObject.encode();
         
         // Create an initialization vector.
