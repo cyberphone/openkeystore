@@ -86,17 +86,10 @@ public class OkpSupport {
     static final HashMap<KeyAlgorithms,byte[]> okpPrefix = new HashMap<>();
 
     static {
-        try {
-            okpPrefix.put(KeyAlgorithms.ED25519, 
-                          HexaDecimal.decode("302a300506032b6570032100"));
-            okpPrefix.put(KeyAlgorithms.ED448,
-                          HexaDecimal.decode("3043300506032b6571033a00"));
-            okpPrefix.put(KeyAlgorithms.X25519,
-                          HexaDecimal.decode("302a300506032b656e032100"));
-            okpPrefix.put(KeyAlgorithms.X448,
-                          HexaDecimal.decode("3042300506032b656f033900"));
-        } catch (Exception e) {
-        }
+        okpPrefix.put(KeyAlgorithms.ED25519, HexaDecimal.decode("302a300506032b6570032100"));
+        okpPrefix.put(KeyAlgorithms.ED448,   HexaDecimal.decode("3043300506032b6571033a00"));
+        okpPrefix.put(KeyAlgorithms.X25519,  HexaDecimal.decode("302a300506032b656e032100"));
+        okpPrefix.put(KeyAlgorithms.X448,    HexaDecimal.decode("3042300506032b656f033900"));
     }
 
     public static byte[] public2RawKey(PublicKey publicKey, KeyAlgorithms keyAlgorithm)
