@@ -83,19 +83,19 @@ public class OkpSupport {
         okpKeyLength.put(KeyAlgorithms.X448,    56);
     }
 
-    static final HashMap<KeyAlgorithms,byte[]> okpPrefix = new HashMap<>();
+    static final HashMap<KeyAlgorithms,byte[]> pubKeyPrefix = new HashMap<>();
 
     static {
-        okpPrefix.put(KeyAlgorithms.ED25519, HexaDecimal.decode("302a300506032b6570032100"));
-        okpPrefix.put(KeyAlgorithms.ED448,   HexaDecimal.decode("3043300506032b6571033a00"));
-        okpPrefix.put(KeyAlgorithms.X25519,  HexaDecimal.decode("302a300506032b656e032100"));
-        okpPrefix.put(KeyAlgorithms.X448,    HexaDecimal.decode("3042300506032b656f033900"));
+        pubKeyPrefix.put(KeyAlgorithms.ED25519, HexaDecimal.decode("302a300506032b6570032100"));
+        pubKeyPrefix.put(KeyAlgorithms.ED448,   HexaDecimal.decode("3043300506032b6571033a00"));
+        pubKeyPrefix.put(KeyAlgorithms.X25519,  HexaDecimal.decode("302a300506032b656e032100"));
+        pubKeyPrefix.put(KeyAlgorithms.X448,    HexaDecimal.decode("3042300506032b656f033900"));
     }
 
     public static byte[] public2RawKey(PublicKey publicKey, KeyAlgorithms keyAlgorithm)
             throws IOException {
         byte[] encoded = publicKey.getEncoded();
-        int prefixLength = okpPrefix.get(keyAlgorithm).length;
+        int prefixLength = pubKeyPrefix.get(keyAlgorithm).length;
         if (okpKeyLength.get(keyAlgorithm) != encoded.length - prefixLength) {
             throw new IOException("Wrong public key length for: " + keyAlgorithm.toString());
         }
@@ -116,7 +116,7 @@ public class OkpSupport {
 //#endif
                 .generatePublic(
                         new X509EncodedKeySpec(
-                                ArrayUtil.add(okpPrefix.get(keyAlgorithm), x)));
+                                ArrayUtil.add(pubKeyPrefix.get(keyAlgorithm), x)));
     }
 
     public static byte[] private2RawKey(PrivateKey privateKey, KeyAlgorithms keyAlgorithm) 
