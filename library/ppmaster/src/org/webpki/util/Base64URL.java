@@ -39,27 +39,24 @@ public class Base64URL {
     private Base64URL() {}  // No instantiation please
 
     /**
-     * Converts a base64url String to a byte array.
+     * Decodes base64url String to a byte array.
      * <p>
      * This method <b>does not</b> accept padding or line wraps.
      * </p>
      *
-     * @param base64url Encoded data
+     * @param base64Url Encoded data
      * @return Decoded data as a byte array
      */
-    public static byte[] decode(String base64url) {
-        if (base64url.contains("=")) {
+    public static byte[] decode(String base64Url) {
+        if (base64Url.contains("=")) {
             throw new IllegalArgumentException("Padding not allowed");
         }
-//#if ANDROID
-        return android.util.Base64.decode(base64url, android.util.Base64.URL_SAFE);
-//#else
-        return DECODER.decode(base64url);
-//#endif
-    }
+        // Flaky decoder fix :(
+        return decodePadded(base64Url);
+     }
 
     /**
-     * Converts a base64url String to a byte array.
+     * Decodes a base64url String to a byte array.
      * <p>
      * This method accepts <i>optional</i> padding.
      * </p>
@@ -67,19 +64,26 @@ public class Base64URL {
      * Note that line wraps are <b>not</b> permitted.
      * </p>
      * 
-     * @param base64url Encoded data
+     * @param base64Url Encoded data
      * @return Decoded data as a byte array
      */
-    public static byte[] decodePadded(String base64url) {
+    public static byte[] decodePadded(String base64Url) {
 //#if ANDROID
-        return android.util.Base64.decode(base64url, android.util.Base64.URL_SAFE);
+        byte[] bytes = android.util.Base64.decode(base64Url, android.util.Base64.URL_SAFE);
 //#else
-        return DECODER.decode(base64url);
+        byte[] bytes = DECODER.decode(base64Url);
 //#endif
+        // Flaky decoder fix :(
+        final String reencoded = encode(bytes);
+        int last = reencoded.length() - 1;
+        if (reencoded.charAt(last) != base64Url.charAt(last)) {
+                throw new IllegalArgumentException("Invalid base64 termination character");
+        }
+        return bytes;
     }
 
     /**
-     * Converts a byte array to a base64url String.
+     * Encodes a byte array to a base64url String.
      * <p>
      * This method adds no padding or line wraps.
      * </p>

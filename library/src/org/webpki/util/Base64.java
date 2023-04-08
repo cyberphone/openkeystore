@@ -35,7 +35,7 @@ public class Base64 {
     private Base64() {}  // No instantiation please
 
     /**
-     * Converts a base64 String to a byte array.
+     * Decodes a base64 String to a byte array.
      * <p>
      * Note that line wraps are <i>ignored</i>.
      * </p>
@@ -48,7 +48,7 @@ public class Base64 {
     }
 
     /**
-     * Converts a byte array to a base64 String.
+     * Encodes a byte array to a base64 String.
      * <p>
      * This method adds no padding or line wraps.
      * </p>
@@ -61,7 +61,7 @@ public class Base64 {
     }
 
     /**
-     * Converts a byte array to a base64 String.
+     * Encodes a byte array to a base64 String.
      * <p>
      * This method wraps lines and adds padding.
      * </p>
