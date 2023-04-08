@@ -35,14 +35,14 @@ public class Base64 {
     /**
      * Converts a base64 String to a byte array.
      * <p>
-     * Note that line wraps are <b>not</p> permitted.
+     * Note that line wraps are <i>ignored</i>.
      * </p>
      *
      * @param base64 Encoded data
      * @return Decoded data as a byte array
      */
     public static byte[] decode(String base64) {
-        return DECODER.decode(base64);
+        return DECODER.decode(base64.replace("\n", "").replace("\r", ""));
     }
 
     /**
