@@ -42,7 +42,7 @@ import org.webpki.util.ArrayUtil;
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
 /**
- * Class handling CBOR/COSE public keys.
+ * Class handling Java/COSE public key conversions.
  * <p>
  * See {@link CBORKeyPair}.
  * </p>

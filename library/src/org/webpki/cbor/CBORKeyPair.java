@@ -38,11 +38,10 @@ import org.webpki.crypto.OkpSupport;
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
 /**
- * Class handling CBOR/COSE private keys.
+ * Class handling Java/COSE private key conversions.
  * <p>
  * See {@link CBORPublicKey}.
  * </p>
- *
  */
 public class CBORKeyPair {
     

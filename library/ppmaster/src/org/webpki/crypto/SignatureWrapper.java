@@ -32,19 +32,19 @@ import java.security.spec.ECParameterSpec;
 import java.security.spec.PSSParameterSpec;
 //#endif
 
+//#if ANDROID
+// Source configured for Android. 
+//#else
+//#if BOUNCYCASTLE
+// Source configured for the BouncyCastle provider.
+//#else 
+// Source configured for JDK.
+//#endif
+//#endif
+
 /**
- * Wrapper over java.security.Signature.
- *
-#if ANDROID
- * Source configured for Android. 
-#else
-#if BOUNCYCASTLE
- * Source configured for the BouncyCastle provider.
-#else 
- * Source configured for the default provider.
-#endif
-#endif
- */
+ * Wrapper over {@link java.security.Signature}.
+ */ 
 public class SignatureWrapper {
 
     static final int ASN1_SEQUENCE = 0x30;
@@ -196,6 +196,14 @@ public class SignatureWrapper {
         }
     }
 
+    /**
+     * Initiates a verifier.
+     * @param algorithm
+     * @param publicKey
+     * @param provider
+     * @throws GeneralSecurityException
+     * @throws IOException
+     */
     public SignatureWrapper(AsymSignatureAlgorithms algorithm, 
                             PublicKey publicKey,
                             String provider) throws GeneralSecurityException, IOException {
@@ -203,11 +211,26 @@ public class SignatureWrapper {
         instance.initVerify(publicKey);
     }
 
+    /**
+     * Initiates a verifier.
+     * @param algorithm
+     * @param publicKey
+     * @throws GeneralSecurityException
+     * @throws IOException
+     */
     public SignatureWrapper(AsymSignatureAlgorithms algorithm,
                             PublicKey publicKey) throws GeneralSecurityException, IOException {
         this(algorithm, publicKey, null);
     }
 
+    /**
+     * Initites a signer.
+     * @param algorithm
+     * @param privateKey
+     * @param provider
+     * @throws GeneralSecurityException
+     * @throws IOException
+     */
     public SignatureWrapper(AsymSignatureAlgorithms algorithm,
                             PrivateKey privateKey,
                             String provider) throws GeneralSecurityException, IOException {
@@ -215,21 +238,50 @@ public class SignatureWrapper {
         instance.initSign(privateKey);
     }
 
+    /**
+     * Initiates a signer.
+     * @param algorithm
+     * @param privateKey
+     * @throws GeneralSecurityException
+     * @throws IOException
+     */
     public SignatureWrapper(AsymSignatureAlgorithms algorithm,
                             PrivateKey privateKey) throws GeneralSecurityException, IOException {
         this(algorithm, privateKey, null);
     }
 
+    /**
+     * Sets ASN.1 encoding mode for ECDSA.
+     * <p>
+     * Default is <code>false</code>.
+     * </p>
+     * @param flag
+     * @return
+     */
     public SignatureWrapper ecdsaAsn1SignatureEncoding(boolean flag) {
         ecdsaAsn1EncodedFlag = flag;
         return this;
     }
 
+    /**
+     * See {@link java.security.Signature}.
+     * 
+     * @param data
+     * @return
+     * @throws GeneralSecurityException
+     */
     public SignatureWrapper update(byte[] data) throws GeneralSecurityException {
         instance.update(data);
         return this;
     }
 
+    /**
+     * See {@link java.security.Signature}.
+     * 
+     * @param data
+     * @return
+     * @throws GeneralSecurityException
+     */
     public SignatureWrapper update(byte data) throws GeneralSecurityException {
         instance.update(data);
         return this;
@@ -239,11 +291,26 @@ public class SignatureWrapper {
         return instance.getProvider();
     }
 
+    /**
+     * See {@link java.security.Signature}.
+     * 
+     * @param signature
+     * @return
+     * @throws GeneralSecurityException
+     * @throws IOException
+     */
     public boolean verify(byte[] signature) throws GeneralSecurityException, IOException {
         return instance.verify(ecdsaAsn1EncodedFlag || unmodifiedSignature ?
                 signature : encodeAsn1EncodedEcdsaSignature(signature, ecParameters));
     }
 
+    /**
+     * See {@link java.security.Signature}.
+     * 
+     * @return
+     * @throws GeneralSecurityException
+     * @throws IOException
+     */
     public byte[] sign() throws GeneralSecurityException, IOException {
         return ecdsaAsn1EncodedFlag || unmodifiedSignature ?
                 instance.sign() : decodeAsn1EncodedEcdsaSignature(instance.sign(), ecParameters);

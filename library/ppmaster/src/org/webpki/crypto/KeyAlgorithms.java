@@ -41,6 +41,7 @@ import android.util.Log;
 import java.security.KeyPairGenerator;
 
 import java.security.spec.X509EncodedKeySpec;
+
 //#endif
 /**
  * Asymmetric key algorithms.

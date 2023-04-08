@@ -49,11 +49,13 @@ import org.webpki.util.ArrayUtil;
 
 /**
  * Core JOSE and COSE encryption support.
- *
+ *<p>
  * Implements a subset of the RFC 7516 (JWE) and RFC 8152 (COSE) algorithms.
- * 
- * Source configured for the default provider.
+ * </p>
  */
+
+// Source configured for JDK.
+
 public class EncryptionCore {
 
     /**

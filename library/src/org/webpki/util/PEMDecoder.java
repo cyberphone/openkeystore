@@ -52,10 +52,10 @@ import org.webpki.crypto.CertificateUtil;
 import org.webpki.crypto.OkpSupport;
 import org.webpki.crypto.KeyAlgorithms;
 
+// Source configured for JDK.
+
 /**
  * Functions for decoding PEM files.
- * 
- * Source configured for the default provider.
  */
 public class PEMDecoder {
     private PEMDecoder() {

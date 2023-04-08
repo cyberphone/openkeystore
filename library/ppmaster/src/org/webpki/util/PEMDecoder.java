@@ -52,14 +52,14 @@ import org.webpki.crypto.CertificateUtil;
 import org.webpki.crypto.OkpSupport;
 import org.webpki.crypto.KeyAlgorithms;
 
+//#if BOUNCYCASTLE
+// Source configured for the BouncyCastle provider.
+//#else 
+// Source configured for JDK.
+//#endif
+
 /**
  * Functions for decoding PEM files.
- * 
-#if BOUNCYCASTLE
- * Source configured for the BouncyCastle provider.
-#else 
- * Source configured for the default provider.
-#endif
  */
 public class PEMDecoder {
     private PEMDecoder() {

@@ -58,20 +58,22 @@ import org.webpki.util.ArrayUtil;
 
 /**
  * Core JOSE and COSE encryption support.
- *
+ *<p>
  * Implements a subset of the RFC 7516 (JWE) and RFC 8152 (COSE) algorithms.
- * 
-#if ANDROID
- * Source configured for Android.
- * Note that the Android version does currently not support OKP.
-#else
-#if BOUNCYCASTLE
- * Source configured for the BouncyCastle provider.
-#else
- * Source configured for the default provider.
-#endif
-#endif
+ * </p>
  */
+
+//#if ANDROID
+// Source configured for Android.
+// Note that the Android version does currently not support OKP.
+//#else
+//#if BOUNCYCASTLE
+// Source configured for the BouncyCastle provider.
+//#else
+// Source configured for JDK.
+//#endif
+//#endif
+
 public class EncryptionCore {
 
     /**

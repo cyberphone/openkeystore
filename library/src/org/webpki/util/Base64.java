@@ -16,6 +16,8 @@
  */
 package org.webpki.util;
 
+// Source configured for JDK.
+
 /**
  * Encodes/decodes base64 data.
  */
@@ -57,6 +59,7 @@ public class Base64 {
     public static String encode(byte[] byteArray) {
         return ENCODER.encodeToString(byteArray);
     }
+
     /**
      * Converts a byte array to a base64 String.
      * <p>

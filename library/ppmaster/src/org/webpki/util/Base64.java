@@ -16,6 +16,12 @@
  */
 package org.webpki.util;
 
+//#if ANDROID
+// Source configured for Android.
+//#else
+// Source configured for JDK.
+//#endif
+
 /**
  * Encodes/decodes base64 data.
  */
@@ -70,6 +76,7 @@ public class Base64 {
         return ENCODER.encodeToString(byteArray);
 //#endif
     }
+
     /**
      * Converts a byte array to a base64 String.
      * <p>

@@ -16,6 +16,8 @@
  */
 package org.webpki.util;
 
+// Source configured for JDK.
+
 /**
  * Encodes/decodes base64URL data.
  * See RFC 4648 Table 2.
@@ -33,10 +35,7 @@ public class Base64URL {
     /**
      * Converts a base64url String to a byte array.
      * <p>
-     * This method <b>does not</b> accept padding.
-     * </p>
-     * <p>
-     * Note that line wraps are <b>not</p> permitted.
+     * This method <b>does not</b> accept padding or line wraps.
      * </p>
      *
      * @param base64url Encoded data
@@ -55,7 +54,7 @@ public class Base64URL {
      * This method accepts <i>optional</i> padding.
      * </p>
      * <p>
-     * Note that line wraps are <b>not</p> permitted.
+     * Note that line wraps are <b>not</b> permitted.
      * </p>
      * 
      * @param base64url Encoded data
