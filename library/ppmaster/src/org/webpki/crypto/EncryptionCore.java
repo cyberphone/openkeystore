@@ -56,13 +56,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.webpki.util.ArrayUtil;
 
-/**
- * Core JOSE and COSE encryption support.
- *<p>
- * Implements a subset of the RFC 7516 (JWE) and RFC 8152 (COSE) algorithms.
- * </p>
- */
-
 //#if ANDROID
 // Source configured for Android.
 // Note that the Android version does currently not support OKP.
@@ -74,6 +67,12 @@ import org.webpki.util.ArrayUtil;
 //#endif
 //#endif
 
+/**
+ * Core JOSE and COSE encryption support.
+ *<p>
+ * Implements a subset of the RFC 7516 (JWE) and RFC 8152 (COSE) algorithms.
+ * </p>
+ */
 public class EncryptionCore {
 
     /**

@@ -47,15 +47,14 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.webpki.util.ArrayUtil;
 
+// Source configured for JDK.
+
 /**
  * Core JOSE and COSE encryption support.
  *<p>
  * Implements a subset of the RFC 7516 (JWE) and RFC 8152 (COSE) algorithms.
  * </p>
  */
-
-// Source configured for JDK.
-
 public class EncryptionCore {
 
     /**
