@@ -397,7 +397,6 @@
         <include name="**/crypto/KeyEncryptionAlgorithms.java"/>
         <include name="**/crypto/ContentEncryptionAlgorithms.java"/>
         <include name="**/cbor/*.java"/>
-        <include name="**/asn1/*.java"/>
       </fileset>
     </copy>
     <property name="ANDROID" value="true"/>

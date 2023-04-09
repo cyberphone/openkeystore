@@ -45,19 +45,19 @@ import org.webpki.asn1.ParseUtil;
 import org.webpki.asn1.cert.SubjectAltNameTypes;
 
 //#endif
+//#if ANDROID_PURE
+// Source configured for the free-standing Android CBOR/JSON libraries.
+//#else
+//#if BOUNCYCASTLE
+// Source configured for the BouncyCastle provider.
+//#else
+// Source configured for JDK.
+//#endif
+//#endif
+
 /**
- * X509 related operations.
- * 
-#if ANDROID_PURE
- * Source configured for the free-standing Android JSON library.
-#else
-#if BOUNCYCASTLE
- * Source configured for the BouncyCastle provider.
-#else
- * Source configured for the default provider.
-#endif
-#endif
- */
+ * X509 certificate related operations.
+ */ 
 public class CertificateUtil {
 
     private CertificateUtil() {}  // No instantiation please

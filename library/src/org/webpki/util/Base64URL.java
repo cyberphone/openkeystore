@@ -66,8 +66,8 @@ public class Base64URL {
         // Flaky decoder fix :(
         final String reencoded = encode(bytes);
         int last = reencoded.length() - 1;
-        if (reencoded.charAt(last) != base64Url.charAt(last)) {
-                throw new IllegalArgumentException("Invalid base64 termination character");
+        if (last >= 0 && reencoded.charAt(last) != base64Url.charAt(last)) {
+            throw new IllegalArgumentException("Invalid base64 termination character");
         }
         return bytes;
     }

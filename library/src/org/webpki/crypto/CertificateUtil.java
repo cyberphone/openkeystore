@@ -43,11 +43,11 @@ import org.webpki.asn1.ParseUtil;
 
 import org.webpki.asn1.cert.SubjectAltNameTypes;
 
+// Source configured for JDK.
+
 /**
- * X509 related operations.
- * 
- * Source configured for the default provider.
- */
+ * X509 certificate related operations.
+ */ 
 public class CertificateUtil {
 
     private CertificateUtil() {}  // No instantiation please

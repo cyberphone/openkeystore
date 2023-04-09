@@ -34,22 +34,14 @@ import java.security.spec.X509EncodedKeySpec;
 
 import java.util.HashMap;
 
-import org.webpki.asn1.ASN1Integer;
-import org.webpki.asn1.ASN1ObjectID;
-import org.webpki.asn1.ASN1OctetString;
-import org.webpki.asn1.ASN1Sequence;
-import org.webpki.asn1.BaseASN1Object;
-import org.webpki.asn1.DerDecoder;
-import org.webpki.asn1.ParseUtil;
-
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.HexaDecimal;
 
+// Source configured for JDK 17 and upwards.
+
 /**
  * Support methods for "OKP" [<a href='https://datatracker.ietf.org/doc/html/rfc8037'>RFC&nbsp;8037</a>].
- * 
- * Source configured for the JDK 17+ provider.
- */
+ */ 
 public class OkpSupport {
     
     private OkpSupport() {}
@@ -64,12 +56,31 @@ public class OkpSupport {
     }
 
     static final HashMap<KeyAlgorithms,byte[]> pubKeyPrefix = new HashMap<>();
+    
+    static {
+        pubKeyPrefix.put(KeyAlgorithms.ED25519, 
+                         HexaDecimal.decode("302a300506032b6570032100"));
+        pubKeyPrefix.put(KeyAlgorithms.ED448,
+                         HexaDecimal.decode("3043300506032b6571033a00"));
+        pubKeyPrefix.put(KeyAlgorithms.X25519,
+                         HexaDecimal.decode("302a300506032b656e032100"));
+        pubKeyPrefix.put(KeyAlgorithms.X448,
+                         HexaDecimal.decode("3042300506032b656f033900"));
+    }
+
+    static final byte PRIV_KEY_LENGTH = 15;
+
+    static final HashMap<KeyAlgorithms,byte[]> privKeyPrefix = new HashMap<>();
 
     static {
-        pubKeyPrefix.put(KeyAlgorithms.ED25519, HexaDecimal.decode("302a300506032b6570032100"));
-        pubKeyPrefix.put(KeyAlgorithms.ED448,   HexaDecimal.decode("3043300506032b6571033a00"));
-        pubKeyPrefix.put(KeyAlgorithms.X25519,  HexaDecimal.decode("302a300506032b656e032100"));
-        pubKeyPrefix.put(KeyAlgorithms.X448,    HexaDecimal.decode("3042300506032b656f033900"));
+        privKeyPrefix.put(KeyAlgorithms.ED25519, 
+                          HexaDecimal.decode("302e020100300506032b657004220420"));
+        privKeyPrefix.put(KeyAlgorithms.ED448,
+                          HexaDecimal.decode("3047020100300506032b6571043b0439"));
+        privKeyPrefix.put(KeyAlgorithms.X25519,
+                          HexaDecimal.decode("302e020100300506032b656e04220420"));
+        privKeyPrefix.put(KeyAlgorithms.X448,
+                          HexaDecimal.decode("3046020100300506032b656f043a0438"));
     }
 
     public static byte[] public2RawKey(PublicKey publicKey, KeyAlgorithms keyAlgorithm)
@@ -97,25 +108,24 @@ public class OkpSupport {
 
     public static byte[] private2RawKey(PrivateKey privateKey, KeyAlgorithms keyAlgorithm) 
             throws IOException {
-        byte[] rawKey = ParseUtil.octet(
-                DerDecoder.decode(
-                        ParseUtil.octet(
-                                ParseUtil.sequence(
-                                        DerDecoder.decode(privateKey.getEncoded())).get(2))));
-        if (okpKeyLength.get(keyAlgorithm) != rawKey.length) {
+        byte[] encoded = privateKey.getEncoded();
+        int keyLength = okpKeyLength.get(keyAlgorithm);
+        byte[] prefix = privKeyPrefix.get(keyAlgorithm);
+        if (encoded.length <= prefix.length || encoded[PRIV_KEY_LENGTH] != keyLength) {
             throw new IOException("Wrong private key length for: " + keyAlgorithm.toString());
         }
+        byte[] rawKey = new byte[keyLength];
+        System.arraycopy(encoded, prefix.length, rawKey, 0, keyLength);
         return rawKey;
     }
 
     public static PrivateKey raw2PrivateKey(byte[] d, KeyAlgorithms keyAlgorithm)
             throws IOException, GeneralSecurityException {
         KeyFactory keyFactory = KeyFactory.getInstance(keyAlgorithm.getJceName());
-        byte[] pkcs8 = new ASN1Sequence(new BaseASN1Object[] {
-            new ASN1Integer(0),
-            new ASN1Sequence(new ASN1ObjectID(keyAlgorithm.getECDomainOID())),
-            new ASN1OctetString(new ASN1OctetString(d).encode())
-        }).encode();
+        if (okpKeyLength.get(keyAlgorithm) != d.length) {
+            throw new IOException("Wrong private key length for: " + keyAlgorithm.toString());
+        }
+        byte[] pkcs8 = ArrayUtil.add(privKeyPrefix.get(keyAlgorithm), d);
         return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(pkcs8));
     }
 
