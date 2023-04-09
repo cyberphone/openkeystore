@@ -305,12 +305,12 @@ Keys and values are expressed as CBOR objects.</td></tr>
 <ol style='margin:0 0'>
 <li>The letter <i>n</i> in the <code>Syntax</code> column denotes one or more digits.</li>
 <li>The optional {<i>sign</i>} must be a single hyphen (<code>'-'</code>) character.</li>
-<li>Whitespace
+<li>Whitespace characters
 (<code>' '</code>, <code>'\t'</code>, <code>'\r'</code>, <code>'\n'</code>) 
-is permitted and <i>ignored</i>.</li> 
-<li>Whitespace
-(<code>' '</code>, <code>'\t'</code>, <code>'\r'</code>, <code>'\n'</code>) 
-is permitted and <i>becomes a part of the text</i>.
+inside of string quotes are <i>ignored</i>.</li> 
+<li>Whitespace characters
+(<code>'\t'</code>, <code>'\r'</code>, <code>'\n'</code>) 
+inside of string quotes <i>become a part of the text</i>.
 To <i>avoid</i> getting newline characters (<code>'\n'</code>)
 included in multi-line text strings,
 a <i>line continuation marker</i> consisting of a backslash&nbsp;(<code>'\'</code>)
