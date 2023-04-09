@@ -281,7 +281,8 @@ See <a href='#floating-point-encoding'>CBOR floating point encoding</a>.
 <td><code>h'</code><i>hex&nbsp;data</i><code>'</code></td><td>3</td>
 <td>Byte data provided in hexadecimal notation.</td></tr>
 <tr><td><code>b64'</code><i>base64&nbsp;data</i><code>'</code></td><td>3</td>
-<td>Byte data provided in base64 or base64URL notation.</td></tr>
+<td>Byte data provided in base64 or base64URL notation.
+Padding with <code>'='</code> characters is <i>optional</i>.</td></tr>
 <tr><td><code>'</code><i>text</i><code>'</code></td><td>4, 5</td>
 <td>Byte data provided as UTF-8 encoded text.</td></tr>
 <tr><td><code>&lt;&lt;</code>&nbsp;<i>object</i>&nbsp;<code>&gt;&gt;</code></td><td></td>
