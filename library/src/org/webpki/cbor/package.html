@@ -278,9 +278,10 @@ See <a href='#floating-point-encoding'>CBOR floating point encoding</a>.
 See <a href='#floating-point-encoding'>CBOR floating point encoding</a>.
 </td></tr>
 <tr><td rowspan='4'><code>byte&nbsp;string</code></td>
-<td><code>h'</code><i>hex&nbsp;data</i><code>'</code></td><td>3</td>
-<td>Byte data provided in hexadecimal notation.</td></tr>
-<tr><td><code>b64'</code><i>base64&nbsp;data</i><code>'</code></td><td>3</td>
+<td><code>h'</code><i>hex&nbsp;data</i><code>'</code></td><td>3, 6</td>
+<td>Byte data provided in hexadecimal notation.
+Each byte must be represented by two hexadecimal digits.</td></tr>
+<tr><td><code>b64'</code><i>base64&nbsp;data</i><code>'</code></td><td>3, 6</td>
 <td>Byte data provided in base64 or base64URL notation.
 Padding with <code>'='</code> characters is <i>optional</i>.</td></tr>
 <tr><td><code>'</code><i>text</i><code>'</code></td><td>4, 5</td>
@@ -319,5 +320,6 @@ immediately preceding the newline may be used.</li>
 (<code>'\''</code>, <code>'\"'</code>, <code>'\\'</code>, 
 <code>'\b'</code>, <code>'\f'</code>, <code>'\n'</code>, 
 <code>'\r'</code>, <code>'\t'</code>, <code>'\u'</code>).</li>
+<li>Zero-length strings (<code>''</code>) return byte strings of length zero.</li>
 </ol>
 </body>
