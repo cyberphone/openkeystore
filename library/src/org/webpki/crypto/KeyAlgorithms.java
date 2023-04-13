@@ -361,7 +361,7 @@ public enum KeyAlgorithms implements CryptoAlgorithms {
         }
         KeyAlgorithms keyAlgorithm = OkpSupport.getKeyAlgorithm(publicKey);
         return OkpSupport.raw2PublicKey(OkpSupport.public2RawKey(publicKey, keyAlgorithm),
-                                           keyAlgorithm);
+                                        keyAlgorithm);
     }
 
     public static KeyAlgorithms getKeyAlgorithm(Key key) {
