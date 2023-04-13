@@ -16,8 +16,6 @@
  */
 package org.webpki.util;
 
-import java.io.IOException;
-
 /**
  * Encodes/decodes hexadecimal data.
  */
@@ -113,16 +111,16 @@ public class HexaDecimal {
         return res.toString();
     }
 
-    public static String getHexDebugData(byte[] binaryBlob, int bytesPerLine) {
-        return new HexaDecimal().toHexDebugData(binaryBlob, bytesPerLine);
+    public static String getHexDebugData(byte[] byteArray, int bytesPerLine) {
+        return new HexaDecimal().toHexDebugData(byteArray, bytesPerLine);
     }
 
-    public static String getHexDebugData(byte[] binaryBlob) {
-        return getHexDebugData(binaryBlob, 16);
+    public static String getHexDebugData(byte[] byteArray) {
+        return getHexDebugData(byteArray, 16);
     }
 
-    public static String encode(byte[] binaryBlob) {
-        return new HexaDecimal().toHexString(binaryBlob);
+    public static String encode(byte[] byteArray) {
+        return new HexaDecimal().toHexString(byteArray);
     }
 
     public static int toHex(char c) {
@@ -148,28 +146,4 @@ public class HexaDecimal {
         }
         return data;
     }
-
-
-    /*##################################################################*/
-    /*                                                                  */
-    /*  Method: main                                                    */
-    /*                                                                  */
-    /*  Description: This is a command-line interface for testing only  */
-    /*                                                                  */
-    /*##################################################################*/
-
-    public static void main(String[] args) throws IOException {
-        if (args.length == 3 && args[0].equals("tobin")) {
-            ArrayUtil.writeFile(args[2], HexaDecimal.decode(new String(ArrayUtil.readFile(args[1]), "UTF-8")));
-            System.exit(0);
-        }
-        if (args.length != 2 || !(args[0].equals("hex") || args[0].equals("dump"))) {
-            System.out.println("Usage: HexaDecimal hex|dump bininputfile \n" +
-                    "                      tobin inputfileinhex outputfilebin\n");
-            System.exit(0);
-        }
-        byte[] data = ArrayUtil.readFile(args[1]);
-        System.out.print(args[0].equals("dump") ? HexaDecimal.getHexDebugData(data) : HexaDecimal.encode(data));
-    }
-
 }

@@ -1,6 +1,8 @@
 <project name="WEBPKI.ORG library" default="help" basedir=".">
 
   <!-- set global properties for this build -->
+  <property name="doc.title" value="&lt;h1&gt;WebPKI.org Support&lt;/h1&gt;"/>
+  <property name="doc.bottom" value="&lt;i&gt;2005-2022 WebPKI.org.&lt;/i&gt;"/>
   <property name="sks.implementation" value="org.webpki.sks.SKSReferenceImplementation"/>
   <property name="sks.debug" value="true"/>
   <property name="src_dir" value="src"/>
@@ -224,8 +226,8 @@
       </packageset>
       <link offline="false" href="https://docs.oracle.com/en/java/javase/17/docs/api/index.html"/>
       <link offline="false" href="https://javaee.github.io/javaee-spec/javadocs/"/>
-      <doctitle><![CDATA[<h1>WebPKI.org Support</h1>]]></doctitle>
-      <bottom><![CDATA[<i>2005-2022 WebPKI.org.</i>]]></bottom>
+      <doctitle>&lt;h3&gt;WebPKI.org Support&lt;/h3&gt;</doctitle>
+      <bottom>${doc.bottom}</bottom>
     </javadoc>
   	
   	<concat destfile="${doc_dir}/stylesheet.css" append="true">
@@ -366,66 +368,8 @@
     <delete dir="${bin_dir}"/>
   </target>
 		
-  <target name="android-cbor">    
-    <delete file="${dist_dir}/${android-cbor}.zip"/>
-    <delete dir="${temp_dir}"/>
-    <delete dir="${bin_dir}"/>
-    <mkdir dir="${temp_dir}"/>
-    <mkdir dir="${bin_dir}"/>
-
-    <copy todir="${android_dir}/org/webpki" preservelastmodified="true">
-      <fileset dir="${src_dir}/org/webpki">
-        <include name="**/util/HexaDecimal.java"/>
-        <include name="**/util/ArrayUtil.java"/>
-        <include name="**/util/StringUtil.java"/>
-        <include name="**/crypto/X509VerifierInterface.java"/>
-        <include name="**/crypto/HmacVerifierInterface.java"/>
-        <include name="**/crypto/X509SignerInterface.java"/>
-        <include name="**/crypto/AsymKeySignerInterface.java"/>
-        <include name="**/crypto/HmacSignerInterface.java"/>
-        <include name="**/crypto/CryptoAlgorithms.java"/>
-        <include name="**/crypto/OkpSupport.java"/>
-        <include name="**/crypto/HashAlgorithms.java"/>
-        <include name="**/crypto/KeyAlgorithms.java"/>
-        <include name="**/crypto/KeyTypes.java"/>
-        <include name="**/crypto/HmacAlgorithms.java"/>
-        <include name="**/crypto/SignatureAlgorithms.java"/>
-        <include name="**/crypto/AlgorithmPreferences.java"/>
-        <include name="**/crypto/AsymSignatureAlgorithms.java"/>
-        <include name="**/crypto/SymSignatureAlgorithms.java"/>
-        <include name="**/crypto/CryptoRandom.java"/>
-        <include name="**/crypto/KeyEncryptionAlgorithms.java"/>
-        <include name="**/crypto/ContentEncryptionAlgorithms.java"/>
-        <include name="**/cbor/*.java"/>
-      </fileset>
-    </copy>
-    <property name="ANDROID" value="true"/>
-    <property name="ANDROID_PURE" value="true"/>
-    <jpp destdir="${android_dir}" verbose="true" force="true">
-        <fileset dir="ppmaster/src" includes="**/*.java">
-            <exclude name="**/Base64.java"/>
-            <exclude name="**/PEMDecoder.java"/>
-            <exclude name="**/CustomCryptoProvider.java"/>
-        </fileset>
-    </jpp>
-
-    <antcall target="_clean_android"/>
-    <javac debug="${debug}" srcdir="${android_dir}:androidrefsrc" 
-        destdir="${bin_dir}" 
-        includeAntRuntime="false">
-        <exclude name="**/android/**/*.java"/>
-        <exclude name="**/androidx/**/*.java"/>
-        <include name="**/*.java"/>
-    </javac>
-    
-    <!-- Create Android CBOR java library -->
-    <zip destfile="${dist_dir}/${android-cbor}.zip">
-      <zipfileset dir="${temp_dir}">
-          <include name="**/*.java"/>
-       </zipfileset>
-    </zip>
-    <delete dir="${temp_dir}"/>
-    <delete dir="${bin_dir}"/>
+  <target name="android-cbor"> 
+	<ant antfile="android-cbor-build.xml" target="_android-cbor" useNativeBasedir="true"/>
   </target>
 
   <target name="android-saturn">    

@@ -1,0 +1,144 @@
+<project name="android-cbor config" default="help" basedir=".">
+
+  <!-- set global properties for this build -->
+  <property name="android-cbor-project" location="../../android-cbor"/>
+  <property name="javaapi-project" location="../../javaapi"/>
+  <property name="android-cbor-src" value="${android-cbor-project}/jlibcbor/src/main/java"/>
+  <property name="android-cbor-apidoc" value="${android-cbor-project}/distribution/apidoc"/>
+
+  <target name="help">
+    <echo message="Must not be called directly!"/>
+  </target>
+
+  <target name="_android-cbor">
+    <delete includeEmptyDirs="true">
+      <fileset dir="${android-cbor-src}">
+      	<exclude name="**/jlibcbor"/>
+      </fileset>
+    </delete>
+    <delete dir="${android-cbor-apidoc}"/>
+    <mkdir dir="${android-cbor-apidoc}"/>
+    <delete dir="${bin_dir}"/>
+    <mkdir dir="${bin_dir}"/>
+  	<!--
+    </target>
+    <target name="fuck">
+    -->
+
+    <copy todir="${android-cbor-src}" preservelastmodified="true">
+      <fileset dir="${src_dir}">
+        <include name="**/util/HexaDecimal.java"/>
+        <include name="**/util/ArrayUtil.java"/>
+        <include name="**/util/package.html"/>
+        <include name="**/crypto/X509VerifierInterface.java"/>
+        <include name="**/crypto/HmacVerifierInterface.java"/>
+        <include name="**/crypto/X509SignerInterface.java"/>
+        <include name="**/crypto/AsymKeySignerInterface.java"/>
+        <include name="**/crypto/HmacSignerInterface.java"/>
+        <include name="**/crypto/CryptoAlgorithms.java"/>
+        <include name="**/crypto/OkpSupport.java"/>
+        <include name="**/crypto/HashAlgorithms.java"/>
+        <include name="**/crypto/KeyAlgorithms.java"/>
+        <include name="**/crypto/KeyTypes.java"/>
+        <include name="**/crypto/HmacAlgorithms.java"/>
+        <include name="**/crypto/SignatureAlgorithms.java"/>
+        <include name="**/crypto/AlgorithmPreferences.java"/>
+        <include name="**/crypto/AsymSignatureAlgorithms.java"/>
+        <include name="**/crypto/SymSignatureAlgorithms.java"/>
+        <include name="**/crypto/CryptoRandom.java"/>
+        <include name="**/crypto/KeyEncryptionAlgorithms.java"/>
+        <include name="**/crypto/ContentEncryptionAlgorithms.java"/>
+        <include name="**/crypto/package.html"/>
+        <include name="**/cbor/*.*"/>
+        <include name="overview.html"/>
+      </fileset>
+    </copy>
+    <property name="ANDROID" value="true"/>
+    <property name="ANDROID_PURE" value="true"/>
+    <jpp destdir="${android-cbor-src}" verbose="true" force="true">
+        <fileset dir="ppmaster/src" includes="**/*.java">
+            <exclude name="**/Base64.java"/>
+            <exclude name="**/PEMDecoder.java"/>
+            <exclude name="**/CustomCryptoProvider.java"/>
+        </fileset>
+    </jpp>
+
+    <replaceregexp file="${android-cbor-src}/org/webpki/crypto/AsymSignatureAlgorithms.java"
+        match="&quot;RSASSA-PSS&quot;,\n.*256,"
+        replace="&quot;SHA256withRSA/PSS&quot;,&#10;                   null/* Android != JDK */,"
+        flags="g"/>
+    <replaceregexp file="${android-cbor-src}/org/webpki/crypto/AsymSignatureAlgorithms.java"
+        match="&quot;RSASSA-PSS&quot;,\n.*384,"
+        replace="&quot;SHA384withRSA/PSS&quot;,&#10;                   null/* Android != JDK */,"
+        flags="g"/>
+    <replaceregexp file="${android-cbor-src}/org/webpki/crypto/AsymSignatureAlgorithms.java"
+        match="&quot;RSASSA-PSS&quot;,\n.*512,"
+        replace="&quot;SHA512withRSA/PSS&quot;,&#10;                   null/* Android != JDK */,"
+        flags="g"/>
+
+    <javac debug="${debug}" srcdir="${android-cbor-src}:androidrefsrc" 
+        destdir="${bin_dir}" 
+        includeAntRuntime="false">
+        <exclude name="**/android/**/*.java"/>
+        <exclude name="**/androidx/**/*.java"/>
+        <include name="**/*.java"/>
+    </javac>
+  	
+  	<!-- Documentation -->
+    <replaceregexp file="${android-cbor-src}/org/webpki/crypto/package.html"
+        match="The Crypto.*class\.\&lt;\/p\&gt;"
+        replace=""
+        flags="s"/>
+
+    <replaceregexp file="${android-cbor-src}/overview.html"
+        match="Crypto, JSON, CBOR, and more"
+        replace="CBOR, Crypto, and Utilities"
+        flags="s"/>
+
+  	<javadoc destdir="${android-cbor-apidoc}"
+             overview="${android-cbor-src}/overview.html"
+             author="true"
+             version="true"
+             Package="false"
+             Use="false"
+             additionalparam="--allow-script-in-comments -Xdoclint:none -notimestamp"
+             nodeprecated="true"
+             nodeprecatedlist="true"
+             noindex="true"
+             windowtitle="WebPKI.org Support">
+      <classpath>
+         <pathelement path="${bin_dir}"/>
+      </classpath>
+      <packageset dir="${android-cbor-src}"/>
+      <link offline="false" href="https://docs.oracle.com/en/java/javase/17/docs/api/index.html"/>
+      <doctitle>&lt;h3&gt;CBOR Support for Android&lt;/h3&gt;</doctitle>
+      <bottom>${doc.bottom}</bottom>
+    </javadoc>
+
+  	<concat destfile="${android-cbor-apidoc}/stylesheet.css" append="true">
+      <filelist dir="." files="javadoc-extrastyles.css"/>
+    </concat>
+
+    <copy todir="${android-cbor-apidoc}/org/webpki/cbor">
+      <fileset dir="${javaapi-project}/org/webpki/cbor">
+      	<include name="doc-files/*.*"/>
+      </fileset>
+    </copy>
+  	
+    <!-- Windows... -->
+    <fixcrlf srcdir="${android-cbor-apidoc}"
+      eol="lf"
+      includes="**/*.html, **/*.js, **/*.css, element-list"/>
+
+    <delete>
+      <fileset dir="${android-cbor-src}">
+      	<exclude name="**/*.java"/>
+      </fileset>
+    </delete>
+  	
+    
+    <delete dir="${bin_dir}"/>
+  </target>
+
+</project>
+

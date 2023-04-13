@@ -24,7 +24,7 @@ import java.io.FileOutputStream;
 import java.io.ByteArrayOutputStream;
 
 /**
- * Useful functions for arrays.
+ * Collection of support functions for arrays.
  */
 public class ArrayUtil {
     private ArrayUtil() {
