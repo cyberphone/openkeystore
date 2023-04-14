@@ -142,7 +142,7 @@ public class CBORFloatingPoint extends CBORObject {
     }
 
     /**
-     * Number formatter for diagnostic notation.
+     * Returns number in diagnostic notation.
      * <p>
      * Floating point numbers are always serialized using at least
      * one integer digit (may be <code>0</code>), a decimal point, and
