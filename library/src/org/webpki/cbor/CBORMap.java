@@ -143,7 +143,8 @@ public class CBORMap extends CBORObject {
                     diff = entry.compare(newEntry.encodedKey);
                     if (diff == 0) {
                         reportError(STDERR_DUPLICATE_KEY + key);                      
-                    } else if (diff > 0) {
+                    }
+                    if (diff > 0) {
                         // New key is less than a current entry.
                         if (precedingEntry == null) {
                             // Less than root, means the root must be redefined.
@@ -154,10 +155,13 @@ public class CBORMap extends CBORObject {
                             newEntry.next = entry;
                             precedingEntry.next = newEntry;
                         }
+                        // Done, break out of the loop.
                         break;
                     }
+                    // No luck in this round, continue searching.
                     precedingEntry = entry;
                 }
+                // Biggest key so far, insert at the end.
                 if (diff < 0) {
                     precedingEntry.next = newEntry;
                 }
