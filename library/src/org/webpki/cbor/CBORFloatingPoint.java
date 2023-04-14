@@ -142,7 +142,13 @@ public class CBORFloatingPoint extends CBORObject {
     }
 
     /**
-     * A slightly nicer formatter than Java's original
+     * Number formatter for diagnostic notation.
+     * <p>
+     * Floating point numbers are always serialized using at least
+     * one integer digit (may be <code>0</code>), a decimal point, and
+     * one or more fractional digits. 
+     * </p>
+     * Possible exponents are written as <code>e&pm;</code><i>n</i>, where <i>n</i> != <code>0</code>.
      * 
      * @param value The double
      * @return The double in string format
