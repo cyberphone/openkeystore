@@ -781,10 +781,10 @@ public abstract class CBORObject {
      * <p>
      * This method is identical to:
      * <pre>  decode(new ByteArrayInputStream(encodedCborData),
-     *        false, 
-     *        false,
-     *        false,
-     *        encodedCborData.length);
+     *         false, 
+     *         false,
+     *         false,
+     *         encodedCborData.length);
      *</pre>
      * </p>
      * 
