@@ -250,7 +250,7 @@ public class CBORMap extends CBORObject {
      * @throws IOException
      */
     public byte[] readBytesAndRemoveKey(CBORObject key) throws IOException {
-        byte[] data = getObject(getKey(key)).getBytes();
+        byte[] data = getObject(key).getBytes();
         removeObject(key);
         return data;
     }
