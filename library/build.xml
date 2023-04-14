@@ -71,7 +71,7 @@
   </condition>
 
   <target name="help">
-    <echo message="Targets: help build tomcat doc testkeygen2 testsks testjson testcbor testkeyalgs android-json android-saturn android-cbor"/>
+    <echo message="Targets: help build tomcat doc testkeygen2 testsks testjson testcbor testkeyalgs android-json android-saturn android-cbor [-Daargen=true]"/>
   </target>
 
   <target name="_preprocess">

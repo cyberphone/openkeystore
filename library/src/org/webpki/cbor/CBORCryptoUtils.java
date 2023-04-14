@@ -239,7 +239,7 @@ public class CBORCryptoUtils {
             CryptoRandom.generateRandom(contentEncryptionAlgorithm.getKeyLength()) : null;
                                                                          
         // The core
-        EncryptionCore.AsymmetricEncryptionResult asymmetricEncryptionResult =
+        EncryptionCore.AsymmetricEncryptionResult result =
                 keyEncryptionAlgorithm.isRsa() ?
                     EncryptionCore.rsaEncryptKey(contentEncryptionKey,
                                                  keyEncryptionAlgorithm,
@@ -253,15 +253,13 @@ public class CBORCryptoUtils {
         if (!keyEncryptionAlgorithm.isRsa()) {
             // ECDH-ES requires the ephemeral public key
             keyEncryption.setObject(EPHEMERAL_KEY_LABEL,
-                                    CBORPublicKey.convert(
-                                        asymmetricEncryptionResult.getEphemeralKey()));
+                                    CBORPublicKey.convert(result.getEphemeralKey()));
         }
         if (keyEncryptionAlgorithm.isKeyWrap()) {
             // Encrypted key
-            keyEncryption.setObject(CIPHER_TEXT_LABEL,
-                                    new CBORBytes(asymmetricEncryptionResult.getEncryptedKey()));
+            keyEncryption.setObject(CIPHER_TEXT_LABEL, new CBORBytes(result.getEncryptedKey()));
         }
-        return asymmetricEncryptionResult.getContentEncryptionKey();
+        return result.getContentEncryptionKey();
     }
     
     static byte[] asymKeyDecrypt(PrivateKey privateKey,

@@ -5,11 +5,24 @@
   <property name="javaapi-project" location="../../javaapi"/>
   <property name="android-cbor-src" value="${android-cbor-project}/jlibcbor/src/main/java"/>
   <property name="android-cbor-apidoc" value="${android-cbor-project}/distribution/apidoc"/>
+  <property name="jlib.ver" value="1.0.0"/>
+  <property name="aar.file" 
+  	location="${android-cbor-project}/distribution/org.webpki-jlibcbor-${jlib.ver}.aar"/>
 
   <target name="help">
     <echo message="Must not be called directly!"/>
   </target>
 
+  <target name="_aargen" if="aargen">
+  	<echo message="generate AAR"/>
+  	<!-- Pardon me, this only works on Windows -->
+    <exec executable="cmd" failonerror="true" dir="${android-cbor-project}">
+      <arg line="/c gradlew clean build"/>
+    </exec>
+    <copy file="${android-cbor-project}/jlibcbor/build/outputs/aar/jlibcbor-release.aar" 
+    	  tofile="${aar.file}"/>
+  </target>
+	
   <target name="_android-cbor">
     <delete includeEmptyDirs="true">
       <fileset dir="${android-cbor-src}">
@@ -20,10 +33,6 @@
     <mkdir dir="${android-cbor-apidoc}"/>
     <delete dir="${bin_dir}"/>
     <mkdir dir="${bin_dir}"/>
-  	<!--
-    </target>
-    <target name="fuck">
-    -->
 
     <copy todir="${android-cbor-src}" preservelastmodified="true">
       <fileset dir="${src_dir}">
@@ -95,6 +104,11 @@
         replace="CBOR, Crypto, and Utilities"
         flags="s"/>
 
+  	<replaceregexp file="${android-cbor-src}/overview.html"
+        match="Source.*\n"
+        replace=""
+        flags="s"/>
+
   	<javadoc destdir="${android-cbor-apidoc}"
              overview="${android-cbor-src}/overview.html"
              author="true"
@@ -135,9 +149,11 @@
       	<exclude name="**/*.java"/>
       </fileset>
     </delete>
-  	
     
     <delete dir="${bin_dir}"/>
+
+    <antcall target="_aargen"/>
+  	
   </target>
 
 </project>

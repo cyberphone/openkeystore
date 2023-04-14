@@ -17,7 +17,7 @@ import org.webpki.util.HexaDecimal;
 public class EncryptionDemo {
     
     // X25519 private key in COSE format.
-    static final byte[] x25519_PRIVATE_KEY = HexaDecimal.decode(
+    static final byte[] X25519_PRIVATE_KEY = HexaDecimal.decode(
             "a401012004215820e99a0cef205894960d9b1c05978513dccb" +
             "42a13bfbced523a51b8a117ad5f00c2358207317e5f3a11599" +
             "caab474ee65843427f517fe4d8b99add55886c84441e90d6f0");
@@ -25,7 +25,7 @@ public class EncryptionDemo {
     public static void main(String[] args) {
         try {
             // Get keys in Java format.
-            KeyPair keyPair = CBORKeyPair.convert(CBORObject.decode(x25519_PRIVATE_KEY));
+            KeyPair keyPair = CBORKeyPair.convert(CBORObject.decode(X25519_PRIVATE_KEY));
             PrivateKey receiverKey = keyPair.getPrivate();
             PublicKey senderKey = keyPair.getPublic();
             
@@ -44,7 +44,7 @@ public class EncryptionDemo {
             String secretMessage = new String(decryptedData, "utf-8");
             System.out.println(secretMessage);
 //@begin@
-new CborDocumentLog(args[0], "#sample.program.key#", CBORObject.decode(x25519_PRIVATE_KEY));
+new CborDocumentLog(args[0], "#sample.program.key#", CBORObject.decode(X25519_PRIVATE_KEY));
 new CborDocumentLog(args[0], "#sample.program.hex#", cborBinary = 
 new CborDocumentLog().checkForChanges(cborBinary, HexaDecimal.decode(
         "a5010302a201381807a3010120042158203e9c03b4e2ccb023272fe0f1a5a41" +
