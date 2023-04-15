@@ -57,7 +57,6 @@ import org.webpki.util.ArrayUtil;
 import org.webpki.util.Base64URL;
 import org.webpki.util.HexaDecimal;
 import org.webpki.util.PEMDecoder;
-import org.webpki.util.UTF8;
 
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
