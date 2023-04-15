@@ -21,6 +21,7 @@ import org.webpki.cbor.CBORObject;
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.Base64URL;
 import org.webpki.util.HexaDecimal;
+import org.webpki.util.UTF8;
 
 /**
  * Decodes CBOR data.
@@ -55,12 +56,12 @@ public class CBORPrinter {
         byte[] readCbor = ArrayUtil.readFile(args[1]);
         String format = args[0];
         if (format.equals("hex")) {
-            String hex = new String(readCbor, "utf-8")
+            String hex = UTF8.decode(readCbor)
                     .replaceAll("#.*(\r|\n|$)", "")
                     .replaceAll("( |\n|\r)", "");
             readCbor = HexaDecimal.decode(hex);
         } else if (format.equals("b64u")) {
-            readCbor = Base64URL.decode(new String(readCbor, "utf-8"));
+            readCbor = Base64URL.decode(UTF8.decode(readCbor));
         } else if (!format.equals("bin")) {
             exitCommand();
         }

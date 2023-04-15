@@ -36,6 +36,7 @@ import org.webpki.json.JSONOutputFormats;
 import org.webpki.json.JSONParser;
 
 import org.webpki.util.Base64URL;
+import org.webpki.util.UTF8;
 
 /**
  * JWS and JWS/CT decoder
@@ -183,10 +184,9 @@ public class JWSDecoder {
     /**
      * Get JWS header.
      * @return JWS header as a verbatim string copy after Base64Url-decoding.
-     * @throws IOException 
-     */
-    public String getJWSHeaderAsString() throws IOException {
-        return new String(Base64URL.decode(jwsHeaderB64U), "utf-8");
+      */
+    public String getJWSHeaderAsString() {
+        return UTF8.decode(Base64URL.decode(jwsHeaderB64U));
     }
     
     /**

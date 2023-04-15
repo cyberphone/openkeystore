@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.HexaDecimal;
+import org.webpki.util.UTF8;
 
 /**
  * Encodes/decodes hexadecimal data.
@@ -39,7 +40,8 @@ public class Hex {
 
     public static void main(String[] args) throws IOException {
         if (args.length == 3 && args[0].equals("tobin")) {
-            ArrayUtil.writeFile(args[2], HexaDecimal.decode(new String(ArrayUtil.readFile(args[1]), "UTF-8")));
+            ArrayUtil.writeFile(args[2], 
+                    HexaDecimal.decode(UTF8.decode(ArrayUtil.readFile(args[1]))));
             System.exit(0);
         }
         if (args.length != 2 || !(args[0].equals("hex") || args[0].equals("dump"))) {

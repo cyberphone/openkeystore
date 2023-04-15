@@ -56,6 +56,7 @@ import org.webpki.json.SymmetricKeys;
 
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.PEMDecoder;
+import org.webpki.util.UTF8;
 
 /*
  * Create JSF test vectors
@@ -222,7 +223,7 @@ public class JsonSignatures {
     }
 
     static String cleanJavaScriptSignature(byte[] signature) throws IOException {
-        String text = new String(signature, "utf-8");
+        String text = UTF8.decode(signature);
         int i = text.indexOf(" " + JSONCryptoHelper.VALUE_JSON + ": \"");
         int j = text.indexOf('"', i + JSONCryptoHelper.VALUE_JSON.length() + 4);
         return text.substring(0, i) + text.substring(j);
@@ -322,9 +323,8 @@ public class JsonSignatures {
     }
 
     static String getDataToSign() throws Exception {
-        return new String(ArrayUtil.readFile(baseData +
-                                             "datatobesigned.json"), 
-                          "UTF-8").replace("\r", "");
+        return UTF8.decode(
+                ArrayUtil.readFile(baseData + "datatobesigned.json")).replace("\r", "");
     }
     
     static JSONObjectWriter parseDataToSign() throws Exception {
@@ -336,7 +336,7 @@ public class JsonSignatures {
         int i = signed.indexOf(",\n  \"" + signatureLabel + "\":");
         String unsigned = getDataToSign();
         int j = unsigned.lastIndexOf("\n}");
-        return (unsigned.substring(0,j) + signed.substring(i)).getBytes("UTF-8");
+        return UTF8.encode(unsigned.substring(0,j) + signed.substring(i));
     }
     
     static byte[] createSignatures(ArrayList<JSONSigner> signers,
@@ -357,7 +357,7 @@ public class JsonSignatures {
         int i = signed.indexOf(",\n  \"" + signatureLabel + "\":");
         String unsigned = getDataToSign();
         int j = unsigned.lastIndexOf("\n}");
-        return (unsigned.substring(0,j) + signed.substring(i)).getBytes("UTF-8");
+        return UTF8.encode(unsigned.substring(0,j) + signed.substring(i));
     }
 
     static KeyPair readJwk(String keyType) throws Exception {

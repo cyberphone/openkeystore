@@ -6,6 +6,7 @@ import org.webpki.cbor.CBORArray;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORTypes;
+
 import org.webpki.util.HexaDecimal;
 
 public class CborDocumentLog {

@@ -50,6 +50,7 @@ import org.webpki.crypto.KeyAlgorithms;
 
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.Base64;
+import org.webpki.util.UTF8;
 
 public class KeyStore2PEMConverter {
     
@@ -115,9 +116,9 @@ public class KeyStore2PEMConverter {
             baos.write((byte)'\n');
         }
         next = true;
-        baos.write(("-----BEGIN " + string + "-----\n").getBytes("UTF-8"));
-        baos.write(Base64.mimeEncode(encoded).getBytes("UTF-8"));
-        baos.write(("\n-----END " + string + "-----\n").getBytes("UTF-8"));
+        baos.write(UTF8.encode("-----BEGIN " + string + "-----\n"));
+        baos.write(UTF8.encode(Base64.mimeEncode(encoded)));
+        baos.write(UTF8.encode("\n-----END " + string + "-----\n"));
     }
     
     private static void fail() {

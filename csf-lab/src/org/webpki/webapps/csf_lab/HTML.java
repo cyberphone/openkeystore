@@ -25,6 +25,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.webpki.util.UTF8;
+
 public class HTML {
 
     static Logger logger = Logger.getLogger(HTML.class.getName());
@@ -99,7 +101,7 @@ public class HTML {
         response.setContentType("text/html; charset=utf-8");
         response.setHeader("Pragma", "No-Cache");
         response.setDateHeader("EXPIRES", 0);
-        response.getOutputStream().write(html.getBytes("utf-8"));
+        response.getOutputStream().write(UTF8.encode(html));
     }
 
     static String getConditionalParameter(HttpServletRequest request,

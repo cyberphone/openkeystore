@@ -75,6 +75,7 @@ import org.webpki.crypto.CertificateInfo;
 import org.webpki.crypto.KeyStoreReader;
 
 import org.webpki.util.ArrayUtil;
+import org.webpki.util.UTF8;
 
 /**
  * The HTTPSWrapper class makes it possible to establish HTTP/HTTPS connections
@@ -411,7 +412,7 @@ public class HTTPSWrapper {
      * @throws IOException If something unexpected happens...
      */
     public void makePostRequestUTF8(String url, String data) throws IOException {
-        makePostRequest(url, data.getBytes("UTF-8"));
+        makePostRequest(url, UTF8.encode(data));
     }
 
 
@@ -612,7 +613,7 @@ public class HTTPSWrapper {
      * @throws IOException If something unexpected happens...
      */
     public String getDataUTF8() throws IOException {
-        return (server_data == null) ? null : new String(server_data, "UTF-8");
+        return (server_data == null) ? null : UTF8.decode(server_data);
     }
 
 

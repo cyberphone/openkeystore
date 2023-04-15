@@ -63,7 +63,8 @@ public class UTF8 {
      * </p>
      *
      * @param utf16String String presumably holding valid UTF-16
-     * @return Decoded UTF-8 data
+     * @return UTF-8 byte array
+     * @throws IllegalArgumentException
      */
     public static byte[] encode(String utf16String) {
         try {
@@ -84,7 +85,8 @@ public class UTF8 {
      * </p>
      *
      * @param utf8Bytes Binary data presumably holding valid UTF-8
-     * @return Decoded data as a Java (UTF-16) String
+     * @return Java (UTF-16) String
+     * @throws IllegalArgumentException
      */
     public static String decode(byte[] utf8Bytes) {
         try {

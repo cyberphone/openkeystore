@@ -36,6 +36,7 @@ import org.webpki.json.JSONObjectWriter;
 import org.webpki.json.JSONOutputFormats;
 
 import org.webpki.util.Base64URL;
+import org.webpki.util.UTF8;
 
 /**
  * JWS encoder base class
@@ -128,7 +129,7 @@ public abstract class JWSSigner {
         String jwsProtectedHeaderB64U = Base64URL.encode(
                 jwsProtectedHeader.serializeToBytes(JSONOutputFormats.NORMALIZED));
         String jwsPayloadB64U = Base64URL.encode(jwsPayload);
-        byte[] dataToBeSigned = (jwsProtectedHeaderB64U + "." + jwsPayloadB64U).getBytes("utf-8");
+        byte[] dataToBeSigned = UTF8.encode(jwsProtectedHeaderB64U + "." + jwsPayloadB64U);
 
         // Sign data and return JWS string
         return jwsProtectedHeaderB64U +

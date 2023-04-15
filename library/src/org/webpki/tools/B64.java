@@ -18,6 +18,7 @@ package org.webpki.tools;
 
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.Base64URL;
+import org.webpki.util.UTF8;
 import org.webpki.util.Base64;
 
 /**
@@ -55,9 +56,9 @@ public class B64 {
                     exitCommand();
                 }
             } else if (args[0].equals("enc")) {
-                output = Base64.encode(input).getBytes("UTF-8");
+                output = UTF8.encode(Base64.encode(input));
             } else if (args[0].equals("encurl")) {
-                output = Base64URL.encode(input).getBytes("UTF-8");
+                output = UTF8.encode(Base64URL.encode(input));
             } else {
                 exitCommand();
             }

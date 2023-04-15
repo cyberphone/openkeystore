@@ -3,6 +3,7 @@ package cbor_api_demo;
 import java.io.IOException;
 
 import org.webpki.util.ArrayUtil;
+import org.webpki.util.UTF8;
 
 public class ReadWriteSubstitute {
 
@@ -11,7 +12,7 @@ public class ReadWriteSubstitute {
     }
 
     static void writeString(String fileName, String data) throws IOException {
-        ArrayUtil.writeFile(fileName, data.getBytes("utf-8"));
+        ArrayUtil.writeFile(fileName, UTF8.encode(data));
         return;
     }
     

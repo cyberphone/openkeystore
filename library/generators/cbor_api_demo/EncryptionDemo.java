@@ -13,8 +13,11 @@ import org.webpki.crypto.ContentEncryptionAlgorithms;
 import org.webpki.crypto.KeyEncryptionAlgorithms;
 
 import org.webpki.util.HexaDecimal;
+import org.webpki.util.UTF8;
 
 public class EncryptionDemo {
+    
+    static final byte[] SECRET_MESSAGE = UTF8.encode("A very secret message");
     
     // X25519 private key in COSE format.
     static final byte[] X25519_PRIVATE_KEY = HexaDecimal.decode(
@@ -34,14 +37,14 @@ public class EncryptionDemo {
                     senderKey,
                     KeyEncryptionAlgorithms.ECDH_ES,
                     ContentEncryptionAlgorithms.A256GCM)
-                .encrypt("A very secret message".getBytes("utf-8")).encode();
+                .encrypt(SECRET_MESSAGE).encode();
             
             // Decrypt data.
             byte[] decryptedData = new CBORAsymKeyDecrypter(receiverKey)
                     .decrypt(CBORObject.decode(cborBinary));
             
             // Assume that the data is a string.
-            String secretMessage = new String(decryptedData, "utf-8");
+            String secretMessage = UTF8.decode(decryptedData);
             System.out.println(secretMessage);
 //@begin@
 new CborDocumentLog(args[0], "#sample.program.key#", CBORObject.decode(X25519_PRIVATE_KEY));

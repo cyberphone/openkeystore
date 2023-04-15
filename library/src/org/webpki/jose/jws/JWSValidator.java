@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 
 import org.webpki.util.Base64URL;
+import org.webpki.util.UTF8;
 
 /**
  * JWS validator base class
@@ -91,10 +92,8 @@ public abstract class JWSValidator {
         }
         
         // Delegated validation 
-        validateObject((jwsDecoder.jwsHeaderB64U + 
-                        "." + 
-                        jwsDecoder.jwsPayloadB64U).getBytes("utf-8"),
-                       jwsDecoder);
+        validateObject(UTF8.encode(jwsDecoder.jwsHeaderB64U + "." + jwsDecoder.jwsPayloadB64U),
+                                   jwsDecoder);
         
         // No access to payload without having passed validation
         jwsDecoder.validated = true;

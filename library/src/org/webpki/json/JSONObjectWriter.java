@@ -47,6 +47,7 @@ import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.Base64URL;
 import org.webpki.util.ISODateTime;
+import org.webpki.util.UTF8;
 
 /**
  * Creates JSON objects and performs serialization
@@ -1239,7 +1240,7 @@ import org.webpki.json.JSONSignatureDecoder;
      * @throws IOException
      */
     public byte[] serializeToBytes(JSONOutputFormats outputFormat) throws IOException {
-        return serializeToString(outputFormat).getBytes("UTF-8");
+        return UTF8.encode(serializeToString(outputFormat));
     }
 
     /**

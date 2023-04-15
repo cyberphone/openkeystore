@@ -22,6 +22,8 @@ import java.util.ArrayList;
 
 import java.util.regex.Pattern;
 
+import org.webpki.util.UTF8;
+
 /**
  * Parses JSON string/byte array data.
  */
@@ -86,7 +88,7 @@ public class JSONParser {
      * @throws IOException
      */
     public static JSONObjectReader parse(byte[] jsonBytes) throws IOException {
-        return parse(new String(jsonBytes, "UTF-8"));
+        return parse(UTF8.decode(jsonBytes));
     }
 
     /**
