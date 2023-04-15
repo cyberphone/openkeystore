@@ -1,40 +1,40 @@
 <?xml version='1.0' encoding='utf-8'?>
-<svg viewBox='0 0 1133 780' xmlns='http://www.w3.org/2000/svg'>
+<svg viewBox='0 0 1133 750' xmlns='http://www.w3.org/2000/svg'>
 <title>CBOR Encryption Format</title>
 <!-- Anders Rundgren 2021 -->
 <g stroke='#4366bf' stroke-width='3' fill='none'>
-<rect x='20' y='180' width='460' height='80' rx='8'/>
-<rect x='20' y='280' width='460' height='80' stroke-dasharray='8' rx='8'/>
-<rect x='20' y='380' width='460' height='80' stroke-dasharray='8' rx='8'/>
-<rect x='20' y='480' width='460' height='80' rx='8'/>
-<rect x='20' y='580' width='460' height='80' rx='8'/>
-<rect x='20' y='680' width='460' height='80' rx='8'/>
-<rect x='603' y='180' width='510' height='80' rx='8'/>
-<rect x='603' y='280' width='510' height='80' stroke-dasharray='8' rx='8'/>
-<rect x='603' y='380' width='510' height='80' stroke-dasharray='8' rx='8'/>
-<rect x='603' y='480' width='510' height='80' stroke-dasharray='8' rx='8'/>
-<rect x='603' y='580' width='510' height='80' stroke-dasharray='8' rx='8'/>
-<rect x='603' y='680' width='510' height='80' stroke-dasharray='8' rx='8'/>
+<rect x='20' y='150' width='460' height='80' rx='8'/>
+<rect x='20' y='250' width='460' height='80' stroke-dasharray='8' rx='8'/>
+<rect x='20' y='350' width='460' height='80' stroke-dasharray='8' rx='8'/>
+<rect x='20' y='450' width='460' height='80' rx='8'/>
+<rect x='20' y='550' width='460' height='80' rx='8'/>
+<rect x='20' y='650' width='460' height='80' rx='8'/>
+<rect x='603' y='150' width='510' height='80' rx='8'/>
+<rect x='603' y='250' width='510' height='80' stroke-dasharray='8' rx='8'/>
+<rect x='603' y='350' width='510' height='80' stroke-dasharray='8' rx='8'/>
+<rect x='603' y='450' width='510' height='80' stroke-dasharray='8' rx='8'/>
+<rect x='603' y='550' width='510' height='80' stroke-dasharray='8' rx='8'/>
+<rect x='603' y='650' width='510' height='80' stroke-dasharray='8' rx='8'/>
 </g>
 <g font-size='40' font-family='Roboto,sans-serif'>
-<text x='250' y='70' font-size='50' text-anchor='middle'>Main Map</text>
-<text x='250' y='120' text-anchor='middle'>(Content Encryption)</text>
-<text x='858' y='70' font-size='50' text-anchor='middle'>Optional Sub Map</text>
-<text x='858' y='120' text-anchor='middle'>(Key Encryption)</text>
+<text x='250' y='60' font-size='50' text-anchor='middle'>Main Map</text>
+<text x='250' y='110' text-anchor='middle'>(Content Encryption)</text>
+<text x='858' y='60' font-size='50' text-anchor='middle'>Optional Sub Map</text>
+<text x='858' y='110' text-anchor='middle'>(Key Encryption)</text>
 </g>
 <g font-size='40' font-family='Noto Mono,monospace' fill='maroon'>
-<text x='44' y='234'>algorithm<tspan fill='black'> (1)</tspan></text>
-<text x='44' y='334'>keyEncryption<tspan fill='black'> (2)</tspan></text>
-<text x='44' y='434'>keyId<tspan fill='black'> (3)</tspan></text>
-<text x='44' y='534'>tag<tspan fill='black'> (8)</tspan></text>
-<text x='44' y='634'>iv<tspan fill='black'> (9)</tspan></text>
-<text x='44' y='734'>cipherText<tspan fill='black'> (10)</tspan></text>
-<text x='627' y='234'>algorithm<tspan fill='black'> (1)</tspan></text>
-<text x='627' y='334'>keyId<tspan fill='black'> (3)</tspan></text>
-<text x='627' y='434'>publicKey<tspan fill='black'> (4)</tspan></text>
-<text x='627' y='534'>certificatePath<tspan fill='black'> (5)</tspan></text>
-<text x='627' y='634'>ephemeralKey<tspan fill='black'> (7)</tspan></text>
-<text x='627' y='734'>cipherText<tspan fill='black'> (10)</tspan></text>
+<text x='44' y='204'>algorithm<tspan fill='black'> (1)</tspan></text>
+<text x='44' y='304'>keyEncryption<tspan fill='black'> (2)</tspan></text>
+<text x='44' y='404'>keyId<tspan fill='black'> (3)</tspan></text>
+<text x='44' y='504'>tag<tspan fill='black'> (8)</tspan></text>
+<text x='44' y='604'>iv<tspan fill='black'> (9)</tspan></text>
+<text x='44' y='704'>cipherText<tspan fill='black'> (10)</tspan></text>
+<text x='627' y='204'>algorithm<tspan fill='black'> (1)</tspan></text>
+<text x='627' y='304'>keyId<tspan fill='black'> (3)</tspan></text>
+<text x='627' y='404'>publicKey<tspan fill='black'> (4)</tspan></text>
+<text x='627' y='504'>certificatePath<tspan fill='black'> (5)</tspan></text>
+<text x='627' y='604'>ephemeralKey<tspan fill='black'> (7)</tspan></text>
+<text x='627' y='704'>cipherText<tspan fill='black'> (10)</tspan></text>
 </g>
-<path fill='none' stroke='#4366bf' stroke-width='3' stroke-linecap='round' d='m 583,180 c -35,0 -35,80 -35,80 v 0 c 0,0 0,49 -48,60 c 48,11 48,60 48,60 v 300 c 0,0 0,80 35,80'/>
+<path fill='none' stroke='#4366bf' stroke-width='3' stroke-linecap='round' d='m 583,150 c -35,0 -35,80 -35,80 v 0 c 0,0 0,49 -48,60 c 48,11 48,60 48,60 v 300 c 0,0 0,80 35,80'/>
 </svg>
