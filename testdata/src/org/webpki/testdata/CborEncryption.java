@@ -61,6 +61,7 @@ import org.webpki.json.SymmetricKeys;
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.HexaDecimal;
 import org.webpki.util.PEMDecoder;
+import org.webpki.util.UTF8;
 
 /*
  * Create JSF test vectors
@@ -433,7 +434,7 @@ public class CborEncryption {
         fileName = baseEncryption + fileName;
         byte[] encryption = ArrayUtil.readFile(baseEncryption + "x25519#ecdh-es+a256kw@a256gcm@kid.cbor"); 
         ArrayUtil.writeFile(fileName + ".hex", 
-                            HexaDecimal.encode(encryption).getBytes("utf-8"));
+                            UTF8.encode(HexaDecimal.encode(encryption)));
         StringBuilder text = new StringBuilder(CBORObject.decode(encryption).toString());
         int i = text.indexOf("\n  1:");
         for (String comment : new String[]{"Content encryption algorithm = A256GCM",
@@ -469,9 +470,9 @@ public class CborEncryption {
             }
         }
         ArrayUtil.writeFile(fileName + ".txt", 
-                            text.toString()
+                            UTF8.encode(text.toString()
                                 .replace("\n", "<br>\n")
-                                .replace("  ", "&nbsp;&nbsp;").getBytes("utf-8"));
+                                .replace("  ", "&nbsp;&nbsp;")));
     }
 
 }

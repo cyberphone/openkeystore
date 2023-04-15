@@ -38,6 +38,7 @@
       <fileset dir="${src_dir}">
         <include name="**/util/HexaDecimal.java"/>
         <include name="**/util/ArrayUtil.java"/>
+        <include name="**/util/UTF8.java"/>
         <include name="**/util/package.html"/>
         <include name="**/crypto/X509VerifierInterface.java"/>
         <include name="**/crypto/HmacVerifierInterface.java"/>

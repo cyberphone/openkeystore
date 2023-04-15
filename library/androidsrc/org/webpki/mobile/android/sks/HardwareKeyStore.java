@@ -59,6 +59,8 @@ import android.security.keystore.KeyProtection;
 
 import androidx.annotation.RequiresApi;
 
+import org.webpki.util.UTF8;
+
 // This class holds all interfaces between SKS and the AndroidKeyStore.
 // It also provides SKS/AndroidKeyStore initialization and serialization support. 
 
@@ -114,7 +116,7 @@ public abstract class HardwareKeyStore {
                                     (androidId == null ? "N/A" : androidId) + ",CN=Android SKS"));
                     if (Build.VERSION.SDK_INT > 24) {
                         // Some Android 7 devices seem awfully broken...
-                        builder.setAttestationChallenge("webpki.org".getBytes("utf-8"));
+                        builder.setAttestationChallenge(UTF8.encode("webpki.org"));
                     }
                     kpg.initialize(builder.build());
                     KeyPair keyPair = kpg.generateKeyPair();

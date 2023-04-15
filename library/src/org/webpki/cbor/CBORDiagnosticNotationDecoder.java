@@ -23,6 +23,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 
 import org.webpki.util.Base64URL;
+import org.webpki.util.UTF8;
 
 /**
  * Class for converting diagnostic CBOR to CBOR.
@@ -402,13 +403,15 @@ public class CBORDiagnosticNotationDecoder {
  
                 case '"':
                     if (!byteString) {
-                        return new CBORString(s.toString());
+                        String test = s.toString();
+                        UTF8.encode(test);
+                        return new CBORString(test);
                     }
                     break;
 
                 case '\'':
                     if (byteString) {
-                        return new CBORBytes(s.toString().getBytes("utf-8"));
+                        return new CBORBytes(UTF8.encode(s.toString()));
                     }
                     break;
                     

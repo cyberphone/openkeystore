@@ -57,6 +57,7 @@ import org.webpki.util.ArrayUtil;
 import org.webpki.util.Base64URL;
 import org.webpki.util.HexaDecimal;
 import org.webpki.util.PEMDecoder;
+import org.webpki.util.UTF8;
 
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
@@ -2195,4 +2196,39 @@ public class CBORTest {
         CBORDiagnosticNotationDecoder.decode("1.0e+300");
         diagFlag("1.0e+500");  // Too large
     }
-}
+
+    void utf8DecoderTest(String hex, boolean ok) {
+        byte[] cbor = HexaDecimal.decode(hex);
+        try {
+            byte[] roundTrip = CBORObject.decode(cbor).encode();
+            assertTrue("OK", ok);
+            assertTrue("Conv", ArrayUtil.compare(cbor, roundTrip));
+        } catch (Exception e) {
+            assertFalse("No good", ok);
+        }
+    }
+
+    void utf8EncoderTest(String string, boolean ok) {
+         try {
+            String encodedString = CBORDiagnosticNotationDecoder.decode(
+                    "\"" + string + "\"").getString();
+            assertTrue("OK", ok);
+            assertTrue("Conv", string.equals(encodedString));
+            byte[] encodedBytes = CBORDiagnosticNotationDecoder.decode(
+                    "'" + string + "'").getBytes();
+            assertTrue("OK", ok);
+            assertTrue("Conv2", ArrayUtil.compare(encodedBytes, string.getBytes("utf-8")));
+        } catch (Exception e) {
+            assertFalse("No good", ok);
+        }
+    }
+
+    @Test
+    public void utf8Test() {
+        utf8DecoderTest("62c328", false);
+        utf8DecoderTest("64f0288cbc", false);
+        utf8DecoderTest("64f0908cbc", true);
+        utf8EncoderTest("\uD83D", false);
+        utf8EncoderTest("\uD83D\uDE2D", true);
+    }
+ }

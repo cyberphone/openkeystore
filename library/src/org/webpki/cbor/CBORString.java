@@ -16,9 +16,8 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
-
 import org.webpki.util.ArrayUtil;
+import org.webpki.util.UTF8;
 
 /**
  * Class for holding CBOR text strings.
@@ -42,12 +41,8 @@ public class CBORString extends CBORObject {
 
     @Override
     public byte[] encode() {
-        try {
-            byte[] utf8 = textString.getBytes("utf-8");
-            return ArrayUtil.add(encodeTagAndN(MT_TEXT_STRING, utf8.length), utf8);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        byte[] utf8Bytes = UTF8.encode(textString);
+        return ArrayUtil.add(encodeTagAndN(MT_TEXT_STRING, utf8Bytes.length), utf8Bytes);
     }
 
     // JavaScript/JSON compatible escape character support

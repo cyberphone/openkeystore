@@ -40,6 +40,7 @@ import org.webpki.json.JSONObjectWriter;
 import org.webpki.json.JSONParser;
 
 import org.webpki.util.PEMDecoder;
+import org.webpki.util.UTF8;
 
 import org.webpki.webutil.ServletUtil;
 
@@ -81,7 +82,7 @@ public class CoseKeyServlet extends CoreRequestServlet {
                     throw new IOException("Undecodable JWK: " + e.getMessage());
                 }
             } else {
-                byte[] keyInBinary = inData.getBytes("utf-8");
+                byte[] keyInBinary = UTF8.encode(inData);
                 try {
                     keyPair = PEMDecoder.getKeyPair(keyInBinary);
                 } catch (Exception e) {

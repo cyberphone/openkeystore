@@ -37,6 +37,7 @@ import org.webpki.json.JSONOutputFormats;
 
 import org.webpki.util.Base64URL;
 import org.webpki.util.HexaDecimal;
+import org.webpki.util.UTF8;
 
 
 public class CoreRequestServlet extends HttpServlet {
@@ -161,7 +162,7 @@ public class CoreRequestServlet extends HttpServlet {
     }
 
     byte[] getBinaryParameter(HttpServletRequest request, String parameter) throws IOException {
-        return getParameter(request, parameter).getBytes("utf-8");
+        return UTF8.encode(getParameter(request, parameter));
     }
 
     byte[] getBytesFromCborHex(String hexAndOptionalComments) throws IOException {

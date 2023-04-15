@@ -46,6 +46,7 @@ import org.webpki.json.JSONParser;
 
 import org.webpki.util.HexaDecimal;
 import org.webpki.util.PEMDecoder;
+import org.webpki.util.UTF8;
 
 public class ValidateServlet extends CoreRequestServlet {
 
@@ -84,7 +85,7 @@ public class ValidateServlet extends CoreRequestServlet {
                 PublicKey externalPublicKey =  jwkValidationKey ? 
                     JSONParser.parse(validationKey).getCorePublicKey(AlgorithmPreferences.JOSE)
                                                                 :
-                    PEMDecoder.getPublicKey(validationKey.getBytes("utf-8"));
+                    PEMDecoder.getPublicKey(UTF8.encode(validationKey));
                 if (x509flag) {
                     validator = new CBORX509Validator(new CBORX509Validator.Parameters() {
 

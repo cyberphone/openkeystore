@@ -215,7 +215,7 @@ public class PEMDecoder {
 
     private static ArrayList<byte[]> decodePemObjects(byte[]pemBlob, 
                                                       String itemType) throws IOException {
-        String pemString = new String(pemBlob, "utf-8");
+        String pemString = UTF8.decode(pemBlob);
         String header = "-----BEGIN " + itemType + "-----";
         String footer = "-----END "   + itemType + "-----";
         ArrayList<byte[]> objects = new ArrayList<>();

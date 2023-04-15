@@ -61,6 +61,7 @@ import org.webpki.json.SymmetricKeys;
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.HexaDecimal;
 import org.webpki.util.PEMDecoder;
+import org.webpki.util.UTF8;
 
 /*
  * Create CSF test vectors
@@ -504,7 +505,7 @@ public class CborSignatures {
 
     private static void additionalFiles(String fileName, byte[] signature) throws IOException {
         ArrayUtil.writeFile(fileName.replace(".cbor", ".hex"), 
-                            HexaDecimal.encode(signature).getBytes("utf-8"));
+                            UTF8.encode(HexaDecimal.encode(signature)));
         StringBuilder text = new StringBuilder(CBORObject.decode(signature).toString());
         int i = text.indexOf("\n  -1:");
         for (String comment : new String[]{"Enveloped signature object",
@@ -536,11 +537,11 @@ public class CborSignatures {
             }
         }
         ArrayUtil.writeFile(fileName.replace(".cbor", ".txt"), 
-                            text.toString()
+                            UTF8.encode(text.toString()
                                 .replace("6: h'", "<span class='webpkihighlite'>6: h'")
                                 .replace("'\n  }\n}", "'</span>\n  }\n}")
                                 .replace("\n", "<br>\n")
-                                .replace("  ", "&nbsp;&nbsp;").getBytes("utf-8"));
+                                .replace("  ", "&nbsp;&nbsp;")));
     }
 
 }

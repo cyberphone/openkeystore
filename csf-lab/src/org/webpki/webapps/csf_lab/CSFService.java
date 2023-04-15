@@ -39,6 +39,7 @@ import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.SignatureAlgorithms;
 
 import org.webpki.util.ArrayUtil;
+import org.webpki.util.UTF8;
 
 import org.webpki.webutil.InitPropertyReader;
 
@@ -115,7 +116,7 @@ public class CSFService extends InitPropertyReader implements ServletContextList
     }
     
     String getEmbeddedResourceString(String name) throws IOException {
-        return new String(getEmbeddedResource(name), "utf-8");
+        return UTF8.decode(getEmbeddedResource(name));
     }
 
     @Override

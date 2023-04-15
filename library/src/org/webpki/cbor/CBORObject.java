@@ -24,6 +24,8 @@ import java.math.BigInteger;
 
 import java.util.Arrays;
 
+import org.webpki.util.UTF8;
+
 /**
  * Base class for all CBOR objects.
  * <p>
@@ -711,7 +713,7 @@ public abstract class CBORObject {
                     return new CBORBytes(readBytes(checkLength(n)));
     
                 case MT_TEXT_STRING:
-                    return new CBORString(new String(readBytes(checkLength(n)), "utf-8"));
+                    return new CBORString(UTF8.decode(readBytes(checkLength(n))));
     
                 case MT_ARRAY:
                     CBORArray cborArray = new CBORArray();
