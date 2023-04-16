@@ -23,8 +23,8 @@
   <property name="android-saturn" value="android.saturn"/>
   <property name="android-json" value="android.json"/>
   <property name="android-cbor" value="android.cbor"/>
-  <property name="webpki-libext" value="webpki.org-libext-1.00.jar"/>
-  <property name="webpki-webutil" value="webpki.org-webutil-1.00.jar"/>
+  <property name="webpki-libext" value="webpki.org-libext-1.0.0.jar"/>
+  <property name="webpki-webutil" value="webpki.org-webutil-1.0.0.jar"/>
   <property name="debug"  value="on"/>
   <property name="javadoccss" location="stylesheet.css"/>
   <property name="bcprovider" value=""/>

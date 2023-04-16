@@ -20,7 +20,8 @@ package org.webpki.pdf;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
-import org.webpki.util.ArrayUtil;
+import org.webpki.util.IO;
+
 import org.webpki.crypto.DemoKeyStore;
 import org.webpki.crypto.KeyStoreSigner;
 
@@ -52,9 +53,9 @@ public class Sign {
             signer.setExtendedCertPath(true);
         }
         for (int i = 6; i < argv.length; i++) {
-            ds.addAttachment(argv[i], "Attachment #" + (i - 5), ArrayUtil.readFile(argv[i]));
+            ds.addAttachment(argv[i], "Attachment #" + (i - 5), IO.readFile(argv[i]));
         }
-        ArrayUtil.writeFile(argv[5], ds.addDocumentSignature(ArrayUtil.readFile(argv[4]), argv[0].equals("c")));
+        IO.writeFile(argv[5], ds.addDocumentSignature(IO.readFile(argv[4]), argv[0].equals("c")));
     }
 
 }

@@ -23,7 +23,7 @@ import java.util.GregorianCalendar;
 
 import java.security.KeyStore;
 
-import org.webpki.util.ArrayUtil;
+import org.webpki.util.IO;
 
 import org.webpki.crypto.CertificateInfo;
 import org.webpki.crypto.DemoKeyStore;
@@ -70,7 +70,7 @@ public class AresEnc {
 // Which is to be HTTP POSTed but here just put on a file
 
         byte[] data = authenc.serializeJSONDocument(JSONOutputFormats.PRETTY_PRINT);
-        ArrayUtil.writeFile(out_file, data);
+        IO.writeFile(out_file, data);
         JSONDecoderCache sc = new JSONDecoderCache();
         sc.addToCache(AuthenticationResponseDecoder.class);
         sc.parse(data);

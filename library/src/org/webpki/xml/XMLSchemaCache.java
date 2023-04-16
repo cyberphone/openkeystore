@@ -46,6 +46,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import org.webpki.util.ArrayUtil;
+import org.webpki.util.IO;
 
 /**
  * Repository for schemas and classes for wrapping XML elements as Java objects.
@@ -155,7 +156,7 @@ public class XMLSchemaCache {
 
 
     public void addSchema(InputStream is) throws IOException {
-        addSchema(ArrayUtil.getByteArrayFromInputStream(is));
+        addSchema(IO.getByteArrayFromInputStream(is));
     }
 
 

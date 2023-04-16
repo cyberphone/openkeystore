@@ -64,7 +64,7 @@ public class Tabs {
                          line.charAt(line.length() - 1) == '+');
             }
             System.out.println("File=" + path + " lines=" + i);
-            ArrayUtil.writeFile(path, data.toString().getBytes("utf-8"));
+            IO.writeFile(path, data.toString().getBytes("utf-8"));
         }
     }
 

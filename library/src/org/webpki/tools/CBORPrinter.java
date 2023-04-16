@@ -18,7 +18,7 @@ package org.webpki.tools;
 
 import org.webpki.cbor.CBORObject;
 
-import org.webpki.util.ArrayUtil;
+import org.webpki.util.IO;
 import org.webpki.util.Base64URL;
 import org.webpki.util.HexaDecimal;
 import org.webpki.util.UTF8;
@@ -43,7 +43,7 @@ public class CBORPrinter {
     /**
      * Run CBOR printer.
      * <p>
-     * <code>java -cp </code><i>path</i><code>/webpki.org-libext-1.00.jar org.webpki.tools.CBORPrinter bin </code><i>CBORfile</i>
+     * <code>java -cp </code><i>path</i><code>/webpki.org-libext-n.n.n.jar org.webpki.tools.CBORPrinter bin </code><i>CBORfile</i>
      * </p>
      * @param args Command line interface
      * 
@@ -53,7 +53,7 @@ public class CBORPrinter {
         if (args.length != 2) {
             exitCommand();
         }
-        byte[] readCbor = ArrayUtil.readFile(args[1]);
+        byte[] readCbor = IO.readFile(args[1]);
         String format = args[0];
         if (format.equals("hex")) {
             String hex = UTF8.decode(readCbor)

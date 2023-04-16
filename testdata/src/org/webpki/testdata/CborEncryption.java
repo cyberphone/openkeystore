@@ -60,6 +60,7 @@ import org.webpki.json.SymmetricKeys;
 
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.HexaDecimal;
+import org.webpki.util.IO;
 import org.webpki.util.PEMDecoder;
 import org.webpki.util.UTF8;
 
@@ -99,13 +100,13 @@ public class CborEncryption {
         baseData = args[1] + File.separator;
         baseEncryption = args[2] + File.separator;
         symmetricKeys = new SymmetricKeys(baseKey);
-        dataToBeEncrypted = ArrayUtil.readFile(baseData + "datatobeencrypted.txt");
+        dataToBeEncrypted = IO.readFile(baseData + "datatobeencrypted.txt");
 
         for (String key : new String[]{"p256", "p384", "p521", "r2048", "x25519", "x448"}) {
             // Check the PEM reader
             KeyPair keyPairPem = 
-                    new KeyPair(PEMDecoder.getPublicKey(ArrayUtil.readFile(baseKey + key + "publickey.pem")),
-                                PEMDecoder.getPrivateKey(ArrayUtil.readFile(baseKey + key + "privatekey.pem")));
+                    new KeyPair(PEMDecoder.getPublicKey(IO.readFile(baseKey + key + "publickey.pem")),
+                                PEMDecoder.getPrivateKey(IO.readFile(baseKey + key + "privatekey.pem")));
             KeyPair keyPairJwk = readJwk(key);
             if (!keyPairJwk.getPublic().equals(keyPairPem.getPublic())) {
                 throw new IOException("PEM fail at public " + key);
@@ -114,7 +115,7 @@ public class CborEncryption {
                 throw new IOException("PEM fail at private " + key);
             }
             KeyStore keyStorePem = 
-                    PEMDecoder.getKeyStore(ArrayUtil.readFile(baseKey + key + "certificate-key.pem"),
+                    PEMDecoder.getKeyStore(IO.readFile(baseKey + key + "certificate-key.pem"),
                                                               "mykey", "foo123");
             if (!keyPairJwk.getPrivate().equals(keyStorePem.getKey("mykey",
                                                                    "foo123".toCharArray()))) {
@@ -251,7 +252,7 @@ public class CborEncryption {
         boolean changed = true;
         byte[] oldEncryption = null;
         try {
-            oldEncryption = ArrayUtil.readFile(fileName);
+            oldEncryption = IO.readFile(fileName);
             try {
                 compareResults(decrypter, oldEncryption);
             } catch (Exception e) {
@@ -265,7 +266,7 @@ public class CborEncryption {
             cleanEncryption(oldEncryption).equals(cleanEncryption(updatedEncryption))) {
             return;
         }
-        ArrayUtil.writeFile(fileName, updatedEncryption);
+        IO.writeFile(fileName, updatedEncryption);
         if (changed) {
             System.out.println("WARNING '" + fileName + "' was UPDATED");
         }
@@ -317,7 +318,7 @@ public class CborEncryption {
 
     
     static KeyPair readJwk(String keyType) throws Exception {
-        JSONObjectReader jwkPlus = JSONParser.parse(ArrayUtil.readFile(baseKey + keyType + "privatekey.jwk"));
+        JSONObjectReader jwkPlus = JSONParser.parse(IO.readFile(baseKey + keyType + "privatekey.jwk"));
         // Note: The built-in JWK decoder does not accept "kid" since it doesn't have a meaning in JSF or JEF. 
         keyId = new CBORString(jwkPlus.getString("kid"));
         jwkPlus.removeProperty("kid");
@@ -432,8 +433,8 @@ public class CborEncryption {
     
     static void demoDocEncryption(String fileName) throws IOException {
         fileName = baseEncryption + fileName;
-        byte[] encryption = ArrayUtil.readFile(baseEncryption + "x25519#ecdh-es+a256kw@a256gcm@kid.cbor"); 
-        ArrayUtil.writeFile(fileName + ".hex", 
+        byte[] encryption = IO.readFile(baseEncryption + "x25519#ecdh-es+a256kw@a256gcm@kid.cbor"); 
+        IO.writeFile(fileName + ".hex", 
                             UTF8.encode(HexaDecimal.encode(encryption)));
         StringBuilder text = new StringBuilder(CBORObject.decode(encryption).toString());
         int i = text.indexOf("\n  1:");
@@ -469,7 +470,7 @@ public class CborEncryption {
                 break;
             }
         }
-        ArrayUtil.writeFile(fileName + ".txt", 
+        IO.writeFile(fileName + ".txt", 
                             UTF8.encode(text.toString()
                                 .replace("\n", "<br>\n")
                                 .replace("  ", "&nbsp;&nbsp;")));

@@ -8,7 +8,7 @@ import java.security.spec.ECGenParameterSpec;
 
 import org.webpki.crypto.CustomCryptoProvider;
 
-import org.webpki.util.ArrayUtil;
+import org.webpki.util.IO;
 
 public class ASN1 {
     static final byte[] RSA_ALGORITHM_OID = {0x2A, (byte) 0x86, 0x48, (byte) 0x86, (byte) 0xF7, 0x0D, 0x01, 0x01, 0x01};
@@ -52,10 +52,10 @@ public class ASN1 {
         }
         try {
             if (args[0].equals("rp") || args[0].equals("rc")) {
-                byte[] data = ArrayUtil.readFile(args[1]);
+                byte[] data = IO.readFile(args[1]);
                 System.out.println("KEY L=" + (args[0].equals("rp") ? getPublicKey(data) : getPublicKeyFromCertificate(data)).length);
             } else if (args[0].equals("rk")) {
-                byte[] data = ArrayUtil.readFile(args[1]);
+                byte[] data = IO.readFile(args[1]);
                 System.out.println("KEY L=" + getPrivateKey(data).length);
             } else if (args[0].equals("we")) {
                 CustomCryptoProvider.forcedLoad(true);
@@ -63,13 +63,13 @@ public class ASN1 {
                 ECGenParameterSpec eccgen = new ECGenParameterSpec("secp256r1");
                 generator.initialize(eccgen, new SecureRandom());
                 KeyPair key_pair = generator.generateKeyPair();
-                ArrayUtil.writeFile(args[1], key_pair.getPrivate().getEncoded());
+                IO.writeFile(args[1], key_pair.getPrivate().getEncoded());
             } else if (args[0].equals("wrs")) {
                 CustomCryptoProvider.forcedLoad(true);
                 KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
                 kpg.initialize(2048);
                 KeyPair key_pair = kpg.generateKeyPair();
-                ArrayUtil.writeFile(args[1], key_pair.getPrivate().getEncoded());
+                IO.writeFile(args[1], key_pair.getPrivate().getEncoded());
             }
         } catch (Exception e) {
             e.printStackTrace();

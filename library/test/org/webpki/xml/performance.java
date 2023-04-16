@@ -20,7 +20,7 @@ import java.util.Date;
 
 import java.text.SimpleDateFormat;
 
-import org.webpki.util.ArrayUtil;
+import org.webpki.util.IO;
 
 public class performance {
     static void timeout(String message) {
@@ -33,7 +33,7 @@ public class performance {
             System.exit(3);
         }
         int last = argv.length - 1;
-        byte[] xml_data = ArrayUtil.readFile(argv[last]);
+        byte[] xml_data = IO.readFile(argv[last]);
         int count = Integer.valueOf(argv[0]);
         timeout("XML Schema Cache Init");
         XMLSchemaCache xmlp = new XMLSchemaCache();

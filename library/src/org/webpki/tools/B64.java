@@ -16,8 +16,8 @@
  */
 package org.webpki.tools;
 
-import org.webpki.util.ArrayUtil;
 import org.webpki.util.Base64URL;
+import org.webpki.util.IO;
 import org.webpki.util.UTF8;
 import org.webpki.util.Base64;
 
@@ -40,7 +40,7 @@ public class B64 {
             exitCommand();
         } else {
             byte[] output = null;
-            byte[] input = ArrayUtil.readFile(args[1]);
+            byte[] input = IO.readFile(args[1]);
             if (args[0].startsWith("dec")) {
                 StringBuilder string = new StringBuilder();
                 for (byte b : input) {
@@ -62,7 +62,7 @@ public class B64 {
             } else {
                 exitCommand();
             }
-            ArrayUtil.writeFile(args[2], output);
+            IO.writeFile(args[2], output);
         }
     }
 }

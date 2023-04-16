@@ -25,6 +25,7 @@ import java.security.PrivateKey;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import org.webpki.util.IO;
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.Base64;
 
@@ -197,12 +198,12 @@ public class xmlobject extends XMLObjectWrapper implements XMLEnvelopedInput {
                 });
                 xmls.createEnvelopedSignature(o);
             }
-            ArrayUtil.writeFile(args[2], o.writeXML());
+            IO.writeFile(args[2], o.writeXML());
         } else {
             XMLSchemaCache xml = new XMLSchemaCache();
             xml.addWrapper(XMLSignatureWrapper.class);
             xml.addWrapper(xmlobject.class);
-            xmlobject o = (xmlobject) xml.parse(ArrayUtil.readFile(args[2]));
+            xmlobject o = (xmlobject) xml.parse(IO.readFile(args[2]));
             if (args[0].equals("-rsa")) {
                 XMLAsymKeyVerifier verifier = new XMLAsymKeyVerifier();
                 verifier.validateEnvelopedSignature(o);

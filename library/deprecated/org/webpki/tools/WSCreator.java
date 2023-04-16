@@ -1631,7 +1631,7 @@ public class WSCreator extends XMLObjectWrapper {
         try {
             XMLSchemaCache xsc = new XMLSchemaCache();
             xsc.addWrapper(WSCreator.class);
-            xsc.parse(ArrayUtil.readFile(args[1]));
+            xsc.parse(IO.readFile(args[1]));
         } catch (IOException iox) {
             iox.printStackTrace();
             System.exit(3);

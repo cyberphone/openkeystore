@@ -18,7 +18,7 @@ package org.webpki.tools;
 
 import java.io.IOException;
 
-import org.webpki.util.ArrayUtil;
+import org.webpki.util.IO;
 import org.webpki.util.HexaDecimal;
 import org.webpki.util.UTF8;
 
@@ -40,8 +40,8 @@ public class Hex {
 
     public static void main(String[] args) throws IOException {
         if (args.length == 3 && args[0].equals("tobin")) {
-            ArrayUtil.writeFile(args[2], 
-                    HexaDecimal.decode(UTF8.decode(ArrayUtil.readFile(args[1]))));
+            IO.writeFile(args[2], 
+                    HexaDecimal.decode(UTF8.decode(IO.readFile(args[1]))));
             System.exit(0);
         }
         if (args.length != 2 || !(args[0].equals("hex") || args[0].equals("dump"))) {
@@ -49,8 +49,9 @@ public class Hex {
                                "           tobin inputfileinhex outputfilebin\n");
             System.exit(0);
         }
-        byte[] data = ArrayUtil.readFile(args[1]);
-        System.out.print(args[0].equals("dump") ? HexaDecimal.getHexDebugData(data) : HexaDecimal.encode(data));
+        byte[] data = IO.readFile(args[1]);
+        System.out.print(args[0].equals("dump") ? 
+              HexaDecimal.getHexDebugData(data) : HexaDecimal.encode(data));
     }
 
 }

@@ -51,6 +51,7 @@ import org.webpki.json.Extension1;
 import org.webpki.json.Extension2;
 
 import org.webpki.util.ArrayUtil;
+import org.webpki.util.IO;
 import org.webpki.util.PEMDecoder;
 
 /*
@@ -102,7 +103,7 @@ public class JsonEncryption {
         }
         boolean changed = true;
         try {
-            JSONObjectReader oldEncryptedData = JSONParser.parse(ArrayUtil.readFile(fileName));
+            JSONObjectReader oldEncryptedData = JSONParser.parse(IO.readFile(fileName));
             try {
                 if (ArrayUtil.compare(decrypter.decrypt(oldEncryptedData), dataToBeEncrypted)) {
                     // All good but are the new and old effectively the same?
@@ -117,7 +118,7 @@ public class JsonEncryption {
         if (changed) {
             System.out.println("UPDATED: " + baseName);
         }
-        ArrayUtil.writeFile(fileName, encryptedData);
+        IO.writeFile(fileName, encryptedData);
     }
 
     public static void main(String[] args) throws Exception {
@@ -129,7 +130,7 @@ public class JsonEncryption {
         baseData = args[1] + File.separator;
         baseEncryption = args[2] + File.separator;
         symmetricKeys = new SymmetricKeys(baseKey);
-        dataToBeEncrypted = ArrayUtil.readFile(baseData + "datatobeencrypted.txt");
+        dataToBeEncrypted = IO.readFile(baseData + "datatobeencrypted.txt");
         
         asymEnc("p256", ContentEncryptionAlgorithms.A128CBC_HS256);
         asymEnc("p256", ContentEncryptionAlgorithms.A256CBC_HS512);
@@ -209,7 +210,7 @@ public class JsonEncryption {
 
     static X509Certificate[] getCertificatePath(String keyType)
             throws IOException, GeneralSecurityException {
-        return PEMDecoder.getCertificatePath(ArrayUtil.readFile(baseKey + keyType + "certpath.pem"));
+        return PEMDecoder.getCertificatePath(IO.readFile(baseKey + keyType + "certpath.pem"));
     }
 
     static void certEnc(String keyType, 
@@ -291,7 +292,7 @@ public class JsonEncryption {
     }
     
     static KeyPair readJwk(String keyType) throws Exception {
-        JSONObjectReader jwkPlus = JSONParser.parse(ArrayUtil.readFile(baseKey + keyType + "privatekey.jwk"));
+        JSONObjectReader jwkPlus = JSONParser.parse(IO.readFile(baseKey + keyType + "privatekey.jwk"));
         // Note: The built-in JWK decoder does not accept "kid" since it doesn't have a meaning in JSF or JEF. 
         if ((keyId = jwkPlus.getStringConditional("kid")) != null) {
             jwkPlus.removeProperty("kid");
@@ -450,7 +451,7 @@ public class JsonEncryption {
             options.setPublicKeyOption(JSONCryptoHelper.PUBLIC_KEY_OPTIONS.FORBIDDEN);
         }
         try {
-            JSONObjectReader oldEncryptedData = JSONParser.parse(ArrayUtil.readFile(fileName));
+            JSONObjectReader oldEncryptedData = JSONParser.parse(IO.readFile(fileName));
             boolean allOk = true;
             for (JSONDecryptionDecoder decoder : oldEncryptedData.getEncryptionObjects(options)) {
                 if (!ArrayUtil.compare(decoder.getDecryptedData(decryptionKeys), dataToBeEncrypted)) {
@@ -470,6 +471,6 @@ public class JsonEncryption {
         if (changed) {
             System.out.println("UPDATED: " + baseName);
         }
-        ArrayUtil.writeFile(fileName, encryptedData);
+        IO.writeFile(fileName, encryptedData);
     }
 }

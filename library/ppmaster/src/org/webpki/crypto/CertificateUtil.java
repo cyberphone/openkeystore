@@ -34,7 +34,7 @@ import java.util.regex.Matcher;
 
 import javax.security.auth.x500.X500Principal;
 
-import org.webpki.util.ArrayUtil;
+import org.webpki.util.IO;
 import org.webpki.util.HexaDecimal;
 
 import org.webpki.asn1.DerDecoder;
@@ -347,7 +347,7 @@ public class CertificateUtil {
             try {
                 ArrayList<byte[]> certPath = new ArrayList<>();
                 for (String file : args) {
-                    certPath.add(ArrayUtil.readFile(file));
+                    certPath.add(IO.readFile(file));
                 }
                 for (X509Certificate cert : getSortedPathFromBlobs(certPath)) {
                     System.out.println("\nCertificate:\n" + new CertificateInfo(cert));

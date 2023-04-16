@@ -74,7 +74,7 @@ public class SresEnc {
 // Which is to be HTTP POSTed but here just put on a file
 
         byte[] data = sresenc.writeXML();
-        ArrayUtil.writeFile(out_file, data);
+        IO.writeFile(out_file, data);
         XMLSchemaCache sc = new XMLSchemaCache();
         sc.addWrapper(sresenc);
         sc.addWrapper((XMLObjectWrapper) spre);

@@ -45,6 +45,7 @@ import org.webpki.json.JSONObjectWriter;
 import org.webpki.json.JSONOutputFormats;
 import org.webpki.json.JSONParser;
 
+import org.webpki.util.IO;
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.Base64URL;
 
@@ -171,7 +172,7 @@ public class KeyStore2JWKConverter {
                 total = s.append('\"').toString();
             }            
         }
-        ArrayUtil.writeFile(argv[2], total.getBytes("utf-8"));
+        IO.writeFile(argv[2], total.getBytes("utf-8"));
     }
 
     private void setKeyId(String keyId) {

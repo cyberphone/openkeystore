@@ -38,7 +38,7 @@ public class SresDec {
     }
 
     static SignatureResponseDecoder test(String in_file, boolean aia_support) throws Exception {
-        byte[] data = ArrayUtil.readFile(in_file);
+        byte[] data = IO.readFile(in_file);
         XMLSchemaCache schema_cache = new XMLSchemaCache();
         schema_cache.addWrapper(SignatureResponseDecoder.class);
         schema_cache.addWrapper(XDSProfileResponseDecoder.class);

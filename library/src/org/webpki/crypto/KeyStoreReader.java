@@ -23,7 +23,7 @@ import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 
-import org.webpki.util.ArrayUtil;
+import org.webpki.util.IO;
 
 public class KeyStoreReader {
 
@@ -48,11 +48,11 @@ public class KeyStoreReader {
 
     public static KeyStore loadKeyStore(String keystoreFileName, String password) 
             throws IOException, GeneralSecurityException {
-        return loadKeyStore(ArrayUtil.readFile(keystoreFileName), password);
+        return loadKeyStore(IO.readFile(keystoreFileName), password);
     }
 
     public static KeyStore loadKeyStore(InputStream inputStream, String password) 
             throws IOException, GeneralSecurityException {
-        return loadKeyStore(ArrayUtil.getByteArrayFromInputStream(inputStream), password);
+        return loadKeyStore(IO.getByteArrayFromInputStream(inputStream), password);
     }
 }

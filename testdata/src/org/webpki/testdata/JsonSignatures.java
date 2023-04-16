@@ -55,6 +55,7 @@ import org.webpki.json.Extension2;
 import org.webpki.json.SymmetricKeys;
 
 import org.webpki.util.ArrayUtil;
+import org.webpki.util.IO;
 import org.webpki.util.PEMDecoder;
 import org.webpki.util.UTF8;
 
@@ -106,14 +107,14 @@ public class JsonSignatures {
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
         keyStore.load(null, null);
         keyStore.setCertificateEntry("mykey",
-            CertificateUtil.getCertificateFromBlob(ArrayUtil.readFile(baseKey + "rootca.cer")));
+            CertificateUtil.getCertificateFromBlob(IO.readFile(baseKey + "rootca.cer")));
         x509Verifier = new JSONX509Verifier(new KeyStoreVerifier(keyStore));
 
         for (String key : new String[]{"p256", "p384", "p521", "r2048", "ed25519", "ed448"}) {
             // Check the PEM reader
             KeyPair keyPairPem = 
-                    new KeyPair(PEMDecoder.getPublicKey(ArrayUtil.readFile(baseKey + key + "publickey.pem")),
-                                PEMDecoder.getPrivateKey(ArrayUtil.readFile(baseKey + key + "privatekey.pem")));
+                    new KeyPair(PEMDecoder.getPublicKey(IO.readFile(baseKey + key + "publickey.pem")),
+                                PEMDecoder.getPrivateKey(IO.readFile(baseKey + key + "privatekey.pem")));
             KeyPair keyPairJwk = readJwk(key);
             if (!keyPairJwk.getPublic().equals(keyPairPem.getPublic())) {
                 throw new IOException("PEM fail at public " + key);
@@ -122,7 +123,7 @@ public class JsonSignatures {
                 throw new IOException("PEM fail at private " + key);
             }
             KeyStore keyStorePem = 
-                    PEMDecoder.getKeyStore(ArrayUtil.readFile(baseKey + key + "certificate-key.pem"),
+                    PEMDecoder.getKeyStore(IO.readFile(baseKey + key + "certificate-key.pem"),
                                                               "mykey", "foo123");
             if (!keyPairJwk.getPrivate().equals(keyStorePem.getKey("mykey",
                                                                    "foo123".toCharArray()))) {
@@ -201,13 +202,13 @@ public class JsonSignatures {
             (exts ? "exts-" : "") + "jwk.json";
         boolean changed = true;
         try {
-            if (cleanArraySignature(signedData).equals(cleanArraySignature(ArrayUtil.readFile(fileName)))) {
+            if (cleanArraySignature(signedData).equals(cleanArraySignature(IO.readFile(fileName)))) {
                 return;
             }
         } catch (Exception e) {
             changed = false;  // New
         }
-        ArrayUtil.writeFile(fileName, signedData);
+        IO.writeFile(fileName, signedData);
         if (changed) {
             System.out.println("WARNING '" + fileName + "' was UPDATED");
         }
@@ -245,13 +246,13 @@ public class JsonSignatures {
         String fileName = baseSignatures + prefix(keyType) + getAlgorithm(decoder) + "@jwk.js";
         boolean changed = true;
         try {
-            if (cleanJavaScriptSignature(signatureData).equals(cleanJavaScriptSignature(ArrayUtil.readFile(fileName)))) {
+            if (cleanJavaScriptSignature(signatureData).equals(cleanJavaScriptSignature(IO.readFile(fileName)))) {
                 return;
             }
         } catch (Exception e) {
             changed = false;  // New
         }
-        ArrayUtil.writeFile(fileName, signatureData);
+        IO.writeFile(fileName, signatureData);
         if (changed) {
             System.out.println("WARNING '" + fileName + "' was UPDATED");
         }
@@ -284,11 +285,11 @@ public class JsonSignatures {
         boolean changed = true;
         try {
             if (cleanFlag) {
-                if (cleanSignature(ArrayUtil.readFile(fileName)).equals(cleanSignature(updatedSignature))) {
+                if (cleanSignature(IO.readFile(fileName)).equals(cleanSignature(updatedSignature))) {
                     return;
                 }
             } else {
-                if (ArrayUtil.compare(ArrayUtil.readFile(fileName), updatedSignature)) {
+                if (ArrayUtil.compare(IO.readFile(fileName), updatedSignature)) {
                     return;
                 }
             }
@@ -296,7 +297,7 @@ public class JsonSignatures {
             // New I guess.
             changed = false;
         }
-        ArrayUtil.writeFile(fileName, updatedSignature);
+        IO.writeFile(fileName, updatedSignature);
         if (changed) {
             System.out.println("WARNING '" + fileName + "' was UPDATED");
         }
@@ -324,7 +325,7 @@ public class JsonSignatures {
 
     static String getDataToSign() throws Exception {
         return UTF8.decode(
-                ArrayUtil.readFile(baseData + "datatobesigned.json")).replace("\r", "");
+                IO.readFile(baseData + "datatobesigned.json")).replace("\r", "");
     }
     
     static JSONObjectWriter parseDataToSign() throws Exception {
@@ -361,7 +362,7 @@ public class JsonSignatures {
     }
 
     static KeyPair readJwk(String keyType) throws Exception {
-        JSONObjectReader jwkPlus = JSONParser.parse(ArrayUtil.readFile(baseKey + keyType + "privatekey.jwk"));
+        JSONObjectReader jwkPlus = JSONParser.parse(IO.readFile(baseKey + keyType + "privatekey.jwk"));
         // Note: The built-in JWK decoder does not accept "kid" since it doesn't have a meaning in JSF or JEF. 
         if ((keyId = jwkPlus.getStringConditional("kid")) != null) {
             jwkPlus.removeProperty("kid");
@@ -436,7 +437,7 @@ public class JsonSignatures {
         boolean cleanFlag = true;
         if (wantKeyId) {
             try {
-                JSONObjectReader oldSignatures = JSONParser.parse(ArrayUtil.readFile(fileName));
+                JSONObjectReader oldSignatures = JSONParser.parse(IO.readFile(fileName));
                 signatures = chained ?
                         oldSignatures.getSignatureChain(options) 
                                                                   : 
@@ -517,7 +518,7 @@ public class JsonSignatures {
         boolean cleanFlag = true;
         if (!wantPublicKey) {
             try {
-                JSONParser.parse(ArrayUtil.readFile(fileName))
+                JSONParser.parse(IO.readFile(fileName))
                     .getSignature(signatureLabel, 
                                   options).verify(new JSONAsymKeyVerifier(keyPair.getPublic()));
             } catch (Exception e) {
@@ -537,7 +538,7 @@ public class JsonSignatures {
 
     static X509Certificate[] readCertificatePath(String keyType)
             throws IOException, GeneralSecurityException {
-        return PEMDecoder.getCertificatePath(ArrayUtil.readFile(baseKey + keyType + "certpath.pem"));
+        return PEMDecoder.getCertificatePath(IO.readFile(baseKey + keyType + "certpath.pem"));
     }
 
     static void certSign(String keyType) throws Exception {

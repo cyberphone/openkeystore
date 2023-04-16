@@ -24,7 +24,7 @@ import java.util.TimeZone;
 
 import java.text.SimpleDateFormat;
 
-import org.webpki.util.ArrayUtil;
+import org.webpki.util.IO;
 
 import org.webpki.crypto.CertificateInfo;
 import org.webpki.crypto.DemoKeyStore;
@@ -44,7 +44,7 @@ public class Verify {
         if (argv.length == 2) {
             pdf_verifier.selectSignatureByIndex(Integer.parseInt(argv[0]));
         }
-        pdf_verifier.verifyDocumentSignature(ArrayUtil.readFile(argv[argv.length - 1]));
+        pdf_verifier.verifyDocumentSignature(IO.readFile(argv[argv.length - 1]));
         System.out.println("Signature name: " + pdf_verifier.getSignatureName());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss z");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -53,7 +53,7 @@ public class Verify {
         System.out.println("Document revision: " + pdf_verifier.getDocumentRevision());
         System.out.println("Document modified: " + pdf_verifier.getDocumentModifiedStatus());
         System.out.println("Signer certificate:\n" + new CertificateInfo(verifier.getSignerCertificate()).toString());
-        ArrayUtil.writeFile("c:\\unsigned-file.pdf", pdf_verifier.getUnsignedDocument());
+        IO.writeFile("c:\\unsigned-file.pdf", pdf_verifier.getUnsignedDocument());
     }
 
 }

@@ -34,7 +34,7 @@ public class AresDec {
     }
 
     static AuthenticationResponseDecoder test(String in_file) throws Exception {
-        byte[] data = ArrayUtil.readFile(in_file);
+        byte[] data = IO.readFile(in_file);
         XMLSchemaCache schema_cache = new XMLSchemaCache();
         schema_cache.addWrapper(AuthenticationResponseDecoder.class);
 

@@ -60,6 +60,7 @@ import org.webpki.json.SymmetricKeys;
 
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.HexaDecimal;
+import org.webpki.util.IO;
 import org.webpki.util.PEMDecoder;
 import org.webpki.util.UTF8;
 
@@ -90,10 +91,10 @@ public class CborSignatures {
         for (String key : new String[]{"p256", "p384", "p521", "r2048", "ed25519", "ed448"}) {
             // Check the PEM reader
             KeyPair keyPairPem = new KeyPair(
-                PEMDecoder.getPublicKey(ArrayUtil.readFile(baseKey + key + "publickey.pem")),
-                PEMDecoder.getPrivateKey(ArrayUtil.readFile(baseKey + key + "privatekey.pem")));
+                PEMDecoder.getPublicKey(IO.readFile(baseKey + key + "publickey.pem")),
+                PEMDecoder.getPrivateKey(IO.readFile(baseKey + key + "privatekey.pem")));
             X509Certificate[] certificatePath = 
-                PEMDecoder.getCertificatePath(ArrayUtil.readFile(baseKey + key + "certpath.pem"));
+                PEMDecoder.getCertificatePath(IO.readFile(baseKey + key + "certpath.pem"));
             KeyPair keyPairJwk = readJwk(key);
             if (!keyPairJwk.getPublic().equals(keyPairPem.getPublic())) {
                 throw new IOException("PEM fail at public " + key);
@@ -102,7 +103,7 @@ public class CborSignatures {
                 throw new IOException("PEM fail at private " + key);
             }
             KeyStore keyStorePem = 
-                    PEMDecoder.getKeyStore(ArrayUtil.readFile(baseKey + key + "certificate-key.pem"),
+                    PEMDecoder.getKeyStore(IO.readFile(baseKey + key + "certificate-key.pem"),
                                                               "mykey", "foo123");
             if (!keyPairJwk.getPrivate().equals(keyStorePem.getKey("mykey",
                                                                    "foo123".toCharArray()))) {
@@ -180,7 +181,7 @@ public class CborSignatures {
         boolean changed = true;
         byte[] oldSignature = null;
         try {
-            oldSignature = ArrayUtil.readFile(fileName);
+            oldSignature = IO.readFile(fileName);
             try {
                 validator.validate(SIGNATURE_LABEL, CBORObject.decode(oldSignature));
             } catch (Exception e) {
@@ -201,7 +202,7 @@ public class CborSignatures {
                 }
             }
         }
-        ArrayUtil.writeFile(fileName, updatedSignature);
+        IO.writeFile(fileName, updatedSignature);
         if (changed) {
             System.out.println("WARNING '" + fileName + "' was UPDATED");
         }
@@ -263,7 +264,7 @@ public class CborSignatures {
     }
     
     static KeyPair readJwk(String keyType) throws Exception {
-        JSONObjectReader jwkPlus = JSONParser.parse(ArrayUtil.readFile(
+        JSONObjectReader jwkPlus = JSONParser.parse(IO.readFile(
                 baseKey + keyType + "privatekey.jwk"));
         // Note: The built-in JWK decoder does not accept "kid" since it
         // doesn't have a meaning in JSF or JEF. 
@@ -479,7 +480,7 @@ public class CborSignatures {
         boolean changed = true;
         byte[] oldSignature = null;
         try {
-            oldSignature = ArrayUtil.readFile(fileName);
+            oldSignature = IO.readFile(fileName);
             try {
                 validator.validate(new CBORInteger(-1), CBORObject.decode(oldSignature).getMap());
             } catch (Exception e) {
@@ -496,7 +497,7 @@ public class CborSignatures {
             }
 
         }
-        ArrayUtil.writeFile(fileName, signedData);
+        IO.writeFile(fileName, signedData);
         additionalFiles(fileName, signedData);
         if (changed) {
             System.out.println("WARNING '" + fileName + "' was UPDATED");
@@ -504,7 +505,7 @@ public class CborSignatures {
     }
 
     private static void additionalFiles(String fileName, byte[] signature) throws IOException {
-        ArrayUtil.writeFile(fileName.replace(".cbor", ".hex"), 
+        IO.writeFile(fileName.replace(".cbor", ".hex"), 
                             UTF8.encode(HexaDecimal.encode(signature)));
         StringBuilder text = new StringBuilder(CBORObject.decode(signature).toString());
         int i = text.indexOf("\n  -1:");
@@ -536,7 +537,7 @@ public class CborSignatures {
                 break;
             }
         }
-        ArrayUtil.writeFile(fileName.replace(".cbor", ".txt"), 
+        IO.writeFile(fileName.replace(".cbor", ".txt"), 
                             UTF8.encode(text.toString()
                                 .replace("6: h'", "<span class='webpkihighlite'>6: h'")
                                 .replace("'\n  }\n}", "'</span>\n  }\n}")

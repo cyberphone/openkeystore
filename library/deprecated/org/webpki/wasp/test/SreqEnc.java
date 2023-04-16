@@ -285,7 +285,7 @@ public class SreqEnc {
         }
 
         byte[] data = sreqenc.writeXML();
-        ArrayUtil.writeFile(args[0], data);
+        IO.writeFile(args[0], data);
         XMLSchemaCache sc = new XMLSchemaCache();
         sc.addWrapper(sreqenc);
         sc.validate(data);
@@ -341,7 +341,7 @@ public class SreqEnc {
                             sresdec.getDocumentData().getDocuments()[1].getContentID()));
         }
 
-        ArrayUtil.writeFile(sigfile, sresdec.writeXML());
+        IO.writeFile(sigfile, sresdec.writeXML());
 
     }
 

@@ -17,7 +17,7 @@
 package org.webpki.webauth;
 
 import org.webpki.util.StringUtil;
-import org.webpki.util.ArrayUtil;
+import org.webpki.util.IO;
 
 import org.webpki.crypto.DemoKeyStore;
 import org.webpki.crypto.KeyStoreVerifier;
@@ -36,7 +36,7 @@ public class AreqDec {
 
     static AuthenticationRequestDecoder test(String file, boolean outdata) throws Exception {
 
-        byte[] data = ArrayUtil.readFile(file);
+        byte[] data = IO.readFile(file);
 
         JSONDecoderCache schema_cache = new JSONDecoderCache();
         schema_cache.addToCache(AuthenticationRequestDecoder.class);

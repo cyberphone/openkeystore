@@ -2,17 +2,17 @@ package cbor_api_demo;
 
 import java.io.IOException;
 
-import org.webpki.util.ArrayUtil;
+import org.webpki.util.IO;
 import org.webpki.util.UTF8;
 
 public class ReadWriteSubstitute {
 
     static String readString(String fileName) throws IOException {
-        return new String(ArrayUtil.readFile(fileName), "utf-8");
+        return new String(IO.readFile(fileName), "utf-8");
     }
 
     static void writeString(String fileName, String data) throws IOException {
-        ArrayUtil.writeFile(fileName, UTF8.encode(data));
+        IO.writeFile(fileName, UTF8.encode(data));
         return;
     }
     

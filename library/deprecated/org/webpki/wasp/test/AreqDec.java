@@ -40,7 +40,7 @@ public class AreqDec {
 
     static AuthenticationRequestDecoder test(String file, boolean outdata) throws Exception {
 
-        byte[] data = ArrayUtil.readFile(file);
+        byte[] data = IO.readFile(file);
 
         XMLSchemaCache schema_cache = new XMLSchemaCache();
         schema_cache.addWrapper(AuthenticationRequestDecoder.class);

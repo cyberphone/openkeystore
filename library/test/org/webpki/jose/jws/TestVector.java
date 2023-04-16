@@ -25,7 +25,7 @@ import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONObjectWriter;
 import org.webpki.json.JSONParser;
 
-import org.webpki.util.ArrayUtil;
+import org.webpki.util.IO;
 
 public class TestVector {
     
@@ -44,7 +44,7 @@ public class TestVector {
         try {
             JSONObjectReader jsonIn = JSONParser.parse(JSON_TO_BE_SIGNED);
             
-            KeyPair keyPair = JSONParser.parse(ArrayUtil.readFile(argc[0]))
+            KeyPair keyPair = JSONParser.parse(IO.readFile(argc[0]))
                 .removeProperty(JOSEKeyWords.KID_JSON)
                 .getKeyPair(AlgorithmPreferences.JOSE);
             

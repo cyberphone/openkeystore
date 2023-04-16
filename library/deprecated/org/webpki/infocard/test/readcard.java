@@ -38,7 +38,7 @@ public class readcard
         if (args.length < 1) show ();
         KeyStoreVerifier verifier = new KeyStoreVerifier (DemoKeyStore.getCAKeyStore ());
         verifier.setTrustedRequired (false);
-        new InfoCardReader (ArrayUtil.readFile (args[0]), verifier);
+        new InfoCardReader (IO.readFile (args[0]), verifier);
 
       }
   }

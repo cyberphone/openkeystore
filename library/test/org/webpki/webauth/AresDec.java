@@ -16,10 +16,11 @@
  */
 package org.webpki.webauth;
 
-import org.webpki.util.ArrayUtil;
+import org.webpki.util.IO;
 
 import org.webpki.crypto.DemoKeyStore;
 import org.webpki.crypto.KeyStoreVerifier;
+
 import org.webpki.json.JSONDecoderCache;
 
 public class AresDec {
@@ -30,7 +31,7 @@ public class AresDec {
     }
 
     static AuthenticationResponseDecoder test(String in_file) throws Exception {
-        byte[] data = ArrayUtil.readFile(in_file);
+        byte[] data = IO.readFile(in_file);
         JSONDecoderCache schema_cache = new JSONDecoderCache();
         schema_cache.addToCache(AuthenticationResponseDecoder.class);
 

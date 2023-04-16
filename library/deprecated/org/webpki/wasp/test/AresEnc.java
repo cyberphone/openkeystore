@@ -81,7 +81,7 @@ public class AresEnc {
 // Which is to be HTTP POSTed but here just put on a file
 
         byte[] data = authenc.writeXML();
-        ArrayUtil.writeFile(out_file, data);
+        IO.writeFile(out_file, data);
         XMLSchemaCache sc = new XMLSchemaCache();
         sc.addWrapper(authenc);
         sc.validate(data);

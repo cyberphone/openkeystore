@@ -19,7 +19,8 @@ package org.webpki.pkcs7;
 import org.webpki.crypto.CertificateInfo;
 import org.webpki.crypto.DemoKeyStore;
 import org.webpki.crypto.KeyStoreSigner;
-import org.webpki.util.ArrayUtil;
+
+import org.webpki.util.IO;
 
 public class Sign {
     public static void main(String[] args) throws Exception {
@@ -33,11 +34,11 @@ public class Sign {
         KeyStoreSigner signer = new KeyStoreSigner(DemoKeyStore.getMarionKeyStore(), null);
         signer.setKey(null, DemoKeyStore.getSignerPassword());
         PKCS7Signer pkcs7 = new PKCS7Signer(signer);
-        ArrayUtil.writeFile(args[0],
+        IO.writeFile(args[0],
                 args.length == 2 ?
-                        pkcs7.signMessage(ArrayUtil.readFile(args[1]))
+                        pkcs7.signMessage(IO.readFile(args[1]))
                         :
-                        pkcs7.signDetachedMessage(ArrayUtil.readFile(args[1])));
+                        pkcs7.signDetachedMessage(IO.readFile(args[1])));
         System.out.println("\nSIGNING SUCCESSFUL\n\n" + new CertificateInfo(signer.getCertificatePath()[0]).toString());
     }
 }

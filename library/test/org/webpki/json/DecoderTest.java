@@ -18,7 +18,7 @@ package org.webpki.json;
 
 import java.io.IOException;
 
-import org.webpki.util.ArrayUtil;
+import org.webpki.util.IO;
 
 public class DecoderTest {
     public static void main(String[] argc) {
@@ -32,7 +32,7 @@ public class DecoderTest {
                     JSONDecoderCache parser = new JSONDecoderCache();
                     parser.setCheckForUnreadProperties(Boolean.valueOf(argc[2]));
                     parser.addToCache(argc[0]);
-                    JSONDecoder doc = parser.parse(ArrayUtil.readFile(argc[1]));
+                    JSONDecoder doc = parser.parse(IO.readFile(argc[1]));
                     System.out.print(new String(doc.getWriter().serializeToBytes(of), "UTF-8"));
                     return;
                 }

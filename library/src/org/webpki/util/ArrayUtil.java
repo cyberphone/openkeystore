@@ -16,13 +16,6 @@
  */
 package org.webpki.util;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ByteArrayOutputStream;
-
 /**
  * Collection of support functions for arrays.
  */
@@ -237,24 +230,6 @@ public class ArrayUtil {
                 (byte) (value & 0xFF)}, 0, -1, true, byteSeparator);
     }
 
-    public static byte[] readFile(File file) throws IOException {
-        return getByteArrayFromInputStream(new FileInputStream(file));
-    }
-
-    public static byte[] readFile(String filename) throws IOException {
-        return readFile(new File(filename));
-    }
-
-    public static void writeFile(File file, byte[] b) throws IOException {
-        FileOutputStream fos = new FileOutputStream(file);
-        fos.write(b);
-        fos.close();
-    }
-
-    public static void writeFile(String filename, byte[] b) throws IOException {
-        writeFile(new File(filename), b);
-    }
-
     /*
      * Copies a part or the whole of the supplied byte array to a new array of the indicated size.
      * If <i>newSize</i> is larger than <code>b.length</code> the remaining bytes of the 
@@ -293,16 +268,5 @@ public class ArrayUtil {
             r[i] = b[l - i - 1];
         }
         return r;
-    }
-
-    public static byte[] getByteArrayFromInputStream(InputStream is) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream(10000);
-        byte[] buffer = new byte[10000];
-        int bytes;
-        while ((bytes = is.read(buffer)) != -1) {
-            baos.write(buffer, 0, bytes);
-        }
-        is.close();
-        return baos.toByteArray();
     }
 }

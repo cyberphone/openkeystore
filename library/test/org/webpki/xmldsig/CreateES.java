@@ -22,7 +22,8 @@ import java.io.FileInputStream;
 import java.security.KeyStore;
 
 import org.webpki.crypto.KeyStoreSigner;
-import org.webpki.util.ArrayUtil;
+
+import org.webpki.util.IO;
 
 import org.webpki.xml.XMLSchemaCache;
 import org.webpki.xml.XMLObjectWrapper;
@@ -51,7 +52,7 @@ public class CreateES {
         sc.addWrapper(XMLSignatureWrapper.class);
         sc.addWrapper(Class.forName(args[WRAPPER], true, ClassLoader.getSystemClassLoader()).asSubclass(XMLObjectWrapper.class));
 
-        XMLObjectWrapper o = sc.parse(ArrayUtil.readFile(args[INFILE]));
+        XMLObjectWrapper o = sc.parse(IO.readFile(args[INFILE]));
 
         KeyStore ks = KeyStore.getInstance(args[STORETYPE]);
         ks.load(new FileInputStream(args[KEYSTORE]), args[STOREPASS].toCharArray());
@@ -67,7 +68,7 @@ public class CreateES {
 
         xmlsign.createEnvelopedSignature((XMLEnvelopedInput) o);
 
-        ArrayUtil.writeFile(args[OUTFILE], o.writeXML());
+        IO.writeFile(args[OUTFILE], o.writeXML());
 
     }
 

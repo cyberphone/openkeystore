@@ -34,7 +34,7 @@ import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.CryptoAlgorithms;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 
-import org.webpki.util.ArrayUtil;
+import org.webpki.util.IO;
 
 /**
  * Supports HTML descriptions of JSON protocols.
@@ -244,7 +244,7 @@ public class JSONBaseHTML  {
         if (fileReaderBase == null) {
             throw new IOException("File reader base missing!");
         }
-        return ArrayUtil.readFile(fileReaderBase + name);
+        return IO.readFile(fileReaderBase + name);
     }
 
     public JSONBaseHTML(String[] args, String subsystem_name) throws IOException {
@@ -1086,7 +1086,7 @@ public class JSONBaseHTML  {
                  "<div style=\"cursor:pointer;padding:2pt 0 0 0;position:absolute;top:15pt;left:15pt;z-index:5;visibility:visible;width:100pt;" +
                  "height:47pt;border-width:1px;border-style:solid;border-color:black;box-shadow:3pt 3pt 3pt #D0D0D0\"" +
                  " onclick=\"document.location.href='http://webpki.org'\" title=\"Home of WebPKI.org\">")
-          .append(new String(ArrayUtil.getByteArrayFromInputStream (getClass().getResourceAsStream ("webpki-logo.svg")),"UTF-8"))
+          .append(new String(IO.getByteArrayFromInputStream (getClass().getResourceAsStream ("webpki-logo.svg")),"UTF-8"))
           .append("</div>");
         for (Content division_object : division_objects) {
             html.append(division_object.getHTML ());
@@ -1095,7 +1095,7 @@ public class JSONBaseHTML  {
     }
     
     public void writeHTML() throws IOException {
-        ArrayUtil.writeFile(file_name, getHTML().getBytes("UTF-8"));
+        IO.writeFile(file_name, getHTML().getBytes("UTF-8"));
     }
 
     public ProtocolObject addProtocolTable(String protocol) {
@@ -1256,7 +1256,7 @@ public class JSONBaseHTML  {
         buffer.append("<table class=\"tftable\" style=\"margin-top:10pt\">");
         boolean next = false;
         for (ProtocolStep protocol_step : protocol_steps) {
-            JSONObjectReader or = JSONParser.parse(ArrayUtil.getByteArrayFromInputStream (parent.getResourceAsStream (protocol_step.json_file)));
+            JSONObjectReader or = JSONParser.parse(IO.getByteArrayFromInputStream (parent.getResourceAsStream (protocol_step.json_file)));
             if (next) {
                 buffer.append("<tr><td style=\"border-width:0px;height:10px;background-color:white\"></td></tr>");
             } else {

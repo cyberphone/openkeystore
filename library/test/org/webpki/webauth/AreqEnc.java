@@ -18,7 +18,7 @@ package org.webpki.webauth;
 
 import java.io.IOException;
 
-import org.webpki.util.ArrayUtil;
+import org.webpki.util.IO;
 
 import org.webpki.crypto.DemoKeyStore;
 import org.webpki.crypto.KeyStoreSigner;
@@ -133,7 +133,7 @@ public class AreqEnc {
         }
 
         byte[] data = areqenc.serializeJSONDocument(JSONOutputFormats.PRETTY_PRINT);
-        ArrayUtil.writeFile(args[0], data);
+        IO.writeFile(args[0], data);
         JSONDecoderCache sc = new JSONDecoderCache();
         sc.addToCache(AuthenticationRequestDecoder.class);
         sc.parse(data);
@@ -151,7 +151,7 @@ public class AreqEnc {
         AuthenticationResponseDecoder aresdec = AresDec.test(authfile);
         areqenc.checkRequestResponseIntegrity(aresdec, null);
 
-        ArrayUtil.writeFile(authfile, aresdec.getWriter().serializeToBytes(JSONOutputFormats.PRETTY_PRINT));
+        IO.writeFile(authfile, aresdec.getWriter().serializeToBytes(JSONOutputFormats.PRETTY_PRINT));
 
     }
 }

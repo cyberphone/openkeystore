@@ -64,6 +64,6 @@ public class writecard
 
         KeyStoreSigner signer = new KeyStoreSigner (DemoKeyStore.getExampleDotComKeyStore (), null);
         signer.setKey (null, DemoKeyStore.getSignerPassword ());
-        ArrayUtil.writeFile (args[0], icw.getInfoCard (signer));
+        IO.writeFile (args[0], icw.getInfoCard (signer));
       }
   }

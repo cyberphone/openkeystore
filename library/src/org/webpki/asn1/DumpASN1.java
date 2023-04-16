@@ -16,9 +16,9 @@
  */
 package org.webpki.asn1;
 
-import java.io.*;
+import java.io.FileOutputStream;
 
-import org.webpki.util.ArrayUtil;
+import org.webpki.util.IO;
 
 /**
  * Command line utility for viewing ASN.1 structures.
@@ -92,7 +92,7 @@ public class DumpASN1 {
 
         if (oidfile != null) ASN1ObjectID.tryReadOIDNames(oidfile);
 
-        BaseASN1Object o = DerDecoder.decode(ArrayUtil.readFile(infile), offset);
+        BaseASN1Object o = DerDecoder.decode(IO.readFile(infile), offset);
 
         System.out.println(o.toString(expand, bytenum));
 

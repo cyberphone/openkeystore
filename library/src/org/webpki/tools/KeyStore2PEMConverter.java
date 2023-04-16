@@ -48,6 +48,7 @@ import org.webpki.json.JSONParser;
 import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.KeyAlgorithms;
 
+import org.webpki.util.IO;
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.Base64;
 import org.webpki.util.UTF8;
@@ -176,6 +177,6 @@ public class KeyStore2PEMConverter {
                 throw new Exception("Bad KS");
             }
         }
-        ArrayUtil.writeFile(argv[2], converter.getData());
+        IO.writeFile(argv[2], converter.getData());
     }
 }

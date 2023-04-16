@@ -74,7 +74,7 @@ import javax.net.ssl.KeyManagerFactory;
 import org.webpki.crypto.CertificateInfo;
 import org.webpki.crypto.KeyStoreReader;
 
-import org.webpki.util.ArrayUtil;
+import org.webpki.util.IO;
 import org.webpki.util.UTF8;
 
 /**
@@ -557,11 +557,11 @@ public class HTTPSWrapper {
         response_code = conn.getResponseCode();
         if (response_code == HttpURLConnection.HTTP_OK || 
             response_code == HttpURLConnection.HTTP_CREATED) {
-            server_data = ArrayUtil.getByteArrayFromInputStream(conn.getInputStream());
+            server_data = IO.getByteArrayFromInputStream(conn.getInputStream());
         } else {
             InputStream is = conn.getErrorStream();
             if (is != null) {
-                server_data = ArrayUtil.getByteArrayFromInputStream(conn.getErrorStream());
+                server_data = IO.getByteArrayFromInputStream(conn.getErrorStream());
             }
         }
 
@@ -1512,7 +1512,7 @@ public class HTTPSWrapper {
             if (CMD_get_oper.found) {
                 wrap.makeGetRequest(CMD_get_oper.getString());
             } else {
-                wrap.makePostRequest(CMD_post_oper.getString(), ArrayUtil.readFile(CMD_data_file.getString()));
+                wrap.makePostRequest(CMD_post_oper.getString(), IO.readFile(CMD_data_file.getString()));
             }
 
             if (CMD_dump_certs.found) {
@@ -1536,7 +1536,7 @@ public class HTTPSWrapper {
             }
 
             if (CMD_store_data.found) {
-                ArrayUtil.writeFile(CMD_store_data.getString(), wrap.getData());
+                IO.writeFile(CMD_store_data.getString(), wrap.getData());
             }
 
         }

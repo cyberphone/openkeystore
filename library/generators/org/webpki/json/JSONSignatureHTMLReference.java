@@ -36,8 +36,8 @@ import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.json.JSONBaseHTML.RowInterface;
 import org.webpki.json.JSONBaseHTML.Types;
 
-import org.webpki.util.ArrayUtil;
 import org.webpki.util.HexaDecimal;
+import org.webpki.util.IO;
 import org.webpki.util.PEMDecoder;
 
 /**
@@ -80,7 +80,7 @@ public class JSONSignatureHTMLReference extends JSONBaseHTML.Types {
     static final String FILE_NAME_SIGN           = "p256#es256@name-jwk.json";
  
     static JSONObjectReader readJSON(String name) throws IOException {
-        return JSONParser.parse(ArrayUtil.getByteArrayFromInputStream(JSONEncryptionHTMLReference.class.getResourceAsStream(name)));
+        return JSONParser.parse(IO.getByteArrayFromInputStream(JSONEncryptionHTMLReference.class.getResourceAsStream(name)));
     }
     
     static String formatCode(String code) {

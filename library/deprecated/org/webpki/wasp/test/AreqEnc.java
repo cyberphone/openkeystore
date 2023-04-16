@@ -143,7 +143,7 @@ public class AreqEnc {
         }
 
         byte[] data = areqenc.writeXML();
-        ArrayUtil.writeFile(args[0], data);
+        IO.writeFile(args[0], data);
         XMLSchemaCache sc = new XMLSchemaCache();
         sc.addWrapper(areqenc);
         sc.validate(data);
@@ -161,7 +161,7 @@ public class AreqEnc {
         AuthenticationResponseDecoder aresdec = AresDec.test(authfile);
         areqenc.checkRequestResponseIntegrity(aresdec, null);
 
-        ArrayUtil.writeFile(authfile, aresdec.writeXML());
+        IO.writeFile(authfile, aresdec.writeXML());
 
     }
 }

@@ -38,7 +38,7 @@ import org.webpki.json.JSONObjectWriter;
 import org.webpki.json.JSONOutputFormats;
 import org.webpki.json.JSONParser;
 
-import org.webpki.util.ArrayUtil;
+import org.webpki.util.IO;
 import org.webpki.util.PEMDecoder;
 
 import org.webpki.webutil.InitPropertyReader;
@@ -110,7 +110,7 @@ public class JSFService extends InitPropertyReader implements ServletContextList
         if (is == null) {
             throw new IOException("Resource fail for: " + name);
         }
-        return ArrayUtil.getByteArrayFromInputStream(is);
+        return IO.getByteArrayFromInputStream(is);
     }
     
     String getEmbeddedResourceString(String name) throws IOException {

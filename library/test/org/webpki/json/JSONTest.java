@@ -74,6 +74,7 @@ import org.webpki.json.JSONCryptoHelper.PUBLIC_KEY_OPTIONS;
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.Base64URL;
 import org.webpki.util.HexaDecimal;
+import org.webpki.util.IO;
 import org.webpki.util.ISODateTime;
 
 /**
@@ -2425,7 +2426,7 @@ public class JSONTest {
     }
 
     static KeyPair readJwk(String keyType) throws Exception {
-        JSONObjectReader jwkPlus = JSONParser.parse(ArrayUtil.readFile(baseKey + keyType + "privatekey.jwk"));
+        JSONObjectReader jwkPlus = JSONParser.parse(IO.readFile(baseKey + keyType + "privatekey.jwk"));
         // Note: The built-in JWK decoder does not accept "kid" since it doesn't have a meaning in JSF or JEF. 
         if ((keyId = jwkPlus.getStringConditional("kid")) != null) {
             jwkPlus.removeProperty("kid");
@@ -2438,16 +2439,16 @@ public class JSONTest {
         keyStore.load (null, null);
         keyStore.setCertificateEntry ("mykey",
                                       CertificateUtil.getCertificateFromBlob (
-                                           ArrayUtil.readFile(baseKey + name)));        
+                                           IO.readFile(baseKey + name)));        
         return new JSONX509Verifier(new KeyStoreVerifier(keyStore));
     }
 
     static JSONObjectReader readSignature(String shortName) throws Exception {
-        return JSONParser.parse(ArrayUtil.readFile(baseSignatures + shortName));
+        return JSONParser.parse(IO.readFile(baseSignatures + shortName));
     }
 
     static JSONObjectReader readEncryption(String shortName) throws Exception {
-        return JSONParser.parse(ArrayUtil.readFile(baseEncryption + shortName));
+        return JSONParser.parse(IO.readFile(baseEncryption + shortName));
     }
 
     void booleanValues(boolean value) throws IOException {
@@ -4112,14 +4113,14 @@ public class JSONTest {
         JSONDecryptionDecoder dec = readEncryption(fileName).getEncryptionObject(new JSONCryptoHelper.Options()
           .setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED).setPublicKeyOption(JSONCryptoHelper.PUBLIC_KEY_OPTIONS.FORBIDDEN));
         KeyPair keyPair = readJwk("r2048");
-        assertTrue(ArrayUtil.compare(ArrayUtil.readFile(baseData + "datatobeencrypted.txt"),
+        assertTrue(ArrayUtil.compare(IO.readFile(baseData + "datatobeencrypted.txt"),
                                      dec.getDecryptedData(keyPair.getPrivate())));
     }
     
     JSONDecryptionDecoder encFailDecrypt(JSONObjectReader enc, JSONCryptoHelper.Options option) throws Exception {
         KeyPair p256 = readJwk("p256");
         JSONDecryptionDecoder dec = enc.getEncryptionObject(option);
-        assertTrue(ArrayUtil.compare(ArrayUtil.readFile(baseData + "datatobeencrypted.txt"),
+        assertTrue(ArrayUtil.compare(IO.readFile(baseData + "datatobeencrypted.txt"),
                 dec.getDecryptedData(p256.getPrivate())));
         return dec;
     }
@@ -4629,7 +4630,7 @@ public class JSONTest {
     public void PrettyPrinting() throws Exception {
         StringBuilder json = new StringBuilder();
         int index = 0;
-        for (byte c : ArrayUtil.getByteArrayFromInputStream(getClass().getResourceAsStream("pretty.txt"))) {
+        for (byte c : IO.getByteArrayFromInputStream(getClass().getResourceAsStream("pretty.txt"))) {
             if (c == '\n') {
                 if (index == 0) {
                     String input = json.toString();

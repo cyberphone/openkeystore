@@ -38,7 +38,7 @@ import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.SignatureAlgorithms;
 
-import org.webpki.util.ArrayUtil;
+import org.webpki.util.IO;
 import org.webpki.util.UTF8;
 
 import org.webpki.webutil.InitPropertyReader;
@@ -112,7 +112,7 @@ public class CSFService extends InitPropertyReader implements ServletContextList
         if (is == null) {
             throw new IOException("Resource fail for: " + name);
         }
-        return ArrayUtil.getByteArrayFromInputStream(is);
+        return IO.getByteArrayFromInputStream(is);
     }
     
     String getEmbeddedResourceString(String name) throws IOException {

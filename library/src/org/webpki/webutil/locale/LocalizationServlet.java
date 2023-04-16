@@ -23,8 +23,7 @@ import java.security.GeneralSecurityException;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
 
-import org.webpki.util.ArrayUtil;
-
+import org.webpki.util.IO;
 import org.webpki.xml.XMLSchemaCache;
 
 /**
@@ -66,7 +65,7 @@ public abstract class LocalizationServlet extends HttpServlet {
             throws IOException, GeneralSecurityException {
         XMLSchemaCache sc = new XMLSchemaCache();
         sc.addWrapper(LocalizedStringsSchema.class);
-        return (LocalizedStringsSchema) sc.parse(ArrayUtil.readFile(
+        return (LocalizedStringsSchema) sc.parse(IO.readFile(
                 context.getRealPath("/WEB-INF/locale/" + locale + "/locale.xml")));
     }
 

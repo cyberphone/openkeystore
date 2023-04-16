@@ -56,6 +56,7 @@ import org.webpki.json.SymmetricKeys;
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.Base64URL;
 import org.webpki.util.HexaDecimal;
+import org.webpki.util.IO;
 import org.webpki.util.PEMDecoder;
 
 import static org.webpki.cbor.CBORCryptoConstants.*;
@@ -81,8 +82,7 @@ public class CBORTest {
         x25519 = readJwk("x25519");
         ed448 = readJwk("ed448");
         ed25519 = readJwk("ed25519");
-        p256CertPath = PEMDecoder.getCertificatePath(ArrayUtil.readFile(baseKey +
-                                                                        "p256certpath.pem"));
+        p256CertPath = PEMDecoder.getCertificatePath(IO.readFile(baseKey + "p256certpath.pem"));
     }
     
     static byte[] dataToEncrypt;
@@ -119,7 +119,7 @@ public class CBORTest {
     
     static KeyPair readJwk(String keyType) throws Exception {
         JSONObjectReader jwkPlus = JSONParser.parse(
-                ArrayUtil.readFile(baseKey + keyType + "privatekey.jwk"));
+                IO.readFile(baseKey + keyType + "privatekey.jwk"));
         // Note: The built-in JWK decoder does not accept "kid" since
         // it doesn't have a meaning in JSF or JEF. 
         keyId = new CBORString(jwkPlus.getString("kid"));
@@ -2194,6 +2194,10 @@ public class CBORTest {
         diagFlag("18446744073709551616(8)");  // Too large
         CBORDiagnosticNotationDecoder.decode("1.0e+300");
         diagFlag("1.0e+500");  // Too large
+        diagFlag("b64'00'");  // Bad B64
+        diagFlag("h'0'");  // Bad Hex
+        diagFlag("'unterminated");  // Bad string
+        diagFlag("\"unterminated");  // Bad string
     }
 
     void utf8DecoderTest(String hex, boolean ok) {

@@ -19,7 +19,9 @@ package org.webpki.pkcs7;
 import org.webpki.crypto.CertificateInfo;
 import org.webpki.crypto.DemoKeyStore;
 import org.webpki.crypto.KeyStoreVerifier;
+
 import org.webpki.util.ArrayUtil;
+import org.webpki.util.IO;
 
 public class Verify {
     public static void main(String[] args) throws Exception {
@@ -34,12 +36,12 @@ public class Verify {
         PKCS7Verifier pkcs7 = new PKCS7Verifier(verifier);
         verifier.setTrustedRequired(false);
         if (args.length == 2) {
-            byte[] read_data = pkcs7.verifyMessage(ArrayUtil.readFile(args[1]));
-            if (!ArrayUtil.compare(read_data, ArrayUtil.readFile(args[0]))) {
+            byte[] read_data = pkcs7.verifyMessage(IO.readFile(args[1]));
+            if (!ArrayUtil.compare(read_data, IO.readFile(args[0]))) {
                 throw new Exception("Data mismatch");
             }
         } else {
-            pkcs7.verifyDetachedMessage(ArrayUtil.readFile(args[0]), ArrayUtil.readFile(args[1]));
+            pkcs7.verifyDetachedMessage(IO.readFile(args[0]), IO.readFile(args[1]));
         }
         System.out.println("\nVERIFICATION SUCCESSFUL\n\n" + new CertificateInfo(verifier.getCertificatePath()[0]).toString());
     }
