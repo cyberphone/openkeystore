@@ -28,12 +28,13 @@ import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.RSAKeyGenParameterSpec;
 
+import java.util.Arrays;
+
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.CustomCryptoProvider;
 
-import org.webpki.util.ArrayUtil;
 import org.webpki.util.HexaDecimal;
 
 /**
@@ -99,7 +100,7 @@ public class Key2 {
         PublicKey publicKey = key_pair.getPublic();
         byte[] data = new Writer(publicKey).serializeJSONDocument(JSONOutputFormats.PRETTY_PRINT);
         Reader reader = (Reader) cache.parse(data);
-        if (!ArrayUtil.compare(reader.getPublicKey().getEncoded(), publicKey.getEncoded())) {
+        if (!Arrays.equals(reader.getPublicKey().getEncoded(), publicKey.getEncoded())) {
             throw new IOException("Unmatching keys:" + publicKey.toString());
         }
         if (list) {

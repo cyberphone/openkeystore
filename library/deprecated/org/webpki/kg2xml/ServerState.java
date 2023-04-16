@@ -129,7 +129,7 @@ public class ServerState implements Serializable
             return o instanceof PostProvisioningTargetKey && 
                    clientSessionId.equals(((PostProvisioningTargetKey)o).clientSessionId) &&
                    serverSessionId.equals (((PostProvisioningTargetKey)o).serverSessionId) &&
-                   ArrayUtil.compare (certificate_data, ((PostProvisioningTargetKey)o).certificate_data);
+                   Arrays.equals (certificate_data, ((PostProvisioningTargetKey)o).certificate_data);
           }
       }
   
@@ -1136,7 +1136,7 @@ public class ServerState implements Serializable
         MacGenerator check = new MacGenerator ();
         check.addArray (saved_close_nonce);
         check.addString (SecureKeyStore.ALGORITHM_SESSION_ATTEST_1);
-        if (!ArrayUtil.compare (attest (check.getResult (),
+        if (!Arrays.equals (attest (check.getResult (),
                                         getMacSequenceCounterAndUpdate ()),
                                 close_session_attestation))
           {
@@ -1238,7 +1238,7 @@ public class ServerState implements Serializable
                                                                  device_certificate == null ? null : device_certificate,
                                                                  prov_init_response.attestation);
             if (((server_certificate == null ^ prov_init_response.server_certificate_fingerprint == null)) ||
-                (server_certificate != null && !ArrayUtil.compare (prov_init_response.server_certificate_fingerprint, 
+                (server_certificate != null && !Arrays.equals (prov_init_response.server_certificate_fingerprint, 
                                                                    HashAlgorithms.SHA256.digest (server_certificate.getEncoded ()))))
               {
                 throw new IOException ("Attribute '" + SERVER_CERT_FP_ATTR + "' is missing or is invalid");
@@ -1248,7 +1248,7 @@ public class ServerState implements Serializable
                 @Override
                 public boolean verifyData (byte[] data, byte[] digest, HashAlgorithms algorithm, String keyId) throws IOException
                   {
-                    return ArrayUtil.compare (serverCryptoInterface.mac (data, SecureKeyStore.KDF_EXTERNAL_SIGNATURE), digest);
+                    return Arrays.equals (serverCryptoInterface.mac (data, SecureKeyStore.KDF_EXTERNAL_SIGNATURE), digest);
                   }
               }).validateEnvelopedSignature (prov_init_response, null, prov_init_response.signature, clientSessionId);
           }
@@ -1298,7 +1298,7 @@ public class ServerState implements Serializable
                 // Write key attestation data
                 attestation.addString (gpk.id);
                 attestation.addArray (gpk.publicKey.getEncoded ());
-                 if (!ArrayUtil.compare (attest (attestation.getResult (), kp.expected_attest_mac_count),
+                 if (!Arrays.equals (attest (attestation.getResult (), kp.expected_attest_mac_count),
                                          kp.attestation = gpk.attestation))
                   {
                     ServerState.bad ("Attestation failed for key id:" + gpk.id);

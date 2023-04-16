@@ -112,6 +112,12 @@ public abstract class CBORObject {
         }
     }
 
+    static byte[] addByteArrays(byte[]a, byte[] b) {
+        byte[] result = Arrays.copyOf(a, a.length + b.length);
+        System.arraycopy(b, 0, result, a.length, b.length);
+        return result;
+    }
+
     byte[] encodeTagAndValue(int tag, int length, long value) {
         byte[] encoded = new byte[length + 1];
         encoded[0] = (byte)tag;
@@ -782,24 +788,24 @@ public abstract class CBORObject {
      * Decodes CBOR data.
      * <p>
      * This method is identical to:
-     * <pre>  decode(new ByteArrayInputStream(encodedCborData),
+     * <pre>  decode(new ByteArrayInputStream(cborData),
      *         false, 
      *         false,
      *         false,
-     *         encodedCborData.length);
+     *         cborData.length);
      *</pre>
      * </p>
      * 
-     * @param encodedCborData
+     * @param cborData CBOR in its binary form
      * @return CBORObject
      * @throws IOException
      */
-    public static CBORObject decode(byte[] encodedCborData) throws IOException {
-        return decode(new ByteArrayInputStream(encodedCborData),
+    public static CBORObject decode(byte[] cborData) throws IOException {
+        return decode(new ByteArrayInputStream(cborData),
                       false, 
                       false,
                       false,
-                      encodedCborData.length);
+                      cborData.length);
     }
     
     class DiagnosticNotation {

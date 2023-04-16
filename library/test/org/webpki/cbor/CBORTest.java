@@ -34,6 +34,7 @@ import java.security.PublicKey;
 
 import java.security.cert.X509Certificate;
 
+import java.util.Arrays;
 import java.util.Locale;
 
 import org.junit.BeforeClass;
@@ -53,7 +54,6 @@ import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONParser;
 import org.webpki.json.SymmetricKeys;
 
-import org.webpki.util.ArrayUtil;
 import org.webpki.util.Base64URL;
 import org.webpki.util.HexaDecimal;
 import org.webpki.util.IO;
@@ -157,7 +157,7 @@ public class CBORTest {
     CBORObject parseCborHex(String hex) throws IOException {
         byte[] cbor = HexaDecimal.decode(hex);
         CBORObject cborObject = CBORObject.decode(cbor);
-        assertTrue("phex: " + hex, ArrayUtil.compare(cbor, cborObject.encode()));
+        assertTrue("phex: " + hex, Arrays.equals(cbor, cborObject.encode()));
         return cborObject;
     }
 
@@ -632,12 +632,12 @@ public class CBORTest {
         byte[] cbor = HexaDecimal.decode(
    "782c74686520717569636b2062726f776e20666f78206a756d7073206f76657220746865206c617a792062656172");
         assertTrue("bt", 
-                ArrayUtil.compare(cbor,
+                Arrays.equals(cbor,
                           CBORObject.decode(
                                   new StrangeReader(cbor), false, false, false, null).encode()));
 
         assertTrue("bt", 
-                ArrayUtil.compare(cbor,
+                Arrays.equals(cbor,
                           CBORObject.decode(new StrangeReader(cbor), 
                                             false, false, false, cbor.length).encode()));
         try {
@@ -1438,7 +1438,7 @@ public class CBORTest {
                                                      cea); 
                     CBORObject encrypted = encrypter.encrypt(dataToEncrypt);
                     assertTrue("enc/dec", 
-                            ArrayUtil.compare(new CBORAsymKeyDecrypter(
+                            Arrays.equals(new CBORAsymKeyDecrypter(
                                     keyPair.getPrivate()).decrypt(encrypted),
                                     dataToEncrypt));
                 }
@@ -1456,7 +1456,7 @@ public class CBORTest {
                     CBORSymKeyEncrypter encrypter = new CBORSymKeyEncrypter(secretKey, cea);
                     CBORObject encrypted = encrypter.encrypt(dataToEncrypt);
                     assertTrue("enc/dec",
-                            ArrayUtil.compare(
+                            Arrays.equals(
                                     new CBORSymKeyDecrypter(secretKey).decrypt(encrypted),
                                     dataToEncrypt));
                     assertTrue("Keysize1", ok);
@@ -1493,17 +1493,17 @@ public class CBORTest {
                                          ContentEncryptionAlgorithms.A256GCM);
         CBORObject p256Encrypted = p256Encrypter.encrypt(dataToEncrypt);
         assertTrue("enc/dec", 
-                ArrayUtil.compare(new CBORAsymKeyDecrypter(
+                Arrays.equals(new CBORAsymKeyDecrypter(
                         p256.getPrivate()).decrypt(p256Encrypted),
                         dataToEncrypt));
         p256Encrypter.setKeyId(keyId);
         CBORObject p256EncryptedKeyId = p256Encrypter.encrypt(dataToEncrypt);
         assertTrue("enc/dec", 
-                ArrayUtil.compare(new CBORAsymKeyDecrypter(
+                Arrays.equals(new CBORAsymKeyDecrypter(
                         p256.getPrivate()).decrypt(p256EncryptedKeyId),
                         dataToEncrypt));
         assertTrue("enc/dec", 
-            ArrayUtil.compare(new CBORAsymKeyDecrypter(
+            Arrays.equals(new CBORAsymKeyDecrypter(
                 new CBORAsymKeyDecrypter.KeyLocator() {
                     
                     @Override
@@ -1561,7 +1561,7 @@ public class CBORTest {
                 .encrypt(dataToEncrypt);
  
         assertTrue("enc/dec", 
-                ArrayUtil.compare(new CBORX509Decrypter(new CBORX509Decrypter.KeyLocator() {
+                Arrays.equals(new CBORX509Decrypter(new CBORX509Decrypter.KeyLocator() {
 
                     @Override
                     public PrivateKey locate(X509Certificate[] certificatePath,
@@ -1595,7 +1595,7 @@ public class CBORTest {
         
         CBORSymKeyDecrypter a256Decrypter = new CBORSymKeyDecrypter(symmetricKeys.getValue(256));
         assertTrue("enc/dec", 
-                ArrayUtil.compare(a256Decrypter.decrypt(a256Encrypted),
+                Arrays.equals(a256Decrypter.decrypt(a256Encrypted),
                         dataToEncrypt));
         
         try {
@@ -1646,7 +1646,7 @@ public class CBORTest {
         CBORObject taggedX25519Encrypted = taggedX25519Encrypter.encrypt(dataToEncrypt);
         try {
             assertTrue("enc/dec", 
-                    ArrayUtil.compare(new CBORAsymKeyDecrypter(x25519.getPrivate())
+                    Arrays.equals(new CBORAsymKeyDecrypter(x25519.getPrivate())
                                           .decrypt(taggedX25519Encrypted),
                                       dataToEncrypt));
             fail("must fail");
@@ -1655,7 +1655,7 @@ public class CBORTest {
         }
         try {
             assertTrue("enc/dec", 
-                    ArrayUtil.compare(new CBORAsymKeyDecrypter(x25519.getPrivate())
+                    Arrays.equals(new CBORAsymKeyDecrypter(x25519.getPrivate())
                     .setTagPolicy(CBORCryptoUtils.POLICY.MANDATORY, 
                                   new CBORCryptoUtils.Collector() {
 
@@ -1670,7 +1670,7 @@ public class CBORTest {
             checkException(e, "Custom data encountered. Policy: FORBIDDEN");
         }
         assertTrue("enc/dec", 
-                ArrayUtil.compare(new CBORAsymKeyDecrypter(x25519.getPrivate())
+                Arrays.equals(new CBORAsymKeyDecrypter(x25519.getPrivate())
                     .setCustomDataPolicy(CBORCryptoUtils.POLICY.MANDATORY,
                                          new CBORCryptoUtils.Collector() {
                             
@@ -1714,7 +1714,7 @@ public class CBORTest {
 
         taggedX25519Encrypted = taggedX25519Encrypter.encrypt(dataToEncrypt);
         assertTrue("enc/dec", 
-                ArrayUtil.compare(new CBORAsymKeyDecrypter(x25519.getPrivate())
+                Arrays.equals(new CBORAsymKeyDecrypter(x25519.getPrivate())
                     .setTagPolicy(CBORCryptoUtils.POLICY.MANDATORY,
                           new CBORCryptoUtils.Collector() {
                             
@@ -1899,7 +1899,8 @@ public class CBORTest {
         CBORObject cborObject;
         while ((cborObject = CBORObject.decode(inputStream, true, false, false, null)) != null) {
             byte[] rawCbor = cborObject.encode();
-            assertTrue("Seq", ArrayUtil.compare(rawCbor, 0, sequence, position, rawCbor.length));
+            assertTrue("Seq", Arrays.equals(rawCbor, 0, rawCbor.length, 
+                                            sequence, position, position + rawCbor.length));
             position += rawCbor.length;
         }
         assertTrue("SeqEnd", sequence.length == position);
@@ -1920,7 +1921,8 @@ public class CBORTest {
         position = 0;
         while ((cborObject = CBORObject.decode(inputStream, true, false, false, null)) != null) {
             byte[] rawCbor = cborObject.encode();
-            assertTrue("Seq", ArrayUtil.compare(rawCbor, 0, sequence, position, rawCbor.length));
+            assertTrue("Seq", Arrays.equals(rawCbor, 0, rawCbor.length,
+                                            sequence, position, position + rawCbor.length));
             position += rawCbor.length;
         }
         assertTrue("SeqEnd", sequence.length == position);
@@ -2162,7 +2164,7 @@ public class CBORTest {
         assertTrue("hex", CBORDiagnosticNotationDecoder.decode(
                 "-0x" + DIAG_HEX).getInt() == -30);
         assertTrue("bstr", 
-                    ArrayUtil.compare(
+                    Arrays.equals(
                             CBORDiagnosticNotationDecoder.decode(
                                     "'" + DIAG_TEXT + "'").getBytes(),
                             DIAG_TEXT.getBytes("utf-8")));
@@ -2172,7 +2174,7 @@ public class CBORTest {
         assertTrue("tstr", 
                    DIAG_TEXT.equals(CBORDiagnosticNotationDecoder.decode(
                         "\"" + DIAG_TEXT.replace("te", "te\\\n") + "\"").getString()));
-        assertTrue("emb", ArrayUtil.compare(
+        assertTrue("emb", Arrays.equals(
                           CBORDiagnosticNotationDecoder.decode(
                                   "<< " + DIAG_CBOR.toString() + ">>").getBytes(),
                           DIAG_CBOR.encode()));
@@ -2205,7 +2207,7 @@ public class CBORTest {
         try {
             byte[] roundTrip = CBORObject.decode(cbor).encode();
             assertTrue("OK", ok);
-            assertTrue("Conv", ArrayUtil.compare(cbor, roundTrip));
+            assertTrue("Conv", Arrays.equals(cbor, roundTrip));
         } catch (Exception e) {
             assertFalse("No good", ok);
         }
@@ -2220,7 +2222,7 @@ public class CBORTest {
             byte[] encodedBytes = CBORDiagnosticNotationDecoder.decode(
                     "'" + string + "'").getBytes();
             assertTrue("OK", ok);
-            assertTrue("Conv2", ArrayUtil.compare(encodedBytes, string.getBytes("utf-8")));
+            assertTrue("Conv2", Arrays.equals(encodedBytes, string.getBytes("utf-8")));
         } catch (Exception e) {
             assertFalse("No good", ok);
         }

@@ -20,8 +20,6 @@ import java.io.IOException;
 
 import java.util.ArrayList;
 
-import org.webpki.util.ArrayUtil;
-
 /**
  * Class for holding CBOR arrays.
  */
@@ -85,7 +83,7 @@ public class CBORArray extends CBORObject {
     public byte[] encode() {
         byte[] encoded = encodeTagAndN(MT_ARRAY, objectList.size());
         for (CBORObject cborObject : getObjects()) {
-            encoded = ArrayUtil.add(encoded, cborObject.encode());
+            encoded = addByteArrays(encoded, cborObject.encode());
         }
         return encoded;
     }

@@ -20,9 +20,9 @@ import java.io.IOException;
 
 import java.security.GeneralSecurityException;
 
-import org.webpki.crypto.HmacAlgorithms;
+import java.util.Arrays;
 
-import org.webpki.util.ArrayUtil;
+import org.webpki.crypto.HmacAlgorithms;
 
 /**
  * JWS HMAC signature validator
@@ -46,7 +46,7 @@ public class JWSHmacValidator extends JWSValidator {
     @Override
     void validateObject(byte[] signedData, JWSDecoder jwsDecoder)
             throws IOException, GeneralSecurityException {
-        if (!ArrayUtil.compare(
+        if (!Arrays.equals(
                ((HmacAlgorithms)jwsDecoder.signatureAlgorithm).digest(secretKey, 
                                                                       signedData),
                                                                       jwsDecoder.signature)) {

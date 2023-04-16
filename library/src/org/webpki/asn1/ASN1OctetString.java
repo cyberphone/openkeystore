@@ -19,8 +19,6 @@ package org.webpki.asn1;
 import java.io.IOException;
 import java.util.*;
 
-import org.webpki.util.ArrayUtil;
-
 public final class ASN1OctetString extends Binary {
     public ASN1OctetString(byte[] value) {
         super(OCTETSTRING, true, value);
@@ -59,7 +57,7 @@ public final class ASN1OctetString extends Binary {
 
     public boolean deepCompare(BaseASN1Object o) {
         return sameType(o) &&
-                ArrayUtil.compare(((ASN1OctetString) o).value, value);
+                Arrays.equals(((ASN1OctetString) o).value, value);
     }
 
     public String stringValue() {

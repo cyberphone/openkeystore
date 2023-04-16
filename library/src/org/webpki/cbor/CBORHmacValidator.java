@@ -19,10 +19,9 @@ package org.webpki.cbor;
 import java.io.IOException;
 
 import java.security.GeneralSecurityException;
+import java.util.Arrays;
 
 import org.webpki.crypto.HmacAlgorithms;
-
-import org.webpki.util.ArrayUtil;
 
 /**
  * Class for CBOR HMAC signature validation.
@@ -100,7 +99,7 @@ public class CBORHmacValidator extends CBORValidator {
         HmacAlgorithms hmacAlgorithm = HmacAlgorithms.getAlgorithmFromId(coseAlgorithmId);
 
         // Finally, verify the HMAC.
-        if (!ArrayUtil.compare(hmacAlgorithm.digest(
+        if (!Arrays.equals(hmacAlgorithm.digest(
                 keyLocator.locate(optionalKeyId, hmacAlgorithm), signedData), signatureValue)) {
             throw new GeneralSecurityException("HMAC signature validation error");
         }

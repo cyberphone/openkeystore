@@ -27,13 +27,13 @@ import java.security.spec.ECGenParameterSpec;
 import java.security.spec.RSAKeyGenParameterSpec;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.CustomCryptoProvider;
 
-import org.webpki.util.ArrayUtil;
 import org.webpki.util.Base64URL;
 
 /**
@@ -121,7 +121,7 @@ public class Keys {
         if (ec_flag == rsa) {
             throw new IOException("Failed to find EC");
         }
-        if (!ArrayUtil.compare(reader.getPublicKey().getEncoded(), gen_pk)) {
+        if (!Arrays.equals(reader.getPublicKey().getEncoded(), gen_pk)) {
             throw new IOException("Unmatching keys:" + publicKey.toString());
         }
         if (list) {

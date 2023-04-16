@@ -450,7 +450,7 @@ public class KeyGen2Test
                 i = 0;
                 for (KeyCreationRequestDecoder.KeyObject ko : decoder.getKeyObjects ())
                   {
-                    if (!ArrayUtil.compare (ko.getSKSPINValue (), pins[index[i++]].getBytes ("UTF-8")))
+                    if (!Arrays.equals (ko.getSKSPINValue (), pins[index[i++]].getBytes ("UTF-8")))
                       {
                         error = "Grouping problem";
                         break;
@@ -545,7 +545,7 @@ public class KeyGen2Test
                 if (ek.getProvisioningHandle () == old_provisioning_session.getProvisioningHandle ())
                   {
                     KeyAttributes ka = sks.getKeyAttributes (ek.getKeyHandle ());
-                    if (ArrayUtil.compare (HashAlgorithms.SHA256.digest (ka.getCertificatePath ()[0].getEncoded ()), postOperation.getCertificateFingerprint ()))
+                    if (Arrays.equals (HashAlgorithms.SHA256.digest (ka.getCertificatePath ()[0].getEncoded ()), postOperation.getCertificateFingerprint ()))
                       {
                         switch (postOperation.getPostOperation ())
                           {
@@ -1714,7 +1714,7 @@ public class KeyGen2Test
             assertTrue ("Prop name error", props1[i].getName ().equals (props2[i].getName ()));
             assertTrue ("Prop value error", props1[i].getValue ().equals (props2[i].getValue ()));
           }
-        assertTrue ("HMAC error", ArrayUtil.compare (sks.performHMAC (keyHandle,
+        assertTrue ("HMAC error", Arrays.equals (sks.performHMAC (keyHandle,
                                                                       HashAlgorithms.HMAC_SHA1.getURI (),
                                                                       null,
                                                                       USER_DEFINED_PIN, TEST_STRING),
@@ -1745,7 +1745,7 @@ public class KeyGen2Test
                                               iv,
                                               USER_DEFINED_PIN,
                                               TEST_STRING);
-        assertTrue ("Encrypt/decrypt error", ArrayUtil.compare (sks.symmetricKeyEncrypt (keyHandle,
+        assertTrue ("Encrypt/decrypt error", Arrays.equals (sks.symmetricKeyEncrypt (keyHandle,
                                                                                          SymEncryptionAlgorithms.AES256_CBC.getURI (),
                                                                                          false,
                                                                                          iv,
@@ -1905,7 +1905,7 @@ public class KeyGen2Test
         Signature sign = Signature.getInstance (AsymSignatureAlgorithms.RSA_SHA256.getJCEName ());
         sign.initSign (doer.server.gen_private_key);
         sign.update (TEST_STRING);
-        assertTrue ("Bad signature", ArrayUtil.compare (sign.sign (), result));
+        assertTrue ("Bad signature", Arrays.equals (sign.sign (), result));
       }
 
     @Test
@@ -1963,7 +1963,7 @@ public class KeyGen2Test
         key_agreement.init (kp.getPrivate ());
         key_agreement.doPhase (ka.getCertificatePath ()[0].getPublicKey (), true);
         byte[] Z = key_agreement.generateSecret ();
-        assertTrue ("DH fail", ArrayUtil.compare (z, Z));
+        assertTrue ("DH fail", Arrays.equals (z, Z));
       }
 
     @Test

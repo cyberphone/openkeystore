@@ -20,13 +20,11 @@ import java.io.IOException;
 
 import java.security.PublicKey;
 import java.security.GeneralSecurityException;
-
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
-
-import org.webpki.util.ArrayUtil;
 
 import org.webpki.xml.XMLObjectWrapper;
 
@@ -56,7 +54,7 @@ abstract class XMLVerifierCore {
         if (debug) {
             logger.info(ref.id + "=\n" + new String(ref_cn));
         }
-        if (!ArrayUtil.compare(ref.digestAlg.digest(ref_cn), ref.digest_val)) {
+        if (!Arrays.equals(ref.digestAlg.digest(ref_cn), ref.digest_val)) {
             throw new IOException("Incorrect message digest id=" + ref.id);
         }
     }

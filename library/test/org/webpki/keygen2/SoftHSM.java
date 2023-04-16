@@ -34,6 +34,7 @@ import java.security.interfaces.RSAKey;
 
 import java.security.spec.ECGenParameterSpec;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import javax.crypto.Cipher;
@@ -111,7 +112,7 @@ public class SoftHSM implements ServerCryptoInterface {
             byte[] session_key_attest = mac.doFinal(attestation_arguments);
 
             // Verify that the session key signature is correct
-            if (!ArrayUtil.compare(session_key_attest, session_attestation)) {
+            if (!Arrays.equals(session_key_attest, session_attestation)) {
                 throw new IOException("Verify attestation failed");
             }
         } else {

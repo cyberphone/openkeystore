@@ -197,7 +197,7 @@ public class CborSignatures {
                     return;
                 }
             } else {
-                if (ArrayUtil.compare(oldSignature, updatedSignature)) {
+                if (Arrays.equals(oldSignature, updatedSignature)) {
                     return;
                 }
             }

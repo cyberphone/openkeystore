@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
@@ -31,7 +32,6 @@ import org.webpki.crypto.KeyContainerTypes;
 import org.webpki.json.JSONArrayWriter;
 import org.webpki.json.JSONObjectWriter;
 
-import org.webpki.util.ArrayUtil;
 import org.webpki.util.ISODateTime;
 
 import static org.webpki.webauth.WebAuthConstants.*;
@@ -109,7 +109,7 @@ public class AuthenticationRequestEncoder extends ServerEncoder {
                                               byte[] expectedServerCertificateFingerprint) throws IOException {
         if (expectedServerCertificateFingerprint != null &&
                 (authenticationResponse.serverCertificateFingerprint == null ||
-                        !ArrayUtil.compare(authenticationResponse.serverCertificateFingerprint,
+                        !Arrays.equals(authenticationResponse.serverCertificateFingerprint,
                                 expectedServerCertificateFingerprint))) {
             bad("Server certificate fingerprint");
         }

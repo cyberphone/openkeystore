@@ -27,6 +27,7 @@ import java.io.FileInputStream;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.xml.XMLConstants;
 
@@ -45,7 +46,6 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import org.webpki.util.ArrayUtil;
 import org.webpki.util.IO;
 
 /**
@@ -168,7 +168,7 @@ public class XMLSchemaCache {
     public void addSchema(byte[] schema) throws IOException {
         Enumeration<byte[]> schemas = knownURIs.elements();
         while (schemas.hasMoreElements()) {
-            if (ArrayUtil.compare(schemas.nextElement(), schema)) {
+            if (Arrays.equals(schemas.nextElement(), schema)) {
                 return;
             }
         }

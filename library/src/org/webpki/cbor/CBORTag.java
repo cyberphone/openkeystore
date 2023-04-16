@@ -16,8 +16,6 @@
  */
 package org.webpki.cbor;
 
-import org.webpki.util.ArrayUtil;
-
 /**
  * Class for holding CBOR tagged objects.
  * <p>
@@ -107,7 +105,7 @@ public class CBORTag extends CBORObject {
     
     @Override
     public byte[] encode() {
-        return ArrayUtil.add(encodeTagAndN(MT_TAG, tagNumber), object.encode());
+        return addByteArrays(encodeTagAndN(MT_TAG, tagNumber), object.encode());
 
     }
     

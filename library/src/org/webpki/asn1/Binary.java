@@ -18,7 +18,7 @@ package org.webpki.asn1;
 
 import java.io.IOException;
 
-import org.webpki.util.ArrayUtil;
+import java.util.Arrays;
 
 public abstract class Binary extends Simple {
     byte[] value;
@@ -63,7 +63,7 @@ public abstract class Binary extends Simple {
     }
 
     public boolean diff(BaseASN1Object o, StringBuilder s, String prefix) {
-        if (!sameType(o) || !ArrayUtil.compare(value, ((Binary) o).value)) {
+        if (!sameType(o) || !Arrays.equals(value, ((Binary) o).value)) {
             s.append(prefix).append("<-------    ");//.append('\n');
             toString(s, prefix);
             s.append('\n');

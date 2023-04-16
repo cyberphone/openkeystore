@@ -19,13 +19,13 @@ package org.webpki.xml;
 import java.io.IOException;
 import java.io.Serializable;
 
+import java.util.Arrays;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.Document;
 
 import org.webpki.xmldsig.XPathCanonicalizer;
 import org.webpki.xmldsig.CanonicalizationAlgorithms;
-
-import org.webpki.util.ArrayUtil;
 
 public class XMLCookie implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -59,7 +59,7 @@ public class XMLCookie implements Serializable {
     }
 
     public boolean equals(XMLCookie ref) throws IOException {
-        return ArrayUtil.compare(getC14NData(), ref.getC14NData());
+        return Arrays.equals(getC14NData(), ref.getC14NData());
     }
 }
 

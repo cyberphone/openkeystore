@@ -98,14 +98,14 @@ public class JsonEncryption {
     static void optionalUpdate(String baseName, byte[] encryptedData, LocalDecrypt decrypter) throws Exception {
         String fileName = baseEncryption + baseName;
         JSONObjectReader newEncryptedData = JSONParser.parse(encryptedData);
-        if (!ArrayUtil.compare(decrypter.decrypt(newEncryptedData), dataToBeEncrypted)) {
+        if (!Arrays.equals(decrypter.decrypt(newEncryptedData), dataToBeEncrypted)) {
             throw new IOException("Decrypt err:" + baseName);
         }
         boolean changed = true;
         try {
             JSONObjectReader oldEncryptedData = JSONParser.parse(IO.readFile(fileName));
             try {
-                if (ArrayUtil.compare(decrypter.decrypt(oldEncryptedData), dataToBeEncrypted)) {
+                if (Arrays.equals(decrypter.decrypt(oldEncryptedData), dataToBeEncrypted)) {
                     // All good but are the new and old effectively the same?
                     if (cleanEncryption(newEncryptedData).equals(cleanEncryption(oldEncryptedData))) {
                         return;  // Yes, don't rewrite.
@@ -437,7 +437,7 @@ public class JsonEncryption {
         JSONObjectReader newEncryptedData = JSONParser.parse(encryptedData);
         for (JSONDecryptionDecoder decoder : newEncryptedData.getEncryptionObjects(options)) {
             q++;
-            if (!ArrayUtil.compare(decoder.getDecryptedData(decryptionKeys), dataToBeEncrypted)) {
+            if (!Arrays.equals(decoder.getDecryptedData(decryptionKeys), dataToBeEncrypted)) {
                 throw new Exception("Dec err");
             }
         }
@@ -454,7 +454,7 @@ public class JsonEncryption {
             JSONObjectReader oldEncryptedData = JSONParser.parse(IO.readFile(fileName));
             boolean allOk = true;
             for (JSONDecryptionDecoder decoder : oldEncryptedData.getEncryptionObjects(options)) {
-                if (!ArrayUtil.compare(decoder.getDecryptedData(decryptionKeys), dataToBeEncrypted)) {
+                if (!Arrays.equals(decoder.getDecryptedData(decryptionKeys), dataToBeEncrypted)) {
                     allOk = false;
                     break;
                 }

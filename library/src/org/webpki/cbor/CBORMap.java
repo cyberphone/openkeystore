@@ -18,8 +18,6 @@ package org.webpki.cbor;
 
 import java.io.IOException;
 
-import org.webpki.util.ArrayUtil;
-
 /**
  * Class for holding <code>CBOR</code> map.
  */
@@ -282,8 +280,8 @@ public class CBORMap extends CBORObject {
     public byte[] encode() {
         byte[] encoded = encodeTagAndN(MT_MAP, size());
         for (Entry entry = root; entry != null; entry = entry.next) {
-            encoded = ArrayUtil.add(encoded,
-                                    ArrayUtil.add(entry.encodedKey, entry.value.encode()));
+            encoded = addByteArrays(encoded,
+                                    addByteArrays(entry.encodedKey, entry.value.encode()));
         }
         return encoded;
     }

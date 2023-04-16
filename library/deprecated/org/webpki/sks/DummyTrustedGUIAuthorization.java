@@ -68,7 +68,7 @@ public class DummyTrustedGUIAuthorization implements TrustedGUIAuthorization {
             Mac mac = Mac.getInstance("HmacSHA256");
             mac.init(new SecretKeySpec(SHARED_SECRET_32, "RAW"));
             mac.update(value, 32, value.length - 32);
-            if (!ArrayUtil.compare(mac.doFinal(), value, 0, 32)) {
+            if (!Arrays.equals(mac.doFinal(), value, 0, 32)) {
                 throw new SKSException("MAC error on trusted GUI \"Authorization\" object");
             }
             Cipher crypt = Cipher.getInstance("AES/CBC/PKCS5Padding");

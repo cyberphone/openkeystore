@@ -24,11 +24,10 @@ import java.security.GeneralSecurityException;
 import java.io.InputStream;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Document;
-
-import org.webpki.util.ArrayUtil;
 
 /**
  * Base class for java classes whos data can be translated to/from XML documents.
@@ -272,7 +271,7 @@ public abstract class XMLObjectWrapper {
     }
 
     public boolean equals(XMLObjectWrapper other) throws IOException {
-        return ArrayUtil.compare(writeXML(), other.writeXML());
+        return Arrays.equals(writeXML(), other.writeXML());
     }
 
     /**

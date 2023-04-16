@@ -18,8 +18,6 @@ package org.webpki.cbor;
 
 import java.math.BigInteger;
 
-import org.webpki.util.ArrayUtil;
-
 /**
  * Class for holding CBOR <code>big&nbsp;integer</code>.
  * <p>
@@ -77,7 +75,7 @@ public class CBORBigInteger extends CBORObject {
             System.arraycopy(encoded, 1, temp, 0, temp.length);
             encoded = temp;
         }
-        return ArrayUtil.add(unsigned ? UNSIGNED_BIG_INTEGER_TAG : NEGATIVE_BIG_INTEGER_TAG, 
+        return addByteArrays(unsigned ? UNSIGNED_BIG_INTEGER_TAG : NEGATIVE_BIG_INTEGER_TAG, 
                              new CBORBytes(encoded).encode());
     }
     

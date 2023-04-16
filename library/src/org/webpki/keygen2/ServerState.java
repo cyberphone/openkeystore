@@ -34,6 +34,7 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.CryptoAlgorithms;
@@ -141,7 +142,7 @@ public class ServerState {
         private boolean matching(PostProvisioningTargetKey targetKey) {
             return clientSessionId.equals(targetKey.clientSessionId) &&
                    serverSessionId.equals(targetKey.serverSessionId) &&
-                   ArrayUtil.compare(certificateData, targetKey.certificateData);
+                   Arrays.equals(certificateData, targetKey.certificateData);
         }
     }
 
@@ -1133,7 +1134,7 @@ public class ServerState {
                                                                  GeneralSecurityException {
         MacGenerator check = new MacGenerator();
         check.addArray(savedCloseNonce);
-        if (!ArrayUtil.compare(attest(check.getResult(), getMacSequenceCounterAndUpdate()),
+        if (!Arrays.equals(attest(check.getResult(), getMacSequenceCounterAndUpdate()),
                                closeSessionAttestation)) {
             bad("Final attestation failed!");
         }
@@ -1320,7 +1321,7 @@ public class ServerState {
             // Recreate anticipated key attestation data
             attestation.addArray(gpk.publicKey.getEncoded());
             attestation.addArray(kp.keyMac);
-            if (!ArrayUtil.compare(attest(attestation.getResult(), kp.expectedAttestMacCount), 
+            if (!Arrays.equals(attest(attestation.getResult(), kp.expectedAttestMacCount), 
                                           gpk.attestation)) {
                 ServerState.bad("Attestation failed for key id:" + gpk.id);
             }

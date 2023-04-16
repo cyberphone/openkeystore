@@ -23,6 +23,7 @@ import java.math.BigInteger;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import java.util.regex.Pattern;
 
@@ -32,8 +33,6 @@ import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 
 import javax.security.auth.x500.X500Principal;
-
-import org.webpki.util.ArrayUtil;
 
 public class CertificateFilter {
 
@@ -412,7 +411,7 @@ public class CertificateFilter {
             return true;
         }
         for (X509Certificate certificate : certificatePath) {
-            if (ArrayUtil.compare(specifier, MessageDigest.getInstance("SHA256").digest(certificate.getEncoded()))) {
+            if (Arrays.equals(specifier, MessageDigest.getInstance("SHA256").digest(certificate.getEncoded()))) {
                 return true;
             }
         }

@@ -68,7 +68,7 @@ public abstract class Simple extends BaseASN1Object {
           
       /*    if(blob != null && o.blob != null &&
              encodedLength != o.encodedLength &&
-             !ArrayUtil.compare(blob, blobOffset, o.blob, o.blobOffset, encodedLength)){
+             !Arrays.equals(blob, blobOffset, o.blob, o.blobOffset, encodedLength)){
       System.out.println("kex");
             s.append(prefix).append("<------- length " + encodedLength).append("    ");
             toString(s, prefix);

@@ -111,7 +111,7 @@ public final class ASN1BitString extends Binary {
     }
 
     public boolean deepCompare(BaseASN1Object o) {
-        return sameType(o) && ArrayUtil.compare(((ASN1BitString) o).value, value);
+        return sameType(o) && Arrays.equals(((ASN1BitString) o).value, value);
     }
 
     void toString(StringBuilder s, String prefix) {

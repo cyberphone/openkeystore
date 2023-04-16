@@ -289,7 +289,7 @@ public class JsonSignatures {
                     return;
                 }
             } else {
-                if (ArrayUtil.compare(IO.readFile(fileName), updatedSignature)) {
+                if (Arrays.equals(IO.readFile(fileName), updatedSignature)) {
                     return;
                 }
             }

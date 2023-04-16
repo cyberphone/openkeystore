@@ -19,6 +19,7 @@ package org.webpki.keygen2;
 import java.io.IOException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.EnumSet;
 
@@ -31,7 +32,6 @@ import org.webpki.sks.Grouping;
 import org.webpki.sks.PassphraseFormat;
 import org.webpki.sks.PatternRestriction;
 
-import org.webpki.util.ArrayUtil;
 import org.webpki.util.HexaDecimal;
 
 import org.webpki.json.JSONObjectReader;
@@ -566,7 +566,7 @@ public class KeyCreationRequestDecoder extends ClientDecoder {
                             if (appUsage == key.appUsage) {
                                 keysNeedingPin.add(key);
                             } else {
-                                if (key.userSetPin != null && ArrayUtil.compare(pin, key.userSetPin)) {
+                                if (key.userSetPin != null && Arrays.equals(pin, key.userSetPin)) {
                                     error.uniqueError = true;
                                     error.uniqueErrorAppUsage = key.appUsage;
                                     return error;
@@ -576,7 +576,7 @@ public class KeyCreationRequestDecoder extends ClientDecoder {
 
                         case SIGNATURE_PLUS_STANDARD:
                             if ((appUsage == AppUsage.SIGNATURE) ^ (key.appUsage == AppUsage.SIGNATURE)) {
-                                if (key.userSetPin != null && ArrayUtil.compare(pin, key.userSetPin)) {
+                                if (key.userSetPin != null && Arrays.equals(pin, key.userSetPin)) {
                                     error.uniqueError = true;
                                     error.uniqueErrorAppUsage = key.appUsage;
                                     return error;

@@ -41,6 +41,7 @@ import java.security.spec.RSAKeyGenParameterSpec;
 import java.security.spec.X509EncodedKeySpec;
 
 import java.util.GregorianCalendar;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.Set;
@@ -274,7 +275,7 @@ public class ProvSess {
                     mac = Mac.getInstance(HmacAlgorithms.HMAC_SHA256.getJceName());
                     mac.init(new SecretKeySpec(session_key, "RAW"));
                     byte[] session_key_attest = mac.doFinal(attestation_arguments);
-                    if (!ArrayUtil.compare(session_key_attest, session_attestation)) {
+                    if (!Arrays.equals(session_key_attest, session_attestation)) {
                         throw new IOException("Verify attestation failed");
                     }
                 } else {
@@ -579,7 +580,7 @@ public class ProvSess {
                         SecureKeyStore.METHOD_CLOSE_PROVISIONING_SESSION));
         MacGenerator check = new MacGenerator();
         check.addArray(nonce);
-        if (!ArrayUtil.compare(attest(check.getResult()), result)) {
+        if (!Arrays.equals(attest(check.getResult()), result)) {
             bad("Final attestation failed!");
         }
     }
@@ -800,7 +801,7 @@ public class ProvSess {
         MacGenerator key_attestation = new MacGenerator();
         key_attestation.addArray(key_entry.getPublicKey().getEncoded());
         key_attestation.addArray(keyMac);
-        if (!ArrayUtil.compare(attest(key_attestation.getResult()), key_entry.getAttestation())) {
+        if (!Arrays.equals(attest(key_attestation.getResult()), key_entry.getAttestation())) {
             bad("Failed key attest");
         }
         GenKey key = new GenKey();

@@ -651,7 +651,7 @@ public class KeyCreationRequestDecoder extends KeyCreationRequest
                             }
                           else
                             {
-                              if (key.userSetPin != null && ArrayUtil.compare (pin, key.userSetPin))
+                              if (key.userSetPin != null && Arrays.equals (pin, key.userSetPin))
                                 {
                                   error.unique_error = true;
                                   error.unique_error_app_usage = key.appUsage;
@@ -663,7 +663,7 @@ public class KeyCreationRequestDecoder extends KeyCreationRequest
                         case SIGNATURE_PLUS_STANDARD:
                           if ((appUsage == AppUsage.SIGNATURE) ^ (key.appUsage == AppUsage.SIGNATURE))
                             {
-                              if (key.userSetPin != null && ArrayUtil.compare (pin, key.userSetPin))
+                              if (key.userSetPin != null && Arrays.equals (pin, key.userSetPin))
                                 {
                                   error.unique_error = true;
                                   error.unique_error_app_usage = key.appUsage;

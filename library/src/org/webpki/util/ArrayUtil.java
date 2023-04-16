@@ -18,10 +18,13 @@ package org.webpki.util;
 
 /**
  * Collection of support functions for arrays.
+ * <p>
+ * To be deprecated in favor of {@link java.util.Arrays}.
+ * </p>
  */
 public class ArrayUtil {
-    private ArrayUtil() {
-    }  // No instantiation please
+
+    private ArrayUtil() {}  // No instantiation please
 
     /*
      * Find first difference between two byte arrays.
@@ -63,62 +66,6 @@ public class ArrayUtil {
         return firstDiff(a, b, 0, Math.min(a.length, b.length));
     }
 
-    /*
-     * Compare two byte arrays.
-     * return true if contents are the same and both are non-null.
-     */
-    public static boolean compare(byte[] a, int aOffset, byte[] b, int bOffset, int length) {
-        if (a == null || b == null ||
-                aOffset + length > a.length ||
-                bOffset + length > b.length) {
-            return false;
-        }
-        if (a == b && aOffset == bOffset) {
-            return true;
-        }
-        for (int i = 0; i < length; i++) {
-            if (a[aOffset + i] != b[bOffset + i]) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /*
-     * Compare two byte arrays.
-     * return true if a.length - aOffset == b.length - bOffset and all values in a starting at aOffset match the values in b starting at bOffset.
-     */
-    public static boolean compare(byte[] a, int aOffset, byte[] b, int bOffset) {
-        return a.length - aOffset == b.length - bOffset &&
-                compare(a, aOffset, b, bOffset, a.length - aOffset);
-    }
-
-    /*
-     * Compare two byte arrays.
-     */
-    public static boolean compare(byte[] a, byte[] b, int offset, int length) {
-        return compare(a, offset, b, offset, length);
-    }
-
-    /*
-     * Compare two byte arrays.
-     */
-    public static boolean compare(byte[] a, byte[] b, int offset) {
-        return compare(a, offset, b, offset);
-    }
-
-    /*
-     * Compare two byte arrays.
-     */
-    public static boolean compare(byte[] a, byte[] b) {
-        return a == b || compare(a, b, 0);
-    }
-
-    /*
-     * Returns the index of the (first) minimal element of an <code>int</code> array.
-     * return The index of the (first) minimal element.
-     * throws IllegalArgumentException If <code><i>a</i></code> is empty.
-     */
     public static int indexOfMin(int[] a) {
         if (a.length == 0) {
             throw new IllegalArgumentException("Empty array.");

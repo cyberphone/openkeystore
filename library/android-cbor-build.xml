@@ -37,7 +37,6 @@
     <copy todir="${android-cbor-src}" preservelastmodified="true">
       <fileset dir="${src_dir}">
         <include name="**/util/HexaDecimal.java"/>
-        <include name="**/util/ArrayUtil.java"/>
         <include name="**/util/UTF8.java"/>
         <include name="**/util/package.html"/>
         <include name="**/crypto/X509VerifierInterface.java"/>
@@ -140,6 +139,16 @@
       </fileset>
     </copy>
   	
+    <replaceregexp file="${android-cbor-apidoc}/org/webpki/cbor/doc-files/encryption.html"
+        match="\&lt;h3\&gt;Test Vectors.*\&lt;h3"
+        replace="&lt;h3"
+        flags="s"/>
+  	
+    <replaceregexp file="${android-cbor-apidoc}/org/webpki/cbor/doc-files/signatures.html"
+        match="\&lt;h3\&gt;Test Vectors.*\&lt;h3"
+        replace="&lt;h3"
+        flags="s"/>
+    
     <!-- Windows... -->
     <fixcrlf srcdir="${android-cbor-apidoc}"
       eol="lf"

@@ -45,6 +45,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.crypto.KeyAgreement;
 
@@ -2325,7 +2326,7 @@ public class JSONTest {
             test(rd.getStringConditional(STRING_UNKNOWM) == null);
             test(rd.getStringConditional(STRING_WITH_DEFAULT1, STRING_DEFAULT).equals(STRING_DEFAULT));
             test(rd.getStringConditional(STRING_WITH_DEFAULT2, STRING_DEFAULT).equals(STRING_VALUE));
-            test(ArrayUtil.compare(rd.getBinary(BLOB), BLOB_VALUE));
+            test(Arrays.equals(rd.getBinary(BLOB), BLOB_VALUE));
             test(rd.getStringArray(EMPTY_STRING_LIST).length == 0);
             String[] list = rd.getStringArray(STRING_LIST);
             test(list.length == STRING_LIST_VALUE.length);
@@ -2680,7 +2681,7 @@ public class JSONTest {
         byte[] data = new Writer().serializeJSONDocument(JSONOutputFormats.PRETTY_PRINT);
         Reader reader = (Reader) cache.parse(data);
         byte[] output = reader.getWriter().serializeToBytes(JSONOutputFormats.PRETTY_PRINT);
-        assertTrue(ArrayUtil.compare(data, output));
+        assertTrue(Arrays.equals(data, output));
     }
 
     @Test
@@ -3144,16 +3145,16 @@ public class JSONTest {
         JSONObjectReader or = JSONParser.parse(jcs);
         PublicKey publicKey = or.getPublicKey(AlgorithmPreferences.JOSE_ACCEPT_PREFER);
         PublicKey public_key2 = or.getObject(JSONCryptoHelper.PUBLIC_KEY_JSON).getCorePublicKey(AlgorithmPreferences.JOSE_ACCEPT_PREFER);
-        assertTrue("Public key", ArrayUtil.compare(publicKey.getEncoded(), spki_bin));
-        assertTrue("Public key2", ArrayUtil.compare(public_key2.getEncoded(), spki_bin));
+        assertTrue("Public key", Arrays.equals(publicKey.getEncoded(), spki_bin));
+        assertTrue("Public key2", Arrays.equals(public_key2.getEncoded(), spki_bin));
         JSONObjectWriter ow = new JSONObjectWriter();
         assertTrue("Public key jcs",
-                ArrayUtil.compare(ow.setPublicKey(getPublicKeyFromSPKI(spki_bin), (jcs.indexOf("\"P-") > 0) ?
+                Arrays.equals(ow.setPublicKey(getPublicKeyFromSPKI(spki_bin), (jcs.indexOf("\"P-") > 0) ?
                                 AlgorithmPreferences.JOSE : AlgorithmPreferences.SKS).serializeToBytes(JSONOutputFormats.NORMALIZED),
                         or.serializeToBytes(JSONOutputFormats.NORMALIZED)));
         ow = JSONObjectWriter.createCorePublicKey(publicKey, AlgorithmPreferences.JOSE_ACCEPT_PREFER);
         public_key2 = JSONParser.parse(ow.toString()).getCorePublicKey(AlgorithmPreferences.JOSE_ACCEPT_PREFER);
-        assertTrue("Public core key2", ArrayUtil.compare(public_key2.getEncoded(), spki_bin));
+        assertTrue("Public core key2", Arrays.equals(public_key2.getEncoded(), spki_bin));
         ow.setInt("bug", 3);
         try {
             JSONParser.parse(ow.toString()).getCorePublicKey(AlgorithmPreferences.JOSE_ACCEPT_PREFER);
@@ -3163,7 +3164,7 @@ public class JSONTest {
         }
         ow = new JSONObjectWriter();
         public_key2 = JSONParser.parse(ow.setPublicKey(public_key2).setInt("OK", 5).toString()).getPublicKey();
-        assertTrue("Public key2+", ArrayUtil.compare(public_key2.getEncoded(), spki_bin));
+        assertTrue("Public key2+", Arrays.equals(public_key2.getEncoded(), spki_bin));
         JSONObjectReader pub_key_object = or.getObject(JSONCryptoHelper.PUBLIC_KEY_JSON);
         boolean rsaFlag = pub_key_object.getString(JSONCryptoHelper.KTY_JSON).equals(KeyTypes.RSA.getJoseKty());
         String key_parm = rsaFlag ? JSONCryptoHelper.N_JSON : JSONCryptoHelper.Y_JSON;
@@ -3226,11 +3227,11 @@ public class JSONTest {
         aw = ow2.setArray("Arr");
         aw.setInt(2);
         aw.setString("Blah");
-        assertTrue("Writer added", ArrayUtil.compare(json, ow.setObject("Yay", ow2).serializeToBytes(JSONOutputFormats.NORMALIZED)));
+        assertTrue("Writer added", Arrays.equals(json, ow.setObject("Yay", ow2).serializeToBytes(JSONOutputFormats.NORMALIZED)));
         JSONObjectReader or = JSONParser.parse(json).getObject("Yay");
         ow = new JSONObjectWriter();
         ow.setString("Yes", "No");
-        assertTrue("Reader added", ArrayUtil.compare(json, ow.setObject("Yay", or).serializeToBytes(JSONOutputFormats.NORMALIZED)));
+        assertTrue("Reader added", Arrays.equals(json, ow.setObject("Yay", or).serializeToBytes(JSONOutputFormats.NORMALIZED)));
     }
 
     @Test
@@ -3389,7 +3390,7 @@ public class JSONTest {
             .sign(dataToSign, "jws");
         JWSDecoder jwsDecoder = new JWSDecoder(new JSONObjectReader(jwsCt), "jws");
         new JWSAsymSignatureValidator(keyPair.getPublic()).validate(jwsDecoder);
-        assertTrue("JWS/CT", ArrayUtil.compare(jwsDecoder.getPayload(), payload));
+        assertTrue("JWS/CT", Arrays.equals(jwsDecoder.getPayload(), payload));
     }
     
     void rfc8032(KeyAlgorithms keyAlgorithm,
@@ -3411,7 +3412,7 @@ public class JSONTest {
                                          privateKey)
                         .update(message)
                         .sign();
-            assertTrue("Sig val", ArrayUtil.compare(expectedSignature, signature));
+            assertTrue("Sig val", Arrays.equals(expectedSignature, signature));
             new SignatureWrapper(keyAlgorithm.getRecommendedSignatureAlgorithm(), publicKey)
                 .update(message)
                 .verify(signature);
@@ -3508,7 +3509,7 @@ public class JSONTest {
         } catch (Exception e) {
             checkException(e, "Mixing detached and JWS-supplied payload");
         }
-        assertTrue("data", ArrayUtil.compare(dataToBeSigned,
+        assertTrue("data", Arrays.equals(dataToBeSigned,
                      validator.validate(jwsDecoder).getPayload()));
         assertTrue("header", jwsDecoder.getJWSHeaderAsJson()
                     .serializeToString(JSONOutputFormats.NORMALIZED).equals(
@@ -3940,16 +3941,16 @@ public class JSONTest {
     void cloneObject(String json) throws Exception {
         JSONObjectReader o1 = JSONParser.parse(json);
         JSONObjectReader o2 = o1.clone();
-        assertTrue("clone1=" + json, ArrayUtil.compare(o1.serializeToBytes(JSONOutputFormats.NORMALIZED),
+        assertTrue("clone1=" + json, Arrays.equals(o1.serializeToBytes(JSONOutputFormats.NORMALIZED),
                 o2.serializeToBytes(JSONOutputFormats.NORMALIZED)));
-        assertTrue("clone2=" + json, ArrayUtil.compare(o1.serializeToBytes(JSONOutputFormats.NORMALIZED),
+        assertTrue("clone2=" + json, Arrays.equals(o1.serializeToBytes(JSONOutputFormats.NORMALIZED),
                 json.getBytes("UTF-8")));
     }
 
     void removeProperty(String original, String property, String result) throws Exception {
         JSONObjectReader o = JSONParser.parse(original);
         (property.equals("outer") ? o : o.getObject("outer")).removeProperty(property);
-        assertTrue("remove", ArrayUtil.compare(o.serializeToBytes(JSONOutputFormats.NORMALIZED),
+        assertTrue("remove", Arrays.equals(o.serializeToBytes(JSONOutputFormats.NORMALIZED),
                 result.getBytes("UTF-8")));
     }
 
@@ -3980,7 +3981,7 @@ public class JSONTest {
                                                        iv,
                                                        a,
                                                        t);
-        assertTrue("pout 1", ArrayUtil.compare(p, pout));
+        assertTrue("pout 1", Arrays.equals(p, pout));
 
         iv = EncryptionCore.createIv(enc);
         EncryptionCore.SymmetricEncryptionResult symmetricEncryptionResult = 
@@ -3995,7 +3996,7 @@ public class JSONTest {
                                                 iv,
                                                 a,
                                                 symmetricEncryptionResult.getTag());
-        assertTrue("pout 2", ArrayUtil.compare(p, pout));
+        assertTrue("pout 2", Arrays.equals(p, pout));
 
         byte[] contentEncryptionKey = genRandom(enc.getKeyLength());
         JSONObjectReader json = JSONParser.parse("{\"data\":\"hello!\"}");
@@ -4061,7 +4062,7 @@ public class JSONTest {
                                                           (ECPublicKey)ephemeralKey.getPublic(),
                                                           staticKey.getPrivate(),
                                                           kek);
-        if (!ArrayUtil.compare(cek, cek2)) {
+        if (!Arrays.equals(cek, cek2)) {
             fail("Fail CEK");
         }
         byte[] plainText = test.getObject("input").getString("plaintext").getBytes("UTF-8");
@@ -4071,7 +4072,7 @@ public class JSONTest {
         byte[] res = EncryptionCore.contentDecryption(contentEncryptionAlgorithm, 
                                                       cek, cipherText, iv, authData, tag);
 
-        if (!ArrayUtil.compare(res, plainText)) {
+        if (!Arrays.equals(res, plainText)) {
             fail("Fail plain text");
         }
     }
@@ -4095,7 +4096,7 @@ public class JSONTest {
                                                          iv,
                                                          plainText, 
                                                          authData);
-                if (!ArrayUtil.compare(
+                if (!Arrays.equals(
                         plainText,
                         EncryptionCore.contentDecryption(enc,
                                                          key, 
@@ -4113,14 +4114,14 @@ public class JSONTest {
         JSONDecryptionDecoder dec = readEncryption(fileName).getEncryptionObject(new JSONCryptoHelper.Options()
           .setKeyIdOption(JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED).setPublicKeyOption(JSONCryptoHelper.PUBLIC_KEY_OPTIONS.FORBIDDEN));
         KeyPair keyPair = readJwk("r2048");
-        assertTrue(ArrayUtil.compare(IO.readFile(baseData + "datatobeencrypted.txt"),
+        assertTrue(Arrays.equals(IO.readFile(baseData + "datatobeencrypted.txt"),
                                      dec.getDecryptedData(keyPair.getPrivate())));
     }
     
     JSONDecryptionDecoder encFailDecrypt(JSONObjectReader enc, JSONCryptoHelper.Options option) throws Exception {
         KeyPair p256 = readJwk("p256");
         JSONDecryptionDecoder dec = enc.getEncryptionObject(option);
-        assertTrue(ArrayUtil.compare(IO.readFile(baseData + "datatobeencrypted.txt"),
+        assertTrue(Arrays.equals(IO.readFile(baseData + "datatobeencrypted.txt"),
                 dec.getDecryptedData(p256.getPrivate())));
         return dec;
     }
@@ -4229,7 +4230,7 @@ public class JSONTest {
                                 new JSONAsymKeyEncrypter((kea.isRsa() ?
                                                            malletKeys : alice).getPublic(),
                                                          kea));
-                if (!ArrayUtil.compare(plainText,
+                if (!Arrays.equals(plainText,
                                   JSONParser
                                       .parse(json.toString())
                                           .getEncryptionObject(new JSONCryptoHelper.Options())
@@ -4297,12 +4298,12 @@ public class JSONTest {
         KeyAgreement ka = KeyAgreement.getInstance("XDH");
         ka.init(ALICE_PRIV);
         ka.doPhase(BOB_PUB, true);
-        assertTrue("rfc7748", ArrayUtil.compare(K, ka.generateSecret()));
+        assertTrue("rfc7748", Arrays.equals(K, ka.generateSecret()));
 
         ka = KeyAgreement.getInstance("XDH");
         ka.init(BOB_PRIV);
         ka.doPhase(ALICE_PUB, true);
-        assertTrue("rfc7748", ArrayUtil.compare(K, ka.generateSecret()));
+        assertTrue("rfc7748", Arrays.equals(K, ka.generateSecret()));
 
         byte[] data = new byte[] {1,2,3};
         JSONObjectWriter enc = JSONObjectWriter.createEncryptionObject(
@@ -4310,7 +4311,7 @@ public class JSONTest {
                 ContentEncryptionAlgorithms.A128CBC_HS256,
                 new JSONAsymKeyEncrypter(BOB_PUB,
                                          KeyEncryptionAlgorithms.ECDH_ES_A256KW));
-        assertTrue("X448", ArrayUtil.compare(data, 
+        assertTrue("X448", Arrays.equals(data, 
         JSONParser.parse(enc.toString()).getEncryptionObject(
                 new JSONCryptoHelper.Options()).getDecryptedData(BOB_PRIV)));
     }
@@ -4436,7 +4437,7 @@ public class JSONTest {
                                                   ContentEncryptionAlgorithms.A128CBC_HS256,
                                                   alice.getPublic());
         assertTrue("Bad ECDH",
-                ArrayUtil.compare(asymmetricEncryptionResult.getContentEncryptionKey(),
+                Arrays.equals(asymmetricEncryptionResult.getContentEncryptionKey(),
                         EncryptionCore.receiverKeyAgreement(false,
                                                             KeyEncryptionAlgorithms.ECDH_ES,
                                                             ContentEncryptionAlgorithms.A128CBC_HS256,

@@ -18,6 +18,8 @@ package org.webpki.crypto;
 
 import java.math.BigInteger;
 
+import java.util.Arrays;
+
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -40,8 +42,6 @@ import org.junit.BeforeClass;
 import org.junit.rules.TestName;
 
 import static org.junit.Assert.*;
-
-import org.webpki.util.ArrayUtil;
 
 //#if ANDROID
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -96,7 +96,7 @@ public class KeyAlgorithmTest {
                         .generatePublic(new ECPublicKeySpec(generatedEcKey.getW(),
                                         keyAlgorithm.getECParameterSpec()));
                 assertTrue("EC pub key compare: " + keyAlgorithm,
-                           ArrayUtil.compare(generatedEcKey.getEncoded(), createdEcKey.getEncoded()));
+                           Arrays.equals(generatedEcKey.getEncoded(), createdEcKey.getEncoded()));
 //                System.out.println(keyAlgorithm);
             }
         }
@@ -133,7 +133,7 @@ public class KeyAlgorithmTest {
         ECPublicKey decodedPublicKey = (ECPublicKey) KeyFactory.getInstance("EC")
                 .generatePublic(new X509EncodedKeySpec(x509PublicKey));
         assertTrue("alg", KeyAlgorithms.getKeyAlgorithm(decodedPublicKey) == keyAlgorithm);
-        assertTrue("diff", ArrayUtil.compare(x509PublicKey, createdPublicKey.getEncoded()));
+        assertTrue("diff", Arrays.equals(x509PublicKey, createdPublicKey.getEncoded()));
     }
     
     @Test

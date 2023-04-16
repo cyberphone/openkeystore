@@ -37,8 +37,6 @@ import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.OkpSupport;
 
-import org.webpki.util.ArrayUtil;
-
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
 /**
@@ -51,7 +49,7 @@ public class CBORPublicKey {
     
     private CBORPublicKey() {}
     
-    static final HashMap<KeyAlgorithms, CBORObject> WEBPKI_2_COSE_CRV = new HashMap<>();
+    static final HashMap<KeyAlgorithms, CBORInteger> WEBPKI_2_COSE_CRV = new HashMap<>();
 
     static {
         WEBPKI_2_COSE_CRV.put(KeyAlgorithms.P_256,   COSE_CRV_P_256);
@@ -104,7 +102,7 @@ public class CBORPublicKey {
             return cryptoBinary(value);
         }
         while (curvePoint.length < (ec.getPublicKeySizeInBits() + 7) / 8) {
-            curvePoint = ArrayUtil.add(new byte[]{0}, curvePoint);
+            curvePoint = CBORObject.addByteArrays(new byte[]{0}, curvePoint);
         }
         return curvePoint;        
     }

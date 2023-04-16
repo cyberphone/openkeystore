@@ -20,10 +20,10 @@ import java.io.IOException;
 
 import java.security.GeneralSecurityException;
 
+import java.util.Arrays;
+
 import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.HmacVerifierInterface;
-
-import org.webpki.util.ArrayUtil;
 
 /**
  * Initiator object for HMAC signature verifiers.
@@ -57,7 +57,7 @@ public class JSONHmacVerifier extends JSONVerifier {
                                       byte[] digest,
                                       HmacAlgorithms algorithm,
                                       String keyId) throws IOException, GeneralSecurityException {
-                return ArrayUtil.compare(digest, algorithm.digest(rawKey, data));
+                return Arrays.equals(digest, algorithm.digest(rawKey, data));
             }
             
         });

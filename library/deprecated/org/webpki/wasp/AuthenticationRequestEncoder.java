@@ -174,7 +174,7 @@ public class AuthenticationRequestEncoder extends AuthenticationRequest {
 
     public void checkRequestResponseIntegrity(AuthenticationResponseDecoder areresp, byte[] expected_fingerprint) throws IOException {
         if (expected_fingerprint != null &&
-                (areresp.server_certificate_fingerprint == null || !ArrayUtil.compare(areresp.server_certificate_fingerprint, expected_fingerprint))) {
+                (areresp.server_certificate_fingerprint == null || !Arrays.equals(areresp.server_certificate_fingerprint, expected_fingerprint))) {
             bad("Server certificate fingerprint");
         }
         if (!id.equals(areresp.id)) {

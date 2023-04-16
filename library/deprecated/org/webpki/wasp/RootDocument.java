@@ -84,7 +84,7 @@ public abstract class RootDocument {
 
 
     boolean dataEquality(RootDocument d) {
-        return content_id.equals(d.content_id) && ArrayUtil.compare(data, d.data);
+        return content_id.equals(d.content_id) && Arrays.equals(data, d.data);
     }
 
 }

@@ -27,6 +27,7 @@ import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAKey;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.ContentEncryptionAlgorithms;
@@ -34,13 +35,13 @@ import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyEncryptionAlgorithms;
 import org.webpki.crypto.KeyTypes;
+
 import org.webpki.json.JSONBaseHTML.Extender;
 import org.webpki.json.JSONBaseHTML.RowInterface;
 import org.webpki.json.JSONBaseHTML.Types;
 import org.webpki.json.JSONBaseHTML.ProtocolObject.Row.Column;
 
 import org.webpki.util.IO;
-import org.webpki.util.ArrayUtil;
 import org.webpki.util.HexaDecimal;
 import org.webpki.util.PEMDecoder;
 
@@ -246,7 +247,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
                     }
                 }
                 System.out.println(fileName + " found=" + (validationKey != null));
-                if (!ArrayUtil.compare(decoder.getDecryptedData(validationKey.keyPair.getPrivate()), dataToEncrypt)) {
+                if (!Arrays.equals(decoder.getDecryptedData(validationKey.keyPair.getPrivate()), dataToEncrypt)) {
                     throw new IOException(fileName);
                 }
             }
@@ -285,7 +286,7 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
                      .append(showTextAndCode("Encryption object requiring the " +
                         (dec.getKeyId() == null ? "<i>implicit</i> " : "") + 
                         "key above for decryption:", name, rd.toString()));
-                    if (!ArrayUtil.compare(dec.getDecryptedData(key), dataToEncrypt)) {
+                    if (!Arrays.equals(dec.getDecryptedData(key), dataToEncrypt)) {
                         throw new IOException("Sym enc");
                     }
                     break;

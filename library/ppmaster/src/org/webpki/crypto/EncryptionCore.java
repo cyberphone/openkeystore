@@ -19,6 +19,8 @@ package org.webpki.crypto;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import java.util.Arrays;
+
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.KeyPair;
@@ -53,9 +55,6 @@ import javax.crypto.spec.OAEPParameterSpec;
 import javax.crypto.spec.PSource;
 //#endif
 import javax.crypto.spec.SecretKeySpec;
-
-import org.webpki.util.ArrayUtil;
-import org.webpki.util.UTF8;
 
 //#if ANDROID
 // Source configured for Android.
@@ -284,7 +283,7 @@ public class EncryptionCore {
         if (contentEncryptionAlgorithm.gcm) {
             byte[] cipherOutput = aesGcmCore(Cipher.ENCRYPT_MODE, key, iv, authData, plainText);
             int tagPos = cipherOutput.length - AES_GCM_TAG_LENGTH;
-            byte[] cipherText = ArrayUtil.copy(cipherOutput, tagPos);
+            byte[] cipherText = Arrays.copyOf(cipherOutput, tagPos);
             byte[] tag = new byte[AES_GCM_TAG_LENGTH];
             System.arraycopy(cipherOutput, tagPos, tag, 0, AES_GCM_TAG_LENGTH);
             return new SymmetricEncryptionResult(tag, cipherText);
@@ -323,17 +322,19 @@ public class EncryptionCore {
         check(iv, "iv", contentEncryptionAlgorithm.ivLength, contentEncryptionAlgorithm);
         check(tag, "tag", contentEncryptionAlgorithm.tagLength, contentEncryptionAlgorithm);
         if (contentEncryptionAlgorithm.gcm) {
-            return aesGcmCore(Cipher.DECRYPT_MODE, 
+            byte[] totalData = Arrays.copyOf(cipherText, cipherText.length + tag.length);
+            System.arraycopy(tag, 0, totalData, cipherText.length, tag.length);
+            return aesGcmCore(Cipher.DECRYPT_MODE,
                               key, 
                               iv, 
-                              authData, 
-                              ArrayUtil.add(cipherText, tag));
+                              authData,
+                              totalData);
         }
-        if (!ArrayUtil.compare(tag, getTag(key, 
-                                           cipherText,
-                                           iv, 
-                                           authData,
-                                           contentEncryptionAlgorithm))) {
+        if (!Arrays.equals(tag, getTag(key, 
+                                       cipherText,
+                                       iv, 
+                                       authData,
+                                       contentEncryptionAlgorithm))) {
             throw new GeneralSecurityException("Authentication error on algorithm: " + 
                                                contentEncryptionAlgorithm.toString());
         }
@@ -439,9 +440,7 @@ public class EncryptionCore {
         }
 
         // Only use as much of the digest that is asked for
-        byte[] okm = new byte[keyLength];
-        System.arraycopy(baos.toByteArray(), 0, okm, 0, keyLength);
-        return okm;
+        return Arrays.copyOf(baos.toByteArray(), keyLength);
     }
 
     private static void addInt4(MessageDigest messageDigest, int value) {
@@ -452,7 +451,7 @@ public class EncryptionCore {
 
     public static byte[] concatKdf(byte[] secret, String joseAlgorithmId, int keyLength) 
             throws IOException, GeneralSecurityException {
-        byte[] algorithmId = UTF8.encode(joseAlgorithmId);
+        byte[] algorithmId = joseAlgorithmId.getBytes();
         final MessageDigest messageDigest = MessageDigest.getInstance(HASH_DIGEST_JCENAME);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int reps = (keyLength + KDF_DIGEST_LENGTH - 1) / KDF_DIGEST_LENGTH;
@@ -476,9 +475,7 @@ public class EncryptionCore {
         }
 
         // Only use as much of the digest that is asked for
-        byte[] result = new byte[keyLength];
-        System.arraycopy(baos.toByteArray(), 0, result, 0, keyLength);
-        return result;
+        return Arrays.copyOf(baos.toByteArray(), keyLength);
     }    
 
     private static byte[] coreKeyAgreement(boolean coseMode,

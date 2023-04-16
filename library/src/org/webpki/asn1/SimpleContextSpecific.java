@@ -18,7 +18,7 @@ package org.webpki.asn1;
 
 import java.io.IOException;
 
-import org.webpki.util.ArrayUtil;
+import java.util.Arrays;
 
 /**
  * This needs to be checked.
@@ -76,7 +76,7 @@ public final class SimpleContextSpecific extends Binary {
         }
 
         SimpleContextSpecific cs = (SimpleContextSpecific) o;
-        return ArrayUtil.compare(cs.value, value);
+        return Arrays.equals(cs.value, value);
     }
 
     void toString(StringBuilder s, String prefix) {

@@ -39,6 +39,7 @@ import java.security.spec.RSAKeyGenParameterSpec;
 
 import java.util.GregorianCalendar;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.crypto.KeyAgreement;
 import javax.security.auth.x500.X500Principal;
@@ -91,7 +92,6 @@ import org.webpki.sks.ProvisioningSession;
 import org.webpki.sks.SKSException;
 import org.webpki.sks.SecureKeyStore;
 
-import org.webpki.util.ArrayUtil;
 import org.webpki.util.HTMLHeader;
 import org.webpki.util.ImageData;
 
@@ -353,7 +353,7 @@ public class KeyGen2Test {
             if (error == null) {
                 i = 0;
                 for (KeyCreationRequestDecoder.KeyObject ko : decoder.getKeyObjects()) {
-                    if (!ArrayUtil.compare(ko.getSKSPINValue(), pins[index[i++]].getBytes("UTF-8"))) {
+                    if (!Arrays.equals(ko.getSKSPINValue(), pins[index[i++]].getBytes("UTF-8"))) {
                         error = "Grouping problem";
                         break;
                     }
@@ -430,7 +430,7 @@ public class KeyGen2Test {
                 }
                 if (ek.getProvisioningHandle() == old_provisioning_session.getProvisioningHandle()) {
                     KeyAttributes ka = sks.getKeyAttributes(ek.getKeyHandle());
-                    if (ArrayUtil.compare(HashAlgorithms.SHA256.digest(ka.getCertificatePath()[0].getEncoded()), postOperation.getCertificateFingerprint())) {
+                    if (Arrays.equals(HashAlgorithms.SHA256.digest(ka.getCertificatePath()[0].getEncoded()), postOperation.getCertificateFingerprint())) {
                         switch (postOperation.getPostOperation()) {
                             case ProvisioningFinalizationRequestDecoder.PostOperation.CLONE_KEY_PROTECTION:
                                 sks.postCloneKeyProtection(handle, ek.getKeyHandle(), postOperation.getAuthorization(), postOperation.getMac());
@@ -1446,7 +1446,7 @@ public class KeyGen2Test {
             assertTrue("Prop name error", props1[i].getName().equals(props2[i].getName()));
             assertTrue("Prop value error", props1[i].getValue().equals(props2[i].getValue()));
         }
-        assertTrue("HMAC error", ArrayUtil.compare(sks.performHmac(keyHandle,
+        assertTrue("HMAC error", Arrays.equals(sks.performHmac(keyHandle,
                 HmacAlgorithms.HMAC_SHA1.getAlgorithmId(AlgorithmPreferences.SKS),
                 null,
                 BIOMETRIC_NONE,
@@ -1470,7 +1470,7 @@ public class KeyGen2Test {
                 BIOMETRIC_NONE,
                 USER_DEFINED_PIN,
                 TEST_STRING);
-        assertTrue("Encrypt/decrypt error", ArrayUtil.compare(sks.symmetricKeyEncrypt(keyHandle,
+        assertTrue("Encrypt/decrypt error", Arrays.equals(sks.symmetricKeyEncrypt(keyHandle,
                 SymEncryptionAlgorithms.AES256_CBC.getAlgorithmId(AlgorithmPreferences.SKS),
                 false,
                 iv,
@@ -1622,7 +1622,7 @@ public class KeyGen2Test {
                 TEST_STRING);
         SignatureWrapper sign = new SignatureWrapper(AsymSignatureAlgorithms.RSA_SHA256, doer.server.gen_private_key);
         sign.update(TEST_STRING);
-        assertTrue("Bad signature", ArrayUtil.compare(sign.sign(), result));
+        assertTrue("Bad signature", Arrays.equals(sign.sign(), result));
     }
 
     @Test
@@ -1676,7 +1676,7 @@ public class KeyGen2Test {
         key_agreement.init(kp.getPrivate());
         key_agreement.doPhase(ka.getCertificatePath()[0].getPublicKey(), true);
         byte[] Z = key_agreement.generateSecret();
-        assertTrue("DH fail", ArrayUtil.compare(z, Z));
+        assertTrue("DH fail", Arrays.equals(z, Z));
     }
 
     @Test

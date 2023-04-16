@@ -18,8 +18,6 @@ package org.webpki.cbor;
 
 import java.util.ArrayList;
 
-import org.webpki.util.ArrayUtil;
-
 /**
  * Class for creating CBOR sequences.
  */
@@ -58,7 +56,7 @@ public class CBORSequenceBuilder {
     public byte[] encode() {
         byte[] cborBinary = new byte[0];
         for (CBORObject cborObject : sequence) {
-            cborBinary = ArrayUtil.add(cborBinary, cborObject.encode());
+            cborBinary = CBORObject.addByteArrays(cborBinary, cborObject.encode());
         }
         return cborBinary;
     }

@@ -176,7 +176,7 @@ public class DocumentSignatures {
             return false;
         }
         for (ContentIDAndDigest t : signatures) {
-            if (!ArrayUtil.compare(t.digest, ds.getDigest(t.content_id))) {
+            if (!Arrays.equals(t.digest, ds.getDigest(t.content_id))) {
                 throw new IOException("Mismatch on hash for '" + t.content_id + "'");
             }
         }

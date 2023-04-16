@@ -16,11 +16,12 @@
  */
 package org.webpki.pkcs7;
 
+import java.util.Arrays;
+
 import org.webpki.crypto.CertificateInfo;
 import org.webpki.crypto.DemoKeyStore;
 import org.webpki.crypto.KeyStoreVerifier;
 
-import org.webpki.util.ArrayUtil;
 import org.webpki.util.IO;
 
 public class Verify {
@@ -37,7 +38,7 @@ public class Verify {
         verifier.setTrustedRequired(false);
         if (args.length == 2) {
             byte[] read_data = pkcs7.verifyMessage(IO.readFile(args[1]));
-            if (!ArrayUtil.compare(read_data, IO.readFile(args[0]))) {
+            if (!Arrays.equals(read_data, IO.readFile(args[0]))) {
                 throw new Exception("Data mismatch");
             }
         } else {

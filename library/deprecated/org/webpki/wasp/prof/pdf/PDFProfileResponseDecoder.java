@@ -204,7 +204,7 @@ public class PDFProfileResponseDecoder extends XMLObjectWrapper implements Signa
         }
 
         if (expected_fingerprint != null &&
-                (server_certificate_fingerprint == null || !ArrayUtil.compare(server_certificate_fingerprint, expected_fingerprint))) {
+                (server_certificate_fingerprint == null || !Arrays.equals(server_certificate_fingerprint, expected_fingerprint))) {
             bad("Server certificate fingerprint");
         }
 

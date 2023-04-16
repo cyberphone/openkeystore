@@ -17,8 +17,11 @@
 package org.webpki.xmldsig;
 
 import java.io.IOException;
+
 import java.security.GeneralSecurityException;
 import java.security.PublicKey;
+
+import java.util.Arrays;
 
 import java.security.PrivateKey;
 
@@ -26,7 +29,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import org.webpki.util.IO;
-import org.webpki.util.ArrayUtil;
 import org.webpki.util.Base64;
 
 import org.webpki.xml.XMLObjectWrapper;
@@ -207,7 +209,7 @@ public class xmlobject extends XMLObjectWrapper implements XMLEnvelopedInput {
             if (args[0].equals("-rsa")) {
                 XMLAsymKeyVerifier verifier = new XMLAsymKeyVerifier();
                 verifier.validateEnvelopedSignature(o);
-                if (!ArrayUtil.compare(verifier.getPublicKey().getEncoded(),
+                if (!Arrays.equals(verifier.getPublicKey().getEncoded(),
                         DemoKeyStore.getMarionKeyStore().getCertificate("mykey").getPublicKey().getEncoded())) {
                     throw new Exception("Bad public key");
                 }
@@ -221,7 +223,7 @@ public class xmlobject extends XMLObjectWrapper implements XMLEnvelopedInput {
                         if (algorithm != HmacAlgorithms.HMAC_SHA256) {
                             throw new IOException("Bad sym ALG");
                         }
-                        return ArrayUtil.compare(digest, HmacAlgorithms.HMAC_SHA256.digest(symkey, data));
+                        return Arrays.equals(digest, HmacAlgorithms.HMAC_SHA256.digest(symkey, data));
                     }
                 });
                 verifier.validateEnvelopedSignature(o);
