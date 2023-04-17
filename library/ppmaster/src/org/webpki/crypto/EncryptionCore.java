@@ -34,14 +34,12 @@ import java.security.interfaces.ECKey;
 
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.ECGenParameterSpec;
-//#if !ANDROID
 import java.security.spec.MGF1ParameterSpec;
 //#if BOUNCYCASTLE
 
 import org.bouncycastle.jcajce.spec.XDHParameterSpec;
 //#else
 import java.security.spec.NamedParameterSpec;
-//#endif
 //#endif
 
 import javax.crypto.Cipher;
@@ -50,15 +48,12 @@ import javax.crypto.Mac;
 
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
-//#if !ANDROID
 import javax.crypto.spec.OAEPParameterSpec;
 import javax.crypto.spec.PSource;
-//#endif
 import javax.crypto.spec.SecretKeySpec;
 
 //#if ANDROID
 // Source configured for Android.
-// Note that the Android version does currently not support OKP.
 //#else
 //#if BOUNCYCASTLE
 // Source configured for the BouncyCastle provider.
@@ -150,7 +145,6 @@ public class EncryptionCore {
     // RSA OAEP
     static final String RSA_OAEP_JCENAME     = "RSA/ECB/OAEPWithSHA-1AndMGF1Padding";
     static final String RSA_OAEP_256_JCENAME = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
-//#if !ANDROID
 
     private static String aesProviderName;
 
@@ -181,18 +175,13 @@ public class EncryptionCore {
     public static void setRsaProvider(String providerName) {
         rsaProviderName = providerName;
     }
-//#endif
 
     private static Cipher getAesCipher(String algorithm) throws GeneralSecurityException {
-//#if ANDROID
-        return Cipher.getInstance(algorithm);
-//#else
         return aesProviderName == null ? 
             Cipher.getInstance(algorithm) 
                                        : 
             Cipher.getInstance(algorithm, aesProviderName);
-//#endif
-    }
+   }
 
     private static byte[] getTag(byte[] key,
                                  byte[] cipherText,
@@ -259,12 +248,19 @@ public class EncryptionCore {
         }
     }
  
+   /**
+    * Create an IV with an algorithm specific length.
+    * 
+    * @param contentEncryptionAlgorithm
+    * @return
+    */
     public static byte[] createIv(ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
         return CryptoRandom.generateRandom(contentEncryptionAlgorithm.ivLength);
     }
 
     /**
      * Perform a symmetric key encryption.
+     * 
      * @param contentEncryptionAlgorithm Encryption algorithm
      * @param key Encryption key
      * @param iv Initialization vector
@@ -356,10 +352,6 @@ public class EncryptionCore {
         }
         String jceName = keyEncryptionAlgorithm == KeyEncryptionAlgorithms.RSA_OAEP ?
                 RSA_OAEP_JCENAME : RSA_OAEP_256_JCENAME;
-//#if ANDROID
-        Cipher cipher = Cipher.getInstance(jceName);
-        cipher.init(mode, key);
-//#else
         Cipher cipher = rsaProviderName == null ? 
                 Cipher.getInstance(jceName)
                                                 : 
@@ -370,7 +362,6 @@ public class EncryptionCore {
         } else {
             cipher.init(mode, key);
         }
-//#endif
         return cipher.doFinal(data);
     }
 
@@ -485,9 +476,6 @@ public class EncryptionCore {
                                            PrivateKey privateKey)
     throws GeneralSecurityException, IOException {
         // Begin by calculating Z (do the DH)
-//#if ANDROID
-        KeyAgreement keyAgreement = KeyAgreement.getInstance("ECDH");
-//#else
         String jceName = privateKey instanceof ECKey ? "ECDH" : "XDH";
         KeyAgreement keyAgreement = ecProviderName == null ?
 //#if BOUNCYCASTLE
@@ -497,7 +485,6 @@ public class EncryptionCore {
 //#endif
                                    : 
                 KeyAgreement.getInstance(jceName, ecProviderName);
-//#endif
         keyAgreement.init(privateKey);
         keyAgreement.doPhase(receivedPublicKey, true);
         byte[] Z = keyAgreement.generateSecret();
@@ -581,11 +568,6 @@ public class EncryptionCore {
                                ContentEncryptionAlgorithms contentEncryptionAlgorithm,
                                PublicKey staticKey) 
     throws IOException, GeneralSecurityException {
-//#if ANDROID
-        AlgorithmParameterSpec paramSpec = 
-                new ECGenParameterSpec(KeyAlgorithms.getKeyAlgorithm(staticKey).getJceName());
-        KeyPairGenerator generator = KeyPairGenerator.getInstance("EC");
-//#else
         AlgorithmParameterSpec paramSpec; 
         KeyPairGenerator generator;
         if (staticKey instanceof ECKey) {
@@ -612,7 +594,6 @@ public class EncryptionCore {
                                               : 
                     KeyPairGenerator.getInstance("XDH", ecProviderName);
         }
-//#endif
         generator.initialize(paramSpec, new SecureRandom());
         KeyPair keyPair = generator.generateKeyPair();
         byte[] derivedKey = coreKeyAgreement(coseMode,

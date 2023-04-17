@@ -168,7 +168,7 @@ public class EncryptionCore {
             Cipher.getInstance(algorithm) 
                                        : 
             Cipher.getInstance(algorithm, aesProviderName);
-    }
+   }
 
     private static byte[] getTag(byte[] key,
                                  byte[] cipherText,
@@ -235,12 +235,19 @@ public class EncryptionCore {
         }
     }
  
+   /**
+    * Create an IV with an algorithm specific length.
+    * 
+    * @param contentEncryptionAlgorithm
+    * @return
+    */
     public static byte[] createIv(ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
         return CryptoRandom.generateRandom(contentEncryptionAlgorithm.ivLength);
     }
 
     /**
      * Perform a symmetric key encryption.
+     * 
      * @param contentEncryptionAlgorithm Encryption algorithm
      * @param key Encryption key
      * @param iv Initialization vector
