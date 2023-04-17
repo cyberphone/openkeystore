@@ -1252,16 +1252,12 @@ public class CBORTest {
         }
         
         signAndVerify(new CBORAsymKeySigner(p256.getPrivate()).setPublicKey(p256.getPublic()), 
-            new CBORAsymKeyValidator(new CBORAsymKeyValidator.KeyLocator() {
-                
-                @Override
-                public PublicKey locate(PublicKey optionalPublicKey, 
-                                        CBORObject optionalKeyId,
-                                        AsymSignatureAlgorithms signatureAlgorithm)
-                        throws IOException, GeneralSecurityException {
-                    assertTrue("pk", p256.getPublic().equals(optionalPublicKey));
-                    return optionalPublicKey;
-                }
+            new CBORAsymKeyValidator((optionalPublicKey,
+                                      optionalKeyId,
+                                      signatureAlgorithm) -> {
+                // Lambda is cool?
+                assertTrue("pk", p256.getPublic().equals(optionalPublicKey));
+                return optionalPublicKey;
             }));
 
         try {
