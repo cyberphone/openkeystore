@@ -558,20 +558,20 @@ public class EncryptionCore {
                                byte[] contentEncryptionKey,
                                KeyEncryptionAlgorithms keyEncryptionAlgorithm,
                                ContentEncryptionAlgorithms contentEncryptionAlgorithm,
-                               PublicKey staticKey) 
+                               PublicKey publicKey) 
     throws IOException, GeneralSecurityException {
         KeyPairGenerator generator;
         AlgorithmParameterSpec paramSpec; 
-        if (staticKey instanceof ECKey) {
+        if (publicKey instanceof ECKey) {
             paramSpec = new ECGenParameterSpec(
-                    KeyAlgorithms.getKeyAlgorithm(staticKey).getJceName());
+                    KeyAlgorithms.getKeyAlgorithm(publicKey).getJceName());
             generator = ecEphemeralProvider == null ?
                     KeyPairGenerator.getInstance("EC") 
                                               : 
                     KeyPairGenerator.getInstance("EC", ecEphemeralProvider);
         } else {
             paramSpec = new NamedParameterSpec(
-                    OkpSupport.getKeyAlgorithm(staticKey).getJceName());
+                    OkpSupport.getKeyAlgorithm(publicKey).getJceName());
             generator = ecEphemeralProvider == null ?
                     KeyPairGenerator.getInstance("XDH") 
                                               : 
@@ -583,7 +583,7 @@ public class EncryptionCore {
         byte[] derivedKey = coreKeyAgreement(coseMode,
                                              keyEncryptionAlgorithm,
                                              contentEncryptionAlgorithm,
-                                             staticKey,
+                                             publicKey,
                                              keyPair.getPrivate(),
                                              ecEphemeralProvider);
         byte[] encryptedKey = null;

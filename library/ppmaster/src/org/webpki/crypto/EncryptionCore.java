@@ -524,7 +524,7 @@ public class EncryptionCore {
      * @param coseMode True => hmacKdf, else concatKdf
      * @param keyEncryptionAlgorithm The ECDH algorithm
      * @param contentEncryptionAlgorithm The designated content encryption algorithm
-     * @param receivedPublicKey The sender's (usually ephemeral) public key
+     * @param publicKey The sender's (usually ephemeral) public key
      * @param privateKey The receiver's private key
      * @param encryptedKey For ECDH+KW based operations only
      * @return Shared secret
@@ -535,7 +535,7 @@ public class EncryptionCore {
             boolean coseMode,
             KeyEncryptionAlgorithms keyEncryptionAlgorithm,
             ContentEncryptionAlgorithms contentEncryptionAlgorithm,
-            PublicKey receivedPublicKey,
+            PublicKey publicKey,
             PrivateKey privateKey,
             byte[] encryptedKey) throws GeneralSecurityException, IOException {
         // Sanity check
@@ -547,7 +547,7 @@ public class EncryptionCore {
         byte[] derivedKey = coreKeyAgreement(coseMode,
                                              keyEncryptionAlgorithm,
                                              contentEncryptionAlgorithm,
-                                             receivedPublicKey,
+                                             publicKey,
                                              privateKey,
                                              ecStaticProvider);
         if (keyEncryptionAlgorithm.keyWrap) {
@@ -565,7 +565,7 @@ public class EncryptionCore {
      * @param contentEncryptionKey Also known as CEK
      * @param keyEncryptionAlgorithm The ECDH algorithm
      * @param contentEncryptionAlgorithm The designated content encryption algorithm
-     * @param staticKey The receiver's (usually static) public key
+     * @param publicKey The receiver's (usually static) public key
      * @return A composite object including the (plain text) data encryption key
      * @throws GeneralSecurityException
      * @throws IOException
@@ -575,30 +575,34 @@ public class EncryptionCore {
                                byte[] contentEncryptionKey,
                                KeyEncryptionAlgorithms keyEncryptionAlgorithm,
                                ContentEncryptionAlgorithms contentEncryptionAlgorithm,
-                               PublicKey staticKey) 
+                               PublicKey publicKey) 
     throws IOException, GeneralSecurityException {
         KeyPairGenerator generator;
 //#if ANDROID
-        if (staticKey instanceof ECKey) {
-            AlgorithmParameterSpec paramSpec = new ECGenParameterSpec(
-                    KeyAlgorithms.getKeyAlgorithm(staticKey).getJceName());
+        KeyAlgorithms keyAlgorithm = KeyAlgorithms.getKeyAlgorithm(publicKey);
+        if (publicKey instanceof ECKey) {
+            AlgorithmParameterSpec paramSpec = new ECGenParameterSpec(keyAlgorithm.getJceName());
             generator = ecEphemeralProvider == null ?
                     KeyPairGenerator.getInstance("EC") 
                                               : 
                     KeyPairGenerator.getInstance("EC", ecEphemeralProvider);
             generator.initialize(paramSpec, new SecureRandom());
         } else {
+            // Public keys must be converted to OpenSSL format.
+            publicKey = OkpSupport.raw2PublicKey(
+                    OkpSupport.public2RawKey(publicKey, keyAlgorithm), keyAlgorithm);
             generator = ecEphemeralProvider == null ?
                     KeyPairGenerator.getInstance("XDH") 
                                               : 
                     KeyPairGenerator.getInstance("XDH", ecEphemeralProvider);
-            generator.initialize(256, new SecureRandom());
+            generator.initialize(OkpSupport.okpKeyLength.get(keyAlgorithm) * 8, 
+                                 new SecureRandom());
         }
 //#else
         AlgorithmParameterSpec paramSpec; 
-        if (staticKey instanceof ECKey) {
+        if (publicKey instanceof ECKey) {
             paramSpec = new ECGenParameterSpec(
-                    KeyAlgorithms.getKeyAlgorithm(staticKey).getJceName());
+                    KeyAlgorithms.getKeyAlgorithm(publicKey).getJceName());
             generator = ecEphemeralProvider == null ?
                     KeyPairGenerator.getInstance("EC") 
                                               : 
@@ -606,10 +610,10 @@ public class EncryptionCore {
         } else {
 //#if BOUNCYCASTLE
             paramSpec = new XDHParameterSpec(
-                    OkpSupport.getKeyAlgorithm(staticKey).getJceName());
+                    OkpSupport.getKeyAlgorithm(publicKey).getJceName());
 //#else
             paramSpec = new NamedParameterSpec(
-                    OkpSupport.getKeyAlgorithm(staticKey).getJceName());
+                    OkpSupport.getKeyAlgorithm(publicKey).getJceName());
 //#endif
             generator = ecEphemeralProvider == null ?
 //#if BOUNCYCASTLE
@@ -627,7 +631,7 @@ public class EncryptionCore {
         byte[] derivedKey = coreKeyAgreement(coseMode,
                                              keyEncryptionAlgorithm,
                                              contentEncryptionAlgorithm,
-                                             staticKey,
+                                             publicKey,
                                              keyPair.getPrivate(),
                                              ecEphemeralProvider);
         byte[] encryptedKey = null;

@@ -125,7 +125,11 @@ public class OkpSupport {
 //#if BOUNCYCASTLE
         return KeyFactory.getInstance(keyAlgorithm.getJceName(), "BC")
 //#else
+//#if ANDROID
+        return KeyFactory.getInstance(keyAlgorithm.getKeyType() == KeyTypes.XEC ? "XDH" : "EC")
+//#else
         return KeyFactory.getInstance(keyAlgorithm.getJceName())
+//#endif
 //#endif
                 .generatePublic(new X509EncodedKeySpec(spki));
     }
