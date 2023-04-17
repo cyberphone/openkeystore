@@ -31,6 +31,7 @@ import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAKey;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORSymKeyDecrypter;
@@ -58,7 +59,6 @@ import org.webpki.json.JSONParser;
 // Test
 import org.webpki.json.SymmetricKeys;
 
-import org.webpki.util.ArrayUtil;
 import org.webpki.util.HexaDecimal;
 import org.webpki.util.IO;
 import org.webpki.util.PEMDecoder;

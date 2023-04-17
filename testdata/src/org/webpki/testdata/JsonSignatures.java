@@ -26,6 +26,7 @@ import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
@@ -54,7 +55,6 @@ import org.webpki.json.Extension1;
 import org.webpki.json.Extension2;
 import org.webpki.json.SymmetricKeys;
 
-import org.webpki.util.ArrayUtil;
 import org.webpki.util.IO;
 import org.webpki.util.PEMDecoder;
 import org.webpki.util.UTF8;
