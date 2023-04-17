@@ -162,13 +162,28 @@ public class EncryptionCore {
     /**
      * Explicitly set provider for ECDH operations.
      * <p>
+//#if ANDROID
+     * Setting <code>ecStaticProviderName</code> to <code>"AndroidKeystore"</cde>
+     * permits <i>decryption</i> using protected client keys.
+     * </p>
+     * <p>
+     * Setting <code>ecEphemeralProviderName</code> to anything but <code>null</code>
+     * is not recommended. It is mainly available for compatibility with the JDK
+     * version of this library. 
+//#else
+     * Setting <code>ecStaticProviderName</code> to <code>"AndroidKeystore"</cde>
+     * permits <i>decryption</i> using HSM protected keys.
+     * </p>
+     * <p>
      * Setting <code>ecEphemeralProviderName</code> to anything but <code>null</code>
      * should be done with caution.
+//#endif
      * </p>
      * @param ecStaticProviderName Name of provider for static private keys
      * @param ecEphemeralProviderName Name of provider for ephemeral private keys
      */
-    public static void setEcProvider(String ecStaticProviderName, String ecEphemeralProviderName) {
+    public static void setEcProvider(String ecStaticProviderName, 
+                                     String ecEphemeralProviderName) {
         ecStaticProvider = ecStaticProviderName;
         ecEphemeralProvider = ecEphemeralProviderName;
     }
@@ -595,8 +610,7 @@ public class EncryptionCore {
                     KeyPairGenerator.getInstance("XDH") 
                                               : 
                     KeyPairGenerator.getInstance("XDH", ecEphemeralProvider);
-            generator.initialize(OkpSupport.okpKeyLength.get(keyAlgorithm) * 8, 
-                                 new SecureRandom());
+            generator.initialize(keyAlgorithm.getPublicKeySizeInBits(), new SecureRandom());
         }
 //#else
         AlgorithmParameterSpec paramSpec; 
