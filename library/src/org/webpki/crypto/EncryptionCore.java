@@ -143,14 +143,21 @@ public class EncryptionCore {
         aesProviderName = providerName;
     }
     
-    private static String ecProviderName;
+    private static String ecStaticProvider;
+    private static String ecEphemeralProvider;
     
     /**
-     * Explicitly set provider for EC operations.
-     * @param providerName Name of provider
+     * Explicitly set provider for ECDH operations.
+     * <p>
+     * Setting <code>ecEphemeralProviderName</code> to anything but <code>null</code>
+     * should be done with caution.
+     * </p>
+     * @param ecStaticProviderName Name of provider for static private keys
+     * @param ecEphemeralProviderName Name of provider for ephemeral private keys
      */
-    public static void setEcProvider(String providerName) {
-        ecProviderName = providerName;
+    public static void setEcProvider(String ecStaticProviderName, String ecEphemeralProviderName) {
+        ecStaticProvider = ecStaticProviderName;
+        ecEphemeralProvider = ecEphemeralProviderName;
     }
 
     private static String rsaProviderName;
@@ -460,14 +467,15 @@ public class EncryptionCore {
                                            KeyEncryptionAlgorithms keyEncryptionAlgorithm,
                                            ContentEncryptionAlgorithms contentEncryptionAlgorithm,
                                            PublicKey receivedPublicKey,
-                                           PrivateKey privateKey)
+                                           PrivateKey privateKey,
+                                           String provider)
     throws GeneralSecurityException, IOException {
         // Begin by calculating Z (do the DH)
         String jceName = privateKey instanceof ECKey ? "ECDH" : "XDH";
-        KeyAgreement keyAgreement = ecProviderName == null ?
+        KeyAgreement keyAgreement = provider == null ?
                 KeyAgreement.getInstance(jceName) 
                                    : 
-                KeyAgreement.getInstance(jceName, ecProviderName);
+                KeyAgreement.getInstance(jceName, provider);
         keyAgreement.init(privateKey);
         keyAgreement.doPhase(receivedPublicKey, true);
         byte[] Z = keyAgreement.generateSecret();
@@ -523,7 +531,8 @@ public class EncryptionCore {
                                              keyEncryptionAlgorithm,
                                              contentEncryptionAlgorithm,
                                              receivedPublicKey,
-                                             privateKey);
+                                             privateKey,
+                                             ecStaticProvider);
         if (keyEncryptionAlgorithm.keyWrap) {
             Cipher cipher = getAesCipher(AES_KEY_WRAP_JCENAME);
             cipher.init(Cipher.UNWRAP_MODE, new SecretKeySpec(derivedKey, "AES"));
@@ -551,30 +560,32 @@ public class EncryptionCore {
                                ContentEncryptionAlgorithms contentEncryptionAlgorithm,
                                PublicKey staticKey) 
     throws IOException, GeneralSecurityException {
-        AlgorithmParameterSpec paramSpec; 
         KeyPairGenerator generator;
+        AlgorithmParameterSpec paramSpec; 
         if (staticKey instanceof ECKey) {
             paramSpec = new ECGenParameterSpec(
                     KeyAlgorithms.getKeyAlgorithm(staticKey).getJceName());
-            generator = ecProviderName == null ?
+            generator = ecEphemeralProvider == null ?
                     KeyPairGenerator.getInstance("EC") 
                                               : 
-                    KeyPairGenerator.getInstance("EC", ecProviderName);
+                    KeyPairGenerator.getInstance("EC", ecEphemeralProvider);
         } else {
             paramSpec = new NamedParameterSpec(
                     OkpSupport.getKeyAlgorithm(staticKey).getJceName());
-            generator = ecProviderName == null ?
+            generator = ecEphemeralProvider == null ?
                     KeyPairGenerator.getInstance("XDH") 
                                               : 
-                    KeyPairGenerator.getInstance("XDH", ecProviderName);
+                    KeyPairGenerator.getInstance("XDH", ecEphemeralProvider);
         }
         generator.initialize(paramSpec, new SecureRandom());
+//System.out.println(generator.getProvider().getName());
         KeyPair keyPair = generator.generateKeyPair();
         byte[] derivedKey = coreKeyAgreement(coseMode,
                                              keyEncryptionAlgorithm,
                                              contentEncryptionAlgorithm,
                                              staticKey,
-                                             keyPair.getPrivate());
+                                             keyPair.getPrivate(),
+                                             ecEphemeralProvider);
         byte[] encryptedKey = null;
         if (keyEncryptionAlgorithm.keyWrap) {
             Cipher cipher = getAesCipher(AES_KEY_WRAP_JCENAME);
