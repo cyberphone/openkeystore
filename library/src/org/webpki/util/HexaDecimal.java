@@ -111,19 +111,30 @@ public class HexaDecimal {
         return res.toString();
     }
 
+    /**
+     * Formats byte array data into readable lines.
+     * <p>
+     * After each line (<code>nn:&nbsp;hh&nbsp;hh...</code>) the ASCII counterpart is listed as well.
+     * </p>
+     * @param byteArray The data to be listed
+     * @param bytesPerLine Bytes per line
+     * @return Human-readable String
+     */
     public static String getHexDebugData(byte[] byteArray, int bytesPerLine) {
         return new HexaDecimal().toHexDebugData(byteArray, bytesPerLine);
     }
 
-    public static String getHexDebugData(byte[] byteArray) {
-        return getHexDebugData(byteArray, 16);
-    }
-
+    /**
+     * Encodes byte array data.
+     *
+     * @param byteArray Data to be encoded
+     * @return String with zero or more hexadecimal pairs (<code>hh</code>)
+     */
     public static String encode(byte[] byteArray) {
         return new HexaDecimal().toHexString(byteArray);
     }
 
-    public static int toHex(char c) {
+    static int toHex(char c) {
         if (c >= '0') {
             if (c <= '9') return c - '0';
             if (c >= 'a') {
@@ -136,10 +147,16 @@ public class HexaDecimal {
         throw new IllegalArgumentException("Bad hexchar: " + c);
     }
 
+    /**
+     * Decodes a hexadecimal String.
+     * 
+     * @param hexString String with zero or more hexadecimal pairs (<code>hh</code>)
+     * @return byteArray
+     */
     public static byte[] decode(String hexString) {
         int l = hexString.length();
         int bl;
-        if (l == 0 || l % 2 != 0) throw new IllegalArgumentException("Bad hexstring: " + hexString);
+        if (l % 2 != 0) throw new IllegalArgumentException("Bad hexstring: " + hexString);
         byte[] data = new byte[bl = l / 2];
         while (--bl >= 0) {
             data[bl] = (byte) (toHex(hexString.charAt(--l)) + (toHex(hexString.charAt(--l)) << 4));

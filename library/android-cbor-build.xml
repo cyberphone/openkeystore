@@ -5,7 +5,7 @@
   <property name="javaapi-project" location="../../javaapi"/>
   <property name="android-cbor-src" value="${android-cbor-project}/jlibcbor/src/main/java"/>
   <property name="android-cbor-apidoc" value="${android-cbor-project}/distribution/apidoc"/>
-  <property name="jlib.ver" value="1.0.0"/>
+  <property name="jlib.ver" value="1.0.1"/>
   <property name="aar.file" 
   	location="${android-cbor-project}/distribution/org.webpki-jlibcbor-${jlib.ver}.aar"/>
 
@@ -106,7 +106,7 @@
 
   	<replaceregexp file="${android-cbor-src}/overview.html"
         match="Source.*\n"
-        replace=""
+        replace="&lt;b&gt;Library Version: ${jlib.ver}&lt;/b&gt;"
         flags="s"/>
 
   	<javadoc destdir="${android-cbor-apidoc}"

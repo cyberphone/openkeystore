@@ -339,11 +339,11 @@ public class EncryptionCore {
                           contentEncryptionAlgorithm);
     }
 
-    private static byte[] rsaCore(int mode,
-                                  Key key,
-                                  byte[] data,
-                                  KeyEncryptionAlgorithms keyEncryptionAlgorithm,
-                                  String provider)
+    static byte[] rsaCore(int mode,
+                          Key key,
+                          byte[] data,
+                          KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+                          String provider)
     throws GeneralSecurityException {
         if (!keyEncryptionAlgorithm.rsa) {
             throw new GeneralSecurityException(
@@ -356,7 +356,7 @@ public class EncryptionCore {
         cipher.init(mode, key, new OAEPParameterSpec("SHA-256", "MGF1",
                     keyEncryptionAlgorithm == KeyEncryptionAlgorithms.RSA_OAEP_256 ?
                         MGF1ParameterSpec.SHA256 : MGF1ParameterSpec.SHA1, 
-                    PSource.PSpecified.DEFAULT));
+                        PSource.PSpecified.DEFAULT));
         return cipher.doFinal(data);
     }
 
@@ -437,7 +437,7 @@ public class EncryptionCore {
         }
     }
 
-    public static byte[] concatKdf(byte[] secret, String joseAlgorithmId, int keyLength) 
+    static byte[] concatKdf(byte[] secret, String joseAlgorithmId, int keyLength) 
             throws IOException, GeneralSecurityException {
         byte[] algorithmId = joseAlgorithmId.getBytes();
         final MessageDigest messageDigest = MessageDigest.getInstance(HASH_DIGEST_JCENAME);

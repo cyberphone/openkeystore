@@ -19,6 +19,7 @@ package org.webpki.cbor;
 import java.io.IOException;
 
 import java.security.GeneralSecurityException;
+
 import java.util.Arrays;
 
 import org.webpki.crypto.HmacAlgorithms;

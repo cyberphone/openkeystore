@@ -51,7 +51,7 @@ public class Hex {
         }
         byte[] data = IO.readFile(args[1]);
         System.out.print(args[0].equals("dump") ? 
-              HexaDecimal.getHexDebugData(data) : HexaDecimal.encode(data));
+              HexaDecimal.getHexDebugData(data, 16) : HexaDecimal.encode(data));
     }
 
 }

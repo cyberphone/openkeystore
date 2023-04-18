@@ -336,7 +336,7 @@ public abstract class BaseASN1Object implements ASN1Constants {
                 s.append(hex.charAt(i++));
             }
         } else {
-            String hex = HexaDecimal.getHexDebugData(value);
+            String hex = HexaDecimal.getHexDebugData(value, 16);
             int i = 0;
             while (hex.length() > 0) {
                 s.append("\n" + getByteNumberBlanks());

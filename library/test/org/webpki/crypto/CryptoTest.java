@@ -29,15 +29,20 @@ import java.security.Security;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.NamedParameterSpec;
+
 import java.util.Arrays;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import org.webpki.cbor.CBORAsymKeyDecrypter;
 import org.webpki.cbor.CBORAsymKeyEncrypter;
 import org.webpki.cbor.CBORObject;
+
+import org.webpki.util.Base64URL;
 import org.webpki.util.HexaDecimal;
 import org.webpki.util.UTF8;
 
@@ -140,24 +145,17 @@ public class CryptoTest {
                      ContentEncryptionAlgorithms.A256GCM);
     }
     
-    byte[] getBinaryFromHex(String hex) throws Exception {
-        if (hex.length() == 0) {
-            return new byte[0];
-        }
-        return HexaDecimal.decode(hex);
-    }
-    
     void hmacKdfRun(String ikmHex,
                     String saltHex,
                     String infoHex, 
                     int keyLen, 
                     String okmHex) throws Exception {
         assertTrue("KDF",
-                HexaDecimal.encode(
-                        EncryptionCore.hmacKdf(getBinaryFromHex(ikmHex),
-                                               getBinaryFromHex(saltHex),
-                                               getBinaryFromHex(infoHex),
-                                               keyLen)).equals(okmHex));
+                   HexaDecimal.encode(
+                       EncryptionCore.hmacKdf(HexaDecimal.decode(ikmHex),
+                                              HexaDecimal.decode(saltHex),
+                                              HexaDecimal.decode(infoHex),
+                                              keyLen)).equals(okmHex));
     }
     
     @Test
@@ -207,4 +205,14 @@ public class CryptoTest {
                       "b8a11f5c5ee1879ec3454e5f3c738d2d" +
                       "9d201395faa4b61a96c8");       
     }
- }
+    
+    @Test
+    public void concatKdfTest() throws Exception {
+        String derivedKey = "pgs50IOZ6BxfqvTSie4t9OjWxGr4whiHo1v9Dti93CRiJE2PP60FojLatVVrcjg3BxpuFjnlQxL97GOwAfcwLA";
+        String kdfed = Base64URL.encode(EncryptionCore.concatKdf(
+                Base64URL.decode("Sq8rGLm4rEtzScmnSsY5r1n-AqBl_iBU8FxN80Uc0S0"),
+                ContentEncryptionAlgorithms.A256CBC_HS512.getJoseAlgorithmId(), 
+                64));
+        assertTrue("kdf", derivedKey.equals(kdfed));
+    }
+}
