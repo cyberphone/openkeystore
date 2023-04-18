@@ -433,7 +433,7 @@ public class EncryptionCore {
                        rsaProvider);
     }
 
-    public static byte[] hmacKdf(byte[] ikm, byte[] salt, byte[] info, int keyLength) 
+    static byte[] hmacKdf(byte[] ikm, byte[] salt, byte[] info, int keyLength) 
             throws IOException, GeneralSecurityException {
         final Mac hmac = Mac.getInstance(HMAC_DIGEST_JCENAME);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

@@ -1,0 +1,210 @@
+/*
+ *  Copyright 2006-2021 WebPKI.org (http://webpki.org).
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+package org.webpki.crypto;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.Provider;
+import java.security.SecureRandom;
+import java.security.Security;
+
+import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.ECGenParameterSpec;
+import java.security.spec.NamedParameterSpec;
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.webpki.cbor.CBORAsymKeyDecrypter;
+import org.webpki.cbor.CBORAsymKeyEncrypter;
+import org.webpki.cbor.CBORObject;
+import org.webpki.util.HexaDecimal;
+import org.webpki.util.UTF8;
+
+
+/**
+ * ECDH tests.
+ * <p>
+ * ECDH is actually quite complicated due to the provider concept.
+ * In practical terms: a private key used for key agreement may
+ * come from different providers, depending on if the key represents
+ * a static or an ephemeral key.
+ * </p>
+ *  
+ */
+public class CryptoTest {
+
+    private static Logger logger = Logger.getLogger(CustomCryptoProvider.class.getCanonicalName());
+
+    static final byte[] DATA_TO_ENCRYPT = 
+            UTF8.encode("The quick brown fox jumps over the lazy bear");
+    
+    static final String ALT_PROVIDER = "BC";
+
+    @BeforeClass
+    public static void openFile() throws Exception {
+        Provider bc = (Provider) Class.forName("org.bouncycastle.jce.provider.BouncyCastleProvider").getDeclaredConstructor().newInstance();
+        if (Security.getProvider(bc.getName()) == null) {
+            try {
+                Security.addProvider(bc);
+                logger.info("BouncyCastle successfully added to the list of providers");
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, "BouncyCastle didn't load");
+                throw new RuntimeException(e);
+            }
+        } else {
+            throw new RuntimeException("BouncyCastle was already loaded");
+        }
+    }
+    
+    KeyPair generateKeyPair(String staticProvider, 
+                            KeyAlgorithms keyAlgorithm) throws Exception {
+        AlgorithmParameterSpec paramSpec; 
+        KeyPairGenerator generator;
+        if (keyAlgorithm.getKeyType() == KeyTypes.EC) {
+            paramSpec = new ECGenParameterSpec(keyAlgorithm.getJceName());
+            generator = staticProvider == null ?
+                    KeyPairGenerator.getInstance("EC") 
+                                              : 
+                    KeyPairGenerator.getInstance("EC", staticProvider);
+        } else {
+            paramSpec = new NamedParameterSpec(keyAlgorithm.getJceName());
+            generator = staticProvider == null ?
+                    KeyPairGenerator.getInstance("XDH") 
+                                              : 
+                    KeyPairGenerator.getInstance("XDH", staticProvider);
+        }
+        generator.initialize(paramSpec, new SecureRandom());
+        return generator.generateKeyPair();
+    }
+
+    private void oneShot(KeyAlgorithms ka,
+                         KeyEncryptionAlgorithms kea,
+                         ContentEncryptionAlgorithms cea,
+                         String staticProvider,
+                         String ephemeralProvider) throws Exception {
+        KeyPair keyPair = generateKeyPair(staticProvider, ka);
+        EncryptionCore.setEcProvider(staticProvider, ephemeralProvider);
+        byte[] encrypted = new CBORAsymKeyEncrypter(keyPair.getPublic(), kea, cea)
+            .encrypt(DATA_TO_ENCRYPT).encode();
+        assertTrue("Enc", Arrays.equals(DATA_TO_ENCRYPT,
+                                        new CBORAsymKeyDecrypter(keyPair.getPrivate())
+            .decrypt(CBORObject.decode(encrypted))));
+        encrypted = new CBORAsymKeyEncrypter(keyPair.getPublic(), kea, cea)
+            .setPublicKeyOption(true)
+            .encrypt(DATA_TO_ENCRYPT).encode();
+        assertTrue("Enc2", Arrays.equals(DATA_TO_ENCRYPT,
+                                         new CBORAsymKeyDecrypter(keyPair.getPrivate())
+            .decrypt(CBORObject.decode(encrypted))));
+    }
+    
+    private void providerShot(KeyAlgorithms ka,
+                              KeyEncryptionAlgorithms kea,
+                              ContentEncryptionAlgorithms cea) throws Exception {
+        oneShot(ka, kea, cea, null,         null);
+        oneShot(ka, kea, cea, null,         ALT_PROVIDER);
+        oneShot(ka, kea, cea, ALT_PROVIDER, null);
+        oneShot(ka, kea, cea, ALT_PROVIDER, ALT_PROVIDER);
+    }
+    
+    @Test
+    public void ecdhTxt() throws Exception {
+        providerShot(KeyAlgorithms.P_256,
+                     KeyEncryptionAlgorithms.ECDH_ES,
+                     ContentEncryptionAlgorithms.A256GCM);
+        providerShot(KeyAlgorithms.X25519,
+                     KeyEncryptionAlgorithms.ECDH_ES,
+                     ContentEncryptionAlgorithms.A256GCM);
+        providerShot(KeyAlgorithms.X448,
+                     KeyEncryptionAlgorithms.ECDH_ES,
+                     ContentEncryptionAlgorithms.A256GCM);
+    }
+    
+    byte[] getBinaryFromHex(String hex) throws Exception {
+        if (hex.length() == 0) {
+            return new byte[0];
+        }
+        return HexaDecimal.decode(hex);
+    }
+    
+    void hmacKdfRun(String ikmHex,
+                    String saltHex,
+                    String infoHex, 
+                    int keyLen, 
+                    String okmHex) throws Exception {
+        assertTrue("KDF",
+                HexaDecimal.encode(
+                        EncryptionCore.hmacKdf(getBinaryFromHex(ikmHex),
+                                               getBinaryFromHex(saltHex),
+                                               getBinaryFromHex(infoHex),
+                                               keyLen)).equals(okmHex));
+    }
+    
+    @Test
+    public void hmacKdfTest() throws Exception {
+
+        // From appendix A of RFC 5869
+        
+        // A.1
+        hmacKdfRun("0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+                   "000102030405060708090a0b0c",
+                   "f0f1f2f3f4f5f6f7f8f9",
+                   42,
+                   "3cb25f25faacd57a90434f64d0362f2a" +
+                      "2d2d0a90cf1a5a4c5db02d56ecc4c5bf" +
+                      "34007208d5b887185865");
+
+        // A.2
+        hmacKdfRun("000102030405060708090a0b0c0d0e0f" +
+                     "101112131415161718191a1b1c1d1e1f" +
+                     "202122232425262728292a2b2c2d2e2f" +
+                     "303132333435363738393a3b3c3d3e3f" +
+                     "404142434445464748494a4b4c4d4e4f",
+                   "606162636465666768696a6b6c6d6e6f" +
+                     "707172737475767778797a7b7c7d7e7f" +
+                     "808182838485868788898a8b8c8d8e8f" +
+                     "909192939495969798999a9b9c9d9e9f" +
+                     "a0a1a2a3a4a5a6a7a8a9aaabacadaeaf",
+                   "b0b1b2b3b4b5b6b7b8b9babbbcbdbebf" +
+                     "c0c1c2c3c4c5c6c7c8c9cacbcccdcecf" +
+                     "d0d1d2d3d4d5d6d7d8d9dadbdcdddedf" +
+                     "e0e1e2e3e4e5e6e7e8e9eaebecedeeef" +
+                     "f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff",
+                   82,
+                   "b11e398dc80327a1c8e7f78c596a4934" +
+                     "4f012eda2d4efad8a050cc4c19afa97c" +
+                     "59045a99cac7827271cb41c65e590e09" +
+                     "da3275600c2f09b8367793a9aca3db71" +
+                     "cc30c58179ec3e87c14c01d5c1f3434f" +
+                     "1d87");
+
+        // A.3
+        hmacKdfRun("0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+                   "",
+                   "",
+                   42,
+                   "8da4e775a563c18f715f802a063c5a31" +
+                      "b8a11f5c5ee1879ec3454e5f3c738d2d" +
+                      "9d201395faa4b61a96c8");       
+    }
+ }

@@ -71,7 +71,7 @@
   </condition>
 
   <target name="help">
-    <echo message="Targets: help build tomcat doc testkeygen2 testsks testjson testcbor testecdh testkeyalgs android-json android-saturn android-cbor [-Daargen=true]"/>
+    <echo message="Targets: help build tomcat doc testkeygen2 testsks testjson testcbor testcrypto testkeyalgs android-json android-saturn android-cbor [-Daargen=true]"/>
   </target>
 
   <target name="_preprocess">
@@ -571,10 +571,10 @@
      </antcall>
   </target>
 
-  <!-- JUnit test of ECDH.  The extra parameters for SKS/KeyGen2 are simply ignored... -->
-  <target name="testecdh">
+  <!-- JUnit test of crypto.  The extra parameters for SKS/KeyGen2 are simply ignored... -->
+  <target name="testcrypto">
     <antcall target="_test">
-       <param name="test.class" value="org.webpki.crypto.ECDHTest"/>
+       <param name="test.class" value="org.webpki.crypto.CryptoTest"/>
      </antcall>
   </target>
 	
