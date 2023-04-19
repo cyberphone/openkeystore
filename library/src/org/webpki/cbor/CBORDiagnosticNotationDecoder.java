@@ -486,6 +486,7 @@ public class CBORDiagnosticNotationDecoder {
         return cborDiagnostic[index++];
     }
 
+    @SuppressWarnings("fallthrough")
     private void scanNonSignficantData() throws IOException {
         while (index < cborDiagnostic.length) {
             switch (nextChar()) {
@@ -498,10 +499,12 @@ public class CBORDiagnosticNotationDecoder {
 
                 case '/':
                     readChar();
-                    while (readChar() != '/') {
+                    if (nextChar() != '/') {
+                        while (readChar() != '/') {
+                        }
+                        continue;
                     }
-                    continue;
-                    
+                // Yes, '//' is currently considered as equivalent to '#'
                 case '#':
                     readChar();
                     while (index < cborDiagnostic.length && readChar() != '\n') {

@@ -249,13 +249,14 @@ diagnostic notation:
  <div class='webpkifloat'>
 <table class='webpkitable' style='margin-left:2em'>
 <tr><th>CBOR&nbsp;Object</th><th>Syntax</th><th>Notes</th><th style='min-width:30em'>Description</th></tr>
-<tr><td></td><td><code>/</code>&nbsp;<i>comment&nbsp;text</i>&nbsp;<code>/</code></td>
+<tr><td rowspan='3'></td><td><code>/</code>&nbsp;<i>comment&nbsp;text</i>&nbsp;<code>/</code></td>
 <td></td><td>Multi-line comment.
 Multi-line comments are treated as whitespace and may thus also be used 
 <i>between</i> CBOR objects.</td></tr>
-<tr><td></td><td><code>#</code>&nbsp;<i>comment&nbsp;text</i></td>
-<td></td><td>Single-line comment.
-Single-line comments are terminated by a newline character (<code>'\n'</code>).</td></tr>
+<tr><td><code>#</code>&nbsp;<i>comment&nbsp;text</i></td>
+<td rowspan='2'>7</td><td rowspan='2'>Single-line comment.
+Single-line comments are terminated by a newline character (<code>'\n'</code>) or <code>EOF</code>.</td></tr>
+<tr><td><code>//</code>&nbsp;<i>comment&nbsp;text</i></td></tr>
 <tr><td><code>integer</code></td>
 <td rowspan='2'>{<i>sign</i>}{<code>0x</code>}<i>n</i></td>
 <td rowspan='2'>1, 2</td><td rowspan='2'>
@@ -321,5 +322,6 @@ immediately preceding the newline may be used.</li>
 <code>'\b'</code>, <code>'\f'</code>, <code>'\n'</code>, 
 <code>'\r'</code>, <code>'\t'</code>, <code>'\u'</code>).</li>
 <li>Zero-length strings (<code>''</code>) return byte strings of length zero.</li>
+<li>The IETF have yet to define a single line comment.</li>
 </ol>
 </body>
