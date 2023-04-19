@@ -20,10 +20,20 @@ import java.security.SecureRandom;
 
 import org.webpki.util.Base64URL;
 
+/**
+ * Support class to {@link SecureRandom}.
+ *
+ */
 public class CryptoRandom {
 
     private CryptoRandom() { }
 
+    /**
+     * Generates byte array with random data.
+     * 
+     * @param length Number of bytes
+     * @return byteArray
+     */
     public static byte[] generateRandom(int length) {
         byte[] random = new byte[length];
         new SecureRandom().nextBytes(random);
@@ -32,6 +42,10 @@ public class CryptoRandom {
 
     /**
      * Generates a URL friendly encoded nonce.
+     * <p>
+     * Note: although the characters are derived from Bas64URL,
+     * the string is NOT intended to be decoded!
+     * </p>
      * @param length Number of characters
      * @return Encoded nonce
      */

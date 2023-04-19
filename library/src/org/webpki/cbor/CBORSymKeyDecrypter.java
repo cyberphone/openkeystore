@@ -63,16 +63,7 @@ public class CBORSymKeyDecrypter extends CBORDecrypter {
      * @param secretKey Decryption key
      */
     public CBORSymKeyDecrypter(byte[] secretKey) {
-        this(new KeyLocator() {
-
-            @Override
-            public byte[] locate(CBORObject optionalKeyId,
-                                 ContentEncryptionAlgorithms contentEncryptionAlgorithm)
-                    throws IOException, GeneralSecurityException {
-                return secretKey;
-            }
-            
-        });
+        this((optionalKeyId, contentEncryptionAlgorithm) -> secretKey);
     }
 
     /**

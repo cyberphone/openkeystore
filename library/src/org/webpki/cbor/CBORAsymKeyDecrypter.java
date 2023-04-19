@@ -67,18 +67,10 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
      * @param privateKey Decryption key
      */
     public CBORAsymKeyDecrypter(PrivateKey privateKey) {
-        this(new KeyLocator() {
-
-            @Override
-            public PrivateKey locate(PublicKey optionalPublicKey,
-                                     CBORObject optionalKeyId,
-                                     KeyEncryptionAlgorithms keyEncryptionAlgorithm,
-                                     ContentEncryptionAlgorithms contentEncryptionAlgorithm)
-                    throws IOException, GeneralSecurityException {
-                return privateKey;
-            }
-            
-        });
+        this((optionalPublicKey, 
+              optionalKeyId, 
+              keyEncryptionAlgorithm, 
+              contentEncryptionAlgorithm) -> privateKey);
     }
 
     /**

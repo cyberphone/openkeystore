@@ -71,17 +71,7 @@ public class CBORAsymKeyValidator extends CBORValidator {
      * @param publicKey The anticipated public key
      */
     public CBORAsymKeyValidator(PublicKey publicKey) {
-        this(new KeyLocator() {
-
-            @Override
-            public PublicKey locate(PublicKey optionalPublicKey,
-                                    CBORObject optionalKeyId,
-                                    AsymSignatureAlgorithms algorithm)
-                    throws IOException, GeneralSecurityException {
-                return publicKey;
-            }
-            
-        });
+        this((optionalPublicKey, optionalKeyId, algorithm) -> publicKey);
     }
 
     /**

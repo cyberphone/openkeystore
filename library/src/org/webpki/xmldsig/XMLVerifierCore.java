@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import java.security.PublicKey;
 import java.security.GeneralSecurityException;
+
 import java.util.Arrays;
 import java.util.logging.Logger;
 
@@ -93,7 +94,7 @@ abstract class XMLVerifierCore {
         boolean success;
         if (this instanceof XMLSymKeyVerifier) {
             success = ((XMLSymKeyVerifier) this).
-                    sym_verifier.verifyData(sign_cn,
+                    sym_verifier.verifySignature(sign_cn,
                     signature.signedinfo_object.signature_val,
                     signature.signedinfo_object.sym_signature_alg,
                     signature.symmetric_key_name);

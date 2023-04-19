@@ -47,11 +47,8 @@ public class CBORX509Signer extends CBORSigner {
      * Initializes a signer with an external interface.
      * 
      * @param signer Custom signer
-     * @throws GeneralSecurityException 
-     * @throws IOException 
      */
-    public CBORX509Signer(X509SignerInterface signer) throws IOException,
-                                                             GeneralSecurityException {
+    public CBORX509Signer(X509SignerInterface signer) {
         this.signer = signer;
     }
     
@@ -80,13 +77,10 @@ public class CBORX509Signer extends CBORSigner {
      * @param privateKey Signature key
      * @param certificatePath A matching non-null certificate path
      * @param algorithm Signature algorithm
-     * @throws IOException 
-     * @throws GeneralSecurityException 
      */
     public CBORX509Signer(PrivateKey privateKey,
                           X509Certificate[] certificatePath,
-                          AsymSignatureAlgorithms algorithm) throws IOException,
-                                                                    GeneralSecurityException {
+                          AsymSignatureAlgorithms algorithm) {
         signer = new X509SignerInterface() {
 
             @Override
@@ -99,8 +93,7 @@ public class CBORX509Signer extends CBORSigner {
             }
 
             @Override
-            public X509Certificate[] getCertificatePath() throws IOException, 
-                                                                 GeneralSecurityException {
+            public X509Certificate[] getCertificatePath() {
                 return certificatePath;
             }
 

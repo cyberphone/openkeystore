@@ -189,7 +189,7 @@ public class CBORFromJSON {
             c = nextChar();
         } while ((c >= '0' && c <= '9') || c == '.');
         try {
-            return CBORInteger.createInt53(Long.valueOf(token.toString()));
+            return CBORInteger.createInt53(Long.parseLong(token.toString()));
         } catch (IllegalArgumentException e) {
             reportError(e.getMessage());
         }

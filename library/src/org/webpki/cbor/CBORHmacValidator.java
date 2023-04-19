@@ -23,6 +23,7 @@ import java.security.GeneralSecurityException;
 import java.util.Arrays;
 
 import org.webpki.crypto.HmacAlgorithms;
+import org.webpki.crypto.HmacVerifierInterface;
 
 /**
  * Class for CBOR HMAC signature validation.
@@ -32,62 +33,44 @@ import org.webpki.crypto.HmacAlgorithms;
  */
 public class CBORHmacValidator extends CBORValidator {
     
-    /**
-     * Interface for dynamic key retrieval.
-     */
-    public interface KeyLocator {
-
-        /**
-         * Retrieves validation key and verifies signature meta data.
-         * <p>
-         * An implementation is supposed to throw an exception if it
-         * does not find a matching key or if the supplied algorithm does
-         * not meet the policy.
-         * </p>
-         * 
-         * @param optionalKeyId KeyId or null
-         * @param algorithm HMAC algorithm
-         * @return Validation key 
-         * @throws IOException
-         * @throws GeneralSecurityException
-         */
-        byte[] locate(CBORObject optionalKeyId, HmacAlgorithms algorithm)
-            throws IOException, GeneralSecurityException;
-    }
-    
-    KeyLocator keyLocator;
+    HmacVerifierInterface verifier;
 
     /**
      * Initializes a validator with a secret key.
      * <p>
      * This constructor presumes that the validation key is given by the context
-     * and that the supplied algorithm meets the policy.
+     * and that the supplied algorithm meets the policy.  The optional CSF
+     * <code>keyId</code> is <i>ignored</i>.
      * </p>
      * 
      * @param secretKey Validation key
      */
     public CBORHmacValidator(byte[] secretKey) {
-        this(new KeyLocator() {
+        this(new HmacVerifierInterface() {
 
             @Override
-            public byte[] locate(CBORObject optionalKeyId, HmacAlgorithms hmacAlgorithm) {
-                 return secretKey;
+            public boolean verifySignature(byte[] data, 
+                                           byte[] digest, 
+                                           HmacAlgorithms algorithm, 
+                                           String keyId)
+                    throws IOException, GeneralSecurityException {
+                return Arrays.equals(algorithm.digest(secretKey, data), digest);
             }
-            
         });
     }
 
     /**
-     * Initializes a validator with a key locator.
+     * Initializes a validator with an external implementation.
      * <p>
      * This constructor provides full control for the verifier
-     * regarding key identifiers and HMAC algorithms.
+     * HMAC algorithms and cryptographic providers.  Note that an optional CSF
+     * <code>keyId</code> <b>must</b> be a CBOR string.
      * </p>
      *
-     * @param keyLocator KeyLocator implementation
+     * @param verifier Verifier implementation
      */
-    public CBORHmacValidator(KeyLocator keyLocator) {
-        this.keyLocator = keyLocator;
+    public CBORHmacValidator(HmacVerifierInterface verifier) {
+        this.verifier = verifier;
     }
 
     @Override
@@ -96,12 +79,10 @@ public class CBORHmacValidator extends CBORValidator {
                         CBORObject optionalKeyId,
                         byte[] signatureValue,
                         byte[] signedData) throws IOException, GeneralSecurityException {
-        // Get algorithm from the signature object.
-        HmacAlgorithms hmacAlgorithm = HmacAlgorithms.getAlgorithmFromId(coseAlgorithmId);
-
-        // Finally, verify the HMAC.
-        if (!Arrays.equals(hmacAlgorithm.digest(
-                keyLocator.locate(optionalKeyId, hmacAlgorithm), signedData), signatureValue)) {
+        if (!verifier.verifySignature(signedData, 
+                                      signatureValue, 
+                                      HmacAlgorithms.getAlgorithmFromId(coseAlgorithmId),
+                                      optionalKeyId == null ? null : optionalKeyId.getString())) {
             throw new GeneralSecurityException("HMAC signature validation error");
         }
     }

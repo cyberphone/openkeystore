@@ -37,7 +37,8 @@ public class CBORTypedObjectDecoderCache {
 
     private boolean checkForUnread = true;
 
-    private Hashtable<String, Class<? extends CBORTypedObjectDecoder>> classMap = new Hashtable<>();
+    private final Hashtable<String, 
+                            Class<? extends CBORTypedObjectDecoder>> classMap = new Hashtable<>();
     
     private CBORTypedObjectDecoder getInstance(Class<? extends CBORTypedObjectDecoder> decoderClass) {
         try {

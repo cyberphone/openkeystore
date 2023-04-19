@@ -16,10 +16,6 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
-
 import org.webpki.crypto.ContentEncryptionAlgorithms;
 
 /**
@@ -34,19 +30,15 @@ public class CBORSymKeyEncrypter extends CBOREncrypter {
      * 
      * @param secretKey Encryption key
      * @param algorithm Encryption algorithm
-     * @throws IOException
-     * @throws GeneralSecurityException
      */
     public CBORSymKeyEncrypter(byte[] secretKey,
-                               ContentEncryptionAlgorithms algorithm) 
-            throws IOException, GeneralSecurityException {
+                               ContentEncryptionAlgorithms algorithm) {
         super(algorithm);
         contentEncryptionKey = secretKey;
     }
 
     @Override
-    byte[] getContentEncryptionKey(CBORMap encryptionObject)
-            throws IOException, GeneralSecurityException {
+    byte[] getContentEncryptionKey(CBORMap encryptionObject) {
         return contentEncryptionKey;
     }
 }

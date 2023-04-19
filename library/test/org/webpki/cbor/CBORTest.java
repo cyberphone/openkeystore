@@ -44,6 +44,7 @@ import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.ContentEncryptionAlgorithms;
 import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.HmacSignerInterface;
+import org.webpki.crypto.HmacVerifierInterface;
 import org.webpki.crypto.KeyEncryptionAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
 import org.webpki.crypto.X509SignerInterface;
@@ -1056,22 +1057,24 @@ public class CBORTest {
             .sign(SIGNATURE_LABEL, tbs); 
         sd = tbs.encode();
         cborSd = CBORObject.decode(sd);
-        new CBORHmacValidator(
-            new CBORHmacValidator.KeyLocator() {
+        new CBORHmacValidator(new HmacVerifierInterface() {
 
-                @Override
-                public byte[] locate(CBORObject optionalKeyId, HmacAlgorithms hmacAlgorithm)
-                        throws IOException, GeneralSecurityException {
-                    if (!compareKeyId(keyId, optionalKeyId)) {
-                        throw new IOException("Unknown keyId");
-                    }
-                    if (!algorithm.equals(hmacAlgorithm)) {
-                        throw new IOException("Algorithm error");
-                    }
-                    return symmetricKeys.getValue(size);
+            @Override
+            public boolean verifySignature(byte[] data, 
+                                      byte[] digest, 
+                                      HmacAlgorithms hmacAlgorithm, 
+                                      String optionalKeyId)
+                    throws IOException, GeneralSecurityException {
+                if (!algorithm.equals(hmacAlgorithm)) {
+                    throw new IOException("Algorithm error");
                 }
+                if (!keyId.getString().equals(optionalKeyId)) {
+                    throw new IOException("Unknown keyId");
+                }
+                return Arrays.equals(algorithm.digest(symmetricKeys.getValue(size), data), digest);
+            }
                 
-            }).validate(SIGNATURE_LABEL, cborSd.getMap());
+        }).validate(SIGNATURE_LABEL, cborSd.getMap());
     }
 
     @Test

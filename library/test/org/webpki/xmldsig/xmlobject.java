@@ -218,7 +218,7 @@ public class xmlobject extends XMLObjectWrapper implements XMLEnvelopedInput {
                 verifier.validateEnvelopedSignature(o);
             } else {
                 XMLSymKeyVerifier verifier = new XMLSymKeyVerifier(new HmacVerifierInterface() {
-                    public boolean verifyData(byte[] data, byte[] digest, HmacAlgorithms algorithm, String keyId) 
+                    public boolean verifySignature(byte[] data, byte[] digest, HmacAlgorithms algorithm, String keyId) 
                             throws IOException, GeneralSecurityException {
                         if (algorithm != HmacAlgorithms.HMAC_SHA256) {
                             throw new IOException("Bad sym ALG");

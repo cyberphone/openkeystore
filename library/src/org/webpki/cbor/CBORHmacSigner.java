@@ -39,11 +39,8 @@ public class CBORHmacSigner extends CBORSigner {
      * 
      * @param secretKey Signature key
      * @param algorithm HMAC algorithm
-     * @throws IOException 
-     * @throws GeneralSecurityException 
      */
-    public CBORHmacSigner(byte[] secretKey, HmacAlgorithms algorithm) 
-            throws IOException, GeneralSecurityException {
+    public CBORHmacSigner(byte[] secretKey, HmacAlgorithms algorithm) {
         
         this.signer = new HmacSignerInterface() {
 
@@ -64,11 +61,8 @@ public class CBORHmacSigner extends CBORSigner {
      * Initializes signer with an external interface.
      * 
      * @param signer The external signer
-     * @throws IOException 
-     * @throws GeneralSecurityException 
      */
-    public CBORHmacSigner(HmacSignerInterface signer) throws IOException,
-                                                             GeneralSecurityException {
+    public CBORHmacSigner(HmacSignerInterface signer) {
         this.signer = signer;
     }
     
@@ -78,7 +72,7 @@ public class CBORHmacSigner extends CBORSigner {
     }
 
     @Override
-    void additionalItems(CBORMap signatureObject) throws IOException, GeneralSecurityException {
+    void additionalItems(CBORMap signatureObject) {
         // No additional items needed.
     }
 

@@ -137,7 +137,7 @@ public class CBORKeyPair {
                                                                     GeneralSecurityException {
         CBORMap privateKeyMap = cosePrivateKey.getMap();
         PublicKey publicKey = CBORPublicKey.getPublicKey(privateKeyMap);
-        PrivateKey privateKey = null;
+        PrivateKey privateKey;
         switch (CBORPublicKey.getKeyType(privateKeyMap)) {
             case RSA:
                 privateKey = KeyFactory.getInstance("RSA").generatePrivate(

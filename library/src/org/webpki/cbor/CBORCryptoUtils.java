@@ -170,7 +170,7 @@ public class CBORCryptoUtils {
     /**
      * Policy regarding additional CSF and CEF features.
      */
-    public static enum POLICY {FORBIDDEN, OPTIONAL, MANDATORY}
+    public enum POLICY {FORBIDDEN, OPTIONAL, MANDATORY}
     
     static void inputError(String text, POLICY policy) throws IOException {
         CBORObject.reportError(String.format("%s. Policy: %s", text, policy.toString()));

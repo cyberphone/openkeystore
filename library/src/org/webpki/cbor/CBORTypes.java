@@ -38,4 +38,4 @@ public enum CBORTypes {
     CBORTypes(boolean permittedConstrainedKey) {
         this.permittedConstrainedKey = permittedConstrainedKey;
     }
-};
+}

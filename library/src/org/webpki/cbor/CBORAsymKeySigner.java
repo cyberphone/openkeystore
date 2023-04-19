@@ -50,11 +50,8 @@ public class CBORAsymKeySigner extends CBORSigner {
      * Initializes a signer with an external interface.
      * 
      * @param signer Custom signer
-     * @throws GeneralSecurityException 
-     * @throws IOException 
      */
-    public CBORAsymKeySigner(AsymKeySignerInterface signer) throws IOException,
-                                                                   GeneralSecurityException {
+    public CBORAsymKeySigner(AsymKeySignerInterface signer) {
         this.signer = signer;
     }
     
@@ -65,10 +62,8 @@ public class CBORAsymKeySigner extends CBORSigner {
      * in RFC 7518.
      * </p>
      * @param privateKey Signature key
-     * @throws IOException 
-     * @throws GeneralSecurityException 
      */
-    public CBORAsymKeySigner(PrivateKey privateKey) throws IOException, GeneralSecurityException {
+    public CBORAsymKeySigner(PrivateKey privateKey) {
         this(privateKey, 
              KeyAlgorithms.getKeyAlgorithm(privateKey).getRecommendedSignatureAlgorithm());
     }
@@ -78,11 +73,8 @@ public class CBORAsymKeySigner extends CBORSigner {
      * 
      * @param privateKey Signature key
      * @param algorithm Signature algorithm
-     * @throws IOException 
-     * @throws GeneralSecurityException 
      */
-    public CBORAsymKeySigner(PrivateKey privateKey, AsymSignatureAlgorithms algorithm) 
-            throws IOException, GeneralSecurityException {
+    public CBORAsymKeySigner(PrivateKey privateKey, AsymSignatureAlgorithms algorithm) {
         
         signer = new AsymKeySignerInterface() {
 

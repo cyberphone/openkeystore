@@ -79,9 +79,8 @@ public abstract class CBORTypedObjectDecoder {
      * </p>
      * 
      * @return CBORObject
-     * @throws IOException
      */
-    public CBORObject getRoot() throws IOException {
+    public CBORObject getRoot() {
         return root;
     }
 }

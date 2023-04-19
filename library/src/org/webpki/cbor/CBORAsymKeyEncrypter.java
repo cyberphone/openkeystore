@@ -42,13 +42,10 @@ public class CBORAsymKeyEncrypter extends CBOREncrypter {
      * @param publicKey Encryption key
      * @param keyEncryptionAlgorithm Key encryption algorithm
      * @param contentEncryptionAlgorithm Content encryption algorithm
-     * @throws IOException
-     * @throws GeneralSecurityException
      */
     public CBORAsymKeyEncrypter(PublicKey publicKey,
                                 KeyEncryptionAlgorithms keyEncryptionAlgorithm,
-                                ContentEncryptionAlgorithms contentEncryptionAlgorithm) 
-            throws IOException, GeneralSecurityException {
+                                ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
         super(contentEncryptionAlgorithm);
         this.publicKey = publicKey;
         this.keyEncryptionAlgorithm = keyEncryptionAlgorithm;
