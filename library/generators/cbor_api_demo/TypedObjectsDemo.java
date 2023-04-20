@@ -2,8 +2,6 @@ package cbor_api_demo;
 
 import java.io.IOException;
 
-import java.security.GeneralSecurityException;
-
 import org.webpki.cbor.CBORInteger;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;
@@ -23,7 +21,7 @@ public class TypedObjectsDemo {
         static final CBORObject INT_KEY = new CBORInteger(1);
         
         @Override
-        protected void decode(CBORObject cborBody) throws IOException, GeneralSecurityException {
+        protected void decode(CBORObject cborBody) throws IOException{
             number = cborBody.getMap().getObject(INT_KEY).getInt();
         }
 
@@ -41,7 +39,7 @@ public class TypedObjectsDemo {
         String justAString;
 
         @Override
-        protected void decode(CBORObject cborBody) throws IOException, GeneralSecurityException {
+        protected void decode(CBORObject cborBody) throws IOException {
             justAString = cborBody.getString();
         }
 
