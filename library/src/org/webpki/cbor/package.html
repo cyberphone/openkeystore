@@ -258,11 +258,12 @@ Multi-line comments are treated as whitespace and may thus also be used
 Single-line comments are terminated by a newline character (<code>'\n'</code>) or <code>EOF</code>.</td></tr>
 <tr><td><code>//</code>&nbsp;<i>comment&nbsp;text</i></td></tr>
 <tr><td><code>integer</code></td>
-<td rowspan='2'>{<i>sign</i>}{<code>0x</code>}<i>n</i></td>
+<td rowspan='2'><span style='white-space:nowrap'>{<i>sign</i>}{<code>0b</code>|<code>0o</code>|<code>0x</code>}<i>n</i></span></td>
 <td rowspan='2'>1, 2</td><td rowspan='2'>
 Arbitrary sized integers without fractional components or exponents.
-Hexadecimal notation is supported by prepending numbers with <code>0x</code>.
 See <a href='#integer-encoding'>CBOR integer encoding</a>.
+Binary, octal, and hexadecimal notation is supported by prepending numbers
+with <code>0b</code>, <code>0o</code>, and <code>0x</code> respectively.
 </td></tr>
 <tr><td><code>big&nbsp;integer</code></tr>
 <tr><td rowspan='3'><code>floating&nbsp;point</code></td>

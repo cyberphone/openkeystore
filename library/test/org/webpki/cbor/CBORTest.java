@@ -2088,6 +2088,10 @@ public class CBORTest {
         assertTrue("int", CBORDiagnosticNotationDecoder.decode("1000").getInt() == 1000);
         assertTrue("big", CBORDiagnosticNotationDecoder.decode(DIAG_BIG).getBigInteger().equals(
                 new BigInteger(DIAG_BIG)));
+        assertTrue("bigb", CBORDiagnosticNotationDecoder.decode(
+                "0b" + DIAG_BIG).getBigInteger().equals(new BigInteger(DIAG_BIG, 2)));
+        assertTrue("bigo", CBORDiagnosticNotationDecoder.decode(
+                "0o" + DIAG_BIG).getBigInteger().equals(new BigInteger(DIAG_BIG, 8)));
         assertTrue("bigh", CBORDiagnosticNotationDecoder.decode(
                 "0x" + DIAG_BIG).getBigInteger().equals(new BigInteger(DIAG_BIG, 16)));
         assertTrue("bigh-", CBORDiagnosticNotationDecoder.decode(

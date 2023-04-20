@@ -241,15 +241,26 @@ public class CBORDiagnosticNotationDecoder {
     private CBORObject getNumberOrTag(boolean negative) throws IOException {
         StringBuilder token = new StringBuilder();
         index--;
-        boolean hexFlag = false;
+        Integer prefix = null;
         if (readChar() == '0') {
-            if (nextChar() == 'x') {
-                hexFlag = true;
-                readChar();
+            switch (nextChar()) {
+                case 'b':
+                    prefix = 2;
+                    break;
+                
+                case 'o':
+                    prefix = 8;
+                    break;
+                
+                case 'x':
+                    prefix = 16;
+                    break;
             }
         }
-        if (!hexFlag) {
+        if (prefix == null) {
             index--;
+        } else {
+            readChar();
         }
         boolean floatingPoint = false;
         while (true)  {
@@ -283,7 +294,7 @@ public class CBORDiagnosticNotationDecoder {
         String number = token.toString();
         try {
             if (floatingPoint) {
-                testForHex(hexFlag);
+                testForNonDecimal(prefix);
                 Double value = Double.valueOf(number);
                 // Implicit overflow is not permitted
                 if (value.isInfinite()) {
@@ -293,7 +304,7 @@ public class CBORDiagnosticNotationDecoder {
             }
             if (nextChar() == '(') {
                 // Do not accept '-', 0xhhh, or leading zeros
-                testForHex(hexFlag);
+                testForNonDecimal(prefix);
                 if (negative || (number.length() > 1 && number.charAt(0) == '0')) {
                     reportError("Tag syntax error");
                 }
@@ -312,7 +323,7 @@ public class CBORDiagnosticNotationDecoder {
                 scanFor(")");
                 return cborTag;
             }
-            BigInteger bigInteger = new BigInteger(number, hexFlag ? 16 : 10);
+            BigInteger bigInteger = new BigInteger(number, prefix == null ? 10 : prefix);
             // Slight quirk to get the proper CBOR integer type  
             return CBORObject.decode(new CBORBigInteger(negative ? 
                                              bigInteger.negate() : bigInteger).encode());
@@ -322,8 +333,8 @@ public class CBORDiagnosticNotationDecoder {
         return null; // For the compiler...
     }
 
-    private void testForHex(boolean hexFlag) throws IOException {
-        if (hexFlag) {
+    private void testForNonDecimal(Integer nonDecimal) throws IOException {
+        if (nonDecimal != null) {
             reportError("Hexadecimal not permitted here");
         }
     }
