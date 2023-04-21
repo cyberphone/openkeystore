@@ -20,7 +20,6 @@ import java.io.IOException;
 
 import java.net.URLEncoder;
 
-import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 
 import javax.servlet.ServletException;
@@ -353,8 +352,7 @@ public class CreateServlet extends CoreRequestServlet {
             }
 
             signer.setKeyId(optionalKeyId).setIntercepter(new CBORCryptoUtils.Intercepter() {
-                public CBORObject wrap(CBORMap mapToSign) 
-                        throws IOException, GeneralSecurityException {
+                public CBORObject wrap(CBORMap mapToSign) {
                     return rawCbor;
                 }
             });

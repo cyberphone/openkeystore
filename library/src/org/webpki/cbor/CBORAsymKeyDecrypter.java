@@ -20,6 +20,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 
 import org.webpki.crypto.ContentEncryptionAlgorithms;
+import org.webpki.crypto.EncryptionCore;
 import org.webpki.crypto.KeyEncryptionAlgorithms;
 
 import static org.webpki.cbor.CBORCryptoConstants.*;
@@ -95,11 +96,12 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
                                   PublicKey optionalEphemeralKey,
                                   KeyEncryptionAlgorithms keyEncryptionAlgorithm,
                                   ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
-                return CBORCryptoUtils.asymKeyDecrypt(privateKey,
-                                                      optionalEncryptedKey,
-                                                      optionalEphemeralKey,
-                                                      keyEncryptionAlgorithm,
-                                                      contentEncryptionAlgorithm);
+                return EncryptionCore.decryptKey(true,
+                                                 privateKey,
+                                                 optionalEncryptedKey,
+                                                 optionalEphemeralKey,
+                                                 keyEncryptionAlgorithm,
+                                                 contentEncryptionAlgorithm);
             }
 
             @Override
@@ -155,7 +157,7 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
                 CBORCryptoUtils.getEphemeralKey(innerObject, keyEncryptionAlgorithm);
 
         // Finally, get the decrypted key.
-        return decrypterImpl.decrypt(privateKey, 
+        return decrypterImpl.decrypt(privateKey,
                                      optionalEncryptedKey,
                                      optionalEphemeralKey,
                                      keyEncryptionAlgorithm, 

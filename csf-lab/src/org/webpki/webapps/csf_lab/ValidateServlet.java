@@ -117,8 +117,7 @@ public class ValidateServlet extends CoreRequestServlet {
                                           new CBORCryptoUtils.Collector() {
                     
                     @Override
-                    public void foundData(CBORObject data)
-                            throws IOException, GeneralSecurityException {
+                    public void foundData(CBORObject data) {
                         if (data != null) {
                             data.scan();
                         }

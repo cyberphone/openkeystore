@@ -555,6 +555,37 @@ public class EncryptionCore {
     }
 
     /**
+     * Key decryption convenience method.
+     * 
+     * @param codeMode <code>true</code> for COSE, <code>false</code> for JOSE
+     * @param privateKey Private decryption key
+     * @param optionalEncryptedKey For ECDH
+     * @param optionalEphemeralKey For key-wrapping algorithms
+     * @param keyEncryptionAlgorithm Key encryption algorithm
+     * @param contentEncryptionAlgorithm Content encryption algorithm
+     * @return Decrypted key
+     */
+    public static byte[] decryptKey(boolean codeMode,
+                                    PrivateKey privateKey,
+                                    byte[] optionalEncryptedKey,     // For all but ECDH-ES
+                                    PublicKey optionalEphemeralKey,  // For ECDH*
+                                    KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+                                    ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
+    // The core
+    return keyEncryptionAlgorithm.isRsa() ?
+        EncryptionCore.rsaDecryptKey(keyEncryptionAlgorithm,
+                                     optionalEncryptedKey,
+                                     privateKey)
+                                          :
+        EncryptionCore.receiverKeyAgreement(codeMode,
+                                            keyEncryptionAlgorithm,
+                                            contentEncryptionAlgorithm,
+                                            optionalEphemeralKey,
+                                            privateKey,
+                                            optionalEncryptedKey);
+    }
+
+    /**
      * Perform a sender side ECDH operation.
      * 
      * @param coseMode True => hmacKdf, else concatKdf

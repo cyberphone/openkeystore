@@ -16,10 +16,6 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
-
 import java.security.cert.X509Certificate;
 
 import org.webpki.crypto.ContentEncryptionAlgorithms;
@@ -42,21 +38,17 @@ public class CBORX509Encrypter extends CBOREncrypter {
      * @param certificatePath Encryption certificate path
      * @param keyEncryptionAlgorithm Key encryption algorithm
      * @param contentEncryptionAlgorithm Content encryption algorithm
-     * @throws IOException
-     * @throws GeneralSecurityException
      */
     public CBORX509Encrypter(X509Certificate[] certificatePath,
                              KeyEncryptionAlgorithms keyEncryptionAlgorithm,
-                             ContentEncryptionAlgorithms contentEncryptionAlgorithm) 
-            throws IOException, GeneralSecurityException {
+                             ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
         super(contentEncryptionAlgorithm);
         this.certificatePath = certificatePath;
         this.keyEncryptionAlgorithm = keyEncryptionAlgorithm;
     }
 
     @Override
-    byte[] getContentEncryptionKey(CBORMap keyEncryption)
-            throws IOException, GeneralSecurityException {
+    byte[] getContentEncryptionKey(CBORMap keyEncryption) {
         
         // X509 encryptions mandate a certificate path.
         keyEncryption.setObject(CERT_PATH_LABEL, 

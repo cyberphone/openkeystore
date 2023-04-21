@@ -353,8 +353,7 @@ public class CborSignatures {
             signer.setIntercepter(new CBORCryptoUtils.Intercepter() {
                 
                 @Override
-                public CBORObject wrap(CBORMap mapToSign) 
-                        throws IOException, GeneralSecurityException {
+                public CBORObject wrap(CBORMap mapToSign) {
                     
                     // 1-dimensional or 2-dimensional tag
                     return tagged == 1 ?
@@ -364,7 +363,7 @@ public class CborSignatures {
                 }
                 
                 @Override
-                public CBORObject getCustomData() throws IOException, GeneralSecurityException {
+                public CBORObject getCustomData() {
                     return customData ? CborEncryption.CUSTOM_DATA : null;
                 }                
             });
@@ -372,7 +371,7 @@ public class CborSignatures {
             signer.setIntercepter(new CBORCryptoUtils.Intercepter() {
                 
                 @Override
-                public CBORObject getCustomData() throws IOException, GeneralSecurityException {
+                public CBORObject getCustomData() {
                     return CborEncryption.CUSTOM_DATA;
                 }     
                 
@@ -385,8 +384,7 @@ public class CborSignatures {
                     new CBORCryptoUtils.Collector() {
                         
                         @Override
-                        public void foundData(CBORObject wrapperTafg)
-                                throws IOException, GeneralSecurityException {
+                        public void foundData(CBORObject wrapperTafg){
                             CborEncryption.verifyTag(wrapperTafg);
                         }
                     });
@@ -396,8 +394,7 @@ public class CborSignatures {
                     new CBORCryptoUtils.Collector() {
                         
                         @Override
-                        public void foundData(CBORObject customData)
-                                throws IOException, GeneralSecurityException {
+                        public void foundData(CBORObject customData) {
                             customData.getString();
                         }
                     });
@@ -414,8 +411,7 @@ public class CborSignatures {
             tagCollector = new CBORCryptoUtils.Collector() {
 
                 @Override
-                public void foundData(CBORObject wrapperTag)
-                        throws IOException, GeneralSecurityException {
+                public void foundData(CBORObject wrapperTag) {
                     CborEncryption.verifyTag(wrapperTag);
                 }
                 
@@ -428,8 +424,7 @@ public class CborSignatures {
             customDataCollector = new CBORCryptoUtils.Collector() {
 
                 @Override
-                public void foundData(CBORObject customData)
-                        throws IOException, GeneralSecurityException {
+                public void foundData(CBORObject customData) {
  
                 }
                 

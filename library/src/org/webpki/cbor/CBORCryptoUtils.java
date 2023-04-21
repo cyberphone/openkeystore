@@ -273,25 +273,6 @@ public class CBORCryptoUtils {
         
     }
     
-    static byte[] asymKeyDecrypt(PrivateKey privateKey,
-                                 byte[] optionalEncryptedKey,     // For all but ECDH-ES
-                                 PublicKey optionalEphemeralKey,  // For ECDH*
-                                 KeyEncryptionAlgorithms keyEncryptionAlgorithm,
-                                 ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
-        // The core
-        return keyEncryptionAlgorithm.isRsa() ?
-            EncryptionCore.rsaDecryptKey(keyEncryptionAlgorithm,
-                                         optionalEncryptedKey,
-                                         privateKey)
-                                              :
-            EncryptionCore.receiverKeyAgreement(true,
-                                                keyEncryptionAlgorithm,
-                                                contentEncryptionAlgorithm,
-                                                optionalEphemeralKey,
-                                                privateKey,
-                                                optionalEncryptedKey);
-    }
-
     static void asymKeySignatureValidation(PublicKey publicKey,
                                            AsymSignatureAlgorithms signatureAlgorithm,
                                            byte[] signedData,

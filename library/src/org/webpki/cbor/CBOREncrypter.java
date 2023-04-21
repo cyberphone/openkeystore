@@ -16,10 +16,6 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
-
 import org.webpki.crypto.ContentEncryptionAlgorithms;
 import org.webpki.crypto.EncryptionCore;
 
@@ -57,8 +53,7 @@ public abstract class CBOREncrypter {
         this.contentEncryptionAlgorithm = contentEncryptionAlgorithm;
     }
     
-    abstract byte[] getContentEncryptionKey(CBORMap encryptionObject)
-            throws IOException, GeneralSecurityException;
+    abstract byte[] getContentEncryptionKey(CBORMap encryptionObject);
     
     /**
      * Sets optional Intercepter.
@@ -127,10 +122,8 @@ public abstract class CBOREncrypter {
      * 
      * @param dataToEncrypt The data to encrypt
      * @return CBOR encryption object
-     * @throws IOException
-     * @throws GeneralSecurityException
      */
-    public CBORObject encrypt(byte[] dataToEncrypt) throws IOException, GeneralSecurityException {
+    public CBORObject encrypt(byte[] dataToEncrypt) {
 
         // Create an empty encryption container object.
         CBORMap cefContainer = new CBORMap();

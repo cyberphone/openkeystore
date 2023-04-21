@@ -50,7 +50,9 @@ import org.webpki.cbor.CBORCryptoUtils;
 import org.webpki.cbor.CBORMap;
 
 import org.webpki.crypto.CustomCryptoProvider;
+import org.webpki.crypto.EncryptionCore;
 import org.webpki.crypto.ContentEncryptionAlgorithms;
+import org.webpki.crypto.CryptoException;
 import org.webpki.crypto.KeyEncryptionAlgorithms;
 
 import org.webpki.json.JSONObjectReader;
@@ -79,14 +81,14 @@ public class CborEncryption {
     static final CBORObject CUSTOM_DATA = new CBORString("Any valid CBOR object");
     static final String OBJECT_ID = "https://example.com/myobject";
     
-    static void verifyTag(CBORObject wrapperTag) throws IOException {
+    static void verifyTag(CBORObject wrapperTag) {
         CBORTag tag = wrapperTag.getTag();
         if (tag.getTagNumber() == CBORTag.RESERVED_TAG_COTX) {
             if (!tag.getObject().getArray().getObject(0).getString().equals(OBJECT_ID)) {
-                throw new IOException("ID mismatch");
+                throw new CryptoException("ID mismatch");
             }
         } else if (tag.getTagNumber() != NON_RESEVED_TAG) {
-            throw new IOException("Tag mismatch");
+            throw new CryptoException("Tag mismatch");
         }
     }
    
@@ -174,30 +176,43 @@ public class CborEncryption {
         CBORX509Encrypter encrypter = 
                 new CBORX509Encrypter(certificatePath, keyEncryptionAlgorithm, contentEncryptionAlgorithm);
         byte[] encryptedData = encrypter.encrypt(dataToBeEncrypted).encode();
-        CBORX509Decrypter decrypter = new CBORX509Decrypter(new CBORX509Decrypter.KeyLocator() {
+        CBORX509Decrypter decrypter = new CBORX509Decrypter(new CBORX509Decrypter.DecrypterImpl() {
 
             @Override
             public PrivateKey locate(X509Certificate[] cp,
                                      KeyEncryptionAlgorithms kea,
-                                     ContentEncryptionAlgorithms cea)
-                    throws IOException, GeneralSecurityException {
+                                     ContentEncryptionAlgorithms cea) {
                 if (certificatePath.length != cp.length) {
-                    throw new GeneralSecurityException("cer mismatch");
+                    throw new CryptoException("cer mismatch");
                 }
                 for (int i = 0; i < cp.length ; i++) {
                     if (!certificatePath[i].equals(cp[i])) {
-                        throw new GeneralSecurityException("cer2 mismatch");
+                        throw new CryptoException("cer2 mismatch");
                     }
                 }
                 if (keyEncryptionAlgorithm != kea) {
-                    throw new GeneralSecurityException("kea mismatch");
+                    throw new CryptoException("kea mismatch");
                 }
                 if (contentEncryptionAlgorithm != cea) {
-                    throw new GeneralSecurityException("cea mismatch");
+                    throw new CryptoException("cea mismatch");
                 }
                 return keyPair.getPrivate();
             }
-            
+
+            @Override
+            public byte[] decrypt(PrivateKey privateKey,
+                                  byte[] optionalEncryptedKey,
+                                  PublicKey optionalEphemeralKey,
+                                  KeyEncryptionAlgorithms kea,
+                                  ContentEncryptionAlgorithms cea) {
+                return EncryptionCore.decryptKey(true,
+                                                 privateKey, 
+                                                 optionalEncryptedKey, 
+                                                 optionalEphemeralKey, 
+                                                 keyEncryptionAlgorithm, 
+                                                 contentEncryptionAlgorithm);
+            }
+
         });
         compareResults(decrypter, encryptedData);
         optionalUpdate(decrypter, 
@@ -296,14 +311,13 @@ public class CborEncryption {
         decrypter = new CBORSymKeyDecrypter(new CBORSymKeyDecrypter.KeyLocator() {
 
             @Override
-            public byte[] locate(CBORObject optionalKeyId, ContentEncryptionAlgorithms arg1)
-                    throws IOException, GeneralSecurityException {
+            public byte[] locate(CBORObject optionalKeyId, ContentEncryptionAlgorithms arg1) {
 //TODO
                 if (wantKeyId && !CBORTest.compareKeyId(keyName, optionalKeyId)) {
-                    throw new GeneralSecurityException("missing key");
+                    throw new CryptoException("missing key");
                 }
                 if (algorithm != arg1) {
-                    throw new GeneralSecurityException("alg mismatch");
+                    throw new CryptoException("alg mismatch");
                 }
                 return key;
             }
@@ -354,8 +368,7 @@ public class CborEncryption {
             encrypter.setIntercepter(new CBORCryptoUtils.Intercepter() {
                 
                 @Override
-                public CBORObject wrap(CBORMap encryptionObject) 
-                        throws IOException, GeneralSecurityException {
+                public CBORObject wrap(CBORMap encryptionObject) {
                     
                     // 1-dimensional or 2-dimensional tag
                     return tagged == 1 ? 
@@ -365,7 +378,7 @@ public class CborEncryption {
                 }
                 
                 @Override
-                public CBORObject getCustomData() throws IOException, GeneralSecurityException {
+                public CBORObject getCustomData() {
                     return customData ? CUSTOM_DATA : null;
                 }
 
@@ -374,7 +387,7 @@ public class CborEncryption {
             encrypter.setIntercepter(new CBORCryptoUtils.Intercepter() {
                 
                 @Override
-                public CBORObject getCustomData() throws IOException, GeneralSecurityException {
+                public CBORObject getCustomData() {
                     return CUSTOM_DATA;
                 }
 
@@ -382,34 +395,46 @@ public class CborEncryption {
         }
         byte[] encryptedData = encrypter.encrypt(dataToBeEncrypted).encode();
         CBORAsymKeyDecrypter decrypter = 
-                new CBORAsymKeyDecrypter(new CBORAsymKeyDecrypter.KeyLocator() {
+            new CBORAsymKeyDecrypter(new CBORAsymKeyDecrypter.DecrypterImpl() {
 
             @Override
-            public PrivateKey locate(PublicKey optionalPublicKey,
-                                     CBORObject optionalKeyId, 
+            public PrivateKey locate(PublicKey optionalPublicKey, 
+                                     CBORObject optionalKeyId,
                                      KeyEncryptionAlgorithms kea,
-                                     ContentEncryptionAlgorithms cea)
-                    throws IOException, GeneralSecurityException {
+                                     ContentEncryptionAlgorithms cea) {
                 if (wantKeyId && !CBORTest.compareKeyId(keyId, optionalKeyId)) {
-                    throw new GeneralSecurityException("missing key");
+                    throw new CryptoException("missing key");
                 }
                 if (keyEncryptionAlgorithm != kea) {
-                    throw new GeneralSecurityException("kea mismatch");
+                    throw new CryptoException("kea mismatch");
                 }
                 if (contentEncryptionAlgorithm != cea) {
-                    throw new GeneralSecurityException("cea mismatch");
+                    throw new CryptoException("cea mismatch");
                 }
                 return keyPair.getPrivate();
             }
             
+            @Override
+            public byte[] decrypt(PrivateKey privateKey, 
+                                  byte[] optionalEncryptedKey,
+                                  PublicKey optionalEphemeralKey,
+                                  KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+                                  ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
+                return EncryptionCore.decryptKey(true,
+                                                 privateKey, 
+                                                 optionalEncryptedKey, 
+                                                 optionalEphemeralKey, 
+                                                 keyEncryptionAlgorithm, 
+                                                 contentEncryptionAlgorithm);
+            }
+
         });
         if (customData) {
             decrypter.setCustomDataPolicy(CBORCryptoUtils.POLICY.MANDATORY,
                     new CBORCryptoUtils.Collector() {
 
                         @Override
-                        public void foundData(CBORObject customData)
-                                throws IOException, GeneralSecurityException {
+                        public void foundData(CBORObject customData) {
                             customData.getString();
                         }});
         }
@@ -418,8 +443,7 @@ public class CborEncryption {
                     new CBORCryptoUtils.Collector() {
                         
                         @Override
-                        public void foundData(CBORObject wrappingTag)
-                                throws IOException, GeneralSecurityException {
+                        public void foundData(CBORObject wrappingTag) {
                             verifyTag(wrappingTag);
                         }
                     });

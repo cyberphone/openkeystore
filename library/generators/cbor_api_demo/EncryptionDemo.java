@@ -26,17 +26,16 @@ public class EncryptionDemo {
             "caab474ee65843427f517fe4d8b99add55886c84441e90d6f0");
     
     public static void main(String[] args) {
-        try {
             // Get keys in Java format.
             KeyPair keyPair = CBORKeyPair.convert(CBORObject.decode(X25519_PRIVATE_KEY));
             PrivateKey receiverKey = keyPair.getPrivate();
             PublicKey senderKey = keyPair.getPublic();
             
             // Encrypt data using CEF.
-            byte[] cborBinary = new CBORAsymKeyEncrypter(
-                    senderKey,
-                    KeyEncryptionAlgorithms.ECDH_ES,
-                    ContentEncryptionAlgorithms.A256GCM)
+            byte[] cborBinary =
+                    new CBORAsymKeyEncrypter(senderKey,
+                                             KeyEncryptionAlgorithms.ECDH_ES,
+                                             ContentEncryptionAlgorithms.A256GCM)
                 .encrypt(SECRET_MESSAGE).encode();
             
             // Decrypt data.
@@ -58,8 +57,5 @@ new CborDocumentLog(args[0], "#sample.program.diagnostic#", CBORObject.decode(cb
 new CborDocumentLog(args[0], args[1], "#sample.program#");
 //@end@
             
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 }
