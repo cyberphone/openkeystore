@@ -348,7 +348,7 @@ public class CertificateUtil {
     }
 
     public static X509Certificate[] checkCertificatePath(X509Certificate[] certificatePath) 
-            throws IOException, GeneralSecurityException {
+            throws GeneralSecurityException {
         X509Certificate signedCertificate = certificatePath[0];
         int i = 0;
         while (++i < certificatePath.length) {
@@ -356,8 +356,8 @@ public class CertificateUtil {
             String issuer = signedCertificate.getIssuerX500Principal().getName();
             String subject = signerCertificate.getSubjectX500Principal().getName();
             if (!issuer.equals(subject)) {
-                throw new IOException("Path issuer order error, '" + 
-                                      issuer + "' versus '" + subject + "'");
+                throw new GeneralSecurityException("Path issuer order error, '" + 
+                                                   issuer + "' versus '" + subject + "'");
             }
             signedCertificate.verify(signerCertificate.getPublicKey());
             signedCertificate = signerCertificate;
@@ -366,13 +366,13 @@ public class CertificateUtil {
     }
 
     public static X509Certificate getCertificateFromBlob(byte[] encoded)
-            throws IOException, GeneralSecurityException {
+            throws GeneralSecurityException {
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
         return (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(encoded));
     }
 
     public static X509Certificate[] makeCertificatePath(List<byte[]> certificateBlobs)
-            throws IOException, GeneralSecurityException {
+            throws GeneralSecurityException {
         ArrayList<X509Certificate> certificates = new ArrayList<>();
         for (byte[] certificateBlob : certificateBlobs) {
             certificates.add(getCertificateFromBlob(certificateBlob));

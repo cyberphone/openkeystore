@@ -16,10 +16,6 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
-
 import org.webpki.crypto.ContentEncryptionAlgorithms;
 
 /**
@@ -44,12 +40,9 @@ public class CBORSymKeyDecrypter extends CBORDecrypter {
          * @param optionalKeyId Optional key Id found in the encryption object
          * @param contentEncryptionAlgorithm The requested content encryption algorithm
          * @return Decryption key
-         * @throws IOException
-         * @throws GeneralSecurityException
          */
         byte[] locate(CBORObject optionalKeyId, 
-                      ContentEncryptionAlgorithms contentEncryptionAlgorithm)
-            throws IOException, GeneralSecurityException;
+                      ContentEncryptionAlgorithms contentEncryptionAlgorithm);
     }
     
     KeyLocator keyLocator;
@@ -69,7 +62,7 @@ public class CBORSymKeyDecrypter extends CBORDecrypter {
     /**
      * Initializes a decrypter with a key locator.
      * 
-     * @param keyLocator KeyLocator implementation
+     * @param keyLocator DecrypterImpl implementation
      */
     public CBORSymKeyDecrypter(KeyLocator keyLocator) {
         this.keyLocator = keyLocator;
@@ -78,8 +71,7 @@ public class CBORSymKeyDecrypter extends CBORDecrypter {
     @Override
     byte[] getContentEncryptionKey(CBORMap innerObject,
                                    ContentEncryptionAlgorithms contentEncryptionAlgorithm,
-                                   CBORObject optionalKeyId) throws IOException,
-                                                                     GeneralSecurityException {
+                                   CBORObject optionalKeyId) {
         return keyLocator.locate(optionalKeyId, contentEncryptionAlgorithm);
     }
 }

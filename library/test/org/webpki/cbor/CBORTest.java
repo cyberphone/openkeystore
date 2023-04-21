@@ -49,6 +49,7 @@ import org.webpki.crypto.KeyEncryptionAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
 import org.webpki.crypto.X509SignerInterface;
 import org.webpki.crypto.CustomCryptoProvider;
+import org.webpki.crypto.EncryptionCore;
 
 import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONParser;
@@ -996,8 +997,7 @@ public class CBORTest {
             validator.setTagPolicy(CBORCryptoUtils.POLICY.MANDATORY, new CBORCryptoUtils.Collector() {
                 
                 @Override
-                public void foundData(CBORObject objectOrNull)
-                        throws IOException, GeneralSecurityException {
+                public void foundData(CBORObject objectOrNull) {
                     if (objectId == null) {
                         assertTrue("tagn", objectOrNull.getTag().getTagNumber() == tagNumber);
                     } else {
@@ -1357,8 +1357,7 @@ public class CBORTest {
             .setIntercepter(new CBORCryptoUtils.Intercepter() {
                 
                 @Override
-                public CBORObject wrap(CBORMap mapToSign) 
-                        throws IOException, GeneralSecurityException {
+                public CBORObject wrap(CBORMap mapToSign) {
                     return new CBORTag(objectId, mapToSign);
                 }
             
@@ -1376,8 +1375,7 @@ public class CBORTest {
            .setTagPolicy(CBORCryptoUtils.POLICY.OPTIONAL, new CBORCryptoUtils.Collector() {
 
                 @Override
-                public void foundData(CBORObject objectOrNull)
-                        throws IOException, GeneralSecurityException {
+                public void foundData(CBORObject objectOrNull) {
                     assertTrue("id", 
                                objectOrNull.getTag()
                                    .getObject()
@@ -1390,8 +1388,7 @@ public class CBORTest {
             .setTagPolicy(CBORCryptoUtils.POLICY.MANDATORY, new CBORCryptoUtils.Collector() {
                 
                 @Override
-                public void foundData(CBORObject objectOrNull)
-                        throws IOException, GeneralSecurityException {
+                public void foundData(CBORObject objectOrNull) {
                     assertTrue("id", 
                                objectOrNull.getTag()
                                    .getObject()
@@ -1407,8 +1404,7 @@ public class CBORTest {
             .setIntercepter(new CBORCryptoUtils.Intercepter() {
                 
                 @Override
-                public CBORObject wrap(CBORMap mapToSign) 
-                        throws IOException, GeneralSecurityException {
+                public CBORObject wrap(CBORMap mapToSign) {
                     return new CBORTag(tag, mapToSign);
                 }
                 
@@ -1419,8 +1415,7 @@ public class CBORTest {
             .setTagPolicy(CBORCryptoUtils.POLICY.MANDATORY, new CBORCryptoUtils.Collector() {
                 
                 @Override
-                public void foundData(CBORObject objectOrNull)
-                        throws IOException, GeneralSecurityException {
+                public void foundData(CBORObject objectOrNull) {
                     assertTrue("tagn", tag == objectOrNull.getTag().getTagNumber());
                 }
             }).validate(SIGNATURE_LABEL, taggedSignature);
@@ -1503,16 +1498,28 @@ public class CBORTest {
                         dataToEncrypt));
         assertTrue("enc/dec", 
             Arrays.equals(new CBORAsymKeyDecrypter(
-                new CBORAsymKeyDecrypter.KeyLocator() {
+                new CBORAsymKeyDecrypter.DecrypterImpl() {
+ 
+                    @Override
+                    public PrivateKey locate(PublicKey optionalPublicKey, 
+                                             CBORObject optionalKeyId,
+                                             KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+                                             ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
+                        return compareKeyId(keyId, optionalKeyId) ? p256.getPrivate() : null;
+                    }
                     
                     @Override
-                    public PrivateKey locate(
-                            PublicKey optionalPublicKey,
-                            CBORObject optionalKeyId,
-                            KeyEncryptionAlgorithms keyEncryptionAlgorithm,
-                            ContentEncryptionAlgorithms contentEncryptionAlgorithm)
-                            throws IOException, GeneralSecurityException {
-                        return compareKeyId(keyId, optionalKeyId) ? p256.getPrivate() : null;
+                    public byte[] decrypt(PrivateKey privateKey,
+                                          byte[] optionalEncryptedKey,
+                                          PublicKey optionalEphemeralKey,
+                                          KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+                                          ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
+                        return EncryptionCore.receiverKeyAgreement(true, 
+                                                                   keyEncryptionAlgorithm,
+                                                                   contentEncryptionAlgorithm, 
+                                                                   optionalEphemeralKey, 
+                                                                   privateKey, 
+                                                                   optionalEncryptedKey);
                     }
 
                 }).decrypt(p256EncryptedKeyId),
@@ -1560,13 +1567,12 @@ public class CBORTest {
                 .encrypt(dataToEncrypt);
  
         assertTrue("enc/dec", 
-                Arrays.equals(new CBORX509Decrypter(new CBORX509Decrypter.KeyLocator() {
+                Arrays.equals(new CBORX509Decrypter(new CBORX509Decrypter.DecrypterImpl() {
 
                     @Override
                     public PrivateKey locate(X509Certificate[] certificatePath,
                                              KeyEncryptionAlgorithms keyEncryptionAlgorithm,
-                                             ContentEncryptionAlgorithms contentEncryptionAlgorithm)
-                            throws IOException, GeneralSecurityException {
+                                             ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
                         assertTrue("cert", 
                                 CBORCryptoUtils.encodeCertificateArray(certificatePath)
                                   .equals(CBORCryptoUtils.encodeCertificateArray(p256CertPath)));
@@ -1574,8 +1580,22 @@ public class CBORTest {
                                           KeyEncryptionAlgorithms.ECDH_ES_A128KW);
                         assertTrue("cea", contentEncryptionAlgorithm == 
                                           ContentEncryptionAlgorithms.A256GCM);
-                        return p256.getPrivate();
+                        return p256.getPrivate();                    }
+
+                    @Override
+                    public byte[] decrypt(PrivateKey privateKey,
+                                          byte[] optionalEncryptedKey,
+                                          PublicKey optionalEphemeralKey,
+                                          KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+                                          ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
+                        return EncryptionCore.receiverKeyAgreement(true, 
+                                                                   keyEncryptionAlgorithm,
+                                                                   contentEncryptionAlgorithm, 
+                                                                   optionalEphemeralKey, 
+                                                                   privateKey, 
+                                                                   optionalEncryptedKey);
                     }
+
                 }).decrypt(p256CertEncrypted), dataToEncrypt));
         
         try {
@@ -1615,8 +1635,7 @@ public class CBORTest {
             .setIntercepter(new CBORCryptoUtils.Intercepter() {
                 
                 @Override
-                public CBORObject wrap(CBORMap encryptionObject)
-                        throws IOException, GeneralSecurityException {
+                public CBORObject wrap(CBORMap encryptionObject) {
                     return new CBORTag(objectId, encryptionObject);
                 }
                 
@@ -1629,8 +1648,7 @@ public class CBORTest {
             .setIntercepter(new CBORCryptoUtils.Intercepter() {
                 
                 @Override
-                public CBORObject wrap(CBORMap encryptionObject)
-                        throws IOException, GeneralSecurityException {
+                public CBORObject wrap(CBORMap encryptionObject) {
                     // 2-dimensional
                     return new CBORTag(objectId, encryptionObject);
                 }
@@ -1659,8 +1677,7 @@ public class CBORTest {
                                   new CBORCryptoUtils.Collector() {
 
                         @Override
-                        public void foundData(CBORObject objectOrNull)
-                                throws IOException, GeneralSecurityException {
+                        public void foundData(CBORObject objectOrNull) {
                             objectOrNull.getTag();
                         }})
                     .decrypt(taggedX25519Encrypted), dataToEncrypt));
@@ -1674,8 +1691,7 @@ public class CBORTest {
                                          new CBORCryptoUtils.Collector() {
                             
                             @Override
-                            public void foundData(CBORObject objectOrNull)
-                                    throws IOException, GeneralSecurityException {
+                            public void foundData(CBORObject objectOrNull) {
                                 assertTrue("data",
                                            objectOrNull.getArray().getObject(0).getInt() == 500);
                             }
@@ -1684,8 +1700,7 @@ public class CBORTest {
                                   new CBORCryptoUtils.Collector() {
 
                             @Override
-                            public void foundData(CBORObject objectOrNull)
-                                    throws IOException, GeneralSecurityException {
+                            public void foundData(CBORObject objectOrNull) {
                                 assertTrue("id", 
                                            objectOrNull.getTag()
                                                .getObject()
@@ -1704,8 +1719,7 @@ public class CBORTest {
             .setIntercepter(new CBORCryptoUtils.Intercepter() {
                 
                     @Override
-                    public CBORObject wrap(CBORMap encryptionObject)
-                            throws IOException, GeneralSecurityException {
+                    public CBORObject wrap(CBORMap encryptionObject) {
                         // 1-dimensional
                         return new CBORTag(9999999, encryptionObject);
                     }
@@ -1718,8 +1732,7 @@ public class CBORTest {
                           new CBORCryptoUtils.Collector() {
                             
                             @Override
-                            public void foundData(CBORObject objectOrNull)
-                                    throws IOException, GeneralSecurityException {
+                            public void foundData(CBORObject objectOrNull) {
                                 assertTrue("tagn", objectOrNull.getTag().getTagNumber() == 9999999);
                             }
                         })
