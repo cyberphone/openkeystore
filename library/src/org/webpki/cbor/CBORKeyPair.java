@@ -16,8 +16,6 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
-
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -32,6 +30,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.ECPrivateKeySpec;
 import java.security.spec.RSAPrivateCrtKeySpec;
 
+import org.webpki.crypto.CryptoException;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.OkpSupport;
 
@@ -86,11 +85,8 @@ public class CBORKeyPair {
     * 
     * @param keyPair in Java/JCE format
     * @return Private key in COSE format
-    * @throws IOException
-    * @throws GeneralSecurityException
     */
-    public static CBORMap convert(KeyPair keyPair) 
-           throws IOException, GeneralSecurityException {
+    public static CBORMap convert(KeyPair keyPair) {
         CBORMap cosePrivateKey = CBORPublicKey.convert(keyPair.getPublic());
         KeyAlgorithms keyAlg = KeyAlgorithms.getKeyAlgorithm(keyPair.getPublic());
         switch (keyAlg.getKeyType()) {
@@ -130,43 +126,44 @@ public class CBORKeyPair {
      * 
      * @param cosePrivateKey Private key in COSE format
      * @return KeyPair as a Java/JCE object 
-     * @throws IOException
-     * @throws GeneralSecurityException
      */
-    public static KeyPair convert(CBORObject cosePrivateKey) throws IOException, 
-                                                                    GeneralSecurityException {
+    public static KeyPair convert(CBORObject cosePrivateKey) {
         CBORMap privateKeyMap = cosePrivateKey.getMap();
         PublicKey publicKey = CBORPublicKey.getPublicKey(privateKeyMap);
         PrivateKey privateKey;
-        switch (CBORPublicKey.getKeyType(privateKeyMap)) {
-            case RSA:
-                privateKey = KeyFactory.getInstance("RSA").generatePrivate(
+        try {
+            switch (CBORPublicKey.getKeyType(privateKeyMap)) {
+                case RSA:
+                    privateKey = KeyFactory.getInstance("RSA").generatePrivate(
                         new RSAPrivateCrtKeySpec(
-                                ((RSAPublicKey) publicKey).getModulus(),
-                                ((RSAPublicKey) publicKey).getPublicExponent(),
-                                CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_D_LABEL),
-                                CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_P_LABEL),
-                                CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_Q_LABEL),
-                                CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_DP_LABEL),
-                                CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_DQ_LABEL),
-                                CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_QINV_LABEL)));
-                break;
-
-            case EC:
-                privateKey = KeyFactory.getInstance("EC").generatePrivate(new ECPrivateKeySpec(
-                        CBORPublicKey.getCurvePoint(privateKeyMap,
-                                                    COSE_EC2_D_LABEL, 
-                                                    CBORPublicKey.getKeyAlgorithmFromCurveId(
-                                                                    privateKeyMap,
-                                                                    COSE_EC2_CRV_LABEL)),
-                        ((ECKey)publicKey).getParams()));
-                break;
-
-            default:
-                privateKey = OkpSupport.raw2PrivateKey(
-                        privateKeyMap.getObject(COSE_OKP_D_LABEL).getBytes(),
-                        CBORPublicKey.getKeyAlgorithmFromCurveId(privateKeyMap, 
-                                                                 COSE_OKP_CRV_LABEL));
+                            ((RSAPublicKey) publicKey).getModulus(),
+                            ((RSAPublicKey) publicKey).getPublicExponent(),
+                            CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_D_LABEL),
+                            CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_P_LABEL),
+                            CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_Q_LABEL),
+                            CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_DP_LABEL),
+                            CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_DQ_LABEL),
+                            CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_QINV_LABEL)));
+                    break;
+    
+                case EC:
+                    privateKey = KeyFactory.getInstance("EC").generatePrivate(new ECPrivateKeySpec(
+                            CBORPublicKey.getCurvePoint(privateKeyMap,
+                                                        COSE_EC2_D_LABEL, 
+                                                        CBORPublicKey.getKeyAlgorithmFromCurveId(
+                                                                        privateKeyMap,
+                                                                        COSE_EC2_CRV_LABEL)),
+                            ((ECKey)publicKey).getParams()));
+                    break;
+    
+                default:
+                    privateKey = OkpSupport.raw2PrivateKey(
+                            privateKeyMap.getObject(COSE_OKP_D_LABEL).getBytes(),
+                            CBORPublicKey.getKeyAlgorithmFromCurveId(privateKeyMap, 
+                                                                     COSE_OKP_CRV_LABEL));
+            }
+        } catch (GeneralSecurityException e) {
+            throw new CryptoException(e);
         }
         privateKeyMap.checkForUnread();
         return new KeyPair(publicKey, privateKey);
