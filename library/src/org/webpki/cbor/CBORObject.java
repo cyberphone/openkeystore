@@ -849,11 +849,10 @@ public abstract class CBORObject {
      */
     @Override
     public boolean equals(Object object) {
-        try {
-            return Arrays.equals(((CBORObject) object).encode(), encode());
-        } catch (Exception e) {
+        if (object == null || !(object instanceof CBORObject)) {
             return false;
         }
+        return Arrays.equals(((CBORObject) object).encode(), encode());
     }
 
     /**

@@ -140,7 +140,7 @@ public class CBORTest {
         }
     }
     
-    void binaryCompare(CBORObject cborObject, String hex) throws Exception {
+    void binaryCompare(CBORObject cborObject, String hex) {
         byte[] cbor = cborObject.encode();
         String actual = HexaDecimal.encode(cbor);
         hex = hex.toLowerCase();
@@ -151,12 +151,12 @@ public class CBORTest {
         assertTrue("bc d=" + decS + " o=" + origS, decS.equals(origS));
     }
 
-    void textCompare(CBORObject cborObject, String text) throws Exception {
+    void textCompare(CBORObject cborObject, String text) {
         String actual = cborObject.toString();
         assertTrue("text=\n" + actual + "\n" + text, text.equals(actual));
     }
 
-    CBORObject parseCborHex(String hex) throws IOException {
+    CBORObject parseCborHex(String hex) {
         byte[] cbor = HexaDecimal.decode(hex);
         CBORObject cborObject = CBORObject.decode(cbor);
         assertTrue("phex: " + hex, Arrays.equals(cbor, cborObject.encode()));
@@ -166,7 +166,7 @@ public class CBORTest {
     void integerTest(long value, 
                      boolean forceUnsigned, 
                      boolean set, 
-                     String hex) throws Exception {
+                     String hex) {
         CBORObject cborObject = set ? 
                 new CBORInteger(value, forceUnsigned) : new CBORInteger(value);
         byte[] cbor = cborObject.encode();
@@ -190,12 +190,11 @@ public class CBORTest {
         assertTrue("Big", cborObject.toString().equals(bigInteger.toString()));
      }
 
-    void integerTest(long value, String hex) throws Exception {
+    void integerTest(long value, String hex) {
         integerTest(value, false, false, hex);
     }
     
-    void integerTest(String value, IntegerVariations variation, boolean mustFail)
-            throws Exception {
+    void integerTest(String value, IntegerVariations variation, boolean mustFail) {
         BigInteger bigInteger = new BigInteger(value);
         CBORObject cborBigInteger = new CBORBigInteger(bigInteger);
         byte[] cbor = cborBigInteger.encode();
@@ -258,7 +257,7 @@ public class CBORTest {
         }
     }
 
-    void bigIntegerTest(String value, String hex) throws Exception {
+    void bigIntegerTest(String value, String hex) {
         byte[] cbor = new CBORBigInteger(new BigInteger(value)).encode();
         String calc = HexaDecimal.encode(cbor);
         assertTrue("big int=" + value + " c=" + calc + " h=" + hex,
@@ -268,14 +267,14 @@ public class CBORTest {
         assertTrue("Big2 d=" + decS + " v=" + value, value.equals(decS));
     }
 
-    void stringTest(String string, String hex) throws Exception {
+    void stringTest(String string, String hex) {
         byte[] cbor = new CBORString(string).encode();
         String calc = HexaDecimal.encode(cbor);
         assertTrue("string=" + string + " c=" + calc + " h=" + hex, hex.equals(calc));
         assertTrue("string 2", CBORObject.decode(cbor).toString().equals("\"" + string + "\""));
     }
 
-    void arrayTest(CBORArray cborArray, String hex) throws Exception {
+    void arrayTest(CBORArray cborArray, String hex) {
         byte[] cbor = cborArray.encode();
         String calc = HexaDecimal.encode(cbor);
         assertTrue(" c=" + calc + " h=" + hex, hex.equals(calc));
@@ -323,7 +322,7 @@ public class CBORTest {
         }
     }
     
-    void floatTest(String asText, String hex, boolean mustFail) throws IOException {
+    void floatTest(String asText, String hex, boolean mustFail) {
         double v = Double.valueOf(asText);
         CBORObject cborObject = parseCborHex(hex);
         try {
@@ -340,7 +339,7 @@ public class CBORTest {
     }
 
     @Test
-    public void assortedTests() throws Exception {
+    public void assortedTests() {
         CBORArray cborArray = new CBORArray()
             .addObject(new CBORInteger(1))
             .addObject(new CBORArray()
