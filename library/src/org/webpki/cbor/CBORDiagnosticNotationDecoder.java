@@ -16,8 +16,6 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
-
 import java.math.BigInteger;
 
 import java.util.ArrayList;
@@ -44,9 +42,8 @@ public class CBORDiagnosticNotationDecoder {
      * 
      * @param cborDiagnostic String holding diagnostic (textual) CBOR
      * @return {@link CBORObject}
-     * @throws IOException
      */
-    public static CBORObject decode(String cborDiagnostic) throws IOException {
+    public static CBORObject decode(String cborDiagnostic) {
         return new CBORDiagnosticNotationDecoder(cborDiagnostic, false).readToEOF();
     }
 
@@ -55,13 +52,12 @@ public class CBORDiagnosticNotationDecoder {
      * 
      * @param cborDiagnostic String holding diagnostic (textual) CBOR
      * @return {@link CBORObject}[] Non-empty array of CBOR objects
-     * @throws IOException
      */
-    public static CBORObject[] decodeSequence(String cborDiagnostic) throws IOException {
+    public static CBORObject[] decodeSequence(String cborDiagnostic) {
         return new CBORDiagnosticNotationDecoder(cborDiagnostic, true).readSequenceToEOF();
     }
 
-    private void reportError(String error) throws IOException {
+    private void reportError(String error) {
         // Unsurprisingly, error handling turned out to be the most complex part...
         int start = index - 100;
         if (start < 0) {
@@ -97,13 +93,13 @@ public class CBORDiagnosticNotationDecoder {
                 lineNumber++;
             }
         }
-        throw new IOException(complete.append("^\n\nError in line ")
-                                      .append(lineNumber)
-                                      .append(". ")
-                                      .append(error).toString());
+        throw new CBORException(complete.append("^\n\nError in line ")
+                                        .append(lineNumber)
+                                        .append(". ")
+                                        .append(error).toString());
     }
     
-    private CBORObject readToEOF() throws IOException {
+    private CBORObject readToEOF() {
         CBORObject cborObject = getObject();
         if (index < cborDiagnostic.length) {
             readChar();
@@ -112,7 +108,7 @@ public class CBORDiagnosticNotationDecoder {
         return cborObject;
     }
 
-    private CBORObject[] readSequenceToEOF() throws IOException {
+    private CBORObject[] readSequenceToEOF() {
         ArrayList<CBORObject> sequence = new ArrayList<>();
         while (true) {
             sequence.add(getObject());
@@ -124,14 +120,14 @@ public class CBORDiagnosticNotationDecoder {
         }
     }
 
-    private CBORObject getObject() throws IOException {
+    private CBORObject getObject() {
         scanNonSignficantData();
         CBORObject cborObject = getRawObject();
         scanNonSignficantData();
         return cborObject;
     }
     
-    private boolean continueList(char validStop) throws IOException {
+    private boolean continueList(char validStop) {
         if (nextChar() == ',') {
             readChar();
             scanNonSignficantData();
@@ -142,7 +138,7 @@ public class CBORDiagnosticNotationDecoder {
         return false;
     }
     
-    private CBORObject getRawObject() throws IOException {
+    private CBORObject getRawObject() {
         switch (readChar()) {
         
             case '<':
@@ -238,7 +234,7 @@ public class CBORDiagnosticNotationDecoder {
         }
     }
 
-    private CBORObject getNumberOrTag(boolean negative) throws IOException {
+    private CBORObject getNumberOrTag(boolean negative) {
         StringBuilder token = new StringBuilder();
         index--;
         Integer prefix = null;
@@ -333,13 +329,13 @@ public class CBORDiagnosticNotationDecoder {
         return null; // For the compiler...
     }
 
-    private void testForNonDecimal(Integer nonDecimal) throws IOException {
+    private void testForNonDecimal(Integer nonDecimal) {
         if (nonDecimal != null) {
             reportError("Hexadecimal not permitted here");
         }
     }
 
-    private char nextChar() throws IOException {
+    private char nextChar() {
         if (index == cborDiagnostic.length) return 0;
         char c = readChar();
         index--;
@@ -350,7 +346,7 @@ public class CBORDiagnosticNotationDecoder {
         return c < ' ' ? String.format("\\u%04x", (int) c) : String.format("'%c'", c);
     }
 
-    private void scanFor(String expected) throws IOException {
+    private void scanFor(String expected) {
         for (char c : expected.toCharArray()) {
             char actual = readChar(); 
             if (c != actual) {
@@ -359,7 +355,7 @@ public class CBORDiagnosticNotationDecoder {
         }
     }
 
-    private CBORObject getString(boolean byteString) throws IOException {
+    private CBORObject getString(boolean byteString) {
         StringBuilder s = new StringBuilder();
         while (true) {
             char c;
@@ -435,7 +431,7 @@ public class CBORDiagnosticNotationDecoder {
         }
     }
     
-    private CBORObject getBytes(boolean b64) throws IOException {
+    private CBORObject getBytes(boolean b64) {
         StringBuilder s = new StringBuilder();
         scanFor("'");
         while(true) {
@@ -474,7 +470,7 @@ public class CBORDiagnosticNotationDecoder {
         return new CBORBytes(bytes);
     }
 
-    private char hexCharToChar(char c) throws IOException {
+    private char hexCharToChar(char c) {
         switch (c) {
             case '0': case '1': case '2': case '3': case '4':
             case '5': case '6': case '7': case '8': case '9':
@@ -490,7 +486,7 @@ public class CBORDiagnosticNotationDecoder {
         return 0; // For the compiler...
     }
 
-    private char readChar() throws IOException {
+    private char readChar() {
         if (index >= cborDiagnostic.length) {
             reportError("Unexpected EOF");
         }
@@ -498,7 +494,7 @@ public class CBORDiagnosticNotationDecoder {
     }
 
     @SuppressWarnings("fallthrough")
-    private void scanNonSignficantData() throws IOException {
+    private void scanNonSignficantData() {
         while (index < cborDiagnostic.length) {
             switch (nextChar()) {
                 case ' ':

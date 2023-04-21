@@ -16,8 +16,6 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
-
 import java.math.BigInteger;
 
 import java.security.GeneralSecurityException;
@@ -33,6 +31,7 @@ import java.security.spec.RSAPublicKeySpec;
 
 import java.util.HashMap;
 
+import org.webpki.crypto.CryptoException;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.OkpSupport;
@@ -65,22 +64,16 @@ public class CBORPublicKey {
     
     static {
         for (KeyAlgorithms key : WEBPKI_2_COSE_CRV.keySet()) {
-            try {
-                COSE_2_WEBPKI_CRV.put(WEBPKI_2_COSE_CRV.get(key).getInt(), key);
-            } catch (IOException e) {
-            }
+            COSE_2_WEBPKI_CRV.put(WEBPKI_2_COSE_CRV.get(key).getInt(), key);
         }
     }
     
     static final HashMap<Integer,KeyTypes> keyTypes = new HashMap<>();
     
     static {
-        try {
-            keyTypes.put(COSE_RSA_KTY.getInt(), KeyTypes.RSA);
-            keyTypes.put(COSE_EC2_KTY.getInt(), KeyTypes.EC);
-            keyTypes.put(COSE_OKP_KTY.getInt(), KeyTypes.EDDSA); // XEC and EDDSA share kty...
-        } catch (IOException e) {
-        }
+        keyTypes.put(COSE_RSA_KTY.getInt(), KeyTypes.RSA);
+        keyTypes.put(COSE_EC2_KTY.getInt(), KeyTypes.EC);
+        keyTypes.put(COSE_OKP_KTY.getInt(), KeyTypes.EDDSA); // XEC and EDDSA share kty...
     }
 
     static byte[] cryptoBinary(BigInteger value) {
@@ -93,11 +86,11 @@ public class CBORPublicKey {
         return cryptoBinary;        
     }
 
-    static byte[] curvePoint(BigInteger value, KeyAlgorithms ec) throws GeneralSecurityException {
+    static byte[] curvePoint(BigInteger value, KeyAlgorithms ec) {
         byte[] curvePoint = value.toByteArray();
         if (curvePoint.length > (ec.getPublicKeySizeInBits() + 7) / 8) {
             if (curvePoint[0] != 0) {
-                throw new GeneralSecurityException("Unexpected EC point");
+                throw new CryptoException("Unexpected EC point");
             }
             return cryptoBinary(value);
         }
@@ -112,11 +105,8 @@ public class CBORPublicKey {
      * 
      * @param jcePublicKey Public key in Java/JCE format
      * @return Public key in COSE format
-     * @throws IOException
-     * @throws GeneralSecurityException
-     */
-    public static CBORMap convert(PublicKey jcePublicKey) 
-            throws IOException, GeneralSecurityException {
+      */
+    public static CBORMap convert(PublicKey jcePublicKey) {
         CBORMap cosePublicKey = new CBORMap();
         KeyAlgorithms keyAlg = KeyAlgorithms.getKeyAlgorithm(jcePublicKey);
         switch (keyAlg.getKeyType()) {
@@ -146,74 +136,75 @@ public class CBORPublicKey {
         return cosePublicKey;
     }
 
-    static BigInteger getCryptoBinary(CBORMap keyMap, CBORObject key) 
-            throws IOException, GeneralSecurityException {
+    static BigInteger getCryptoBinary(CBORMap keyMap, CBORObject key) {
         byte[] cryptoBinary = keyMap.getObject(key).getBytes();
         if (cryptoBinary[0] == 0x00) {
-            throw new GeneralSecurityException("RSA key parameter contains leading zeroes");
+            throw new CryptoException("RSA key parameter contains leading zeroes");
         }
         return new BigInteger(1, cryptoBinary);
     }
 
-    static BigInteger getCurvePoint(CBORMap keyMap, CBORObject key, KeyAlgorithms ec) 
-            throws IOException, GeneralSecurityException {
+    static BigInteger getCurvePoint(CBORMap keyMap, CBORObject key, KeyAlgorithms ec) {
         byte[] fixedBinary = keyMap.getObject(key).getBytes();
         if (fixedBinary.length != (ec.getPublicKeySizeInBits() + 7) / 8) {
-            throw new GeneralSecurityException("Public EC key parameter is not normalized");
+            throw new CryptoException("Public EC key parameter is not normalized");
         }
         return new BigInteger(1, fixedBinary);
     }
 
-    static KeyAlgorithms getKeyAlgorithmFromCurveId(CBORMap keyMap, CBORObject curveLabel)
-                throws IOException, GeneralSecurityException {
+    static KeyAlgorithms getKeyAlgorithmFromCurveId(CBORMap keyMap, CBORObject curveLabel) {
         CBORObject curve = keyMap.getObject(curveLabel);
         KeyAlgorithms keyAlgorithm = COSE_2_WEBPKI_CRV.get(curve.getInt());
         if (keyAlgorithm == null) {
-            throw new GeneralSecurityException("No such key/curve algorithm: " + curve.getInt());
+            throw new CryptoException("No such key/curve algorithm: " + curve.getInt());
         }
         return keyAlgorithm;
     }
     
-    static KeyTypes getKeyType(CBORMap coseKeyMap) throws IOException, GeneralSecurityException {
+    static KeyTypes getKeyType(CBORMap coseKeyMap) {
         int coseKty = coseKeyMap.getObject(COSE_KTY_LABEL).getInt();
         KeyTypes keyType = keyTypes.get(coseKty);
         if (keyType == null) {
-            throw new GeneralSecurityException("Unrecognized key type: " + coseKty);
+            throw new CryptoException("Unrecognized key type: " + coseKty);
         }
         return keyType;
     }
     
-    static PublicKey getPublicKey(CBORMap publicKeyMap) 
-            throws IOException, GeneralSecurityException {
+    static PublicKey getPublicKey(CBORMap publicKeyMap) {
         KeyAlgorithms keyAlg;
         PublicKey publicKey;
-        switch (getKeyType(publicKeyMap)) {
-            case RSA:
-                publicKey = KeyFactory.getInstance("RSA").generatePublic(new RSAPublicKeySpec(
-                    getCryptoBinary(publicKeyMap, COSE_RSA_N_LABEL),
-                    getCryptoBinary(publicKeyMap, COSE_RSA_E_LABEL)));
-                break;
-    
-            case EC:
-                keyAlg = getKeyAlgorithmFromCurveId(publicKeyMap, COSE_EC2_CRV_LABEL);
-                if (keyAlg.getKeyType() != KeyTypes.EC) {
-                    throw new GeneralSecurityException("Invalid EC curve: " + keyAlg.toString());
-                }
-                publicKey = KeyFactory.getInstance("EC").generatePublic(new ECPublicKeySpec(
-                    new ECPoint(getCurvePoint(publicKeyMap, COSE_EC2_X_LABEL, keyAlg),
-                                getCurvePoint(publicKeyMap, COSE_EC2_Y_LABEL, keyAlg)),
-                    keyAlg.getECParameterSpec()));
-                break;
-    
-            default:  // EDDSA and XEC
-                keyAlg = getKeyAlgorithmFromCurveId(publicKeyMap, COSE_OKP_CRV_LABEL);
-                if (keyAlg.getKeyType() != KeyTypes.EDDSA && keyAlg.getKeyType() != KeyTypes.XEC) {
-                    throw new GeneralSecurityException("Invalid OKP curve: " + keyAlg.toString());
-                }
-                publicKey = OkpSupport.raw2PublicKey(
-                    publicKeyMap.getObject(COSE_OKP_X_LABEL).getBytes(), keyAlg);
+        try {
+            switch (getKeyType(publicKeyMap)) {
+                case RSA:
+                    publicKey = KeyFactory.getInstance("RSA").generatePublic(new RSAPublicKeySpec(
+                        getCryptoBinary(publicKeyMap, COSE_RSA_N_LABEL),
+                        getCryptoBinary(publicKeyMap, COSE_RSA_E_LABEL)));
+                    break;
+        
+                case EC:
+                    keyAlg = getKeyAlgorithmFromCurveId(publicKeyMap, COSE_EC2_CRV_LABEL);
+                    if (keyAlg.getKeyType() != KeyTypes.EC) {
+                        throw new CryptoException("Invalid EC curve: " + keyAlg.toString());
+                    }
+                    publicKey = KeyFactory.getInstance("EC").generatePublic(new ECPublicKeySpec(
+                        new ECPoint(getCurvePoint(publicKeyMap, COSE_EC2_X_LABEL, keyAlg),
+                                    getCurvePoint(publicKeyMap, COSE_EC2_Y_LABEL, keyAlg)),
+                        keyAlg.getECParameterSpec()));
+                    break;
+        
+                default:  // EDDSA and XEC
+                    keyAlg = getKeyAlgorithmFromCurveId(publicKeyMap, COSE_OKP_CRV_LABEL);
+                    if (keyAlg.getKeyType() != KeyTypes.EDDSA && 
+                        keyAlg.getKeyType() != KeyTypes.XEC) {
+                        throw new CryptoException("Invalid OKP curve: " + keyAlg.toString());
+                    }
+                    publicKey = OkpSupport.raw2PublicKey(
+                        publicKeyMap.getObject(COSE_OKP_X_LABEL).getBytes(), keyAlg);
+            }
+            return publicKey;
+        } catch (GeneralSecurityException e) {
+            throw new CryptoException(e);
         }
-        return publicKey;
     }
 
     /**
@@ -221,11 +212,8 @@ public class CBORPublicKey {
      * 
      * @param cosePublicKey Public key in COSE format
      * @return Public key as a Java/JCE object 
-     * @throws IOException
-     * @throws GeneralSecurityException
      */
-    public static PublicKey convert(CBORObject cosePublicKey) 
-            throws IOException, GeneralSecurityException {
+    public static PublicKey convert(CBORObject cosePublicKey) {
         CBORMap publicKeyMap = cosePublicKey.getMap();
         PublicKey publicKey = getPublicKey(publicKeyMap);
         publicKeyMap.checkForUnread();

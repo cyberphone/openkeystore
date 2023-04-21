@@ -1,22 +1,20 @@
 package cbor_api_demo;
 
-import java.io.IOException;
-
 import org.webpki.util.IO;
 import org.webpki.util.UTF8;
 
 public class ReadWriteSubstitute {
 
-    static String readString(String fileName) throws IOException {
-        return new String(IO.readFile(fileName), "utf-8");
+    static String readString(String fileName) {
+        return UTF8.decode(IO.readFile(fileName));
     }
 
-    static void writeString(String fileName, String data) throws IOException {
+    static void writeString(String fileName, String data) {
         IO.writeFile(fileName, UTF8.encode(data));
         return;
     }
     
-    static void replace(String fileName, String holder, String data) throws IOException {
+    static void replace(String fileName, String holder, String data) {
         String fileData = readString(fileName);
         writeString(fileName, fileData.replace(holder, data));
     }

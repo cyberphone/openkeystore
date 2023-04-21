@@ -16,8 +16,6 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
-
 /**
  * Class for converting JSON to CBOR.
  * 
@@ -35,16 +33,18 @@ public class CBORFromJSON {
     
     /**
      * Convert JSON to CBOR.
+     * <p>
+     * Decoding errors throw {@link CBORException}.
+     * </p>
      * 
      * @param json JSON String
      * @return CBORObject
-     * @throws IOException
      */
-    public static CBORObject convert(String json) throws IOException {
+    public static CBORObject convert(String json) {
         return new CBORFromJSON(json).readToEOF();
     }
 
-    private void reportError(String error) throws IOException {
+    private void reportError(String error) {
         // Unsurprisingly, error handling turned out to be the most complex part...
         int start = index - 100;
         if (start < 0) {
@@ -80,13 +80,13 @@ public class CBORFromJSON {
                 lineNumber++;
             }
         }
-        throw new IOException(complete.append("^\n\nError in line ")
-                                      .append(lineNumber)
-                                      .append(". ")
-                                      .append(error).toString());
+        throw new CBORException(complete.append("^\n\nError in line ")
+                                        .append(lineNumber)
+                                        .append(". ")
+                                        .append(error).toString());
     }
     
-    private CBORObject readToEOF() throws IOException {
+    private CBORObject readToEOF() {
         CBORObject cborObject = getObject();
         if (index < json.length) {
             readChar();
@@ -95,14 +95,14 @@ public class CBORFromJSON {
         return cborObject;
     }
 
-    private CBORObject getObject() throws IOException {
+    private CBORObject getObject() {
         scanNonSignficantData();
         CBORObject cborObject = getRawObject();
         scanNonSignficantData();
         return cborObject;
     }
     
-    private boolean continueList(char validStop) throws IOException {
+    private boolean continueList(char validStop) {
         if (nextChar() == ',') {
             readChar();
             scanNonSignficantData();
@@ -113,7 +113,7 @@ public class CBORFromJSON {
         return false;
     }
     
-    private CBORObject getRawObject() throws IOException {
+    private CBORObject getRawObject() {
         switch (readChar()) {
         
             case '[':
@@ -180,7 +180,7 @@ public class CBORFromJSON {
         }
     }
 
-    private CBORObject getNumber() throws IOException {
+    private CBORObject getNumber() {
         StringBuilder token = new StringBuilder();
         index--;
         char c;
@@ -196,7 +196,7 @@ public class CBORFromJSON {
         return null; // For the compiler...
     }
 
-    private char nextChar() throws IOException {
+    private char nextChar() {
         if (index == json.length) return 0;
         char c = readChar();
         index--;
@@ -207,7 +207,7 @@ public class CBORFromJSON {
         return c < ' ' ? String.format("\\u%04x", (int) c) : String.format("'%c'", c);
     }
 
-    private void scanFor(String expected) throws IOException {
+    private void scanFor(String expected) {
         for (char c : expected.toCharArray()) {
             char actual = readChar(); 
             if (c != actual) {
@@ -216,7 +216,7 @@ public class CBORFromJSON {
         }
     }
 
-    private CBORObject getString() throws IOException {
+    private CBORObject getString() {
         StringBuilder s = new StringBuilder();
         while (true) {
             char c;
@@ -271,7 +271,7 @@ public class CBORFromJSON {
         }
     }
     
-    private char hexCharToChar(char c) throws IOException {
+    private char hexCharToChar(char c) {
         switch (c) {
             case '0': case '1': case '2': case '3': case '4':
             case '5': case '6': case '7': case '8': case '9':
@@ -287,14 +287,14 @@ public class CBORFromJSON {
         return 0; // For the compiler...
     }
 
-    private char readChar() throws IOException {
+    private char readChar() {
         if (index >= json.length) {
             reportError("Unexpected EOF");
         }
         return json[index++];
     }
 
-    private void scanNonSignficantData() throws IOException {
+    private void scanNonSignficantData() {
         while (index < json.length) {
             switch (nextChar()) {
                 case ' ':

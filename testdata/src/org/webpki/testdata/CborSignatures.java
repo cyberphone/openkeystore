@@ -50,6 +50,7 @@ import org.webpki.cbor.CBORCryptoUtils;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.HmacAlgorithms;
+import org.webpki.crypto.HmacVerifierInterface;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.SignatureAlgorithms;
@@ -189,7 +190,7 @@ public class CborSignatures {
                 throw new GeneralSecurityException(
                         "ERROR - Old signature '" + fileName + "' did not validate");
             }
-        } catch (IOException e) {
+        } catch (IO.WrappedIOException e) {
             changed = false;  // New file
         }
         if (oldSignature != null) {
@@ -223,18 +224,21 @@ public class CborSignatures {
         CBORHmacValidator validator = new CBORHmacValidator(key);
         CBORMap decoded = CBORObject.decode(signedData).getMap();
         validator.validate(SIGNATURE_LABEL, decoded);
-        new CBORHmacValidator(new CBORHmacValidator.KeyLocator() {
-            
+        new CBORHmacValidator(new HmacVerifierInterface() {
+
             @Override
-            public byte[] locate(CBORObject optionalKeyId, HmacAlgorithms hmacAlgorithm)
+            public boolean verifySignature(byte[] data, 
+                                           byte[] digest, 
+                                           HmacAlgorithms hmacAlgorithm, 
+                                           String keyId)
                     throws IOException, GeneralSecurityException {
-                if (wantKeyId && !CBORTest.compareKeyId(keyName, optionalKeyId)) {
+                if (wantKeyId && !symmetricKeys.getName(keyBits).equals(keyId)) {
                     throw new GeneralSecurityException("No id");
                 }
                 if (!algorithm.equals(hmacAlgorithm)) {
                     throw new GeneralSecurityException("Bad algorithm");
                 }
-                return key;
+                return Arrays.equals(algorithm.digest(key, data), digest);
             }
 
         }).validate(SIGNATURE_LABEL, decoded);
@@ -488,7 +492,7 @@ public class CborSignatures {
                 throw new GeneralSecurityException(
                         "ERROR - Old signature '" + fileName + "' did not validate");
             }
-        } catch (IOException e) {
+        } catch (IO.WrappedIOException e) {
             changed = false;  // New file
         }
         if (oldSignature != null) {

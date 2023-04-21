@@ -18,10 +18,6 @@ package org.webpki.cbor;
 
 import java.lang.reflect.InvocationTargetException;
 
-import java.security.GeneralSecurityException;
-
-import java.io.IOException;
-
 import java.util.Hashtable;
 
 /**
@@ -45,7 +41,7 @@ public class CBORTypedObjectDecoderCache {
             return decoderClass.getDeclaredConstructor().newInstance();
         } catch (InstantiationException | InvocationTargetException | 
                  NoSuchMethodException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new CBORException(e);
         }        
     }
     
@@ -61,20 +57,17 @@ public class CBORTypedObjectDecoderCache {
      * 
      * @param typedObject Typed object to be decoded
      * @return Instantiated {@link CBORTypedObjectDecoder}
-     * @throws IOException
-     * @throws GeneralSecurityException
      */
-    public CBORTypedObjectDecoder decode(CBORObject typedObject) 
-            throws IOException, GeneralSecurityException {
+    public CBORTypedObjectDecoder decode(CBORObject typedObject) {
         CBORTag tag = typedObject.getTag();
         if (tag.tagNumber != CBORTag.RESERVED_TAG_COTX) {
-            throw new IOException("COTX expcted, got: " + tag.tagNumber);
+            throw new CBORException("COTX expcted, got: " + tag.tagNumber);
         }
         CBORArray cborArray = tag.getObject().getArray(2);
         String objectId = cborArray.getObject(0).getString();
         Class<? extends CBORTypedObjectDecoder> schemaClass = classMap.get(objectId);
         if (schemaClass == null) {
-            throw new IOException("Unknown ObjectId: " + objectId);
+            throw new CBORException("Unknown ObjectId: " + objectId);
         }
         CBORTypedObjectDecoder decoder = getInstance(schemaClass);
         decoder.root = typedObject;

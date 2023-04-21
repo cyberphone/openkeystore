@@ -1970,8 +1970,7 @@ public class CBORTest {
         static final CBORObject INT_KEY = new CBORInteger(1);
         
         @Override
-        protected void decode(CBORObject cborBody)
-                throws IOException, GeneralSecurityException {
+        protected void decode(CBORObject cborBody) {
             number = cborBody.getMap().getObject(INT_KEY).getInt();
         }
 
@@ -1988,8 +1987,7 @@ public class CBORTest {
         String justAString;
 
         @Override
-        protected void decode(CBORObject cborBody)
-                throws IOException, GeneralSecurityException {
+        protected void decode(CBORObject cborBody) {
             justAString = cborBody.getString();
         }
 
@@ -2004,8 +2002,7 @@ public class CBORTest {
         String justAString;
 
         @Override
-        protected void decode(CBORObject cborBody)
-                throws IOException, GeneralSecurityException {
+        protected void decode(CBORObject cborBody) {
             justAString = cborBody.getString();
         }
 

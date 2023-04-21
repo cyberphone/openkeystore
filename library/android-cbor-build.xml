@@ -38,6 +38,7 @@
       <fileset dir="${src_dir}">
         <include name="**/util/HexaDecimal.java"/>
         <include name="**/util/UTF8.java"/>
+        <include name="**/util/IO.java"/>
         <include name="**/util/package.html"/>
         <include name="**/crypto/X509VerifierInterface.java"/>
         <include name="**/crypto/HmacVerifierInterface.java"/>
@@ -45,6 +46,7 @@
         <include name="**/crypto/AsymKeySignerInterface.java"/>
         <include name="**/crypto/HmacSignerInterface.java"/>
         <include name="**/crypto/CryptoAlgorithms.java"/>
+        <include name="**/crypto/CryptoException.java"/>
         <include name="**/crypto/OkpSupport.java"/>
         <include name="**/crypto/HashAlgorithms.java"/>
         <include name="**/crypto/KeyAlgorithms.java"/>

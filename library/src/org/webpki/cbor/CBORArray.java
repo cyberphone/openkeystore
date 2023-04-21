@@ -16,8 +16,6 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
-
 import java.util.ArrayList;
 
 /**
@@ -47,9 +45,8 @@ public class CBORArray extends CBORObject {
      * 
      * @param index The position (0 - size-1)
      * @return CBOR object
-     * @throws IOException
      */
-    public CBORObject getObject(int index) throws IOException {
+    public CBORObject getObject(int index) {
         return objectList.get(index);
     }
     

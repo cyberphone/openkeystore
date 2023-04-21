@@ -18,48 +18,67 @@ package org.webpki.util;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ByteArrayOutputStream;
 
 /**
  * Collection of file I/O functions.
+ * <p>
+ * Unlike java.io and java.nio classes, the methods declared here,
+ * throw the <i>unchecked</i> {@link WrappedIOException}.
+ * The intended use cases include client applications and test programs.
+ * Server applications should probably stick to the standard java API.
+ * </p>
  */
 public class IO {
+    /**
+     * Exception wrapper.
+     */
+    public static class WrappedIOException extends RuntimeException {
+
+        private static final long serialVersionUID = 1L;
+
+        WrappedIOException(IOException e) {
+            super(e);
+        }
+    }
+    
     private IO() {
     }  // No instantiation please
 
-    public static byte[] readFile(File file) throws IOException {
-        return getByteArrayFromInputStream(new FileInputStream(file));
+    public static byte[] readFile(String fileName) {
+        try {
+            return getByteArrayFromInputStream(new FileInputStream(fileName));
+        } catch (IOException e) {
+            throw new WrappedIOException(e);
+        }
+     }
+
+    public static void writeFile(String fileName, byte[] bytes) {
+        try (FileOutputStream fos = new FileOutputStream(fileName)) {
+            fos.write(bytes);
+        } catch (IOException e) {
+            throw new WrappedIOException(e);
+        }
     }
 
-    public static byte[] readFile(String filename) throws IOException {
-        return readFile(new File(filename));
+    public static void writeFile(String fileName, String text) {
+        writeFile(fileName, UTF8.encode(text));
     }
 
-    public static void writeFile(File file, byte[] bytes) throws IOException {
-        FileOutputStream fos = new FileOutputStream(file);
-        fos.write(bytes);
-        fos.close();
-    }
-
-    public static void writeFile(String filename, byte[] bytes) throws IOException {
-        writeFile(new File(filename), bytes);
-    }
-
-    public static void writeFile(String filename, String text) throws IOException {
-        writeFile(new File(filename), UTF8.encode(text));
-    }
-
-    public static byte[] getByteArrayFromInputStream(InputStream is) throws IOException {
+    public static byte[] getByteArrayFromInputStream(InputStream inputStream) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream(10000);
         byte[] buffer = new byte[10000];
         int bytes;
-        while ((bytes = is.read(buffer)) != -1) {
-            baos.write(buffer, 0, bytes);
+        try {
+            while ((bytes = inputStream.read(buffer)) != -1) {
+                baos.write(buffer, 0, bytes);
+            }
+            inputStream.close();
+        } catch (IOException e) {
+            throw new WrappedIOException(e);
         }
-        is.close();
         return baos.toByteArray();
     }
 }

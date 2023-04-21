@@ -259,7 +259,7 @@ public class CborEncryption {
                 throw new GeneralSecurityException("ERROR - Old encryption '" + 
                                                    fileName + "' did not decrypt");
             }
-        } catch (IOException e) {
+        } catch (IO.WrappedIOException e) {
             changed = false;  // New file
         }
         if (oldEncryption != null &&

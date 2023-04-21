@@ -1,7 +1,5 @@
 package cbor_api_demo;
 
-import java.io.IOException;
-
 import org.webpki.cbor.CBORInteger;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;
@@ -21,7 +19,7 @@ public class TypedObjectsDemo {
         static final CBORObject INT_KEY = new CBORInteger(1);
         
         @Override
-        protected void decode(CBORObject cborBody) throws IOException{
+        protected void decode(CBORObject cborBody) {
             number = cborBody.getMap().getObject(INT_KEY).getInt();
         }
 
@@ -39,7 +37,7 @@ public class TypedObjectsDemo {
         String justAString;
 
         @Override
-        protected void decode(CBORObject cborBody) throws IOException {
+        protected void decode(CBORObject cborBody) {
             justAString = cborBody.getString();
         }
 
@@ -56,36 +54,31 @@ public class TypedObjectsDemo {
 
     
     public static void main(String[] args) {
-        try {
-            // Create typed CBOR messages.
-            byte[] objectOne = new CBORTag(ObjectOne.OBJECT_ID,
-                    new CBORMap().setObject(ObjectOne.INT_KEY, new CBORInteger(-343)))
-                        .encode();
-            
-            byte[] objectTwo = new CBORTag(ObjectTwo.OBJECT_ID, 
-                    new CBORString("Hi there!"))
-                        .encode();
-            
-            // Decode and instantiate.
-            CBORTypedObjectDecoder decodedObject = decoderCache.decode(
-                    CBORObject.decode(objectOne));
-            
-            // Dispatch to the proper handler for the associated decoder.
-            switch (decodedObject.getObjectId()) {
-                case ObjectOne.OBJECT_ID:
-                    System.out.println("Number=" + ((ObjectOne)decodedObject).number);
-                    break;
-                    
-                default: 
-                    throw new IOException("Unexpected");
-            }
+        // Create typed CBOR messages.
+        byte[] objectOne = new CBORTag(ObjectOne.OBJECT_ID,
+                new CBORMap().setObject(ObjectOne.INT_KEY, new CBORInteger(-343)))
+                    .encode();
+        
+        byte[] objectTwo = new CBORTag(ObjectTwo.OBJECT_ID, 
+                new CBORString("Hi there!"))
+                    .encode();
+        
+        // Decode and instantiate.
+        CBORTypedObjectDecoder decodedObject = decoderCache.decode(
+                CBORObject.decode(objectOne));
+        
+        // Dispatch to the proper handler for the associated decoder.
+        switch (decodedObject.getObjectId()) {
+            case ObjectOne.OBJECT_ID:
+                System.out.println("Number=" + ((ObjectOne)decodedObject).number);
+                break;
+                
+            default: 
+                throw new RuntimeException("Unexpected");
+        }
 //@begin@
 new CborDocumentLog(args[0], "#sample.program.diagnostic#", CBORObject.decode(objectOne));
 new CborDocumentLog(args[0], args[1], "#sample.program#");
 //@end@
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 }

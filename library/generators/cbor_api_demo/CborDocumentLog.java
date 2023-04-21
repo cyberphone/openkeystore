@@ -1,7 +1,5 @@
 package cbor_api_demo;
 
-import java.io.IOException;
-
 import org.webpki.cbor.CBORArray;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;
@@ -11,19 +9,19 @@ import org.webpki.util.HexaDecimal;
 
 public class CborDocumentLog {
     
-    CborDocumentLog(String fileName, String holder, byte[] binaryData) throws IOException {
+    CborDocumentLog(String fileName, String holder, byte[] binaryData) {
         ReadWriteSubstitute.replace(fileName, 
                                     holder,
                                     HexaDecimal.encode(binaryData));
     }
 
-    CborDocumentLog(String fileName, String holder, CBORObject cbor) throws IOException {
+    CborDocumentLog(String fileName, String holder, CBORObject cbor) {
         ReadWriteSubstitute.replace(fileName, 
                                     holder,
                                     ReadWriteSubstitute.htmlIze(cbor.toString()));
     }
 
-    CborDocumentLog(String fileName, String sourceCodeFile, String holder) throws IOException {
+    CborDocumentLog(String fileName, String sourceCodeFile, String holder) {
         String source = ReadWriteSubstitute.readString(sourceCodeFile);
         int i;
         while ((i = source.indexOf("//@begin@")) >= 0)
@@ -38,7 +36,7 @@ public class CborDocumentLog {
         // TODO Auto-generated constructor stub
     }
     
-    void traverse(CBORObject refData, CBORObject newData) throws IOException {
+    void traverse(CBORObject refData, CBORObject newData) {
         switch (refData.getType()) {
             case MAP:
                 CBORMap refMap = refData.getMap();
@@ -50,7 +48,7 @@ public class CborDocumentLog {
                         byte[] refBlob = refValue.getBytes();
                         byte[] newBlob = newValue.getBytes();
                         if (refBlob.length != newBlob.length) {
-                            throw new IOException("new");
+                            throw new RuntimeException("new");
                         }
                         continue;
                     }
@@ -68,14 +66,14 @@ public class CborDocumentLog {
                 
             default:
                 if (!refData.equals(newData)) {
-                    throw new IOException("hew");
+                    throw new RuntimeException("hew");
                 }
                 newData.scan();
                 break;
         }
     }
 
-    byte[] checkForChanges(byte[] newData, byte[] refData) throws IOException {
+    byte[] checkForChanges(byte[] newData, byte[] refData) {
         CBORObject newCbor = CBORObject.decode(newData);
         CBORObject refCbor = CBORObject.decode(refData);
         try {

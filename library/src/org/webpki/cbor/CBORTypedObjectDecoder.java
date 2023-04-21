@@ -16,10 +16,6 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
-
 /**
  * Base class for typed decoders.
  * <p>
@@ -54,15 +50,15 @@ public abstract class CBORTypedObjectDecoder {
      * associated with the specific object decoder.
      * </p>
      * <p>
+     * Note that "checked" exceptions <b>must</b> be wrapped in {@link RuntimeException}
+     * </p>
+     * <p>
      * Also see {@link CBORTypedObjectDecoderCache#setCheckForUnread(boolean)}.
      * </p>
      *
      * @param cborBody COTX argument of {@link CBORTypedObjectDecoder} instance
-     * @throws IOException
-     * @throws GeneralSecurityException 
      */
-    protected abstract void decode(CBORObject cborBody) 
-            throws IOException, GeneralSecurityException;
+    protected abstract void decode(CBORObject cborBody);
 
     /**
      * Returns typed object identifier.

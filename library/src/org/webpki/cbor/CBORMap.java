@@ -16,8 +16,6 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
-
 /**
  * Class for holding <code>CBOR</code> map.
  */
@@ -101,15 +99,14 @@ public class CBORMap extends CBORObject {
     /**
      * Sets map object.
      * <p>
-     * If <code>key</code> is already present, an exception is thrown.
+     * If <code>key</code> is already present, a {@link CBORException} is thrown.
      * </p>
      * 
      * @param key Key
      * @param value Object
      * @return <code>this</code>
-     * @throws IOException
      */
-    public CBORMap setObject(CBORObject key, CBORObject value) throws IOException {
+    public CBORMap setObject(CBORObject key, CBORObject value) {
         key = getKey(key);
         nullCheck(value);
         if (constrainedKeys && !key.getType().permittedConstrainedKey) {
@@ -172,14 +169,13 @@ public class CBORMap extends CBORObject {
      /**
      * Retrieves map object.
      * <p>
-     * If <code>key</code> is not present, an exception is thrown.
+     * If <code>key</code> is not present, a {@link CBORException} is thrown.
      * </p>
      * 
      * @param key Key
      * @return Object
-     * @throws IOException
      */
-    public CBORObject getObject(CBORObject key) throws IOException {
+    public CBORObject getObject(CBORObject key) {
         byte[] testKey = getKey(key).encode();
         for (Entry entry = root; entry != null; entry = entry.next) {
             if (entry.compare(testKey) == 0) {
@@ -193,14 +189,13 @@ public class CBORMap extends CBORObject {
     /**
      * Removes mapped object.
      * <p>
-     * If <code>key</code> is not present, an exception is thrown.
+     * If <code>key</code> is not present, a {@link CBORException} is thrown.
      * </p>
      * 
      * @param key Key
      * @return <code>this</code>
-     * @throws IOException
      */
-    public CBORMap removeObject(CBORObject key) throws IOException {
+    public CBORMap removeObject(CBORObject key) {
         byte[] testKey = getKey(key).encode();
         Entry precedingEntry = null;
         for (Entry entry = root; entry != null; entry = entry.next) {
@@ -240,7 +235,7 @@ public class CBORMap extends CBORObject {
      * <p>
      * If <code>key</code> is not present or the
      * mapped data is not a CBOR <code>byte&nbsp;string</code>,
-     * an exception is thrown.
+     * a {@link CBORException} is thrown.
      * </p>
      * <p>
      * This method is provided for supporting the validation phase
@@ -249,9 +244,8 @@ public class CBORMap extends CBORObject {
      * 
      * @param key Key
      * @return byte string
-     * @throws IOException
      */
-    public byte[] readBytesAndRemoveKey(CBORObject key) throws IOException {
+    public byte[] readBytesAndRemoveKey(CBORObject key) {
         byte[] data = getObject(key).getBytes();
         removeObject(key);
         return data;
@@ -260,7 +254,7 @@ public class CBORMap extends CBORObject {
     /**
      * Sets a <code>byte string</code> value.
      * <p>
-     * If <code>key</code> is not present an exception is thrown.
+     * If <code>key</code> is not present a {@link CBORException} is thrown.
      * </p>
      * <p>
      * This convenience method is provided for supporting
@@ -270,9 +264,8 @@ public class CBORMap extends CBORObject {
      * @param key Key
      * @param byteString Byte string
      * @return <code>this</code>
-     * @throws IOException
      */
-    public CBORMap setBytes(CBORObject key, byte[] byteString) throws IOException {
+    public CBORMap setBytes(CBORObject key, byte[] byteString) {
         return setObject(key, new CBORBytes(byteString));
     }
     
