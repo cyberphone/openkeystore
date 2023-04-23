@@ -16,9 +16,6 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 
 import java.security.cert.X509Certificate;
@@ -152,7 +149,6 @@ public class CBORCryptoUtils {
          * 
          * @param objectOrNull If there is no tag or custom data this element is <code>null</code>
          *
-         * @throws IOException
          */
         void foundData(CBORObject objectOrNull);
     }

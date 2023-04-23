@@ -1112,8 +1112,7 @@ public class CBORTest {
                 @Override
                 public PublicKey locate(PublicKey optionalPublicKey, 
                                         CBORObject optionalKeyId,
-                                        AsymSignatureAlgorithms signatureAlgorithm)
-                        throws IOException, GeneralSecurityException {
+                                        AsymSignatureAlgorithms signatureAlgorithm) {
                     return p256.getPublic();
                 }
             }));
@@ -1124,8 +1123,7 @@ public class CBORTest {
                 @Override
                 public PublicKey locate(PublicKey optionalPublicKey, 
                                         CBORObject optionalKeyId,
-                                        AsymSignatureAlgorithms signatureAlgorithm)
-                        throws IOException, GeneralSecurityException {
+                                        AsymSignatureAlgorithms signatureAlgorithm) {
                     assertTrue("public", optionalPublicKey == null);
                     assertTrue("keyId", optionalKeyId == null);
                     assertTrue("alg", AsymSignatureAlgorithms.ECDSA_SHA256.equals(
@@ -1140,8 +1138,7 @@ public class CBORTest {
                 @Override
                 public PublicKey locate(PublicKey optionalPublicKey, 
                                         CBORObject optionalKeyId,
-                                        AsymSignatureAlgorithms signatureAlgorithm)
-                        throws IOException, GeneralSecurityException {
+                                        AsymSignatureAlgorithms signatureAlgorithm) {
                     return compareKeyId(keyIdP256, optionalKeyId) ? 
                                                  p256.getPublic() : p256_2.getPublic();
                 }
@@ -1153,8 +1150,7 @@ public class CBORTest {
 
                 @Override
                 public void verify(X509Certificate[] certificatePath,
-                                  AsymSignatureAlgorithms signatureAlgorithm)
-                        throws IOException, GeneralSecurityException {
+                                  AsymSignatureAlgorithms signatureAlgorithm) {
                 }
 
             }));
@@ -1183,8 +1179,7 @@ public class CBORTest {
 
                 @Override
                 public void verify(X509Certificate[] certificatePath,
-                                  AsymSignatureAlgorithms signatureAlgorithm)
-                        throws IOException, GeneralSecurityException {
+                                  AsymSignatureAlgorithms signatureAlgorithm) {
                 }
 
             }));
@@ -1214,8 +1209,7 @@ public class CBORTest {
     
                     @Override
                     public void verify(X509Certificate[] certificatePath,
-                                      AsymSignatureAlgorithms signatureAlgorithm)
-                            throws IOException, GeneralSecurityException {
+                                      AsymSignatureAlgorithms signatureAlgorithm) {
                     }
     
                 }));
@@ -1229,8 +1223,7 @@ public class CBORTest {
     
                     @Override
                     public void verify(X509Certificate[] certificatePath,
-                                      AsymSignatureAlgorithms signatureAlgorithm)
-                            throws IOException, GeneralSecurityException {
+                                      AsymSignatureAlgorithms signatureAlgorithm) {
                     }
     
                 }));
@@ -1245,8 +1238,7 @@ public class CBORTest {
 
                     @Override
                     public void verify(X509Certificate[] certificatePath,
-                                      AsymSignatureAlgorithms signatureAlgorithm)
-                            throws IOException, GeneralSecurityException {
+                                      AsymSignatureAlgorithms signatureAlgorithm) {
                     }
 
                 }));
@@ -1271,8 +1263,7 @@ public class CBORTest {
                     @Override
                     public PublicKey locate(PublicKey optionalPublicKey, 
                                             CBORObject optionalKeyId,
-                                            AsymSignatureAlgorithms signatureAlgorithm)
-                            throws IOException, GeneralSecurityException {
+                                            AsymSignatureAlgorithms signatureAlgorithm) {
                         return p256_2.getPublic();
                     }
                 }));
@@ -1338,12 +1329,11 @@ public class CBORTest {
                     @Override
                     public PublicKey locate(PublicKey optionalPublicKey, 
                                             CBORObject optionalKeyId,
-                                            AsymSignatureAlgorithms signatureAlgorithm)
-                            throws IOException, GeneralSecurityException {
+                                            AsymSignatureAlgorithms signatureAlgorithm) {
                         if (compareKeyId(new CBORString("otherkey"), optionalKeyId)) {
                             return p256_2.getPublic();
                         }
-                        throw new IOException("KeyId = " + optionalKeyId);
+                        throw new CryptoException("KeyId = " + optionalKeyId);
                     }
                 }));
             fail("must not execute");

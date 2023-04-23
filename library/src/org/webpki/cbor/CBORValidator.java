@@ -16,10 +16,6 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
-
 import org.webpki.cbor.CBORCryptoUtils.POLICY;
 import org.webpki.cbor.CBORCryptoUtils.Collector;
 
@@ -44,7 +40,7 @@ public abstract class CBORValidator {
                                  int coseAlgorithmId,
                                  CBORObject optionalKeyId,
                                  byte[] signatureValue,
-                                 byte[] signedData) throws IOException, GeneralSecurityException;
+                                 byte[] signedData);
  
     POLICY customDataPolicy = POLICY.FORBIDDEN;
     Collector customDataCollector;
@@ -101,11 +97,8 @@ public abstract class CBORValidator {
      * @param key Key in map holding signature
      * @param signedObject Signed CBOR object
      * @return The original <code>signedObject</code>
-     * @throws IOException
-     * @throws GeneralSecurityException
      */
-    public CBORObject validate(CBORObject key, CBORObject signedObject) 
-            throws IOException, GeneralSecurityException {
+    public CBORObject validate(CBORObject key, CBORObject signedObject) {
 
         // There may be a tag holding the signed map.
         CBORMap signedMap = CBORCryptoUtils.unwrapContainerMap(signedObject,

@@ -16,12 +16,10 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
+import org.webpki.crypto.CryptoException;
 import org.webpki.crypto.SignatureWrapper;
 
 import static org.webpki.cbor.CBORCryptoConstants.*;
@@ -51,13 +49,10 @@ public class CBORAsymKeyValidator extends CBORValidator {
          * @param optionalKeyId KeyId or <code>null</code>
          * @param algorithm Signature algorithm
          * @return Validation key
-         * @throws IOException
-         * @throws GeneralSecurityException
          */
         PublicKey locate(PublicKey optionalPublicKey, 
                          CBORObject optionalKeyId, 
-                         AsymSignatureAlgorithms algorithm)
-            throws IOException, GeneralSecurityException;
+                         AsymSignatureAlgorithms algorithm);
     }
     
     KeyLocator keyLocator;
@@ -109,7 +104,7 @@ public class CBORAsymKeyValidator extends CBORValidator {
                         int coseAlgorithmId,
                         CBORObject optionalKeyId,
                         byte[] signatureValue,
-                        byte[] signedData) throws IOException, GeneralSecurityException {
+                        byte[] signedData) {
         
         // Get signature algorithm.
         AsymSignatureAlgorithms algorithm =
@@ -139,7 +134,7 @@ public class CBORAsymKeyValidator extends CBORValidator {
             !inLinePublicKey.equals(keyLocator.locate(inLinePublicKey, 
                                                       optionalKeyId, 
                                                       algorithm))) {
-            throw new GeneralSecurityException("Public keys not identical");
+            throw new CryptoException("Public keys not identical");
         }
     }
 }

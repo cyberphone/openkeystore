@@ -24,33 +24,28 @@ public class SignatureDemo {
     static final CBORInteger SIGNATURE_LABEL = new CBORInteger(-1);
     
     public static void main(String[] args) {
-        try {
-            // Create CBOR data to be signed.
-            CBORMap dataToBeSigned = new CBORMap()
-                .setObject(HELLO_LABEL, new CBORString("Hello CBOR World!"))
-                .setObject(ARRAY_LABEL, new CBORArray()
-                    .addObject(new CBORFloatingPoint(-4.5))
-                    .addObject(new CBORBoolean(true)));
-            
-            // Sign and encode CBOR.
-            byte[] signedData = new CBORHmacSigner(HMAC_KEY, HmacAlgorithms.HMAC_SHA256)
-                .sign(SIGNATURE_LABEL, dataToBeSigned).encode();
-            
-            // Decode CBOR and validate signature.
-            CBORMap decodedCbor = new CBORHmacValidator(HMAC_KEY)
-                .validate(SIGNATURE_LABEL, CBORObject.decode(signedData)).getMap();
+        // Create CBOR data to be signed.
+        CBORMap dataToBeSigned = new CBORMap()
+            .setObject(HELLO_LABEL, new CBORString("Hello CBOR World!"))
+            .setObject(ARRAY_LABEL, new CBORArray()
+                .addObject(new CBORFloatingPoint(-4.5))
+                .addObject(new CBORBoolean(true)));
+        
+        // Sign and encode CBOR.
+        byte[] signedData = new CBORHmacSigner(HMAC_KEY, HmacAlgorithms.HMAC_SHA256)
+            .sign(SIGNATURE_LABEL, dataToBeSigned).encode();
+        
+        // Decode CBOR and validate signature.
+        CBORMap decodedCbor = new CBORHmacValidator(HMAC_KEY)
+            .validate(SIGNATURE_LABEL, CBORObject.decode(signedData)).getMap();
 //@begin@
 new CborDocumentLog(args[0], "#sample.program.hex#", signedData);
 new CborDocumentLog(args[0], "#sample.program.diagnostic#", decodedCbor);
 new CborDocumentLog(args[0], args[1], "#sample.program#");
 //@end@
 
-            // Fetch a map item.
-            String greatings = decodedCbor.getObject(HELLO_LABEL).getString();
-            System.out.println(greatings);
-            
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        // Fetch a map item.
+        String greatings = decodedCbor.getObject(HELLO_LABEL).getString();
+        System.out.println(greatings);
     }
 }

@@ -306,8 +306,7 @@ public class CborSignatures {
 
                 @Override
                 public void verify(X509Certificate[] certificatePath,
-                                   AsymSignatureAlgorithms asymSignatureAlgorithm)
-                        throws IOException, GeneralSecurityException {
+                                   AsymSignatureAlgorithms asymSignatureAlgorithm) {
                     saveAlgorithm.algorithm = asymSignatureAlgorithm;
                 }
                 
@@ -320,8 +319,7 @@ public class CborSignatures {
 
             @Override
             public void verify(X509Certificate[] certificatePath,
-                               AsymSignatureAlgorithms asymSignatureAlgorithm)
-                    throws IOException, GeneralSecurityException {
+                               AsymSignatureAlgorithms asymSignatureAlgorithm) {
             }
             
         }).validate(SIGNATURE_LABEL, decoded);
@@ -435,16 +433,15 @@ public class CborSignatures {
             @Override
             public PublicKey locate(PublicKey optionalPublicKey, 
                                     CBORObject optionalKeyId, 
-                                    AsymSignatureAlgorithms arg2)
-                    throws IOException, GeneralSecurityException {
+                                    AsymSignatureAlgorithms arg2) {
                 if (wantPublicKey && !keyPair.getPublic().equals(optionalPublicKey)) {
-                    throw new GeneralSecurityException("Missing public key");
+                    throw new CryptoException("Missing public key");
                 }
                 if (wantKeyId && !CBORTest.compareKeyId(keyId, optionalKeyId)) {
-                    throw new GeneralSecurityException("Missing key Id");
+                    throw new CryptoException("Missing key Id");
                 }
                 if (algorithm != arg2) {
-                    throw new GeneralSecurityException("Missing algorithm");
+                    throw new CryptoException("Missing algorithm");
                 }
                 return keyPair.getPublic();
             }

@@ -16,10 +16,6 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
-
 import java.security.cert.X509Certificate;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
@@ -54,11 +50,8 @@ public class CBORX509Validator extends CBORValidator {
          * 
          * @param certificatePath Path to be verified
          * @param algorithm Signature algorithm
-         * @throws IOException
-         * @throws GeneralSecurityException
          */
-        void verify(X509Certificate[] certificatePath, AsymSignatureAlgorithms algorithm)
-            throws IOException, GeneralSecurityException;
+        void verify(X509Certificate[] certificatePath, AsymSignatureAlgorithms algorithm);
     }
     
     Parameters parameters;
@@ -77,7 +70,7 @@ public class CBORX509Validator extends CBORValidator {
                         int coseAlgorithmId,
                         CBORObject optionalKeyId,
                         byte[] signatureValue,
-                        byte[] signedData) throws IOException, GeneralSecurityException {
+                        byte[] signedData) {
 
         // keyId and certificates? Never!
         CBORCryptoUtils.rejectPossibleKeyId(optionalKeyId);
