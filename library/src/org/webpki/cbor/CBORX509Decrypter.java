@@ -45,7 +45,7 @@ public class CBORX509Decrypter extends CBORDecrypter {
          *<p>
          * This interface also enables encryption parameter verification.
          * </p>
-         *          * 
+         *
          * @param certificatePath Certificate path in the encryption objectt
          * @param keyEncryptionAlgorithm The requested key encryption algorithm
          * @param contentEncryptionAlgorithm The requested content encryption algorithm

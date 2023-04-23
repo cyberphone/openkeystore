@@ -160,7 +160,7 @@ public abstract class CBORObject {
      * <p>
      * This method requires that the object is a
      * {@link CBORBigInteger} or {@link CBORInteger},
-     * otherwise a {@link CBORException} will be thrown.
+     * otherwise a {@link CBORException} is thrown.
      * </p>
      * <p>
      * Note that this method is independent of the underlying CBOR integer type.
@@ -181,7 +181,7 @@ public abstract class CBORObject {
       * <p>
      * This method requires that the object is a
      * {@link CBORInteger} and fits a Java (<i>signed</i>) long, 
-     * otherwise a {@link CBORException} will be thrown.
+     * otherwise a {@link CBORException} is thrown.
      * </p>
      * Also see {@link #getBigInteger()}.
      * 
@@ -200,7 +200,7 @@ public abstract class CBORObject {
      * Returns Java <i>unsigned</i> <code>long</code> value.
       * <p>
      * This method requires that the object is an <i>unsigned</i>
-     * {@link CBORInteger}, otherwise a {@link CBORException} will be thrown.
+     * {@link CBORInteger}, otherwise a {@link CBORException} is thrown.
      * </p>
      * 
      * @return Java <code>long</code>
@@ -218,7 +218,7 @@ public abstract class CBORObject {
      * <p>
      * This method requires that the object is a
      * {@link CBORInteger} and fits a Java (<i>signed</i>) <code>int</code>, 
-     * otherwise a {@link CBORException} will be thrown.
+     * otherwise a {@link CBORException} is thrown.
      * </p>
      * Also see {@link #getBigInteger()}.
      * 
@@ -237,14 +237,13 @@ public abstract class CBORObject {
      * <p>
      * This method requires that the object is a
      * {@link CBORInteger} and fits a JavaScript <code>Number</code> 
-     * (&pm;2^53), otherwise a {@link CBORException} will be thrown.
+     * (&pm;2^53), otherwise an {@link IllegalArgumentException} is thrown.
      * </p>
      * <p>
      * See {@link CBORInteger#createInt53(long)}.
      * </p>
      * 
      * @return Signed long
-     * @throws IllegalArgumentException
      */
     public long getInt53() {
         return CBORInteger.checkInt53(getLong());
@@ -254,7 +253,7 @@ public abstract class CBORObject {
      * Returns <code>double</code> value.
      * <p>
      * This method requires that the object is a
-     * {@link CBORFloatingPoint}, otherwise a {@link CBORException} will be thrown.
+     * {@link CBORFloatingPoint}, otherwise a {@link CBORException} is thrown.
      * </p>
      * 
      * @return Java double
@@ -269,7 +268,7 @@ public abstract class CBORObject {
      * <p>
      * This method requires that the object is a
      * {@link CBORFloatingPoint} holding a 16 or 32-bit IEEE 754 value, 
-     * otherwise a {@link CBORException} will be thrown.
+     * otherwise a {@link CBORException} is thrown.
      * </p>
      * 
      * @return Java float
@@ -287,7 +286,7 @@ public abstract class CBORObject {
      * Returns <code>boolean</code> value.
      * <p>
      * This method requires that the object is a
-     * {@link CBORBoolean}, otherwise a {@link CBORException} will be thrown.
+     * {@link CBORBoolean}, otherwise a {@link CBORException} is thrown.
      * </p>
      * 
      * @return Boolean
@@ -315,7 +314,7 @@ public abstract class CBORObject {
      * Returns <code>text string</code> value.
      * <p>
      * This method requires that the object is a
-     * {@link CBORString}, otherwise a {@link CBORException} will be thrown.
+     * {@link CBORString}, otherwise a {@link CBORException} is thrown.
      * </p>
      * 
      * @return String
@@ -329,7 +328,7 @@ public abstract class CBORObject {
      * Returns <code>byte string</code> value.
      * <p>
      * This method requires that the object is a
-     * {@link CBORBytes}, otherwise a {@link CBORException} will be thrown.
+     * {@link CBORBytes}, otherwise a {@link CBORException} is thrown.
      * </p>
      * 
      * @return Byte array
@@ -343,7 +342,7 @@ public abstract class CBORObject {
      * Returns <code>map</code> object.
      * <p>
      * This method requires that the object is a
-     * {@link CBORMap}, otherwise a {@link CBORException} will be thrown.
+     * {@link CBORMap}, otherwise a {@link CBORException} is thrown.
      * </p>
      * 
      * @return Map object
@@ -357,7 +356,7 @@ public abstract class CBORObject {
      * Returns <code>array</code> object.
      * <p>
      * This method requires that the object is a
-     * {@link CBORArray}, otherwise a {@link CBORException} will be thrown.
+     * {@link CBORArray}, otherwise a {@link CBORException} is thrown.
      * </p>
      * 
      * @return Array object
@@ -373,7 +372,7 @@ public abstract class CBORObject {
      * This method requires that the object is a
      * {@link CBORArray} as well as holding
      * <code>requiredLength</code> number of elements, 
-     * otherwise a {@link CBORException} will be thrown.
+     * otherwise a {@link CBORException} is thrown.
      * </p>
      * 
      * @param requiredLength Required number of elements
@@ -391,7 +390,7 @@ public abstract class CBORObject {
      * Returns tag object.
      * <p>
      * This method requires that the object is a
-     * {@link CBORTag}, otherwise a {@link CBORException} will be thrown.
+     * {@link CBORTag}, otherwise a {@link CBORException} is thrown.
      * </p>
      * <p>
      * Note that the <code>big&nbsp;integer</code> type is dealt with

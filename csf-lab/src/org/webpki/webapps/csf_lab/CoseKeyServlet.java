@@ -86,11 +86,10 @@ public class CoseKeyServlet extends CoreRequestServlet {
                 try {
                     keyPair = PEMDecoder.getKeyPair(keyInBinary);
                 } catch (Exception e) {
-                    try {
-                        publicKey = PEMDecoder.getPublicKey(keyInBinary);
-                    } catch (Exception e1) {
-                        throw new IOException("Undecodable PEM");
+                    if (inData.contains("PRIVATE")) {
+                        throw e;
                     }
+                    publicKey = PEMDecoder.getPublicKey(keyInBinary);
                 }
             }
             

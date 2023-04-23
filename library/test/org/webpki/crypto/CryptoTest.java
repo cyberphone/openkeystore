@@ -20,9 +20,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.InputStream;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.KeyStore;
+import java.security.PrivateKey;
 import java.security.Provider;
+import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Security;
 
@@ -44,6 +48,8 @@ import org.webpki.cbor.CBORObject;
 
 import org.webpki.util.Base64URL;
 import org.webpki.util.HexaDecimal;
+import org.webpki.util.IO;
+import org.webpki.util.PEMDecoder;
 import org.webpki.util.UTF8;
 
 
@@ -64,6 +70,9 @@ public class CryptoTest {
     static final byte[] DATA_TO_ENCRYPT = 
             UTF8.encode("The quick brown fox jumps over the lazy bear");
     
+    static final byte[] DATA_TO_SIGN = 
+            UTF8.encode("Signatures make the world go round?");
+
     static final String ALT_PROVIDER = "BC";
 
     @BeforeClass
@@ -214,5 +223,92 @@ public class CryptoTest {
                 ContentEncryptionAlgorithms.A256CBC_HS512.getJoseAlgorithmId(), 
                 64));
         assertTrue("kdf", derivedKey.equals(kdfed));
+    }
+    
+    @Test
+    public void pemTest() {
+        readAndVerifySeparatePrivPub("openssl-ed25519-priv", "openssl-ed25519-pub", true);
+        readAndVerifyKeyPair("openssl-ed25519-priv", false);
+        readAndVerifyKeyPair("ed25519-combined-privpub", true);
+        readAndVerifyKeyPair("rsa-priv", true);
+        readAndVerifyCertificatePath("ed25519-certpath-key", 2);
+        readCertificatePath("ed25519-certpath-key", 2);
+        readCertificatePath("two-ee-cert", null);
+    }
+
+    private void readCertificatePath(String certPath, Integer pathLen) {
+        try {
+            int l = PEMDecoder.getCertificatePath(readPem(certPath)).length;
+            PEMDecoder.getCertificatePath(readPem(certPath));
+            assertFalse("cert", pathLen == null);
+            assertTrue("pathLen", l == pathLen);
+        } catch (Exception e) {
+            assertTrue("should not: " + e.getMessage(), pathLen == null);
+        }
+    }
+
+    private void readAndVerifyCertificatePath(String certPathAndKey, Integer pathLen) {
+        String alias = "myKey";
+        String password = "fj63dk09hg";
+        try {
+            KeyStore keyStore = PEMDecoder.getKeyStore(readPem(certPathAndKey), 
+                                                       alias, 
+                                                       password);
+            PrivateKey privateKey = (PrivateKey) keyStore.getKey(alias, password.toCharArray());
+            int l = keyStore.getCertificateChain(alias).length;
+            assertFalse("priv+cert", pathLen == null);
+            assertTrue("pathLen", l == pathLen);
+            signTest(privateKey, keyStore.getCertificate(alias).getPublicKey());
+        } catch (Exception e) {
+            assertTrue("should not: " + e.getMessage(), pathLen == null);
+        }
+    }
+
+    private void readAndVerifySeparatePrivPub(String priv, String pub, boolean ok) {
+        try {
+            PrivateKey privateKey = getPrivateKey(priv);
+            PublicKey publicKey = getPublicKey(pub);
+            assertTrue("priv+pub", ok);
+            signTest(privateKey, publicKey);
+        } catch (Exception e) {
+            assertFalse("should not: " + e.getMessage(), ok);
+        }
+    }
+    
+    private void readAndVerifyKeyPair(String priv, boolean ok) {
+        try {
+            KeyPair keyPair = getKeyPair(priv);
+            assertTrue("keypair", ok);
+            signTest(keyPair.getPrivate(), keyPair.getPublic());
+        } catch (Exception e) {
+            assertFalse("should not: " + e.getMessage(), ok);
+        }
+    }
+    
+    private void signTest(PrivateKey privateKey, PublicKey publicKey) {
+        KeyAlgorithms keyAlg = KeyAlgorithms.getKeyAlgorithm(publicKey);
+        AsymSignatureAlgorithms sigAlg = keyAlg.getRecommendedSignatureAlgorithm();
+        byte[] signature = SignatureWrapper.sign(privateKey, sigAlg, DATA_TO_SIGN, null);
+        SignatureWrapper.validate(publicKey, sigAlg, DATA_TO_SIGN, signature, null);
+    }
+
+    byte[] readPem(String name) {
+        InputStream inputStream = this.getClass().getResourceAsStream(name + ".pem");
+        if (inputStream == null) {
+            throw new CryptoException("Could not read: " + name + ".pem");
+        }
+        return IO.getByteArrayFromInputStream(inputStream);
+    }
+
+    private PublicKey getPublicKey(String pub) {
+        return PEMDecoder.getPublicKey(readPem(pub));
+    }
+
+    private PrivateKey getPrivateKey(String priv) {
+        return PEMDecoder.getPrivateKey(readPem(priv));
+    }
+
+    private KeyPair getKeyPair(String priv) {
+        return PEMDecoder.getKeyPair(readPem(priv));
     }
 }

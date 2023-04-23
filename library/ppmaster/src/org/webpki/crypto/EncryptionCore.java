@@ -552,7 +552,7 @@ public class EncryptionCore {
     /**
      * Perform a receiver side ECDH operation.
 
-     * @param coseMode True => hmacKdf, else concatKdf
+     * @param coseMode If <code>true</code> => <code>hmacKdf</code>, else <code>concatKdf</code>
      * @param privateKey The receiver's private key
      * @param keyEncryptionAlgorithm The ECDH algorithm
      * @param contentEncryptionAlgorithm The designated content encryption algorithm
@@ -594,7 +594,7 @@ public class EncryptionCore {
     /**
      * Key decryption convenience method.
      * 
-     * @param codeMode <code>true</code> for COSE, <code>false</code> for JOSE
+     * @param coseMode <code>true</code> for COSE, <code>false</code> for JOSE
      * @param privateKey Private decryption key
      * @param optionalEncryptedKey For ECDH
      * @param optionalEphemeralKey For key-wrapping algorithms
@@ -602,7 +602,7 @@ public class EncryptionCore {
      * @param contentEncryptionAlgorithm Content encryption algorithm
      * @return Decrypted key
      */
-    public static byte[] decryptKey(boolean codeMode,
+    public static byte[] decryptKey(boolean coseMode,
                                     PrivateKey privateKey,
                                     byte[] optionalEncryptedKey,     // For all but ECDH-ES
                                     PublicKey optionalEphemeralKey,  // For ECDH*
@@ -614,7 +614,7 @@ public class EncryptionCore {
                                      keyEncryptionAlgorithm,
                                      optionalEncryptedKey)
                                           :
-        EncryptionCore.receiverKeyAgreement(codeMode,
+        EncryptionCore.receiverKeyAgreement(coseMode,
                                             privateKey,
                                             keyEncryptionAlgorithm,
                                             contentEncryptionAlgorithm,
@@ -625,7 +625,7 @@ public class EncryptionCore {
     /**
      * Perform a sender side ECDH operation.
      * 
-     * @param coseMode True => hmacKdf, else concatKdf
+     * @param coseMode If <code>true</code> => <code>hmacKdf</code>, else <code>concatKdf</code>
      * @param contentEncryptionKey Also known as CEK
      * @param keyEncryptionAlgorithm The ECDH algorithm
      * @param contentEncryptionAlgorithm The designated content encryption algorithm

@@ -27,6 +27,12 @@ public class CBORString extends CBORObject {
 
     /**
      * Creates a CBOR <code>text string</code>.
+     * </p>
+     * Note that <code>textString</code> must be valid <code>UTF-16</code>.
+     * </p>
+     * <p>
+     * See {@link CBORObject#getString()}.
+     * </p>
      */
     public CBORString(String textString) {
         this.textString = textString;

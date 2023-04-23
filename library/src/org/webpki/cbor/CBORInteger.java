@@ -60,11 +60,11 @@ public class CBORInteger extends CBORObject {
      * </p>
      * <div class='webpkicomment'>
      * Applications that are intended to work with multiple platforms
-     * <b>should&nbsp;not</b> exploit {@link CBORInteger} numbers outside of
-     * the 64-bit unsigned and 64-bit signed ranges.
-     * Applications needing the extended range <b>should</b> preferably 
+     * <b>should&nbsp;not</b> exploit {@link CBORInteger} numbers outside the range
+     * <code>-2^63</code> to <code>2^64-1</code>.
+     * Applications needing the full 65-bit range <b>should</b> preferably 
      * declare associated protocol items as {@link CBORBigInteger} compatible,
-     * although some numbers would use the 65-bit scheme to adhere with
+     * although some negative numbers would still use the 65-bit scheme to adhere with
      * CBOR integer encoding rules.
      * </div>
      *
@@ -111,9 +111,12 @@ public class CBORInteger extends CBORObject {
     /**
      * Creates a JavaScript compatible integer.
      * <p>
-     * Creates an integer that is compatible with
-     * the JavaScript <code>Number</code> type which is limited
-     * to &pm;2^53. A value outside of this range throws an exception.
+     * This method requires that <code>value</code>
+     * fits a JavaScript <code>Number</code> 
+     * (&pm;2^53), otherwise an {@link IllegalArgumentException} is thrown.
+     * </p>
+     * <p>
+     * See {@link CBORInteger#createInt53(long)}.
      * </p>
      * <p>
      * See {@link CBORObject#getInt53()}.
@@ -121,7 +124,6 @@ public class CBORInteger extends CBORObject {
      * 
      * @param value Signed long
      * @return CBORInteger
-     * @throws IllegalArgumentException
      */
     public static CBORInteger createInt53(long value) {
         return new CBORInteger(checkInt53(value));
