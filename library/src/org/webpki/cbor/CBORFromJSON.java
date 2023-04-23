@@ -122,7 +122,7 @@ public class CBORFromJSON {
                 while (readChar() != ']') {
                     index--;
                     do {
-                        array.addObject(getObject());
+                        array.add(getObject());
                     } while (continueList(']'));
                 }
                 return array;
@@ -138,7 +138,7 @@ public class CBORFromJSON {
                         }
                         CBORObject key = getObject();
                         scanFor(":");
-                        map.setObject(key, getObject());
+                        map.set(key, getObject());
                     } while (continueList('}'));
                 }
                 return map;

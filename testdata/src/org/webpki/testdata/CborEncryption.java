@@ -84,7 +84,7 @@ public class CborEncryption {
     static void verifyTag(CBORObject wrapperTag) {
         CBORTag tag = wrapperTag.getTag();
         if (tag.getTagNumber() == CBORTag.RESERVED_TAG_COTX) {
-            if (!tag.getObject().getArray().getObject(0).getString().equals(OBJECT_ID)) {
+            if (!tag.getObject().getArray().get(0).getString().equals(OBJECT_ID)) {
                 throw new CryptoException("ID mismatch");
             }
         } else if (tag.getTagNumber() != NON_RESEVED_TAG) {
@@ -234,7 +234,7 @@ public class CborEncryption {
         if (rawContainer.getType() == CBORTypes.TAG) {
             CBORObject container = rawContainer.getTag().getObject();
             if (container.getType() == CBORTypes.ARRAY) {
-                container = container.getArray().getObject(1);
+                container = container.getArray().get(1);
             }
             return container.getMap();
         }
@@ -244,17 +244,17 @@ public class CborEncryption {
     static String cleanEncryption(byte[] cefData) throws IOException {
         CBORObject cborObject = CBORObject.decode(cefData);
         CBORMap decoded = unwrapOptionalTag(cborObject);
-        decoded.removeObject(CBORCryptoConstants.IV_LABEL);
-        decoded.removeObject(CBORCryptoConstants.TAG_LABEL);
-        decoded.removeObject(CBORCryptoConstants.CIPHER_TEXT_LABEL);
-        if (decoded.hasKey(CBORCryptoConstants.KEY_ENCRYPTION_LABEL)) {
+        decoded.remove(CBORCryptoConstants.IV_LABEL);
+        decoded.remove(CBORCryptoConstants.TAG_LABEL);
+        decoded.remove(CBORCryptoConstants.CIPHER_TEXT_LABEL);
+        if (decoded.containsKey(CBORCryptoConstants.KEY_ENCRYPTION_LABEL)) {
             CBORMap keyEncryption =
-                    decoded.getObject(CBORCryptoConstants.KEY_ENCRYPTION_LABEL).getMap();
-            if (keyEncryption.hasKey(CBORCryptoConstants.CIPHER_TEXT_LABEL)) {
-                keyEncryption.removeObject(CBORCryptoConstants.CIPHER_TEXT_LABEL);
+                    decoded.get(CBORCryptoConstants.KEY_ENCRYPTION_LABEL).getMap();
+            if (keyEncryption.containsKey(CBORCryptoConstants.CIPHER_TEXT_LABEL)) {
+                keyEncryption.remove(CBORCryptoConstants.CIPHER_TEXT_LABEL);
             }
-            if (keyEncryption.hasKey(CBORCryptoConstants.EPHEMERAL_KEY_LABEL)) {
-                keyEncryption.removeObject(CBORCryptoConstants.EPHEMERAL_KEY_LABEL);
+            if (keyEncryption.containsKey(CBORCryptoConstants.EPHEMERAL_KEY_LABEL)) {
+                keyEncryption.remove(CBORCryptoConstants.EPHEMERAL_KEY_LABEL);
             }
         }
         return cborObject.toString();

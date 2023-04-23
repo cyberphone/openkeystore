@@ -18,7 +18,6 @@ package org.webpki.webapps.csf_lab;
 
 import java.io.IOException;
 
-import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 
 import java.security.cert.X509Certificate;
@@ -41,7 +40,7 @@ import org.webpki.cbor.CBORDiagnosticNotationDecoder;
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.CertificateInfo;
-
+import org.webpki.crypto.CryptoException;
 import org.webpki.json.JSONParser;
 
 import org.webpki.util.HexaDecimal;
@@ -69,10 +68,10 @@ public class ValidateServlet extends CoreRequestServlet {
             
             // This is certainly not what you would do in an application...
             CBORMap csfContainer = unwrapOptionalTag(signedCborObject)
-                        .getObject(signatureLabel).getMap();
+                        .get(signatureLabel).getMap();
             boolean hmacSignature = 
-                    csfContainer.getObject(CBORCryptoConstants.ALGORITHM_LABEL).getInt() > 0;
-            boolean x509flag = csfContainer.hasKey(CBORCryptoConstants.CERT_PATH_LABEL);
+                    csfContainer.get(CBORCryptoConstants.ALGORITHM_LABEL).getInt() > 0;
+            boolean x509flag = csfContainer.containsKey(CBORCryptoConstants.CERT_PATH_LABEL);
             final StringBuilder certificateData = x509flag ? new StringBuilder() : null;
 
             // Validation
@@ -91,11 +90,10 @@ public class ValidateServlet extends CoreRequestServlet {
 
                         @Override
                         public void verify(X509Certificate[] certificatePath,
-                                           AsymSignatureAlgorithms asymSignatureAlgorithm)
-                                throws IOException, GeneralSecurityException {
+                                           AsymSignatureAlgorithms asymSignatureAlgorithm) {
                             if (!certificatePath[0].getPublicKey().equals(externalPublicKey)) {
-                                throw new IOException("Externally supplied public key does " +
-                                                      "not match signature certificate");
+                                throw new CryptoException("Externally supplied public key does " +
+                                                          "not match signature certificate");
                             }
                             for (X509Certificate certificate : certificatePath) {
                                 if (!certificateData.isEmpty()) {

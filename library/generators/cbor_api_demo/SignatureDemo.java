@@ -26,26 +26,26 @@ public class SignatureDemo {
     public static void main(String[] args) {
         // Create CBOR data to be signed.
         CBORMap dataToBeSigned = new CBORMap()
-            .setObject(HELLO_LABEL, new CBORString("Hello CBOR World!"))
-            .setObject(ARRAY_LABEL, new CBORArray()
-                .addObject(new CBORFloatingPoint(-4.5))
-                .addObject(new CBORBoolean(true)));
+            .set(HELLO_LABEL, new CBORString("Hello Signed CBOR World!"))
+            .set(ARRAY_LABEL, new CBORArray()
+                .add(new CBORFloatingPoint(-4.5))
+                .add(new CBORBoolean(true)));
         
-        // Sign and encode CBOR.
-        byte[] signedData = new CBORHmacSigner(HMAC_KEY, HmacAlgorithms.HMAC_SHA256)
+        // Sign data using CSF.
+        byte[] signatureObject = new CBORHmacSigner(HMAC_KEY, HmacAlgorithms.HMAC_SHA256)
             .sign(SIGNATURE_LABEL, dataToBeSigned).encode();
         
-        // Decode CBOR and validate signature.
+        // Validate CSF object.
         CBORMap decodedCbor = new CBORHmacValidator(HMAC_KEY)
-            .validate(SIGNATURE_LABEL, CBORObject.decode(signedData)).getMap();
+            .validate(SIGNATURE_LABEL, CBORObject.decode(signatureObject)).getMap();
 //@begin@
-new CborDocumentLog(args[0], "#sample.program.hex#", signedData);
+new CborDocumentLog(args[0], "#sample.program.hex#", signatureObject);
 new CborDocumentLog(args[0], "#sample.program.diagnostic#", decodedCbor);
 new CborDocumentLog(args[0], args[1], "#sample.program#");
 //@end@
 
         // Fetch a map item.
-        String greatings = decodedCbor.getObject(HELLO_LABEL).getString();
+        String greatings = decodedCbor.get(HELLO_LABEL).getString();
         System.out.println(greatings);
     }
 }

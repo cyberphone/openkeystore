@@ -112,8 +112,8 @@ public class CBORAsymKeyValidator extends CBORValidator {
         
         // Fetch public key if there is one.
         PublicKey inLinePublicKey = null;
-        if (signatureObject.hasKey(PUBLIC_KEY_LABEL)) {
-            inLinePublicKey = CBORPublicKey.convert(signatureObject.getObject(PUBLIC_KEY_LABEL));
+        if (signatureObject.containsKey(PUBLIC_KEY_LABEL)) {
+            inLinePublicKey = CBORPublicKey.convert(signatureObject.get(PUBLIC_KEY_LABEL));
             // Please select ONE method for identifying the signature key.
             CBORCryptoUtils.rejectPossibleKeyId(optionalKeyId);
         }

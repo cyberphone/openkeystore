@@ -82,7 +82,7 @@ public class CBORMap extends CBORObject {
      * @param key Key
      * @return <code>true</code> if the key is present
      */
-    public boolean hasKey(CBORObject key) {
+    public boolean containsKey(CBORObject key) {
         byte[] testKey = key.encode();
         for (Entry entry = root; entry != null; entry = entry.next) {
             if (entry.compare(testKey) == 0) {
@@ -106,7 +106,7 @@ public class CBORMap extends CBORObject {
      * @param value Object
      * @return <code>this</code>
      */
-    public CBORMap setObject(CBORObject key, CBORObject value) {
+    public CBORMap set(CBORObject key, CBORObject value) {
         key = getKey(key);
         nullCheck(value);
         if (constrainedKeys && !key.getType().permittedConstrainedKey) {
@@ -175,7 +175,7 @@ public class CBORMap extends CBORObject {
      * @param key Key
      * @return Object
      */
-    public CBORObject getObject(CBORObject key) {
+    public CBORObject get(CBORObject key) {
         byte[] testKey = getKey(key).encode();
         for (Entry entry = root; entry != null; entry = entry.next) {
             if (entry.compare(testKey) == 0) {
@@ -195,7 +195,7 @@ public class CBORMap extends CBORObject {
      * @param key Key
      * @return <code>this</code>
      */
-    public CBORMap removeObject(CBORObject key) {
+    public CBORMap remove(CBORObject key) {
         byte[] testKey = getKey(key).encode();
         Entry precedingEntry = null;
         for (Entry entry = root; entry != null; entry = entry.next) {
@@ -246,8 +246,8 @@ public class CBORMap extends CBORObject {
      * @return byte string
      */
     public byte[] readBytesAndRemoveKey(CBORObject key) {
-        byte[] data = getObject(key).getBytes();
-        removeObject(key);
+        byte[] data = get(key).getBytes();
+        remove(key);
         return data;
     }
 
@@ -266,7 +266,7 @@ public class CBORMap extends CBORObject {
      * @return <code>this</code>
      */
     public CBORMap setBytes(CBORObject key, byte[] byteString) {
-        return setObject(key, new CBORBytes(byteString));
+        return set(key, new CBORBytes(byteString));
     }
     
     @Override

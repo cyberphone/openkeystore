@@ -106,7 +106,7 @@ public abstract class CBORValidator {
                                                                tagCollector);
 
         // Fetch signature container object
-        CBORMap csfContainer = signedMap.getObject(key).getMap();
+        CBORMap csfContainer = signedMap.get(key).getMap();
 
         // Get the signature value and remove it from the (map) object.
         byte[] signatureValue = csfContainer.readBytesAndRemoveKey(SIGNATURE_LABEL);
@@ -120,7 +120,7 @@ public abstract class CBORValidator {
         // Call algorithm specific validator. The code below presumes that encode()
         // returns a deterministic representation of the signed CBOR data.
         coreValidation(csfContainer,
-                       csfContainer.getObject(ALGORITHM_LABEL).getInt(),
+                       csfContainer.get(ALGORITHM_LABEL).getInt(),
                        optionalKeyId, 
                        signatureValue,
                        signedObject.encode());
@@ -129,7 +129,7 @@ public abstract class CBORValidator {
         csfContainer.checkForUnread();
 
         // Restore object.
-        csfContainer.setObject(SIGNATURE_LABEL, new CBORBytes(signatureValue));
+        csfContainer.set(SIGNATURE_LABEL, new CBORBytes(signatureValue));
         
         // Return it as well.
         return signedObject;

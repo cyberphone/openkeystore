@@ -86,7 +86,7 @@ public class CBORCryptoUtils {
     public static CBORArray encodeCertificateArray(X509Certificate[] certificatePath) {
         CBORArray array = new CBORArray();
         for (X509Certificate cert : CertificateUtil.checkCertificatePath(certificatePath)) {
-            array.addObject(new CBORBytes(CertificateUtil.getBlobFromCertificate(cert)));
+            array.add(new CBORBytes(CertificateUtil.getBlobFromCertificate(cert)));
         }
         return array;
     }
@@ -172,7 +172,7 @@ public class CBORCryptoUtils {
             CBORTag tag = container.getTag();
             container = tag.object;
             if (tag.tagNumber == CBORTag.RESERVED_TAG_COTX) {
-                container = container.getArray(2).getObject(1);
+                container = container.getArray(2).get(1);
             }
             if (callBackOrNull != null) {
                 callBackOrNull.foundData(tag);
@@ -186,20 +186,20 @@ public class CBORCryptoUtils {
     static CBORObject getKeyId(CBORMap holderMap) {
 
         // Get the key Id if there is one and scan() to make sure checkForUnread() won't fail
-        return holderMap.hasKey(KEY_ID_LABEL) ?
-            holderMap.getObject(KEY_ID_LABEL).scan() : null;
+        return holderMap.containsKey(KEY_ID_LABEL) ?
+            holderMap.get(KEY_ID_LABEL).scan() : null;
     }
     
     static void getCustomData(CBORMap holderMap, 
                               POLICY customDataPolicy,
                               Collector callBackOrNull) {
         // Get optional customData element.
-        if (holderMap.hasKey(CUSTOM_DATA_LABEL)) {
+        if (holderMap.containsKey(CUSTOM_DATA_LABEL)) {
             if (customDataPolicy == POLICY.FORBIDDEN) {
                 inputError("Custom data encountered", customDataPolicy);
             }
             // It is OK to not read customData during validation.
-            CBORObject customData = holderMap.getObject(CUSTOM_DATA_LABEL).scan();
+            CBORObject customData = holderMap.get(CUSTOM_DATA_LABEL).scan();
             if (callBackOrNull != null) {
                 callBackOrNull.foundData(customData);
             }
@@ -214,7 +214,7 @@ public class CBORCryptoUtils {
                                           ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
 
         // The mandatory key encryption algorithm
-        keyEncryption.setObject(ALGORITHM_LABEL,
+        keyEncryption.set(ALGORITHM_LABEL,
                                 new CBORInteger(keyEncryptionAlgorithm.getCoseAlgorithmId()));
         
         // Key wrapping algorithms need a key to wrap
@@ -235,12 +235,12 @@ public class CBORCryptoUtils {
                                                       publicKey);
         if (!keyEncryptionAlgorithm.isRsa()) {
             // ECDH-ES requires the ephemeral public key
-            keyEncryption.setObject(EPHEMERAL_KEY_LABEL,
+            keyEncryption.set(EPHEMERAL_KEY_LABEL,
                                     CBORPublicKey.convert(result.getEphemeralKey()));
         }
         if (keyEncryptionAlgorithm.isKeyWrap()) {
             // Encrypted key
-            keyEncryption.setObject(CIPHER_TEXT_LABEL, new CBORBytes(result.getEncryptedKey()));
+            keyEncryption.set(CIPHER_TEXT_LABEL, new CBORBytes(result.getEncryptedKey()));
         }
         return result.getContentEncryptionKey();
     }
@@ -248,13 +248,13 @@ public class CBORCryptoUtils {
     static byte[] getEncryptedKey(CBORMap innerObject,
                                   KeyEncryptionAlgorithms keyEncryptionAlgorithm) {
         return keyEncryptionAlgorithm.isKeyWrap() ?  // All but ECDH-ES
-            innerObject.getObject(CIPHER_TEXT_LABEL).getBytes() : null;
+            innerObject.get(CIPHER_TEXT_LABEL).getBytes() : null;
     }
     
     static PublicKey getEphemeralKey(CBORMap innerObject,
                                      KeyEncryptionAlgorithms keyEncryptionAlgorithm) {
         return keyEncryptionAlgorithm.isRsa() ? null :
-            CBORPublicKey.convert(innerObject.getObject(EPHEMERAL_KEY_LABEL));
+            CBORPublicKey.convert(innerObject.get(EPHEMERAL_KEY_LABEL));
         
     }
     

@@ -19,7 +19,6 @@ package org.webpki.webapps.csf_lab;
 import java.io.IOException;
 import java.io.InputStream;
 
-import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 
 import java.util.logging.Level;
@@ -34,6 +33,7 @@ import org.webpki.cbor.CBORObject;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
+import org.webpki.crypto.CryptoException;
 import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.SignatureAlgorithms;
@@ -176,10 +176,9 @@ public class CSFService extends InitPropertyReader implements ServletContextList
                 @Override
                 public PublicKey locate(PublicKey publicKey, 
                                         CBORObject keyId, 
-                                        AsymSignatureAlgorithms algorithm)
-                        throws IOException, GeneralSecurityException {
+                                        AsymSignatureAlgorithms algorithm) {
                     if (publicKey == null) {
-                        throw new GeneralSecurityException("No public key");
+                        throw new CryptoException("No public key");
                     }
                     return publicKey;
                 }

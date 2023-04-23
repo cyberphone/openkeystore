@@ -64,14 +64,14 @@ public class CBORTypedObjectDecoderCache {
             throw new CBORException("COTX expcted, got: " + tag.tagNumber);
         }
         CBORArray cborArray = tag.getObject().getArray(2);
-        String objectId = cborArray.getObject(0).getString();
+        String objectId = cborArray.get(0).getString();
         Class<? extends CBORTypedObjectDecoder> schemaClass = classMap.get(objectId);
         if (schemaClass == null) {
             throw new CBORException("Unknown ObjectId: " + objectId);
         }
         CBORTypedObjectDecoder decoder = getInstance(schemaClass);
         decoder.root = typedObject;
-        decoder.decode(cborArray.getObject(1));
+        decoder.decode(cborArray.get(1));
         if (checkForUnread) {
             typedObject.checkForUnread();
         }

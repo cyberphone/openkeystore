@@ -66,8 +66,8 @@ public class CBORTag extends CBORObject {
      */
     public CBORTag(String typeUrl, CBORObject object) {
         this(RESERVED_TAG_COTX, new CBORArray()
-                                    .addObject(new CBORString(typeUrl))
-                                    .addObject(object));
+                                    .add(new CBORString(typeUrl))
+                                    .add(object));
     }
 
     /**

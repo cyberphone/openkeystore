@@ -156,21 +156,21 @@ public class CborSignatures {
         CBORMap decoded = CborEncryption.unwrapOptionalTag(signedObject);
         CBORObject[] keys = decoded.getMap().getKeys();
         for (CBORObject key : keys) {
-            CBORObject value = decoded.getMap().getObject(key);
+            CBORObject value = decoded.getMap().get(key);
             if (value.getType() == CBORTypes.MAP) {
                 CBORMap possibleSignature = value.getMap();
-                if (possibleSignature.hasKey(CBORCryptoConstants.ALGORITHM_LABEL)) {
+                if (possibleSignature.containsKey(CBORCryptoConstants.ALGORITHM_LABEL)) {
                     CBORObject alg =
-                            possibleSignature.getObject(CBORCryptoConstants.ALGORITHM_LABEL);
+                            possibleSignature.get(CBORCryptoConstants.ALGORITHM_LABEL);
                     if (alg.getType() != CBORTypes.INTEGER) continue;
                 }
-                if (possibleSignature.hasKey(CBORCryptoConstants.SIGNATURE_LABEL)) {
+                if (possibleSignature.containsKey(CBORCryptoConstants.SIGNATURE_LABEL)) {
                     CBORObject sig =
-                            possibleSignature.getObject(CBORCryptoConstants.SIGNATURE_LABEL);
+                            possibleSignature.get(CBORCryptoConstants.SIGNATURE_LABEL);
                     if (sig.getType() != CBORTypes.BYTE_STRING) continue;
                 }
                 // This is with 99% certainty a CSF signature.  Bump the signature value.
-                possibleSignature.removeObject(CBORCryptoConstants.SIGNATURE_LABEL);
+                possibleSignature.remove(CBORCryptoConstants.SIGNATURE_LABEL);
                 return signedObject.toString();
             }
         }
@@ -254,9 +254,9 @@ public class CborSignatures {
 
     static byte[] getDataToSign() throws Exception {
         return new CBORMap()
-            .setObject(new CBORString("instant"), new CBORString("2021-06-10T11:23:06Z"))
-            .setObject(new CBORString("name"), new CBORString("John Doe"))
-            .setObject(new CBORString("id"), new CBORInteger(123456))
+            .set(new CBORString("instant"), new CBORString("2021-06-10T11:23:06Z"))
+            .set(new CBORString("name"), new CBORString("John Doe"))
+            .set(new CBORString("id"), new CBORInteger(123456))
             .encode();
     }
     
@@ -458,20 +458,20 @@ public class CborSignatures {
         CBORAsymKeySigner signer = 
                 new CBORAsymKeySigner(keyPair.getPrivate()).setPublicKey(keyPair.getPublic());
         byte[] signedData = signer.sign(new CBORInteger(-1), 
-                new CBORMap().setObject(new CBORInteger(1), 
+                new CBORMap().set(new CBORInteger(1), 
                                         new CBORMap()
-                                            .setObject(new CBORInteger(1), new CBORString("Space Shop"))
-                                            .setObject(new CBORInteger(2), new CBORString("435.00"))
-                                            .setObject(new CBORInteger(3), new CBORString("USD")))
-                             .setObject(new CBORInteger(2), new CBORString("spaceshop.com"))
-                             .setObject(new CBORInteger(3), new CBORString("FR7630002111110020050014382"))
-                             .setObject(new CBORInteger(4), new CBORString("https://banknet2.org"))
-                             .setObject(new CBORInteger(5), new CBORString("05768401"))
-                             .setObject(new CBORInteger(6), new CBORString("2022-09-29T09:34:08-05:00"))
-                             .setObject(new CBORInteger(7),
+                                            .set(new CBORInteger(1), new CBORString("Space Shop"))
+                                            .set(new CBORInteger(2), new CBORString("435.00"))
+                                            .set(new CBORInteger(3), new CBORString("USD")))
+                             .set(new CBORInteger(2), new CBORString("spaceshop.com"))
+                             .set(new CBORInteger(3), new CBORString("FR7630002111110020050014382"))
+                             .set(new CBORInteger(4), new CBORString("https://banknet2.org"))
+                             .set(new CBORInteger(5), new CBORString("05768401"))
+                             .set(new CBORInteger(6), new CBORString("2022-09-29T09:34:08-05:00"))
+                             .set(new CBORInteger(7),
                                         new CBORMap()
-                                            .setObject(new CBORInteger(1), new CBORFloatingPoint(38.8882))
-                                            .setObject(new CBORInteger(2), new CBORFloatingPoint(77.0199))))
+                                            .set(new CBORInteger(1), new CBORFloatingPoint(38.8882))
+                                            .set(new CBORInteger(2), new CBORFloatingPoint(77.0199))))
                 .encode();
         CBORAsymKeyValidator validator = new CBORAsymKeyValidator(keyPair.getPublic());
         boolean changed = true;

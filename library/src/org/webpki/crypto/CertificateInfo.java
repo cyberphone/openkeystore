@@ -16,11 +16,7 @@
  */
 package org.webpki.crypto;
 
-import java.io.IOException;
-
 import java.util.GregorianCalendar;
-
-import java.security.GeneralSecurityException;
 
 import java.security.cert.X509Certificate;
 
@@ -55,8 +51,7 @@ public class CertificateInfo {
     private boolean trustModeSet;
 
 
-    public CertificateInfo(X509Certificate certificate, boolean trusted) 
-            throws IOException, GeneralSecurityException {
+    public CertificateInfo(X509Certificate certificate, boolean trusted) {
         this.certificate = certificate;
         this.trusted = trusted;
         trustModeSet = true;
@@ -70,8 +65,7 @@ public class CertificateInfo {
     }
 
 
-    public CertificateInfo(X509Certificate certificate)
-            throws IOException, GeneralSecurityException {
+    public CertificateInfo(X509Certificate certificate) {
         this(certificate, true);
         trustModeSet = false;
     }
@@ -201,7 +195,7 @@ public class CertificateInfo {
     /*
      * Returns the certificate hash.
      */
-    public byte[] getCertificateHash() throws IOException, GeneralSecurityException {
+    public byte[] getCertificateHash() {
         return CertificateUtil.getCertificateSHA256(certificate);
     }
 
@@ -255,27 +249,27 @@ public class CertificateInfo {
     }
 
 
-    public String[] getPolicyOIDs() throws IOException, GeneralSecurityException {
+    public String[] getPolicyOIDs() {
         return CertificateUtil.getPolicyOIDs(certificate);
     }
 
 
-    public String[] getAIAOCSPResponders() throws IOException, GeneralSecurityException {
+    public String[] getAIAOCSPResponders() {
         return CertificateUtil.getAIAOCSPResponders(certificate);
     }
 
 
-    public String[] getAIACAIssuers() throws IOException, GeneralSecurityException {
+    public String[] getAIACAIssuers() {
         return CertificateUtil.getAIACAIssuers(certificate);
     }
 
 
-    public String[] getExtendedKeyUsage() throws IOException, GeneralSecurityException {
+    public String[] getExtendedKeyUsage() {
         return CertificateUtil.getExtendedKeyUsage(certificate);
     }
 
 
-    public String[] getKeyUsages() throws IOException, GeneralSecurityException {
+    public String[] getKeyUsages() {
         return CertificateUtil.getKeyUsages(certificate);
     }
 
@@ -290,40 +284,36 @@ public class CertificateInfo {
     }
 
 
-    public String getPublicKeyAlgorithm() throws IOException {
+    public String getPublicKeyAlgorithm() {
         return KeyAlgorithms.getKeyAlgorithm(
                 certificate.getPublicKey()).getAlgorithmId(AlgorithmPreferences.SKS);
     }
 
 
-    public String getSerialNumberInHex() throws IOException {
+    public String getSerialNumberInHex() {
         return HexaDecimal.encode(certificate.getSerialNumber().toByteArray());
     }
 
 
-    public int getPublicKeySize() throws IOException {
+    public int getPublicKeySize() {
         return KeyAlgorithms.getKeyAlgorithm(certificate.getPublicKey()).getPublicKeySizeInBits();
     }
 
 
-    public byte[] getCertificateBlob() throws IOException {
-        try {
-            return certificate.getEncoded();
-        } catch (GeneralSecurityException gse) {
-            throw new IOException(gse.getMessage());
-        }
+    public byte[] getCertificateBlob() {
+        return CertificateUtil.getBlobFromCertificate(certificate);
     }
 
 
-    public boolean isTrusted() throws IOException {
+    public boolean isTrusted() {
         if (trustModeSet) {
             return trusted;
         }
-        throw new IOException("Illegal call.  Trust is unknown");
+        throw new CryptoException("Illegal call.  Trust is unknown");
     }
 
 
-    public byte[] getPublicKeyData() throws IOException {
+    public byte[] getPublicKeyData() {
         if (certificate.getPublicKey() instanceof RSAKey) {
             return DerDecoder.decode(
                     ((ASN1BitString) (
@@ -340,7 +330,7 @@ public class CertificateInfo {
     }
 
 
-    public String toString(boolean Verbose) throws IOException, GeneralSecurityException {
+    public String toString(boolean Verbose) {
         byte hash[] = getCertificateHash();
         return "  Subject DN: " + getSubject() + "\n" +
                "  Issuer DN: " + getIssuer() + "\n" +
@@ -355,12 +345,7 @@ public class CertificateInfo {
 
 
     public String toString() {
-        try {
-            return toString(false);
-        } catch (IOException | GeneralSecurityException e) {
-            throw new RuntimeException(e);
-        }
+        return toString(false);
     }
-
 }
   

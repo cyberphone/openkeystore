@@ -112,7 +112,7 @@ public class CBORPublicKey {
         switch (keyAlg.getKeyType()) {
             case RSA:
                 RSAPublicKey rsaPublicKey = (RSAPublicKey) jcePublicKey;
-                cosePublicKey.setObject(COSE_KTY_LABEL, COSE_RSA_KTY)
+                cosePublicKey.set(COSE_KTY_LABEL, COSE_RSA_KTY)
                              .setBytes(COSE_RSA_N_LABEL,
                                        cryptoBinary(rsaPublicKey.getModulus()))
                              .setBytes(COSE_RSA_E_LABEL, 
@@ -121,15 +121,15 @@ public class CBORPublicKey {
     
             case EC:
                 ECPoint ecPoint = ((ECPublicKey) jcePublicKey).getW();
-                cosePublicKey.setObject(COSE_KTY_LABEL, COSE_EC2_KTY)
-                             .setObject(COSE_EC2_CRV_LABEL, WEBPKI_2_COSE_CRV.get(keyAlg))
+                cosePublicKey.set(COSE_KTY_LABEL, COSE_EC2_KTY)
+                             .set(COSE_EC2_CRV_LABEL, WEBPKI_2_COSE_CRV.get(keyAlg))
                              .setBytes(COSE_EC2_X_LABEL, curvePoint(ecPoint.getAffineX(), keyAlg))
                              .setBytes(COSE_EC2_Y_LABEL, curvePoint(ecPoint.getAffineY(), keyAlg));
                 break;
      
             default:  // EDDSA and XEC
-                cosePublicKey.setObject(COSE_KTY_LABEL, COSE_OKP_KTY)
-                             .setObject(COSE_OKP_CRV_LABEL, WEBPKI_2_COSE_CRV.get(keyAlg))
+                cosePublicKey.set(COSE_KTY_LABEL, COSE_OKP_KTY)
+                             .set(COSE_OKP_CRV_LABEL, WEBPKI_2_COSE_CRV.get(keyAlg))
                              .setBytes(COSE_OKP_X_LABEL,
                                        OkpSupport.public2RawKey(jcePublicKey, keyAlg));
         }
@@ -137,7 +137,7 @@ public class CBORPublicKey {
     }
 
     static BigInteger getCryptoBinary(CBORMap keyMap, CBORObject key) {
-        byte[] cryptoBinary = keyMap.getObject(key).getBytes();
+        byte[] cryptoBinary = keyMap.get(key).getBytes();
         if (cryptoBinary[0] == 0x00) {
             throw new CryptoException("RSA key parameter contains leading zeroes");
         }
@@ -145,7 +145,7 @@ public class CBORPublicKey {
     }
 
     static BigInteger getCurvePoint(CBORMap keyMap, CBORObject key, KeyAlgorithms ec) {
-        byte[] fixedBinary = keyMap.getObject(key).getBytes();
+        byte[] fixedBinary = keyMap.get(key).getBytes();
         if (fixedBinary.length != (ec.getPublicKeySizeInBits() + 7) / 8) {
             throw new CryptoException("Public EC key parameter is not normalized");
         }
@@ -153,7 +153,7 @@ public class CBORPublicKey {
     }
 
     static KeyAlgorithms getKeyAlgorithmFromCurveId(CBORMap keyMap, CBORObject curveLabel) {
-        CBORObject curve = keyMap.getObject(curveLabel);
+        CBORObject curve = keyMap.get(curveLabel);
         KeyAlgorithms keyAlgorithm = COSE_2_WEBPKI_CRV.get(curve.getInt());
         if (keyAlgorithm == null) {
             throw new CryptoException("No such key/curve algorithm: " + curve.getInt());
@@ -162,7 +162,7 @@ public class CBORPublicKey {
     }
     
     static KeyTypes getKeyType(CBORMap coseKeyMap) {
-        int coseKty = coseKeyMap.getObject(COSE_KTY_LABEL).getInt();
+        int coseKty = coseKeyMap.get(COSE_KTY_LABEL).getInt();
         KeyTypes keyType = keyTypes.get(coseKty);
         if (keyType == null) {
             throw new CryptoException("Unrecognized key type: " + coseKty);
@@ -199,7 +199,7 @@ public class CBORPublicKey {
                         throw new CryptoException("Invalid OKP curve: " + keyAlg.toString());
                     }
                     publicKey = OkpSupport.raw2PublicKey(
-                        publicKeyMap.getObject(COSE_OKP_X_LABEL).getBytes(), keyAlg);
+                        publicKeyMap.get(COSE_OKP_X_LABEL).getBytes(), keyAlg);
             }
             return publicKey;
         } catch (GeneralSecurityException e) {

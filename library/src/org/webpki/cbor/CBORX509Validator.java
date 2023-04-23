@@ -81,7 +81,7 @@ public class CBORX509Validator extends CBORValidator {
         
         // Fetch certificate(path).
         X509Certificate[] certificatePath = CBORCryptoUtils.decodeCertificateArray(
-                signatureObject.getObject(CERT_PATH_LABEL).getArray());
+                signatureObject.get(CERT_PATH_LABEL).getArray());
         
         // Now we have everything needed for validating the signature.
         SignatureWrapper.validate(certificatePath[0].getPublicKey(),

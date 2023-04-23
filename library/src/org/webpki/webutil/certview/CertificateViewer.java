@@ -121,7 +121,6 @@ public abstract class CertificateViewer extends HttpServlet {
 
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        try {
         boolean no_session = request.getSession(false) == null;
         CertificateInfo ci = getCertificateInfo(request);
         if (ci == null) {
@@ -171,9 +170,6 @@ public abstract class CertificateViewer extends HttpServlet {
                 append("\"></form></body></html>");
         DefaultHTML.setHTMLMode(response);
         response.getOutputStream().print(s.toString());
-        } catch (GeneralSecurityException e) {
-            throw new IOException(e);
-        }
     }
 
 

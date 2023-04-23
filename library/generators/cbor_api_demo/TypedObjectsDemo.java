@@ -20,7 +20,7 @@ public class TypedObjectsDemo {
         
         @Override
         protected void decode(CBORObject cborBody) {
-            number = cborBody.getMap().getObject(INT_KEY).getInt();
+            number = cborBody.getMap().get(INT_KEY).getInt();
         }
 
         @Override
@@ -56,7 +56,7 @@ public class TypedObjectsDemo {
     public static void main(String[] args) {
         // Create typed CBOR messages.
         byte[] objectOne = new CBORTag(ObjectOne.OBJECT_ID,
-                new CBORMap().setObject(ObjectOne.INT_KEY, new CBORInteger(-343)))
+                new CBORMap().set(ObjectOne.INT_KEY, new CBORInteger(-343)))
                     .encode();
         
         byte[] objectTwo = new CBORTag(ObjectTwo.OBJECT_ID, 

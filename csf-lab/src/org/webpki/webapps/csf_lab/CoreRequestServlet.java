@@ -241,7 +241,7 @@ public class CoreRequestServlet extends HttpServlet {
         if (rawContainer.getType() == CBORTypes.TAG) {
             CBORObject container = rawContainer.getTag().getObject();
             if (container.getType() == CBORTypes.ARRAY) {
-                container = container.getArray().getObject(1);
+                container = container.getArray().get(1);
             }
             return container.getMap();
         }

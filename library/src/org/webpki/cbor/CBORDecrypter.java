@@ -107,11 +107,11 @@ public abstract class CBORDecrypter {
         // Get the mandatory content encryption algorithm.
         ContentEncryptionAlgorithms contentEncryptionAlgorithm =
                 ContentEncryptionAlgorithms.getAlgorithmFromId(
-                        cefContainer.getObject(ALGORITHM_LABEL).getInt());
+                        cefContainer.get(ALGORITHM_LABEL).getInt());
 
         // Possible key encryption kicks in here.  That is, there is a sub map.
         CBORMap innerObject = this instanceof CBORSymKeyDecrypter ? 
-                cefContainer : cefContainer.getObject(KEY_ENCRYPTION_LABEL).getMap();
+                cefContainer : cefContainer.get(KEY_ENCRYPTION_LABEL).getMap();
               
         // Fetch optional keyId.
         CBORObject optionalKeyId = CBORCryptoUtils.getKeyId(innerObject);

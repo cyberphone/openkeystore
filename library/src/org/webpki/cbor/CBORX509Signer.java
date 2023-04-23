@@ -103,7 +103,7 @@ public class CBORX509Signer extends CBORSigner {
     @Override
     void additionalItems(CBORMap signatureObject) {
         // X509 signatures mandate a certificate path.
-        signatureObject.setObject(CERT_PATH_LABEL, 
+        signatureObject.set(CERT_PATH_LABEL, 
                                   CBORCryptoUtils.encodeCertificateArray(signer.getCertificatePath()));
         // Key IDs are always rejected.
         CBORCryptoUtils.rejectPossibleKeyId(optionalKeyId);

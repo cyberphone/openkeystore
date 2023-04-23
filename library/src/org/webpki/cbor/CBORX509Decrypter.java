@@ -98,11 +98,11 @@ public class CBORX509Decrypter extends CBORDecrypter {
         // Mandatory algorithm
         KeyEncryptionAlgorithms keyEncryptionAlgorithm =
                 KeyEncryptionAlgorithms.getAlgorithmFromId(
-                        innerObject.getObject(ALGORITHM_LABEL).getInt());
+                        innerObject.get(ALGORITHM_LABEL).getInt());
  
         // Fetch certificate path
         X509Certificate[] certificatePath = CBORCryptoUtils.decodeCertificateArray(
-                innerObject.getObject(CERT_PATH_LABEL).getArray());
+                innerObject.get(CERT_PATH_LABEL).getArray());
 
         // Now we have what it takes for finding the proper private key
         PrivateKey privateKey = decrypterImpl.locate(certificatePath,

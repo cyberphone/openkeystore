@@ -448,7 +448,7 @@ public abstract class CBORObject {
         
             case ARRAY:
                 CBORArray cborArray = (CBORArray) this;
-                for (CBORObject object : cborArray.getObjects()) {
+                for (CBORObject object : cborArray.toArray()) {
                     object.traverse(cborArray, check);
                 }
                 break;
@@ -683,7 +683,7 @@ public abstract class CBORObject {
                     CBORObject tagData = getObject();
                     if (n == CBORTag.RESERVED_TAG_COTX) {
                         CBORArray holder = tagData.getArray(2);
-                        if (holder.getObject(0).getType() != CBORTypes.TEXT_STRING) {
+                        if (holder.get(0).getType() != CBORTypes.TEXT_STRING) {
                             reportError("Tag syntax " +  CBORTag.RESERVED_TAG_COTX +
                                         "([\"string\", CBOR object]) expected");
                         }
@@ -705,7 +705,7 @@ public abstract class CBORObject {
                 case MT_ARRAY:
                     CBORArray cborArray = new CBORArray();
                     for (int q = checkLength(n); --q >= 0; ) {
-                        cborArray.addObject(getObject());
+                        cborArray.add(getObject());
                     }
                     return cborArray;
     
@@ -714,7 +714,7 @@ public abstract class CBORObject {
                     cborMap.deterministicMode = deterministicMode;
                     cborMap.constrainedKeys = constrainedMapKeys;
                     for (int q = checkLength(n); --q >= 0; ) {
-                        cborMap.setObject(getObject(), getObject());
+                        cborMap.set(getObject(), getObject());
                     }
                     // Programmatically added elements sort automatically. 
                     cborMap.deterministicMode = false;

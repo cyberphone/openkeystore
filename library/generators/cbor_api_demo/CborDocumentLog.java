@@ -42,8 +42,8 @@ public class CborDocumentLog {
                 CBORMap refMap = refData.getMap();
                 CBORMap newMap = newData.getMap();
                 for (CBORObject key : refMap.getKeys()) {
-                    CBORObject refValue = refMap.getObject(key);
-                    CBORObject newValue = newMap.getObject(key);
+                    CBORObject refValue = refMap.get(key);
+                    CBORObject newValue = newMap.get(key);
                     if (refValue.getType() == CBORTypes.BYTE_STRING) {
                         byte[] refBlob = refValue.getBytes();
                         byte[] newBlob = newValue.getBytes();
@@ -60,7 +60,7 @@ public class CborDocumentLog {
                 CBORArray refArray = refData.getArray();
                 CBORArray newArray = newData.getArray();
                 for (int q = refArray.size(); --q >= 0;) {
-                    traverse(refArray.getObject(q), newArray.getObject(q));
+                    traverse(refArray.get(q), newArray.get(q));
                 }
                 break;
                 

@@ -153,7 +153,7 @@ public class CBORDiagnosticNotationDecoder {
                 while (readChar() != ']') {
                     index--;
                     do {
-                        array.addObject(getObject());
+                        array.add(getObject());
                     } while (continueList(']'));
                 }
                 return array;
@@ -166,7 +166,7 @@ public class CBORDiagnosticNotationDecoder {
                     do {
                         CBORObject key = getObject();
                         scanFor(":");
-                        map.setObject(key, getObject());
+                        map.set(key, getObject());
                     } while (continueList('}'));
                 }
                 return map;
@@ -311,7 +311,7 @@ public class CBORDiagnosticNotationDecoder {
                     CBORArray array;
                     if (taggedObject.getType() != CBORTypes.ARRAY ||
                         (array = taggedObject.getArray()).size() != 2 ||
-                        (array.getObject(0).getType() != CBORTypes.TEXT_STRING)) {
+                        (array.get(0).getType() != CBORTypes.TEXT_STRING)) {
                         reportError("Special tag " + CBORTag.RESERVED_TAG_COTX + " syntax error");
                     }
                 }
