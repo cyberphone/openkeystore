@@ -16,8 +16,6 @@
  */
 package org.webpki.asn1;
 
-import java.io.IOException;
-
 import java.util.Arrays;
 
 /**
@@ -30,25 +28,25 @@ public final class SimpleContextSpecific extends Binary {
         System.arraycopy(value, 0, this.value, 0, value.length);
     }
 
-    public SimpleContextSpecific(int tagNumber, BaseASN1Object value) throws IOException {
+    public SimpleContextSpecific(int tagNumber, BaseASN1Object value) {
         this(tagNumber, value.encodeContent());
     }
 
-    SimpleContextSpecific(DerDecoder decoder) throws IOException {
+    SimpleContextSpecific(DerDecoder decoder) {
         super(decoder);
 
         if (!isContext()) {
-            throw new IOException("Internal error: Wrong tag class");
+            throw new ASN1Exception("Internal error: Wrong tag class");
         }
 
         if (isPrimitive()) {
             value = decoder.content();
         } else {
-            throw new IOException("Internal error: Composite");
+            throw new ASN1Exception("Internal error: Composite");
         }
 
         if (value == null) {
-            throw new IOException("Empty CONTEXT_SPECIFIC.");
+            throw new ASN1Exception("Empty CONTEXT_SPECIFIC.");
         }
     }
 
@@ -56,7 +54,7 @@ public final class SimpleContextSpecific extends Binary {
         return value[i];
     }
 
-    public void encode(Encoder encoder) throws IOException {
+    public void encode(Encoder encoder) {
         encode(encoder, value);
     }
 

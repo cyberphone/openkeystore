@@ -65,15 +65,12 @@ public class JSONAsymKeySigner extends JSONSigner {
         signer = new AsymKeySignerInterface() {
 
             @Override
-            public byte[] signData(byte[] data) throws IOException, GeneralSecurityException {
-                return new SignatureWrapper(algorithm, privateKey, provider)
-                               .update(data)
-                               .sign();
+            public byte[] signData(byte[] data) {
+                return SignatureWrapper.sign(privateKey, algorithm, data, provider);
             }
 
             @Override
-            public AsymSignatureAlgorithms getAlgorithm() throws IOException,
-                                                                 GeneralSecurityException {
+            public AsymSignatureAlgorithms getAlgorithm() {
                 return algorithm;
             }
           

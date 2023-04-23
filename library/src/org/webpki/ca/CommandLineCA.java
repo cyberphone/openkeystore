@@ -43,6 +43,7 @@ import java.security.cert.X509Certificate;
 import org.webpki.asn1.cert.DistinguishedName;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
+import org.webpki.crypto.CryptoException;
 import org.webpki.crypto.ExtendedKeyUsages;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyTypes;
@@ -58,8 +59,8 @@ public class CommandLineCA {
 
     String helptext;
 
-    private void bad(String what) throws IOException {
-        throw new IOException(what);
+    private void bad(String what) {
+        throw new CryptoException(what);
     }
 
 
@@ -104,30 +105,30 @@ public class CommandLineCA {
             list.add(this);
         }
 
-        int getInteger() throws IOException {
+        int getInteger() {
             return Integer.parseInt(getString());
         }
 
-        String getString() throws IOException {
+        String getString() {
             if (argvalue.size() != 1) {
                 bad("Internal argument error for command: " + command);
             }
             return argvalue.get(0).trim();
         }
 
-        AsymSignatureAlgorithms getAlgorithm() throws IOException {
+        AsymSignatureAlgorithms getAlgorithm() {
             return AsymSignatureAlgorithms.valueOf(getString());
         }
 
-        KeyAlgorithms getKeyAlgorithm() throws IOException {
+        KeyAlgorithms getKeyAlgorithm() {
             return KeyAlgorithms.valueOf(getString());
         }
 
-        BigInteger getBigInteger() throws IOException {
+        BigInteger getBigInteger() {
             return new BigInteger(getString());
         }
 
-        int get1Dec() throws IOException {
+        int get1Dec() {
             try {
                 int v = Integer.parseInt(temparg.substring(0, 1));
                 temparg = temparg.substring(1);
@@ -138,11 +139,11 @@ public class CommandLineCA {
             }
         }
 
-        int get2Dec() throws IOException {
+        int get2Dec() {
             return get1Dec() * 10 + get1Dec();
         }
 
-        int eatDelimAndGet2Dec(char delim) throws IOException {
+        int eatDelimAndGet2Dec(char delim) {
             if (temparg.toUpperCase().charAt(0) != delim) {
                 bad("DateTime delimiter expected: " + delim);
             }
@@ -153,7 +154,7 @@ public class CommandLineCA {
         /**
          * dateTime       = YYYY "-" MM "-" DD "T" hh ":" mm ":" ss
          */
-        Date getDateTime() throws IOException {
+        Date getDateTime() {
             GregorianCalendar gc = new GregorianCalendar();
             gc.clear();
 
@@ -181,7 +182,7 @@ public class CommandLineCA {
             return gc.getTime();
         }
 
-        char[] toCharArray() throws IOException {
+        char[] toCharArray() {
             return getString().toCharArray();
         }
 
@@ -222,16 +223,19 @@ public class CommandLineCA {
 
 
         @Override
-        public byte[] signData(byte[] data) throws IOException, GeneralSecurityException {
+        public byte[] signData(byte[] data) {
+            try {
             return new SignatureWrapper(certalg, signKey)
                         .ecdsaAsn1SignatureEncoding(true)
                         .update(data)
                         .sign();
+            } catch (GeneralSecurityException e) {
+                throw new CryptoException(e);
+            }
         }
 
         @Override
-        public AsymSignatureAlgorithms getAlgorithm() throws IOException,
-                                                             GeneralSecurityException {
+        public AsymSignatureAlgorithms getAlgorithm() {
              return certalg;
         }
 
@@ -251,7 +255,7 @@ public class CommandLineCA {
         }
     }
 
-    void checkConsistency() throws IOException {
+    void checkConsistency() {
         for (CmdLineArgument cla1 : list) {
             if (cla1.found) {
                 // Now check for mutual exclusion....
@@ -631,7 +635,7 @@ public class CommandLineCA {
     }
 
 
-    CmdLineArgument get(String argument) throws IOException {
+    CmdLineArgument get(String argument) {
         for (CmdLineArgument cla : list) {
             if (cla.command.equals(argument.substring(1))) {
                 if (cla.found && (cla.frequency == CmdFrequency.OPTIONAL || cla.frequency == CmdFrequency.SINGLE)) {
@@ -646,7 +650,7 @@ public class CommandLineCA {
     }
 
 
-    void decodeCommandLine(String argv[]) throws IOException {
+    void decodeCommandLine(String argv[]) {
         if (argv.length == 0) {
             show();
             System.exit(3);
@@ -678,7 +682,8 @@ public class CommandLineCA {
             ///////////////////////////////////////////////////////////////
             // Create the target certificate key-pair
             ///////////////////////////////////////////////////////////////
-            KeyPairGenerator kpg = null;
+            KeyPairGenerator kpg;
+            KeyPair key_pair;
             if (CMD_ecc_curve.found) {
                 KeyAlgorithms keyAlgorithm = CMD_ecc_curve.getKeyAlgorithm();
                 if (keyAlgorithm.getKeyType() == KeyTypes.EC) {
@@ -690,12 +695,14 @@ public class CommandLineCA {
             } else {
                 kpg = KeyPairGenerator.getInstance("RSA");
                 if (CMD_exponent.found) {
-                    kpg.initialize(new RSAKeyGenParameterSpec(CMD_rsa_key_size.getInteger(), BigInteger.valueOf(CMD_exponent.getInteger())));
+                    kpg.initialize(new RSAKeyGenParameterSpec(
+                            CMD_rsa_key_size.getInteger(),
+                            BigInteger.valueOf(CMD_exponent.getInteger())));
                 } else {
                     kpg.initialize(CMD_rsa_key_size.getInteger());
                 }
             }
-            KeyPair key_pair = kpg.generateKeyPair();
+            key_pair = kpg.generateKeyPair();
             PrivateKey priv_key = key_pair.getPrivate();
             PublicKey subject_pub_key = key_pair.getPublic();
 
@@ -875,8 +882,8 @@ public class CommandLineCA {
                     CMD_out_pkey_pass.toCharArray(),
                     cert_path.toArray(new Certificate[0]));
             ks.store(ofile, CMD_out_ks_pass.toCharArray());
-        } catch (GeneralSecurityException gse) {
-            bad(gse.getMessage());
+        } catch (GeneralSecurityException | IOException e) {
+            bad(e.getMessage());
         }
     }
 

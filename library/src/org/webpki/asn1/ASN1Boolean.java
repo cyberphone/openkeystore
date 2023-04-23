@@ -16,8 +16,6 @@
  */
 package org.webpki.asn1;
 
-import java.io.IOException;
-
 public final class ASN1Boolean extends Simple {
     boolean value;
 
@@ -26,17 +24,17 @@ public final class ASN1Boolean extends Simple {
         this.value = value;
     }
 
-    ASN1Boolean(DerDecoder decoder) throws IOException {
+    ASN1Boolean(DerDecoder decoder) {
         // Boolean encoding shall be primitive
         super(decoder, true);
 
         if (decoder.length != 1) {
-            throw new IOException("Boolean value must have length 1.");
+            throw new ASN1Exception("Boolean value must have length 1.");
         }
         value = decoder.content()[0] != 0;
     }
 
-    public void encode(Encoder encoder) throws IOException {
+    public void encode(Encoder encoder) {
         encode(encoder, value ? Encoder.TRUE : Encoder.FALSE);
     }
 

@@ -4057,10 +4057,10 @@ public class JSONTest {
         byte[] kek = keyEncryptionAlgorithm.isKeyWrap() ?
                 test.getObject("encrypting_key").getBinary("encrypted_key") : null;
         byte[] cek2 = EncryptionCore.receiverKeyAgreement(false,
+                                                          staticKey.getPrivate(),
                                                           keyEncryptionAlgorithm, 
                                                           contentEncryptionAlgorithm,
                                                           (ECPublicKey)ephemeralKey.getPublic(),
-                                                          staticKey.getPrivate(),
                                                           kek);
         if (!Arrays.equals(cek, cek2)) {
             fail("Fail CEK");
@@ -4424,10 +4424,10 @@ public class JSONTest {
         assertTrue("Bad ECDH",
                 Base64URL.encode(
                         EncryptionCore.receiverKeyAgreement(false,
+                                                            alice.getPrivate(),
                                                             KeyEncryptionAlgorithms.ECDH_ES,
                                                             ContentEncryptionAlgorithms.A128CBC_HS256,
                                                             (ECPublicKey) bob.getPublic(),
-                                                            alice.getPrivate(),
                                                             null)).equals(ECDH_RESULT_WITH_KDF));
 
         EncryptionCore.AsymmetricEncryptionResult asymmetricEncryptionResult =
@@ -4439,10 +4439,10 @@ public class JSONTest {
         assertTrue("Bad ECDH",
                 Arrays.equals(asymmetricEncryptionResult.getContentEncryptionKey(),
                         EncryptionCore.receiverKeyAgreement(false,
+                                                            alice.getPrivate(),
                                                             KeyEncryptionAlgorithms.ECDH_ES,
                                                             ContentEncryptionAlgorithms.A128CBC_HS256,
                                                             asymmetricEncryptionResult.getEphemeralKey(),
-                                                            alice.getPrivate(),
                                                             null)));
         KeyPairGenerator mallet = KeyPairGenerator.getInstance("RSA");
         mallet.initialize(2048);

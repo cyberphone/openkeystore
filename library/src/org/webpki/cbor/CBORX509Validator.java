@@ -23,6 +23,7 @@ import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
+import org.webpki.crypto.SignatureWrapper;
 
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
@@ -90,10 +91,11 @@ public class CBORX509Validator extends CBORValidator {
                 signatureObject.getObject(CERT_PATH_LABEL).getArray());
         
         // Now we have everything needed for validating the signature.
-        CBORCryptoUtils.asymKeySignatureValidation(certificatePath[0].getPublicKey(),
-                                                   algorithm, 
-                                                   signedData, 
-                                                   signatureValue);
+        SignatureWrapper.validate(certificatePath[0].getPublicKey(),
+                                  algorithm, 
+                                  signedData, 
+                                  signatureValue,
+                                  null);
 
         // Finally, check certificate(path) and signature algorithm.
         parameters.verify(certificatePath, algorithm);

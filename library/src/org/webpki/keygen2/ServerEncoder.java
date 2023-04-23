@@ -24,6 +24,7 @@ import java.security.GeneralSecurityException;
 
 import java.util.GregorianCalendar;
 
+import org.webpki.crypto.CryptoException;
 import org.webpki.json.JSONEncoder;
 import org.webpki.json.JSONObjectWriter;
 
@@ -34,8 +35,8 @@ abstract class ServerEncoder extends JSONEncoder {
     abstract void writeServerRequest(JSONObjectWriter wr) throws IOException,
                                                                  GeneralSecurityException;
 
-    final void bad(String message) throws IOException {
-        throw new IOException(message);
+    final void bad(String message) {
+        throw new CryptoException(message);
     }
 
     @Override

@@ -16,10 +16,8 @@
  */
 package org.webpki.asn1;
 
-import java.io.IOException;
-
 public class ASN1NumericString extends ASN1String {
-    ASN1NumericString(DerDecoder decoder) throws IOException {
+    ASN1NumericString(DerDecoder decoder) {
         super(decoder);
     }
 

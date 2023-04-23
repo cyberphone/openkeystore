@@ -17,6 +17,7 @@
 package org.webpki.keygen2;
 
 import java.io.IOException;
+
 import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 
@@ -68,7 +69,7 @@ public class CredentialDiscoveryRequestEncoder extends ServerEncoder {
         }
 
         @Override
-        protected void nullCheck(Object object) throws IOException {
+        protected void nullCheck(Object object) {
             searchFilter = true;
             if (object == null) {
                 bad("Null search parameter not allowed");
@@ -133,13 +134,17 @@ public class CredentialDiscoveryRequestEncoder extends ServerEncoder {
         }
 
         @Override
-        public byte[] signData(byte[] data) throws IOException, GeneralSecurityException {
-            return serverCryptoInterface.generateKeyManagementAuthorization(keyManagementKey, data);
+        public byte[] signData(byte[] data) {
+            try {
+            return serverCryptoInterface.generateKeyManagementAuthorization(
+                    keyManagementKey, data);
+            } catch (GeneralSecurityException | IOException e) {
+                throw new KeyGen2Exception(e);
+            }
         }
 
         @Override
-        public AsymSignatureAlgorithms getAlgorithm()
-                throws IOException, GeneralSecurityException {
+        public AsymSignatureAlgorithms getAlgorithm() {
             return keyManagementKey instanceof RSAKey ?
                    AsymSignatureAlgorithms.RSA_SHA256 : AsymSignatureAlgorithms.ECDSA_SHA256;
          }

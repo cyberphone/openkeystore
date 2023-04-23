@@ -16,14 +16,12 @@
  */
 package org.webpki.asn1;
 
-import java.io.IOException;
-
 public class ASN1IA5String extends ASN1String {
     public ASN1IA5String(String value) {
         super(IA5STRING, value);
     }
 
-    ASN1IA5String(DerDecoder decoder) throws IOException {
+    ASN1IA5String(DerDecoder decoder) {
         super(decoder);
     }
 

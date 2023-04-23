@@ -16,8 +16,6 @@
  */
 package org.webpki.crypto;
 
-import java.io.IOException;
-
 import java.security.GeneralSecurityException;
 
 import javax.crypto.Mac;
@@ -74,10 +72,14 @@ public enum HmacAlgorithms implements SignatureAlgorithms {
         return null;
     }
 
-    public byte[] digest(byte[] key, byte[] data) throws IOException, GeneralSecurityException {
-        Mac mac = Mac.getInstance(getJceName());
-        mac.init(new SecretKeySpec(key, "RAW"));  // Note: any length is OK in HMAC
-        return mac.doFinal(data);
+    public byte[] digest(byte[] key, byte[] data) {
+        try {
+            Mac mac = Mac.getInstance(getJceName());
+            mac.init(new SecretKeySpec(key, "RAW"));  // Note: any length is OK in HMAC
+            return mac.doFinal(data);
+        } catch (GeneralSecurityException e) {
+            throw new CryptoException(e);
+        }
     }
 
     public static boolean testAlgorithmUri(String sksId) {
@@ -94,26 +96,25 @@ public enum HmacAlgorithms implements SignatureAlgorithms {
         for (HmacAlgorithms alg : values()) {
             if (algorithmId.equals(alg.sksId)) {
                 if (algorithmPreferences == AlgorithmPreferences.JOSE) {
-                    throw new IllegalArgumentException("JOSE algorithm expected: " + algorithmId);
+                    throw new CryptoException("JOSE algorithm expected: " + algorithmId);
                 }
                 return alg;
             }
             if (algorithmId.equals(alg.joseId)) {
                 if (algorithmPreferences == AlgorithmPreferences.SKS) {
-                    throw new IllegalArgumentException("SKS algorithm expected: " + algorithmId);
+                    throw new CryptoException("SKS algorithm expected: " + algorithmId);
                 }
                 return alg;
             }
         }
-        throw new IllegalArgumentException("Unknown HMAC algorithm: " + algorithmId);
+        throw new CryptoException("Unknown HMAC algorithm: " + algorithmId);
     }
 
     @Override
     public String getAlgorithmId(AlgorithmPreferences algorithmPreferences) {
         if (joseId == null) {
             if (algorithmPreferences == AlgorithmPreferences.JOSE) {
-                throw new IllegalArgumentException("There is no JOSE algorithm for: " + 
-                                                   this.toString());
+                throw new CryptoException("There is no JOSE algorithm for: " +  this.toString());
             }
             return sksId;
         }
@@ -138,8 +139,7 @@ public enum HmacAlgorithms implements SignatureAlgorithms {
     @Override
     public int getCoseAlgorithmId() {
         if (coseId == 0) {
-            throw new IllegalArgumentException("There is no COSE HMAC algorithm for :" + 
-                                               this.toString());
+            throw new CryptoException("There is no COSE HMAC algorithm for :" + this.toString());
         }
         return coseId;
     }
@@ -151,7 +151,6 @@ public enum HmacAlgorithms implements SignatureAlgorithms {
                 return alg;
             }
         }
-        throw new IllegalArgumentException("Unknown COSE HMAC algorithm: " +
-                                           coseAlgorithmId);
+        throw new CryptoException("Unknown COSE HMAC algorithm: " + coseAlgorithmId);
     }
 }

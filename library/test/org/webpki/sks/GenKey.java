@@ -40,6 +40,7 @@ import org.webpki.crypto.AsymKeySignerInterface;
 import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
 import org.webpki.crypto.AsymSignatureAlgorithms;
+import org.webpki.crypto.CryptoException;
 import org.webpki.crypto.SymEncryptionAlgorithms;
 
 import org.webpki.sks.ProvSess.MacGenerator;
@@ -89,19 +90,22 @@ public class GenKey {
                         new AsymKeySignerInterface() {
 
                             @Override
-                            public byte[] signData(byte[] data) throws IOException, GeneralSecurityException {
-                                SignatureWrapper signer = 
-                                        new SignatureWrapper(AsymSignatureAlgorithms.RSA_SHA256, 
-                                                             ProvSess.RSA_KEY_2.getPrivate());
-                                signer.ecdsaAsn1SignatureEncoding(true);
-                                signer.update(data);
-                                return signer.sign();
+                            public byte[] signData(byte[] data) {
+                                try {
+                                    SignatureWrapper signer = 
+                                            new SignatureWrapper(AsymSignatureAlgorithms.RSA_SHA256, 
+                                                                 ProvSess.RSA_KEY_2.getPrivate());
+                                    signer.ecdsaAsn1SignatureEncoding(true);
+                                    signer.update(data);
+                                    return signer.sign();
+                                } catch (GeneralSecurityException e) {
+                                    throw new CryptoException(e);
+                                }
 
                             }
 
                             @Override
-                            public AsymSignatureAlgorithms getAlgorithm() 
-                                    throws IOException, GeneralSecurityException {
+                            public AsymSignatureAlgorithms getAlgorithm() {
                                 return AsymSignatureAlgorithms.RSA_SHA256;
                             }
 

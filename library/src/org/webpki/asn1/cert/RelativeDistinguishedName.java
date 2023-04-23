@@ -16,7 +16,6 @@
  */
 package org.webpki.asn1.cert;
 
-import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Enumeration;
 import java.util.BitSet;
@@ -30,6 +29,8 @@ import org.webpki.asn1.ASN1ObjectID;
 import org.webpki.asn1.ASN1Sequence;
 import org.webpki.asn1.BaseASN1Object;
 import org.webpki.asn1.ParseUtil;
+
+import org.webpki.crypto.CryptoException;
 
 import org.webpki.util.StringUtil;
 
@@ -130,7 +131,7 @@ public class RelativeDistinguishedName {
         components.put(oid, value);
     }
 
-    private void add(String nameOrOID, String value) throws IOException {
+    private void add(String nameOrOID, String value) {
         if (nameOrOID.indexOf('.') < 0) {
             String t = name2OID(nameOrOID);
             if (t == null) {
@@ -141,7 +142,7 @@ public class RelativeDistinguishedName {
                     String key = e.nextElement();
                     s.append("\n  ").append(key).append("   [").append(name2OID.get(key)).append("]");
                 }
-                throw new IOException(s.toString());
+                throw new CryptoException(s.toString());
             }
             nameOrOID = t;
         }
@@ -158,7 +159,7 @@ public class RelativeDistinguishedName {
     /*
      * Create a RelativeDistinguishedName from a set of OID value-pairs.
      */
-    public RelativeDistinguishedName(Hashtable<String, String> nameOrOIDValuePairs) throws IOException {
+    public RelativeDistinguishedName(Hashtable<String, String> nameOrOIDValuePairs) {
         for (Enumeration<String> e = nameOrOIDValuePairs.keys(); e.hasMoreElements(); ) {
             String nameOrOID = e.nextElement(),
                     value = nameOrOIDValuePairs.get(nameOrOID);
@@ -170,15 +171,14 @@ public class RelativeDistinguishedName {
     /*
      * Create a RelativeDistinguishedName from a OID value-pair.
      */
-    public RelativeDistinguishedName(String nameOrOID, String value) throws IOException {
+    public RelativeDistinguishedName(String nameOrOID, String value) {
         add(nameOrOID, value);
     }
 
     /*
      * Create a RelativeDistinguishedName from a BaseASN1Object ASN.1 structure.
      */
-    public RelativeDistinguishedName(BaseASN1Object relativeDistinguishedName)
-            throws IOException {
+    public RelativeDistinguishedName(BaseASN1Object relativeDistinguishedName) {
         asn1Representation = ParseUtil.set(relativeDistinguishedName);
 
         for (int i = 0; i < asn1Representation.size(); i++) {

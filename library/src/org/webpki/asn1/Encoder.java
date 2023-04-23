@@ -16,7 +16,8 @@
  */
 package org.webpki.asn1;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
 
 public class Encoder {
     final static byte[] TRUE = {(byte) 0xFF};

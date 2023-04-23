@@ -16,7 +16,6 @@
  */
 package org.webpki.asn1;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -36,15 +35,15 @@ public final class CompositeContextSpecific extends Composite {
         components.add(value);
     }
 
-    CompositeContextSpecific(DerDecoder decoder) throws IOException {
+    CompositeContextSpecific(DerDecoder decoder) {
         super(decoder);
 
         if (!isContext()) {
-            throw new IOException("Internal error: Wrong tag class");
+            throw new ASN1Exception("Internal error: Wrong tag class");
         }
 
         if (components == null) {
-            throw new IOException("Empty CONTEXT_SPECIFIC.");
+            throw new ASN1Exception("Empty CONTEXT_SPECIFIC.");
         }
     }
 

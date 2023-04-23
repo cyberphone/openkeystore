@@ -16,10 +16,6 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
-
 import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.HmacSignerInterface;
 import org.webpki.crypto.SignatureAlgorithms;
@@ -45,7 +41,7 @@ public class CBORHmacSigner extends CBORSigner {
         this.signer = new HmacSignerInterface() {
 
             @Override
-            public byte[] signData(byte[] data) throws IOException, GeneralSecurityException {
+            public byte[] signData(byte[] data) {
                 return algorithm.digest(secretKey, data);
             }
 
@@ -67,7 +63,7 @@ public class CBORHmacSigner extends CBORSigner {
     }
     
     @Override
-    byte[] coreSigner(byte[] dataToBeSigned) throws IOException, GeneralSecurityException {
+    byte[] coreSigner(byte[] dataToBeSigned) {
         return signer.signData(dataToBeSigned);
     }
 
@@ -77,7 +73,7 @@ public class CBORHmacSigner extends CBORSigner {
     }
 
     @Override
-    SignatureAlgorithms getAlgorithm() throws IOException, GeneralSecurityException {
+    SignatureAlgorithms getAlgorithm() {
         return signer.getAlgorithm();
     }
 }

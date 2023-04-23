@@ -16,8 +16,6 @@
  */
 package org.webpki.crypto;
 
-import java.io.IOException;
-
 import java.security.MessageDigest;
 import java.security.GeneralSecurityException;
 
@@ -62,8 +60,12 @@ public enum HashAlgorithms implements CryptoAlgorithms {
         return jceName;
     }
 
-    public byte[] digest(byte[] data) throws IOException, GeneralSecurityException {
-        return MessageDigest.getInstance(getJceName()).digest(data);
+    public byte[] digest(byte[] data) {
+        try {
+            return MessageDigest.getInstance(getJceName()).digest(data);
+        } catch (GeneralSecurityException e) {
+            throw new CryptoException(e);
+        }
     }
 
     public static HashAlgorithms getAlgorithmFromOid(String oid) {
@@ -72,7 +74,7 @@ public enum HashAlgorithms implements CryptoAlgorithms {
                 return alg;
             }
         }
-        throw new IllegalArgumentException("Unknown algorithm: " + oid);
+        throw new CryptoException("Unknown algorithm: " + oid);
     }
 
     public static HashAlgorithms getAlgorithmFromId(String algorithmId,
@@ -80,20 +82,20 @@ public enum HashAlgorithms implements CryptoAlgorithms {
         for (HashAlgorithms alg : values()) {
             if (algorithmId.equals(alg.sksName)) {
                 if (algorithmPreferences == AlgorithmPreferences.JOSE) {
-                    throw new IllegalArgumentException(
+                    throw new CryptoException(
                             "JOSE algorithm expected: " + algorithmId);
                 }
                 return alg;
             }
             if (algorithmId.equals(alg.joseName)) {
                 if (algorithmPreferences == AlgorithmPreferences.SKS) {
-                    throw new IllegalArgumentException(
+                    throw new CryptoException(
                             "SKS algorithm expected: " + algorithmId);
                 }
                 return alg;
             }
         }
-        throw new IllegalArgumentException("Unknown algorithm: " + algorithmId);
+        throw new CryptoException("Unknown algorithm: " + algorithmId);
     }
     
     @Override
@@ -105,8 +107,7 @@ public enum HashAlgorithms implements CryptoAlgorithms {
     public String getAlgorithmId(AlgorithmPreferences algorithmPreferences) {
         if (joseName == null) {
             if (algorithmPreferences == AlgorithmPreferences.JOSE) {
-                throw new IllegalArgumentException("There is no JOSE algorithm for: " + 
-                                                   this.toString());
+                throw new CryptoException("There is no JOSE algorithm for: " +  this.toString());
             }
             return sksName;
         }

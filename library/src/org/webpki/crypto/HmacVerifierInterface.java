@@ -16,17 +16,11 @@
  */
 package org.webpki.crypto;
 
-
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
-
 /**
  * Common interface for HMAC validation.
  */
 public interface HmacVerifierInterface {
 
-    public boolean verifySignature(byte[] data, byte[] digest, HmacAlgorithms algorithm, String keyId) 
-            throws IOException, GeneralSecurityException;
+    boolean verifySignature(byte[] data, byte[] digest, HmacAlgorithms algorithm, String keyId);
 
 }

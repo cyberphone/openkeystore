@@ -16,13 +16,12 @@
  */
 package org.webpki.asn1;
 
-import java.io.IOException;
 import java.util.*;
 
 public abstract class ASN1Time extends Simple {
     Date value;
 
-    ASN1Time(DerDecoder decoder) throws IOException {
+    ASN1Time(DerDecoder decoder) {
         super(decoder);
     }
 
@@ -41,7 +40,7 @@ public abstract class ASN1Time extends Simple {
 
     abstract String encodedForm();
 
-    public void encode(Encoder encoder) throws IOException {
+    public void encode(Encoder encoder) {
         String encodedForm = encodedForm();
         encodeHeader(encoder, encodedForm.length(), true);
         encoder.write(encodedForm.getBytes());

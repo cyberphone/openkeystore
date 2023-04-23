@@ -16,24 +16,22 @@
  */
 package org.webpki.asn1;
 
-import java.io.IOException;
-
 /**
  * Methods for testing datatypes (verifying ASN1 object structure).
  */
 public class ParseUtil {
-    static void bad(String msg) throws IOException {
-        throw new IOException(msg);
+    static void bad(String msg) {
+        throw new ASN1Exception(msg);
     }
 
-    public static ASN1Sequence sequence(BaseASN1Object o) throws IOException {
+    public static ASN1Sequence sequence(BaseASN1Object o) {
         if (!(o instanceof ASN1Sequence)) {
             bad("Expected Sequence");
         }
         return (ASN1Sequence) o;
     }
 
-    public static ASN1Sequence sequence(BaseASN1Object o, int size) throws IOException {
+    public static ASN1Sequence sequence(BaseASN1Object o, int size) {
         ASN1Sequence seq = sequence(o);
         if (seq.size() != size) {
             bad("Expected length " + size + " Sequence");
@@ -41,59 +39,59 @@ public class ParseUtil {
         return seq;
     }
 
-    public static ASN1Sequence seqOIDValue(BaseASN1Object o) throws IOException {
+    public static ASN1Sequence seqOIDValue(BaseASN1Object o) {
         ASN1Sequence seq = sequence(o, 2);
         oid(seq.get(0));
         return seq;
     }
 
-    public static BaseASN1Object seqOIDValue(BaseASN1Object o, String oid) throws IOException {
+    public static BaseASN1Object seqOIDValue(BaseASN1Object o, String oid) {
         ASN1Sequence seq = sequence(o, 2);
         oid(seq.get(0), oid);
         return seq.get(1);
     }
 
-    public static ASN1ObjectID seqOIDNull(BaseASN1Object o) throws IOException {
+    public static ASN1ObjectID seqOIDNull(BaseASN1Object o) {
         ASN1Sequence seq = sequence(o, 2);
         oid(seq.get(0));
         nul(seq.get(1));
         return (ASN1ObjectID) seq.get(0);
     }
 
-    public static void seqOIDNull(BaseASN1Object o, String oid) throws IOException {
+    public static void seqOIDNull(BaseASN1Object o, String oid) {
         ASN1Sequence seq = sequence(o, 2);
         oid(seq.get(0), oid);
         nul(seq.get(1));
     }
 
-    public static void nul(BaseASN1Object o) throws IOException {
+    public static void nul(BaseASN1Object o) {
         if (!(o instanceof ASN1Null)) {
             bad("Expected Null");
         }
     }
 
-    public static Composite composite(BaseASN1Object o) throws IOException {
+    public static Composite composite(BaseASN1Object o) {
         if (!(o instanceof Composite)) {
             bad("Expected Composite type");
         }
         return (Composite) o;
     }
 
-    public static Composite setOrSequence(BaseASN1Object o) throws IOException {
+    public static Composite setOrSequence(BaseASN1Object o) {
         if (!(o instanceof ASN1Sequence) && !(o instanceof ASN1Set)) {
             bad("Expected Set or Sequence");
         }
         return (Composite) o;
     }
 
-    public static ASN1Set set(BaseASN1Object o) throws IOException {
+    public static ASN1Set set(BaseASN1Object o) {
         if (!(o instanceof ASN1Set)) {
             bad("Expected Set");
         }
         return (ASN1Set) o;
     }
 
-    public static ASN1Set set(BaseASN1Object o, int size) throws IOException {
+    public static ASN1Set set(BaseASN1Object o, int size) {
         ASN1Set set = set(o);
         if (set.size() != size) {
             bad("Expected length " + size + " Set");
@@ -113,22 +111,21 @@ public class ParseUtil {
         return o instanceof CompositeContextSpecific && o.tagNumber == tagNumber;
     }
 
-    public static CompositeContextSpecific compositeContext(BaseASN1Object o) throws IOException {
+    public static CompositeContextSpecific compositeContext(BaseASN1Object o) {
         if (!(o instanceof CompositeContextSpecific)) {
             bad("Expected CompositeContextSpecific");
         }
         return (CompositeContextSpecific) o;
     }
 
-    public static SimpleContextSpecific simpleContext(BaseASN1Object o) throws IOException {
+    public static SimpleContextSpecific simpleContext(BaseASN1Object o) {
         if (!(o instanceof SimpleContextSpecific)) {
             bad("Expected SimpleContextSpecific");
         }
         return (SimpleContextSpecific) o;
     }
 
-    public static SimpleContextSpecific simpleContext(BaseASN1Object o, int tagNumber)
-            throws IOException {
+    public static SimpleContextSpecific simpleContext(BaseASN1Object o, int tagNumber) {
         SimpleContextSpecific context = simpleContext(o);
         if (tagNumber != -1 && context.tagNumber() != tagNumber) {
             bad("Expected SimpleContextSpecific[" + tagNumber + "], found [" + context.tagNumber() + "].");
@@ -136,8 +133,7 @@ public class ParseUtil {
         return context;
     }
 
-    public static CompositeContextSpecific compositeContext(BaseASN1Object o, int tagNumber, int size)
-            throws IOException {
+    public static CompositeContextSpecific compositeContext(BaseASN1Object o, int tagNumber, int size) {
         CompositeContextSpecific context = compositeContext(o);
         if (tagNumber != -1 && context.tagNumber() != tagNumber) {
             bad("Expected CompositeContextSpecific[" + tagNumber + "], found [" + context.tagNumber() + "].");
@@ -148,8 +144,7 @@ public class ParseUtil {
         return context;
     }
 
-    public static CompositeContextSpecific compositeContext(BaseASN1Object o, int[] allowedTagNumbers)
-            throws IOException {
+    public static CompositeContextSpecific compositeContext(BaseASN1Object o, int[] allowedTagNumbers) {
         CompositeContextSpecific context = compositeContext(o);
         for (int i = 0; i < allowedTagNumbers.length; i++) {
             if (context.tagNumber() == allowedTagNumbers[i]) {
@@ -160,8 +155,7 @@ public class ParseUtil {
         return null;
     }
 
-    public static SimpleContextSpecific simpleContext(BaseASN1Object o, int[] allowedTagNumbers)
-            throws IOException {
+    public static SimpleContextSpecific simpleContext(BaseASN1Object o, int[] allowedTagNumbers) {
         SimpleContextSpecific context = simpleContext(o);
         for (int i = 0; i < allowedTagNumbers.length; i++) {
             if (context.tagNumber() == allowedTagNumbers[i]) {
@@ -172,26 +166,25 @@ public class ParseUtil {
         return null;
     }
 
-    public static BaseASN1Object singleContext(BaseASN1Object o, int tagNumber)
-            throws IOException {
+    public static BaseASN1Object singleContext(BaseASN1Object o, int tagNumber) {
         return compositeContext(o, tagNumber, 1).get(0);
     }
 
-    public static ASN1ObjectID oid(BaseASN1Object o) throws IOException {
+    public static ASN1ObjectID oid(BaseASN1Object o) {
         if (!(o instanceof ASN1ObjectID)) {
             bad("Expected ObjectID");
         }
         return (ASN1ObjectID) o;
     }
 
-    public static void oid(BaseASN1Object o, String allowedOID) throws IOException {
+    public static void oid(BaseASN1Object o, String allowedOID) {
         ASN1ObjectID id = oid(o);
         if (!id.oid().equals(allowedOID)) {
             bad("Expected ObjectID " + allowedOID + ", found " + id.oid());
         }
     }
 
-    public static ASN1ObjectID oid(BaseASN1Object o, String[] allowedOIDs) throws IOException {
+    public static ASN1ObjectID oid(BaseASN1Object o, String[] allowedOIDs) {
         ASN1ObjectID id = oid(o);
         for (int i = 0; i < allowedOIDs.length; i++) {
             if (id.oid().equals(allowedOIDs[i])) {
@@ -202,14 +195,14 @@ public class ParseUtil {
         return null;
     }
 
-    public static ASN1Integer integer(BaseASN1Object o) throws IOException {
+    public static ASN1Integer integer(BaseASN1Object o) {
         if (!(o instanceof ASN1Integer)) {
             bad("Expected Integer");
         }
         return (ASN1Integer) o;
     }
 
-    public static int integer(BaseASN1Object o, int allowedValue) throws IOException {
+    public static int integer(BaseASN1Object o, int allowedValue) {
         int v = integer(o).intValue();
         if (v != allowedValue) {
             bad("Expected Integer " + allowedValue + ", found " + v);
@@ -217,7 +210,7 @@ public class ParseUtil {
         return v;
     }
 
-    public static int integer(BaseASN1Object o, int[] allowedValues) throws IOException {
+    public static int integer(BaseASN1Object o, int[] allowedValues) {
         int v = integer(o).intValue();
         for (int i = 0; i < allowedValues.length; i++) {
             if (v == allowedValues[i]) {
@@ -228,14 +221,14 @@ public class ParseUtil {
         return 0;
     }
 
-    public static int enumerated(BaseASN1Object o) throws IOException {
+    public static int enumerated(BaseASN1Object o) {
         if (!(o instanceof ASN1Enumerated)) {
             bad("Expected Enumerated");
         }
         return ((ASN1Enumerated) o).intValue();
     }
 
-    public static int enumerated(BaseASN1Object o, int allowedValue) throws IOException {
+    public static int enumerated(BaseASN1Object o, int allowedValue) {
         int v = enumerated(o);
         if (v != allowedValue) {
             bad("Expected Enumerated " + allowedValue + ", found " + v);
@@ -243,7 +236,7 @@ public class ParseUtil {
         return v;
     }
 
-    public static int enumerated(BaseASN1Object o, int[] allowedValues) throws IOException {
+    public static int enumerated(BaseASN1Object o, int[] allowedValues) {
         int v = enumerated(o);
         for (int i = 0; i < allowedValues.length; i++) {
             if (v == allowedValues[i]) {
@@ -254,33 +247,33 @@ public class ParseUtil {
         return 0;
     }
 
-    public static byte[] octet(BaseASN1Object o) throws IOException {
+    public static byte[] octet(BaseASN1Object o) {
         if (!(o instanceof ASN1OctetString)) {
             bad("Expected OctetString");
         }
         return ((ASN1OctetString) o).value();
     }
 
-    public static byte[] bitstring(BaseASN1Object o) throws IOException {
+    public static byte[] bitstring(BaseASN1Object o) {
         if (!(o instanceof ASN1BitString)) {
             bad("Expected BitString");
         }
         return ((ASN1BitString) o).value();
     }
 
-    public static byte[] bitstring(BaseASN1Object o, int length) throws IOException {
+    public static byte[] bitstring(BaseASN1Object o, int length) {
         if (!(o instanceof ASN1BitString)) {
             bad("Expected BitString");
         }
         ASN1BitString bs = (ASN1BitString) o;
         byte[] data = bs.value();
         if (data.length * 8 - bs.unusedBits() > length) {
-            throw new IOException("Bit String length error");
+            throw new ASN1Exception("Bit String length error");
         }
         return data;
     }
 
-    public static ASN1String string(BaseASN1Object o) throws IOException {
+    public static ASN1String string(BaseASN1Object o) {
         if (!(o instanceof ASN1String)) {
             bad("Expected string type");
         }

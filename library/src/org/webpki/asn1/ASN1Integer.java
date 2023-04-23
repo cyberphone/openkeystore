@@ -16,8 +16,6 @@
  */
 package org.webpki.asn1;
 
-import java.io.IOException;
-
 import java.math.*;
 
 import org.webpki.util.HexaDecimal;
@@ -39,12 +37,12 @@ public final class ASN1Integer extends Simple {
         this(Long.toString(value));
     }
 
-    ASN1Integer(DerDecoder decoder) throws IOException {
+    ASN1Integer(DerDecoder decoder) {
         super(decoder, true);
         value = new BigInteger(decoder.content());
     }
 
-    public void encode(Encoder encoder) throws IOException {
+    public void encode(Encoder encoder) {
         byte[] content = value.toByteArray();
         encodeHeader(encoder, content.length, true);
         encoder.write(content);

@@ -16,19 +16,17 @@
  */
 package org.webpki.asn1;
 
-import java.io.IOException;
-
 public final class ASN1Null extends Simple {
     public ASN1Null() {
         super(NULL, true);
     }
 
-    ASN1Null(DerDecoder decoder) throws IOException {
+    ASN1Null(DerDecoder decoder) {
         super(decoder);
         // Null has no content.
     }
 
-    public void encode(Encoder encoder) throws IOException {
+    public void encode(Encoder encoder) {
         // Null has no content. It shall be primitive.
         encodeHeader(encoder, 0, true);
     }

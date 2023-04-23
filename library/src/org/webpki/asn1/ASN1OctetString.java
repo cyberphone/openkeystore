@@ -16,7 +16,6 @@
  */
 package org.webpki.asn1;
 
-import java.io.IOException;
 import java.util.*;
 
 public final class ASN1OctetString extends Binary {
@@ -24,7 +23,7 @@ public final class ASN1OctetString extends Binary {
         super(OCTETSTRING, true, value);
     }
 
-    ASN1OctetString(DerDecoder decoder) throws IOException {
+    ASN1OctetString(DerDecoder decoder) {
         super(decoder);
         if (isPrimitive()) {
             value = decoder.content();
@@ -51,7 +50,7 @@ public final class ASN1OctetString extends Binary {
         }
     }
 
-    public void encode(Encoder encoder) throws IOException {
+    public void encode(Encoder encoder) {
         encode(encoder, value);
     }
 

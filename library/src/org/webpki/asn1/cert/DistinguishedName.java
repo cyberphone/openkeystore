@@ -16,10 +16,7 @@
  */
 package org.webpki.asn1.cert;
 
-import java.io.IOException;
-
 import java.security.cert.X509Certificate;
-import java.security.GeneralSecurityException;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -76,7 +73,7 @@ public class DistinguishedName {
     /*
      * Construct an <code>DistinguishedName</code> from a BaseASN1Object ASN.1 structure.
      */
-    public DistinguishedName(BaseASN1Object distinguishedName) throws IOException {
+    public DistinguishedName(BaseASN1Object distinguishedName) {
         asn1Representation = ParseUtil.sequence(distinguishedName);
 
         for (int i = 0; i < asn1Representation.size(); i++) {
@@ -96,7 +93,7 @@ public class DistinguishedName {
     /*
      * Create a <code>DistinguishedName</code> from a set of <code>OID</code>/value-pairs.
      */
-    public DistinguishedName(Hashtable<String, String> nameOrOIDValuePairs) throws IOException {
+    public DistinguishedName(Hashtable<String, String> nameOrOIDValuePairs) {
         for (Enumeration<String> e = nameOrOIDValuePairs.keys(); e.hasMoreElements(); ) {
             String nameOrOID = e.nextElement(),
                     value = nameOrOIDValuePairs.get(nameOrOID);
@@ -108,8 +105,7 @@ public class DistinguishedName {
     /*
      * Returns the DistinguishedName of a certificate subject.
      */
-    public static DistinguishedName subjectDN(ASN1Sequence certificate)
-            throws IOException, GeneralSecurityException {
+    public static DistinguishedName subjectDN(ASN1Sequence certificate) {
         // First element, version, may be omitted (if "default"),
         // hence the index of subject may vary:
         ASN1Sequence seq = ParseUtil.sequence(certificate.get(0));
@@ -119,16 +115,14 @@ public class DistinguishedName {
     /*
      * Returns the DistinguishedName of a certificate subject.
      */
-    public static DistinguishedName subjectDN(X509Certificate certificate)
-            throws IOException, GeneralSecurityException {
+    public static DistinguishedName subjectDN(X509Certificate certificate) {
         return subjectDN(ASN1Util.x509Certificate(certificate));
     }
 
     /*
      * Returns the DistinguishedName of a certificate issuer.
      */
-    public static DistinguishedName issuerDN(ASN1Sequence certificate)
-            throws IOException, GeneralSecurityException {
+    public static DistinguishedName issuerDN(ASN1Sequence certificate) {
         // First element, version, may be omitted (if "default"),
         // hence the index of issuer may vary:
         ASN1Sequence seq = ParseUtil.sequence(certificate.get(0));
@@ -138,8 +132,7 @@ public class DistinguishedName {
     /*
      * Returns the DistinguishedName of a certificate issuer.
      */
-    public static DistinguishedName issuerDN(X509Certificate certificate)
-            throws IOException, GeneralSecurityException {
+    public static DistinguishedName issuerDN(X509Certificate certificate) {
         return issuerDN(ASN1Util.x509Certificate(certificate));
     }
 

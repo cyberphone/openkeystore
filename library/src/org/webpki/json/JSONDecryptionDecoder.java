@@ -240,15 +240,15 @@ public class JSONDecryptionDecoder {
                                                                  GeneralSecurityException {
         checkEncryptionConstruct(true);
         return localDecrypt(keyEncryptionAlgorithm.isRsa() ?
-                EncryptionCore.rsaDecryptKey(keyEncryptionAlgorithm,
-                                             encryptedKeyData,
-                                             privateKey)
+                EncryptionCore.rsaDecryptKey(privateKey,
+                                             keyEncryptionAlgorithm,
+                                             encryptedKeyData)
                                                            :
                 EncryptionCore.receiverKeyAgreement(false,
+                                                    privateKey,
                                                     keyEncryptionAlgorithm,
                                                     holder.contentEncryptionAlgorithm,
                                                     ephemeralPublicKey,
-                                                    privateKey,
                                                     encryptedKeyData));
     }
 

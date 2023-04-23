@@ -16,7 +16,6 @@
  */
 package org.webpki.asn1;
 
-import java.io.IOException;
 import java.util.*;
 import java.text.*;
 import java.math.*;
@@ -35,12 +34,12 @@ public class ASN1GeneralizedTime extends ASN1Time {
         super(GENERALIZEDTIME, utcTime);
     }
 
-    ASN1GeneralizedTime(DerDecoder decoder) throws IOException {
+    ASN1GeneralizedTime(DerDecoder decoder) {
         super(decoder);
 
         if (isPrimitive()) {
             if (decoder.length == -1) {
-                throw new IOException("GeneralizedTime cannot have indefinite length(?).");
+                throw new ASN1Exception("GeneralizedTime cannot have indefinite length(?).");
             }
             String date = new String(decoder.content());
             try {
@@ -67,14 +66,14 @@ public class ASN1GeneralizedTime extends ASN1Time {
                                             Integer.parseInt(date.substring(iZ + 2, iZ + 4)) : 0)));
                 }
             } catch (ParseException pe) {
-                throw new IOException("Failed to decode Generalized Time " + date + ":\n" +
+                throw new ASN1Exception("Failed to decode Generalized Time " + date + ":\n" +
                         pe.getMessage());
             } catch (StringIndexOutOfBoundsException sioobe) {
-                throw new IOException("Failed to decode Generalized Time " + date + ":\n" +
+                throw new ASN1Exception("Failed to decode Generalized Time " + date + ":\n" +
                         sioobe.getMessage());
             }
         } else {
-            throw new IOException("Constructed GeneralizedTime not supported.");
+            throw new ASN1Exception("Constructed GeneralizedTime not supported.");
         }
     }
 

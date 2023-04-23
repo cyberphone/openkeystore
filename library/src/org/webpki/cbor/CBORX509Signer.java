@@ -16,9 +16,6 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 
 import java.security.cert.X509Certificate;
@@ -27,6 +24,7 @@ import org.webpki.crypto.X509SignerInterface;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.SignatureAlgorithms;
+import org.webpki.crypto.SignatureWrapper;
 
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
@@ -60,12 +58,8 @@ public class CBORX509Signer extends CBORSigner {
      * </p>
      * @param privateKey Signature key
      * @param certificatePath A matching non-null certificate path
-     * @throws IOException 
-     * @throws GeneralSecurityException 
      */
-    public CBORX509Signer(PrivateKey privateKey,
-                          X509Certificate[] certificatePath) throws IOException, 
-                                                                    GeneralSecurityException {
+    public CBORX509Signer(PrivateKey privateKey, X509Certificate[] certificatePath) {
         this(privateKey, 
              certificatePath, 
              KeyAlgorithms.getKeyAlgorithm(privateKey).getRecommendedSignatureAlgorithm());
@@ -84,12 +78,8 @@ public class CBORX509Signer extends CBORSigner {
         signer = new X509SignerInterface() {
 
             @Override
-            public byte[] signData(byte[] dataToBeSigned) throws IOException,
-                                                                 GeneralSecurityException {
-                return CBORCryptoUtils.asymKeySignatureGeneration(privateKey,
-                                                                  algorithm,
-                                                                  dataToBeSigned, 
-                                                                  provider);
+            public byte[] signData(byte[] data) {
+                return SignatureWrapper.sign(privateKey, algorithm, data, provider);
             }
 
             @Override
@@ -106,22 +96,21 @@ public class CBORX509Signer extends CBORSigner {
     }
 
     @Override
-    byte[] coreSigner(byte[] dataToBeSigned) throws IOException, GeneralSecurityException {
+    byte[] coreSigner(byte[] dataToBeSigned) {
         return signer.signData(dataToBeSigned);
     }
     
     @Override
-    void additionalItems(CBORMap signatureObject) 
-            throws IOException, GeneralSecurityException {
+    void additionalItems(CBORMap signatureObject) {
         // X509 signatures mandate a certificate path.
-        signatureObject.setObject(CERT_PATH_LABEL, CBORCryptoUtils.encodeCertificateArray(
-                signer.getCertificatePath()));
+        signatureObject.setObject(CERT_PATH_LABEL, 
+                                  CBORCryptoUtils.encodeCertificateArray(signer.getCertificatePath()));
         // Key IDs are always rejected.
         CBORCryptoUtils.rejectPossibleKeyId(optionalKeyId);
     }
 
     @Override
-    SignatureAlgorithms getAlgorithm() throws IOException, GeneralSecurityException {
+    SignatureAlgorithms getAlgorithm() {
         return signer.getAlgorithm();
     }
 }

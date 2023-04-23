@@ -19,21 +19,18 @@ package org.webpki.cbor;
 import java.io.IOException;
 
 import java.security.GeneralSecurityException;
-import java.security.PrivateKey;
 import java.security.PublicKey;
 
 import java.security.cert.X509Certificate;
 
 import java.util.ArrayList;
 
-import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.CertificateUtil;
 import org.webpki.crypto.ContentEncryptionAlgorithms;
 import org.webpki.crypto.CryptoException;
 import org.webpki.crypto.CryptoRandom;
 import org.webpki.crypto.EncryptionCore;
 import org.webpki.crypto.KeyEncryptionAlgorithms;
-import org.webpki.crypto.SignatureWrapper;
 
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
@@ -68,11 +65,7 @@ public class CBORCryptoUtils {
         do {
             blobs.add(array.objectList.get(index).getBytes());
         } while (++index < array.objectList.size());
-        try {
-            return CertificateUtil.makeCertificatePath(blobs);
-        } catch (GeneralSecurityException e) {
-            throw new CryptoException(e);
-        }
+        return CertificateUtil.makeCertificatePath(blobs);
     }
 
     /**
@@ -95,12 +88,8 @@ public class CBORCryptoUtils {
       */
     public static CBORArray encodeCertificateArray(X509Certificate[] certificatePath) {
         CBORArray array = new CBORArray();
-        try {
-            for (X509Certificate cert : CertificateUtil.checkCertificatePath(certificatePath)) {
-                array.addObject(new CBORBytes(cert.getEncoded()));
-            }
-        } catch (GeneralSecurityException e) {
-            throw new CryptoException(e);
+        for (X509Certificate cert : CertificateUtil.checkCertificatePath(certificatePath)) {
+            array.addObject(new CBORBytes(CertificateUtil.getBlobFromCertificate(cert)));
         }
         return array;
     }
@@ -273,32 +262,6 @@ public class CBORCryptoUtils {
         
     }
     
-    static void asymKeySignatureValidation(PublicKey publicKey,
-                                           AsymSignatureAlgorithms signatureAlgorithm,
-                                           byte[] signedData,
-                                           byte[] signatureValue) 
-            throws GeneralSecurityException, IOException {
-
-        // Verify signature using the default provider
-        if (!new SignatureWrapper(signatureAlgorithm, publicKey)
-                 .update(signedData)
-                 .verify(signatureValue)) {
-            throw new CryptoException("Bad signature for key: " + publicKey.toString());
-        }
-    }
-
-    static byte[] asymKeySignatureGeneration(PrivateKey privateKey,
-                                             AsymSignatureAlgorithms algorithm,
-                                             byte[] dataToBeSigned,
-                                             String provider) 
-            throws GeneralSecurityException, IOException {
-
-        // Sign using the specified provider
-        return new SignatureWrapper(algorithm, privateKey, provider)
-                .update(dataToBeSigned)
-                .sign();      
-    }
-
     static void rejectPossibleKeyId(CBORObject optionalKeyId) {
         if (optionalKeyId != null) {
             throw new CryptoException(STDERR_KEY_ID_PUBLIC);

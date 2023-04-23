@@ -16,7 +16,6 @@
  */
 package org.webpki.asn1;
 
-import java.io.IOException;
 import java.util.BitSet;
 
 import org.webpki.util.StringUtil;
@@ -27,7 +26,7 @@ public class ASN1PrintableString extends ASN1String {
         StringUtil.checkAllowedChars(value, allowedChars);
     }
 
-    ASN1PrintableString(DerDecoder decoder) throws IOException {
+    ASN1PrintableString(DerDecoder decoder) {
         super(decoder);
     }
 

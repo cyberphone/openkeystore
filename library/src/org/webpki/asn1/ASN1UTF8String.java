@@ -16,15 +16,14 @@
  */
 package org.webpki.asn1;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import org.webpki.util.UTF8;
 
 public class ASN1UTF8String extends ASN1String {
     public ASN1UTF8String(String value) { // throws UnsupportedEncodingException
-        super(UTF8STRING, getBytesUTF8(value));
+        super(UTF8STRING, UTF8.encode(value));
     }
 
-    ASN1UTF8String(DerDecoder decoder) throws IOException {
+    ASN1UTF8String(DerDecoder decoder) {
         super(decoder);
     }
 
@@ -32,20 +31,7 @@ public class ASN1UTF8String extends ASN1String {
         s.append(getByteNumber()).append(prefix).append("UTF8String '").append(value()).append('\'');
     }
 
-    private static byte[] getBytesUTF8(String value) {
-        try {
-            return value.getBytes("UTF-8");
-        } catch (UnsupportedEncodingException uee) {
-            throw new RuntimeException("UTF-8 not supported!");
-        }
-
-    }
-
     public String value() {
-        try {
-            return new String(value, "UTF-8");
-        } catch (UnsupportedEncodingException uee) {
-            throw new RuntimeException("UTF-8 not supported!");
-        }
+        return UTF8.decode(value);
     }
 }

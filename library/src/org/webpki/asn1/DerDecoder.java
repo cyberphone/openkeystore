@@ -16,9 +16,8 @@
  */
 package org.webpki.asn1;
 
-import java.io.*;
-
 import org.webpki.util.ArrayUtil;
+import org.webpki.util.IO;
 
 public class DerDecoder implements ASN1Constants {
     private int offset = 0;
@@ -56,7 +55,7 @@ public class DerDecoder implements ASN1Constants {
         return r;
     }
 
-    BaseASN1Object readNext(int endOffset) throws IOException {
+    BaseASN1Object readNext(int endOffset) {
         if (offset < source.length && (endOffset == -1 || offset < endOffset)) {
             return readNext();
         } else {
@@ -65,7 +64,7 @@ public class DerDecoder implements ASN1Constants {
     }
 
     @SuppressWarnings("fallthrough")
-    public BaseASN1Object readNext() throws IOException {
+    public BaseASN1Object readNext() {
         if (!(offset < source.length)) {
             return null;
         }
@@ -90,7 +89,7 @@ public class DerDecoder implements ASN1Constants {
                               return new ASN1ContextSpecific(this);
                           //case PRIVATE:
                           default:
-                              throw new IOException("Kex? " + tagClass + ", " + tagEncoding + ", " + length);
+                              throw new ASN1Exception("Kex? " + tagClass + ", " + tagEncoding + ", " + length);
                         }*/
                     case BOOLEAN:
                         return new ASN1Boolean(this);
@@ -139,10 +138,10 @@ public class DerDecoder implements ASN1Constants {
                     case BMPSTRING:
                         return new ASN1BMPString(this);
                     default:
-                        throw new IOException("********** Unknown/unsupported tag 0x" + ArrayUtil.toHexString(tagNumber, (char) 0) + " [" + length + "] **********");
+                        throw new ASN1Exception("********** Unknown/unsupported tag 0x" + ArrayUtil.toHexString(tagNumber, (char) 0) + " [" + length + "] **********");
                 }
             default:
-                throw new IOException("********** Only universal/context specific tags supported (0x" + Integer.toHexString(tagNumber) + " [" + length + "]) **********");
+                throw new ASN1Exception("********** Only universal/context specific tags supported (0x" + Integer.toHexString(tagNumber) + " [" + length + "]) **********");
         }
     }
 
@@ -155,24 +154,19 @@ public class DerDecoder implements ASN1Constants {
         this.offset = offset;
     }
 
-    public DerDecoder(String filename) throws IOException {
-        File f = new File(filename);
-        DataInputStream in = new DataInputStream(new FileInputStream(f));
-        source = new byte[(int) f.length()];
-        in.readFully(source);
-        in.close();
+    public DerDecoder(String filename) {
+        source = IO.readFile(filename);
     }
 
-    public static BaseASN1Object decode(String filename)
-            throws IOException, IOException {
+    public static BaseASN1Object decode(String filename) {
         return new DerDecoder(filename).readNext();
     }
 
-    public static BaseASN1Object decode(byte[] source) throws IOException {
+    public static BaseASN1Object decode(byte[] source) {
         return new DerDecoder(source).readNext();
     }
 
-    public static BaseASN1Object decode(byte[] source, int offset) throws IOException {
+    public static BaseASN1Object decode(byte[] source, int offset) {
         return new DerDecoder(source, offset).readNext();
     }
 

@@ -62,6 +62,7 @@ import org.webpki.ca.CertSpec;
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymKeySignerInterface;
 import org.webpki.crypto.CertificateUtil;
+import org.webpki.crypto.CryptoException;
 import org.webpki.crypto.DemoKeyStore;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.HashAlgorithms;
@@ -1083,14 +1084,18 @@ public class KeyGen2Test {
                             new AsymKeySignerInterface() {
 
                                 @Override
-                                public byte[] signData(byte[] data) throws IOException, GeneralSecurityException {
+                                public byte[] signData(byte[] data) {
+                                    try {
                                     return new SignatureWrapper(algorithm, (PrivateKey) DemoKeyStore.getSubCAKeyStore().getKey("mykey", DemoKeyStore.getSignerPassword().toCharArray()))
                                             .update(data)
                                             .sign();
+                                    } catch (GeneralSecurityException e) {
+                                        throw new CryptoException(e);
+                                    }
                                 }
 
                                 @Override
-                                public AsymSignatureAlgorithms getAlgorithm() throws IOException, GeneralSecurityException {
+                                public AsymSignatureAlgorithms getAlgorithm() {
                                      return algorithm;
                                 }
 

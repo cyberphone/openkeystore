@@ -17,7 +17,11 @@
 package org.webpki.asn1;
 
 import java.util.*;
-import java.io.*;
+
+import org.webpki.crypto.CryptoException;
+
+import java.io.ByteArrayInputStream;
+
 import java.security.GeneralSecurityException;
 import java.security.cert.*;
 
@@ -34,23 +38,26 @@ public class ASN1Sequence extends Composite {
         super(SEQUENCE, new BaseASN1Object[]{component});
     }
 
-    ASN1Sequence(DerDecoder decoder) throws IOException {
+    ASN1Sequence(DerDecoder decoder) {
         super(decoder);
     }
 
     /*
      * Try to construct a X509Certificate from this sequence.
      */
-    public X509Certificate x509Certificate()
-            throws IOException, GeneralSecurityException {
+    public X509Certificate x509Certificate() {
         // TODO !!!!!! This should be changed (moved and used more generally).
         if (blob == null) {
             blob = encode();
             blobOffset = 0;
         }
 
+        try {
         return (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(
                 new ByteArrayInputStream(blob, blobOffset, blob.length - blobOffset));
+        } catch (GeneralSecurityException e) {
+            throw new CryptoException(e);
+        }
     }
 
     void toString(StringBuilder s, String prefix) {

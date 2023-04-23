@@ -18,8 +18,8 @@ package org.webpki.crypto;
 
 import java.io.IOException;
 
-import java.security.KeyStore;
 import java.security.GeneralSecurityException;
+import java.security.KeyStore;
 
 
 public class DemoKeyStore {
@@ -31,37 +31,37 @@ public class DemoKeyStore {
     private DemoKeyStore() {
     }
 
-    public static KeyStore getMarionKeyStore() throws IOException {
+    public static KeyStore getMarionKeyStore() {
         return new DemoKeyStore().getKeyStore("marion.jks");
     }
 
-    public static KeyStore getECDSAStore() throws IOException {
+    public static KeyStore getECDSAStore() {
         return new DemoKeyStore().getKeyStore("ecdsa.jks");
     }
 
-    public static KeyStore getExampleDotComKeyStore() throws IOException {
+    public static KeyStore getExampleDotComKeyStore() {
         return new DemoKeyStore().getKeyStore("example.jks");
     }
 
-    public static KeyStore getMybankDotComKeyStore() throws IOException {
+    public static KeyStore getMybankDotComKeyStore() {
         return new DemoKeyStore().getKeyStore("mybank.jks");
     }
 
-    public static KeyStore getCAKeyStore() throws IOException {
+    public static KeyStore getCAKeyStore() {
         return new DemoKeyStore().getKeyStore("root.jks");
     }
 
-    public static KeyStore getSubCAKeyStore() throws IOException {
+    public static KeyStore getSubCAKeyStore()  {
         return new DemoKeyStore().getKeyStore("subca.jks");
     }
 
-    private KeyStore getKeyStore(String name) throws IOException {
+    private KeyStore getKeyStore(String name) {
         try {
             KeyStore ks = KeyStore.getInstance("JKS");
             ks.load(getClass().getResourceAsStream(name), getSignerPassword().toCharArray());
             return ks;
-        } catch (GeneralSecurityException e) {
-            throw new IOException(e.getMessage());
+        } catch (GeneralSecurityException | IOException e) {
+            throw new CryptoException(e);
         }
     }
 

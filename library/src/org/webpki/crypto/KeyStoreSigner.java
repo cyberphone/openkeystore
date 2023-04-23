@@ -16,18 +16,14 @@
  */
 package org.webpki.crypto;
 
-import java.io.IOException;
-
 import java.util.Enumeration;
 
 import java.security.cert.X509Certificate;
 import java.security.cert.Certificate;
 
+import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.PrivateKey;
-
-import java.security.GeneralSecurityException;
-
 
 /**
  * Sign data using the KeyStore interface.
@@ -47,15 +43,16 @@ public class KeyStoreSigner implements X509SignerInterface, CertificateSelectorS
     private boolean ecdsaDerEncoded;
 
 
-    private KeyStoreSigner testKey(String keyAlias) throws IOException, GeneralSecurityException {
+    private KeyStoreSigner testKey(String keyAlias) throws GeneralSecurityException {
         if (!signerCertKeystore.isKeyEntry(keyAlias)) {
-            throw new IOException("Specified certficate does not have a private key: " + keyAlias);
+            throw new CryptoException("Specified certficate does not have a private key: " + keyAlias);
         }
         return this;
     }
 
 
-    private X509Certificate[] getCertPath(String keyAlias, boolean pathExpansion) throws IOException, GeneralSecurityException {
+    private X509Certificate[] getCertPath(String keyAlias, boolean pathExpansion) {
+        try {
         testKey(keyAlias);
         Certificate[] cp = signerCertKeystore.getCertificateChain(keyAlias);
         X509Certificate[] certificatePath = new X509Certificate[cp.length];
@@ -63,11 +60,14 @@ public class KeyStoreSigner implements X509SignerInterface, CertificateSelectorS
             certificatePath[q] = (X509Certificate) cp[q];
         }
         return certificatePath;
+        } catch (GeneralSecurityException e) {
+            throw new CryptoException(e);
+        }
     }
 
 
     public CertificateSelection getCertificateSelection(CertificateFilter[] cfs) 
-            throws IOException,GeneralSecurityException {
+            throws GeneralSecurityException {
         boolean path_expansion = false;
         for (CertificateFilter cf : cfs) {
             if (cf.needsPathExpansion()) {
@@ -97,7 +97,7 @@ public class KeyStoreSigner implements X509SignerInterface, CertificateSelectorS
     }
 
 
-    public X509Certificate[] getCertificatePath() throws IOException, GeneralSecurityException {
+    public X509Certificate[] getCertificatePath() {
         X509Certificate[] path = getCertPath(keyAlias, true);
         return extendedCertpath ? path : new X509Certificate[]{path[0]};
     }
@@ -110,11 +110,15 @@ public class KeyStoreSigner implements X509SignerInterface, CertificateSelectorS
 
 
     @Override
-    public byte[] signData(byte[] data) throws IOException, GeneralSecurityException {
-         return new SignatureWrapper(algorithm, privateKey)
-                .ecdsaAsn1SignatureEncoding(ecdsaDerEncoded)
-                .update(data)
-                .sign();
+    public byte[] signData(byte[] data) {
+        try {
+            return new SignatureWrapper(algorithm, privateKey)
+                           .ecdsaAsn1SignatureEncoding(ecdsaDerEncoded)
+                           .update(data)
+                           .sign();
+        } catch (GeneralSecurityException e) {
+            throw new CryptoException(e);
+        }
     }
 
 
@@ -124,7 +128,7 @@ public class KeyStoreSigner implements X509SignerInterface, CertificateSelectorS
 
 
     public KeyStoreSigner setKey(String inKeyAlias, String password) 
-            throws IOException, GeneralSecurityException {
+            throws GeneralSecurityException {
         keyAlias = inKeyAlias;
         if (keyAlias == null) {
             // Search for signer certificate/key:
@@ -134,13 +138,13 @@ public class KeyStoreSigner implements X509SignerInterface, CertificateSelectorS
                 String new_key = aliases.nextElement();
                 if (signerCertKeystore.isKeyEntry(new_key)) {
                     if (keyAlias != null) {
-                        throw new IOException("Missing certificate alias and multiple matches");
+                        throw new CryptoException("Missing certificate alias and multiple matches");
                     }
                     keyAlias = new_key;
                 }
             }
             if (keyAlias == null) {
-                throw new IOException("No matching certificate");
+                throw new CryptoException("No matching certificate");
             }
         } else {
             testKey(keyAlias);
@@ -162,7 +166,7 @@ public class KeyStoreSigner implements X509SignerInterface, CertificateSelectorS
     }
     
     @Override
-    public AsymSignatureAlgorithms getAlgorithm() throws IOException, GeneralSecurityException {
+    public AsymSignatureAlgorithms getAlgorithm() {
         return algorithm;
     }
 

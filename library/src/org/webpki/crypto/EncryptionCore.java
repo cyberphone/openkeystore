@@ -390,14 +390,14 @@ public class EncryptionCore {
 
     /**
      * Decrypt a symmetric key using an RSA cipher.
+     * @param privateKey The RSA private key
      * @param keyEncryptionAlgorithm The algorithm to use
      * @param encryptedKey Contains a symmetric key used for encrypting the data
-     * @param privateKey The RSA private key
      * @return The key in plain text
      */
-    public static byte[] rsaDecryptKey(KeyEncryptionAlgorithms keyEncryptionAlgorithm,
-                                       byte[] encryptedKey,
-                                       PrivateKey privateKey) {
+    public static byte[] rsaDecryptKey(PrivateKey privateKey,
+                                       KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+                                       byte[] encryptedKey) {
         return rsaCore(Cipher.DECRYPT_MODE,
                        privateKey,
                        encryptedKey,
@@ -516,19 +516,19 @@ public class EncryptionCore {
      * Perform a receiver side ECDH operation.
 
      * @param coseMode True => hmacKdf, else concatKdf
+     * @param privateKey The receiver's private key
      * @param keyEncryptionAlgorithm The ECDH algorithm
      * @param contentEncryptionAlgorithm The designated content encryption algorithm
      * @param publicKey The sender's (usually ephemeral) public key
-     * @param privateKey The receiver's private key
      * @param encryptedKey For ECDH+KW based operations only
      * @return Shared secret
      */
     public static byte[] receiverKeyAgreement(
             boolean coseMode,
+            PrivateKey privateKey,
             KeyEncryptionAlgorithms keyEncryptionAlgorithm,
             ContentEncryptionAlgorithms contentEncryptionAlgorithm,
             PublicKey publicKey,
-            PrivateKey privateKey,
             byte[] encryptedKey) {
         // Sanity check
         if (keyEncryptionAlgorithm.keyWrap ^ (encryptedKey != null)) {
@@ -573,15 +573,15 @@ public class EncryptionCore {
                                     ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
     // The core
     return keyEncryptionAlgorithm.isRsa() ?
-        EncryptionCore.rsaDecryptKey(keyEncryptionAlgorithm,
-                                     optionalEncryptedKey,
-                                     privateKey)
+        EncryptionCore.rsaDecryptKey(privateKey,
+                                     keyEncryptionAlgorithm,
+                                     optionalEncryptedKey)
                                           :
         EncryptionCore.receiverKeyAgreement(codeMode,
+                                            privateKey,
                                             keyEncryptionAlgorithm,
                                             contentEncryptionAlgorithm,
                                             optionalEphemeralKey,
-                                            privateKey,
                                             optionalEncryptedKey);
     }
 

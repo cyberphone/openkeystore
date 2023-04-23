@@ -48,6 +48,7 @@ import org.webpki.cbor.CBORCryptoConstants;
 import org.webpki.cbor.CBORCryptoUtils;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
+import org.webpki.crypto.CryptoException;
 import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.HmacVerifierInterface;
@@ -230,13 +231,12 @@ public class CborSignatures {
             public boolean verifySignature(byte[] data, 
                                            byte[] digest, 
                                            HmacAlgorithms hmacAlgorithm, 
-                                           String keyId)
-                    throws IOException, GeneralSecurityException {
+                                           String keyId) {
                 if (wantKeyId && !symmetricKeys.getName(keyBits).equals(keyId)) {
-                    throw new GeneralSecurityException("No id");
+                    throw new CryptoException("No id");
                 }
                 if (!algorithm.equals(hmacAlgorithm)) {
-                    throw new GeneralSecurityException("Bad algorithm");
+                    throw new CryptoException("Bad algorithm");
                 }
                 return Arrays.equals(algorithm.digest(key, data), digest);
             }

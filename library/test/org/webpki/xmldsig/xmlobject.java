@@ -44,6 +44,7 @@ import org.webpki.crypto.KeyStoreSigner;
 import org.webpki.crypto.KeyStoreVerifier;
 import org.webpki.crypto.SignatureWrapper;
 import org.webpki.crypto.AsymSignatureAlgorithms;
+import org.webpki.crypto.CryptoException;
 import org.webpki.crypto.AsymKeySignerInterface;
 import org.webpki.crypto.HmacSignerInterface;
 import org.webpki.crypto.HmacVerifierInterface;
@@ -68,15 +69,12 @@ public class xmlobject extends XMLObjectWrapper implements XMLEnvelopedInput {
         }
 
         @Override
-        public byte[] signData(byte[] data) throws IOException, GeneralSecurityException {
-                return new SignatureWrapper(algorithm, priv_key)
-                        .update(data)
-                        .sign();
+        public byte[] signData(byte[] data) {
+                return SignatureWrapper.sign(priv_key, algorithm, data, null);
         }
 
         @Override
-        public AsymSignatureAlgorithms getAlgorithm()
-                throws IOException, GeneralSecurityException {
+        public AsymSignatureAlgorithms getAlgorithm() {
             // TODO Auto-generated method stub
             return null;
         }
@@ -189,11 +187,11 @@ public class xmlobject extends XMLObjectWrapper implements XMLEnvelopedInput {
             } else {
                 XMLSymKeySigner xmls = new XMLSymKeySigner(new HmacSignerInterface() {
 
-                    public HmacAlgorithms getAlgorithm() throws IOException {
+                    public HmacAlgorithms getAlgorithm() {
                         return HmacAlgorithms.HMAC_SHA256;
                     }
 
-                    public byte[] signData(byte[] data) throws IOException, GeneralSecurityException {
+                    public byte[] signData(byte[] data) {
                         return getAlgorithm().digest(symkey, data);
                     }
 
@@ -218,10 +216,12 @@ public class xmlobject extends XMLObjectWrapper implements XMLEnvelopedInput {
                 verifier.validateEnvelopedSignature(o);
             } else {
                 XMLSymKeyVerifier verifier = new XMLSymKeyVerifier(new HmacVerifierInterface() {
-                    public boolean verifySignature(byte[] data, byte[] digest, HmacAlgorithms algorithm, String keyId) 
-                            throws IOException, GeneralSecurityException {
+                    public boolean verifySignature(byte[] data,
+                                                   byte[] digest,
+                                                   HmacAlgorithms algorithm, 
+                                                   String keyId) {
                         if (algorithm != HmacAlgorithms.HMAC_SHA256) {
-                            throw new IOException("Bad sym ALG");
+                            throw new CryptoException("Bad sym ALG");
                         }
                         return Arrays.equals(digest, HmacAlgorithms.HMAC_SHA256.digest(symkey, data));
                     }

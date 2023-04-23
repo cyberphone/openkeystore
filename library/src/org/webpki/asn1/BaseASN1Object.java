@@ -17,8 +17,11 @@
 package org.webpki.asn1;
 
 import java.util.*;
+
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+
 import java.math.*;
-import java.io.*;
 
 import org.webpki.util.HexaDecimal;
 
@@ -56,7 +59,7 @@ public abstract class BaseASN1Object implements ASN1Constants {
     /*
      * Decode object.
      */
-    BaseASN1Object(DerDecoder decoder) throws IOException {
+    BaseASN1Object(DerDecoder decoder) {
         this.decoder = decoder;
 //System.out.println(this.getClass().getName().substring(this.getClass().getName().lastIndexOf('.') + 1) + ": " + decoder.length);
         blob = decoder.source;
@@ -71,7 +74,7 @@ public abstract class BaseASN1Object implements ASN1Constants {
         tagNumber = decoder.tagNumber;
         if (tagClass == UNIVERSAL &&
                 classToTagNumber.get(getClass()).intValue() != tagNumber) {
-            throw new IOException("Internal error: types don't match.");
+            throw new ASN1Exception("Internal error: types don't match.");
         }
     }
 
@@ -79,7 +82,7 @@ public abstract class BaseASN1Object implements ASN1Constants {
      * Decode substructure.
      * This should be the only way to decode substructures as it updates encodedLength!!!!
      */
-    ArrayList<BaseASN1Object> readComponents(DerDecoder decoder) throws IOException {
+    ArrayList<BaseASN1Object> readComponents(DerDecoder decoder) {
         if (blob != decoder.source) {
             throw new IllegalArgumentException("Must use the same decoder!!!!");
         }
@@ -111,27 +114,27 @@ public abstract class BaseASN1Object implements ASN1Constants {
     /**
      * Decode object, testing primitive/constructed.
      */
-    BaseASN1Object(DerDecoder decoder, boolean primitive) throws IOException {
+    BaseASN1Object(DerDecoder decoder, boolean primitive) {
         this(decoder);
         if (isPrimitive() != primitive) {
-            throw new IOException("Illegal encoding, expected " +
+            throw new ASN1Exception("Illegal encoding, expected " +
                     (primitive ? "primitive." : "constructed."));
         }
     }
 
-    public abstract void encode(Encoder encoder) throws IOException;
+    public abstract void encode(Encoder encoder);
 
-    public void encode(OutputStream os) throws IOException {
+    public void encode(OutputStream os) {
         encode(new Encoder(os));
     }
 
-    public byte[] encode() throws IOException {
+    public byte[] encode() {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         encode(new Encoder(os));
         return os.toByteArray();
     }
 
-    public ASN1OctetString encodedAsOctetString() throws IOException {
+    public ASN1OctetString encodedAsOctetString() {
         return new ASN1OctetString(encode());
     }
 
@@ -139,7 +142,7 @@ public abstract class BaseASN1Object implements ASN1Constants {
      * Writes the already encoded value to the encoder, prepending the head.
      * The encoding of encodedValue should be primitive.
      */
-    void encode(Encoder encoder, byte[] encodedValue) throws IOException {
+    void encode(Encoder encoder, byte[] encodedValue) {
         encodeHeader(encoder, encodedValue.length, true);
         encoder.write(encodedValue);
     }
@@ -147,7 +150,7 @@ public abstract class BaseASN1Object implements ASN1Constants {
     /*
      * Writes a constructed value to the encoder, prepending the head.
      */
-    void encode(Encoder encoder, ArrayList<BaseASN1Object> components) throws IOException {
+    void encode(Encoder encoder, ArrayList<BaseASN1Object> components) {
         encodeHeader(encoder, -1, false);
         for (int i = 0; i < components.size(); i++) {
             components.get(i).encode(encoder);
@@ -158,16 +161,16 @@ public abstract class BaseASN1Object implements ASN1Constants {
     /*
      * Write header of this object to the encoder.
      */
-    void encodeHeader(Encoder encoder, int length) throws IOException {
+    void encodeHeader(Encoder encoder, int length) {
         encodeHeader(encoder, length, tagEncoding == 0);
     }
 
     /*
      * Write header of this object to the encoder, forcing primitive/constructed flag.
      */
-    void encodeHeader(Encoder encoder, int length, boolean primitive) throws IOException {
+    void encodeHeader(Encoder encoder, int length, boolean primitive) {
         if (tagNumber > 30) {
-            throw new IOException("tagNumber > 30 not supported");
+            throw new ASN1Exception("tagNumber > 30 not supported");
         }
         encoder.write(tagClass | (primitive ? DerDecoder.PRIMITIVE : DerDecoder.CONSTRUCTED) | tagNumber);
         if (length == -1) {
@@ -188,7 +191,7 @@ public abstract class BaseASN1Object implements ASN1Constants {
         }
     }
 
-    public byte[] encodeContent() throws IOException {
+    public byte[] encodeContent() {
         // Uggly!!!!
         DerDecoder d = new DerDecoder(encode());
         d.readHeader();
@@ -196,11 +199,11 @@ public abstract class BaseASN1Object implements ASN1Constants {
     }
 
 
-    public BaseASN1Object get(int i) throws IOException {
-        throw new IOException("Not composite");
+    public BaseASN1Object get(int i) {
+        throw new ASN1Exception("Not composite");
     }
 
-    public BaseASN1Object get(int[] path) throws IOException {
+    public BaseASN1Object get(int[] path) {
         BaseASN1Object o = this;
         for (int i = 0; i < path.length; i++) {
             o = o.get(path[i]);
@@ -295,7 +298,7 @@ public abstract class BaseASN1Object implements ASN1Constants {
         return o.tagClass == tagClass && o.tagNumber == tagNumber;
     }
 
-    public String toString(boolean extractfromoctetstrings, boolean bytenumbers) throws IOException {
+    public String toString(boolean extractfromoctetstrings, boolean bytenumbers) {
         if (decoder == null) {
             DerDecoder dd = new DerDecoder(encode());
             return dd.readNext().toString(extractfromoctetstrings, bytenumbers);

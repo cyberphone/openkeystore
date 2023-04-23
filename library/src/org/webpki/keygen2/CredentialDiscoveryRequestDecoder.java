@@ -113,7 +113,7 @@ public class CredentialDiscoveryRequestDecoder extends ClientDecoder {
         }
 
         @Override
-        public boolean matches(X509Certificate[] certificatePath) throws IOException {
+        public boolean matches(X509Certificate[] certificatePath) {
             if (issuedBefore != null && issuedBefore.getTimeInMillis() < (certificatePath[0].getNotBefore().getTime())) {
                 return false;
             }

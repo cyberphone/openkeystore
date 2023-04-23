@@ -17,9 +17,10 @@
 package org.webpki.asn1;
 
 import java.util.*;
-import java.security.GeneralSecurityException;
-import java.security.cert.*;
-import java.io.*;
+
+import org.webpki.crypto.CertificateUtil;
+
+import java.security.cert.X509Certificate;
 
 public class ASN1Util {
     public final static ASN1Null STATIC_NULL = new ASN1Null();
@@ -38,23 +39,21 @@ public class ASN1Util {
         return true;
     }
 
-    public static byte[] getBinary(BaseASN1Object o, int[] path) throws IOException {
+    public static byte[] getBinary(BaseASN1Object o, int[] path) {
         return ((Binary) o.get(path)).value();
     }
 
-    public static X509Certificate x509Certificate(BaseASN1Object o, int[] path)
-            throws IOException, GeneralSecurityException {
+    public static X509Certificate x509Certificate(BaseASN1Object o, int[] path) {
         return ParseUtil.sequence(o.get(path)).x509Certificate();
     }
 
-    public static X509Certificate x509Certificate(BaseASN1Object o)
-            throws IOException, GeneralSecurityException {
+    public static X509Certificate x509Certificate(BaseASN1Object o) {
         return ParseUtil.sequence(o).x509Certificate();
     }
 
-    public static ASN1Sequence x509Certificate(Certificate c)
-            throws IOException, GeneralSecurityException {
-        return ParseUtil.sequence(new DerDecoder(c.getEncoded()).readNext());
+    public static ASN1Sequence x509Certificate(X509Certificate c) {
+        return ParseUtil.sequence(new DerDecoder(
+                CertificateUtil.getBlobFromCertificate(c)).readNext());
     }
 
     public static ASN1Sequence oidValue(String oid, BaseASN1Object value) {

@@ -16,11 +16,6 @@
  */
 package org.webpki.crypto;
 
-
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
-
 /**
  * Common interface for HMAC signatures.
  *
@@ -32,20 +27,16 @@ public interface HmacSignerInterface {
      * 
      * @param data Data to sign
      * @return Signed data
-     * @throws IOException
-     * @throws GeneralSecurityException
      */
-    byte[] signData(byte[] data) throws IOException, GeneralSecurityException;
+    byte[] signData(byte[] data);
 
     /**
      * Get signature algorithm.
      * 
      * @return Signature algorithm
-     * @throws IOException
-     * @throws GeneralSecurityException
      */
-    default HmacAlgorithms getAlgorithm() throws IOException, GeneralSecurityException {
-        throw new GeneralSecurityException("Missing implementation!");
+    default HmacAlgorithms getAlgorithm() {
+        throw new CryptoException("Missing implementation!");
     }
 
 }

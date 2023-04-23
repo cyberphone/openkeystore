@@ -17,6 +17,7 @@
 package org.webpki.asn1;
 
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 import org.webpki.util.IO;
 
@@ -97,9 +98,13 @@ public class DumpASN1 {
         System.out.println(o.toString(expand, bytenum));
 
         if (outfile != null) {
+            try {
             FileOutputStream fos = new FileOutputStream(outfile);
             o.encode(fos);
             fos.close();
+            } catch (IOException e) {
+                throw new ASN1Exception(e);
+            }
         }
     }
 }

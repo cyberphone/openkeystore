@@ -42,6 +42,7 @@ import org.junit.Test;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.ContentEncryptionAlgorithms;
+import org.webpki.crypto.CryptoException;
 import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.HmacSignerInterface;
 import org.webpki.crypto.HmacVerifierInterface;
@@ -1036,12 +1037,12 @@ public class CBORTest {
          new CBORHmacSigner(new HmacSignerInterface() {
 
             @Override
-            public byte[] signData(byte[] data) throws IOException, GeneralSecurityException {
+            public byte[] signData(byte[] data) {
                 return algorithm.digest(symmetricKeys.getValue(size), data);
             }
 
             @Override
-            public HmacAlgorithms getAlgorithm() throws IOException, GeneralSecurityException {
+            public HmacAlgorithms getAlgorithm() {
                 return algorithm;
             }
             
@@ -1060,15 +1061,14 @@ public class CBORTest {
 
             @Override
             public boolean verifySignature(byte[] data, 
-                                      byte[] digest, 
-                                      HmacAlgorithms hmacAlgorithm, 
-                                      String optionalKeyId)
-                    throws IOException, GeneralSecurityException {
+                                           byte[] digest, 
+                                           HmacAlgorithms hmacAlgorithm, 
+                                           String optionalKeyId) {
                 if (!algorithm.equals(hmacAlgorithm)) {
-                    throw new IOException("Algorithm error");
+                    throw new CryptoException("Algorithm error");
                 }
                 if (!keyId.getString().equals(optionalKeyId)) {
-                    throw new IOException("Unknown keyId");
+                    throw new CryptoException("Unknown keyId");
                 }
                 return Arrays.equals(algorithm.digest(symmetricKeys.getValue(size), data), digest);
             }
@@ -1162,10 +1162,12 @@ public class CBORTest {
         signAndVerify(new CBORX509Signer(new X509SignerInterface() {
 
                 @Override
-                public byte[] signData(byte[] data)  throws IOException, GeneralSecurityException {
-                    return new SignatureWrapper(AsymSignatureAlgorithms.ECDSA_SHA256, p256.getPrivate())
-                            .update(data)
-                            .sign();                    }
+                public byte[] signData(byte[] data) {
+                    return SignatureWrapper.sign(p256.getPrivate(),
+                                                 AsymSignatureAlgorithms.ECDSA_SHA256,
+                                                 data,
+                                                 null);
+                    }
                 
                 @Override
                 public AsymSignatureAlgorithms getAlgorithm() {
@@ -1173,8 +1175,7 @@ public class CBORTest {
                 }
     
                 @Override
-                public X509Certificate[] getCertificatePath()
-                        throws IOException, GeneralSecurityException {
+                public X509Certificate[] getCertificatePath() {
                     return p256CertPath;
                 }
                 
@@ -1192,10 +1193,12 @@ public class CBORTest {
             signAndVerify(new CBORX509Signer(new X509SignerInterface() {
     
                     @Override
-                    public byte[] signData(byte[] data)  throws IOException, GeneralSecurityException {
-                        return new SignatureWrapper(AsymSignatureAlgorithms.ECDSA_SHA256, p256.getPrivate())
-                                .update(data)
-                                .sign();                    }
+                    public byte[] signData(byte[] data) {
+                        return SignatureWrapper.sign(p256.getPrivate(),
+                                                     AsymSignatureAlgorithms.ECDSA_SHA256,
+                                                     data,
+                                                     null);
+                    }
                     
                     @Override
                     public AsymSignatureAlgorithms getAlgorithm() {
@@ -1203,8 +1206,7 @@ public class CBORTest {
                     }
         
                     @Override
-                    public X509Certificate[] getCertificatePath()
-                            throws IOException, GeneralSecurityException {
+                    public X509Certificate[] getCertificatePath() {
                         return p256CertPath;
                     }
                     
@@ -1514,10 +1516,10 @@ public class CBORTest {
                                           KeyEncryptionAlgorithms keyEncryptionAlgorithm,
                                           ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
                         return EncryptionCore.receiverKeyAgreement(true, 
+                                                                   privateKey, 
                                                                    keyEncryptionAlgorithm,
                                                                    contentEncryptionAlgorithm, 
                                                                    optionalEphemeralKey, 
-                                                                   privateKey, 
                                                                    optionalEncryptedKey);
                     }
 
@@ -1588,10 +1590,10 @@ public class CBORTest {
                                           KeyEncryptionAlgorithms keyEncryptionAlgorithm,
                                           ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
                         return EncryptionCore.receiverKeyAgreement(true, 
+                                                                   privateKey, 
                                                                    keyEncryptionAlgorithm,
                                                                    contentEncryptionAlgorithm, 
                                                                    optionalEphemeralKey, 
-                                                                   privateKey, 
                                                                    optionalEncryptedKey);
                     }
 

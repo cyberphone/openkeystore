@@ -16,11 +16,7 @@
  */
 package org.webpki.asn1;
 
-import java.io.IOException;
-
 import java.util.*;
-
-import org.webpki.util.ArrayUtil;
 
 /**
  * ASN.1 BitString.
@@ -28,18 +24,18 @@ import org.webpki.util.ArrayUtil;
 public final class ASN1BitString extends Binary {
     byte unusedBits;
 
-    private void checkConsistensy() throws IOException {
+    private void checkConsistensy() {
         if (value.length <= 4) {
             int v = value[value.length - 1] & 0xFF;
             for (int i = 0; i < unusedBits % 8; i++) {
-                if ((v & 1) != 0) throw new IOException("Bit string not padded with zeros");
+                if ((v & 1) != 0) throw new ASN1Exception("Bit string not padded with zeros");
                 v >>= 1;
             }
-            if ((v & 1) == 0) throw new IOException("Bit string contained spurious zeros");
+            if ((v & 1) == 0) throw new ASN1Exception("Bit string contained spurious zeros");
         }
     }
 
-    public ASN1BitString(byte[] value) throws IOException {
+    public ASN1BitString(byte[] value) {
         super(BITSTRING, true, value);
         int v = value[value.length - 1] & 0xFF;
         int unusedBits = 0;
@@ -61,12 +57,12 @@ public final class ASN1BitString extends Binary {
         return unusedBits;
     }
 
-    public BaseASN1Object derDecodeValue() throws IOException {
-        throw new IOException("Not applicable to bit strings (?).");
+    public BaseASN1Object derDecodeValue() {
+        throw new ASN1Exception("Not applicable to bit strings (?).");
         //return DerDecoder.decode(value);
     }
 
-    ASN1BitString(DerDecoder decoder) throws IOException {
+    ASN1BitString(DerDecoder decoder) {
         super(decoder);
 
         if (isPrimitive()) {
@@ -91,7 +87,7 @@ public final class ASN1BitString extends Binary {
             for (int i = 0; i < v.size() - 1; i++) {
                 bs = (ASN1BitString) v.get(i);
                 if (bs.unusedBits != 0) {
-                    throw new IOException("Unused bits in sub-bitstring (only allowed in last substring).");
+                    throw new ASN1Exception("Unused bits in sub-bitstring (only allowed in last substring).");
                 }
                 System.arraycopy(bs.value, 0, value, offset, bs.value.length);
                 offset += bs.value.length;
@@ -104,7 +100,7 @@ public final class ASN1BitString extends Binary {
         checkConsistensy();
     }
 
-    public void encode(Encoder encoder) throws IOException {
+    public void encode(Encoder encoder) {
         encodeHeader(encoder, value.length + 1, true);
         encoder.write(unusedBits);
         encoder.write(value);

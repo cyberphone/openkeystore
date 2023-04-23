@@ -16,14 +16,12 @@
  */
 package org.webpki.asn1;
 
-import java.io.IOException;
-
 public class ASN1BMPString extends ASN1String {
     ASN1BMPString(String value) {
         super(BMPSTRING, value);
     }
 
-    ASN1BMPString(DerDecoder decoder) throws IOException {
+    ASN1BMPString(DerDecoder decoder) {
         super(decoder);
     }
 

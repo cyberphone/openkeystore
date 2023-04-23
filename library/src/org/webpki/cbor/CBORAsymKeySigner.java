@@ -16,9 +16,6 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
@@ -26,6 +23,7 @@ import org.webpki.crypto.AsymKeySignerInterface;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.SignatureAlgorithms;
+import org.webpki.crypto.SignatureWrapper;
 
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
@@ -79,12 +77,8 @@ public class CBORAsymKeySigner extends CBORSigner {
         signer = new AsymKeySignerInterface() {
 
             @Override
-            public byte[] signData(byte[] dataToBeSigned) throws IOException,
-                                                                 GeneralSecurityException {
-                return CBORCryptoUtils.asymKeySignatureGeneration(privateKey,
-                                                                  algorithm,
-                                                                  dataToBeSigned, 
-                                                                  provider);
+            public byte[] signData(byte[] data) {
+                return SignatureWrapper.sign(privateKey, algorithm, data, provider);
             }
             
             @Override
@@ -103,7 +97,6 @@ public class CBORAsymKeySigner extends CBORSigner {
      * is equivalent to the default (=no public key).
      * </p>
      * 
-     * 
      * @param publicKey The public key or <code>null</code>
      * @return <code>this</code>
      */
@@ -113,12 +106,12 @@ public class CBORAsymKeySigner extends CBORSigner {
     }
     
     @Override
-    byte[] coreSigner(byte[] dataToBeSigned) throws IOException, GeneralSecurityException {
+    byte[] coreSigner(byte[] dataToBeSigned) {
         return signer.signData(dataToBeSigned);
     }
 
     @Override
-    void additionalItems(CBORMap signatureObject) throws IOException, GeneralSecurityException {
+    void additionalItems(CBORMap signatureObject) {
         if (optionalPublicKey != null) {
             signatureObject.setObject(PUBLIC_KEY_LABEL, CBORPublicKey.convert(optionalPublicKey));
             CBORCryptoUtils.rejectPossibleKeyId(optionalKeyId);
@@ -126,7 +119,7 @@ public class CBORAsymKeySigner extends CBORSigner {
     }
 
     @Override
-    SignatureAlgorithms getAlgorithm() throws IOException, GeneralSecurityException {
+    SignatureAlgorithms getAlgorithm() {
         return signer.getAlgorithm();
     }
 }

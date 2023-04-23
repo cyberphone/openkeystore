@@ -16,8 +16,6 @@
  */
 package org.webpki.ca;
 
-import java.io.IOException;
-
 import java.math.BigInteger;
 
 import java.util.ArrayList;
@@ -26,7 +24,6 @@ import java.util.GregorianCalendar;
 
 import java.security.cert.X509Certificate;
 
-import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 
 import org.webpki.asn1.BaseASN1Object;
@@ -56,6 +53,7 @@ import org.webpki.crypto.HashAlgorithms;
 import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.CertificateExtensions;
 import org.webpki.crypto.CertificateUtil;
+import org.webpki.crypto.CryptoException;
 
 
 /*
@@ -84,7 +82,7 @@ public class CA {
 
         void add(CertificateExtensions extension, 
                  boolean critical, 
-                 BaseASN1Object argument) throws IOException {
+                 BaseASN1Object argument) {
             BaseASN1Object[] o = new BaseASN1Object[critical ? 3 : 2];
             o[0] = new ASN1ObjectID(extension.getOid());
             if (critical) {
@@ -95,7 +93,7 @@ public class CA {
         }
 
         void add(CertificateExtensions extension, 
-                 BaseASN1Object argument) throws IOException {
+                 BaseASN1Object argument) {
             add(extension, false, argument);
         }
 
@@ -109,12 +107,11 @@ public class CA {
     }
 
 
-    private ASN1OctetString createKeyID(PublicKey publicKey) throws IOException,
-                                                                    GeneralSecurityException {
+    private ASN1OctetString createKeyID(PublicKey publicKey) {
         return new ASN1OctetString(HashAlgorithms.SHA1.digest(publicKey.getEncoded()));
     }
 
-    private ASN1Time getASN1Time(Date date) throws IOException {
+    private ASN1Time getASN1Time(Date date) {
         GregorianCalendar gc = new GregorianCalendar();
         gc.setTime(date);
         if (gc.get(GregorianCalendar.YEAR) < 2050) {
@@ -134,8 +131,7 @@ public class CA {
                                       Date startDate, Date endDate,
                                       AsymKeySignerInterface signer,
                                       PublicKey issuerPublicKey,
-                                      PublicKey subjectPublicKey) throws IOException,
-                                                                         GeneralSecurityException {
+                                      PublicKey subjectPublicKey) {
         Extensions extensions = new Extensions();
 
         BaseASN1Object version = new CompositeContextSpecific(0, new ASN1Integer(2));
@@ -239,18 +235,18 @@ public class CA {
                     type == SubjectAltNameTypes.DNS_NAME ||
                     type == SubjectAltNameTypes.UNIFORM_RESOURCE_IDENTIFIER) {
                     if (!(nameValue.value instanceof ASN1IA5String)) {
-                        throw new IOException(
+                        throw new CryptoException(
                                 "Wrong argument type to SubjectAltNames of type " + type);
                     }
                 }
                 // Or IP addresses.
                 else if (type == SubjectAltNameTypes.IP_ADDRESS) {
                     if (!(nameValue.value instanceof ASN1OctetString)) {
-                        throw new IOException(
+                        throw new CryptoException(
                                 "Wrong argument type to SubjectAltNames of type IP address");
                     }
                 } else {
-                    throw new IOException("SubjectAltNames of type " + type + " are not handled.");
+                    throw new CryptoException("SubjectAltNames of type " + type + " are not handled.");
                 }
                 san[i++] = new SimpleContextSpecific(type, nameValue.value);
             }

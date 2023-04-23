@@ -16,7 +16,6 @@
  */
 package org.webpki.asn1;
 
-import java.io.IOException;
 import java.util.*;
 
 import org.webpki.util.ArrayUtil;
@@ -72,11 +71,11 @@ public abstract class Composite extends BaseASN1Object {
         this(UNIVERSAL, tagNumber);
     }
 
-    Composite(DerDecoder decoder) throws IOException {
+    Composite(DerDecoder decoder) {
         super(decoder);
 
         if (isPrimitive()) {
-            throw new IOException("Internal error: Primitive encoding of composite value.");
+            throw new ASN1Exception("Internal error: Primitive encoding of composite value.");
         }
 
         components = readComponents(decoder);
@@ -95,13 +94,13 @@ public abstract class Composite extends BaseASN1Object {
         return components.get(i);
     }
 
-    public void encode(Encoder encoder) throws IOException {
+    public void encode(Encoder encoder) {
         //*/encode(encoder, components);/*
         byte[] encodedValue = encode();
         encoder.write(encodedValue);//*/
     }
 
-    public byte[] encode() throws IOException {
+    public byte[] encode() {
         byte[][] t = new byte[components.size()][];
         int length = 0;
         for (int i = 0; i < t.length; i++) {

@@ -16,7 +16,6 @@
  */
 package org.webpki.asn1;
 
-import java.io.IOException;
 import java.util.*;
 
 public final class ASN1Set extends Composite {
@@ -33,7 +32,7 @@ public final class ASN1Set extends Composite {
         this.components.add(component);
     }
 
-    ASN1Set(DerDecoder decoder) throws IOException {
+    ASN1Set(DerDecoder decoder) {
         super(decoder);
     }
 

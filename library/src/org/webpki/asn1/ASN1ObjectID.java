@@ -16,9 +16,14 @@
  */
 package org.webpki.asn1;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import java.math.*;
 import java.util.*;
-import java.io.*;
 
 public final class ASN1ObjectID extends Simple {
     String id;
@@ -28,7 +33,7 @@ public final class ASN1ObjectID extends Simple {
         this.id = id;
     }
 
-    ASN1ObjectID(DerDecoder decoder) throws IOException {
+    ASN1ObjectID(DerDecoder decoder) {
         super(decoder);
         byte[] content = decoder.content();
         int i = 0;
@@ -48,7 +53,7 @@ public final class ASN1ObjectID extends Simple {
         }
     }
 
-    public void encode(Encoder encoder) throws IOException {
+    public void encode(Encoder encoder) {
         ArrayList<BigInteger> v = new ArrayList<>();
 
         StringTokenizer st = new StringTokenizer(id, ".");
@@ -108,10 +113,10 @@ public final class ASN1ObjectID extends Simple {
         }
     }
 
-    public static String oid(String name) throws IOException {
+    public static String oid(String name) {
         String r;
         if (nameToOID == null || (r = nameToOID.get(name)) == null) {
-            throw new IOException("Unknown OID name " + name + ".");//return oid;
+            throw new ASN1Exception("Unknown OID name " + name + ".");//return oid;
         } else {
             return r;
         }
@@ -120,29 +125,32 @@ public final class ASN1ObjectID extends Simple {
     static Hashtable<String, String> oidToName, nameToOID;
 
     static {
-        try {
-            tryReadOIDNames(null);
-        } catch (IOException e) {
-        }
+        tryReadOIDNames(null);
     }
 
-    public static void tryReadOIDNames(String filename) throws IOException {
-        InputStream in = (filename == null) ?
-                new ASN1OIDDefinitions().getOIDStream() :
-                new FileInputStream(filename);
-        BufferedReader r = new BufferedReader(new InputStreamReader(in));
-        Hashtable<String, String> on = new Hashtable<>(), no = new Hashtable<>();
-        String s;
-        while ((s = r.readLine()) != null) {
-            if (s.startsWith("Description = ")) {
-                int i1 = s.indexOf("("), i2 = s.indexOf(")");
-                on.put(s.substring(i1 + 1, i2).replace(' ', '.'), s.substring("Description = ".length(), i1 - 1));
-                no.put(s.substring("Description = ".length(), i1 - 1), s.substring(i1 + 1, i2).replace(' ', '.'));
+    public static void tryReadOIDNames(String filename) {
+        try {
+            InputStream in = (filename == null) ?
+                    new ASN1OIDDefinitions().getOIDStream() :
+                    new FileInputStream(filename);
+            BufferedReader r = new BufferedReader(new InputStreamReader(in));
+            Hashtable<String, String> on = new Hashtable<>(), no = new Hashtable<>();
+            String s;
+            while ((s = r.readLine()) != null) {
+                if (s.startsWith("Description = ")) {
+                    int i1 = s.indexOf("("), i2 = s.indexOf(")");
+                    on.put(s.substring(i1 + 1, i2).replace(' ', '.'), 
+                                       s.substring("Description = ".length(), i1 - 1));
+                    no.put(s.substring("Description = ".length(), 
+                                       i1 - 1), s.substring(i1 + 1, i2).replace(' ', '.'));
+                }
             }
+            r.close();
+            oidToName = on;
+            nameToOID = no;
+        } catch (IOException e) {
+            throw new ASN1Exception(e);
         }
-        r.close();
-        oidToName = on;
-        nameToOID = no;
     }
 
     void toString(StringBuilder s, String prefix) {

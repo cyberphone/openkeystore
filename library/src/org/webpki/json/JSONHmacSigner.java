@@ -54,12 +54,12 @@ public class JSONHmacSigner extends JSONSigner {
         signer = new HmacSignerInterface() {
 
             @Override
-            public byte[] signData(byte[] data) throws IOException, GeneralSecurityException {
+            public byte[] signData(byte[] data) {
                 return algorithm.digest(rawKey, data);
             }
 
             @Override
-            public HmacAlgorithms getAlgorithm() throws IOException {
+            public HmacAlgorithms getAlgorithm() {
                 return algorithm;
             }
 

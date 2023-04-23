@@ -72,21 +72,17 @@ public class JSONX509Signer extends JSONSigner {
         signer = new X509SignerInterface() {
 
             @Override
-            public byte[] signData(byte[] data) throws IOException, GeneralSecurityException {
-                return new SignatureWrapper(algorithm, privateKey, provider)
-                                .update(data)
-                                .sign();
+            public byte[] signData(byte[] data) {
+                return SignatureWrapper.sign(privateKey, algorithm, data, provider);
             }
 
             @Override
-            public AsymSignatureAlgorithms getAlgorithm() throws IOException,
-                                                                 GeneralSecurityException {
+            public AsymSignatureAlgorithms getAlgorithm() {
                 return algorithm;
             }
 
             @Override
-            public X509Certificate[] getCertificatePath()
-                    throws IOException, GeneralSecurityException {
+            public X509Certificate[] getCertificatePath() {
                 return null;  // Not used here
             }
     

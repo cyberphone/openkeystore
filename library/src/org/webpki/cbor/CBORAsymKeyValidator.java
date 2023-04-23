@@ -22,6 +22,7 @@ import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
+import org.webpki.crypto.SignatureWrapper;
 
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
@@ -127,10 +128,11 @@ public class CBORAsymKeyValidator extends CBORValidator {
                  keyLocator.locate(null, optionalKeyId, algorithm) : inLinePublicKey;
         
         // Now we have everything needed for validating the signature.
-        CBORCryptoUtils.asymKeySignatureValidation(publicKey,
-                                                   algorithm, 
-                                                   signedData, 
-                                                   signatureValue);
+        SignatureWrapper.validate(publicKey,
+                                  algorithm, 
+                                  signedData, 
+                                  signatureValue,
+                                  null);
 
         // If we have an in-line public key, check that it matches the expected one.
         if (inLinePublicKey != null && 

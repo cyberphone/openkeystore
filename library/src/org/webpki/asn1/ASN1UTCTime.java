@@ -16,7 +16,6 @@
  */
 package org.webpki.asn1;
 
-import java.io.IOException;
 import java.util.*;
 import java.text.*;
 
@@ -66,12 +65,12 @@ public class ASN1UTCTime extends ASN1Time {
         this(parseUTCTime(utcTime));
     }
 
-    ASN1UTCTime(DerDecoder decoder) throws IOException {
+    ASN1UTCTime(DerDecoder decoder) {
         super(decoder);
 
         if (isPrimitive()) {
             if (decoder.length == -1) {
-                throw new IOException("UTCTime cannot have indefinite length(?).");
+                throw new ASN1Exception("UTCTime cannot have indefinite length(?).");
             }
 
             String utcTime = new String(decoder.content());
@@ -79,11 +78,11 @@ public class ASN1UTCTime extends ASN1Time {
             try {
                 value = parseUTCTime(utcTime);
             } catch (ParseException pe) {
-                throw new IOException("Failed to decode UTC Time " + utcTime + ":\n" +
+                throw new ASN1Exception("Failed to decode UTC Time " + utcTime + ":\n" +
                         pe.getMessage());
             }
         } else {
-            throw new IOException("Constructed UTCTime not supported.");
+            throw new ASN1Exception("Constructed UTCTime not supported.");
         }
     }
 

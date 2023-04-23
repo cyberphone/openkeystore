@@ -14,18 +14,30 @@
  *  limitations under the License.
  *
  */
-package org.webpki.asn1;
+package org.webpki.keygen2;
 
-public class ASN1VisibleString extends ASN1String {
-    ASN1VisibleString(String value) {
-        super(VISIBLESTRING, value);
+/**
+ * Wrapper for making the KeyGen2 library only throw unchecked exceptions.
+ */
+public class KeyGen2Exception extends RuntimeException {
+
+    private static final long serialVersionUID = 1L;
+    
+    /**
+     * Constructor for rethrowing checked exceptions.
+     *  
+     * @param sourceException
+     */
+    public KeyGen2Exception(Exception sourceException) {
+        super(sourceException);
     }
-
-    ASN1VisibleString(DerDecoder decoder) {
-        super(decoder);
-    }
-
-    void toString(StringBuilder s, String prefix) {
-        s.append(getByteNumber()).append(prefix).append("VisibleString '").append(value()).append('\'');
+    
+    /**
+     * Constructor for original exceptions.
+     * 
+     * @param message
+     */
+    public KeyGen2Exception(String message) {
+        super(message);
     }
 }

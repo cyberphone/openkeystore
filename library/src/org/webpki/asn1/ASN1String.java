@@ -16,7 +16,6 @@
  */
 package org.webpki.asn1;
 
-import java.io.IOException;
 import java.util.*;
 
 public abstract class ASN1String extends Simple {
@@ -32,7 +31,7 @@ public abstract class ASN1String extends Simple {
         this.value = value.getBytes();
     }
 
-    ASN1String(DerDecoder decoder) throws IOException {
+    ASN1String(DerDecoder decoder) {
         super(decoder);
 
         if (isPrimitive()) {
@@ -69,7 +68,7 @@ public abstract class ASN1String extends Simple {
         return sameType(o) && ((ASN1String) o).value.equals(value);
     }
 
-    public void encode(Encoder encoder) throws IOException {
+    public void encode(Encoder encoder) {
         // Use primitive encoding.
         encodeHeader(encoder, value.length);
         encoder.write(value);

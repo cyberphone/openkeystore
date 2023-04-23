@@ -16,8 +16,6 @@
  */
 package org.webpki.crypto;
 
-import java.io.IOException;
-
 public enum KeyUsageBits {
 
     DIGITAL_SIGNATURE ("digitalSignature"),
@@ -42,12 +40,12 @@ public enum KeyUsageBits {
     }
 
 
-    public static KeyUsageBits getKeyUsageBit(String x509Name) throws IOException {
+    public static KeyUsageBits getKeyUsageBit(String x509Name) {
         for (KeyUsageBits kubit : values()) {
             if (kubit.x509Name.equals(x509Name)) {
                 return kubit;
             }
         }
-        throw new IOException("Bad KeyUsage bit: " + x509Name);
+        throw new CryptoException("Bad KeyUsage bit: " + x509Name);
     }
 }

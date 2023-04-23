@@ -16,11 +16,6 @@
  */
 package org.webpki.crypto;
 
-
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
-
 import java.security.cert.X509Certificate;
 
 /**
@@ -36,6 +31,6 @@ public interface X509SignerInterface extends AsymKeySignerInterface {
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    X509Certificate[] getCertificatePath() throws IOException, GeneralSecurityException;
+    X509Certificate[] getCertificatePath();
 
 }

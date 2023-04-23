@@ -16,10 +16,6 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
-
 import org.webpki.crypto.SignatureAlgorithms;
 
 import static org.webpki.cbor.CBORCryptoConstants.*;
@@ -54,13 +50,11 @@ public abstract class CBORSigner {
 
     CBORSigner() {}
     
-    abstract byte[] coreSigner(byte[] dataToSign) throws IOException, GeneralSecurityException;
+    abstract byte[] coreSigner(byte[] dataToSign);
     
-    abstract SignatureAlgorithms getAlgorithm()
-            throws IOException,GeneralSecurityException;
+    abstract SignatureAlgorithms getAlgorithm();
     
-    abstract void additionalItems(CBORMap signatureObject)
-            throws IOException, GeneralSecurityException;
+    abstract void additionalItems(CBORMap signatureObject);
     
     /**
      * Sets optional Intercepter.
@@ -122,11 +116,8 @@ public abstract class CBORSigner {
      * @param key Key holding the signature in the CBOR map to sign
      * @param mapToSign CBOR map to be signed
      * @return Signed object
-     * @throws IOException
-     * @throws GeneralSecurityException
      */
-    public CBORObject sign(CBORObject key, CBORMap mapToSign) throws IOException, 
-                                                                     GeneralSecurityException {
+    public CBORObject sign(CBORObject key, CBORMap mapToSign) {
         // Create an empty signature container object.
         CBORMap csfContainer = new CBORMap();
 

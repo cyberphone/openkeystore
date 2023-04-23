@@ -16,11 +16,13 @@
  */
 package org.webpki.json;
 
-import java.io.IOException;
 import java.util.LinkedHashMap;
 
 import org.webpki.util.IO;
+import org.webpki.util.UTF8;
 import org.webpki.util.HexaDecimal;
+
+import org.webpki.crypto.CryptoException;
 
 /*
  * Holder of symmetric keys
@@ -31,7 +33,7 @@ public class SymmetricKeys {
     
     private String keyBase;
   
-    public SymmetricKeys(String keyBase) throws IOException {
+    public SymmetricKeys(String keyBase) {
         this.keyBase = keyBase;
         init(128);
         init(256);
@@ -39,22 +41,22 @@ public class SymmetricKeys {
         init(512);
     }
 
-    private void init(int i) throws IOException {
+    private void init(int i) {
         keys.put(i,        
-                 HexaDecimal.decode(new String(IO.readFile(keyBase + getName(i) + ".hex"), "utf-8")));
+                 HexaDecimal.decode(UTF8.decode(IO.readFile(keyBase + getName(i) + ".hex"))));
     }
 
-    public String getName(int i) throws IOException {
+    public String getName(int i) {
         return "a" + i + "bitkey";
     }
 
-    public byte[] getValue(int i) throws IOException {
+    public byte[] getValue(int i) {
         byte[] key = keys.get(i);
         if (key == null){
-            throw new IOException("No such key: " + i);
+            throw new CryptoException("No such key: " + i);
         }
         if (key.length * 8 != i) {
-            throw new IOException("Bad sym key:" + key.length);
+            throw new CryptoException("Bad sym key:" + key.length);
         }
         return key;
     }

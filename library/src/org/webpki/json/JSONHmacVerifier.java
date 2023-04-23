@@ -56,7 +56,7 @@ public class JSONHmacVerifier extends JSONVerifier {
             public boolean verifySignature(byte[] data,
                                            byte[] digest,
                                            HmacAlgorithms algorithm,
-                                           String keyId) throws IOException, GeneralSecurityException {
+                                           String keyId) {
                 return Arrays.equals(digest, algorithm.digest(rawKey, data));
             }
             

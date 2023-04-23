@@ -17,7 +17,6 @@
 package org.webpki.crypto;
 
 import java.io.IOException;
-
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.PrivateKey;
@@ -44,39 +43,37 @@ public class SignatureWrapper {
 
     boolean ecdsaAsn1EncodedFlag;
 
-    private static int getExtendTo(ECParameterSpec ecParameters) 
-            throws IOException, GeneralSecurityException {
+    private static int getExtendTo(ECParameterSpec ecParameters) {
         return (KeyAlgorithms.getECKeyAlgorithm(ecParameters).getPublicKeySizeInBits() + 7) / 8;
     }
 
     private byte[] decodeAsn1EncodedEcdsaSignature(byte[] derCodedSignature,
-                                                   ECParameterSpec ecParameters)
-            throws IOException, GeneralSecurityException {
+                                                   ECParameterSpec ecParameters) {
         int extendTo = getExtendTo(ecParameters);
         int index = 2;
         int length;
         byte[] concatenatedSignature = new byte[extendTo << 1];
         if (derCodedSignature[0] != ASN1_SEQUENCE) {
-            throw new IOException("Not SEQUENCE");
+            throw new CryptoException("Not SEQUENCE");
         }
         length = derCodedSignature[1];
         if (length < 4) {
             if (length != -127) {
-                throw new IOException("ASN.1 Length error");
+                throw new CryptoException("ASN.1 Length error");
             }
             length = derCodedSignature[index++] & 0xFF;
         }
         if (index != derCodedSignature.length - length) {
-            throw new IOException("ASN.1 Length error");
+            throw new CryptoException("ASN.1 Length error");
         }
         for (int offset = 0; offset <= extendTo; offset += extendTo) {
             if (derCodedSignature[index++] != ASN1_INTEGER) {
-                throw new IOException("Not INTEGER");
+                throw new CryptoException("Not INTEGER");
             }
             int l = derCodedSignature[index++];
             while (l > extendTo) {
                 if (derCodedSignature[index++] != LEADING_ZERO) {
-                    throw new IOException("Bad INTEGER");
+                    throw new CryptoException("Bad INTEGER");
                 }
                 l--;
             }
@@ -84,17 +81,16 @@ public class SignatureWrapper {
             index += l;
         }
         if (index != derCodedSignature.length) {
-            throw new IOException("ASN.1 Length error");
+            throw new CryptoException("ASN.1 Length error");
         }
         return concatenatedSignature;
     }
 
     private byte[] encodeAsn1EncodedEcdsaSignature(byte[] concatenatedSignature,
-                                                   ECParameterSpec ecParameters) 
-            throws IOException, GeneralSecurityException {
+                                                   ECParameterSpec ecParameters) {
         int extendTo = getExtendTo(ecParameters);
         if (extendTo != concatenatedSignature.length / 2) {
-            throw new IOException("Signature length error");
+            throw new CryptoException("Signature length error");
         }
 
         int i = extendTo;
@@ -142,10 +138,10 @@ public class SignatureWrapper {
     ECParameterSpec ecParameters;
 
     private SignatureWrapper(AsymSignatureAlgorithms algorithm, String provider, Key key) 
-            throws GeneralSecurityException, IOException {
+            throws GeneralSecurityException {
         KeyAlgorithms keyAlgorithm = KeyAlgorithms.getKeyAlgorithm(key);
         if (keyAlgorithm.getKeyType() != algorithm.getKeyType()) {
-            throw new IllegalArgumentException(
+            throw new CryptoException(
                     "Supplied key (" +
                     keyAlgorithm.toString() +
                     ") is incompatible with specified algorithm (" +
@@ -177,11 +173,10 @@ public class SignatureWrapper {
      * @param publicKey
      * @param provider
      * @throws GeneralSecurityException
-     * @throws IOException
      */
     public SignatureWrapper(AsymSignatureAlgorithms algorithm, 
                             PublicKey publicKey,
-                            String provider) throws GeneralSecurityException, IOException {
+                            String provider) throws GeneralSecurityException {
         this(algorithm, provider, publicKey);
         instance.initVerify(publicKey);
     }
@@ -191,10 +186,9 @@ public class SignatureWrapper {
      * @param algorithm
      * @param publicKey
      * @throws GeneralSecurityException
-     * @throws IOException
      */
     public SignatureWrapper(AsymSignatureAlgorithms algorithm,
-                            PublicKey publicKey) throws GeneralSecurityException, IOException {
+                            PublicKey publicKey) throws GeneralSecurityException {
         this(algorithm, publicKey, null);
     }
 
@@ -204,11 +198,10 @@ public class SignatureWrapper {
      * @param privateKey
      * @param provider
      * @throws GeneralSecurityException
-     * @throws IOException
      */
     public SignatureWrapper(AsymSignatureAlgorithms algorithm,
                             PrivateKey privateKey,
-                            String provider) throws GeneralSecurityException, IOException {
+                            String provider) throws GeneralSecurityException {
         this(algorithm, provider, privateKey);
         instance.initSign(privateKey);
     }
@@ -218,10 +211,9 @@ public class SignatureWrapper {
      * @param algorithm
      * @param privateKey
      * @throws GeneralSecurityException
-     * @throws IOException
      */
     public SignatureWrapper(AsymSignatureAlgorithms algorithm,
-                            PrivateKey privateKey) throws GeneralSecurityException, IOException {
+                            PrivateKey privateKey) throws GeneralSecurityException {
         this(algorithm, privateKey, null);
     }
 
@@ -272,9 +264,8 @@ public class SignatureWrapper {
      * @param signature
      * @return
      * @throws GeneralSecurityException
-     * @throws IOException
      */
-    public boolean verify(byte[] signature) throws GeneralSecurityException, IOException {
+    public boolean verify(byte[] signature) throws GeneralSecurityException {
         return instance.verify(ecdsaAsn1EncodedFlag || unmodifiedSignature ?
                 signature : encodeAsn1EncodedEcdsaSignature(signature, ecParameters));
     }
@@ -284,10 +275,68 @@ public class SignatureWrapper {
      * 
      * @return
      * @throws GeneralSecurityException
-     * @throws IOException
      */
-    public byte[] sign() throws GeneralSecurityException, IOException {
+    public byte[] sign() throws GeneralSecurityException {
         return ecdsaAsn1EncodedFlag || unmodifiedSignature ?
                 instance.sign() : decodeAsn1EncodedEcdsaSignature(instance.sign(), ecParameters);
+    }
+    
+    /**
+     * Signature creation conveniance method.
+     * <p>
+     * This method generates JOSE/COSE compatible signatures.
+     * </p>
+     * <p>
+     * For security related errors, {@link CryptoException} is thrown.
+     * </p> 
+     * 
+     * @param privateKey Signature key
+     * @param algorithm Signature algorithm
+     * @param data Data to sign
+     * @param provider Optional provider or <code>null</code>
+     * @return Signature
+     */
+    public static byte[] sign(PrivateKey privateKey,
+                              AsymSignatureAlgorithms algorithm,
+                              byte[] data,
+                              String provider) {
+        try {
+            return new SignatureWrapper(algorithm, privateKey, provider)
+                           .update(data)
+                           .sign();
+        } catch (GeneralSecurityException e) {
+            throw new CryptoException(e);
+        }
+    }
+    
+    /**
+     * Signature validation conveniance method.
+     * <p>
+     * This method validates JOSE/COSE compatible signatures.
+     * </p>
+     * <p>
+     * For security related errors including invalid signatures, {@link CryptoException} is thrown.
+     * </p> 
+     * 
+     * @param publicKey Validtion key
+     * @param algorithm Signature algorithm
+     * @param data The data what was signed
+     * @param signature The signature to be validated
+     * @param provider Optional provider or <code>null</code>
+     */
+    public static void validate(PublicKey publicKey,
+                                AsymSignatureAlgorithms algorithm,
+                                byte[] data,
+                                byte[] signature,
+                                String provider) {
+        try {
+            if (!new SignatureWrapper(algorithm, publicKey, provider)
+                         .update(data)
+                         .verify(signature)) {
+                throw new CryptoException("Bad signature for key: " + publicKey.toString());
+            }
+        } catch (GeneralSecurityException e) {
+            throw new CryptoException(e);
+        }
     }
 }

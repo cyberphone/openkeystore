@@ -16,12 +16,9 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
-
 import java.util.Arrays;
 
+import org.webpki.crypto.CryptoException;
 import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.HmacVerifierInterface;
 
@@ -52,8 +49,7 @@ public class CBORHmacValidator extends CBORValidator {
             public boolean verifySignature(byte[] data, 
                                            byte[] digest, 
                                            HmacAlgorithms algorithm, 
-                                           String keyId)
-                    throws IOException, GeneralSecurityException {
+                                           String keyId) {
                 return Arrays.equals(algorithm.digest(secretKey, data), digest);
             }
         });
@@ -78,12 +74,12 @@ public class CBORHmacValidator extends CBORValidator {
                         int coseAlgorithmId,
                         CBORObject optionalKeyId,
                         byte[] signatureValue,
-                        byte[] signedData) throws IOException, GeneralSecurityException {
+                        byte[] signedData) {
         if (!verifier.verifySignature(signedData, 
                                       signatureValue, 
                                       HmacAlgorithms.getAlgorithmFromId(coseAlgorithmId),
                                       optionalKeyId == null ? null : optionalKeyId.getString())) {
-            throw new GeneralSecurityException("HMAC signature validation error");
+            throw new CryptoException("HMAC signature validation error");
         }
     }
 }

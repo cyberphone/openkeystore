@@ -16,16 +16,16 @@
  */
 package org.webpki.ca;
 
-import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.EnumSet;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import org.webpki.asn1.ASN1OctetString;
 import org.webpki.asn1.BaseASN1Object;
+import org.webpki.asn1.ASN1Exception;
 import org.webpki.asn1.ASN1IA5String;
 
 import org.webpki.asn1.cert.RelativeDistinguishedName;
@@ -143,17 +143,17 @@ public class CertSpec {
     }
 
 
-    public void addSubjectComponent(String name_or_oid, String value) throws IOException {
+    public void addSubjectComponent(String name_or_oid, String value) {
         subject.add(new RelativeDistinguishedName(name_or_oid, value));
     }
 
 
-    private void bad(String err) throws IOException {
-        throw new IOException("Subject DN error: " + err);
+    private void bad(String err) {
+        throw new ASN1Exception("Subject DN error: " + err);
     }
 
 
-    public void setSubject(String subject) throws IOException {
+    public void setSubject(String subject) {
         ArrayList<String> dns = new ArrayList<>();
         boolean quote = false;
         StringBuilder s = new StringBuilder();
@@ -173,7 +173,7 @@ public class CertSpec {
             }
         }
         if (quote) {
-            throw new IOException("Bad quotes");
+            throw new ASN1Exception("Bad quotes");
         }
         String attr = s.toString().trim();
         if (attr.length() > 0) {
@@ -235,10 +235,14 @@ public class CertSpec {
     }
 
 
-    public void addIPAddress(String ip_address) throws IOException {
-        addSubjectAltNameElement(
-                SubjectAltNameTypes.IP_ADDRESS, 
-                new ASN1OctetString(InetAddress.getByName(ip_address).getAddress()));
+    public void addIPAddress(String ip_address) {
+        try {
+            addSubjectAltNameElement(
+                    SubjectAltNameTypes.IP_ADDRESS, 
+                    new ASN1OctetString(InetAddress.getByName(ip_address).getAddress()));
+        } catch (UnknownHostException e) {
+            throw new ASN1Exception(e);
+        }
     }
 
 

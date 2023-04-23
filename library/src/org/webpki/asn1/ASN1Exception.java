@@ -16,16 +16,28 @@
  */
 package org.webpki.asn1;
 
-public class ASN1VisibleString extends ASN1String {
-    ASN1VisibleString(String value) {
-        super(VISIBLESTRING, value);
-    }
+/**
+ * Wrapper for making the WebPKI ASN.1 library only throw unchecked exceptions.
+ */
+public class ASN1Exception extends RuntimeException {
 
-    ASN1VisibleString(DerDecoder decoder) {
-        super(decoder);
+    private static final long serialVersionUID = 1L;
+    
+    /**
+     * Constructor for rethrowing checked exceptions.
+     *  
+     * @param sourceException
+     */
+    public ASN1Exception(Exception sourceException) {
+        super(sourceException);
     }
-
-    void toString(StringBuilder s, String prefix) {
-        s.append(getByteNumber()).append(prefix).append("VisibleString '").append(value()).append('\'');
+    
+    /**
+     * Constructor for original exceptions.
+     * 
+     * @param message
+     */
+    public ASN1Exception(String message) {
+        super(message);
     }
 }

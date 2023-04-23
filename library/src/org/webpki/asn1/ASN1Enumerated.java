@@ -16,7 +16,6 @@
  */
 package org.webpki.asn1;
 
-import java.io.IOException;
 import java.math.*;
 
 public final class ASN1Enumerated extends Simple {
@@ -35,12 +34,12 @@ public final class ASN1Enumerated extends Simple {
         this(Long.toString(value));
     }
 
-    ASN1Enumerated(DerDecoder decoder) throws IOException {
+    ASN1Enumerated(DerDecoder decoder) {
         super(decoder, true);
         value = new BigInteger(decoder.content());
     }
 
-    public void encode(Encoder encoder) throws IOException {
+    public void encode(Encoder encoder) {
         byte[] content = value.toByteArray();
         encodeHeader(encoder, content.length, true);
         encoder.write(content);

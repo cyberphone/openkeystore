@@ -16,8 +16,6 @@
  */
 package org.webpki.crypto;
 
-import java.io.IOException;
-
 import java.math.BigInteger;
 
 import java.util.LinkedHashMap;
@@ -28,9 +26,6 @@ import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import java.security.cert.X509Certificate;
-
-import java.security.GeneralSecurityException;
-import java.security.MessageDigest;
 
 import javax.security.auth.x500.X500Principal;
 
@@ -73,10 +68,10 @@ public class CertificateFilter {
 
         LinkedHashMap<String, Boolean> rules = new LinkedHashMap<>();
 
-        BaseRuleParser(String[] ruleSet) throws IOException {
+        BaseRuleParser(String[] ruleSet) {
             if (ruleSet != null) {
                 if (ruleSet.length == 0) {
-                    throw new IOException("Empty list not allowed");
+                    throw new CryptoException("Empty list not allowed");
                 }
                 for (String rule : ruleSet) {
                     boolean required = true;
@@ -85,7 +80,7 @@ public class CertificateFilter {
                         rule = rule.substring(1);
                     }
                     if (rules.put(parse(rule), required) != null) {
-                        throw new IOException("Duplicate rule: " + rule);
+                        throw new CryptoException("Duplicate rule: " + rule);
                     }
                 }
             }
@@ -102,7 +97,7 @@ public class CertificateFilter {
             return ruleSet.toArray(new String[0]);
         }
 
-        abstract String parse(String argument) throws IOException;
+        abstract String parse(String argument);
 
         boolean checkRule(String rule) {
             Boolean required = rules.get(rule);
@@ -126,25 +121,25 @@ public class CertificateFilter {
     }
 
     static class KeyUsageRuleParser extends BaseRuleParser {
-        KeyUsageRuleParser(String[] ruleSet) throws IOException {
+        KeyUsageRuleParser(String[] ruleSet) {
             super(ruleSet);
         }
 
         @Override
-        String parse(String argument) throws IOException {
+        String parse(String argument) {
             return KeyUsageBits.getKeyUsageBit(argument).getX509Name();
         }
     }
 
     static class OIDRuleParser extends BaseRuleParser {
-        OIDRuleParser(String[] ruleSet) throws IOException {
+        OIDRuleParser(String[] ruleSet) {
             super(ruleSet);
         }
 
         @Override
-        String parse(String argument) throws IOException {
+        String parse(String argument) {
             if (!oidPattern.matcher(argument).matches()) {
-                throw new IOException("Bad OID: " + argument);
+                throw new CryptoException("Bad OID: " + argument);
             }
             return argument;
         }
@@ -163,7 +158,7 @@ public class CertificateFilter {
         return regex;
     }
 
-    protected void nullCheck(Object o) throws IOException {
+    protected void nullCheck(Object o) {
 
     }
 
@@ -208,77 +203,77 @@ public class CertificateFilter {
     }
 
 
-    public CertificateFilter setFingerPrint(byte[] fingerPrint) throws IOException {
+    public CertificateFilter setFingerPrint(byte[] fingerPrint) {
         nullCheck(fingerPrint);
         if (fingerPrint != null && fingerPrint.length != 32) {
-            throw new IOException("\"Sha256\" fingerprint <> 32 bytes!");
+            throw new CryptoException("\"Sha256\" fingerprint <> 32 bytes!");
         }
         this.fingerPrint = fingerPrint;
         return this;
     }
 
 
-    public CertificateFilter setIssuer(X500Principal issuer) throws IOException {
+    public CertificateFilter setIssuer(X500Principal issuer) {
         nullCheck(issuer);
         this.issuerRegEx = quote(issuer);
         return this;
     }
 
 
-    public CertificateFilter setSubject(X500Principal subject) throws IOException {
+    public CertificateFilter setSubject(X500Principal subject) {
         nullCheck(subject);
         this.subjectRegEx = quote(subject);
         return this;
     }
 
 
-    public CertificateFilter setIssuerRegEx(String issuerRegEx) throws IOException {
+    public CertificateFilter setIssuerRegEx(String issuerRegEx) {
         nullCheck(issuerRegEx);
         this.issuerRegEx = conditionalCompile(issuerRegEx);
         return this;
     }
 
 
-    public CertificateFilter setSubjectRegEx(String subjectRegEx) throws IOException {
+    public CertificateFilter setSubjectRegEx(String subjectRegEx) {
         nullCheck(subjectRegEx);
         this.subjectRegEx = conditionalCompile(subjectRegEx);
         return this;
     }
 
 
-    public CertificateFilter setEmail(String emailAddress) throws IOException {
+    public CertificateFilter setEmail(String emailAddress) {
         nullCheck(emailAddress);
         this.emailRegEx = Pattern.quote(emailAddress);
         return this;
     }
 
 
-    public CertificateFilter setEmailRegEx(String emailRegEx) throws IOException {
+    public CertificateFilter setEmailRegEx(String emailRegEx) {
         nullCheck(emailRegEx);
         this.emailRegEx = conditionalCompile(emailRegEx);
         return this;
     }
 
 
-    public CertificateFilter setPolicyRules(String[] ruleSet) throws IOException {
+    public CertificateFilter setPolicyRules(String[] ruleSet) {
         nullCheck(ruleSet);
         this.policyRules = new OIDRuleParser(ruleSet).normalized();
         return this;
     }
 
-    public CertificateFilter setSerialNumber(BigInteger serialNumber) throws IOException {
+    public CertificateFilter setSerialNumber(BigInteger serialNumber) {
         nullCheck(serialNumber);
         this.serialNumber = serialNumber;
         return this;
     }
 
-    public CertificateFilter setKeyUsageRules(String[] keyUsageRules) throws IOException {
+    public CertificateFilter setKeyUsageRules(String[] keyUsageRules) {
         nullCheck(keyUsageRules);
         this.keyUsageRules = new KeyUsageRuleParser(keyUsageRules).normalized();
         return this;
     }
 
-    public CertificateFilter setKeyUsageRules(KeyUsageBits[] required, KeyUsageBits[] disallowed) throws IOException {
+    public CertificateFilter setKeyUsageRules(KeyUsageBits[] required, KeyUsageBits[] disallowed) {
         nullCheck(required);
         nullCheck(disallowed);
         ArrayList<String> list = new ArrayList<>();
@@ -298,7 +293,7 @@ public class CertificateFilter {
      *   requires matching end-entity certificates to have (at least) the two extended key usages,
      *   clientAuthentication and emailProtection
      */
-    public CertificateFilter setExtendedKeyUsageRules(String[] extendedKeyUsageRules) throws IOException {
+    public CertificateFilter setExtendedKeyUsageRules(String[] extendedKeyUsageRules) {
         nullCheck(extendedKeyUsageRules);
         this.extendedKeyUsageRules = new OIDRuleParser(extendedKeyUsageRules).normalized();
         return this;
@@ -309,7 +304,7 @@ public class CertificateFilter {
     }
 
 
-    public static boolean matchKeyUsage(String[] specifier, X509Certificate certificate) throws IOException {
+    public static boolean matchKeyUsage(String[] specifier, X509Certificate certificate) {
         if (specifier == null) {
             return true;
         }
@@ -331,8 +326,7 @@ public class CertificateFilter {
     }
 
 
-    private static boolean matchExtendedKeyUsage(String[] specifier, X509Certificate certificate)
-            throws IOException, GeneralSecurityException {
+    private static boolean matchExtendedKeyUsage(String[] specifier, X509Certificate certificate) {
         if (specifier == null) {
             return true;
         }
@@ -350,8 +344,7 @@ public class CertificateFilter {
     }
 
 
-    private static boolean matchEmailAddress(String specifier, X509Certificate certificate)
-            throws IOException, GeneralSecurityException {
+    private static boolean matchEmailAddress(String specifier, X509Certificate certificate) {
         if (specifier == null) {
             return true;
         }
@@ -369,8 +362,7 @@ public class CertificateFilter {
     }
 
 
-    private static boolean matchPolicy(String specifier[], X509Certificate certificate)
-            throws IOException, GeneralSecurityException {
+    private static boolean matchPolicy(String specifier[], X509Certificate certificate) {
         if (specifier == null) {
             return true;
         }
@@ -388,7 +380,9 @@ public class CertificateFilter {
     }
 
 
-    private static boolean matchDistinguishedName(String specifier, X509Certificate[] certificatePath, boolean issuer) {
+    private static boolean matchDistinguishedName(String specifier, 
+                                                  X509Certificate[] certificatePath, 
+                                                  boolean issuer) {
         if (specifier == null) {
             return true;
         }
@@ -406,12 +400,12 @@ public class CertificateFilter {
     }
 
 
-    private static boolean matchFingerPrint(byte[] specifier, X509Certificate[] certificatePath) throws GeneralSecurityException {
+    private static boolean matchFingerPrint(byte[] specifier, X509Certificate[] certificatePath) {
         if (specifier == null) {
             return true;
         }
         for (X509Certificate certificate : certificatePath) {
-            if (Arrays.equals(specifier, MessageDigest.getInstance("SHA256").digest(certificate.getEncoded()))) {
+            if (Arrays.equals(specifier, CertificateUtil.getCertificateSHA256(certificate))) {
                 return true;
             }
         }
@@ -427,18 +421,14 @@ public class CertificateFilter {
     }
 
 
-    public boolean matches(X509Certificate[] certificatePath) throws IOException {
-        try {
-            return matchSerial(serialNumber, certificatePath[0]) &&
-                   matchFingerPrint(fingerPrint, certificatePath) &&
-                   matchKeyUsage(keyUsageRules, certificatePath[0]) &&
-                   matchExtendedKeyUsage(extendedKeyUsageRules, certificatePath[0]) &&
-                   matchPolicy(policyRules, certificatePath[0]) &&
-                   matchEmailAddress(emailRegEx, certificatePath[0]) &&
-                   matchDistinguishedName(issuerRegEx, certificatePath, true) &&
-                   matchDistinguishedName(subjectRegEx, certificatePath, false);
-        } catch (GeneralSecurityException e) {
-            throw new IOException(e);
-        }
+    public boolean matches(X509Certificate[] certificatePath) {
+        return matchSerial(serialNumber, certificatePath[0]) &&
+               matchFingerPrint(fingerPrint, certificatePath) &&
+               matchKeyUsage(keyUsageRules, certificatePath[0]) &&
+               matchExtendedKeyUsage(extendedKeyUsageRules, certificatePath[0]) &&
+               matchPolicy(policyRules, certificatePath[0]) &&
+               matchEmailAddress(emailRegEx, certificatePath[0]) &&
+               matchDistinguishedName(issuerRegEx, certificatePath, true) &&
+               matchDistinguishedName(subjectRegEx, certificatePath, false);
     }
 }

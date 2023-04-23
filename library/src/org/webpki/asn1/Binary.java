@@ -16,8 +16,6 @@
  */
 package org.webpki.asn1;
 
-import java.io.IOException;
-
 import java.util.Arrays;
 
 public abstract class Binary extends Simple {
@@ -37,7 +35,7 @@ public abstract class Binary extends Simple {
         return value.length;
     }
 
-    public BaseASN1Object derDecodeValue() throws IOException {
+    public BaseASN1Object derDecodeValue() {
         return DerDecoder.decode(value);
     }
 
@@ -58,7 +56,7 @@ public abstract class Binary extends Simple {
         this(UNIVERSAL, tagNumber, primitive, value);
     }
 
-    Binary(DerDecoder decoder) throws IOException {
+    Binary(DerDecoder decoder) {
         super(decoder);
     }
 

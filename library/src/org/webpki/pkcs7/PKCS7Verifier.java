@@ -58,7 +58,7 @@ public class PKCS7Verifier {
 
         BigInteger serial;
 
-        IssuerAndSerialNumber(BaseASN1Object issuer_and_serial) throws IOException {
+        IssuerAndSerialNumber(BaseASN1Object issuer_and_serial) {
             ASN1Sequence seq = ParseUtil.sequence(issuer_and_serial, 2);
 
             issuer = new DistinguishedName(seq.get(0));
@@ -66,7 +66,7 @@ public class PKCS7Verifier {
             serial = ParseUtil.integer(seq.get(1)).value();
         }
 
-        IssuerAndSerialNumber(X509Certificate certificate) throws IOException, GeneralSecurityException {
+        IssuerAndSerialNumber(X509Certificate certificate) {
             ASN1Sequence seq = ASN1Util.x509Certificate(certificate);
 
             issuer = DistinguishedName.issuerDN(seq);
@@ -76,7 +76,7 @@ public class PKCS7Verifier {
             serial = ParseUtil.integer(seq.get(ParseUtil.isContext(seq.get(0), 0) ? 1 : 0)).value();
         }
 
-        boolean matches(X509Certificate certificate) throws IOException, GeneralSecurityException {
+        boolean matches(X509Certificate certificate) {
             IssuerAndSerialNumber t = new IssuerAndSerialNumber(certificate);
             //System.out.println("SSSSSSSSSS " + serial + " --- " + t.serial);
             return issuer.equals(t.issuer) && serial.equals(t.serial);
@@ -129,15 +129,12 @@ public class PKCS7Verifier {
         SignedData(BaseASN1Object signed_data, byte detached_data[]) throws IOException, GeneralSecurityException {
             ASN1Sequence contents;
 
-            try {
-                ASN1Sequence top = ParseUtil.sequence(signed_data, 2);
+            ASN1Sequence top = ParseUtil.sequence(signed_data, 2);
 
-                ParseUtil.oid(top.get(0), PKCS7Signer.PKCS7_SIGNED_DATA);
+            ParseUtil.oid(top.get(0), PKCS7Signer.PKCS7_SIGNED_DATA);
 
-                contents = ParseUtil.sequence(ParseUtil.compositeContext(top.get(1), 0, 1).get(0));
-            } catch (IOException tme) {
-                contents = ParseUtil.sequence(signed_data);
-            }
+            contents = ParseUtil.sequence(ParseUtil.compositeContext(top.get(1), 0, 1).get(0));
+            contents = ParseUtil.sequence(signed_data);
 
             ParseUtil.integer(contents.get(0), 1);
 
