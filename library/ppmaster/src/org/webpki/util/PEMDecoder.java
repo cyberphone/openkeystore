@@ -49,6 +49,7 @@ import org.webpki.asn1.DerDecoder;
 import org.webpki.asn1.ParseUtil;
 
 import org.webpki.crypto.CertificateUtil;
+import org.webpki.crypto.CryptoException;
 import org.webpki.crypto.OkpSupport;
 import org.webpki.crypto.KeyAlgorithms;
 
@@ -66,8 +67,7 @@ public class PEMDecoder {
     }  // No instantiation please
 
  
-    static PublicKey ecPublicKeyFromPKCS8(byte[] pkcs8) throws IOException, 
-                                                               GeneralSecurityException {
+    static PublicKey ecPublicKeyFromPKCS8(byte[] pkcs8) {
         ASN1Sequence seq = ParseUtil.sequence(DerDecoder.decode(pkcs8), 3);
         String oid = ParseUtil.oid(ParseUtil.sequence(seq.get(1), 2).get(1)).oid();
         seq = ParseUtil.sequence(DerDecoder.decode(ParseUtil.octet(seq.get(2))));
@@ -75,7 +75,7 @@ public class PEMDecoder {
         try {
             publicKey = ParseUtil.bitstring(ParseUtil.singleContext(seq.get(seq.size() -1), 1));
         } catch (Exception e) {
-            throw new GeneralSecurityException(
+            throw new CryptoException(
                     "This implementation requires PKCS8 with public key attribute");
         }
         int length = (publicKey.length - 1) / 2;
@@ -88,28 +88,25 @@ public class PEMDecoder {
             if (oid.equals(ka.getECDomainOID())) {
                 if (oid.equals(ka.getECDomainOID())) {
                     ECPoint w = new ECPoint(x, y);
+                    try {
                     return KeyFactory.getInstance("EC").generatePublic(
                             new ECPublicKeySpec(w, ka.getECParameterSpec()));
+                    } catch (GeneralSecurityException e) {
+                        throw new CryptoException(e);
+                    }
                 }
             }
         }
-        throw new IOException("Failed creating EC public key from private key");
+        throw new CryptoException("Failed creating EC public key from private key");
     }
     
-    static PublicKey okpPublicKeyFromPKCS8(byte[] pkcs8) throws IOException,
-                                                                GeneralSecurityException {
+    static PublicKey okpPublicKeyFromPKCS8(byte[] pkcs8) {
         ASN1Sequence seq = ParseUtil.sequence(DerDecoder.decode(pkcs8));
         KeyAlgorithms keyAlgorithm = 
                 getKeyAlgorithm(ParseUtil.oid(ParseUtil.sequence(seq.get(1)).get(0)).oid());
-        byte[] content;
-        try {
-            content = ParseUtil.simpleContext(seq.get(seq.size() - 1), 1).encodeContent();
-        } catch (Exception e) {
-            throw new GeneralSecurityException(
-                    "This implementation requires a public key attribute (RFC8410)");
-        }
+        byte[] content = ParseUtil.simpleContext(seq.get(seq.size() - 1), 1).encodeContent();
         if (content[0] != 0) {
-            throw new GeneralSecurityException(
+            throw new CryptoException(
                     "Missing leading 0 in public key attribute (RFC8410)");
         }
         byte[] publicKey = new byte[content.length - 1];
@@ -118,103 +115,116 @@ public class PEMDecoder {
 
     }
     
-    private static byte[] getPrivateKeyBlob(byte[] pemBlob) throws IOException {
+    private static byte[] getPrivateKeyBlob(byte[] pemBlob) {
         return decodePemObject(pemBlob, "PRIVATE KEY");
     }
     
-    private static PrivateKey getPrivateKeyFromPKCS8(byte[] pkcs8)
-    throws IOException, GeneralSecurityException {
-        PrivateKey privateKey = getKeyFactory(ParseUtil.sequence(DerDecoder.decode(pkcs8)).get(1))
-                .generatePrivate(new PKCS8EncodedKeySpec(pkcs8));
-        // This is for getting the identical representation to JWK decoding
-        if (privateKey instanceof ECKey) {
-            return KeyFactory.getInstance("EC")
-                    .generatePrivate(new ECPrivateKeySpec(((ECPrivateKey)privateKey).getS(),
-                                                          ((ECPrivateKey)privateKey).getParams()));
+    private static PrivateKey getPrivateKeyFromPKCS8(byte[] pkcs8) {
+        try {
+            PrivateKey privateKey = getKeyFactory(ParseUtil.sequence(DerDecoder.decode(pkcs8)).get(1))
+                    .generatePrivate(new PKCS8EncodedKeySpec(pkcs8));
+            // This is for getting the identical representation to JWK decoding
+            if (privateKey instanceof ECKey) {
+                return KeyFactory.getInstance("EC")
+                        .generatePrivate(new ECPrivateKeySpec(((ECPrivateKey)privateKey).getS(),
+                                                              ((ECPrivateKey)privateKey).getParams()));
+            }
+            if (privateKey instanceof RSAKey) {
+                return privateKey;
+            }
+            KeyAlgorithms keyAlgorithm = OkpSupport.getKeyAlgorithm(privateKey);
+            return OkpSupport.raw2PrivateKey(OkpSupport.private2RawKey(privateKey, keyAlgorithm), 
+                                             keyAlgorithm);
+        } catch (GeneralSecurityException e) {
+            throw new CryptoException(e);
         }
-        if (privateKey instanceof RSAKey) {
-            return privateKey;
-        }
-        KeyAlgorithms keyAlgorithm = OkpSupport.getKeyAlgorithm(privateKey);
-        return OkpSupport.raw2PrivateKey(OkpSupport.private2RawKey(privateKey, 
-                                                                         keyAlgorithm), 
-                                            keyAlgorithm);
     }
 
-    public static KeyPair getKeyPair(byte[] pemBlob) throws IOException, GeneralSecurityException {
-        byte[] pkcs8 = getPrivateKeyBlob(pemBlob);
-        PrivateKey privateKey =  getPrivateKeyFromPKCS8(pkcs8);
-        if (privateKey instanceof ECKey) {
-            return new KeyPair(ecPublicKeyFromPKCS8(pkcs8), privateKey);
+    public static KeyPair getKeyPair(byte[] pemBlob) {
+        try {
+            byte[] pkcs8 = getPrivateKeyBlob(pemBlob);
+            PrivateKey privateKey =  getPrivateKeyFromPKCS8(pkcs8);
+            if (privateKey instanceof ECKey) {
+                return new KeyPair(ecPublicKeyFromPKCS8(pkcs8), privateKey);
+            }
+            if (privateKey instanceof RSAKey) {
+                KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+                RSAPrivateCrtKey privk = (RSAPrivateCrtKey)privateKey;
+                return new KeyPair(keyFactory.generatePublic(
+                        new RSAPublicKeySpec(privk.getModulus(),
+                                             privk.getPublicExponent())),
+                                             privateKey);
+            }
+            return new KeyPair(okpPublicKeyFromPKCS8(pkcs8), privateKey);
+        } catch (GeneralSecurityException e) {
+            throw new CryptoException(e);
         }
-        if (privateKey instanceof RSAKey) {
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            RSAPrivateCrtKey privk = (RSAPrivateCrtKey)privateKey;
-            return new KeyPair(keyFactory.generatePublic(
-                new RSAPublicKeySpec(privk.getModulus(), privk.getPublicExponent())), privateKey);
-        }
-        return new KeyPair(okpPublicKeyFromPKCS8(pkcs8), privateKey);
     }
     
-    static KeyAlgorithms getKeyAlgorithm(String oid) throws IOException {
+    static KeyAlgorithms getKeyAlgorithm(String oid) {
         for (KeyAlgorithms keyAlgorithm : KeyAlgorithms.values()) {
             if (oid.equals(keyAlgorithm.getECDomainOID())) {
                 return keyAlgorithm;
             }
         }
-        throw new IOException("Did not find OID: " + oid);
+        throw new CryptoException("Did not find OID: " + oid);
     }
 
-    private static KeyFactory getKeyFactory(BaseASN1Object object) 
-    throws IOException, GeneralSecurityException {
+    private static KeyFactory getKeyFactory(BaseASN1Object object) {
         String oid = ParseUtil.oid(ParseUtil.sequence(object).get(0)).oid();
-        if (oid.startsWith("1.3.101.11")) {
+        try {
+            if (oid.startsWith("1.3.101.11")) {
 //#if BOUNCYCASTLE
-            return KeyFactory.getInstance(getKeyAlgorithm(oid).getJceName(), "BC");
+                return KeyFactory.getInstance(getKeyAlgorithm(oid).getJceName(), "BC");
 //#else
-            return KeyFactory.getInstance(getKeyAlgorithm(oid).getJceName());
+                return KeyFactory.getInstance(getKeyAlgorithm(oid).getJceName());
 //#endif
+            }
+            return KeyFactory.getInstance(oid.equals("1.2.840.113549.1.1.1") ? "RSA" : "EC");
+        } catch (GeneralSecurityException e) {
+            throw new CryptoException(e);
         }
-        return KeyFactory.getInstance(oid.equals("1.2.840.113549.1.1.1") ? "RSA" : "EC");
     }
 
-    public static PrivateKey getPrivateKey(byte[] pemBlob) throws IOException, 
-                                                                  GeneralSecurityException {
+    public static PrivateKey getPrivateKey(byte[] pemBlob) {
         return getPrivateKeyFromPKCS8(getPrivateKeyBlob(pemBlob)); 
     }
     
-    public static PublicKey getPublicKey(byte[] pemBlob) throws IOException, 
-                                                                GeneralSecurityException {
+    public static PublicKey getPublicKey(byte[] pemBlob) {
         byte[] publicKeyBlob = decodePemObject(pemBlob, "PUBLIC KEY");
+        try {
         return getKeyFactory(ParseUtil.sequence(DerDecoder.decode(publicKeyBlob)).get(0))
-                .generatePublic(new X509EncodedKeySpec(publicKeyBlob)); 
+                .generatePublic(new X509EncodedKeySpec(publicKeyBlob));
+        } catch (GeneralSecurityException e) {
+            throw new CryptoException(e);
+        }
     }
 
-    public static X509Certificate[] getCertificatePath(byte[] pemBlob) 
-            throws IOException, GeneralSecurityException {
-        return CertificateUtil.getSortedPathFromBlobs(
-                decodePemObjects(pemBlob, "CERTIFICATE"));
+    public static X509Certificate[] getCertificatePath(byte[] pemBlob) {
+        return CertificateUtil.getSortedPathFromBlobs(decodePemObjects(pemBlob, "CERTIFICATE"));
     }
 
-    public static KeyStore getKeyStore(byte[] pemBlob, String alias, String password)
-            throws IOException, GeneralSecurityException {
-        KeyStore keyStore = KeyStore.getInstance("PKCS12");
-        keyStore.load(null, password.toCharArray());
-        keyStore.setKeyEntry(alias,
-                             getPrivateKey(pemBlob),
-                             password.toCharArray(),
-                             getCertificatePath(pemBlob));
-        return keyStore;
+    public static KeyStore getKeyStore(byte[] pemBlob, String alias, String password) {
+        try {
+            KeyStore keyStore = KeyStore.getInstance("PKCS12");
+            keyStore.load(null, password.toCharArray());
+            keyStore.setKeyEntry(alias,
+                                 getPrivateKey(pemBlob),
+                                 password.toCharArray(),
+                                 getCertificatePath(pemBlob));
+            return keyStore;
+        } catch (GeneralSecurityException | IOException e) {
+            throw new CryptoException(e);
+        }
     }
 
-    public static X509Certificate getRootCertificate(byte[] pemBlob) 
-    throws IOException, GeneralSecurityException {
+    public static X509Certificate getRootCertificate(byte[] pemBlob) {
         X509Certificate[] certPath = getCertificatePath(pemBlob);
         return certPath[certPath.length - 1];
     }
 
     private static ArrayList<byte[]> decodePemObjects(byte[]pemBlob, 
-                                                      String itemType) throws IOException {
+                                                      String itemType) {
         String pemString = UTF8.decode(pemBlob);
         String header = "-----BEGIN " + itemType + "-----";
         String footer = "-----END "   + itemType + "-----";
@@ -224,22 +234,22 @@ public class PEMDecoder {
             start = pemString.indexOf(header, start);
             if (start < 0) {
                 if (objects.isEmpty()) {
-                    throw new IOException("Didn't find any: " + header);
+                    throw new CryptoException("Didn't find any: " + header);
                 }
                 break;
             }
             int end = pemString.indexOf(footer, start);
-            if (end < 0) throw new IOException("Expected to find: " + footer);
+            if (end < 0) throw new CryptoException("Expected to find: " + footer);
             objects.add(Base64.decode(pemString.substring(start + header.length(), end)));
             start = end + footer.length();
         }
         return objects;
     }
     
-    private static byte[] decodePemObject(byte[]pemBlob, String itemType) throws IOException {
+    private static byte[] decodePemObject(byte[]pemBlob, String itemType) {
         ArrayList<byte[]> objects = decodePemObjects(pemBlob, itemType);
         if (objects.size() != 1) {
-            throw new IOException("Only expected one: " + itemType);
+            throw new CryptoException("Only expected one: " + itemType);
         }
         return objects.get(0);
     }
