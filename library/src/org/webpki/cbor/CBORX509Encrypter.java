@@ -52,7 +52,7 @@ public class CBORX509Encrypter extends CBOREncrypter {
         
         // X509 encryptions mandate a certificate path.
         keyEncryption.set(CERT_PATH_LABEL, 
-                                CBORCryptoUtils.encodeCertificateArray(certificatePath));
+                          CBORCryptoUtils.encodeCertificateArray(certificatePath));
 
         // Key IDs are not permitted.
         CBORCryptoUtils.rejectPossibleKeyId(optionalKeyId);

@@ -138,8 +138,8 @@ public abstract class CBOREncrypter {
         }
 
         // Add the mandatory content encryption algorithm.
-        cefContainer.set(ALGORITHM_LABEL,
-                               new CBORInteger(contentEncryptionAlgorithm.getCoseAlgorithmId()));
+        cefContainer.set(ALGORITHM_LABEL, 
+                         new CBORInteger(contentEncryptionAlgorithm.getCoseAlgorithmId()));
 
         // Possible key encryption kicks in here.
         CBORMap innerObject;

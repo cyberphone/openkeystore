@@ -43,16 +43,8 @@ public class CBORHmacValidator extends CBORValidator {
      * @param secretKey Validation key
      */
     public CBORHmacValidator(byte[] secretKey) {
-        this(new HmacVerifierInterface() {
-
-            @Override
-            public boolean verifySignature(byte[] data, 
-                                           byte[] digest, 
-                                           HmacAlgorithms algorithm, 
-                                           String keyId) {
-                return Arrays.equals(algorithm.digest(secretKey, data), digest);
-            }
-        });
+        this((data, digest, algorithm, keyId) -> 
+            Arrays.equals(algorithm.digest(secretKey, data), digest));
     }
 
     /**
