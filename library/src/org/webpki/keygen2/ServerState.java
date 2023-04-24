@@ -1184,7 +1184,7 @@ public class ServerState {
                        String optionalServerSessionId) throws IOException {
         this.serverCryptoInterface = serverCryptoInterface;
         this.issuerUri = issuerUri;
-        serverTime = ISODateTime.formatDateTime(new GregorianCalendar(), ISODateTime.UTC_NO_SUBSECONDS);
+        serverTime = ISODateTime.encode(new GregorianCalendar(), ISODateTime.UTC_NO_SUBSECONDS);
         if (optionalServerSessionId == null) {
             optionalServerSessionId = Long.toHexString(new GregorianCalendar().getTimeInMillis());
             optionalServerSessionId += 

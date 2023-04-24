@@ -76,7 +76,7 @@ public class CertificateInfo {
     }
 
     private static String toDate(GregorianCalendar dateTime) {
-        return ISODateTime.formatDateTime(dateTime, ISODateTime.UTC_NO_SUBSECONDS);
+        return ISODateTime.encode(dateTime, ISODateTime.UTC_NO_SUBSECONDS);
     }
 
 

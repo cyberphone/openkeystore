@@ -113,7 +113,7 @@ public class JSONArrayWriter {
     }
 
     public JSONArrayWriter setDateTime(GregorianCalendar dateTime, EnumSet<ISODateTime.DatePatterns> format) throws IOException {
-        return setString(ISODateTime.formatDateTime(dateTime, format));
+        return setString(ISODateTime.encode(dateTime, format));
     }
 
     public JSONArrayWriter setBinary(byte[] value) throws IOException {

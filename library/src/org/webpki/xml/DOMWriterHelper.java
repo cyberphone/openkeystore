@@ -452,7 +452,7 @@ public class DOMWriterHelper {
     public void addDateTime(String name, 
                             GregorianCalendar value,
                             EnumSet<ISODateTime.DatePatterns> format) {
-        addString(name, ISODateTime.formatDateTime(value, format));
+        addString(name, ISODateTime.encode(value, format));
     }
 
 
@@ -623,7 +623,7 @@ public class DOMWriterHelper {
     public void setDateTimeAttribute(String name,
                                      GregorianCalendar value,
                                      EnumSet<ISODateTime.DatePatterns> format) {
-        setStringAttribute(name, ISODateTime.formatDateTime(value, format));
+        setStringAttribute(name, ISODateTime.encode(value, format));
     }
 
     // TODO: document

@@ -165,14 +165,14 @@ public class DOMAttributeReaderHelper {
 
     public GregorianCalendar getDateTime(String name,
                                          EnumSet<ISODateTime.DatePatterns> format) throws NoSuchElementException, IOException {
-        return ISODateTime.parseDateTime(getString(name), format);
+        return ISODateTime.decode(getString(name), format);
     }
 
     public GregorianCalendar getDateTimeConditional(String name,
                                                     EnumSet<ISODateTime.DatePatterns> format,
                                                     GregorianCalendar defaultValue) throws IOException {
         String s = getStringConditional(name);
-        return s != null ? ISODateTime.parseDateTime(s, format) : defaultValue;
+        return s != null ? ISODateTime.decode(s, format) : defaultValue;
     }
 
     public GregorianCalendar getDateTimeConditional(String name,

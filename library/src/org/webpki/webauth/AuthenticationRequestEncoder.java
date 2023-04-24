@@ -61,7 +61,7 @@ public class AuthenticationRequestEncoder extends ServerEncoder {
 
     public AuthenticationRequestEncoder() {
         this.serverTime = 
-                ISODateTime.formatDateTime(new GregorianCalendar(), ISODateTime.UTC_NO_SUBSECONDS);
+                ISODateTime.encode(new GregorianCalendar(), ISODateTime.UTC_NO_SUBSECONDS);
     }
 
 

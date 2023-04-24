@@ -50,7 +50,9 @@ public abstract class CBORTypedObjectDecoder {
      * associated with the specific object decoder.
      * </p>
      * <p>
-     * Note that "checked" exceptions <b>must</b> be wrapped in {@link RuntimeException}
+     * Note that "checked" exceptions <b>must</b> be wrapped in
+     * an unchecked exception like {@link RuntimeException},
+     * {@link CBORException}, or {@link org.webpki.crypto.CryptoException}.
      * </p>
      * <p>
      * Also see {@link CBORTypedObjectDecoderCache#setCheckForUnread(boolean)}.

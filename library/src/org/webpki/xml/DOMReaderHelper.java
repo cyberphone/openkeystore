@@ -437,18 +437,18 @@ public class DOMReaderHelper {
 
 
     public GregorianCalendar getDateTime(EnumSet<ISODateTime.DatePatterns> format) throws NoSuchElementException, IOException {
-        return ISODateTime.parseDateTime(getString(), format);
+        return ISODateTime.decode(getString(), format);
     }
 
     public GregorianCalendar getDateTime(String name,
                                          EnumSet<ISODateTime.DatePatterns> format) throws NoSuchElementException, IOException {
-        return ISODateTime.parseDateTime(getString(name), format);
+        return ISODateTime.decode(getString(name), format);
     }
 
     public GregorianCalendar getDateTimeConditional(String name,
                                                     EnumSet<ISODateTime.DatePatterns> format) throws NoSuchElementException, IOException {
         String s = getStringConditional(name);
-        return s != null ? ISODateTime.parseDateTime(s, format) : null;
+        return s != null ? ISODateTime.decode(s, format) : null;
     }
 
     public static GregorianCalendar parseDate(String s) throws IOException {

@@ -234,13 +234,13 @@ public class JSONObjectReader implements Cloneable {
      * @param constraints Required input format
      * @return Java <code>GregorianCalendar</code>
      * @throws IOException
-     * @see org.webpki.util.ISODateTime#parseDateTime(String, EnumSet)
+     * @see org.webpki.util.ISODateTime#decode(String, EnumSet)
      * @see JSONObjectWriter#setDateTime(String, GregorianCalendar, EnumSet)
      */
     public GregorianCalendar getDateTime(String name, 
                                          EnumSet<ISODateTime.DatePatterns> constraints) 
     throws IOException {
-        return ISODateTime.parseDateTime(getString(name), constraints);
+        return ISODateTime.decode(getString(name), constraints);
     }
 
     /**

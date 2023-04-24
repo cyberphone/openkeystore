@@ -352,12 +352,12 @@ public class JSONObjectWriter {
      * @param format Requited output format
      * @return Current instance of {@link org.webpki.json.JSONObjectWriter}
      * @throws IOException
-     * @see org.webpki.util.ISODateTime#formatDateTime(GregorianCalendar, EnumSet)
+     * @see org.webpki.util.ISODateTime#encode(GregorianCalendar, EnumSet)
      */
     public JSONObjectWriter setDateTime(String name, 
                                         GregorianCalendar dateTime,
                                         EnumSet<ISODateTime.DatePatterns> format) throws IOException {
-        return setString(name, ISODateTime.formatDateTime(dateTime, format));
+        return setString(name, ISODateTime.encode(dateTime, format));
     }
 
     /**

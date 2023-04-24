@@ -46,6 +46,7 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 
 import javax.crypto.KeyAgreement;
 
@@ -77,6 +78,7 @@ import org.webpki.util.Base64URL;
 import org.webpki.util.HexaDecimal;
 import org.webpki.util.IO;
 import org.webpki.util.ISODateTime;
+import org.webpki.util.ISODateTime.DatePatterns;
 
 /**
  * JSON JUnit suite
@@ -2473,8 +2475,18 @@ public class JSONTest {
                 .getDateTime("date", ISODateTime.COMPLETE);
         assertTrue("Fraction", dateTime.get(GregorianCalendar.MILLISECOND) == milliSeconds);
     }
+    
+    void dateFractionParse(String date, EnumSet<DatePatterns> constraints, boolean ok) {
+        try {
+            ISODateTime.decode(date, constraints);
+            assertTrue("Should not: " + date, ok);
+        } catch (Exception e) {
+            assertFalse("Good: " + date + "\n" + e.getMessage(), ok);
+        }
+    }
 
     void dateTimeTest() throws IOException {
+//TODO wrong place for this test
         GregorianCalendar dateTime = new GregorianCalendar();
         dateTime.setTimeInMillis((dateTime.getTimeInMillis() / 1000) * 1000);
         JSONObjectWriter or = new JSONObjectWriter();
@@ -2499,6 +2511,34 @@ public class JSONTest {
         dateTimeFractions("100", 100);
         dateTimeFractions("12", 120);
         dateTimeFractions("15679223", 156);
+        dateFractionParse("2009-12-24T13:54:23Z", ISODateTime.UTC_NO_SUBSECONDS, true);
+        dateFractionParse("2009-12-24T13:54:23Z", ISODateTime.LOCAL_NO_SUBSECONDS, false);
+        dateFractionParse("2009-12-24T13:54:23.Z", ISODateTime.UTC_NO_SUBSECONDS, false);
+        dateFractionParse("2009-12-24T13:54:23Z", ISODateTime.COMPLETE, true);
+        dateFractionParse("2009-12-24T13:54:23.Z", ISODateTime.COMPLETE, false);
+        dateFractionParse("2009-12-24T13:54:23.1Z", ISODateTime.COMPLETE, true);
+        dateFractionParse("2009-12-24T13:54:23.188888888Z", ISODateTime.COMPLETE, true);
+        dateFractionParse("2009-12-24T13:54:23.1888888889Z", ISODateTime.COMPLETE, false);
+        EnumSet<DatePatterns> pattern = EnumSet.noneOf(DatePatterns.class);
+        pattern.add(DatePatterns.MILLISECONDS);
+        pattern.add(DatePatterns.UTC);
+        dateFractionParse("2009-12-24T13:54:23.188888888Z", pattern, false);
+        dateFractionParse("2009-12-24T13:54:23.1888Z", pattern, false);
+        dateFractionParse("2009-12-24T13:54:23.188Z", pattern, true);
+        dateFractionParse("2009-12-24T13:54:23Z", pattern, true);
+        pattern = EnumSet.noneOf(DatePatterns.class);
+        pattern.add(DatePatterns.MICROSECONDS);
+        pattern.add(DatePatterns.UTC);
+        dateFractionParse("2009-12-24T13:54:23.188888888Z", pattern, false);
+        dateFractionParse("2009-12-24T13:54:23.1888Z", pattern, true);
+        dateFractionParse("2009-12-24T13:54:23.188Z", pattern, true);
+        dateFractionParse("2009-12-24T13:54:23Z", pattern, true);
+        pattern.add(DatePatterns.NANOSECONDS);
+        pattern.add(DatePatterns.UTC);
+        dateFractionParse("2009-12-24T13:54:23.188888888Z", pattern, true);
+        dateFractionParse("2009-12-24T13:54:23.1888Z", pattern, true);
+        dateFractionParse("2009-12-24T13:54:23.188Z", pattern, true);
+        dateFractionParse("2009-12-24T13:54:23Z", pattern, true);
     }
 
     void bigIntegerValues(BigInteger value) throws IOException {
