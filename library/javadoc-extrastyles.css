@@ -16,6 +16,9 @@
   padding: 0.4em 0.5em;
   background-color: #f8f8f8;
   text-align: center;
+  font-family: sans-serif;
+  font-size: 1.1em;
+  font-weight: bolder;
   border-width: 1px;
   border-style: solid;
   border-color: black;
@@ -67,4 +70,13 @@
 .webpkihighlite {
   background: black;
   color: white;
+}
+
+.webpkisuper {
+  font-size: 0.8em;
+  position: relative;
+  bottom: 0.5em;
+  left: 0.1em;
+  display: inline-block;
+  padding: 0.3em 0.1em 0 0;
 }

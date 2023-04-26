@@ -27,7 +27,24 @@ import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 /**
- * Encodes/decodes ISO time data.
+ * <div id='iso'>Encodes/decodes ISO <code>dateTime</code> objects.</div>
+ * <p>
+ * <i>Always:</i> <code>yyyy-mm-ddThh:mm:ss</code><br>
+ * <i>Optionally:</i> a <code>'.'</code> followed by <code>1-9</code> digits holding fractions of a second<br>
+ * <i>Finally:</i> <code>'Z'</code> for UTC or an UTC time-zone difference 
+ * expressed as <code>&pm;hh:mm</code>.
+ * </p>
+ * Sample values:
+ * <div class='webpkifloat'>
+ * <table class='webpkitable'>
+ * <tr><th>ISO&nbsp;dateTime</th><th style='min-width:20em'>Description</th></tr>
+ * <tr><td><code>2009-12-24T05:45:23-08:00</code></td><td>Local <code>dateTime</code> without sub-seconds.</td></tr>
+ * <tr><td><code>2009-12-24T13:45:23Z</code></td><td>The same <code>dateTime</code> as the previous, expressed as UTC.
+ * <tr><td><code style='white-space:nowrap'>2009-12-24T05:45:23.856-08:00</code></td><td>Local <code>dateTime</code> with sub-seconds.</td></tr>
+ * <tr><td><code>2009-12-24T13:45:23.856Z</code></td><td>The same <code>dateTime</code> as the previous, expressed as UTC.
+ * </table>
+ * </div>
+ *
  */
 public class ISODateTime {
 
@@ -40,7 +57,7 @@ public class ISODateTime {
         /**
          * UTC time zone.
          * <p>
-         * Note: you must specify {@link LOCAL}, {@link UTC}, 
+         * Note: you must specify {@link DatePatterns#LOCAL}, {@link DatePatterns#UTC}, 
          * or both for {@link #decode(String, EnumSet<DatePatterns>)}.
          * </p>
          */
@@ -79,7 +96,7 @@ public class ISODateTime {
     public static final EnumSet<DatePatterns> LOCAL_NO_SUBSECONDS = EnumSet.of(DatePatterns.LOCAL);
     
     /**
-     * For {@link #decode(String, EnumSet<DatePatterns>)} only: accept the full syntax.
+     * For {@link #decode(String, EnumSet<DatePatterns>)} only: accept all <a href='#iso'>valid forms</a>.
      */
     public static final EnumSet<DatePatterns> COMPLETE = EnumSet.allOf(DatePatterns.class);
 
@@ -88,23 +105,17 @@ public class ISODateTime {
 
     
     /**
-     * Decodes an ISO formatted dateTime string.
-     * <p>
-     * <i>Always:</i> <code>yyyy-mm-ddThh:mm:ss</code><br>
-     * <i>Optionally:</i> a '.' followed by 1-9 digits holding fractions of a second<br>
-     * <i>Finally:</i> 'Z' for UTC or an UTC time-zone difference 
-     * expressed as <code>+hh:mm</code> or <code>-hh:mm</code>
-     * </p>
+     * Decodes an <a href='#iso'>ISO compliant</a> <code>dateTime</code> string.
      *
-     * @param dateTime String to be parsed
-     * @param constraints Permitted format(s)
+     * @param dateTime ISO formatted <code>dateTime</code> string
+     * @param constraints Permitted input format variants
      * @return GregorianCalendar
      */
     public static GregorianCalendar decode(String dateTime, 
                                            EnumSet<DatePatterns> constraints) {
 
         if (!DATE_PATTERN.matcher(dateTime).matches()) {
-            throw new IllegalArgumentException("DateTime syntax error: " + dateTime);
+            throw new IllegalArgumentException("\"dateTime\" syntax error: " + dateTime);
         }
         
         GregorianCalendar gc = new GregorianCalendar();
@@ -174,24 +185,20 @@ public class ISODateTime {
     }
 
     private static void bad(String dateTime) {
-        throw new IllegalArgumentException("DateTime format doesn't match specification: " + 
+        throw new IllegalArgumentException("\"dateTime\' format doesn't match \"constraints\": " + 
                                            dateTime);
     }
 
     /**
-     * Encodes an ISO formatted dateTime string.
+     * Encodes an <a href='#iso'>ISO compliant</a> <code>dateTime</code> string.
      * <p>
-     * <i>Always:</i> <code>yyyy-mm-ddThh:mm:ss</code><br>
-     * <i>Optional:</i> a '.' followed by 3 digits holding milliseconds<br>
-     * <i>UTC:</i> Append 'Z'<br>
-     * <i>Local time:</i> Append time-zone difference expressed as
-     * <code>+hh:mm</code> or <code>-hh:mm</code>
-     * </p>
+     * If {@link DatePatterns#MILLISECONDS} is defined, milliseconds (<code>.nnn</code>] 
+     * are included in the output, else only seconds are used.
+     * </p> 
      * 
      * @param dateTime The date/time object
-     * @param format Format: Note <i>Representation:</i> <code>true</code>
-     * for UTC, <code>false</code> for local time
-     * @return String
+     * @param format Output format
+     * @return ISO formatted <code>dateTime</code> string
      */
     public static String encode(GregorianCalendar dateTime, EnumSet<DatePatterns> format) {
         SimpleDateFormat sdf = new SimpleDateFormat(
