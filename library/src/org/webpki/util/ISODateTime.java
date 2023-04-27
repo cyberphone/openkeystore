@@ -38,10 +38,10 @@ import java.util.regex.Pattern;
  * <div class='webpkifloat'>
  * <table class='webpkitable'>
  * <tr><th>ISO&nbsp;dateTime</th><th style='min-width:20em'>Description</th></tr>
- * <tr><td><code>2009-12-24T05:45:23-08:00</code></td><td>Local <code>dateTime</code> without sub-seconds.</td></tr>
- * <tr><td><code>2009-12-24T13:45:23Z</code></td><td>The same <code>dateTime</code> as the previous, expressed as UTC.
- * <tr><td><code style='white-space:nowrap'>2009-12-24T05:45:23.856-08:00</code></td><td>Local <code>dateTime</code> with sub-seconds.</td></tr>
- * <tr><td><code>2009-12-24T13:45:23.856Z</code></td><td>The same <code>dateTime</code> as the previous, expressed as UTC.
+ * <tr><td><code>2022-12-24T05:45:23-08:00</code></td><td>Local <code>dateTime</code> without sub-seconds.</td></tr>
+ * <tr><td><code>2022-12-24T13:45:23Z</code></td><td>The same <code>dateTime</code> as the previous, expressed as UTC.
+ * <tr><td><code style='white-space:nowrap'>2022-12-24T05:45:23.856-08:00</code></td><td>Local <code>dateTime</code> with sub-seconds.</td></tr>
+ * <tr><td><code>2022-12-24T13:45:23.856Z</code></td><td>The same <code>dateTime</code> as the previous, expressed as UTC.
  * </table>
  * </div>
  *
@@ -194,6 +194,10 @@ public class ISODateTime {
      * <p>
      * If {@link DatePatterns#MILLISECONDS} is defined, milliseconds (<code>.nnn</code>] 
      * are included in the output, else only seconds are used.
+     * </p> 
+     * <p>
+     * If {@link DatePatterns#UTC} is defined, UTC format
+     * is applied, else local time format is assumed.
      * </p> 
      * 
      * @param dateTime The date/time object
