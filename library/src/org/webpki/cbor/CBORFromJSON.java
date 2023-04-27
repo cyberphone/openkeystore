@@ -18,11 +18,15 @@ package org.webpki.cbor;
 
 /**
  * Class for converting JSON to CBOR.
- * 
- * Note that the JSON Number type is restricted to integers with a magnitude &lt;= 2^53.
+ * <p>
+ * Note that the JSON <code>Number</code> type is (in this implementation),
+ * restricted to integers with a magnitude <code>&lt;= 2^53</code>.
+ * </p>
  * 
  */
 public class CBORFromJSON {
+    
+    static final long MAX_JSON_INTEGER = 0x0020000000000000L; // 2^53 ("53-bit precision")
 
     char[] json;
     int index;
@@ -189,7 +193,11 @@ public class CBORFromJSON {
             c = nextChar();
         } while ((c >= '0' && c <= '9') || c == '.');
         try {
-            return CBORInteger.createInt53(Long.parseLong(token.toString()));
+            long value = Long.parseLong(token.toString());
+            if (Math.abs(value) > MAX_JSON_INTEGER) {
+                reportError("JSON integer outside of the 2^53 range: " + value);
+            }
+            return new CBORInteger(value);
         } catch (IllegalArgumentException e) {
             reportError(e.getMessage());
         }

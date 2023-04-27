@@ -31,7 +31,7 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
 /**
  * Class for creating CBOR X509 signatures.
  * <p>
- * See {@link CBORSigner} for details.
+ * Also see {@link CBORSigner}.
  * </p>
  * <p> 
  * Note that X509 signatures do not permit the use of a <code>keyId</code>.

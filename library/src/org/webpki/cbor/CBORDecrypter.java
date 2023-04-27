@@ -27,7 +27,7 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
 /**
  * Base class for decrypting data.
  * <p>
- * See {@link CBOREncrypter} for details.
+ * Also see {@link CBOREncrypter}.
  * </p>
   * <p>
  * Note that decrypter objects may be used any number of times
@@ -53,7 +53,7 @@ public abstract class CBORDecrypter {
      * are rejected ({@link CBORCryptoUtils.POLICY#FORBIDDEN}).
      * </p>
      * <p>
-     * See <a href='doc-files/crypto-options.html'>crypto options</a> for details.
+     * Also see <a href='doc-files/crypto-options.html'>crypto options</a>.
      * </p>
      * @param customDataPolicy Define level of support
      * @param customDataCallBack Interface for reading custom data
@@ -75,7 +75,7 @@ public abstract class CBORDecrypter {
      * By default wrapped containers are rejected ({@link CBORCryptoUtils.POLICY#FORBIDDEN}).
      * </p>
      * <p>
-     * See <a href='doc-files/crypto-options.html'>crypto options</a> for details.
+     * Also see <a href='doc-files/crypto-options.html'>crypto options</a>.
      * </p>
      * @param tagPolicy Define level of support
      * @param tagCallBack Interface for reading tag

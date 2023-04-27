@@ -26,7 +26,7 @@ import java.util.Hashtable;
  * Stores {@link CBORTypedObjectDecoder} classes for automatic instantiation during decoding.
  * </p>
  * <p>
- * See <a href='doc-files/typed-objects.html'>Typed Objects</a> for an example.
+ * Also see <a href='doc-files/typed-objects.html'>Typed Objects</a> for an example.
  * </p>
  */
 public class CBORTypedObjectDecoderCache {

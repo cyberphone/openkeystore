@@ -27,7 +27,7 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
 /**
  * Class for CBOR asymmetric key signature validation.
  *<p>
- * See {@link CBORValidator} for details.
+ * Also see {@link CBORValidator}.
  *</p> 
  */
 public class CBORAsymKeyValidator extends CBORValidator {

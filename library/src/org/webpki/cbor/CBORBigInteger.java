@@ -19,7 +19,7 @@ package org.webpki.cbor;
 import java.math.BigInteger;
 
 /**
- * Class for holding CBOR <code>big&nbsp;integer</code>.
+ * Class for holding CBOR <code>big&nbsp;integer</code> objects.
  * <p>
  * Note that the encoder is adaptive, selecting the shortest possible
  * representation in order to produce a fully deterministic result.

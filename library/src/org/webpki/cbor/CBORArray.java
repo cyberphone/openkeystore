@@ -19,7 +19,7 @@ package org.webpki.cbor;
 import java.util.ArrayList;
 
 /**
- * Class for holding CBOR arrays.
+ * Class for holding CBOR <code>array</code> objects.
  */
 public class CBORArray extends CBORObject {
 

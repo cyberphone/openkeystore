@@ -17,7 +17,7 @@
 package org.webpki.cbor;
 
 /**
- * Class for holding CBOR <code>null</code>.
+ * Class for holding CBOR <code>null</code> objects.
  */
 public class CBORNull extends CBORObject {
 

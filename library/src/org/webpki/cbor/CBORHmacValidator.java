@@ -25,7 +25,7 @@ import org.webpki.crypto.HmacVerifierInterface;
 /**
  * Class for CBOR HMAC signature validation.
  *<p>
- * See {@link CBORValidator} for details.
+ * Also see {@link CBORValidator}.
  *</p>
  */
 public class CBORHmacValidator extends CBORValidator {

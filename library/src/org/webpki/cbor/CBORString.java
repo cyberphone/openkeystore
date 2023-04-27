@@ -19,7 +19,7 @@ package org.webpki.cbor;
 import org.webpki.util.UTF8;
 
 /**
- * Class for holding CBOR text strings.
+ * Class for holding CBOR <code>text&nbsp;string</code> objects.
  */
 public class CBORString extends CBORObject {
 
@@ -31,7 +31,7 @@ public class CBORString extends CBORObject {
      * Note that <code>textString</code> must be valid <code>UTF-16</code>.
      * </p>
      * <p>
-     * See {@link CBORObject#getString()}.
+     * Also see {@link CBORObject#getString()}.
      * </p>
      */
     public CBORString(String textString) {

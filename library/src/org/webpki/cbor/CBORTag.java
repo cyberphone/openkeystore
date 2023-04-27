@@ -17,7 +17,7 @@
 package org.webpki.cbor;
 
 /**
- * Class for holding CBOR tagged objects.
+ * Class for holding CBOR <code>tag</code> objects.
  * <p>
  * Tagged objects are based on CBOR major type 6.
  * This implementation accepts two variants of tags:

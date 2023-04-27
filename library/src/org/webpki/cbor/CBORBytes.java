@@ -19,7 +19,7 @@ package org.webpki.cbor;
 import org.webpki.util.HexaDecimal;
 
 /**
- * Class for holding CBOR byte strings.
+ * Class for holding CBOR <code>byte&nbsp;string</code> objects.
  */
 public class CBORBytes extends CBORObject {
 

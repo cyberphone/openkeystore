@@ -17,7 +17,7 @@
 package org.webpki.cbor;
 
 /**
- * Class for holding CBOR floating point numbers.
+ * Class for holding CBOR <code>floating&nbsp;point</code> objects.
  * <p>
  * Numbers are constrained to the IEEE 754 notation
  * using the length 16, 32, and 64 bit on "wire".  Which
@@ -48,7 +48,7 @@ public class CBORFloatingPoint extends CBORObject {
      * Due to the CBOR normalization algorithm, numbers are still correctly encoded.
      * </p>
      * <p>
-     * See {@link CBORObject#getDouble()} and {@link CBORObject#getFloat()}
+     * Also see {@link CBORObject#getDouble()} and {@link CBORObject#getFloat()}
      * </p>
      * 
      * @param value Java double

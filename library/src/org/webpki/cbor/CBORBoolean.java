@@ -17,7 +17,7 @@
 package org.webpki.cbor;
 
 /**
- * Class for holding CBOR <code>true</code> and <code>false</code>.
+ * Class for holding CBOR <code>boolean</code> objects.
  */
 public class CBORBoolean extends CBORObject {
 

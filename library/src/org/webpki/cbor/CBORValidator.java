@@ -24,7 +24,7 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
 /**
  * Base class for validating signatures.
  * <p>
- * See {@link CBORSigner} for details.
+ * Also see {@link CBORSigner}.
  * </p>
  * <p>
  * Note that validator objects may be used any number of times
@@ -53,7 +53,7 @@ public abstract class CBORValidator {
      * are rejected ({@link CBORCryptoUtils.POLICY#FORBIDDEN}).
      * </p>
      * <p>
-     * See <a href='doc-files/crypto-options.html'>crypto options</a> for details.
+     * Also see <a href='doc-files/crypto-options.html'>crypto options</a>.
      * </p>
      * @param customDataPolicy Define level of support
      * @param customDataCollector Interface for reading custom data
@@ -75,7 +75,7 @@ public abstract class CBORValidator {
      * By default tagged CSF containers are rejected ({@link CBORCryptoUtils.POLICY#FORBIDDEN}).
      * </p>
      * <p>
-     * See <a href='doc-files/crypto-options.html'>crypto options</a> for details.
+     * Also see <a href='doc-files/crypto-options.html'>crypto options</a>.
      * </p>
      * @param tagPolicy Define level of support
      * @param tagCollector Interface for reading tag

@@ -17,7 +17,7 @@
 package org.webpki.cbor;
 
 /**
- * Wrapper for making the WebPKI crypto library only throw unchecked exceptions.
+ * Wrapper for making the WebPKI CBOR library only throw unchecked exceptions.
  */
 public class CBORException extends RuntimeException {
 

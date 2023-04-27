@@ -39,7 +39,7 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
 /**
  * Class handling Java/COSE private key conversions.
  * <p>
- * See {@link CBORPublicKey}.
+ * Also see {@link CBORPublicKey}.
  * </p>
  */
 public class CBORKeyPair {

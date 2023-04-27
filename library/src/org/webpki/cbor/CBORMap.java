@@ -17,7 +17,7 @@
 package org.webpki.cbor;
 
 /**
- * Class for holding <code>CBOR</code> map.
+ * Class for holding CBOR <code>map</code> objects.
  */
 public class CBORMap extends CBORObject {
 

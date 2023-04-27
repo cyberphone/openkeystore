@@ -68,19 +68,19 @@ public abstract class CBORObject {
     static final int FLOAT32_EXPONENT_BIAS    = 127;
     static final int FLOAT64_EXPONENT_BIAS    = 1023;
 
-    static final long FLOAT16_NOT_A_NUMBER    = 0x0000000000007e00l;
-    static final long FLOAT16_POS_INFINITY    = 0x0000000000007c00l;
-    static final long FLOAT16_NEG_INFINITY    = 0x000000000000fc00l;
-    static final long FLOAT16_POS_ZERO        = 0x0000000000000000l;
-    static final long FLOAT16_NEG_ZERO        = 0x0000000000008000l;
+    static final long FLOAT16_NOT_A_NUMBER    = 0x0000000000007e00L;
+    static final long FLOAT16_POS_INFINITY    = 0x0000000000007c00L;
+    static final long FLOAT16_NEG_INFINITY    = 0x000000000000fc00L;
+    static final long FLOAT16_POS_ZERO        = 0x0000000000000000L;
+    static final long FLOAT16_NEG_ZERO        = 0x0000000000008000L;
      
-    static final long FLOAT64_NOT_A_NUMBER    = 0x7ff8000000000000l;
-    static final long FLOAT64_POS_INFINITY    = 0x7ff0000000000000l;
-    static final long FLOAT64_NEG_INFINITY    = 0xfff0000000000000l;
-    static final long FLOAT64_POS_ZERO        = 0x0000000000000000l;
-    static final long FLOAT64_NEG_ZERO        = 0x8000000000000000l;
+    static final long FLOAT64_NOT_A_NUMBER    = 0x7ff8000000000000L;
+    static final long FLOAT64_POS_INFINITY    = 0x7ff0000000000000L;
+    static final long FLOAT64_NEG_INFINITY    = 0xfff0000000000000L;
+    static final long FLOAT64_POS_ZERO        = 0x0000000000000000L;
+    static final long FLOAT64_NEG_ZERO        = 0x8000000000000000L;
 
-    static final long MASK_LOWER_32           = 0x00000000ffffffffl;
+    static final long MASK_LOWER_32           = 0x00000000ffffffffL;
     
     /**
      * Returns core CBOR type.
@@ -198,7 +198,7 @@ public abstract class CBORObject {
 
     /**
      * Returns Java <i>unsigned</i> <code>long</code> value.
-      * <p>
+     * <p>
      * This method requires that the object is an <i>unsigned</i>
      * {@link CBORInteger}, otherwise a {@link CBORException} is thrown.
      * </p>
@@ -230,23 +230,6 @@ public abstract class CBORObject {
             reportError(STDERR_INCOMPATIBLE_INT);
         }
         return (int)value;
-    }
-
-    /**
-     * Returns JavaScript compatible integer value.
-     * <p>
-     * This method requires that the object is a
-     * {@link CBORInteger} and fits a JavaScript <code>Number</code> 
-     * (&pm;2^53), otherwise an {@link IllegalArgumentException} is thrown.
-     * </p>
-     * <p>
-     * See {@link CBORInteger#createInt53(long)}.
-     * </p>
-     * 
-     * @return Signed long
-     */
-    public long getInt53() {
-        return CBORInteger.checkInt53(getLong());
     }
     
     /**
@@ -410,8 +393,7 @@ public abstract class CBORObject {
      * This method sets the status of this object as well as to possible
      * child objects to &quot;read&quot;.
      * </p>
-     * 
-     * @see #checkForUnread()
+     * Also see {@link #checkForUnread()}.
      * 
      * @return <code>this</code>
      */
@@ -428,8 +410,7 @@ public abstract class CBORObject {
      * (through calling {@link #getBytes()} etc.),
      * and throws {@link CBORException} if this is not the case.
      * </p>
-     * 
-     * @see #scan()
+     * Also see {@link #scan()}.
      * 
      */
     public void checkForUnread() {
@@ -729,7 +710,7 @@ public abstract class CBORObject {
     /**
      * Decodes CBOR data with options.
      * <p>
-     * See {@link CBORSequenceBuilder}.
+     * Also see {@link CBORSequenceBuilder}.
      * </p>
      * <p>
      * Decoding errors throw {@link CBORException}.
