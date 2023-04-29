@@ -414,10 +414,10 @@ public abstract class CBORObject {
     /**
      * Returns <code>text string</code> value.
      * <p>
-     * This method requires that the object is a UTF-8 encoded
+     * This method requires that the object is a 
      * {@link CBORString}, otherwise a {@link CBORException} is thrown.
      * </p>
-     * 
+      * 
      * @return <code>String</code>
      */
     public String getString() {
