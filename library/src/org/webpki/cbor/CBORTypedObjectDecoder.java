@@ -44,24 +44,35 @@ public abstract class CBORTypedObjectDecoder {
     CBORObject root;  // Of decoded CBOR
 
     /**
-     * INTERNAL USE ONLY.
+     * IMPLEMENTER USE ONLY.
      * <p>
      * Implementations <b>must</b> decode all elements
      * associated with the specific object decoder.
      * </p>
      * <p>
      * Note that "checked" exceptions <b>must</b> be wrapped in
-     * an unchecked exception like {@link RuntimeException},
+     * suitable unchecked exceptions like {@link RuntimeException},
      * {@link CBORException}, or {@link org.webpki.crypto.CryptoException}.
-     * </p>
-     * <p>
-     * Also see {@link CBORTypedObjectDecoderCache#setCheckForUnread(boolean)}.
      * </p>
      *
      * @param cborBody COTX argument of {@link CBORTypedObjectDecoder} instance
      */
     protected abstract void decode(CBORObject cborBody);
 
+    /**
+     * IMPLEMENTER USE ONLY.
+     * <p>
+     * After {@link #decode(CBORObject)} has been called,
+     * the {@link CBORTypedObjectDecoderCache} will by <i>default</i> call
+     * {@link CBORObject#checkForUnread()}.  By <i>overriding</i>
+     * {@link #enableCheckForUnread()} and returning <code>false</code>,
+     * a decoder implementation can <i>disable</i> this check.
+     * </p>
+     */
+    protected boolean enableCheckForUnread() {
+        return true;
+    }
+    
     /**
      * Returns typed object identifier.
      *
@@ -73,10 +84,10 @@ public abstract class CBORTypedObjectDecoder {
     /**
      * Returns root of decoded CBOR.
      * <p>
-     * Including COTX.
+     * Note: the root points to the entire object, including the COTX tag.
      * </p>
      * 
-     * @return CBORObject
+     * @return <code>CBORObject</code>
      */
     public CBORObject getRoot() {
         return root;

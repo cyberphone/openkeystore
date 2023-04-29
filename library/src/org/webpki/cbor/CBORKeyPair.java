@@ -41,6 +41,9 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
  * <p>
  * Also see {@link CBORPublicKey}.
  * </p>
+ * <p>
+ * Note: this implementation does not support RSA multiprime keys.
+ * </p>
  */
 public class CBORKeyPair {
     
@@ -63,6 +66,9 @@ public class CBORKeyPair {
         | 3     | dP    | -6    | bstr  | dP is d mod (p - 1)               |
         | 3     | dQ    | -7    | bstr  | dQ is d mod (q - 1)               |
         | 3     | qInv  | -8    | bstr  | qInv is the CRT coefficient       |
+
+                               UNSUPPORTED
+        
         |       |       |       |       | q^(-1) mod p                      |
         | 3     | other | -9    | array | other prime infos, an array       |
         | 3     | r_i   | -10   | bstr  | a prime factor r_i of n, where i  |

@@ -31,8 +31,6 @@ import java.util.Hashtable;
  */
 public class CBORTypedObjectDecoderCache {
 
-    private boolean checkForUnread = true;
-
     private final Hashtable<String, 
                             Class<? extends CBORTypedObjectDecoder>> classMap = new Hashtable<>();
     
@@ -72,7 +70,7 @@ public class CBORTypedObjectDecoderCache {
         CBORTypedObjectDecoder decoder = getInstance(schemaClass);
         decoder.root = typedObject;
         decoder.decode(cborArray.get(1));
-        if (checkForUnread) {
+        if (decoder.enableCheckForUnread()) {
             typedObject.checkForUnread();
         }
         return decoder;
@@ -93,15 +91,5 @@ public class CBORTypedObjectDecoderCache {
         }
         return this;
     }
-
-    /**
-     * Sets the check for unread mode.
-     * <p>
-     * The default is <code>true</code>.
-     * </p>
-     * @param flag  <code>true</code> if checks should be performed
-     */
-    public void setCheckForUnread(boolean flag) {
-        checkForUnread = flag;
-    }
 }
+

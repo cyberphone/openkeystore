@@ -82,17 +82,25 @@ public abstract class CBORObject {
 
     static final long MASK_LOWER_32           = 0x00000000ffffffffL;
     
+    static final long UINT32_MASK             = 0xffffffff00000000L;
+    static final long UINT16_MASK             = 0xffffffffffff0000L;
+    static final long UINT8_MASK              = 0xffffffffffffff00L;
+    
     /**
      * Returns core CBOR type.
      * 
-     * @return The CBOR core type
+     * @return CBOR core type
      */
     public abstract CBORTypes getType();
  
     /**
      * Encodes CBOR object.
+     * <p>
+     * Note: this method always return CBOR data using 
+     * <a href='package-summary.html#deterministic-encoding'>Deterministic&nbsp;Encoding</a>.
+     * </p>
      * 
-     * @return CBOR bytes
+     * @return CBOR encoded <code>byteArray</code>
      */
     public abstract byte[] encode();
     
@@ -105,7 +113,7 @@ public abstract class CBORObject {
     static void unsupportedTag(int tag) {
         reportError(String.format(STDERR_UNSUPPORTED_TAG + "%02x", tag));
     }
-
+    
     static void nullCheck(Object object) {
         if (object == null) {
             throw new IllegalArgumentException(STDERR_ARGUMENT_IS_NULL);
@@ -116,6 +124,10 @@ public abstract class CBORObject {
         byte[] result = Arrays.copyOf(a, a.length + b.length);
         System.arraycopy(b, 0, result, a.length, b.length);
         return result;
+    }
+
+    static void integerRangeError(String integerType) {
+        reportError(STDERR_INT_RANGE + integerType);
     }
 
     byte[] encodeTagAndValue(int tag, int length, long value) {
@@ -162,9 +174,6 @@ public abstract class CBORObject {
      * {@link CBORBigInteger} or {@link CBORInteger},
      * otherwise a {@link CBORException} is thrown.
      * </p>
-     * <p>
-     * Note that this method is independent of the underlying CBOR integer type.
-     * </p>
      * 
      * @return <code>BigInteger</code>
      */
@@ -180,18 +189,19 @@ public abstract class CBORObject {
      * Returns Java <code>long</code> value.
       * <p>
      * This method requires that the object is a
-     * {@link CBORInteger} and fits a Java (<i>signed</i>) long, 
+     * {@link CBORInteger} and fits a Java <code>long</code>, 
+     *({@link Long#MIN_VALUE} to {@link Long#MAX_VALUE}), 
      * otherwise a {@link CBORException} is thrown.
      * </p>
      * Also see {@link #getBigInteger()}.
      * 
-     * @return Java <code>long</code>
+     * @return <code>long</code>
      */
     public long getLong() {
         CBORInteger cborInteger = getCborInteger();
         long value = cborInteger.unsigned ? cborInteger.value : ~cborInteger.value;
         if (cborInteger.unsigned == (value < 0)) {
-            reportError(STDERR_INCOMPATIBLE_LONG);
+            integerRangeError("long");
         }
         return value;
     }
@@ -203,12 +213,12 @@ public abstract class CBORObject {
      * {@link CBORInteger}, otherwise a {@link CBORException} is thrown.
      * </p>
      * 
-     * @return Java <code>long</code>
+     * @return <code>long</code>
      */
     public long getUnsignedLong() {
         CBORInteger cborInteger = getCborInteger();
         if (!cborInteger.unsigned) {
-            reportError(STDERR_INCOMPATIBLE_UNSIGNED_LONG);
+            reportError(STDERR_NOT_UNSIGNED);
         }
         return cborInteger.value;
     }
@@ -217,21 +227,122 @@ public abstract class CBORObject {
      * Returns Java <code>int</code> value.
      * <p>
      * This method requires that the object is a
-     * {@link CBORInteger} and fits a Java (<i>signed</i>) <code>int</code>, 
+     * {@link CBORInteger} and fits a Java <code>int</code>
+     *({@link Integer#MIN_VALUE} to {@link Integer#MAX_VALUE}), 
      * otherwise a {@link CBORException} is thrown.
      * </p>
      * Also see {@link #getBigInteger()}.
      * 
-     * @return Java <code>int</code>
+     * @return <code>int</code>
      */
     public int getInt() {
         long value = getLong();
         if (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE) {
-            reportError(STDERR_INCOMPATIBLE_INT);
+            integerRangeError("int");
         }
         return (int)value;
     }
-    
+
+    /**
+     * Returns Java <i>unsigned</i> <code>int</code> value.
+     * <p>
+     * This method requires that the object is a
+     * {@link CBORInteger} and fits a Java <code>int</code>
+     *(<code>0</code> to <code>0xffffffff</code>), 
+     * otherwise a {@link CBORException} is thrown.
+     * </p>
+     * Also see {@link #getBigInteger()}.
+     * 
+     * @return <code>int</code>
+     */
+    public int getUnsignedInt() {
+        long value = getUnsignedLong();
+        if ((value & UINT32_MASK) != 0) {
+            integerRangeError("int");
+        }
+        return (int)value;
+    }    
+
+    /**
+     * Returns Java <code>short</code> value.
+     * <p>
+     * This method requires that the object is a
+     * {@link CBORInteger} and fits a Java <code>short</code>
+     *({@link Short#MIN_VALUE} to {@link Short#MAX_VALUE}), 
+     * otherwise a {@link CBORException} is thrown.
+     * </p>
+     * Also see {@link #getBigInteger()}.
+     * 
+     * @return <code>short</code>
+     */
+    public short getShort() {
+        long value = getLong();
+        if (value > Short.MAX_VALUE || value < Short.MIN_VALUE) {
+            integerRangeError("short");
+        }
+        return (short)value;
+    }
+
+    /**
+     * Returns Java <i>unsigned</i> <code>short</code> value.
+     * <p>
+     * This method requires that the object is a
+     * {@link CBORInteger} and fits a Java <code>short</code>
+     *(<code>0</code> to <code>0xffff</code>), 
+     * otherwise a {@link CBORException} is thrown.
+     * </p>
+     * Also see {@link #getBigInteger()}.
+     * 
+     * @return <code>short</code>
+     */
+    public short getUnsignedShort() {
+        long value = getUnsignedLong();
+        if ((value & UINT16_MASK) != 0) {
+            integerRangeError("short");
+        }
+        return (short)value;
+    }    
+
+    /**
+     * Returns Java <code>byte</code> value.
+     * <p>
+     * This method requires that the object is a
+     * {@link CBORInteger} and fits a Java <code>byte</code>
+     *({@link Byte#MIN_VALUE} to {@link Byte#MAX_VALUE}), 
+     * otherwise a {@link CBORException} is thrown.
+     * </p>
+     * Also see {@link #getBigInteger()}.
+     * 
+     * @return <code>byte</code>
+     */
+    public byte getByte() {
+        long value = getLong();
+        if (value > Byte.MAX_VALUE || value < Byte.MIN_VALUE) {
+            integerRangeError("byte");
+        }
+        return (byte)value;
+    }
+
+    /**
+     * Returns Java <i>unsigned</i> <code>byte</code> value.
+     * <p>
+     * This method requires that the object is a
+     * {@link CBORInteger} and fits a Java <code>byte</code>
+     *(<code>0</code> to <code>0xff</code>), 
+     * otherwise a {@link CBORException} is thrown.
+     * </p>
+     * Also see {@link #getBigInteger()}.
+     * 
+     * @return <code>byte</code>
+     */
+    public byte getUnsignedByte() {
+        long value = getUnsignedLong();
+        if ((value & UINT8_MASK) != 0) {
+            integerRangeError("byte");
+        }
+        return (byte)value;
+    }    
+
     /**
      * Returns <code>double</code> value.
      * <p>
@@ -239,7 +350,7 @@ public abstract class CBORObject {
      * {@link CBORFloatingPoint}, otherwise a {@link CBORException} is thrown.
      * </p>
      * 
-     * @return Java double
+     * @return <code>double</code>
      */
     public double getDouble() {
         checkTypeAndMarkAsRead(CBORTypes.FLOATING_POINT);
@@ -254,7 +365,7 @@ public abstract class CBORObject {
      * otherwise a {@link CBORException} is thrown.
      * </p>
      * 
-     * @return Java float
+     * @return <code>float</code>
      */
     public float getFloat() {
         checkTypeAndMarkAsRead(CBORTypes.FLOATING_POINT);
@@ -272,7 +383,7 @@ public abstract class CBORObject {
      * {@link CBORBoolean}, otherwise a {@link CBORException} is thrown.
      * </p>
      * 
-     * @return Boolean
+     * @return <code>boolean</code>
      */
     public boolean getBoolean() {
         checkTypeAndMarkAsRead(CBORTypes.BOOLEAN);
@@ -285,22 +396,29 @@ public abstract class CBORObject {
      * If the object is a {@link CBORNull} the call will return
      * <code>true</code>, else it will return <code>false</code>.
      * </p>
+     * <p>
+     * Note that the object will only be considered as "read"
+     * ({@link #checkForUnread()}) if the object is a {@link CBORNull}.
+     * </p>
      * 
-     * @return Status
+     * @return <code>boolean</code>
      */
     public boolean isNull() {
-        checkTypeAndMarkAsRead(getType());
-        return getType() == CBORTypes.NULL;
+        if (getType() == CBORTypes.NULL) {
+            readFlag = true;
+            return true;
+        }
+        return false;
     }
     
     /**
      * Returns <code>text string</code> value.
      * <p>
-     * This method requires that the object is a
+     * This method requires that the object is a UTF-8 encoded
      * {@link CBORString}, otherwise a {@link CBORException} is thrown.
      * </p>
      * 
-     * @return String
+     * @return <code>String</code>
      */
     public String getString() {
         checkTypeAndMarkAsRead(CBORTypes.TEXT_STRING);
@@ -314,7 +432,7 @@ public abstract class CBORObject {
      * {@link CBORBytes}, otherwise a {@link CBORException} is thrown.
      * </p>
      * 
-     * @return Byte array
+     * @return <code>byteArray</code>
      */
     public byte[] getBytes() {
         checkTypeAndMarkAsRead(CBORTypes.BYTE_STRING);
@@ -328,7 +446,7 @@ public abstract class CBORObject {
      * {@link CBORMap}, otherwise a {@link CBORException} is thrown.
      * </p>
      * 
-     * @return Map object
+     * @return CBOR <code>map</code> object
      */
     public CBORMap getMap() {
         checkTypeAndMarkAsRead(CBORTypes.MAP);
@@ -342,7 +460,7 @@ public abstract class CBORObject {
      * {@link CBORArray}, otherwise a {@link CBORException} is thrown.
      * </p>
      * 
-     * @return Array object
+     * @return CBOR <code>array</code> object
      */
     public CBORArray getArray() {
         checkTypeAndMarkAsRead(CBORTypes.ARRAY);
@@ -359,7 +477,7 @@ public abstract class CBORObject {
      * </p>
      * 
      * @param requiredLength Required number of elements
-     * @return Array object
+     * @return CBOR <code>array</code> object
      */
     public CBORArray getArray(int requiredLength) {
         CBORArray cborArray = getArray();
@@ -380,7 +498,7 @@ public abstract class CBORObject {
      * as a specific primitive, in spite of being a tagged object.
      * </p>
 
-     * @return Tag object
+     * @return CBOR <code>tag</code> object
      */
     public CBORTag getTag() {
         checkTypeAndMarkAsRead(CBORTypes.TAG);
@@ -654,7 +772,7 @@ public abstract class CBORObject {
                 // N is zero, a shorter variant should have been used.
                 // In addition, a single byte N must be > 23. 
                 if (((n & mask) == 0 || (n > 0 && n < 24)) && deterministicMode) {
-                    reportError(STDERR_NON_DETERMINISTIC_CODING_OF_N);
+                    reportError(STDERR_NON_DETERMINISTIC_N);
                 }
             }
             // N successfully decoded, now switch on major type (upper three bits).
@@ -717,14 +835,14 @@ public abstract class CBORObject {
      * </p>
      * 
      * @param inputStream Stream holding CBOR data
-     * @param sequenceFlag Stop reading after parsing a valid CBOR object
+     * @param sequenceFlag If <code>true</code> stop reading after decoding a CBOR object
      * (no object returns <code>null</code>)
-     * @param nonDeterministic Disable deterministic encoding check
-     * @param constrainedKeys Limit map keys to text string and integer types,
-     * including flagging mixing of these types in map
+     * @param nonDeterministic If <code>true</code> disable deterministic encoding check
+     * @param constrainedKeys If <code>true</code> limit {@link CBORMap} keys to {@link CBORString} and {@link CBORInteger} objects,
+     * including flagging <i>mixing</i> of these objects in maps
      * @param maxLength Holds maximum input size in 
      * bytes or <code>null</code> ({@link Integer#MAX_VALUE} is assumed)
-     * @return CBORObject
+     * @return <code>CBORObject</code>
      */
     public static CBORObject decode(InputStream inputStream,
                                     boolean sequenceFlag,
@@ -768,7 +886,7 @@ public abstract class CBORObject {
      * </p>
      * 
      * @param cborData CBOR in its binary form
-     * @return CBORObject
+     * @return <code>CBORObject</code>
      */
     public static CBORObject decode(byte[] cborData) {
         return decode(new ByteArrayInputStream(cborData),
@@ -836,8 +954,8 @@ public abstract class CBORObject {
     }
 
     /**
-     * Returns CBOR object in pretty-printed 
-     * <a href='package-summary.html#diagnostic-notation'>diagnostic notation</a>.
+     * Returns the CBOR object in pretty-printed 
+     * <a href='package-summary.html#diagnostic-notation'>Diagnostic Notation</a>.
      */
     @Override
     public String toString() {
@@ -846,8 +964,8 @@ public abstract class CBORObject {
         return outputBuffer.getTextualCbor();
     }
     
-    static final String STDERR_INCOMPATIBLE_UNSIGNED_LONG =
-            "CBOR negative integer does not match Java \"unsigned long\"";
+    static final String STDERR_NOT_UNSIGNED =
+            "CBOR negative integer does not match \"unsigned\"";
 
     static final String STDERR_UNSUPPORTED_TAG =
             "Unsupported tag: ";
@@ -855,11 +973,8 @@ public abstract class CBORObject {
     static final String STDERR_N_RANGE_ERROR =
             "N out of range: ";
 
-    static final String STDERR_INCOMPATIBLE_LONG =
-            "CBOR integer does not fit a Java \"long\"";
-
-    static final String STDERR_INCOMPATIBLE_INT =
-            "CBOR integer does not fit a Java \"int\"";
+    static final String STDERR_INT_RANGE =
+            "CBOR integer does not fit a Java \"";
 
     static final String STDERR_NON_DETERMINISTIC_INT =
             "Non-deterministic encoding: big integer fits integer";
@@ -867,7 +982,7 @@ public abstract class CBORObject {
     static final String STDERR_NON_DETERMINISTIC_FLOAT =
             "Non-deterministic encoding of floating point value, tag: ";
 
-    static final String STDERR_NON_DETERMINISTIC_CODING_OF_N =
+    static final String STDERR_NON_DETERMINISTIC_N =
             "Non-deterministic encoding of N";
 
     static final String STDERR_LEADING_ZERO =

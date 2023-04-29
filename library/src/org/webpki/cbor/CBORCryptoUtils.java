@@ -32,7 +32,7 @@ import org.webpki.crypto.KeyEncryptionAlgorithms;
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
 /**
- * Class holding CBOR crypto support 
+ * Class holding CBOR crypto support.
  */
 public class CBORCryptoUtils {
     
@@ -215,7 +215,7 @@ public class CBORCryptoUtils {
 
         // The mandatory key encryption algorithm
         keyEncryption.set(ALGORITHM_LABEL,
-                                new CBORInteger(keyEncryptionAlgorithm.getCoseAlgorithmId()));
+                          new CBORInteger(keyEncryptionAlgorithm.getCoseAlgorithmId()));
         
         // Key wrapping algorithms need a key to wrap
         byte[] contentEncryptionKey = keyEncryptionAlgorithm.isKeyWrap() ?
@@ -236,7 +236,7 @@ public class CBORCryptoUtils {
         if (!keyEncryptionAlgorithm.isRsa()) {
             // ECDH-ES requires the ephemeral public key
             keyEncryption.set(EPHEMERAL_KEY_LABEL,
-                                    CBORPublicKey.convert(result.getEphemeralKey()));
+                              CBORPublicKey.convert(result.getEphemeralKey()));
         }
         if (keyEncryptionAlgorithm.isKeyWrap()) {
             // Encrypted key

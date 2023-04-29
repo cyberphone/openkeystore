@@ -107,14 +107,19 @@ public class CBORTest {
     static CBORObject keyId;
     
     enum IntegerVariations {
-        LONG(CBORObject.STDERR_INCOMPATIBLE_LONG), 
-        ULONG(CBORObject.STDERR_INCOMPATIBLE_UNSIGNED_LONG),
-        INT(CBORObject.STDERR_INCOMPATIBLE_INT);
+        LONG   (false), 
+        ULONG  (true),
+        INT    (false), 
+        UINT   (true),
+        SHORT  (false), 
+        USHORT (true),
+        BYTE   (false), 
+        UBYTE  (true);
         
-        String error;
+        boolean unsigned;
         
-        IntegerVariations(String error) {
-            this.error = error;
+        IntegerVariations(boolean unsigned) {
+            this.unsigned = unsigned;
         }
     };
     
@@ -201,60 +206,50 @@ public class CBORTest {
         byte[] cbor = cborBigInteger.encode();
         CBORObject res = CBORObject.decode(cbor);
         assertTrue("int", res.equals(cborBigInteger));
-        if (res.getType() == CBORTypes.INTEGER) {
-            CBORInteger cborInteger = (CBORInteger)res;
-            assertTrue("int", 
-                       new CBORInteger(cborInteger.value, 
-                                       cborInteger.unsigned).equals(cborBigInteger));
-            if (bigInteger.compareTo(BigInteger.ZERO)< 0) {
-                assertTrue("sint", 
-                           new CBORInteger(~bigInteger.longValue(), 
-                                           false).equals(cborBigInteger));
-            } else {
-                assertTrue("uint", 
-                        new CBORInteger(bigInteger.longValue(), 
-                                        true).equals(cborBigInteger));
-            }
-        }
-        assertTrue("intBig", res.toString().equals(value));
-        if (mustFail) {
-            try {
-                switch (variation) {
-                    case LONG:
-                        res.getLong();
-                        break;
-                        
-                    case ULONG:
-                        res.getUnsignedLong();
-                        break;
-                        
-                    default:
-                        res.getInt();
-                        break;
-                }
-                fail("Must not execute");
-            } catch (Exception e) {
-                if (res.getType() == CBORTypes.INTEGER) {
-                    checkException(e, variation.error); 
-                }
-            }
-            assertTrue("cbor65", res.getBigInteger().toString().equals(value));
-        } else {
-            long v;
+        long v;
+        try {
             switch (variation) {
-            case LONG:
-                v = res.getLong();
-                break;
-                
-            case ULONG:
-                v = res.getUnsignedLong();
-                break;
-                
-            default:
-                v = res.getInt();
-                break;
+                case BYTE:
+                    v = res.getByte();
+                    break;
+                case UBYTE:
+                    v = res.getUnsignedByte();
+                    break;
+                case SHORT:
+                    v = res.getShort();
+                    break;
+                case USHORT:
+                    v = res.getUnsignedShort();
+                    break;
+                case INT:
+                    v = res.getInt();
+                    break;
+                case UINT:
+                    v = res.getUnsignedInt();
+                    break;
+                case LONG:
+                    v = res.getLong();
+                    break;
+                case ULONG:
+                    v = res.getUnsignedLong();
+                    break;
             }
-            assertTrue("Variations", v == new BigInteger(value).longValue());
+            assertFalse("Should not run: " + value, mustFail);
+        } catch (Exception e) {
+            if (res.getType() == CBORTypes.BIG_INTEGER) {
+                checkException(e, "Is type: BIG_INTEGER");
+            } else {
+                if (bigInteger.compareTo(BigInteger.TWO) < 0 && variation.unsigned) {
+                    checkException(e, CBORObject.STDERR_NOT_UNSIGNED);
+                } else {
+                    String dataType = variation.toString().toLowerCase();
+                    if (variation.unsigned) {
+                        dataType = dataType.substring(1);
+                    }
+                    checkException(e, CBORObject.STDERR_INT_RANGE + dataType);
+                }
+            }
+            assertTrue("Shouldn't throw: " + value + e.getMessage(), mustFail);
         }
     }
 
@@ -410,24 +405,46 @@ public class CBORTest {
         integerTest(0xfffffffffffffffeL, true, true,      "1bfffffffffffffffe");
         integerTest(-1,                  false, true,     "3bffffffffffffffff");
         
-        integerTest("18446744073709551615", IntegerVariations.ULONG, false);
-        integerTest("0", IntegerVariations.ULONG, false);
-        integerTest("18446744073709551615", IntegerVariations.ULONG, false);
-        integerTest("18446744073709551616", IntegerVariations.ULONG, true);
-        integerTest("-1", IntegerVariations.ULONG, true);
+        integerTest("-9223372036854775808",  IntegerVariations.LONG, false);
+        integerTest("-9223372036854775809",  IntegerVariations.LONG, true);
+        integerTest("9223372036854775807",   IntegerVariations.LONG, false);
+        integerTest("9223372036854775808",   IntegerVariations.LONG, true);
+        integerTest("-18446744073709551616", IntegerVariations.LONG, true);
+        integerTest("-18446744073709551617", IntegerVariations.LONG, true);
+        integerTest("18446744073709551616",  IntegerVariations.LONG, true);
+
+        integerTest("18446744073709551615",  IntegerVariations.ULONG, false);
+        integerTest("0",                     IntegerVariations.ULONG, false);
+        integerTest("18446744073709551615",  IntegerVariations.ULONG, false);
+        integerTest("18446744073709551616",  IntegerVariations.ULONG, true);
+        integerTest("-1",                    IntegerVariations.ULONG, true);
 
         integerTest("-2147483648", IntegerVariations.INT, false);
         integerTest("-2147483649", IntegerVariations.INT, true);
-        integerTest("2147483647", IntegerVariations.INT, false);
-        integerTest("2147483648", IntegerVariations.INT, true);
+        integerTest("2147483647",  IntegerVariations.INT, false);
+        integerTest("2147483648",  IntegerVariations.INT, true);
 
-        integerTest("-9223372036854775808", IntegerVariations.LONG, false);
-        integerTest("-9223372036854775809", IntegerVariations.LONG, true);
-        integerTest("9223372036854775807", IntegerVariations.LONG, false);
-        integerTest("9223372036854775808", IntegerVariations.LONG, true);
-        integerTest("-18446744073709551616", IntegerVariations.LONG, true);
-        integerTest("-18446744073709551617", IntegerVariations.LONG, true);
-        integerTest("18446744073709551616", IntegerVariations.LONG, true);
+        integerTest("-2147483649", IntegerVariations.UINT, true);
+        integerTest("4294967295",  IntegerVariations.UINT, false);
+        integerTest("4294967296",  IntegerVariations.UINT, true);
+
+        integerTest("-32768", IntegerVariations.SHORT, false);
+        integerTest("-32769", IntegerVariations.SHORT, true);
+        integerTest("32767",  IntegerVariations.SHORT, false);
+        integerTest("32768",  IntegerVariations.SHORT, true);
+
+        integerTest("-2",    IntegerVariations.USHORT, true);
+        integerTest("65535", IntegerVariations.USHORT, false);
+        integerTest("65536", IntegerVariations.USHORT, true);
+        
+        integerTest("-128",  IntegerVariations.BYTE, false);
+        integerTest("-129",  IntegerVariations.BYTE, true);
+        integerTest("127",   IntegerVariations.BYTE, false);
+        integerTest("128",   IntegerVariations.BYTE, true);
+
+        integerTest("-2",  IntegerVariations.UBYTE, true);
+        integerTest("255", IntegerVariations.UBYTE, false);
+        integerTest("256", IntegerVariations.UBYTE, true);
         
         bigIntegerTest("18446744073709551615", "1bffffffffffffffff");
         bigIntegerTest("18446744073709551614", "1bfffffffffffffffe");
@@ -881,7 +898,7 @@ public class CBORTest {
             parseCborHex("3800");
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, CBORObject.STDERR_NON_DETERMINISTIC_CODING_OF_N);
+            checkException(e, CBORObject.STDERR_NON_DETERMINISTIC_N);
         }
 
         try {
@@ -952,7 +969,7 @@ public class CBORTest {
                         e.getMessage().contains("float") ?
                     CBORObject.STDERR_NON_DETERMINISTIC_FLOAT
                                                          :
-                    CBORObject.STDERR_NON_DETERMINISTIC_CODING_OF_N);
+                    CBORObject.STDERR_NON_DETERMINISTIC_N);
             }
         }
     }
@@ -1984,6 +2001,29 @@ public class CBORTest {
         }
     }
     
+    public static class UncheckedObject extends CBORTypedObjectDecoder {
+
+        int number;
+        
+        static final String OBJECT_ID   = "https://example.com/object-unc";
+        static final CBORObject INT_KEY = new CBORInteger(1);
+        
+        @Override
+        protected void decode(CBORObject cborBody) {
+            number = cborBody.getMap().get(INT_KEY).getInt();
+        }
+
+        @Override
+        public String getObjectId() {
+            return OBJECT_ID;
+        }
+        
+        @Override
+        protected boolean enableCheckForUnread() {
+            return false;
+        }
+    }
+
     public static class ObjectTwo extends CBORTypedObjectDecoder {
         
         static final String OBJECT_ID = "https://example.com/object-2";
@@ -2019,6 +2059,7 @@ public class CBORTest {
 
     static final CBORTypedObjectDecoderCache schemaCache = new CBORTypedObjectDecoderCache()
             .addToCache(ObjectOne.class)
+            .addToCache(UncheckedObject.class)
             .addToCache(ObjectTwo.class);
 
     @Test
@@ -2035,6 +2076,9 @@ public class CBORTest {
         } catch (Exception e) {
             
         }
+        CBORObject noGoodObjectOne = new CBORTag(ObjectOne.OBJECT_ID,
+                new CBORMap().set(ObjectOne.INT_KEY, new CBORInteger(-343))
+                             .set(new CBORString("key"), new CBORString("value")));
         
         CBORTypedObjectDecoder sco = schemaCache.decode(objectOne);
         assertTrue("inst", sco instanceof ObjectOne);
@@ -2048,6 +2092,18 @@ public class CBORTest {
         } catch (Exception e) {
             
         }
+        
+        try {
+            sco = schemaCache.decode(noGoodObjectOne);
+            fail("No good");
+        } catch (Exception e) {
+            checkException(e, "Map key ");
+        }
+        
+        CBORObject uncheckedObject = new CBORTag(UncheckedObject.OBJECT_ID,
+                new CBORMap().set(ObjectOne.INT_KEY, new CBORInteger(-343))
+                             .set(new CBORString("key"), new CBORString("value")));
+        sco = schemaCache.decode(uncheckedObject);
     }
 
     static final String DIAG_TEXT = "text\nj";
