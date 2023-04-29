@@ -29,12 +29,12 @@ import org.webpki.crypto.SignatureWrapper;
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
 /**
- * Class for creating CBOR X509 signatures.
+ * Class for creating X.509 signatures.
  * <p>
  * Also see {@link CBORSigner}.
  * </p>
  * <p> 
- * Note that X509 signatures do not permit the use of a <code>keyId</code>.
+ * Note that X.509 signatures do not permit the use of a <code>keyId</code>.
  * </p>
  */
 public class CBORX509Signer extends CBORSigner {
@@ -51,7 +51,7 @@ public class CBORX509Signer extends CBORSigner {
     }
     
     /**
-     * Initializes an X509 signer with a private key.
+     * Initializes an X.509 signer with a private key.
      * <p>
      * The signature algorithm to use is based on the recommendations
      * in RFC 7518.
@@ -66,7 +66,7 @@ public class CBORX509Signer extends CBORSigner {
     }
 
     /**
-     * Initializes an X509 signer with a private key.
+     * Initializes an X.509 signer with a private key.
      * 
      * @param privateKey Signature key
      * @param certificatePath A matching non-null certificate path
@@ -102,7 +102,7 @@ public class CBORX509Signer extends CBORSigner {
     
     @Override
     void additionalItems(CBORMap signatureObject) {
-        // X509 signatures mandate a certificate path.
+        // X.509 signatures mandate a certificate path.
         signatureObject.set(CERT_PATH_LABEL, 
                             CBORCryptoUtils.encodeCertificateArray(signer.getCertificatePath()));
         // Key IDs are always rejected.

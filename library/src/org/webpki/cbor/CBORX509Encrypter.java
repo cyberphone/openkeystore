@@ -24,7 +24,7 @@ import org.webpki.crypto.KeyEncryptionAlgorithms;
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
 /**
- * Class for X509 encryption.
+ * Class for X.509 encryption.
  */
 public class CBORX509Encrypter extends CBOREncrypter {
 
@@ -50,7 +50,7 @@ public class CBORX509Encrypter extends CBOREncrypter {
     @Override
     byte[] getContentEncryptionKey(CBORMap keyEncryption) {
         
-        // X509 encryptions mandate a certificate path.
+        // X.509 encryptions mandate a certificate path.
         keyEncryption.set(CERT_PATH_LABEL, 
                           CBORCryptoUtils.encodeCertificateArray(certificatePath));
 

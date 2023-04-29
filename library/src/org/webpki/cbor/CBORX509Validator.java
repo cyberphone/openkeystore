@@ -24,12 +24,12 @@ import org.webpki.crypto.SignatureWrapper;
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
 /**
- * Class for CBOR X509 signature validation.
+ * Class for validating X.509 signatures.
  *<p>
  * Also see {@link CBORValidator}.
  *</p> 
  * <p>
- * Note that X509 signatures do not permit the use of a keyId.
+ * Note that X.509 signatures do not permit the use of a keyId.
  * </p>
  */
 public class CBORX509Validator extends CBORValidator {
@@ -57,7 +57,7 @@ public class CBORX509Validator extends CBORValidator {
     Parameters parameters;
 
     /**
-     * Initializes X509 validator with a parameter verifier.
+     * Initializes X.509 validator with a parameter verifier.
      * 
      * @param parameters Parameters implementation
      */

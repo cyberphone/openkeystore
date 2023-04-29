@@ -41,12 +41,11 @@ public class CBORCryptoUtils {
     /**
      * Decodes a certificate path from a CBOR array.
      *<p>
-     * Note that the array must only contain a
-     * list of X509 certificates in DER format,
+     * The CBOR array is assumed to hold one or more X.509 certificates in DER format,
      * each encoded as a CBOR <code>byte&nbsp;string</code>. 
-     * The certificates must be in ascending
-     * order with respect to parenthood.  That is,
-     * the first certificate would typically be
+     * Note that the certificates must be featured in <i>ascending order</i>
+     * with respect to parenthood.  That is,
+     * the certificate at index <code>0</code> would normally be
      * an end-entity certificate.
      * </p>
      * <p>
@@ -54,7 +53,7 @@ public class CBORCryptoUtils {
      * </p>
      * 
      * @param array CBOR array with X.509 certificates
-     * @return Certificate path
+     * @return Decoded X.509 certificate path
      */
     public static X509Certificate[] decodeCertificateArray(CBORArray array) {
         ArrayList<byte[]> blobs = new ArrayList<>();
@@ -68,11 +67,11 @@ public class CBORCryptoUtils {
     /**
      * Encodes certificate path into a CBOR array.
      * <p>
-     * Note that the certificates must be in ascending
-     * order with respect to parenthood.  That is,
-     * the first certificate would typically be
+     * Note that the certificates must be featured in <i>ascending order</i>
+     * with respect to parenthood.  That is,
+     * the certificate at index <code>0</code> would normally be
      * an end-entity certificate.  The CBOR array
-     * will after the conversion hold a list of
+     * will after processing hold a list of
      * DER-encoded certificates, each represented by a CBOR
      * <code>byte&nbsp;string</code>.
      * </p>
@@ -80,8 +79,8 @@ public class CBORCryptoUtils {
      * Also see {@link #decodeCertificateArray(CBORArray)}.
      * </p>
      * 
-     * @param certificatePath The certificate path to be converted to CBOR 
-     * @return CBORArray
+     * @param certificatePath X.509 certificate path to be encoded 
+     * @return CBOR array with X.509 certificates
      */
     public static CBORArray encodeCertificateArray(X509Certificate[] certificatePath) {
         CBORArray array = new CBORArray();

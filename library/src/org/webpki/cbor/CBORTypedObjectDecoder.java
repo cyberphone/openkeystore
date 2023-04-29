@@ -17,7 +17,7 @@
 package org.webpki.cbor;
 
 /**
- * Base class for typed decoders.
+ * Base class for typed objects decoders.
  * <p>
  * Base class for CBOR object decoders that can be instantiated
  * through a {@link CBORTypedObjectDecoderCache}.
