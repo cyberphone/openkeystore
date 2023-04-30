@@ -1005,9 +1005,9 @@ public class CBORTest {
                 @Override
                 public CBORObject wrap(CBORMap cborMap) {
                     return new CBORTag(tagNumber,
-                            objectId == null ? tbs : new CBORArray()
+                            objectId == null ? cborMap : new CBORArray()
                                     .add(new CBORString(objectId))
-                                    .add(tbs));
+                                    .add(cborMap));
                 }
                 
             });
@@ -1044,14 +1044,14 @@ public class CBORTest {
     void hmacTest(final int size, final HmacAlgorithms algorithm) throws IOException,
                                                                          GeneralSecurityException {
         CBORMap tbs = createDataToBeSigned();
-        new CBORHmacSigner(symmetricKeys.getValue(size),
+        CBORObject res = new CBORHmacSigner(symmetricKeys.getValue(size),
                            algorithm).sign(SIGNATURE_LABEL, tbs);
-        byte[] sd = tbs.encode();
+        byte[] sd = res.encode();
         CBORObject cborSd = CBORObject.decode(sd);
         new CBORHmacValidator(symmetricKeys.getValue(size)).validate(SIGNATURE_LABEL, cborSd);
         
         tbs = createDataToBeSigned();
-         new CBORHmacSigner(new HmacSignerInterface() {
+         res = new CBORHmacSigner(new HmacSignerInterface() {
 
             @Override
             public byte[] signData(byte[] data) {
@@ -1064,15 +1064,15 @@ public class CBORTest {
             }
             
         }).sign(SIGNATURE_LABEL, tbs);
-        sd = tbs.encode();
+        sd = res.encode();
         cborSd = CBORObject.decode(sd);
         new CBORHmacValidator(symmetricKeys.getValue(size)).validate(SIGNATURE_LABEL, cborSd);
 
         tbs = createDataToBeSigned();
         CBORObject keyId = new CBORString(symmetricKeys.getName(size));
-        new CBORHmacSigner(symmetricKeys.getValue(size), algorithm).setKeyId(keyId)
+        res = new CBORHmacSigner(symmetricKeys.getValue(size), algorithm).setKeyId(keyId)
             .sign(SIGNATURE_LABEL, tbs); 
-        sd = tbs.encode();
+        sd = res.encode();
         cborSd = CBORObject.decode(sd);
         new CBORHmacValidator(new HmacVerifierInterface() {
 
