@@ -603,18 +603,18 @@ public class EncryptionCore {
                                     PublicKey optionalEphemeralKey,  // For ECDH*
                                     KeyEncryptionAlgorithms keyEncryptionAlgorithm,
                                     ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
-    // The core
-    return keyEncryptionAlgorithm.isRsa() ?
-        EncryptionCore.rsaDecryptKey(privateKey,
-                                     keyEncryptionAlgorithm,
-                                     optionalEncryptedKey)
-                                          :
-        EncryptionCore.receiverKeyAgreement(coseMode,
-                                            privateKey,
-                                            keyEncryptionAlgorithm,
-                                            contentEncryptionAlgorithm,
-                                            optionalEphemeralKey,
-                                            optionalEncryptedKey);
+        // The core
+        return keyEncryptionAlgorithm.isRsa() ?
+            EncryptionCore.rsaDecryptKey(privateKey,
+                                         keyEncryptionAlgorithm,
+                                         optionalEncryptedKey)
+                                              :
+            EncryptionCore.receiverKeyAgreement(coseMode,
+                                                privateKey,
+                                                keyEncryptionAlgorithm,
+                                                contentEncryptionAlgorithm,
+                                                optionalEphemeralKey,
+                                                optionalEncryptedKey);
     }
 
     /**

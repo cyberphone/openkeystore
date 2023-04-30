@@ -18,9 +18,9 @@ package org.webpki.crypto;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.InputStream;
+
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
@@ -41,15 +41,6 @@ import java.util.logging.Logger;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import org.webpki.cbor.CBORAsymKeyDecrypter;
-import org.webpki.cbor.CBORAsymKeyEncrypter;
-import org.webpki.cbor.CBORAsymKeySigner;
-import org.webpki.cbor.CBORAsymKeyValidator;
-import org.webpki.cbor.CBORInteger;
-import org.webpki.cbor.CBORMap;
-import org.webpki.cbor.CBORObject;
-import org.webpki.cbor.CBORString;
 
 import org.webpki.util.Base64URL;
 import org.webpki.util.HexaDecimal;
@@ -123,23 +114,38 @@ public class CryptoTest {
     }
 
     private void ecdhOneShot(KeyAlgorithms ka,
-                             KeyEncryptionAlgorithms kea,
-                             ContentEncryptionAlgorithms cea,
+                             KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+                             ContentEncryptionAlgorithms contentEncryptionAlgorithm,
                              String staticProvider,
                              String ephemeralProvider) throws Exception {
         KeyPair keyPair = generateKeyPair(staticProvider, ka);
+        
+        // Key wrapping algorithms need a key to wrap
+        byte[] contentEncryptionKey = keyEncryptionAlgorithm.isKeyWrap() ?
+            CryptoRandom.generateRandom(contentEncryptionAlgorithm.getKeyLength()) : null;
+                                                                         
+        // Encrypt
+        EncryptionCore.AsymmetricEncryptionResult result =
+                keyEncryptionAlgorithm.isRsa() ?
+                    EncryptionCore.rsaEncryptKey(contentEncryptionKey,
+                                                 keyEncryptionAlgorithm,
+                                                 keyPair.getPublic())
+                                               :
+                    EncryptionCore.senderKeyAgreement(true,
+                                                      contentEncryptionKey,
+                                                      keyEncryptionAlgorithm,
+                                                      contentEncryptionAlgorithm,
+                                                      keyPair.getPublic());
+         
+        // Decrypt
+        assertTrue("enc", Arrays.equals(result.getContentEncryptionKey(),
+                                        EncryptionCore.decryptKey(true,
+                                                                  keyPair.getPrivate(), 
+                                                                  result.getEncryptedKey(), 
+                                                                  result.getEphemeralKey(), 
+                                                                  keyEncryptionAlgorithm, 
+                                                                  contentEncryptionAlgorithm)));
         EncryptionCore.setEcProvider(staticProvider, ephemeralProvider);
-        byte[] encrypted = new CBORAsymKeyEncrypter(keyPair.getPublic(), kea, cea)
-            .encrypt(DATA_TO_ENCRYPT).encode();
-        assertTrue("Enc", Arrays.equals(DATA_TO_ENCRYPT,
-                                        new CBORAsymKeyDecrypter(keyPair.getPrivate())
-            .decrypt(CBORObject.decode(encrypted))));
-        encrypted = new CBORAsymKeyEncrypter(keyPair.getPublic(), kea, cea)
-            .setPublicKeyOption(true)
-            .encrypt(DATA_TO_ENCRYPT).encode();
-        assertTrue("Enc2", Arrays.equals(DATA_TO_ENCRYPT,
-                                         new CBORAsymKeyDecrypter(keyPair.getPrivate())
-            .decrypt(CBORObject.decode(encrypted))));
     }
     
     private void ecdhProviderShot(KeyAlgorithms ka,
@@ -167,14 +173,18 @@ public class CryptoTest {
     private void signatureOneShot(KeyAlgorithms ka,
                                   String keyProvider,
                                   String signatureProvider) throws Exception {
-        CBORInteger APP_KEY = new CBORInteger(1);
-        CBORInteger SIG_KEY = new CBORInteger(-1);
-        CBORMap data = new CBORMap().set(APP_KEY, new CBORString("Hi!"));
         KeyPair keyPair = generateKeyPair(keyProvider, ka);
+
+        byte[] signature = SignatureWrapper.sign(keyPair.getPrivate(),
+                                                 ka.getRecommendedSignatureAlgorithm(), 
+                                                 DATA_TO_SIGN, 
+                                                 signatureProvider);
         
-        CBORObject signedData = new CBORAsymKeySigner(keyPair.getPrivate())
-                .setProvider(signatureProvider).sign(SIG_KEY, data);
-        new CBORAsymKeyValidator(keyPair.getPublic()).validate(SIG_KEY, signedData);
+        SignatureWrapper.validate(keyPair.getPublic(), 
+                                  ka.getRecommendedSignatureAlgorithm(), 
+                                  DATA_TO_SIGN, 
+                                  signature, 
+                                  signatureProvider);
     }
     
     private void signatureProviderShot(KeyAlgorithms ka) throws Exception {
