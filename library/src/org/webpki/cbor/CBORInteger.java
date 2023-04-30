@@ -54,24 +54,30 @@ public class CBORInteger extends CBORObject {
     /**
      * Creates a CBOR unsigned or negative <code>integer</code>.
      * <p>
-     * To cope with the entire 65-bit integer span supported by CBOR
-     * you must use this constructor.  Unsigned integers
-     * range from <code>0</code> to <code>2^64-1</code>,
-     * while negative integers range from <code>-1</code> to <code>-2^64</code>.
      * </p>
-     * <p>
+     * To cope with the entire 65-bit integer span supported by CBOR,
+     * this constructor must be used.  Unsigned integers
+     * range from <code>0</code> to 
+     * <span style='white-space:nowrap'><code>2<div class='webpkisuper'>64</div>-1</code></span>,
+     * while negative integers range from <code>-1</code> to
+     * <span style='white-space:nowrap'><code>-2<div class='webpkisuper'>64</div></code></span>.
+     *<p>
+     * </p> 
      * If the <code>unsigned</code> flag is set to <code>false</code>, 
      * this constructor assumes CBOR native encoding mode for negative integers.
      * That is, <code>value</code> is treated as
      * an unsigned magnitude which is subsequently negated and subtracted by <code>1</code>.
-     * This means that the input values <code>0</code>, <code>43</code>, 
-     * and <code>-9223372036854775808L</code>,
-     * actually represent <code>-1</code>, <code>-44</code>,
-     * and <code>-9223372036854775809</code> respectively.
-     * A special case is the value <code>0xffffffffffffffffL</code>
-     * (long <code>-1</code>), which corresponds to <code>-2^64</code>.
+     * This means that the input values <code>0</code>, <code>9223372036854775807L</code>, 
+     * <code>-9223372036854775808L</code>, and <code>-1</code>,
+     * actually represent <code>-1</code>, <code>-9223372036854775808</code>,
+     * <code>-9223372036854775809</code>, and
+     * <code>-18446744073709551616</code>
+     * (<span style='white-space:nowrap'><code>-2<div class='webpkisuper'>64</div></code></span>)
+     * respectively.
+     * <p>
+     * Also see <a href='#range-constraints'>Range&nbsp;Constraints</a> and 
+     * {@link CBORBigInteger#CBORBigInteger(BigInteger)}.
      * </p>
-     * Also see <a href='#range-constraints'>Range&nbsp;Constraints</a>.
      *
      * @param value long value
      * @param unsigned <code>true</code> if value should be considered as unsigned
@@ -84,7 +90,7 @@ public class CBORInteger extends CBORObject {
     /**
      * Creates a CBOR signed <code>integer</code> value.
      * <p>
- * Also see {@link CBORInteger(long, boolean)} and 
+     * Also see {@link CBORInteger(long, boolean)} and 
      * {@link CBORBigInteger#CBORBigInteger(BigInteger)}.
      * </p>
      * 
