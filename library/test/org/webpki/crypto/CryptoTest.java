@@ -90,7 +90,10 @@ public class CryptoTest {
     KeyPair generateKeyPair(String staticProvider, 
                             KeyAlgorithms keyAlgorithm) throws Exception {
         KeyPairGenerator generator;
-        if (keyAlgorithm.getKeyType() == KeyTypes.EC) {
+        if (keyAlgorithm.getKeyType() == KeyTypes.RSA) {
+            generator = KeyPairGenerator.getInstance("RSA");
+            generator.initialize(keyAlgorithm.getPublicKeySizeInBits());
+        } else if (keyAlgorithm.getKeyType() == KeyTypes.EC) {
             AlgorithmParameterSpec paramSpec = new ECGenParameterSpec(keyAlgorithm.getJceName());
             generator = staticProvider == null ?
                     KeyPairGenerator.getInstance("EC") 
@@ -113,11 +116,11 @@ public class CryptoTest {
         return generator.generateKeyPair();
     }
 
-    private void ecdhOneShot(KeyAlgorithms ka,
-                             KeyEncryptionAlgorithms keyEncryptionAlgorithm,
-                             ContentEncryptionAlgorithms contentEncryptionAlgorithm,
-                             String staticProvider,
-                             String ephemeralProvider) throws Exception {
+    private void asymEncryptionOneShot(KeyAlgorithms ka,
+                                       KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+                                       ContentEncryptionAlgorithms contentEncryptionAlgorithm,
+                                       String staticProvider,
+                                       String ephemeralProvider) throws Exception {
         KeyPair keyPair = generateKeyPair(staticProvider, ka);
         
         // Key wrapping algorithms need a key to wrap
@@ -148,26 +151,29 @@ public class CryptoTest {
         EncryptionCore.setEcProvider(staticProvider, ephemeralProvider);
     }
     
-    private void ecdhProviderShot(KeyAlgorithms ka,
-                                  KeyEncryptionAlgorithms kea,
-                                  ContentEncryptionAlgorithms cea) throws Exception {
-        ecdhOneShot(ka, kea, cea, null,         null);
-        ecdhOneShot(ka, kea, cea, null,         ALT_PROVIDER);
-        ecdhOneShot(ka, kea, cea, ALT_PROVIDER, null);
-        ecdhOneShot(ka, kea, cea, ALT_PROVIDER, ALT_PROVIDER);
+    private void asymEncryptionProviderShot(KeyAlgorithms ka,
+                                            KeyEncryptionAlgorithms kea,
+                                            ContentEncryptionAlgorithms cea) throws Exception {
+        asymEncryptionOneShot(ka, kea, cea, null,         null);
+        asymEncryptionOneShot(ka, kea, cea, null,         ALT_PROVIDER);
+        asymEncryptionOneShot(ka, kea, cea, ALT_PROVIDER, null);
+        asymEncryptionOneShot(ka, kea, cea, ALT_PROVIDER, ALT_PROVIDER);
     }
     
     @Test
-    public void ecdhTest() throws Exception {
-        ecdhProviderShot(KeyAlgorithms.P_256,
-                         KeyEncryptionAlgorithms.ECDH_ES,
-                         ContentEncryptionAlgorithms.A256GCM);
-        ecdhProviderShot(KeyAlgorithms.X25519,
-                         KeyEncryptionAlgorithms.ECDH_ES,
-                         ContentEncryptionAlgorithms.A256GCM);
-        ecdhProviderShot(KeyAlgorithms.X448,
-                         KeyEncryptionAlgorithms.ECDH_ES,
-                         ContentEncryptionAlgorithms.A256GCM);
+    public void encryptionTest() throws Exception {
+        asymEncryptionProviderShot(KeyAlgorithms.P_256,
+                                   KeyEncryptionAlgorithms.ECDH_ES,
+                                   ContentEncryptionAlgorithms.A256GCM);
+        asymEncryptionProviderShot(KeyAlgorithms.X25519,
+                                   KeyEncryptionAlgorithms.ECDH_ES,
+                                   ContentEncryptionAlgorithms.A256GCM);
+        asymEncryptionProviderShot(KeyAlgorithms.X448,
+                                   KeyEncryptionAlgorithms.ECDH_ES,
+                                   ContentEncryptionAlgorithms.A256GCM);
+        asymEncryptionProviderShot(KeyAlgorithms.RSA2048,
+                                   KeyEncryptionAlgorithms.RSA_OAEP_256,
+                                   ContentEncryptionAlgorithms.A256GCM);
     }
     
     private void signatureOneShot(KeyAlgorithms ka,
@@ -199,6 +205,7 @@ public class CryptoTest {
         signatureProviderShot(KeyAlgorithms.P_256);
         signatureProviderShot(KeyAlgorithms.ED25519);
         signatureProviderShot(KeyAlgorithms.ED448);
+        signatureProviderShot(KeyAlgorithms.RSA2048);
     }
     
     void hmacKdfRun(String ikmHex,
