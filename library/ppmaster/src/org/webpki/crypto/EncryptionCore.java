@@ -167,13 +167,8 @@ public class EncryptionCore {
      * Explicitly set provider for ECDH operations.
      * <p>
 //#if ANDROID
-     * Setting <code>ecStaticProviderName</code> to <code>"AndroidKeystore"</cde>
-     * permits <i>decryption</i> using protected client keys.
-     * </p>
-     * <p>
-     * Setting <code>ecEphemeralProviderName</code> to anything but <code>null</code>
-     * is not recommended. It is mainly available for compatibility with the JDK
-     * version of this library. 
+     * DO NOT USE.
+     * </p> 
 //#else
      * Setting <code>ecStaticProviderName</code> to <code>"AndroidKeystore"</cde>
      * permits <i>decryption</i> using HSM protected keys.
