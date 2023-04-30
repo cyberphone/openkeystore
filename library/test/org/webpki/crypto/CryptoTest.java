@@ -44,7 +44,12 @@ import org.junit.Test;
 
 import org.webpki.cbor.CBORAsymKeyDecrypter;
 import org.webpki.cbor.CBORAsymKeyEncrypter;
+import org.webpki.cbor.CBORAsymKeySigner;
+import org.webpki.cbor.CBORAsymKeyValidator;
+import org.webpki.cbor.CBORInteger;
+import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;
+import org.webpki.cbor.CBORString;
 
 import org.webpki.util.Base64URL;
 import org.webpki.util.HexaDecimal;
@@ -93,30 +98,35 @@ public class CryptoTest {
     
     KeyPair generateKeyPair(String staticProvider, 
                             KeyAlgorithms keyAlgorithm) throws Exception {
-        AlgorithmParameterSpec paramSpec; 
         KeyPairGenerator generator;
         if (keyAlgorithm.getKeyType() == KeyTypes.EC) {
-            paramSpec = new ECGenParameterSpec(keyAlgorithm.getJceName());
+            AlgorithmParameterSpec paramSpec = new ECGenParameterSpec(keyAlgorithm.getJceName());
             generator = staticProvider == null ?
                     KeyPairGenerator.getInstance("EC") 
                                               : 
                     KeyPairGenerator.getInstance("EC", staticProvider);
-        } else {
-            paramSpec = new NamedParameterSpec(keyAlgorithm.getJceName());
+            generator.initialize(paramSpec, new SecureRandom());
+        } else if (keyAlgorithm.getKeyType() == KeyTypes.XEC) {
+            AlgorithmParameterSpec paramSpec = new NamedParameterSpec(keyAlgorithm.getJceName());
             generator = staticProvider == null ?
                     KeyPairGenerator.getInstance("XDH") 
-                                              : 
+                                               : 
                     KeyPairGenerator.getInstance("XDH", staticProvider);
+            generator.initialize(paramSpec, new SecureRandom());
+        } else {
+            generator = staticProvider == null ?
+                    KeyPairGenerator.getInstance(keyAlgorithm.getJceName()) 
+                                               : 
+                    KeyPairGenerator.getInstance(keyAlgorithm.getJceName(), staticProvider);
         }
-        generator.initialize(paramSpec, new SecureRandom());
         return generator.generateKeyPair();
     }
 
-    private void oneShot(KeyAlgorithms ka,
-                         KeyEncryptionAlgorithms kea,
-                         ContentEncryptionAlgorithms cea,
-                         String staticProvider,
-                         String ephemeralProvider) throws Exception {
+    private void ecdhOneShot(KeyAlgorithms ka,
+                             KeyEncryptionAlgorithms kea,
+                             ContentEncryptionAlgorithms cea,
+                             String staticProvider,
+                             String ephemeralProvider) throws Exception {
         KeyPair keyPair = generateKeyPair(staticProvider, ka);
         EncryptionCore.setEcProvider(staticProvider, ephemeralProvider);
         byte[] encrypted = new CBORAsymKeyEncrypter(keyPair.getPublic(), kea, cea)
@@ -132,26 +142,53 @@ public class CryptoTest {
             .decrypt(CBORObject.decode(encrypted))));
     }
     
-    private void providerShot(KeyAlgorithms ka,
-                              KeyEncryptionAlgorithms kea,
-                              ContentEncryptionAlgorithms cea) throws Exception {
-        oneShot(ka, kea, cea, null,         null);
-        oneShot(ka, kea, cea, null,         ALT_PROVIDER);
-        oneShot(ka, kea, cea, ALT_PROVIDER, null);
-        oneShot(ka, kea, cea, ALT_PROVIDER, ALT_PROVIDER);
+    private void ecdhProviderShot(KeyAlgorithms ka,
+                                  KeyEncryptionAlgorithms kea,
+                                  ContentEncryptionAlgorithms cea) throws Exception {
+        ecdhOneShot(ka, kea, cea, null,         null);
+        ecdhOneShot(ka, kea, cea, null,         ALT_PROVIDER);
+        ecdhOneShot(ka, kea, cea, ALT_PROVIDER, null);
+        ecdhOneShot(ka, kea, cea, ALT_PROVIDER, ALT_PROVIDER);
     }
     
     @Test
-    public void ecdhTxt() throws Exception {
-        providerShot(KeyAlgorithms.P_256,
-                     KeyEncryptionAlgorithms.ECDH_ES,
-                     ContentEncryptionAlgorithms.A256GCM);
-        providerShot(KeyAlgorithms.X25519,
-                     KeyEncryptionAlgorithms.ECDH_ES,
-                     ContentEncryptionAlgorithms.A256GCM);
-        providerShot(KeyAlgorithms.X448,
-                     KeyEncryptionAlgorithms.ECDH_ES,
-                     ContentEncryptionAlgorithms.A256GCM);
+    public void ecdhTest() throws Exception {
+        ecdhProviderShot(KeyAlgorithms.P_256,
+                         KeyEncryptionAlgorithms.ECDH_ES,
+                         ContentEncryptionAlgorithms.A256GCM);
+        ecdhProviderShot(KeyAlgorithms.X25519,
+                         KeyEncryptionAlgorithms.ECDH_ES,
+                         ContentEncryptionAlgorithms.A256GCM);
+        ecdhProviderShot(KeyAlgorithms.X448,
+                         KeyEncryptionAlgorithms.ECDH_ES,
+                         ContentEncryptionAlgorithms.A256GCM);
+    }
+    
+    private void signatureOneShot(KeyAlgorithms ka,
+                                  String keyProvider,
+                                  String signatureProvider) throws Exception {
+        CBORInteger APP_KEY = new CBORInteger(1);
+        CBORInteger SIG_KEY = new CBORInteger(-1);
+        CBORMap data = new CBORMap().set(APP_KEY, new CBORString("Hi!"));
+        KeyPair keyPair = generateKeyPair(keyProvider, ka);
+        
+        CBORObject signedData = new CBORAsymKeySigner(keyPair.getPrivate())
+                .setProvider(signatureProvider).sign(SIG_KEY, data);
+        new CBORAsymKeyValidator(keyPair.getPublic()).validate(SIG_KEY, signedData);
+    }
+    
+    private void signatureProviderShot(KeyAlgorithms ka) throws Exception {
+        signatureOneShot(ka, null,         null);
+        signatureOneShot(ka, null,         ALT_PROVIDER);
+        signatureOneShot(ka, ALT_PROVIDER, null);
+        signatureOneShot(ka, ALT_PROVIDER, ALT_PROVIDER);
+    }
+    
+    @Test
+    public void signatureTest() throws Exception {
+        signatureProviderShot(KeyAlgorithms.P_256);
+        signatureProviderShot(KeyAlgorithms.ED25519);
+        signatureProviderShot(KeyAlgorithms.ED448);
     }
     
     void hmacKdfRun(String ikmHex,

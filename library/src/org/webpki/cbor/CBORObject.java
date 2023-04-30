@@ -32,7 +32,7 @@ import org.webpki.util.UTF8;
  * In this implementation "object" should be regarded as equivalent to the RFC 8949 "data item".
  * </p>
  */
-public abstract class CBORObject {
+public abstract class CBORObject implements Cloneable {
     
     CBORObject() {}
     
@@ -962,6 +962,14 @@ public abstract class CBORObject {
         DiagnosticNotation outputBuffer = new DiagnosticNotation();
         internalToString(outputBuffer);
         return outputBuffer.getTextualCbor();
+    }
+    
+    /**
+     * Deep copy of <code>CBORObject</code>.
+     */
+    @Override
+    public CBORObject clone() {
+        return CBORObject.decode(encode());
     }
     
     static final String STDERR_NOT_UNSIGNED =

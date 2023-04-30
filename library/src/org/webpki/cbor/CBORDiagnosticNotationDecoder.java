@@ -320,9 +320,8 @@ public class CBORDiagnosticNotationDecoder {
                 return cborTag;
             }
             BigInteger bigInteger = new BigInteger(number, prefix == null ? 10 : prefix);
-            // Slight quirk to get the proper CBOR integer type  
-            return CBORObject.decode(new CBORBigInteger(negative ? 
-                                             bigInteger.negate() : bigInteger).encode());
+            // Clone: slight quirk to get the proper CBOR integer type  
+            return new CBORBigInteger(negative ? bigInteger.negate() : bigInteger).clone();
         } catch (IllegalArgumentException e) {
             reportError(e.getMessage());
         }
