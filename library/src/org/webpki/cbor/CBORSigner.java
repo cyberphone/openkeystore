@@ -47,6 +47,8 @@ public abstract class CBORSigner {
     
     // Optional key ID
     CBORObject optionalKeyId;
+    
+    private boolean cloneFlag;
 
     CBORSigner() {}
     
@@ -107,10 +109,28 @@ public abstract class CBORSigner {
     }
 
     /**
+     * Sets clone mode.
+     * <p>
+     * By default the {@link #sign(CBORObject, CBORMap)} method
+     * <i>overwrites</i> the input <code>map</code> object.
+     * </p>
+     * 
+     * @param flag If <code>true</code> input data will be cloned
+     * @return CBORSigner
+     */
+    public CBORSigner setCloneMode(boolean flag) {
+        this.cloneFlag = flag;
+        return this;
+    }
+  
+    /**
      * Signs CBOR object.
      * 
      * <p>
      * Adds an enveloped CSF object (signature) to a CBOR map.
+     * </p>
+     * <p>
+     * Also see {@link #setCloneMode(boolean)}.
      * </p>
      * 
      * @param key Key holding the signature in the CBOR map to sign
@@ -118,6 +138,11 @@ public abstract class CBORSigner {
      * @return Signed object
      */
     public CBORObject sign(CBORObject key, CBORMap mapToSign) {
+        // Signatures update input by default.
+        if (cloneFlag) {
+            mapToSign = (CBORMap)mapToSign.clone();
+        }
+
         // Create an empty signature container object.
         CBORMap csfContainer = new CBORMap();
 

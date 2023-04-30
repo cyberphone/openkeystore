@@ -1316,7 +1316,21 @@ public class CBORTest {
         } catch (Exception e) {
             checkException(e, CBORCryptoUtils.STDERR_KEY_ID_PUBLIC);
         }
-
+        
+        // Testing the clone method
+        CBORMap clone = createDataToBeSigned().getMap();
+        CBORObject cloneSign = new CBORAsymKeySigner(p256.getPrivate())
+            .setPublicKey(p256.getPublic())
+            .setCloneMode(true)
+            .sign(SIGNATURE_LABEL, clone);
+        assertFalse("c1", clone.containsKey(SIGNATURE_LABEL));
+        new CBORAsymKeyValidator(p256.getPublic()).validate(SIGNATURE_LABEL, cloneSign);
+        cloneSign = new CBORAsymKeySigner(p256.getPrivate())
+            .setPublicKey(p256.getPublic())
+            .sign(SIGNATURE_LABEL, clone);
+            assertTrue("c2", clone.containsKey(SIGNATURE_LABEL));
+        new CBORAsymKeyValidator(p256.getPublic()).validate(SIGNATURE_LABEL, cloneSign);
+        
         // HMAC signatures
         hmacTest(256, HmacAlgorithms.HMAC_SHA256);
         hmacTest(384, HmacAlgorithms.HMAC_SHA384);
