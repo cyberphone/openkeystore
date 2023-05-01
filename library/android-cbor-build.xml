@@ -68,10 +68,12 @@
     <property name="ANDROID" value="true"/>
     <property name="ANDROID_PURE" value="true"/>
     <jpp destdir="${android-cbor-src}" verbose="true" force="true">
-        <fileset dir="ppmaster/src" includes="**/*.java">
-            <exclude name="**/Base64.java"/>
-            <exclude name="**/PEMDecoder.java"/>
-            <exclude name="**/CustomCryptoProvider.java"/>
+        <fileset dir="ppmaster/src">
+            <include name="**/crypto/*.java"/>
+            <exclude name="**/crypto/CustomCryptoProvider.java"/>
+        </fileset>
+        <fileset dir="ppmaster/src">
+            <include name="**/Base64URL.java"/>
         </fileset>
     </jpp>
 

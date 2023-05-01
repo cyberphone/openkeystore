@@ -15,12 +15,14 @@
  *
  */
 package org.webpki.asn1;
+//#if !ANDROID
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+//#endif
 
 import java.math.*;
 import java.util.*;
@@ -130,6 +132,10 @@ public final class ASN1ObjectID extends Simple {
 
     public static void tryReadOIDNames(String filename) {
         Hashtable<String, String> on = new Hashtable<>(), no = new Hashtable<>();
+//#if ANDROID
+        oidToName = on;
+        nameToOID = no;
+//#else
         try {
             InputStream in = (filename == null) ?
                     new ASN1OIDDefinitions().getOIDStream() :
@@ -151,6 +157,7 @@ public final class ASN1ObjectID extends Simple {
         } catch (IOException e) {
             throw new ASN1Exception(e);
         }
+//#endif
     }
 
     void toString(StringBuilder s, String prefix) {
