@@ -193,9 +193,9 @@ public class CBORMap extends CBORObject {
      * </p>
      * 
      * @param key Key
-     * @return <code>this</code>
+     * @return The value mapped by the <code>key</code>
      */
-    public CBORMap remove(CBORObject key) {
+    public CBORObject remove(CBORObject key) {
         byte[] testKey = getKey(key).encode();
         Entry precedingEntry = null;
         for (Entry entry = root; entry != null; entry = entry.next) {
@@ -208,7 +208,7 @@ public class CBORMap extends CBORObject {
                     // Remove key above root.  It may be the top most.
                     precedingEntry.next = entry.next;
                 }
-                return this;
+                return entry.value;
             }
             precedingEntry = entry;
         }
@@ -246,9 +246,7 @@ public class CBORMap extends CBORObject {
      * @return byte string
      */
     public byte[] readBytesAndRemoveKey(CBORObject key) {
-        byte[] data = get(key).getBytes();
-        remove(key);
-        return data;
+        return remove(key).getBytes();
     }
 
     /**

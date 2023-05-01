@@ -1573,11 +1573,10 @@ public class CBORTest {
             checkException(e, "Map key -2 with argument of type=INTEGER with value=5 was never read");
         }
         try {
+            CBORObject modified =  p256Encrypted;
+            modified.getMap().get(KEY_ENCRYPTION_LABEL).getMap().remove(ALGORITHM_LABEL);
             new CBORAsymKeyDecrypter(
-                        p256.getPrivate()).decrypt(
-                                     p256Encrypted.getMap()
-                            .get(KEY_ENCRYPTION_LABEL)
-                            .getMap().remove(ALGORITHM_LABEL));
+                        p256.getPrivate()).decrypt(modified);
             fail("must not run");
         } catch (Exception e) {
             checkException(e, "Missing key: 1");
