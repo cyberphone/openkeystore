@@ -16,6 +16,8 @@
  */
 package org.webpki.cbor;
 
+import java.util.Arrays;
+
 /**
  * Class for holding CBOR <code>map</code> objects.
  */
@@ -62,6 +64,11 @@ public class CBORMap extends CBORObject {
     public CBORTypes getType() {
         return CBORTypes.MAP;
     }
+
+    private CBORObject getKey(CBORObject key) {
+        nullCheck(key);
+        return key;
+    }
     
     /**
      * Returns the size of the map.
@@ -83,19 +90,15 @@ public class CBORMap extends CBORObject {
      * @return <code>true</code> if the key is present
      */
     public boolean containsKey(CBORObject key) {
-        byte[] testKey = key.encode();
+        byte[] testKey = getKey(key).encode();
         for (Entry entry = root; entry != null; entry = entry.next) {
-            if (entry.compare(testKey) == 0) {
+            if (Arrays.equals(entry.encodedKey, testKey)) {
                 return true;
             }
         }
         return false;
     }
 
-    private CBORObject getKey(CBORObject key) {
-        nullCheck(key);
-        return key;
-    }
     /**
      * Sets map object.
      * <p>
