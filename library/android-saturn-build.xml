@@ -1,0 +1,189 @@
+<project name="android saturn" default="help" basedir=".">
+
+  <!-- set global properties for this build -->
+  <property name="android-saturn-project" location="../../webpkisuite-4-android"/>
+  <property name="android-main" value="${android-saturn-project}/app/src/main/java"/>
+  <property name="android-sks" value="${android-main}/org/webpki/mobile/android/sks"/>
+  <property name="android-test" value="${android-saturn-project}/app/src/androidTest/java"/>
+  <property environment="env"/>
+
+  <target name="help">
+    <echo message="Must not be called directly!"/>
+  </target>
+    	
+
+  <target name="_preprocess">
+    <jpp destdir="." verbose="false" force="true">
+        <fileset dir="ppmaster" includes="**/*.java" />
+    </jpp>
+  	<replace file="${test_dir}/org/webpki/sks/SKSReferenceImplementation.java">
+      <replacefilter token="MACRO_GET_PRIVATEKEY" value="privateKey"/>
+      <replacefilter token="MACRO_IMPORTED_PRIVATEKEY" value="keyEntry.privateKey"/>
+    </replace> 
+  </target>
+
+  <target name="_android-saturn">    
+    <delete includeEmptyDirs="true">
+      <fileset dir="${android-main}/org/webpki">
+        <exclude name="**/mobile/**"/>
+      </fileset>
+    </delete>
+    <delete dir="${android-sks}"/>
+    <delete dir="${android-test}/org"/>
+    <delete dir="${bin_dir}"/>
+    <mkdir dir="${bin_dir}"/>
+
+    <copy todir="${android-main}" preservelastmodified="true">
+      <fileset dir="${src_dir}">
+        <exclude name="**/tools/**"/>
+        <exclude name="**/xml/**"/>
+        <exclude name="**/cbor/**"/>
+        <exclude name="**/crypto/**"/>
+        <exclude name="**/jose/**"/>
+        <exclude name="**/util/**"/>
+        <exclude name="**/xmldsig/**"/>
+        <exclude name="**/xmlenc/**"/>
+        <exclude name="**/pdf/**"/>
+        <exclude name="**/pkcs7/**"/>
+        <exclude name="**/securityproxy/**"/>
+        <exclude name="**/ca/**"/>
+        <exclude name="**/net/**"/>
+        <exclude name="**/webutil/**"/>
+        <exclude name="**/asn1/ASN1ObjectID.java"/>
+        <exclude name="**/keygen2/*RequestEncoder.java"/>
+        <exclude name="**/keygen2/*ResponseDecoder.java"/>
+        <exclude name="**/keygen2/ServerState.java"/>
+        <exclude name="**/keygen2/ServerEncoder.java"/>
+        <exclude name="**/keygen2/ServerCryptoInterface.java"/>
+        <exclude name="**/webauth/*RequestEncoder.java"/>
+        <exclude name="**/webauth/*ResponseDecoder.java"/>
+        <exclude name="**/*.html"/>
+        <exclude name="**/*.cfg"/>
+      </fileset>
+      <fileset dir="${src_dir}">
+        <include name="**/util/ISODateTime.java"/>
+        <include name="**/util/HexaDecimal.java"/>
+        <include name="**/util/IO.java"/>
+        <include name="**/util/UTF8.java"/>
+        <include name="**/util/ArrayUtil.java"/>
+        <include name="**/util/StringUtil.java"/>
+        <include name="**/util/HTMLEncoder.java"/>
+        <include name="**/crypto/KeyStoreReader.java"/>
+        <include name="**/crypto/CryptoException.java"/>
+      	<include name="**/crypto/KeyContainerTypes.java"/>
+        <include name="**/crypto/CertificateFilter.java"/>
+        <include name="**/crypto/CertificateUtil.java"/>
+        <include name="**/crypto/CertificateInfo.java"/>
+        <include name="**/crypto/CertificateExtensions.java"/>
+        <include name="**/crypto/ExtendedKeyUsages.java"/>
+        <include name="**/crypto/DeviceID.java"/>
+        <include name="**/crypto/KeyUsageBits.java"/>
+        <include name="**/crypto/X509VerifierInterface.java"/>
+        <include name="**/crypto/HmacVerifierInterface.java"/>
+        <include name="**/crypto/X509SignerInterface.java"/>
+        <include name="**/crypto/AsymKeySignerInterface.java"/>
+        <include name="**/crypto/HmacSignerInterface.java"/>
+        <include name="**/crypto/CryptoAlgorithms.java"/>
+        <include name="**/crypto/KeyTypes.java"/>
+        <include name="**/crypto/HashAlgorithms.java"/>
+        <include name="**/crypto/HmacAlgorithms.java"/>
+        <include name="**/crypto/SignatureAlgorithms.java"/>
+        <include name="**/crypto/AlgorithmPreferences.java"/>
+        <include name="**/crypto/AsymSignatureAlgorithms.java"/>
+        <include name="**/crypto/SymSignatureAlgorithms.java"/>
+        <include name="**/crypto/CryptoRandom.java"/>
+        <include name="**/crypto/AsymEncryptionAlgorithms.java"/>
+        <include name="**/crypto/SymEncryptionAlgorithms.java"/>
+        <include name="**/crypto/EncryptionAlgorithms.java"/>
+        <include name="**/crypto/KeyEncryptionAlgorithms.java"/>
+        <include name="**/crypto/ContentEncryptionAlgorithms.java"/>
+        <include name="**/net/HTTPSWrapper.java"/>
+      </fileset>
+	  <fileset dir="androidsrc"/>
+    </copy>
+	
+  	<replaceregexp
+        match="&quot;SunX509&quot;"
+        replace="&quot;X509&quot;"
+        flags="g">
+        <fileset dir="${android-main}/org/webpki/">
+          <include name="**/*.java"/>
+        </fileset>
+    </replaceregexp>
+
+  	<antcall target="_clean_android"/>
+   	
+  	<property name="ANDROID" value="true"/>
+    <jpp destdir="${android-main}" verbose="true" force="true">
+        <fileset dir="ppmaster/src" includes="**/*.java">
+        	<exclude name="**/PEMDecoder.java"/>
+            <exclude name="**/CustomCryptoProvider.java"/>
+        </fileset>
+        <fileset dir="ppmaster/test">
+          <include name="**/*.java"/>
+        </fileset>
+    </jpp>
+    <replace file="${android-main}/org/webpki/sks/SKSReferenceImplementation.java">
+      <replacefilter token="MACRO_GET_PRIVATEKEY" value="getPrivateKey()"/>
+      <replacefilter token="MACRO_IMPORTED_PRIVATEKEY" value="importedPrivateKey"/>
+    </replace> 
+    <move file="${android-main}/org/webpki/sks/SKSReferenceImplementation.java" tofile="${android-sks}/AndroidSKSImplementation.java"/>
+	
+ 	<move file="${android-main}/org/webpki/sks/SKSTest.java" todir="${android-test}/org/webpki/sks"/>
+ 	<move file="${android-main}/org/webpki/crypto/KeyAlgorithmTest.java" todir="${android-test}/org/webpki/crypto"/>
+
+	<copy todir="${android-test}/org/webpki/sks">
+  		<fileset dir="${test_dir}/org/webpki/sks">
+  	       <exclude name="SKSReferenceImplementation.java"/>
+   	       <exclude name="ASN1.java"/>
+   	       <exclude name="PKCS12Import.java"/>
+   	       <exclude name="DemoTrustedGUIAuthorization.java"/>
+   	       <exclude name="DummyTrustedGUIAuthorization.java"/>
+   	       <exclude name="Random.java"/>
+   	       <exclude name="*.jks"/>
+   	       <exclude name="**/twolayer/**"/>
+  		</fileset>
+  	</copy>
+  	<copy todir="${android-test}">
+  		<fileset dir="${src_dir}">
+   	       <include name="**/CA.java"/>
+   	       <include name="**/CertSpec.java"/>
+  		</fileset>
+  	</copy>
+
+	<!-- Compile to verfify that it is complete -->
+  	<javac debug="${debug}" 
+  		   srcdir="${android-main}:androidrefsrc:${android-test}"
+  		   destdir="${bin_dir}"
+  		   includeAntRuntime="false"
+  	       classpath="${ext.jar}/junit-4.12.jar">
+  	    <compilerarg value="-Xlint:deprecation"/>
+        <exclude name="**/webpki/mobile/**/*.java"/>
+  	</javac>
+
+	<fail message="hyh"/>
+
+    <delete dir="${bin_dir}"/>
+  </target>
+	
+  <target name="_clean_android">
+    <replaceregexp file="${android-main}/org/webpki/json/NumberToJSON.java"
+        match="ValueExact"
+        replace="Value"
+        flags="g"/>
+    <replaceregexp file="${android-main}/org/webpki/crypto/AsymSignatureAlgorithms.java"
+        match="&quot;RSASSA-PSS&quot;,\n.*256,"
+        replace="&quot;SHA256withRSA/PSS&quot;,&#10;                   null/* Android != JDK */,"
+        flags="g"/>
+    <replaceregexp file="${android-main}/org/webpki/crypto/AsymSignatureAlgorithms.java"
+        match="&quot;RSASSA-PSS&quot;,\n.*384,"
+        replace="&quot;SHA384withRSA/PSS&quot;,&#10;                   null/* Android != JDK */,"
+        flags="g"/>
+    <replaceregexp file="${android-main}/org/webpki/crypto/AsymSignatureAlgorithms.java"
+        match="&quot;RSASSA-PSS&quot;,\n.*512,"
+        replace="&quot;SHA512withRSA/PSS&quot;,&#10;                   null/* Android != JDK */,"
+        flags="g"/>
+  </target>
+
+</project>
+
