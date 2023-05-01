@@ -58,9 +58,9 @@ public class CBORX509Encrypter extends CBOREncrypter {
         CBORCryptoUtils.rejectPossibleKeyId(optionalKeyId);
          
         // Create common key encryption data and return content encryption key. 
-        return CBORCryptoUtils.setupBasicKeyEncryption(certificatePath[0].getPublicKey(),
-                                                       keyEncryption,
-                                                       keyEncryptionAlgorithm,
-                                                       contentEncryptionAlgorithm);
+        return CBORCryptoUtils.commonKeyEncryption(certificatePath[0].getPublicKey(),
+                                                   keyEncryption,
+                                                   keyEncryptionAlgorithm,
+                                                   contentEncryptionAlgorithm);
     }
 }

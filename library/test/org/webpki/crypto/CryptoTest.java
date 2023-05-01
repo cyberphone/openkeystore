@@ -116,48 +116,56 @@ public class CryptoTest {
         return generator.generateKeyPair();
     }
 
-    private void asymEncryptionOneShot(KeyAlgorithms ka,
+    private void asymEncryptionOneShot(KeyAlgorithms keyAlgorithm,
                                        KeyEncryptionAlgorithms keyEncryptionAlgorithm,
                                        ContentEncryptionAlgorithms contentEncryptionAlgorithm,
                                        String staticProvider,
                                        String ephemeralProvider) throws Exception {
-        KeyPair keyPair = generateKeyPair(staticProvider, ka);
+        KeyPair keyPair = generateKeyPair(staticProvider, keyAlgorithm);
         
-        // Key wrapping algorithms need a key to wrap
-        byte[] contentEncryptionKey = keyEncryptionAlgorithm.isKeyWrap() ?
-            CryptoRandom.generateRandom(contentEncryptionAlgorithm.getKeyLength()) : null;
-                                                                         
-        // Encrypt
+        // Encrypt key
         EncryptionCore.AsymmetricEncryptionResult result =
-                keyEncryptionAlgorithm.isRsa() ?
-                    EncryptionCore.rsaEncryptKey(contentEncryptionKey,
-                                                 keyEncryptionAlgorithm,
-                                                 keyPair.getPublic())
-                                               :
-                    EncryptionCore.senderKeyAgreement(true,
-                                                      contentEncryptionKey,
-                                                      keyEncryptionAlgorithm,
-                                                      contentEncryptionAlgorithm,
-                                                      keyPair.getPublic());
-         
-        // Decrypt
+                                    EncryptionCore.encryptKey(true,
+                                                              keyPair.getPublic(),
+                                                              keyEncryptionAlgorithm,
+                                                              contentEncryptionAlgorithm);
+        // Decrypt key
         assertTrue("enc", Arrays.equals(result.getContentEncryptionKey(),
-                                        EncryptionCore.decryptKey(true,
-                                                                  keyPair.getPrivate(), 
-                                                                  result.getEncryptedKey(), 
-                                                                  result.getEphemeralKey(), 
-                                                                  keyEncryptionAlgorithm, 
-                                                                  contentEncryptionAlgorithm)));
+                                    EncryptionCore.decryptKey(true,
+                                                              keyPair.getPrivate(), 
+                                                              result.getEncryptedKey(), 
+                                                              result.getEphemeralKey(), 
+                                                              keyEncryptionAlgorithm, 
+                                                              contentEncryptionAlgorithm)));
         EncryptionCore.setEcProvider(staticProvider, ephemeralProvider);
     }
     
-    private void asymEncryptionProviderShot(KeyAlgorithms ka,
-                                            KeyEncryptionAlgorithms kea,
-                                            ContentEncryptionAlgorithms cea) throws Exception {
-        asymEncryptionOneShot(ka, kea, cea, null,         null);
-        asymEncryptionOneShot(ka, kea, cea, null,         ALT_PROVIDER);
-        asymEncryptionOneShot(ka, kea, cea, ALT_PROVIDER, null);
-        asymEncryptionOneShot(ka, kea, cea, ALT_PROVIDER, ALT_PROVIDER);
+    private void asymEncryptionProviderShot(KeyAlgorithms keyAlgorithm,
+                                            KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+                                            ContentEncryptionAlgorithms contentEncryptionAlgorithm) throws Exception {
+        asymEncryptionOneShot(keyAlgorithm, 
+                              keyEncryptionAlgorithm, 
+                              contentEncryptionAlgorithm, 
+                              null,
+                              null);
+
+        asymEncryptionOneShot(keyAlgorithm, 
+                              keyEncryptionAlgorithm, 
+                              contentEncryptionAlgorithm,
+                              null,
+                              ALT_PROVIDER);
+
+        asymEncryptionOneShot(keyAlgorithm,
+                              keyEncryptionAlgorithm,
+                              contentEncryptionAlgorithm,
+                              ALT_PROVIDER,
+                              null);
+        
+        asymEncryptionOneShot(keyAlgorithm,
+                              keyEncryptionAlgorithm,
+                              contentEncryptionAlgorithm,
+                              ALT_PROVIDER,
+                              ALT_PROVIDER);
     }
     
     @Test
@@ -174,30 +182,33 @@ public class CryptoTest {
         asymEncryptionProviderShot(KeyAlgorithms.RSA2048,
                                    KeyEncryptionAlgorithms.RSA_OAEP_256,
                                    ContentEncryptionAlgorithms.A256GCM);
+        asymEncryptionProviderShot(KeyAlgorithms.RSA2048,
+                                   KeyEncryptionAlgorithms.RSA_OAEP,
+                                   ContentEncryptionAlgorithms.A256CBC_HS512);
     }
     
-    private void signatureOneShot(KeyAlgorithms ka,
+    private void signatureOneShot(KeyAlgorithms keyAlgorithm,
                                   String keyProvider,
                                   String signatureProvider) throws Exception {
-        KeyPair keyPair = generateKeyPair(keyProvider, ka);
+        KeyPair keyPair = generateKeyPair(keyProvider, keyAlgorithm);
 
         byte[] signature = SignatureWrapper.sign(keyPair.getPrivate(),
-                                                 ka.getRecommendedSignatureAlgorithm(), 
+                                                 keyAlgorithm.getRecommendedSignatureAlgorithm(), 
                                                  DATA_TO_SIGN, 
                                                  signatureProvider);
         
         SignatureWrapper.validate(keyPair.getPublic(), 
-                                  ka.getRecommendedSignatureAlgorithm(), 
+                                  keyAlgorithm.getRecommendedSignatureAlgorithm(), 
                                   DATA_TO_SIGN, 
                                   signature, 
                                   signatureProvider);
     }
     
-    private void signatureProviderShot(KeyAlgorithms ka) throws Exception {
-        signatureOneShot(ka, null,         null);
-        signatureOneShot(ka, null,         ALT_PROVIDER);
-        signatureOneShot(ka, ALT_PROVIDER, null);
-        signatureOneShot(ka, ALT_PROVIDER, ALT_PROVIDER);
+    private void signatureProviderShot(KeyAlgorithms keyAlgorithm) throws Exception {
+        signatureOneShot(keyAlgorithm, null,         null);
+        signatureOneShot(keyAlgorithm, null,         ALT_PROVIDER);
+        signatureOneShot(keyAlgorithm, ALT_PROVIDER, null);
+        signatureOneShot(keyAlgorithm, ALT_PROVIDER, ALT_PROVIDER);
     }
     
     @Test
@@ -312,7 +323,7 @@ public class CryptoTest {
             int l = keyStore.getCertificateChain(alias).length;
             assertFalse("priv+cert", pathLen == null);
             assertTrue("pathLen", l == pathLen);
-            signTest(privateKey, keyStore.getCertificate(alias).getPublicKey());
+            checkKeys(privateKey, keyStore.getCertificate(alias).getPublicKey());
         } catch (Exception e) {
             assertTrue("should not: " + e.getMessage(), pathLen == null);
         }
@@ -323,7 +334,7 @@ public class CryptoTest {
             PrivateKey privateKey = getPrivateKey(priv);
             PublicKey publicKey = getPublicKey(pub);
             assertTrue("priv+pub", ok);
-            signTest(privateKey, publicKey);
+            checkKeys(privateKey, publicKey);
         } catch (Exception e) {
             assertFalse("should not: " + e.getMessage(), ok);
         }
@@ -333,13 +344,13 @@ public class CryptoTest {
         try {
             KeyPair keyPair = getKeyPair(priv);
             assertTrue("keypair", ok);
-            signTest(keyPair.getPrivate(), keyPair.getPublic());
+            checkKeys(keyPair.getPrivate(), keyPair.getPublic());
         } catch (Exception e) {
             assertFalse("should not: " + e.getMessage(), ok);
         }
     }
     
-    private void signTest(PrivateKey privateKey, PublicKey publicKey) {
+    private void checkKeys(PrivateKey privateKey, PublicKey publicKey) {
         KeyAlgorithms keyAlg = KeyAlgorithms.getKeyAlgorithm(publicKey);
         AsymSignatureAlgorithms sigAlg = keyAlg.getRecommendedSignatureAlgorithm();
         byte[] signature = SignatureWrapper.sign(privateKey, sigAlg, DATA_TO_SIGN, null);

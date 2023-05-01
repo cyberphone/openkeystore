@@ -207,31 +207,22 @@ public class CBORCryptoUtils {
         }
     }
     
-    static byte[] setupBasicKeyEncryption(PublicKey publicKey,
-                                          CBORMap keyEncryption,
-                                          KeyEncryptionAlgorithms keyEncryptionAlgorithm,
-                                          ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
+    static byte[] commonKeyEncryption(PublicKey publicKey,
+                                      CBORMap keyEncryption,
+                                      KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+                                      ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
 
         // The mandatory key encryption algorithm
         keyEncryption.set(ALGORITHM_LABEL,
                           new CBORInteger(keyEncryptionAlgorithm.getCoseAlgorithmId()));
         
-        // Key wrapping algorithms need a key to wrap
-        byte[] contentEncryptionKey = keyEncryptionAlgorithm.isKeyWrap() ?
-            CryptoRandom.generateRandom(contentEncryptionAlgorithm.getKeyLength()) : null;
-                                                                         
-        // The core
-        EncryptionCore.AsymmetricEncryptionResult result =
-                keyEncryptionAlgorithm.isRsa() ?
-                    EncryptionCore.rsaEncryptKey(contentEncryptionKey,
-                                                 keyEncryptionAlgorithm,
-                                                 publicKey)
-                                               :
-                    EncryptionCore.senderKeyAgreement(true,
-                                                      contentEncryptionKey,
-                                                      keyEncryptionAlgorithm,
-                                                      contentEncryptionAlgorithm,
-                                                      publicKey);
+        // The sole cryptographic operation 
+        EncryptionCore.AsymmetricEncryptionResult result = EncryptionCore.encryptKey(
+                                    true,
+                                    publicKey, 
+                                    keyEncryptionAlgorithm, 
+                                    contentEncryptionAlgorithm);
+
         if (!keyEncryptionAlgorithm.isRsa()) {
             // ECDH-ES requires the ephemeral public key
             keyEncryption.set(EPHEMERAL_KEY_LABEL,

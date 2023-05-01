@@ -70,9 +70,9 @@ public class CBORAsymKeyEncrypter extends CBOREncrypter {
         }
         
         // Create common key encryption data and return content encryption key. 
-        return CBORCryptoUtils.setupBasicKeyEncryption(publicKey,
-                                                       keyEncryption,
-                                                       keyEncryptionAlgorithm,
-                                                       contentEncryptionAlgorithm);
+        return CBORCryptoUtils.commonKeyEncryption(publicKey,
+                                                   keyEncryption,
+                                                   keyEncryptionAlgorithm,
+                                                   contentEncryptionAlgorithm);
     }
 }

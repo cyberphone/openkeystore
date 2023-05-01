@@ -108,14 +108,36 @@ public class EncryptionCore {
             this.ephemeralKey = ephemeralKey;
         }
 
+        /**
+         * Get <i>unencrypted</i> content encryption key.
+         * 
+         * @return Content encryption key
+         */
         public byte[] getContentEncryptionKey() {
             return contentEncryptionKey;
         }
 
+        /**
+         * Get encrypted key.
+         * <p>
+         * This element is defined for key wrapping algorithms which currently
+         * include all but <code>ECDH-ES</code>.
+         * </p>
+         * 
+         * @return Encrypted key or <code>null</code>
+         */
         public byte[] getEncryptedKey() {
             return encryptedKey;
         }
 
+        /**
+         * Get ephemeral key.
+         * <p>
+         * This element is defined for all <code>ECDH*</code> algorithms.
+         * </p>
+         * 
+         * @return Ephemeral key or <code>null</code>
+         */
         public PublicKey getEphemeralKey() {
             return ephemeralKey;
         }
@@ -587,37 +609,6 @@ public class EncryptionCore {
     }
 
     /**
-     * Key decryption convenience method.
-     * 
-     * @param coseMode <code>true</code> for COSE, <code>false</code> for JOSE
-     * @param privateKey Private decryption key
-     * @param optionalEncryptedKey For ECDH
-     * @param optionalEphemeralKey For key-wrapping algorithms
-     * @param keyEncryptionAlgorithm Key encryption algorithm
-     * @param contentEncryptionAlgorithm Content encryption algorithm
-     * @return Decrypted key
-     */
-    public static byte[] decryptKey(boolean coseMode,
-                                    PrivateKey privateKey,
-                                    byte[] optionalEncryptedKey,     // For all but ECDH-ES
-                                    PublicKey optionalEphemeralKey,  // For ECDH*
-                                    KeyEncryptionAlgorithms keyEncryptionAlgorithm,
-                                    ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
-        // The core
-        return keyEncryptionAlgorithm.isRsa() ?
-            EncryptionCore.rsaDecryptKey(privateKey,
-                                         keyEncryptionAlgorithm,
-                                         optionalEncryptedKey)
-                                              :
-            EncryptionCore.receiverKeyAgreement(coseMode,
-                                                privateKey,
-                                                keyEncryptionAlgorithm,
-                                                contentEncryptionAlgorithm,
-                                                optionalEphemeralKey,
-                                                optionalEncryptedKey);
-    }
-
-    /**
      * Perform a sender side ECDH operation.
      * 
      * @param coseMode If <code>true</code> => <code>hmacKdf</code>, else <code>concatKdf</code>
@@ -627,12 +618,12 @@ public class EncryptionCore {
      * @param publicKey The receiver's (usually static) public key
      * @return A composite object including the (plain text) data encryption key
      */
-    public static AsymmetricEncryptionResult
-            senderKeyAgreement(boolean coseMode,
-                               byte[] contentEncryptionKey,
-                               KeyEncryptionAlgorithms keyEncryptionAlgorithm,
-                               ContentEncryptionAlgorithms contentEncryptionAlgorithm,
-                               PublicKey publicKey) {
+    public static AsymmetricEncryptionResult senderKeyAgreement(
+                                    boolean coseMode,
+                                    byte[] contentEncryptionKey,
+                                    KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+                                    ContentEncryptionAlgorithms contentEncryptionAlgorithm,
+                                    PublicKey publicKey) {
         try {
         KeyPairGenerator generator;
 //#if ANDROID
@@ -703,5 +694,68 @@ public class EncryptionCore {
         } catch (GeneralSecurityException | IOException e) {
             throw new CryptoException(e);
         }
+    }
+
+    /**
+     * Key encryption convenience method.
+     * 
+     * @param coseMode <code>true</code> for COSE, <code>false</code> for JOSE
+     * @param publicKey Public decryption key
+     * @param keyEncryptionAlgorithm Key encryption algorithm
+     * @param contentEncryptionAlgorithm Content encryption algorithm
+     * @return Encryption parameters including a content encryption key
+     */
+    public static AsymmetricEncryptionResult encryptKey(
+                                    boolean coseMode,
+                                    PublicKey publicKey,
+                                    KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+                                    ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
+
+        // Key wrapping algorithms need a key to wrap
+        byte[] contentEncryptionKey = keyEncryptionAlgorithm.isKeyWrap() ?
+            CryptoRandom.generateRandom(contentEncryptionAlgorithm.getKeyLength()) : null;
+                                                                         
+        // The core
+        return keyEncryptionAlgorithm.isRsa() ?
+                    EncryptionCore.rsaEncryptKey(contentEncryptionKey,
+                                                 keyEncryptionAlgorithm,
+                                                 publicKey)
+                                              :
+                    EncryptionCore.senderKeyAgreement(true,
+                                                      contentEncryptionKey,
+                                                      keyEncryptionAlgorithm,
+                                                      contentEncryptionAlgorithm,
+                                                      publicKey);
+    }
+
+    /**
+     * Key decryption convenience method.
+     * 
+     * @param coseMode <code>true</code> for COSE, <code>false</code> for JOSE
+     * @param privateKey Private decryption key
+     * @param optionalEncryptedKey For key-wrapping algorithms
+     * @param optionalEphemeralKey For ECDH*
+     * @param keyEncryptionAlgorithm Key encryption algorithm
+     * @param contentEncryptionAlgorithm Content encryption algorithm
+     * @return Decrypted content encryption key
+     */
+    public static byte[] decryptKey(boolean coseMode,
+                                    PrivateKey privateKey,
+                                    byte[] optionalEncryptedKey,     // For all but ECDH-ES
+                                    PublicKey optionalEphemeralKey,  // For ECDH*
+                                    KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+                                    ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
+        // The core
+        return keyEncryptionAlgorithm.isRsa() ?
+            EncryptionCore.rsaDecryptKey(privateKey,
+                                         keyEncryptionAlgorithm,
+                                         optionalEncryptedKey)
+                                              :
+            EncryptionCore.receiverKeyAgreement(coseMode,
+                                                privateKey,
+                                                keyEncryptionAlgorithm,
+                                                contentEncryptionAlgorithm,
+                                                optionalEphemeralKey,
+                                                optionalEncryptedKey);
     }
 }
