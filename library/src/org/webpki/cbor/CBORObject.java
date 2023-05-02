@@ -146,13 +146,13 @@ public abstract class CBORObject implements Cloneable {
         int length = 0;
         if (n < 0 || n > 23) {
             modifier = 27;
-            length = 8;
-            while (((MASK_LOWER_32 << ((length / 2) * 8)) & n) == 0) {
+            length = 32;
+            while (((MASK_LOWER_32 << length) & n) == 0) {
                 modifier--;
                 length >>= 1;
             }
         }
-        return encodeTagAndValue(majorType | modifier, length, n);
+        return encodeTagAndValue(majorType | modifier, length >> 2, n);
     }
 
     void checkTypeAndMarkAsRead(CBORTypes requestedCborType) {
