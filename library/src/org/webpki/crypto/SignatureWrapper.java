@@ -16,7 +16,6 @@
  */
 package org.webpki.crypto;
 
-import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.PrivateKey;

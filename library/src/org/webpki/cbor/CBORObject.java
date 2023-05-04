@@ -953,6 +953,18 @@ public abstract class CBORObject implements Cloneable {
         return Arrays.equals(((CBORObject) object).encode(), encode());
     }
 
+    @Override
+    public int hashCode() {
+        byte[] encoded = encode();
+        int hash = 0;
+        int q = Math.min(encoded.length, 4);
+        while (--q >= 0) {
+            hash <<= 8;
+            hash += encoded[q];
+        }
+        return hash;
+    }
+
     /**
      * Returns the CBOR object in pretty-printed 
      * <a href='package-summary.html#diagnostic-notation'>Diagnostic Notation</a>.
