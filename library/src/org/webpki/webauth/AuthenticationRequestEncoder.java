@@ -16,8 +16,6 @@
  */
 package org.webpki.webauth;
 
-import java.io.IOException;
-
 import java.util.GregorianCalendar;
 import java.util.LinkedHashSet;
 import java.util.ArrayList;
@@ -83,7 +81,8 @@ public class AuthenticationRequestEncoder extends ServerEncoder {
         return this;
     }
 
-    public AuthenticationRequestEncoder setTargetKeyContainerList(KeyContainerTypes[] optionalListOfGrantedTypes) throws IOException {
+    public AuthenticationRequestEncoder setTargetKeyContainerList(
+            KeyContainerTypes[] optionalListOfGrantedTypes) {
         this.keyContainerList = KeyContainerTypes.parseOptionalKeyContainerList(optionalListOfGrantedTypes);
         return this;
     }
@@ -106,7 +105,7 @@ public class AuthenticationRequestEncoder extends ServerEncoder {
     }
 
     public void checkRequestResponseIntegrity(AuthenticationResponseDecoder authenticationResponse,
-                                              byte[] expectedServerCertificateFingerprint) throws IOException {
+                                              byte[] expectedServerCertificateFingerprint) {
         if (expectedServerCertificateFingerprint != null &&
                 (authenticationResponse.serverCertificateFingerprint == null ||
                         !Arrays.equals(authenticationResponse.serverCertificateFingerprint,
@@ -140,7 +139,7 @@ public class AuthenticationRequestEncoder extends ServerEncoder {
     }
 
     @Override
-    void writeServerRequest(JSONObjectWriter wr) throws IOException {
+    void writeServerRequest(JSONObjectWriter wr) {
         //////////////////////////////////////////////////////////////////////////
         // Set top-level attributes
         //////////////////////////////////////////////////////////////////////////

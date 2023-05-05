@@ -16,12 +16,9 @@
  */
 package org.webpki.keygen2;
 
-import java.io.IOException;
-
 import java.util.LinkedHashMap;
 import java.util.ArrayList;
 
-import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
 
 import org.webpki.json.JSONArrayWriter;
@@ -56,7 +53,7 @@ public class CredentialDiscoveryResponseEncoder extends JSONEncoder {
         public void addMatchingCredential(X509Certificate[] certificatePath, 
                                           String clientSessionId,
                                           String serverSessionId,
-                                          boolean locked) throws IOException {
+                                          boolean locked) {
             MatchingCredential matchingCredential = new MatchingCredential();
             matchingCredential.certificatePath = certificatePath;
             matchingCredential.clientSessionId = clientSessionId;
@@ -85,10 +82,10 @@ public class CredentialDiscoveryResponseEncoder extends JSONEncoder {
     }
 
 
-    public LookupResult addLookupResult(String id) throws IOException {
+    public LookupResult addLookupResult(String id) {
         LookupResult lookupResult = new LookupResult(id);
         if (!ref.containsKey(id)) {
-            throw new IOException("Non-matching \"ID\": " + id);
+            throw new KeyGen2Exception("Non-matching \"ID\": " + id);
         }
         lookupResults.add(lookupResult);
         return lookupResult;
@@ -96,8 +93,7 @@ public class CredentialDiscoveryResponseEncoder extends JSONEncoder {
 
 
     @Override
-    protected void writeJSONData(JSONObjectWriter wr)
-            throws IOException, GeneralSecurityException{
+    protected void writeJSONData(JSONObjectWriter wr) {
         //////////////////////////////////////////////////////////////////////////
         // Session properties
         //////////////////////////////////////////////////////////////////////////
@@ -109,10 +105,10 @@ public class CredentialDiscoveryResponseEncoder extends JSONEncoder {
         // Lookup results
         ////////////////////////////////////////////////////////////////////////
         if (lookupResults.isEmpty()) {
-            throw new IOException("There must be at least one result defined");
+            throw new KeyGen2Exception("There must be at least one result defined");
         }
         if (lookupResults.size() != ref.size()) {
-            throw new IOException("Missing outputed results");
+            throw new KeyGen2Exception("Missing outputed results");
         }
         JSONArrayWriter lookups = wr.setArray(LOOKUP_RESULTS_JSON);
         for (LookupResult lookupResult : lookupResults) {

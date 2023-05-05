@@ -16,10 +16,6 @@
  */
 package org.webpki.keygen2;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
-
 import java.util.Iterator;
 
 import org.webpki.sks.SecureKeyStore;
@@ -43,7 +39,7 @@ public class KeyCreationRequestEncoder extends ServerEncoder {
 
     // Constructors
 
-    public KeyCreationRequestEncoder(ServerState serverState) throws IOException {
+    public KeyCreationRequestEncoder(ServerState serverState) {
         this.serverState = serverState;
         serverState.checkState(true, serverState.currentPhase == ProtocolPhase.CREDENTIAL_DISCOVERY ? ProtocolPhase.CREDENTIAL_DISCOVERY : ProtocolPhase.KEY_CREATION);
         serverState.currentPhase = ProtocolPhase.KEY_CREATION;
@@ -60,8 +56,7 @@ public class KeyCreationRequestEncoder extends ServerEncoder {
     }
 
 
-    void writeKeys(JSONObjectWriter wr, PINPolicy pinPolicy) throws IOException,
-                                                                    GeneralSecurityException {
+    void writeKeys(JSONObjectWriter wr, PINPolicy pinPolicy) {
         JSONArrayWriter keys = null;
         for (ServerState.Key requestedKey : serverState.requestedKeys.values()) {
             if (requestedKey.pinPolicy == pinPolicy) {
@@ -74,7 +69,7 @@ public class KeyCreationRequestEncoder extends ServerEncoder {
     }
 
     @Override
-    void writeServerRequest(JSONObjectWriter wr) throws IOException, GeneralSecurityException {
+    void writeServerRequest(JSONObjectWriter wr) {
         //////////////////////////////////////////////////////////////////////////
         // Session properties
         //////////////////////////////////////////////////////////////////////////

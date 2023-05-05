@@ -17,15 +17,27 @@
 package org.webpki.json;
 
 /**
- * Support class for signature verifiers.
+ * Wrapper for making the WebPKI JSON library only throw unchecked exceptions.
  */
-public abstract class JSONVerifier {
+public class JSONException extends RuntimeException {
 
-    JSONVerifier(JSONSignatureTypes signatureType) {
-        this.signatureType = signatureType;
+    private static final long serialVersionUID = 1L;
+    
+    /**
+     * Constructor for rethrowing checked exceptions.
+     *  
+     * @param sourceException
+     */
+    public JSONException(Exception sourceException) {
+        super(sourceException);
     }
-
-    abstract void verify(JSONSignatureDecoder signatureDecoder);
-
-    JSONSignatureTypes signatureType;
+    
+    /**
+     * Constructor for original exceptions.
+     * 
+     * @param message
+     */
+    public JSONException(String message) {
+        super(message);
+    }
 }

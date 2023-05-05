@@ -16,8 +16,6 @@
  */
 package org.webpki.sks;
 
-import java.io.IOException;
-
 public enum BiometricProtection {
 
     NONE        ("none",        SecureKeyStore.BIOMETRIC_PROTECTION_NONE),
@@ -45,13 +43,13 @@ public enum BiometricProtection {
     }
 
 
-    public static BiometricProtection getBiometricProtectionFromString(String name) throws IOException {
+    public static BiometricProtection getBiometricProtectionFromString(String name) {
         for (BiometricProtection biom_type : BiometricProtection.values()) {
             if (name.equals(biom_type.name)) {
                 return biom_type;
             }
         }
-        throw new IOException("Unknown \"" + SecureKeyStore.VAR_BIOMETRIC_PROTECTION + "\": " + name);
+        throw new SKSException("Unknown \"" + SecureKeyStore.VAR_BIOMETRIC_PROTECTION + "\": " + name);
     }
 
 }

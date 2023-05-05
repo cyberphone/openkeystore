@@ -18,8 +18,6 @@
  */
 package org.webpki.json;
 
-import java.io.IOException;
-
 import java.math.BigInteger;
 
 /**
@@ -109,9 +107,8 @@ public final class NumberToJSON {
      * 
      * @param value Value to be formatted
      * @return String representation
-     * @throws IOException NaN/Infinity
      */
-    public static String serializeNumber(double value) throws IOException {
+    public static String serializeNumber(double value) {
         // Step 1: Decode the floating point number, and unify normalized and
         // subnormal cases.
         // First, handle all the trivial cases.
@@ -120,7 +117,7 @@ public final class NumberToJSON {
             return "0";
         }
         if ((bits & INVALID_PATTERN) == INVALID_PATTERN) {
-            throw new IOException("NaN/Infinity not allowed in JSON");
+            throw new JSONException("NaN/Infinity not allowed in JSON");
         }
 
         // Otherwise extract the mantissa and exponent bits and run the full algorithm.

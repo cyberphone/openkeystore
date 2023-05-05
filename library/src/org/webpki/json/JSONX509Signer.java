@@ -16,9 +16,6 @@
  */
 package org.webpki.json;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 
 import java.security.cert.X509Certificate;
@@ -41,7 +38,7 @@ public class JSONX509Signer extends JSONSigner {
 
     X509Certificate[] certificatePath;
     
-    JSONX509Signer(X509Certificate[] certificatePath) throws IOException {
+    JSONX509Signer(X509Certificate[] certificatePath) {
         this.certificatePath = certificatePath;
         this.algorithm = KeyAlgorithms.getKeyAlgorithm(certificatePath[0].getPublicKey())
                 .getRecommendedSignatureAlgorithm();
@@ -51,11 +48,8 @@ public class JSONX509Signer extends JSONSigner {
      * Constructor for custom crypto solutions.
      * 
      * @param signer Handle to implementation
-     * @throws IOException
-     * @throws GeneralSecurityException 
      */
-    public JSONX509Signer(X509SignerInterface signer) throws IOException,
-                                                             GeneralSecurityException {
+    public JSONX509Signer(X509SignerInterface signer) {
         this(signer.getCertificatePath());
         this.signer = signer;
     }
@@ -64,10 +58,8 @@ public class JSONX509Signer extends JSONSigner {
      * Constructor for JCE based solutions.
      * 
      * @param privateKey Private key
-     * @throws IOException
      */
-    public JSONX509Signer(PrivateKey privateKey, X509Certificate[] certificatePath)
-            throws IOException {
+    public JSONX509Signer(PrivateKey privateKey, X509Certificate[] certificatePath) {
         this(certificatePath);
         signer = new X509SignerInterface() {
 
@@ -89,8 +81,7 @@ public class JSONX509Signer extends JSONSigner {
         };
     }
 
-    public JSONX509Signer setAlgorithm(AsymSignatureAlgorithms algorithm)
-            throws IOException, GeneralSecurityException {
+    public JSONX509Signer setAlgorithm(AsymSignatureAlgorithms algorithm) {
         this.algorithm = algorithm;
         return this;
     }
@@ -101,17 +92,17 @@ public class JSONX509Signer extends JSONSigner {
     }
 
     @Override
-    SignatureAlgorithms getAlgorithm() throws IOException, GeneralSecurityException {
+    SignatureAlgorithms getAlgorithm() {
         return signer.getAlgorithm();
     }
 
     @Override
-    byte[] signData(byte[] data) throws IOException, GeneralSecurityException {
+    byte[] signData(byte[] data) {
         return signer.signData(data);
     }
 
     @Override
-    void writeKeyData(JSONObjectWriter wr) throws IOException, GeneralSecurityException {
+    void writeKeyData(JSONObjectWriter wr) {
         wr.setCertificatePath(certificatePath);
     }
 }

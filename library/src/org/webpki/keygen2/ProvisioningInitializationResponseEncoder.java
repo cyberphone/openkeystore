@@ -16,11 +16,8 @@
  */
 package org.webpki.keygen2;
 
-import java.io.IOException;
-
 import java.util.GregorianCalendar;
 
-import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
 
 import java.security.interfaces.ECPublicKey;
@@ -57,8 +54,7 @@ public class ProvisioningInitializationResponseEncoder extends JSONEncoder {
                                                      String clientSessionId,
                                                      GregorianCalendar clientTime,
                                                      byte[] attestation,
-                                                     X509Certificate[] deviceCertificatePath) 
-    throws IOException {
+                                                     X509Certificate[] deviceCertificatePath) {
         this.serverSessionId = prov_init_req.serverSessionId;
         this.serverTimeVerbatim = prov_init_req.serverTimeVerbatim;
         this.clientEphemeralKey = clientEphemeralKey;
@@ -69,8 +65,7 @@ public class ProvisioningInitializationResponseEncoder extends JSONEncoder {
     }
 
     @Override
-    protected void writeJSONData(JSONObjectWriter wr)
-            throws IOException, GeneralSecurityException {
+    protected void writeJSONData(JSONObjectWriter wr) {
         //////////////////////////////////////////////////////////////////////////
         // Session properties
         //////////////////////////////////////////////////////////////////////////

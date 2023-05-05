@@ -16,8 +16,6 @@
  */
 package org.webpki.keygen2;
 
-import java.io.IOException;
-
 import java.math.BigInteger;
 
 import java.net.URI;
@@ -36,7 +34,7 @@ import org.webpki.util.ISODateTime;
 
 abstract class KeyGen2Validator extends JSONDecoder {
 
-    static String validateID(String name, String value) throws IOException {
+    static String validateID(String name, String value) {
         int l = value.length();
         if (l == 0 || l > SecureKeyStore.MAX_LENGTH_ID_TYPE) {
             bad("\"" + name + "\" length error: " + l);
@@ -50,11 +48,11 @@ abstract class KeyGen2Validator extends JSONDecoder {
         return value;
     }
 
-    static String getID(JSONObjectReader rd, String name) throws IOException {
+    static String getID(JSONObjectReader rd, String name) {
         return validateID(name, rd.getString(name));
     }
 
-    static String getURL(JSONObjectReader rd, String name) throws IOException {
+    static String getURL(JSONObjectReader rd, String name) {
         String url = getURI(rd, name);
         if (!url.matches("https?://.*")) {
             bad("Bad URL: " + url);
@@ -62,24 +60,24 @@ abstract class KeyGen2Validator extends JSONDecoder {
         return url;
     }
 
-    static private void validateURI(String uriString) throws IOException {
+    static private void validateURI(String uriString) {
         try {
             URI uri = new URI(uriString);
             if (!uri.isAbsolute()) {
                 bad("Bad URI: " + uri);
             }
         } catch (URISyntaxException e) {
-            throw new IOException(e);
+            throw new KeyGen2Exception(e);
         }
     }
 
-    static String getURI(JSONObjectReader rd, String name) throws IOException {
+    static String getURI(JSONObjectReader rd, String name) {
         String uri = rd.getString(name);
         validateURI(uri);
         return uri;
     }
 
-    static short getPINLength(JSONObjectReader rd, String name) throws IOException {
+    static short getPINLength(JSONObjectReader rd, String name) {
         int l = rd.getInt(name);
         if (l < 0 || l > SecureKeyStore.MAX_LENGTH_PIN_PUK) {
             bad("\"" + name + "\" value out of range: " + l);
@@ -87,11 +85,11 @@ abstract class KeyGen2Validator extends JSONDecoder {
         return (short) l;
     }
 
-    static void bad(String message) throws IOException {
-        throw new IOException(message);
+    static void bad(String message) {
+        throw new KeyGen2Exception(message);
     }
 
-    static byte[] getMac(JSONObjectReader rd) throws IOException {
+    static byte[] getMac(JSONObjectReader rd) {
         byte[] mac = rd.getBinary(KeyGen2Constants.MAC_JSON);
         if (mac.length != 32) {
             bad("\"" + KeyGen2Constants.MAC_JSON + "\" length error: " + mac.length);
@@ -99,7 +97,7 @@ abstract class KeyGen2Validator extends JSONDecoder {
         return mac;
     }
 
-    static byte[] getEncryptedKey(JSONObjectReader rd, String nameOfKey) throws IOException {
+    static byte[] getEncryptedKey(JSONObjectReader rd, String nameOfKey) {
         byte[] encryptedValue = rd.getBinary(nameOfKey);
         if (encryptedValue.length < SecureKeyStore.AES_CBC_PKCS5_PADDING ||
             encryptedValue.length > SecureKeyStore.MAX_LENGTH_PIN_PUK + SecureKeyStore.AES_CBC_PKCS5_PADDING) {
@@ -108,7 +106,7 @@ abstract class KeyGen2Validator extends JSONDecoder {
         return encryptedValue;
     }
 
-    static short getAuthorizationRetryLimit(JSONObjectReader rd, int lowerLimit) throws IOException {
+    static short getAuthorizationRetryLimit(JSONObjectReader rd, int lowerLimit) {
         int retryLimit = rd.getInt(KeyGen2Constants.RETRY_LIMIT_JSON);
         if (retryLimit < lowerLimit || retryLimit > SecureKeyStore.MAX_RETRY_LIMIT) {
             bad("\"" + KeyGen2Constants.RETRY_LIMIT_JSON + "\" limit range error: " + retryLimit);
@@ -116,7 +114,7 @@ abstract class KeyGen2Validator extends JSONDecoder {
         return (short) retryLimit;
     }
 
-    static String[] getNonEmptyList(JSONObjectReader rd, String name) throws IOException {
+    static String[] getNonEmptyList(JSONObjectReader rd, String name) {
         String[] list = rd.getStringArray(name);
         if (list.length == 0) {
             bad("Empty list not allowed for: " + name);
@@ -124,7 +122,7 @@ abstract class KeyGen2Validator extends JSONDecoder {
         return list;
     }
 
-    static String[] getURIList(JSONObjectReader rd, String name) throws IOException {
+    static String[] getURIList(JSONObjectReader rd, String name) {
         String[] uris = getNonEmptyList(rd, name);
         for (String uri : uris) {
             validateURI(uri);
@@ -132,26 +130,26 @@ abstract class KeyGen2Validator extends JSONDecoder {
         return uris;
     }
 
-    static String[] getURIListConditional(JSONObjectReader rd, String name) throws IOException {
+    static String[] getURIListConditional(JSONObjectReader rd, String name) {
         return rd.hasProperty(name) ? getURIList(rd, name) : null;
     }
 
-    static BigInteger getBigIntegerConditional(JSONObjectReader rd, String name) throws IOException {
+    static BigInteger getBigIntegerConditional(JSONObjectReader rd, String name) {
         return rd.hasProperty(name) ? rd.getBigInteger(name) : null;
     }
 
-    static GregorianCalendar getDateTimeConditional(JSONObjectReader rd, String name) throws IOException {
+    static GregorianCalendar getDateTimeConditional(JSONObjectReader rd, String name) {
         return rd.hasProperty(name) ? rd.getDateTime(name, ISODateTime.UTC_NO_SUBSECONDS) : null;
     }
 
-    static ArrayList<JSONObjectReader> getObjectArrayConditional(JSONObjectReader rd, String name) throws IOException {
+    static ArrayList<JSONObjectReader> getObjectArrayConditional(JSONObjectReader rd, String name) {
         if (rd.hasProperty(name)) {
             return getObjectArray(rd, name);
         }
         return new ArrayList<>();
     }
 
-    static ArrayList<JSONObjectReader> getObjectArray(JSONObjectReader rd, String name) throws IOException {
+    static ArrayList<JSONObjectReader> getObjectArray(JSONObjectReader rd, String name) {
         ArrayList<JSONObjectReader> result = new ArrayList<>();
         JSONArrayReader arr = rd.getArray(name);
         do {

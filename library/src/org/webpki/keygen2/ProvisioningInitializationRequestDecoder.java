@@ -16,11 +16,9 @@
  */
 package org.webpki.keygen2;
 
-import java.io.IOException;
-
 import java.util.GregorianCalendar;
 import java.util.ArrayList;
-import java.security.GeneralSecurityException;
+
 import java.security.PublicKey;
 
 import java.security.interfaces.ECPublicKey;
@@ -106,8 +104,7 @@ public class ProvisioningInitializationRequestDecoder extends ClientDecoder {
     }
 
 
-    private void scanForUpdateKeys(JSONObjectReader rd, KeyManagementKeyUpdateHolder kmk) 
-            throws IOException, GeneralSecurityException {
+    private void scanForUpdateKeys(JSONObjectReader rd, KeyManagementKeyUpdateHolder kmk) {
         if (rd.hasProperty(UPDATABLE_KEY_MANAGEMENT_KEYS_JSON)) {
             JSONArrayReader updArr = rd.getArray(UPDATABLE_KEY_MANAGEMENT_KEYS_JSON);
             do {
@@ -137,7 +134,7 @@ public class ProvisioningInitializationRequestDecoder extends ClientDecoder {
 
 
     @Override
-    void readServerRequest(JSONObjectReader rd) throws IOException, GeneralSecurityException {
+    void readServerRequest(JSONObjectReader rd) {
         /////////////////////////////////////////////////////////////////////////////////////////
         // Core session properties
         /////////////////////////////////////////////////////////////////////////////////////////

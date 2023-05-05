@@ -16,8 +16,6 @@
  */
 package org.webpki.keygen2;
 
-import java.io.IOException;
-
 import java.util.LinkedHashMap;
 
 import org.webpki.json.JSONObjectReader;
@@ -31,7 +29,7 @@ public class InvocationResponseDecoder extends KeyGen2Validator {
     String serverSessionId;
 
     @Override
-    protected void readJSONData(JSONObjectReader rd) throws IOException {
+    protected void readJSONData(JSONObjectReader rd) {
         //////////////////////////////////////////////////////////////////////////
         // Session properties
         //////////////////////////////////////////////////////////////////////////

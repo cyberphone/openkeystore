@@ -16,9 +16,6 @@
  */
 package org.webpki.json;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 
 import java.util.LinkedHashSet;
@@ -61,8 +58,7 @@ public abstract class JSONEncrypter {
         
         LinkedHashSet<String> foundExtensions = new LinkedHashSet<>();
         
-        Header(ContentEncryptionAlgorithms contentEncryptionAlgorithm, JSONEncrypter encrypter) 
-                throws IOException {
+        Header(ContentEncryptionAlgorithms contentEncryptionAlgorithm, JSONEncrypter encrypter) {
             this.contentEncryptionAlgorithm = contentEncryptionAlgorithm;
             contentEncryptionKey = encrypter.contentEncryptionKey;
             encryptionWriter = new JSONObjectWriter();
@@ -75,8 +71,7 @@ public abstract class JSONEncrypter {
             }
         }
 
-        void createRecipient(JSONEncrypter encrypter, JSONObjectWriter currentRecipient)
-        throws IOException, GeneralSecurityException {
+        void createRecipient(JSONEncrypter encrypter, JSONObjectWriter currentRecipient) {
             if (encrypter.keyEncryptionAlgorithm != null) {
                 currentRecipient.setString(JSONCryptoHelper.ALGORITHM_JSON, 
                                            encrypter.keyEncryptionAlgorithm.getJoseAlgorithmId());
@@ -127,8 +122,7 @@ public abstract class JSONEncrypter {
             }
         }
 
-        JSONObjectWriter finalizeEncryption(byte[] unencryptedData) 
-        throws IOException, GeneralSecurityException {
+        JSONObjectWriter finalizeEncryption(byte[] unencryptedData) {
             if (!foundExtensions.isEmpty()) {
                 encryptionWriter.setStringArray(JSONCryptoHelper.EXTENSIONS_JSON,
                                                 foundExtensions.toArray(new String[0]));
@@ -150,15 +144,14 @@ public abstract class JSONEncrypter {
         }
     }
 
-    abstract void writeKeyData(JSONObjectWriter wr) throws IOException, GeneralSecurityException;
+    abstract void writeKeyData(JSONObjectWriter wr);
 
     /**
      * Set &quot;crit&quot; for this encryption object.
      * @param extensions JSON object holding the extension properties and associated values
      * @return <code>this</code>
-     * @throws IOException
      */
-    public JSONEncrypter setExtensions(JSONObjectWriter extensions) throws IOException {
+    public JSONEncrypter setExtensions(JSONObjectWriter extensions){
         this.extensions = new JSONObjectReader(extensions);
         JSONCryptoHelper.checkExtensions(this.extensions.getProperties(), true);
         return this;

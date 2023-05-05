@@ -16,8 +16,6 @@
  */
 package org.webpki.json;
 
-import java.io.IOException;
-
 /**
  * Basic JSON types read by the parser.
  */
@@ -36,9 +34,10 @@ public enum JSONTypes {
         this.complex = complex;
     }
 
-    static void compatibilityTest(JSONTypes expectedType, JSONValue value) throws IOException {
+    static void compatibilityTest(JSONTypes expectedType, JSONValue value) {
         if (expectedType != value.type) {
-            throw new IOException("Incompatible types, expected: " + expectedType + " actual: " + value.type);
+            throw new JSONException("Incompatible types, expected: " + 
+                                    expectedType + " actual: " + value.type);
         }
     }
 }

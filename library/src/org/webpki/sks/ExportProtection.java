@@ -16,8 +16,6 @@
  */
 package org.webpki.sks;
 
-import java.io.IOException;
-
 public enum ExportProtection {
 
     NONE           ("none",           SecureKeyStore.EXPORT_DELETE_PROTECTION_NONE),
@@ -45,13 +43,13 @@ public enum ExportProtection {
     }
 
 
-    public static ExportProtection getExportPolicyFromString(String name) throws IOException {
+    public static ExportProtection getExportPolicyFromString(String name) {
         for (ExportProtection exp_pol : ExportProtection.values()) {
             if (name.equals(exp_pol.name)) {
                 return exp_pol;
             }
         }
-        throw new IOException("Unknown \"" + SecureKeyStore.VAR_EXPORT_PROTECTION + "\": " + name);
+        throw new SKSException("Unknown \"" + SecureKeyStore.VAR_EXPORT_PROTECTION + "\": " + name);
     }
 
 }

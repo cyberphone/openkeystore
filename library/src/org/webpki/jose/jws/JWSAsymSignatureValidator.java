@@ -16,12 +16,10 @@
  */
 package org.webpki.jose.jws;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
+import org.webpki.crypto.CryptoException;
 import org.webpki.crypto.SignatureWrapper;
 
 /**
@@ -44,21 +42,14 @@ public class JWSAsymSignatureValidator extends JWSValidator {
     }
 
     @Override
-    void validateObject(byte[] signedData, JWSDecoder jwsDecoder) 
-            throws IOException, GeneralSecurityException {
+    void validateObject(byte[] signedData, JWSDecoder jwsDecoder) {
         if (jwsDecoder.optionalPublicKey != null && 
             !jwsDecoder.optionalPublicKey.equals(publicKey)) {
-                throw new GeneralSecurityException(
-                        "Supplied validation key differs from the signature key specified in the JWS header");
+                throw new CryptoException("Supplied validation key differs from the" +
+                                          "signature key specified in the JWS header");
         }
-        AsymSignatureAlgorithms algorithm = 
-                (AsymSignatureAlgorithms) jwsDecoder.signatureAlgorithm;
-        if (!new SignatureWrapper(algorithm, publicKey, provider)
-                .update(signedData)
-                .verify(jwsDecoder.signature)) {
-            throw new GeneralSecurityException("Signature did not validate for key: " + 
-                                               publicKey.toString());
-        }
+        AsymSignatureAlgorithms algorithm = (AsymSignatureAlgorithms) jwsDecoder.signatureAlgorithm;
+        SignatureWrapper.validate(publicKey, algorithm, signedData, jwsDecoder.signature, provider);
         JWSSigner.checkEcJwsCompliance(publicKey, algorithm);
     }
 }

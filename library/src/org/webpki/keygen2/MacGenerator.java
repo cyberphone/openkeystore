@@ -19,6 +19,8 @@ package org.webpki.keygen2;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import org.webpki.util.UTF8;
+
 class MacGenerator {
 
     private ByteArrayOutputStream baos;
@@ -26,28 +28,36 @@ class MacGenerator {
     MacGenerator() {
         baos = new ByteArrayOutputStream();
     }
+    
+    void writeBytes(byte[] data) {
+        try {
+            baos.write(data);
+        } catch (IOException e) {
+            throw new KeyGen2Exception(e);
+        }
+    }
 
-    void addBlob(byte[] data) throws IOException {
+    void addBlob(byte[] data) {
         addInt(data.length);
-        baos.write(data);
+        writeBytes(data);
     }
 
-    void addArray(byte[] data) throws IOException {
+    void addArray(byte[] data) {
         addShort(data.length);
-        baos.write(data);
+        writeBytes(data);
     }
 
-    void addString(String string) throws IOException {
-        addArray(string.getBytes("utf-8"));
+    void addString(String string) {
+        addArray(UTF8.encode(string));
     }
 
 
-    void addShort(int s) throws IOException {
+    void addShort(int s) {
         baos.write((byte)(s >>> 8));
         baos.write((byte)(s));
     }
     
-    void addInt(int i) throws IOException {
+    void addInt(int i) {
         addShort(i >>> 16);
         addShort(i);
     }

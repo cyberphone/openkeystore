@@ -16,8 +16,6 @@
  */
 package org.webpki.crypto;
 
-import java.io.IOException;
-
 import java.util.LinkedHashSet;
 import java.util.ArrayList;
 
@@ -42,27 +40,27 @@ public enum KeyContainerTypes {
         return name;
     }
 
-    public static KeyContainerTypes getKeyContainerType(String arg) throws IOException {
+    public static KeyContainerTypes getKeyContainerType(String arg) {
         for (KeyContainerTypes type : values()) {
             if (type.toString().equalsIgnoreCase(arg)) {
                 return type;
             }
         }
-        throw new IOException("Bad container name: " + arg);
+        throw new CryptoException("Bad container name: " + arg);
     }
 
     static class KeyContainerListParser {
 
         LinkedHashSet<String> keyContainerTypes = new LinkedHashSet<>();
 
-        KeyContainerListParser(String[] listOfGrantedTypes) throws IOException {
+        KeyContainerListParser(String[] listOfGrantedTypes) {
             if (listOfGrantedTypes != null) {
                 if (listOfGrantedTypes.length == 0) {
-                    throw new IOException("Empty list not allowed");
+                    throw new CryptoException("Empty list not allowed");
                 }
                 for (String type : listOfGrantedTypes) {
                     if (!keyContainerTypes.add(getKeyContainerType(type).getName())) {
-                        throw new IOException("Duplicate key container type: " + type);
+                        throw new CryptoException("Duplicate key container type: " + type);
                     }
                 }
             }
@@ -76,11 +74,11 @@ public enum KeyContainerTypes {
         }
     }
 
-    public static String[] parseOptionalKeyContainerList(String[] listOfGrantedTypes) throws IOException {
+    public static String[] parseOptionalKeyContainerList(String[] listOfGrantedTypes) {
         return new KeyContainerListParser(listOfGrantedTypes).normalized();
     }
 
-    public static String[] parseOptionalKeyContainerList(KeyContainerTypes[] listOfGrantedTypes) throws IOException {
+    public static String[] parseOptionalKeyContainerList(KeyContainerTypes[] listOfGrantedTypes) {
         if (listOfGrantedTypes == null) {
             return null;
         }
@@ -91,7 +89,7 @@ public enum KeyContainerTypes {
         return parseOptionalKeyContainerList(list.toArray(new String[0]));
     }
 
-    public static LinkedHashSet<KeyContainerTypes> getOptionalKeyContainerSet(String[] listOfGrantedTypes) throws IOException {
+    public static LinkedHashSet<KeyContainerTypes> getOptionalKeyContainerSet(String[] listOfGrantedTypes) {
         String[] list = parseOptionalKeyContainerList(listOfGrantedTypes);
         if (list == null) {
             return null;

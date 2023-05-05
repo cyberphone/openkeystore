@@ -16,10 +16,6 @@
  */
 package org.webpki.jose.jws;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
-
 import org.webpki.crypto.HmacAlgorithms;
 
 /**
@@ -38,16 +34,15 @@ public class JWSHmacSigner extends JWSSigner {
      * thread-safe.
      * @param secretKey The key to use
      * @param algorithm HMAC Algorithm to use
-     * @throws IOException 
      */
-    public JWSHmacSigner(byte[] secretKey, HmacAlgorithms algorithm) throws IOException {
+    public JWSHmacSigner(byte[] secretKey, HmacAlgorithms algorithm) {
         super(algorithm);
         this.secretKey = secretKey;
         this.hmacAlgorithm = algorithm;
     }
 
     @Override
-    byte[] signObject(byte[] dataToBeSigned) throws IOException, GeneralSecurityException {
+    byte[] signObject(byte[] dataToBeSigned) {
         return hmacAlgorithm.digest(secretKey, dataToBeSigned);
     }
 }

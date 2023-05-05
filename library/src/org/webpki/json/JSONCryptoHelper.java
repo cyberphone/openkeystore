@@ -33,12 +33,11 @@ import java.security.spec.ECPublicKeySpec;
 import java.security.spec.RSAPrivateCrtKeySpec;
 import java.security.spec.RSAPublicKeySpec;
 
-import java.io.IOException;
-
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
 import org.webpki.crypto.AlgorithmPreferences;
+import org.webpki.crypto.CryptoException;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.OkpSupport;
@@ -134,7 +133,7 @@ public class JSONCryptoHelper {
         
         public abstract String getExtensionUri();
         
-        protected abstract void decode(JSONObjectReader reader) throws IOException;
+        protected abstract void decode(JSONObjectReader reader);
     }
 
     static class ExtensionEntry {
@@ -152,18 +151,18 @@ public class JSONCryptoHelper {
                 new LinkedHashMap<>();
 
         public ExtensionHolder addExtension(Class<? extends Extension> extensionClass,
-                                            boolean mandatory) throws IOException {
+                                            boolean mandatory) {
             try {
                 Extension extension = extensionClass.getDeclaredConstructor().newInstance();
                 ExtensionEntry extensionEntry = new ExtensionEntry();
                 extensionEntry.extensionClass = extensionClass;
                 extensionEntry.mandatory = mandatory;
                 if ((extensions.put(extension.getExtensionUri(), extensionEntry)) != null) {
-                    throw new IOException("Duplicate extension: " + extension.getExtensionUri());
+                    throw new JSONException("Duplicate extension: " + extension.getExtensionUri());
                 }
             } catch (InstantiationException | InvocationTargetException | 
                      NoSuchMethodException | IllegalAccessException e) {
-                throw new IOException (e);
+                throw new JSONException (e);
             }
             return this;
         }
@@ -223,27 +222,27 @@ public class JSONCryptoHelper {
             return keyId == null && this == KEY_ID_XOR_PUBLIC_KEY;
         }
 
-        void checkPublicKey(String keyId) throws IOException {
+        void checkPublicKey(String keyId) {
             if (this == FORBIDDEN || (this != REQUIRED && 
                                       this != OPTIONAL &&
                                       this != KEY_ID_OR_PUBLIC_KEY &&
                                       !keyIdTest(keyId))) {
-                throw new IOException("Unexpected \"" + PUBLIC_KEY_JSON + "\"");
+                throw new JSONException("Unexpected \"" + PUBLIC_KEY_JSON + "\"");
             }
         }
 
-        void checkCertificatePath() throws IOException {
+        void checkCertificatePath() {
             if (this != CERTIFICATE_PATH) {
-                throw new IOException("Unexpected \"" + CERTIFICATE_PATH_JSON + "\"");
+                throw new JSONException("Unexpected \"" + CERTIFICATE_PATH_JSON + "\"");
             }
         }
 
-        void checkMissingKey(String keyId) throws IOException {
+        void checkMissingKey(String keyId) {
             if (this == REQUIRED || 
                 this == CERTIFICATE_PATH ||
                 (keyId == null && this == KEY_ID_OR_PUBLIC_KEY) ||
                 keyIdTest(keyId)) {
-                throw new IOException("Missing key information");
+                throw new JSONException("Missing key information");
             }
         }
     };
@@ -289,53 +288,53 @@ public class JSONCryptoHelper {
             return this;
         }
 
-        public Options setPermittedExclusions(String[] exclusions) throws IOException {
+        public Options setPermittedExclusions(String[] exclusions) {
             this.exclusions = JSONSignatureDecoder.checkExcluded(exclusions);
             return this;
         }
 
-        void initializeOperation(boolean encryptionMode) throws IOException {
+        void initializeOperation(boolean encryptionMode) {
             this.encryptionMode = encryptionMode;
             if (encryptionMode) {
                 if (exclusions != null) {
-                    throw new IOException("\"setPermittedExclusions()\" " +
+                    throw new JSONException("\"setPermittedExclusions()\" " +
                                           "is not applicable to encryption");
                 }
             } else if (publicKeyOption == PUBLIC_KEY_OPTIONS.PLAIN_ENCRYPTION) {
-                throw new IOException("\"" + PUBLIC_KEY_OPTIONS.PLAIN_ENCRYPTION + 
+                throw new JSONException("\"" + PUBLIC_KEY_OPTIONS.PLAIN_ENCRYPTION + 
                                      "\" is not applicable to signatures");
             }
             if (keyIdOption != KEY_ID_OPTIONS.OPTIONAL &&
                  (publicKeyOption == PUBLIC_KEY_OPTIONS.KEY_ID_OR_PUBLIC_KEY ||
                   publicKeyOption == PUBLIC_KEY_OPTIONS.KEY_ID_XOR_PUBLIC_KEY)) {
-                throw new IOException("Invalid key id and public key option combination");
+                throw new JSONException("Invalid key id and public key option combination");
             }
             for (String extension : extensionHolder.extensions.keySet()) {
                 checkOneExtension(extension, encryptionMode);
             }
         }
 
-        String getKeyId(JSONObjectReader reader) throws IOException {
+        String getKeyId(JSONObjectReader reader) {
             String keyId = reader.getStringConditional(JSONCryptoHelper.KEY_ID_JSON);
             if (keyId == null) {
                 if (keyIdOption == JSONCryptoHelper.KEY_ID_OPTIONS.REQUIRED) {
-                    throw new IOException("Missing \"" + JSONCryptoHelper.KEY_ID_JSON + "\"");
+                    throw new JSONException("Missing \"" + JSONCryptoHelper.KEY_ID_JSON + "\"");
                 }
             } else if (keyIdOption == JSONCryptoHelper.KEY_ID_OPTIONS.FORBIDDEN) {
-                throw new IOException("Unexpected \"" + JSONCryptoHelper.KEY_ID_JSON + "\"");
+                throw new JSONException("Unexpected \"" + JSONCryptoHelper.KEY_ID_JSON + "\"");
             }
             return keyId;
         }
 
         void getExtensions(JSONObjectReader innerObject, 
                            JSONObjectReader outerObject,
-                           LinkedHashMap<String, Extension> extensions) throws IOException {
+                           LinkedHashMap<String, Extension> extensions) {
             String[] extensionList = 
                     outerObject.getStringArrayConditional(JSONCryptoHelper.EXTENSIONS_JSON);
             if (extensionList == null) {
                 for (String name : extensionHolder.extensions.keySet()) {
                     if (extensionHolder.extensions.get(name).mandatory) {
-                        throw new IOException("Missing \"" + 
+                        throw new JSONException("Missing \"" + 
                                              JSONCryptoHelper.EXTENSIONS_JSON + 
                                              "\" mandatory extension: " + name);
                     }
@@ -343,7 +342,7 @@ public class JSONCryptoHelper {
             } else {
                 checkExtensions(extensionList, encryptionMode);
                 if (extensionHolder.extensions.isEmpty()) {
-                    throw new IOException("Use of \"" + 
+                    throw new JSONException("Use of \"" + 
                                           JSONCryptoHelper.EXTENSIONS_JSON + 
                                           "\" must be set in options");
                 }
@@ -351,7 +350,7 @@ public class JSONCryptoHelper {
                     JSONCryptoHelper.ExtensionEntry extensionEntry = 
                             extensionHolder.extensions.get(name);
                     if (extensionEntry == null) {
-                        throw new IOException("Unexpected \"" + 
+                        throw new JSONException("Unexpected \"" + 
                                               JSONCryptoHelper.EXTENSIONS_JSON + 
                                               "\" extension: " + name);
                     }
@@ -363,7 +362,7 @@ public class JSONCryptoHelper {
                             extensions.put(name, extension);
                         } catch (InstantiationException | InvocationTargetException | 
                                  NoSuchMethodException | IllegalAccessException e) {
-                            throw new IOException (e);
+                            throw new JSONException (e);
                         }
                     }
                 }
@@ -371,7 +370,7 @@ public class JSONCryptoHelper {
             for (String name : extensionHolder.extensions.keySet()) {
                 if (!extensions.containsKey(name) && 
                     extensionHolder.extensions.get(name).mandatory) {
-                    throw new IOException("Missing \"" + 
+                    throw new JSONException("Missing \"" + 
                                           JSONCryptoHelper.EXTENSIONS_JSON + 
                                           "\" mandatory extension: " + name);
                 }
@@ -380,18 +379,18 @@ public class JSONCryptoHelper {
     }
 
     private static void checkOneExtension(String property, 
-                                          boolean encryptionMode) throws IOException {
+                                          boolean encryptionMode) {
         if ((encryptionMode ? jefReservedWords : jsfReservedWords).contains(property)) {
-            throw new IOException("Forbidden \"" + 
+            throw new JSONException("Forbidden \"" + 
                                   JSONCryptoHelper.EXTENSIONS_JSON + 
                                   "\" property: " + property);
         }
     }
 
     static String[] checkExtensions(String[] properties, 
-                                    boolean encryptionMode) throws IOException {
+                                    boolean encryptionMode) {
         if (properties.length == 0) {
-            throw new IOException("Empty \"" + 
+            throw new JSONException("Empty \"" + 
                                   JSONCryptoHelper.EXTENSIONS_JSON + 
                                   "\" array not allowed");
         }
@@ -401,11 +400,11 @@ public class JSONCryptoHelper {
         return properties;
     }
 
-    static LinkedHashSet<String> createSet(String[] listOfNames) throws IOException {
+    static LinkedHashSet<String> createSet(String[] listOfNames) {
         LinkedHashSet<String> set = new LinkedHashSet<>();
         for (String name : listOfNames) {
             if (!set.add(name)) {
-               throw new IOException("Duplicate: \"" + name + "\""); 
+               throw new JSONException("Duplicate: \"" + name + "\""); 
             }
         }
         return set;
@@ -415,26 +414,25 @@ public class JSONCryptoHelper {
         
         LinkedHashSet<String> extensionNames;
         
-        public void setExtensionNames(String[] names, boolean encryptionMode) throws IOException {
+        public void setExtensionNames(String[] names, boolean encryptionMode) {
             this.extensionNames = createSet(checkExtensions(names, encryptionMode));
         }
     }
     
     static BigInteger getCurvePoint(JSONObjectReader rd, 
                                     String property,
-                                    KeyAlgorithms ec) throws IOException {
+                                    KeyAlgorithms ec) {
         byte[] fixedBinary = rd.getBinary(property);
         if (fixedBinary.length != (ec.getPublicKeySizeInBits() + 7) / 8) {
-            throw new IOException("Public EC key parameter \"" + property + "\" is not normalized");
+            throw new JSONException("Public EC key parameter \"" + property + "\" is not normalized");
         }
         return new BigInteger(1, fixedBinary);
     }
 
-    static BigInteger getCryptoBinary(JSONObjectReader rd, 
-                                      String property) throws IOException {
+    static BigInteger getCryptoBinary(JSONObjectReader rd, String property) {
         byte[] cryptoBinary = rd.getBinary(property);
         if (cryptoBinary[0] == 0x00) {
-            throw new IOException("RSA key parameter \"" + 
+            throw new JSONException("RSA key parameter \"" + 
                                   property + 
                                   "\" contains leading zeroes");
         }
@@ -442,67 +440,72 @@ public class JSONCryptoHelper {
     }
 
     public static PublicKey decodePublicKey(JSONObjectReader rd,
-                                            AlgorithmPreferences algorithmPreferences) 
-            throws IOException, GeneralSecurityException {
+                                            AlgorithmPreferences algorithmPreferences) {
         PublicKey publicKey = null;
         KeyAlgorithms keyAlgorithm;
-        String kty = rd.getString(JSONCryptoHelper.KTY_JSON);
-        switch (KeyTypes.getKeyTypeFromKty(kty)) {
-            case RSA:
-                publicKey = KeyFactory.getInstance("RSA").generatePublic(
-                        new RSAPublicKeySpec(getCryptoBinary(rd, JSONCryptoHelper.N_JSON),
-                                             getCryptoBinary(rd, JSONCryptoHelper.E_JSON)));
-                break;
-            case EC:
-                keyAlgorithm = KeyAlgorithms.getKeyAlgorithmFromId(
-                        rd.getString(JSONCryptoHelper.CRV_JSON),
-                        algorithmPreferences);
-                if (keyAlgorithm.getKeyType() != KeyTypes.EC) {
-                    throw new IllegalArgumentException("\"" + JSONCryptoHelper.CRV_JSON + 
-                                                       "\" is not an EC type");
-                }
-                ECPoint w = new ECPoint(getCurvePoint(rd, JSONCryptoHelper.X_JSON, keyAlgorithm),
-                                        getCurvePoint(rd, JSONCryptoHelper.Y_JSON, keyAlgorithm));
-                publicKey = KeyFactory.getInstance("EC")
-                        .generatePublic(new ECPublicKeySpec(w, keyAlgorithm.getECParameterSpec()));
-                break;
-            case EDDSA:
-            case XEC:
-                keyAlgorithm = KeyAlgorithms.getKeyAlgorithmFromId(
-                        rd.getString(JSONCryptoHelper.CRV_JSON),
-                        algorithmPreferences);
-                publicKey = OkpSupport.raw2PublicKey(rd.getBinary(JSONCryptoHelper.X_JSON), 
-                                                     keyAlgorithm);
-                break;
-            default:
-                throw new IllegalArgumentException("Unrecognized \"" + 
-                                                   JSONCryptoHelper.KTY_JSON + "\": " + kty);
+        try {
+            String kty = rd.getString(JSONCryptoHelper.KTY_JSON);
+            switch (KeyTypes.getKeyTypeFromKty(kty)) {
+                case RSA:
+                    publicKey = KeyFactory.getInstance("RSA").generatePublic(
+                            new RSAPublicKeySpec(getCryptoBinary(rd, JSONCryptoHelper.N_JSON),
+                                                 getCryptoBinary(rd, JSONCryptoHelper.E_JSON)));
+                    break;
+                case EC:
+                    keyAlgorithm = KeyAlgorithms.getKeyAlgorithmFromId(
+                            rd.getString(JSONCryptoHelper.CRV_JSON),
+                            algorithmPreferences);
+                    if (keyAlgorithm.getKeyType() != KeyTypes.EC) {
+                        throw new IllegalArgumentException("\"" + JSONCryptoHelper.CRV_JSON + 
+                                                           "\" is not an EC type");
+                    }
+                    ECPoint w = new ECPoint(getCurvePoint(rd, JSONCryptoHelper.X_JSON, keyAlgorithm),
+                                            getCurvePoint(rd, JSONCryptoHelper.Y_JSON, keyAlgorithm));
+                    publicKey = KeyFactory.getInstance("EC")
+                            .generatePublic(new ECPublicKeySpec(w, keyAlgorithm.getECParameterSpec()));
+                    break;
+                case EDDSA:
+                case XEC:
+                    keyAlgorithm = KeyAlgorithms.getKeyAlgorithmFromId(
+                            rd.getString(JSONCryptoHelper.CRV_JSON),
+                            algorithmPreferences);
+                    publicKey = OkpSupport.raw2PublicKey(rd.getBinary(JSONCryptoHelper.X_JSON), 
+                                                         keyAlgorithm);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unrecognized \"" + 
+                                                       JSONCryptoHelper.KTY_JSON + "\": " + kty);
+            }
+            return publicKey;
+        } catch (GeneralSecurityException e) {
+            throw new CryptoException(e);
         }
-        return publicKey;
 
     }
 
-    public static PrivateKey decodePrivateKey(JSONObjectReader rd,
-                                              PublicKey publicKey) 
-           throws IOException, GeneralSecurityException {
+    public static PrivateKey decodePrivateKey(JSONObjectReader rd, PublicKey publicKey) {
         KeyAlgorithms keyAlgorithm = KeyAlgorithms.getKeyAlgorithm(publicKey);
-        switch (keyAlgorithm.getKeyType()) {
-        case EC:
-            return KeyFactory.getInstance("EC").generatePrivate(
-                    new ECPrivateKeySpec(getCurvePoint(rd, "d", keyAlgorithm),
-                                         keyAlgorithm.getECParameterSpec()));
-        case RSA:
-            return KeyFactory.getInstance("RSA").generatePrivate(
-                    new RSAPrivateCrtKeySpec(((RSAPublicKey) publicKey).getModulus(),
-                                             ((RSAPublicKey) publicKey).getPublicExponent(),
-                                             getCryptoBinary(rd, "d"),
-                                             getCryptoBinary(rd, "p"),
-                                             getCryptoBinary(rd, "q"),
-                                             getCryptoBinary(rd, "dp"),
-                                             getCryptoBinary(rd, "dq"),
-                                             getCryptoBinary(rd, "qi")));
-        default:
-            return OkpSupport.raw2PrivateKey(rd.getBinary("d"), keyAlgorithm);
+        try {
+            switch (keyAlgorithm.getKeyType()) {
+                case EC:
+                    return KeyFactory.getInstance("EC").generatePrivate(
+                            new ECPrivateKeySpec(getCurvePoint(rd, "d", keyAlgorithm),
+                                                 keyAlgorithm.getECParameterSpec()));
+                case RSA:
+                    return KeyFactory.getInstance("RSA").generatePrivate(
+                            new RSAPrivateCrtKeySpec(((RSAPublicKey) publicKey).getModulus(),
+                                                     ((RSAPublicKey) publicKey).getPublicExponent(),
+                                                     getCryptoBinary(rd, "d"),
+                                                     getCryptoBinary(rd, "p"),
+                                                     getCryptoBinary(rd, "q"),
+                                                     getCryptoBinary(rd, "dp"),
+                                                     getCryptoBinary(rd, "dq"),
+                                                     getCryptoBinary(rd, "qi")));
+                default:
+                    return OkpSupport.raw2PrivateKey(rd.getBinary("d"), keyAlgorithm);
+            }
+        } catch (GeneralSecurityException e) {
+            throw new CryptoException(e);
         }
     }
  }

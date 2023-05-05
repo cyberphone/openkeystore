@@ -16,10 +16,6 @@
  */
 package org.webpki.json;
 
-import java.io.IOException;
-
-
-import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 
 import java.security.cert.X509Certificate;
@@ -59,8 +55,7 @@ public class JSONSignatureDecoder {
     JSONSignatureDecoder(JSONObjectReader signedData,
                          JSONObjectReader innerSignatureObject,
                          JSONObjectReader outerSignatureObject,
-                         JSONCryptoHelper.Options options) throws IOException,
-                                                                  GeneralSecurityException {
+                         JSONCryptoHelper.Options options) {
         this.options = options;
         algorithmString = innerSignatureObject.getString(JSONCryptoHelper.ALGORITHM_JSON);
         keyId = options.getKeyId(innerSignatureObject);
@@ -97,7 +92,7 @@ public class JSONSignatureDecoder {
 
         if (options.exclusions == null) {
             if (outerSignatureObject.hasProperty(JSONCryptoHelper.EXCLUDES_JSON)) {
-                throw new IOException("Use of \"" + JSONCryptoHelper.EXCLUDES_JSON +
+                throw new JSONException("Use of \"" + JSONCryptoHelper.EXCLUDES_JSON +
                                       "\" must be set in options");
             }
         } else {
@@ -107,17 +102,17 @@ public class JSONSignatureDecoder {
                             JSONCryptoHelper.EXCLUDES_JSON));
             for (String excluded : parsedExcludes.toArray(new String[0])) {
                 if (!options.exclusions.contains(excluded)) {
-                    throw new IOException("Unexpected \"" + JSONCryptoHelper.EXCLUDES_JSON + 
+                    throw new JSONException("Unexpected \"" + JSONCryptoHelper.EXCLUDES_JSON + 
                                           "\" property: " + excluded);
                 }
                 if (!signedData.root.properties.containsKey(excluded)) {
-                    throw new IOException("Excluded property \"" + excluded + "\" not found");
+                    throw new JSONException("Excluded property \"" + excluded + "\" not found");
                 }
                 signedData.root.properties.remove(excluded);
             }
             for (String excluded : options.exclusions.toArray(new String[0])) {
                 if (!parsedExcludes.contains(excluded)) {
-                    throw new IOException("Missing \"" + JSONCryptoHelper.EXCLUDES_JSON +
+                    throw new JSONException("Missing \"" + JSONCryptoHelper.EXCLUDES_JSON +
                                           "\" property: " + excluded);
                 }
             }
@@ -165,13 +160,12 @@ public class JSONSignatureDecoder {
         }
     }
 
-    void asymKeySignatureValidation(PublicKey publicKey) 
-            throws IOException, GeneralSecurityException {
-        if (!new SignatureWrapper((AsymSignatureAlgorithms) signatureAlgorithm, publicKey)
-                     .update(normalizedData)
-                     .verify(signatureValue)) {
-            throw new IOException("Bad signature for key: " + publicKey.toString());
-        }
+    void asymKeySignatureValidation(PublicKey publicKey) {
+        SignatureWrapper.validate(publicKey,
+                                  (AsymSignatureAlgorithms) signatureAlgorithm,
+                                  normalizedData,
+                                  signatureValue,
+                                  null);   
     }
 
     public byte[] getSignatureValue() {
@@ -186,19 +180,19 @@ public class JSONSignatureDecoder {
         return extensions.get(name);
     }
 
-    void checkRequest(JSONSignatureTypes signatureType) throws IOException {
+    void checkRequest(JSONSignatureTypes signatureType) {
         if (signatureType != getSignatureType()) {
-            throw new IOException("Request doesn't match received signature: " + 
+            throw new JSONException("Request doesn't match received signature: " + 
                                   getSignatureType().toString());
         }
     }
 
-    public X509Certificate[] getCertificatePath() throws IOException {
+    public X509Certificate[] getCertificatePath() {
         checkRequest(JSONSignatureTypes.X509_CERTIFICATE);
         return certificatePath;
     }
 
-    public PublicKey getPublicKey() throws IOException {
+    public PublicKey getPublicKey() {
         checkRequest(JSONSignatureTypes.ASYMMETRIC_KEY);
         return publicKey;
     }
@@ -219,21 +213,21 @@ public class JSONSignatureDecoder {
                           JSONSignatureTypes.ASYMMETRIC_KEY : JSONSignatureTypes.SYMMETRIC_KEY;
     }
 
-    public void verify(JSONVerifier verifier) throws IOException, GeneralSecurityException {
+    public void verify(JSONVerifier verifier) {
         checkRequest(verifier.signatureType);
         verifier.verify(this);
     }
 
-    static LinkedHashSet<String> checkExcluded(String[] excluded) throws IOException {
+    static LinkedHashSet<String> checkExcluded(String[] excluded) {
         if (excluded.length == 0) {
-            throw new IOException("Empty \"" + 
-                                  JSONCryptoHelper.EXCLUDES_JSON + "\" array not allowed");
+            throw new JSONException("Empty \"" + 
+                                    JSONCryptoHelper.EXCLUDES_JSON + "\" array not allowed");
         }
         LinkedHashSet<String> ex = new LinkedHashSet<>();
         for (String property : excluded) {
             if (!ex.add(property)) {
-                throw new IOException("Duplicate \"" + 
-                                      JSONCryptoHelper.EXCLUDES_JSON + "\" property: " + property);
+                throw new JSONException("Duplicate \"" + 
+                                        JSONCryptoHelper.EXCLUDES_JSON + "\" property: " + property);
             }
         }
         return ex;

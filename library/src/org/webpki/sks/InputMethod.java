@@ -16,8 +16,6 @@
  */
 package org.webpki.sks;
 
-import java.io.IOException;
-
 public enum InputMethod {
 
     ANY          ("any",          SecureKeyStore.INPUT_METHOD_ANY),
@@ -44,12 +42,12 @@ public enum InputMethod {
     }
 
 
-    public static InputMethod getInputMethodFromString(String name) throws IOException {
+    public static InputMethod getInputMethodFromString(String name) {
         for (InputMethod type : InputMethod.values()) {
             if (name.equals(type.name)) {
                 return type;
             }
         }
-        throw new IOException("Unknown \"" + SecureKeyStore.VAR_INPUT_METHOD + "\": " + name);
+        throw new SKSException("Unknown \"" + SecureKeyStore.VAR_INPUT_METHOD + "\": " + name);
     }
 }

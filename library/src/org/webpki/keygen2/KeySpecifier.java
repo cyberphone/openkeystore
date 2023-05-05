@@ -16,7 +16,6 @@
  */
 package org.webpki.keygen2;
 
-import java.io.IOException;
 import java.io.Serializable;
 
 import java.math.BigInteger;
@@ -38,32 +37,32 @@ public class KeySpecifier implements Serializable {
     }
 
 
-    KeySpecifier(KeyAlgorithms keyAlgorithm, byte[] optionalParameter) throws IOException {
+    KeySpecifier(KeyAlgorithms keyAlgorithm, byte[] optionalParameter) {
         this(keyAlgorithm);
         if (optionalParameter != null) {
             if (!keyAlgorithm.hasParameters()) {
-                throw new IOException("Algorithm '" + keyAlgorithm.toString() + "' does not use \"" + KeyGen2Constants.KEY_PARAMETERS_JSON + "\"");
+                throw new KeyGen2Exception("Algorithm '" + keyAlgorithm.toString() + "' does not use \"" + KeyGen2Constants.KEY_PARAMETERS_JSON + "\"");
             }
             if (keyAlgorithm.getKeyType() == KeyTypes.RSA) {
                 keyParameters = optionalParameter;
             } else {
-                throw new IOException("Algorithm '" + keyAlgorithm.toString() + "' not implemented");
+                throw new KeyGen2Exception("Algorithm '" + keyAlgorithm.toString() + "' not implemented");
             }
         }
     }
 
 
-    public KeySpecifier(KeyAlgorithms keyAlgorithm, long parameter) throws IOException {
+    public KeySpecifier(KeyAlgorithms keyAlgorithm, long parameter) {
         this(keyAlgorithm, BigInteger.valueOf(parameter).toByteArray());
     }
 
 
-    public KeySpecifier(String uri, byte[] optionalParameters) throws IOException {
+    public KeySpecifier(String uri, byte[] optionalParameters) {
         this(KeyAlgorithms.getKeyAlgorithmFromId(uri, AlgorithmPreferences.SKS), optionalParameters);
     }
 
 
-    public byte[] getKeyParameters() throws IOException {
+    public byte[] getKeyParameters() {
         return keyParameters;
     }
 

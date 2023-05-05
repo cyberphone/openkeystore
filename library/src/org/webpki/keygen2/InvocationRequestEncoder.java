@@ -16,8 +16,6 @@
  */
 package org.webpki.keygen2;
 
-import java.io.IOException;
-
 import org.webpki.crypto.KeyContainerTypes;
 
 import org.webpki.json.JSONObjectWriter;
@@ -34,7 +32,7 @@ public class InvocationRequestEncoder extends ServerEncoder {
 
     // Constructor
 
-    public InvocationRequestEncoder(ServerState serverState) throws IOException {
+    public InvocationRequestEncoder(ServerState serverState) {
         serverState.checkState(true, ProtocolPhase.INVOCATION);
         this.serverState = serverState;
     }
@@ -44,7 +42,7 @@ public class InvocationRequestEncoder extends ServerEncoder {
     }
 
     @Override
-    void writeServerRequest(JSONObjectWriter wr) throws IOException {
+    void writeServerRequest(JSONObjectWriter wr) {
         //////////////////////////////////////////////////////////////////////////
         // Session properties
         //////////////////////////////////////////////////////////////////////////

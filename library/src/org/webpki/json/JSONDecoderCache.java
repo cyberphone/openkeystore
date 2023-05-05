@@ -18,10 +18,6 @@ package org.webpki.json;
 
 import java.lang.reflect.InvocationTargetException;
 
-import java.security.GeneralSecurityException;
-
-import java.io.IOException;
-
 import java.util.Hashtable;
 
 /**
@@ -58,15 +54,14 @@ public class JSONDecoderCache {
 
     Hashtable<String, Class<? extends JSONDecoder>> classMap = new Hashtable<>();
 
-    public JSONDecoder parse(JSONObjectReader reader) 
-            throws IOException, GeneralSecurityException {
+    public JSONDecoder parse(JSONObjectReader reader) {
         String objectTypeIdentifier = reader.getString(CONTEXT_JSON);
         if (reader.hasProperty(QUALIFIER_JSON)) {
             objectTypeIdentifier += CONTEXT_QUALIFIER_DIVIDER + reader.getString(QUALIFIER_JSON);
         }
         Class<? extends JSONDecoder> decoderClass = classMap.get(objectTypeIdentifier);
         if (decoderClass == null) {
-            throw new IOException("Unknown JSONDecoder type: " + objectTypeIdentifier);
+            throw new JSONException("Unknown JSONDecoder type: " + objectTypeIdentifier);
         }
         try {
             JSONDecoder decoder = decoderClass.getDeclaredConstructor().newInstance();
@@ -78,15 +73,15 @@ public class JSONDecoderCache {
             return decoder;
         } catch (InstantiationException | InvocationTargetException | 
                  NoSuchMethodException | IllegalAccessException e) {
-            throw new IOException (e);
+            throw new JSONException (e);
         }
     }
 
-    public JSONDecoder parse(byte[] jsonUtf8) throws IOException, GeneralSecurityException {
+    public JSONDecoder parse(byte[] jsonUtf8) {
         return parse(JSONParser.parse(jsonUtf8));
     }
 
-    public void addToCache(Class<? extends JSONDecoder> jsonDecoder) throws IOException {
+    public void addToCache(Class<? extends JSONDecoder> jsonDecoder) {
         try {
             JSONDecoder decoder = jsonDecoder.getDeclaredConstructor().newInstance();
             String objectTypeIdentifier = decoder.getContext();
@@ -94,20 +89,20 @@ public class JSONDecoderCache {
                 objectTypeIdentifier += CONTEXT_QUALIFIER_DIVIDER + decoder.getQualifier();
             }
             if (classMap.put(objectTypeIdentifier, decoder.getClass()) != null) {
-                throw new IOException("JSON document type already defined: " + objectTypeIdentifier);
+                throw new JSONException("JSON document type already defined: " + objectTypeIdentifier);
             }
         } catch (InstantiationException | InvocationTargetException | 
                  NoSuchMethodException | IllegalAccessException e) {
-            throw new IOException (e);
+            throw new JSONException (e);
         }
 
     }
 
-    public void addToCache(String jsonDecoderPath) throws IOException {
+    public void addToCache(String jsonDecoderPath) {
         try {
             addToCache(Class.forName(jsonDecoderPath).asSubclass(JSONDecoder.class));
         } catch (ClassNotFoundException e) {
-            throw new IOException("Class " + jsonDecoderPath + " can't be found", e);
+            throw new JSONException(e);
         }
     }
 

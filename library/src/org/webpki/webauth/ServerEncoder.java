@@ -16,10 +16,7 @@
  */
 package org.webpki.webauth;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
-
+import org.webpki.crypto.CryptoException;
 import org.webpki.crypto.X509SignerInterface;
 
 import org.webpki.json.JSONEncoder;
@@ -28,10 +25,10 @@ import org.webpki.json.JSONX509Signer;
 
 abstract class ServerEncoder extends JSONEncoder {
 
-    abstract void writeServerRequest(JSONObjectWriter wr) throws IOException;
+    abstract void writeServerRequest(JSONObjectWriter wr);
 
-    final void bad(String message) throws IOException {
-        throw new IOException(message);
+    final void bad(String message) {
+        throw new CryptoException(message);
     }
 
     @Override
@@ -40,8 +37,7 @@ abstract class ServerEncoder extends JSONEncoder {
     }
 
     @Override
-    final protected void writeJSONData(JSONObjectWriter wr)
-            throws IOException, GeneralSecurityException {
+    final protected void writeJSONData(JSONObjectWriter wr) {
         writeServerRequest(wr);
 
         ////////////////////////////////////////////////////////////////////////
@@ -54,7 +50,7 @@ abstract class ServerEncoder extends JSONEncoder {
 
     private X509SignerInterface signer;
 
-    public void setRequestSigner(X509SignerInterface signer) throws IOException {
+    public void setRequestSigner(X509SignerInterface signer) {
         this.signer = signer;
     }
 }

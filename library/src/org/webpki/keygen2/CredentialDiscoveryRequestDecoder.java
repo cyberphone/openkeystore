@@ -16,9 +16,6 @@
  */
 package org.webpki.keygen2;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 
 import java.security.cert.X509Certificate;
@@ -53,15 +50,15 @@ public class CredentialDiscoveryRequestDecoder extends ClientDecoder {
 
         PublicKey keyManagementKey;
 
-        LookupSpecifier(JSONObjectReader rd) throws IOException, GeneralSecurityException {
+        LookupSpecifier(JSONObjectReader rd) {
             id = KeyGen2Validator.getID(rd, ID_JSON);
             if (!Arrays.equals(nonce_reference, rd.getBinary(NONCE_JSON))) {
-                throw new IOException("\"" + NONCE_JSON + "\"  error");
+                throw new KeyGen2Exception("\"" + NONCE_JSON + "\"  error");
             }
             if (rd.hasProperty(SEARCH_FILTER_JSON)) {
                 JSONObjectReader search = rd.getObject(SEARCH_FILTER_JSON);
                 if (search.getProperties().length == 0) {
-                    throw new IOException("Empty \"" + SEARCH_FILTER_JSON + "\" not allowed");
+                    throw new KeyGen2Exception("Empty \"" + SEARCH_FILTER_JSON + "\" not allowed");
                 }
                 setFingerPrint(search.getBinaryConditional(CertificateFilter.CF_FINGER_PRINT));
                 setIssuerRegEx(search.getStringConditional(CertificateFilter.CF_ISSUER_REG_EX));
@@ -82,8 +79,9 @@ public class CredentialDiscoveryRequestDecoder extends ClientDecoder {
             }
             JSONSignatureDecoder signature = rd.getSignature(new JSONCryptoHelper.Options());
             keyManagementKey = signature.getPublicKey();
-            if (((AsymSignatureAlgorithms) signature.getAlgorithm()).getDigestAlgorithm() != HashAlgorithms.SHA256) {
-                throw new IOException("Lookup signature must use SHA256");
+            if (((AsymSignatureAlgorithms) signature.getAlgorithm()).getDigestAlgorithm() != 
+                    HashAlgorithms.SHA256) {
+                throw new KeyGen2Exception("Lookup signature must use SHA256");
             }
         }
 
@@ -147,7 +145,7 @@ public class CredentialDiscoveryRequestDecoder extends ClientDecoder {
 
 
     @Override
-    void readServerRequest(JSONObjectReader rd) throws IOException, GeneralSecurityException {
+    void readServerRequest(JSONObjectReader rd) {
         /////////////////////////////////////////////////////////////////////////////////////////
         // Session properties
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -169,7 +167,7 @@ public class CredentialDiscoveryRequestDecoder extends ClientDecoder {
         for (JSONObjectReader spec : getObjectArray(rd, LOOKUP_SPECIFIERS_JSON)) {
             LookupSpecifier ls = new LookupSpecifier(spec);
             if (lookupSpecifiers.put(ls.id, ls) != null) {
-                throw new IOException("Duplicate id: " + ls.id);
+                throw new KeyGen2Exception("Duplicate id: " + ls.id);
             }
         }
     }

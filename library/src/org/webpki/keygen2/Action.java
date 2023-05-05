@@ -16,8 +16,6 @@
  */
 package org.webpki.keygen2;
 
-import java.io.IOException;
-
 public enum Action {
 
     MANAGE ("manage", true),
@@ -41,12 +39,12 @@ public enum Action {
         return keyInitAllowed;
     }
 
-    public static Action getActionFromString(String jsonName) throws IOException {
+    public static Action getActionFromString(String jsonName) {
         for (Action action : Action.values()) {
             if (jsonName.equals(action.jsonName)) {
                 return action;
             }
         }
-        throw new IOException("Unknown action: " + jsonName);
+        throw new KeyGen2Exception("Unknown action: " + jsonName);
     }
 }

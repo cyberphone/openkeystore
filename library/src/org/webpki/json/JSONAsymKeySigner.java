@@ -16,9 +16,6 @@
  */
 package org.webpki.json;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 import java.security.PrivateKey;
 
@@ -44,11 +41,8 @@ public class JSONAsymKeySigner extends JSONSigner {
      * Constructor for custom crypto solutions.
      * 
      * @param signer Handle to implementation
-     * @throws IOException
-     * @throws GeneralSecurityException 
      */
-    public JSONAsymKeySigner(AsymKeySignerInterface signer) throws IOException,
-                                                                   GeneralSecurityException {
+    public JSONAsymKeySigner(AsymKeySignerInterface signer) {
         this.signer = signer;
         this.algorithm = signer.getAlgorithm();
     }
@@ -57,10 +51,8 @@ public class JSONAsymKeySigner extends JSONSigner {
      * Constructor for JCE based solutions.
 
      * @param privateKey Private key
-     * @throws IOException
-     * @throws GeneralSecurityException 
      */
-    public JSONAsymKeySigner(PrivateKey privateKey) throws IOException, GeneralSecurityException {
+    public JSONAsymKeySigner(PrivateKey privateKey) {
         algorithm = KeyAlgorithms.getKeyAlgorithm(privateKey).getRecommendedSignatureAlgorithm();
         signer = new AsymKeySignerInterface() {
 
@@ -82,8 +74,7 @@ public class JSONAsymKeySigner extends JSONSigner {
         return this;
     }
 
-    public JSONAsymKeySigner setAlgorithm(AsymSignatureAlgorithms algorithm) 
-            throws IOException, GeneralSecurityException {
+    public JSONAsymKeySigner setAlgorithm(AsymSignatureAlgorithms algorithm) {
         this.algorithm = algorithm;
         return this;
     }
@@ -94,17 +85,17 @@ public class JSONAsymKeySigner extends JSONSigner {
     }
 
     @Override
-    SignatureAlgorithms getAlgorithm() throws IOException, GeneralSecurityException {
+    SignatureAlgorithms getAlgorithm() {
         return signer.getAlgorithm();
     }
 
     @Override
-    byte[] signData(byte[] data) throws IOException, GeneralSecurityException {
+    byte[] signData(byte[] data) {
         return signer.signData(data);
     }
 
     @Override
-    void writeKeyData(JSONObjectWriter wr) throws IOException {
+    void writeKeyData(JSONObjectWriter wr) {
         if (publicKey != null) {
             wr.setPublicKey(publicKey, algorithmPreferences);
         }

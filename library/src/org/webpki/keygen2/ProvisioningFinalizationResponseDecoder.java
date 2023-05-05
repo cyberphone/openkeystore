@@ -31,7 +31,7 @@ public class ProvisioningFinalizationResponseDecoder extends KeyGen2Validator {
     byte[] attestation;
 
     @Override
-    protected void readJSONData(JSONObjectReader rd) throws IOException {
+    protected void readJSONData(JSONObjectReader rd) {
         /////////////////////////////////////////////////////////////////////////////////////////
         // Session properties
         /////////////////////////////////////////////////////////////////////////////////////////

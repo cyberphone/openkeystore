@@ -16,8 +16,6 @@
  */
 package org.webpki.keygen2;
 
-import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
@@ -44,7 +42,7 @@ public class KeyCreationRequestDecoder extends ClientDecoder {
 
         byte[] encryptedValue;
 
-        PresetValueReference(JSONObjectReader rd, String nameOfKey) throws IOException {
+        PresetValueReference(JSONObjectReader rd, String nameOfKey) {
             encryptedValue = getEncryptedKey(rd, nameOfKey);
         }
 
@@ -58,7 +56,7 @@ public class KeyCreationRequestDecoder extends ClientDecoder {
 
         boolean userModifiable;
 
-        PresetPIN(JSONObjectReader rd, String nameOfKey) throws IOException {
+        PresetPIN(JSONObjectReader rd, String nameOfKey) {
             super(rd, nameOfKey);
             userModifiable = rd.getBooleanConditional(USER_MODIFIABLE_JSON);
         }
@@ -82,7 +80,7 @@ public class KeyCreationRequestDecoder extends ClientDecoder {
 
         String id;
 
-        PUKPolicy(JSONObjectReader rd) throws IOException {
+        PUKPolicy(JSONObjectReader rd) {
             super(rd, ENCRYPTED_PUK_JSON);
             retryLimit = getAuthorizationRetryLimit(rd, 0);
             id = KeyGen2Validator.getID(rd, ID_JSON);
@@ -146,7 +144,7 @@ public class KeyCreationRequestDecoder extends ClientDecoder {
 
         Set<PatternRestriction> patternRestrictions = EnumSet.noneOf(PatternRestriction.class);
 
-        PINPolicy(JSONObjectReader rd) throws IOException {
+        PINPolicy(JSONObjectReader rd) {
             id = KeyGen2Validator.getID(rd, ID_JSON);
 
             minLength = getPINLength(rd, MIN_LENGTH_JSON);
@@ -165,7 +163,8 @@ public class KeyCreationRequestDecoder extends ClientDecoder {
 
             grouping = Grouping.getGroupingFromString(rd.getStringConditional(GROUPING_JSON, Grouping.NONE.getProtocolName()));
 
-            inputMethod = InputMethod.getInputMethodFromString(rd.getStringConditional(INPUT_METHOD_JSON, InputMethod.ANY.getProtocolName()));
+            inputMethod = InputMethod.getInputMethodFromString(
+                    rd.getStringConditional(INPUT_METHOD_JSON, InputMethod.ANY.getProtocolName()));
 
             for (String pattern : rd.hasProperty(PATTERN_RESTRICTIONS_JSON) ?
                     KeyGen2Validator.getNonEmptyList(rd, PATTERN_RESTRICTIONS_JSON)
@@ -279,7 +278,7 @@ public class KeyCreationRequestDecoder extends ClientDecoder {
                   PINPolicy pinPolicy,
                   boolean startOfPinGroup,
                   PresetPIN presetPin,
-                  boolean devicePinProtected) throws IOException {
+                  boolean devicePinProtected) {
             this.pinPolicy = pinPolicy;
             this.startOfPinGroup = startOfPinGroup;
             this.presetPin = presetPin;
@@ -603,7 +602,7 @@ public class KeyCreationRequestDecoder extends ClientDecoder {
     }
 
 
-    public ArrayList<KeyObject> getKeyObjects() throws IOException {
+    public ArrayList<KeyObject> getKeyObjects() {
         return requestObjects;
     }
 
@@ -647,7 +646,7 @@ public class KeyCreationRequestDecoder extends ClientDecoder {
 
     private KeyObject readKeyProperties(JSONObjectReader rd,
                                         PINPolicy pinPolicy,
-                                        boolean startOfPinGroup) throws IOException {
+                                        boolean startOfPinGroup) {
         KeyObject rk;
         PresetPIN preset = null;
         boolean save_user_defined = pinPolicy.userDefined;
@@ -664,12 +663,12 @@ public class KeyCreationRequestDecoder extends ClientDecoder {
     }
 
 
-    private void readKeyProperties(JSONObjectReader rd, boolean devicePinProtected) throws IOException {
+    private void readKeyProperties(JSONObjectReader rd, boolean devicePinProtected) {
         requestObjects.add(new KeyObject(rd, null, false, null, devicePinProtected));
     }
 
 
-    private PassphraseFormat getPassphraseFormat(JSONObjectReader rd) throws IOException {
+    private PassphraseFormat getPassphraseFormat(JSONObjectReader rd) {
         return PassphraseFormat.getPassphraseFormatFromString(rd.getString(FORMAT_JSON));
     }
 
@@ -704,7 +703,7 @@ public class KeyCreationRequestDecoder extends ClientDecoder {
     }
 
     @Override
-    void readServerRequest(JSONObjectReader rd) throws IOException {
+    void readServerRequest(JSONObjectReader rd) {
         /////////////////////////////////////////////////////////////////////////////////////////
         // Session properties
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -731,7 +730,7 @@ public class KeyCreationRequestDecoder extends ClientDecoder {
         }
     }
 
-    void readPINProtectedKeys(JSONObjectReader rd, PUKPolicy pukPolicy) throws IOException {
+    void readPINProtectedKeys(JSONObjectReader rd, PUKPolicy pukPolicy) {
         boolean startOfpuk = pukPolicy != null;
         for (JSONObjectReader pin : getObjectArray(rd, PIN_POLICY_SPECIFIERS_JSON)) {
             PINPolicy pinPolicy = new PINPolicy(pin);

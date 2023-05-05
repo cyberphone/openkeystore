@@ -16,8 +16,6 @@
  */
 package org.webpki.json;
 
-import java.io.IOException;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -81,12 +79,11 @@ public class JSONObjectReader implements Cloneable {
      * Check for unread data.
      * Throws an exception if any property or array element in the current object or
      * child objects have not been read.
-     * @throws IOException
      * @see JSONObjectReader#scanAway(String)
      * @see JSONObjectReader#getPropertyType(String)
      * @see JSONObjectReader#getProperties()
      */
-    public void checkForUnread() throws IOException {
+    public void checkForUnread() {
         if (getJSONArrayReader() == null) {
             JSONObject.checkObjectForUnread(root);
         } else {
@@ -94,15 +91,15 @@ public class JSONObjectReader implements Cloneable {
         }
     }
 
-    JSONValue getProperty(String name) throws IOException {
+    JSONValue getProperty(String name) {
         JSONValue value = root.properties.get(name);
         if (value == null) {
-            throw new IOException("Property \"" + name + "\" is missing");
+            throw new JSONException("Property \"" + name + "\" is missing");
         }
         return value;
     }
 
-    JSONValue getProperty(String name, JSONTypes expectedType) throws IOException {
+    JSONValue getProperty(String name, JSONTypes expectedType) {
         JSONValue value = getProperty(name);
         JSONTypes.compatibilityTest(expectedType, value);
         value.readFlag = true;
@@ -115,7 +112,7 @@ public class JSONObjectReader implements Cloneable {
         }
     }
 
-    String getString(String name, JSONTypes expectedType) throws IOException {
+    String getString(String name, JSONTypes expectedType) {
         JSONValue value = getProperty(name, expectedType);
         return (String) value.value;
     }
@@ -124,38 +121,37 @@ public class JSONObjectReader implements Cloneable {
      * Read a JSON string property.
      * @param name Property
      * @return Java <code>String</code>
-     * @throws IOException
      * @see JSONObjectWriter#setString(String, String)
      */
-    public String getString(String name) throws IOException {
+    public String getString(String name) {
         return getString(name, JSONTypes.STRING);
     }
 
-    static long int53Check(long value) throws IOException {
+    static long int53Check(long value) {
         if (value > JSONObjectWriter.MAX_INTEGER || value < -JSONObjectWriter.MAX_INTEGER) {
-            throw new IOException("Int53 values must not exceeed abs(" +
+            throw new JSONException("Int53 values must not exceeed abs(" +
                     JSONObjectWriter.MAX_INTEGER +
                     "), found: " + value);
         }
         return value;
     }
 
-    static long parseLong(JSONValue jsonValue) throws IOException {
+    static long parseLong(JSONValue jsonValue) {
         return int53Check(Long.valueOf((String) jsonValue.value));
     }
 
-    static int parseInt(JSONValue jsonValue) throws IOException {
+    static int parseInt(JSONValue jsonValue) {
         long value = parseLong(jsonValue);
         if (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE) {
-            throw new IOException("Int32 value out of range: " + value);
+            throw new JSONException("Int32 value out of range: " + value);
         }
         return (int) value;
     }
 
-    static long convertBigIntegerToLong(BigInteger value) throws IOException {
+    static long convertBigIntegerToLong(BigInteger value) {
         long longValue = value.longValue();
         if (BigInteger.valueOf(longValue).compareTo(value) != 0) {
-            throw new IOException("Int64 value out of range: " + value);
+            throw new JSONException("Int64 value out of range: " + value);
         }
         return longValue;
     }
@@ -165,10 +161,9 @@ public class JSONObjectReader implements Cloneable {
      * This method only accepts true integer values.  I.e. 10.4 would throw an exception.</p>
      * @param name Property
      * @return Java <code>int</code>
-     * @throws IOException
      * @see JSONObjectWriter#setInt(String, int)
      */
-    public int getInt(String name) throws IOException {
+    public int getInt(String name) {
         return parseInt(getProperty(name, JSONTypes.NUMBER));
     }
 
@@ -179,12 +174,11 @@ public class JSONObjectReader implements Cloneable {
      * values outside this range throw exceptions.</p>
      * @param name Property
      * @return Java <code>long</code>
-     * @throws IOException
      * @see JSONObjectWriter#setInt53(String, long)
      * @see JSONObjectWriter#MAX_INTEGER
      * @see #getBigInteger(String)
      */
-    public long getInt53(String name) throws IOException {
+    public long getInt53(String name) {
         return parseLong(getProperty(name, JSONTypes.NUMBER));
     }
 
@@ -195,12 +189,11 @@ public class JSONObjectReader implements Cloneable {
      * which does not have a native counterpart in JavaScript.</p>
      * @param name Property
      * @return Java <code>long</code>
-     * @throws IOException
      * @see JSONObjectWriter#setLong(String, long)
      * @see #getBigInteger(String)
      * @see #getInt53(String)
      */
-    public long getLong(String name) throws IOException {
+    public long getLong(String name) {
         return convertBigIntegerToLong(getBigInteger(name));
     }
 
@@ -208,10 +201,9 @@ public class JSONObjectReader implements Cloneable {
      * Read a JSON double property.
      * @param name Property
      * @return Java <code>double</code>
-     * @throws IOException
      * @see JSONObjectWriter#setDouble(String, double)
      */
-    public double getDouble(String name) throws IOException {
+    public double getDouble(String name) {
         return Double.valueOf(getString(name, JSONTypes.NUMBER));
     }
 
@@ -219,10 +211,9 @@ public class JSONObjectReader implements Cloneable {
      * Read JSON boolean property.
      * @param name Property
      * @return Java <code>boolean</code>
-     * @throws IOException
      * @see JSONObjectWriter#setBoolean(String, boolean)
      */
-    public boolean getBoolean(String name) throws IOException {
+    public boolean getBoolean(String name) {
         return Boolean.valueOf(getString(name, JSONTypes.BOOLEAN));
     }
 
@@ -233,13 +224,12 @@ public class JSONObjectReader implements Cloneable {
      * @param name Property
      * @param constraints Required input format
      * @return Java <code>GregorianCalendar</code>
-     * @throws IOException
      * @see org.webpki.util.ISODateTime#decode(String, EnumSet)
      * @see JSONObjectWriter#setDateTime(String, GregorianCalendar, EnumSet)
      */
     public GregorianCalendar getDateTime(String name, 
                                          EnumSet<ISODateTime.DatePatterns> constraints) 
-    throws IOException {
+    {
         return ISODateTime.decode(getString(name), constraints);
     }
 
@@ -247,10 +237,9 @@ public class JSONObjectReader implements Cloneable {
      * Read a base64url encoded JSON property.
      * @param name Property
      * @return Java <code>byte[]</code>
-     * @throws IOException
      * @see JSONObjectWriter#setBinary(String, byte[])
      */
-    public byte[] getBinary(String name) throws IOException {
+    public byte[] getBinary(String name) {
         return Base64URL.decode(getString(name));
     }
 
@@ -258,24 +247,23 @@ public class JSONObjectReader implements Cloneable {
      * Conditionally read a base64url encoded JSON property.
      * @param name Property
      * @return Java <code>byte[]</code> or <b>null</b> if property is not present
-     * @throws IOException
      * @see JSONObjectWriter#setBinary(String, byte[])
      */
-    public byte[] getBinaryConditional(String name) throws IOException {
+    public byte[] getBinaryConditional(String name) {
         return hasProperty(name) ? getBinary(name) : null;
     }
 
-    static BigDecimal parseMoney(String value, Integer decimals) throws IOException {
+    static BigDecimal parseMoney(String value, Integer decimals) {
         if (INTEGER_PATTERN.matcher(value).matches() ||
                 DECIMAL_PATTERN.matcher(value).matches()) {
             BigDecimal parsed = new BigDecimal(value);
             if (decimals != null && parsed.scale() != decimals) {
-                throw new IOException("Incorrect number of decimals in \"Money\": " + 
+                throw new JSONException("Incorrect number of decimals in \"Money\": " + 
                                       parsed.scale());
             }
             return parsed;
         }
-        throw new IOException("Malformed \"Money\": " + value);
+        throw new JSONException("Malformed \"Money\": " + value);
     }
 
     /**
@@ -284,10 +272,9 @@ public class JSONObjectReader implements Cloneable {
      * this method builds on <i>mapping</i>.</p>
      * @param name Property
      * @return Java <code>BigInteger</code>
-     * @throws IOException
      * @see JSONObjectWriter#setMoney(String, BigDecimal)
      */
-    public BigDecimal getMoney(String name) throws IOException {
+    public BigDecimal getMoney(String name) {
         return parseMoney(getString(name), null);
     }
 
@@ -298,18 +285,17 @@ public class JSONObjectReader implements Cloneable {
      * @param name Property
      * @param decimals Required number of fractional digits or <b>null</b> if unspecified
      * @return Java <code>BigDecimal</code>
-     * @throws IOException
      * @see JSONObjectWriter#setMoney(String, BigDecimal, int)
      */
-    public BigDecimal getMoney(String name, int decimals) throws IOException {
+    public BigDecimal getMoney(String name, int decimals) {
         return parseMoney(getString(name), decimals);
     }
 
-    static BigDecimal parseBigDecimal(String value) throws IOException {
+    static BigDecimal parseBigDecimal(String value) {
         if (JSONParser.NUMBER_PATTERN.matcher(value).matches()) {
             return new BigDecimal(value);
         }
-        throw new IOException("Malformed \"getBigDecimal\": " + value);
+        throw new JSONException("Malformed \"getBigDecimal\": " + value);
     }
 
     /**
@@ -318,18 +304,17 @@ public class JSONObjectReader implements Cloneable {
      * this method builds on <i>mapping</i>.</p>
      * @param name Property
      * @return Java <code>BigInteger</code>
-     * @throws IOException
      * @see JSONObjectWriter#setBigDecimal(String, BigDecimal)
      */
-    public BigDecimal getBigDecimal(String name) throws IOException {
+    public BigDecimal getBigDecimal(String name) {
         return parseBigDecimal(getString(name));
     }
 
-    static BigInteger parseBigInteger(String value) throws IOException {
+    static BigInteger parseBigInteger(String value) {
         if (INTEGER_PATTERN.matcher(value).matches()) {
             return new BigInteger(value);
         }
-        throw new IOException("Malformed \"BigInteger\": " + value);
+        throw new JSONException("Malformed \"BigInteger\": " + value);
     }
 
     /**
@@ -338,10 +323,9 @@ public class JSONObjectReader implements Cloneable {
      * this method builds on <i>mapping</i>.</p>
      * @param name Property
      * @return Java <code>BigInteger</code>
-     * @throws IOException
      * @see JSONObjectWriter#setBigInteger(String, BigInteger)
      */
-    public BigInteger getBigInteger(String name) throws IOException {
+    public BigInteger getBigInteger(String name) {
         return parseBigInteger(getString(name));
     }
 
@@ -363,10 +347,9 @@ public class JSONObjectReader implements Cloneable {
      * Note: Only if the property contains a <b>null</b> the property is marked as "read".</p>
      * @param name Property
      * @return <code>true</code> if <b>null</b> was found, else <code>false</code>
-     * @throws IOException
      * @see JSONObjectReader#checkForUnread()
      */
-    public boolean getIfNULL(String name) throws IOException {
+    public boolean getIfNULL(String name) {
         if (getPropertyType(name) == JSONTypes.NULL) {
             scanAway(name);
             return true;
@@ -378,9 +361,8 @@ public class JSONObjectReader implements Cloneable {
      * Read a JSON object property.
      * @param name Property
      * @return Object reader
-     * @throws IOException
      */
-    public JSONObjectReader getObject(String name) throws IOException {
+    public JSONObjectReader getObject(String name) {
         JSONValue value = getProperty(name, JSONTypes.OBJECT);
         return new JSONObjectReader((JSONObject) value.value);
     }
@@ -389,10 +371,9 @@ public class JSONObjectReader implements Cloneable {
      * Read a JSON array property.
      * @param name Property
      * @return Array reader
-     * @throws IOException
      */
     @SuppressWarnings("unchecked")
-    public JSONArrayReader getArray(String name) throws IOException {
+    public JSONArrayReader getArray(String name) {
         JSONValue value = getProperty(name, JSONTypes.ARRAY);
         return new JSONArrayReader((ArrayList<JSONValue>) value.value);
     }
@@ -402,9 +383,8 @@ public class JSONObjectReader implements Cloneable {
      * Note: This method is equivalent to <code>getStringConditional(name, null)</code>.
      * @param name Property
      * @return The <code>String</code> if available else <b>null</b>
-     * @throws IOException
      */
-    public String getStringConditional(String name) throws IOException {
+    public String getStringConditional(String name) {
         return this.getStringConditional(name, null);
     }
 
@@ -413,9 +393,8 @@ public class JSONObjectReader implements Cloneable {
      * @param name Property
      * @param defaultValue Default value including possibly <b>null</b>
      * @return The <code>String</code> if available else <code>defaultValue</code>
-     * @throws IOException
      */
-    public String getStringConditional(String name, String defaultValue) throws IOException {
+    public String getStringConditional(String name, String defaultValue) {
         return hasProperty(name) ? getString(name) : defaultValue;
     }
 
@@ -423,9 +402,8 @@ public class JSONObjectReader implements Cloneable {
      * Conditionally read a JSON boolean property.<br>
      * @param name Property
      * @return The boolean if available else <code>false</code>
-     * @throws IOException
      */
-    public boolean getBooleanConditional(String name) throws IOException {
+    public boolean getBooleanConditional(String name) {
         return this.getBooleanConditional(name, false);
     }
 
@@ -434,9 +412,8 @@ public class JSONObjectReader implements Cloneable {
      * @param name Property
      * @param defaultValue Default value
      * @return The boolean if available else <code>defaultValue</code>
-     * @throws IOException
      */
-    public boolean getBooleanConditional(String name, boolean defaultValue) throws IOException {
+    public boolean getBooleanConditional(String name, boolean defaultValue) {
         return hasProperty(name) ? getBoolean(name) : defaultValue;
     }
 
@@ -444,13 +421,12 @@ public class JSONObjectReader implements Cloneable {
      * Conditionally read an array of JSON strings.
      * @param name Property
      * @return Array of <code>String</code> or <b>null</b> if property is not present
-     * @throws IOException
      */
-    public String[] getStringArrayConditional(String name) throws IOException {
+    public String[] getStringArrayConditional(String name) {
         return hasProperty(name) ? getStringArray(name) : null;
     }
 
-    String[] getSimpleArray(String name, JSONTypes expectedType) throws IOException {
+    String[] getSimpleArray(String name, JSONTypes expectedType) {
         ArrayList<String> array = new ArrayList<>();
         @SuppressWarnings("unchecked")
         ArrayList<JSONValue> arrayElements = 
@@ -467,9 +443,8 @@ public class JSONObjectReader implements Cloneable {
      * Read an array of JSON strings.
      * @param name Property
      * @return Array of <code>String</code>
-     * @throws IOException
      */
-    public String[] getStringArray(String name) throws IOException {
+    public String[] getStringArray(String name) {
         return getSimpleArray(name, JSONTypes.STRING);
     }
 
@@ -477,9 +452,8 @@ public class JSONObjectReader implements Cloneable {
      * Read an array of base64url encoded JSON strings.
      * @param name Property
      * @return ArrayList holding arrays of bytes
-     * @throws IOException
      */
-    public ArrayList<byte[]> getBinaryArray(String name) throws IOException {
+    public ArrayList<byte[]> getBinaryArray(String name) {
         return getArray(name).getBinaryArray();
     }
 
@@ -505,11 +479,10 @@ public class JSONObjectReader implements Cloneable {
      * Get the native JSON type of a property.
      * @param name Property
      * @return JSON type
-     * @throws IOException
      * @see org.webpki.json.JSONTypes
      * @see JSONObjectReader#hasProperty(String)
      */
-    public JSONTypes getPropertyType(String name) throws IOException {
+    public JSONTypes getPropertyType(String name) {
         return getProperty(name).type;
     }
 
@@ -519,34 +492,29 @@ public class JSONObjectReader implements Cloneable {
      * 
      * @param options Allowed/expected options
      * @return An object which can be used to verify keys etc.
-     * @throws IOException
-     * @throws GeneralSecurityException 
      * @see org.webpki.json.JSONObjectWriter#setSignature(JSONSigner)
      * @see org.webpki.json.JSONCryptoHelper.Options
      */
-    public JSONSignatureDecoder getSignature(JSONCryptoHelper.Options options) 
-            throws IOException, GeneralSecurityException {
+    public JSONSignatureDecoder getSignature(JSONCryptoHelper.Options options) {
         return getSignature(JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON, options);
     }
 
     public JSONSignatureDecoder getSignature(String signatureLabel, 
-                                             JSONCryptoHelper.Options options) 
-            throws IOException, GeneralSecurityException {
+                                             JSONCryptoHelper.Options options) {
         options.initializeOperation(false);
         JSONObjectReader signatureObject = getObject(signatureLabel);
         if (signatureObject.hasProperty(JSONCryptoHelper.SIGNERS_JSON)) {
-            throw new IOException("Use \"getMultiSignature()\" for this object");
+            throw new JSONException("Use \"getMultiSignature()\" for this object");
         }
         if (signatureObject.hasProperty(JSONCryptoHelper.CHAIN_JSON)) {
-            throw new IOException("Use \"getSignatureChain()\" for this object");
+            throw new JSONException("Use \"getSignatureChain()\" for this object");
         }
         return new JSONSignatureDecoder(this, signatureObject, signatureObject, options);
     }
     
     ArrayList<JSONSignatureDecoder> getSignatureArray(String signatureLabel, 
                                                       JSONCryptoHelper.Options options,
-                                                      boolean chained) 
-            throws IOException, GeneralSecurityException {
+                                                      boolean chained) {
         options.initializeOperation(false);
         JSONObjectReader outerSignatureObject = getObject(signatureLabel);
         JSONArrayReader arrayReader = 
@@ -582,17 +550,13 @@ public class JSONObjectReader implements Cloneable {
      * multi-signature object.
      * @param options Allowed/expected options
      * @return List with signature objects
-     * @throws IOException
-     * @throws GeneralSecurityException 
      */
-    public ArrayList<JSONSignatureDecoder> getMultiSignature(JSONCryptoHelper.Options options)
-    throws IOException, GeneralSecurityException {
+    public ArrayList<JSONSignatureDecoder> getMultiSignature(JSONCryptoHelper.Options options) {
         return getMultiSignature(JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON, options);
     }
     
     public ArrayList<JSONSignatureDecoder> getMultiSignature(String signatureLabel, 
-                                                             JSONCryptoHelper.Options options)
-    throws IOException, GeneralSecurityException {
+                                                             JSONCryptoHelper.Options options) {
         return getSignatureArray(signatureLabel, options, false);
     }
 
@@ -602,17 +566,13 @@ public class JSONObjectReader implements Cloneable {
      * chained-signature object.
      * @param options Allowed/expected options
      * @return List with signature objects
-     * @throws IOException
-     * @throws GeneralSecurityException 
      */
-    public ArrayList<JSONSignatureDecoder> getSignatureChain(JSONCryptoHelper.Options options) 
-    throws IOException, GeneralSecurityException {
+    public ArrayList<JSONSignatureDecoder> getSignatureChain(JSONCryptoHelper.Options options) {
         return getSignatureChain(JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON, options);
     }
     
     public ArrayList<JSONSignatureDecoder> getSignatureChain(String signatureLabel, 
-                                                             JSONCryptoHelper.Options options)
-    throws IOException, GeneralSecurityException {
+                                                             JSONCryptoHelper.Options options) {
         return getSignatureArray(signatureLabel, options, true);
     }
 
@@ -623,12 +583,9 @@ public class JSONObjectReader implements Cloneable {
      * 
      * @param algorithmPreferences JOSE or SKS notation expected
      * @return Java <code>PublicKey</code>
-     * @throws IOException
-     * @throws GeneralSecurityException 
      * @see org.webpki.json.JSONObjectWriter#setPublicKey(PublicKey)
      */
-    public PublicKey getPublicKey(AlgorithmPreferences algorithmPreferences) 
-            throws IOException, GeneralSecurityException {
+    public PublicKey getPublicKey(AlgorithmPreferences algorithmPreferences) {
         return getObject(JSONCryptoHelper.PUBLIC_KEY_JSON).getCorePublicKey(algorithmPreferences);
     }
 
@@ -639,11 +596,9 @@ public class JSONObjectReader implements Cloneable {
      * This method is equivalent to <code>getPublicKey(AlgorithmPreferences.JOSE)</code>.
      * 
      * @return Java <code>PublicKey</code>
-     * @throws IOException
-     * @throws GeneralSecurityException 
      * @see org.webpki.json.JSONObjectWriter#setPublicKey(PublicKey)
      */
-    public PublicKey getPublicKey() throws IOException, GeneralSecurityException {
+    public PublicKey getPublicKey() {
         return getPublicKey(AlgorithmPreferences.JOSE);
     }
 
@@ -656,12 +611,9 @@ public class JSONObjectReader implements Cloneable {
      * 
      * @param algorithmPreferences JOSE or SKS notation expected
      * @return Java <code>PublicKey</code>
-     * @throws IOException
-     * @throws GeneralSecurityException 
      * @see org.webpki.json.JSONObjectWriter#createCorePublicKey(PublicKey,AlgorithmPreferences)
      */
-    public PublicKey getCorePublicKey(AlgorithmPreferences algorithmPreferences) 
-    throws IOException, GeneralSecurityException {
+    public PublicKey getCorePublicKey(AlgorithmPreferences algorithmPreferences) {
         clearReadFlags();
         PublicKey publicKey = JSONCryptoHelper.decodePublicKey(this, algorithmPreferences);
         checkForUnread();
@@ -675,11 +627,8 @@ public class JSONObjectReader implements Cloneable {
      * 
      * @param algorithmPreferences JOSE or SKS notation expected
      * @return Java <code>KeyPair</code>
-     * @throws IOException
-     * @throws GeneralSecurityException 
      */
-    public KeyPair getKeyPair(AlgorithmPreferences algorithmPreferences)
-            throws IOException, GeneralSecurityException {
+    public KeyPair getKeyPair(AlgorithmPreferences algorithmPreferences) {
         clearReadFlags();
         PublicKey publicKey = JSONCryptoHelper.decodePublicKey(this, algorithmPreferences);
         KeyPair keyPair =
@@ -695,10 +644,8 @@ public class JSONObjectReader implements Cloneable {
      * This method is equivalent to <code>getKeyPair(AlgorithmPreferences.JOSE)</code>.
      * 
      * @return Java <code>KeyPair</code>
-     * @throws IOException
-     * @throws GeneralSecurityException 
      */
-    public KeyPair getKeyPair() throws IOException, GeneralSecurityException {
+    public KeyPair getKeyPair(){
         return getKeyPair(AlgorithmPreferences.JOSE);
     }
 
@@ -709,16 +656,13 @@ public class JSONObjectReader implements Cloneable {
      * Note: this method assumes that the current object only holds a JEF structure.</p>
      * @param options Restrictions and requirements
      * @return An object which can be used to retrieve the original (unencrypted) data 
-     * @throws IOException
-     * @throws GeneralSecurityException 
      * @see org.webpki.json.JSONObjectWriter#createEncryptionObject(byte[],ContentEncryptionAlgorithms,JSONEncrypter)
      * @see org.webpki.json.JSONCryptoHelper.Options
      */
-    public JSONDecryptionDecoder getEncryptionObject(JSONCryptoHelper.Options options) 
-            throws IOException, GeneralSecurityException {
+    public JSONDecryptionDecoder getEncryptionObject(JSONCryptoHelper.Options options) {
         options.initializeOperation(true);
         if (hasProperty(JSONCryptoHelper.RECIPIENTS_JSON)) {
-            throw new IOException(
+            throw new JSONException(
                     "Please use \"getEncryptionObjects()\" for multiple encryption objects");
         }
         boolean keyEncryption = hasProperty(JSONCryptoHelper.KEY_ENCRYPTION_JSON);
@@ -737,13 +681,10 @@ public class JSONObjectReader implements Cloneable {
      * Note: this method assumes that the current object only holds a JEF structure.</p>
      * @param options Global restrictions and requirements
      * @return An object which can be used to retrieve the original (unencrypted) data 
-     * @throws IOException
-     * @throws GeneralSecurityException 
      * @see org.webpki.json.JSONObjectWriter#createEncryptionObject(byte[],ContentEncryptionAlgorithms,JSONEncrypter)
      * @see org.webpki.json.JSONCryptoHelper.Options
      */
-    public ArrayList<JSONDecryptionDecoder> getEncryptionObjects(JSONCryptoHelper.Options options)
-            throws IOException, GeneralSecurityException {
+    public ArrayList<JSONDecryptionDecoder> getEncryptionObjects(JSONCryptoHelper.Options options) {
         options.initializeOperation(true);
         JSONDecryptionDecoder.Holder holder = new JSONDecryptionDecoder.Holder(options, this, true);
         JSONArrayReader recipientObjects = getArray(JSONCryptoHelper.RECIPIENTS_JSON);
@@ -766,11 +707,9 @@ public class JSONObjectReader implements Cloneable {
      * <b>must</b> be supplied in <i>strict issuance order</i>
      * where certificate[i] is signed by certificate[i + 1].</p>
      * @return Certificate path
-     * @throws IOException
-     * @throws GeneralSecurityException 
      * @see org.webpki.json.JSONObjectWriter#setCertificatePath(X509Certificate[])
      */
-    public X509Certificate[] getCertificatePath() throws IOException, GeneralSecurityException {
+    public X509Certificate[] getCertificatePath() {
         return getArray(JSONCryptoHelper.CERTIFICATE_PATH_JSON).getCertificatePath();
     }
 
@@ -781,12 +720,11 @@ public class JSONObjectReader implements Cloneable {
      * It also marks the property as "read" including possible child objects and arrays. 
      * @param name Property
      * @return Current instance of {@link org.webpki.json.JSONObjectReader}
-     * @throws IOException
      * @see JSONObjectReader#checkForUnread()
      * @see JSONObjectReader#getPropertyType(String)
      * @see JSONObjectReader#getProperties()
      */
-    public JSONObjectReader scanAway(String name) throws IOException {
+    public JSONObjectReader scanAway(String name) {
         JSONValue value = getProperty(name);
         value.readFlag = true;
         if (value.type == JSONTypes.OBJECT) {
@@ -801,9 +739,8 @@ public class JSONObjectReader implements Cloneable {
      * Remove a property.
      * @param name Property
      * @return Current instance of {@link org.webpki.json.JSONObjectReader}
-     * @throws IOException
      */
-    public JSONObjectReader removeProperty(String name) throws IOException {
+    public JSONObjectReader removeProperty(String name) {
         getProperty(name);
         root.properties.remove(name);
         return this;
@@ -813,9 +750,8 @@ public class JSONObjectReader implements Cloneable {
      * Serialize object reader to a Java <code>byte[]</code>.
      * @param outputFormat Any JSONOutputFormats
      * @return JSON string data
-     * @throws IOException
-     */
-    public byte[] serializeToBytes(JSONOutputFormats outputFormat) throws IOException {
+      */
+    public byte[] serializeToBytes(JSONOutputFormats outputFormat) {
         return new JSONObjectWriter(root).serializeToBytes(outputFormat);
     }
 
@@ -823,9 +759,8 @@ public class JSONObjectReader implements Cloneable {
      * Serialize object reader to a Java <code>String</code>.
      * @param outputFormat Any JSONOutputFormats
      * @return JSON string data
-     * @throws IOException
      */
-     public String serializeToString(JSONOutputFormats outputFormat) throws IOException {
+     public String serializeToString(JSONOutputFormats outputFormat) {
         return new JSONObjectWriter(root).serializeToString(outputFormat);
     }
 
@@ -834,11 +769,7 @@ public class JSONObjectReader implements Cloneable {
      */
     @Override
     public JSONObjectReader clone() {
-        try {
-            return JSONParser.parse(serializeToBytes(JSONOutputFormats.NORMALIZED));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return JSONParser.parse(serializeToBytes(JSONOutputFormats.NORMALIZED));
     }
 
     /**

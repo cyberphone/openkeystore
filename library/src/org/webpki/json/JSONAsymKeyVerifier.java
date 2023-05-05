@@ -16,11 +16,9 @@
  */
 package org.webpki.json;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 
+import org.webpki.crypto.CryptoException;
 import org.webpki.crypto.KeyAlgorithms;
 
 /**
@@ -36,22 +34,18 @@ public class JSONAsymKeyVerifier extends JSONVerifier {
      * which is useful if there are multiple keys possible.
      *
      * @param expectedPublicKey Expected public key
-     * @throws GeneralSecurityException
-     * @throws IOException
      */
-    public JSONAsymKeyVerifier(PublicKey expectedPublicKey) 
-    throws GeneralSecurityException, IOException {
+    public JSONAsymKeyVerifier(PublicKey expectedPublicKey) {
         super(JSONSignatureTypes.ASYMMETRIC_KEY);
         this.expectedPublicKey = KeyAlgorithms.normalizePublicKey(expectedPublicKey);
     }
 
     @Override
-    void verify(JSONSignatureDecoder signatureDecoder) 
-            throws IOException, GeneralSecurityException {
+    void verify(JSONSignatureDecoder signatureDecoder) {
         if (signatureDecoder.publicKey == null) {
             signatureDecoder.asymKeySignatureValidation(expectedPublicKey);
         } else if (!signatureDecoder.publicKey.equals(expectedPublicKey)) {
-            throw new IOException("Provided public key differs from the signature key");
+            throw new CryptoException("Provided public key differs from the signature key");
         }
     }
 }

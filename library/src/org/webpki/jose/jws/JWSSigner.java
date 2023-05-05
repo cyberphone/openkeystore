@@ -16,15 +16,13 @@
  */
 package org.webpki.jose.jws;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
 import java.security.Key;
 
 import java.security.interfaces.ECKey;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
+import org.webpki.crypto.CryptoException;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.SignatureAlgorithms;
@@ -52,7 +50,7 @@ public abstract class JWSSigner {
     /*
      * Package level constructor
      */
-    JWSSigner(SignatureAlgorithms signatureAlgorithm) throws IOException {
+    JWSSigner(SignatureAlgorithms signatureAlgorithm) {
         jwsProtectedHeader = new JSONObjectWriter()
             .setString(ALG_JSON, signatureAlgorithm.getKeyType() == KeyTypes.EDDSA ? 
                            EdDSA 
@@ -76,7 +74,7 @@ public abstract class JWSSigner {
      * @return JwsSigner
      * @throws IOException
      */
-    public JWSSigner setKeyId(String keyId) throws IOException {
+    public JWSSigner setKeyId(String keyId) {
         jwsProtectedHeader.setString(KID_JSON, keyId);
         return this;
     }
@@ -87,7 +85,7 @@ public abstract class JWSSigner {
      * @throws IOException
      * @return JwsSigner
      */
-    public JWSSigner addHeaderItems(JSONObjectReader items) throws IOException {
+    public JWSSigner addHeaderItems(JSONObjectReader items) {
         for (String key : items.getProperties()) {
             jwsProtectedHeader.copyElement(key, key, items);
         }
@@ -99,11 +97,8 @@ public abstract class JWSSigner {
      * @param objectToBeSigned The JSON object to be signed
      * @param signatureProperty Name of property holding the "detached" JWS
      * @return The now signed <code>objectToBeSigned</code>
-     * @throws IOException
-     * @throws GeneralSecurityException
      */
-    public JSONObjectWriter sign(JSONObjectWriter objectToBeSigned, String signatureProperty)
-            throws IOException, GeneralSecurityException {
+    public JSONObjectWriter sign(JSONObjectWriter objectToBeSigned, String signatureProperty) {
         return objectToBeSigned.setString(signatureProperty, 
                                           sign(objectToBeSigned
                                                   .serializeToBytes(
@@ -119,11 +114,8 @@ public abstract class JWSSigner {
      * @param jwsPayload Binary payload
      * @param detached True if payload is not to be supplied in the JWS string
      * @return JWS compact (string)
-     * @throws IOException
-     * @throws GeneralSecurityException
      */
-    public String sign(byte[] jwsPayload, boolean detached) 
-            throws IOException, GeneralSecurityException {
+    public String sign(byte[] jwsPayload, boolean detached) {
         
         // Create data to be signed
         String jwsProtectedHeaderB64U = Base64URL.encode(
@@ -139,17 +131,16 @@ public abstract class JWSSigner {
                 Base64URL.encode(signObject(dataToBeSigned));
     }
 
-    abstract byte[] signObject(byte[] dataToBeSigned) throws IOException, GeneralSecurityException;
+    abstract byte[] signObject(byte[] dataToBeSigned);
 
     /*
      * Verify that EC algorithms follow key types as specified by RFC 7515
      */
-    static void checkEcJwsCompliance(Key key, AsymSignatureAlgorithms signatureAlgorithm)
-            throws GeneralSecurityException, IOException {
+    static void checkEcJwsCompliance(Key key, AsymSignatureAlgorithms signatureAlgorithm) {
         if (key instanceof ECKey &&
             KeyAlgorithms.getKeyAlgorithm(key)
                     .getRecommendedSignatureAlgorithm() != signatureAlgorithm) {
-            throw new GeneralSecurityException(
+            throw new CryptoException(
                     "EC key and algorithm does not match the JWS spec");
         } 
     }

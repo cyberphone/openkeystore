@@ -16,8 +16,6 @@
  */
 package org.webpki.keygen2;
 
-import java.io.IOException;
-
 import org.webpki.json.JSONEncoder;
 import org.webpki.json.JSONObjectWriter;
 
@@ -41,7 +39,7 @@ public class ProvisioningFinalizationResponseEncoder extends JSONEncoder {
     }
 
     @Override
-    protected void writeJSONData(JSONObjectWriter wr) throws IOException {
+    protected void writeJSONData(JSONObjectWriter wr) {
         //////////////////////////////////////////////////////////////////////////
         // Session properties
         //////////////////////////////////////////////////////////////////////////

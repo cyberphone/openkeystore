@@ -16,8 +16,6 @@
  */
 package org.webpki.keygen2;
 
-import java.io.IOException;
-
 import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 
@@ -60,18 +58,19 @@ public class ProvisioningInitializationRequestEncoder extends ServerEncoder {
             this.keyManagementKey = keyManagementKey;
         }
 
-        public KeyManagementKeyUpdateHolder update(PublicKey keyManagementKey) 
-                throws IOException, GeneralSecurityException {
+        public KeyManagementKeyUpdateHolder update(PublicKey keyManagementKey) {
             KeyManagementKeyUpdateHolder kmk = new KeyManagementKeyUpdateHolder(keyManagementKey);
-            kmk.authorization = serverState.serverCryptoInterface.generateKeyManagementAuthorization(keyManagementKey,
-                    ArrayUtil.add(SecureKeyStore.KMK_ROLL_OVER_AUTHORIZATION,
-                            this.keyManagementKey.getEncoded()));
+            kmk.authorization = 
+                    serverState.serverCryptoInterface.generateKeyManagementAuthorization(
+                            keyManagementKey,
+                            ArrayUtil.add(SecureKeyStore.KMK_ROLL_OVER_AUTHORIZATION,
+                                          this.keyManagementKey.getEncoded()));
             children.add(kmk);
             return kmk;
         }
 
         public KeyManagementKeyUpdateHolder update(PublicKey keyManagementKey, 
-                                                   byte[] externalAuthorization) throws IOException {
+                                                   byte[] externalAuthorization) {
             KeyManagementKeyUpdateHolder kmk = new KeyManagementKeyUpdateHolder(keyManagementKey);
             kmk.authorization = externalAuthorization;
             try {
@@ -82,10 +81,10 @@ public class ProvisioningInitializationRequestEncoder extends ServerEncoder {
                 kmkVerify.update(SecureKeyStore.KMK_ROLL_OVER_AUTHORIZATION);
                 kmkVerify.update(this.keyManagementKey.getEncoded());
                 if (!kmkVerify.verify(externalAuthorization)) {
-                    throw new IOException("Authorization signature did not validate");
+                    throw new KeyGen2Exception("Authorization signature did not validate");
                 }
             } catch (GeneralSecurityException e) {
-                throw new IOException(e);
+                throw new KeyGen2Exception(e);
             }
             children.add(kmk);
             return kmk;
@@ -96,8 +95,7 @@ public class ProvisioningInitializationRequestEncoder extends ServerEncoder {
 
     public ProvisioningInitializationRequestEncoder(ServerState serverState,
                                                     short sessionLifeTime,
-                                                    short sessionKeyLimit) 
-            throws IOException, GeneralSecurityException {
+                                                    short sessionKeyLimit) {
         serverState.checkState(true, ProtocolPhase.PROVISIONING_INITIALIZATION);
         this.serverState = serverState;
         this.sessionLifeTime = serverState.sessionLifeTime = sessionLifeTime;
@@ -117,7 +115,7 @@ public class ProvisioningInitializationRequestEncoder extends ServerEncoder {
     }
 
 
-    private void scanForUpdatedKeys(JSONObjectWriter wr, KeyManagementKeyUpdateHolder kmk) throws IOException {
+    private void scanForUpdatedKeys(JSONObjectWriter wr, KeyManagementKeyUpdateHolder kmk) {
         if (!kmk.children.isEmpty()) {
             JSONArrayWriter kmkuArr = wr.setArray(UPDATABLE_KEY_MANAGEMENT_KEYS_JSON);
             for (KeyManagementKeyUpdateHolder child : kmk.children) {
@@ -139,7 +137,7 @@ public class ProvisioningInitializationRequestEncoder extends ServerEncoder {
     short sessionKeyLimit;
 
     @Override
-    void writeServerRequest(JSONObjectWriter wr) throws IOException {
+    void writeServerRequest(JSONObjectWriter wr) {
         //////////////////////////////////////////////////////////////////////////
         // Core session properties
         //////////////////////////////////////////////////////////////////////////

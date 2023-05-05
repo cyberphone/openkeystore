@@ -16,10 +16,6 @@
  */
 package org.webpki.json;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
-
 import org.webpki.crypto.X509VerifierInterface;
 
 /**
@@ -41,8 +37,7 @@ public class JSONX509Verifier extends JSONVerifier {
     }
 
     @Override
-    void verify(JSONSignatureDecoder signatureDecoder) throws IOException,
-                                                              GeneralSecurityException {
+    void verify(JSONSignatureDecoder signatureDecoder) {
         verifier.verifyCertificatePath(signatureDecoder.certificatePath);
     }
 }

@@ -16,10 +16,6 @@
  */
 package org.webpki.jose.jws;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
-
 import org.webpki.util.Base64URL;
 import org.webpki.util.UTF8;
 
@@ -32,8 +28,7 @@ public abstract class JWSValidator {
 
     JWSValidator() {}
     
-    abstract void validateObject(byte[] signedData, JWSDecoder jwsDecoder) 
-            throws IOException, GeneralSecurityException;
+    abstract void validateObject(byte[] signedData, JWSDecoder jwsDecoder);
 
     /**
      * Set cryptographic provider.
@@ -54,11 +49,8 @@ public abstract class JWSValidator {
      * @param jwsDecoder Decoded JWS data
      * @param detachedPayload Detached payload
      * @return JwsDecoder
-     * @throws IOException
-     * @throws GeneralSecurityException
      */
-    public JWSDecoder validate(JWSDecoder jwsDecoder, byte[] detachedPayload) 
-            throws IOException, GeneralSecurityException {
+    public JWSDecoder validate(JWSDecoder jwsDecoder, byte[] detachedPayload) {
 
         // Dealing with detached signatures
         if (detachedPayload == null) {
@@ -79,11 +71,8 @@ public abstract class JWSValidator {
      * JWS/CT implicitly builds on the "detached" mode.
      * @param jwsDecoder Decoded JWS data
      * @return JwsDecoder
-     * @throws IOException
-     * @throws GeneralSecurityException
      */
-    public JWSDecoder validate(JWSDecoder jwsDecoder) 
-            throws IOException, GeneralSecurityException {
+    public JWSDecoder validate(JWSDecoder jwsDecoder) {
 
         // Dealing with in-line signatures
         if (jwsDecoder.jwsPayloadB64U == null) {

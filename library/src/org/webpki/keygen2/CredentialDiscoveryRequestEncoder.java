@@ -16,9 +16,6 @@
  */
 package org.webpki.keygen2;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 
 import java.security.interfaces.RSAKey;
@@ -77,35 +74,35 @@ public class CredentialDiscoveryRequestEncoder extends ServerEncoder {
         }
 
 
-        public LookupDescriptor setIssuedBefore(GregorianCalendar issuedBefore) throws IOException {
+        public LookupDescriptor setIssuedBefore(GregorianCalendar issuedBefore) {
             nullCheck(issuedBefore);
             searchFilter = true;
             this.issuedBefore = issuedBefore;
             return this;
         }
 
-        public LookupDescriptor setIssuedAfter(GregorianCalendar issuedAfter) throws IOException {
+        public LookupDescriptor setIssuedAfter(GregorianCalendar issuedAfter) {
             nullCheck(issuedAfter);
             searchFilter = true;
             this.issuedAfter = issuedAfter;
             return this;
         }
 
-        public LookupDescriptor setGrouping(Grouping grouping) throws IOException {
+        public LookupDescriptor setGrouping(Grouping grouping) {
             nullCheck(grouping);
             searchFilter = true;
             this.grouping = grouping;
             return this;
         }
 
-        public LookupDescriptor setAppUsage(AppUsage appUsage) throws IOException {
+        public LookupDescriptor setAppUsage(AppUsage appUsage) {
             nullCheck(appUsage);
             searchFilter = true;
             this.appUsage = appUsage;
             return this;
         }
 
-        void write(JSONObjectWriter wr) throws IOException, GeneralSecurityException {
+        void write(JSONObjectWriter wr) {
             wr.setString(ID_JSON, id);
 
             wr.setBinary(NONCE_JSON, nonce);
@@ -135,12 +132,7 @@ public class CredentialDiscoveryRequestEncoder extends ServerEncoder {
 
         @Override
         public byte[] signData(byte[] data) {
-            try {
-            return serverCryptoInterface.generateKeyManagementAuthorization(
-                    keyManagementKey, data);
-            } catch (GeneralSecurityException | IOException e) {
-                throw new KeyGen2Exception(e);
-            }
+            return serverCryptoInterface.generateKeyManagementAuthorization(keyManagementKey, data);
         }
 
         @Override
@@ -162,7 +154,7 @@ public class CredentialDiscoveryRequestEncoder extends ServerEncoder {
 
     // Constructors
 
-    public CredentialDiscoveryRequestEncoder(ServerState serverState) throws IOException {
+    public CredentialDiscoveryRequestEncoder(ServerState serverState) {
         serverState.checkState(true, ProtocolPhase.CREDENTIAL_DISCOVERY);
         clientSessionId = serverState.clientSessionId;
         serverSessionId = serverState.serverSessionId;
@@ -178,8 +170,7 @@ public class CredentialDiscoveryRequestEncoder extends ServerEncoder {
 
 
     @Override
-    void writeServerRequest(JSONObjectWriter wr) throws IOException,
-                                                        GeneralSecurityException {
+    void writeServerRequest(JSONObjectWriter wr) {
         //////////////////////////////////////////////////////////////////////////
         // Session properties
         //////////////////////////////////////////////////////////////////////////

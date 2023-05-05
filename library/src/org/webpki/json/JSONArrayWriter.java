@@ -16,12 +16,8 @@
  */
 package org.webpki.json;
 
-import java.io.IOException;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
-
-import java.security.GeneralSecurityException;
 
 import java.security.cert.X509Certificate;
 
@@ -63,71 +59,70 @@ public class JSONArrayWriter {
         array = reader.array;
     }
 
-    JSONArrayWriter add(JSONTypes type, Object value) throws IOException {
+    JSONArrayWriter add(JSONTypes type, Object value)  {
         array.add(new JSONValue(type, value));
         return this;
     }
 
-    public JSONArrayWriter setString(String value) throws IOException {
+    public JSONArrayWriter setString(String value)  {
         return add(JSONTypes.STRING, value);
     }
 
-    public JSONArrayWriter setInt(int value) throws IOException {
+    public JSONArrayWriter setInt(int value)  {
         return setInt53(value);
     }
 
-    public JSONArrayWriter setInt53(long value) throws IOException {
+    public JSONArrayWriter setInt53(long value)  {
         return add(JSONTypes.NUMBER, JSONObjectWriter.serializeLong(value));
     }
 
-    public JSONArrayWriter setLong(long value) throws IOException {
+    public JSONArrayWriter setLong(long value)  {
         return setBigInteger(BigInteger.valueOf(value));
     }
 
-    public JSONArrayWriter setMoney(BigDecimal value) throws IOException {
+    public JSONArrayWriter setMoney(BigDecimal value)  {
         return setString(JSONObjectWriter.moneyToString(value, null));
     }
 
-    public JSONArrayWriter setMoney(BigDecimal value, Integer decimals) throws IOException {
+    public JSONArrayWriter setMoney(BigDecimal value, Integer decimals)  {
         return setString(JSONObjectWriter.moneyToString(value, decimals));
     }
 
-    public JSONArrayWriter setBigDecimal(BigDecimal value) throws IOException {
+    public JSONArrayWriter setBigDecimal(BigDecimal value)  {
         return setString(JSONObjectWriter.bigDecimalToString(value));
     }
 
-    public JSONArrayWriter setBigInteger(BigInteger value) throws IOException {
+    public JSONArrayWriter setBigInteger(BigInteger value)  {
         return setString(value.toString());
     }
 
-    public JSONArrayWriter setDouble(double value) throws IOException {
+    public JSONArrayWriter setDouble(double value)  {
         return add(JSONTypes.NUMBER, NumberToJSON.serializeNumber(value));
     }
 
-    public JSONArrayWriter setBoolean(boolean value) throws IOException {
+    public JSONArrayWriter setBoolean(boolean value)  {
         return add(JSONTypes.BOOLEAN, Boolean.toString(value));
     }
 
-    public JSONArrayWriter setNULL() throws IOException {
+    public JSONArrayWriter setNULL()  {
         return add(JSONTypes.NULL, "null");
     }
 
-    public JSONArrayWriter setDateTime(GregorianCalendar dateTime, EnumSet<ISODateTime.DatePatterns> format) throws IOException {
+    public JSONArrayWriter setDateTime(GregorianCalendar dateTime, EnumSet<ISODateTime.DatePatterns> format)  {
         return setString(ISODateTime.encode(dateTime, format));
     }
 
-    public JSONArrayWriter setBinary(byte[] value) throws IOException {
+    public JSONArrayWriter setBinary(byte[] value)  {
         return setString(Base64URL.encode(value));
     }
 
-    JSONObjectWriter createWriteable() throws IOException {
+    JSONObjectWriter createWriteable()  {
         JSONObject dummy = new JSONObject();
         dummy.properties.put(null, new JSONValue(JSONTypes.ARRAY, array));
         return new JSONObjectWriter(dummy);
         
     }
-    public JSONArrayWriter setSignature (JSONSigner signer) throws IOException,
-                                                                   GeneralSecurityException {
+    public JSONArrayWriter setSignature (JSONSigner signer) {
         JSONObjectWriter signatureObject = setObject();
         JSONObjectWriter.coreSign(signer, 
                                   signatureObject,
@@ -136,15 +131,11 @@ public class JSONArrayWriter {
         return this;
     }
 
-    static public JSONArrayWriter createCoreCertificatePath(X509Certificate[] certificatePath) 
-            throws IOException, GeneralSecurityException {
+    static public JSONArrayWriter createCoreCertificatePath(X509Certificate[] certificatePath) {
         JSONArrayWriter arrayWriter = new JSONArrayWriter();
         for (X509Certificate certificate : CertificateUtil.checkCertificatePath(certificatePath)) {
-            try {
-                arrayWriter.setString(Base64URL.encode(certificate.getEncoded()));
-            } catch (GeneralSecurityException e) {
-                throw new IOException(e);
-            }
+             arrayWriter.setString(Base64URL.encode(
+                     CertificateUtil.getBlobFromCertificate(certificate)));
         }
         return arrayWriter;
     }
@@ -153,9 +144,9 @@ public class JSONArrayWriter {
      * Create nested array.<p>
      * This method creates a new array writer at the current position.</p>
      * @return Array writer
-     * @throws IOException
+     * @
      */
-    public JSONArrayWriter setArray() throws IOException {
+    public JSONArrayWriter setArray()  {
         JSONArrayWriter writer = new JSONArrayWriter();
         add(JSONTypes.ARRAY, writer.array);
         return writer;
@@ -166,38 +157,34 @@ public class JSONArrayWriter {
      * This method inserts an existing array writer at the current position.</p>
      * @param writer Instance of array writer
      * @return Array writer
-     * @throws IOException
+     * @
      */
-    public JSONArrayWriter setArray(JSONArrayWriter writer) throws IOException {
+    public JSONArrayWriter setArray(JSONArrayWriter writer)  {
         add(JSONTypes.ARRAY, writer.array);
         return this;
     }
 
-    public JSONObjectWriter setObject() throws IOException {
+    public JSONObjectWriter setObject()  {
         JSONObjectWriter writer = new JSONObjectWriter();
         add(JSONTypes.OBJECT, writer.root);
         return writer;
     }
 
-    public JSONArrayWriter setObject(JSONObjectWriter writer) throws IOException {
+    public JSONArrayWriter setObject(JSONObjectWriter writer)  {
         add(JSONTypes.OBJECT, writer.root);
         return this;
     }
 
-    public String serializeToString(JSONOutputFormats outputFormat) throws IOException {
+    public String serializeToString(JSONOutputFormats outputFormat)  {
         return createWriteable().serializeToString(outputFormat);
     }
 
-    public byte[] serializeToBytes(JSONOutputFormats outputFormat) throws IOException {
+    public byte[] serializeToBytes(JSONOutputFormats outputFormat)  {
         return UTF8.encode(serializeToString(outputFormat));
     }
 
     @Override
     public String toString() {
-        try {
-            return serializeToString(JSONOutputFormats.PRETTY_PRINT);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return serializeToString(JSONOutputFormats.PRETTY_PRINT);
     }
 }

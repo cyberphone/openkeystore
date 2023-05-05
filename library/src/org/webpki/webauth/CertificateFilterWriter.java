@@ -16,14 +16,12 @@
  */
 package org.webpki.webauth;
 
-import java.io.IOException;
-
 import org.webpki.crypto.CertificateFilter;
 
 import org.webpki.json.JSONObjectWriter;
 
 class CertificateFilterWriter {
-    static void write(JSONObjectWriter wr, CertificateFilter cf) throws IOException {
+    static void write(JSONObjectWriter wr, CertificateFilter cf) {
         if (cf.getFingerPrint() != null) {
             wr.setBinary(CertificateFilter.CF_FINGER_PRINT, cf.getFingerPrint());
         }
@@ -38,13 +36,13 @@ class CertificateFilterWriter {
         writeOptionalList(wr, CertificateFilter.CF_EXT_KEY_USAGE_RULES, cf.getExtendedKeyUsageRules());
     }
 
-    static void writeOptionalString(JSONObjectWriter wr, String name, String optional_value) throws IOException {
+    static void writeOptionalString(JSONObjectWriter wr, String name, String optional_value) {
         if (optional_value != null) {
             wr.setString(name, optional_value);
         }
     }
 
-    static void writeOptionalList(JSONObjectWriter wr, String name, String[] optional_values) throws IOException {
+    static void writeOptionalList(JSONObjectWriter wr, String name, String[] optional_values) {
         if (optional_values != null) {
             wr.setStringArray(name, optional_values);
         }

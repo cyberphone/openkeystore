@@ -16,8 +16,6 @@
  */
 package org.webpki.json;
 
-import java.io.IOException;
-
 import java.security.PublicKey;
 
 import org.webpki.crypto.KeyEncryptionAlgorithms;
@@ -31,16 +29,15 @@ public class JSONAsymKeyEncrypter extends JSONEncrypter {
      * Constructor for JCE based solutions.
      * @param publicKey Public key used for encrypting the key
      * @param keyEncryptionAlgorithm The algorithm used for encrypting the key
-     * @throws IOException
      */
     public JSONAsymKeyEncrypter(PublicKey publicKey,
-                                KeyEncryptionAlgorithms keyEncryptionAlgorithm) throws IOException {
+                                KeyEncryptionAlgorithms keyEncryptionAlgorithm) {
         this.publicKey = publicKey;
         this.keyEncryptionAlgorithm = keyEncryptionAlgorithm;
     }
 
     @Override
-    void writeKeyData(JSONObjectWriter wr) throws IOException {
+    void writeKeyData(JSONObjectWriter wr) {
         wr.setPublicKey(publicKey, algorithmPreferences);
     }
 }

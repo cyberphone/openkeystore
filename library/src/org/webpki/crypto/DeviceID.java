@@ -21,7 +21,6 @@ import java.io.IOException;
 
 import java.security.GeneralSecurityException;
 
-import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 
 import org.webpki.util.IO;
@@ -117,8 +116,7 @@ public class DeviceID {
         }
     }
 
-    public static String getDeviceId(byte[] identityBlobOrNull, boolean longVersion) 
-            throws IOException, GeneralSecurityException {
+    public static String getDeviceId(byte[] identityBlobOrNull, boolean longVersion) {
         if (identityBlobOrNull != null) {
             byte[] hash = HashAlgorithms.SHA1.digest(identityBlobOrNull);
             return getDeviceIdFromHash(longVersion ? hash : half(hash));
@@ -126,19 +124,19 @@ public class DeviceID {
         return "N/A";
     }
 
-    public static String getDeviceId(X509Certificate deviceCertificateOrNull, boolean longVersion) 
-            throws CertificateEncodingException, IOException, GeneralSecurityException {
-        return getDeviceId(deviceCertificateOrNull == null ? null : deviceCertificateOrNull.getEncoded(), longVersion);
+    public static String getDeviceId(X509Certificate deviceCertificateOrNull, boolean longVersion) {
+        return getDeviceId(deviceCertificateOrNull == null ? 
+                null : CertificateUtil.getBlobFromCertificate(deviceCertificateOrNull), longVersion);
     }
 
-    public static void validateDeviceID(String deviceId) throws IOException {
+    public static void validateDeviceID(String deviceId) {
         int bytes = 20;
         int characters = 32;
         if (deviceId.length() == 20) {
             bytes = 10;
             characters = 16;
         } else if (deviceId.length() != 36) {
-            throw new IOException("DeviceID must be 20 or 36 characters");
+            throw new CryptoException("DeviceID must be 20 or 36 characters");
         }
         byte[] hash = new byte[bytes];
         int q = 0;
@@ -146,7 +144,7 @@ public class DeviceID {
         for (int i = 0; i < characters; i++) {
             char c = deviceId.charAt(i);
             if (c > 255 || (c = REVERSE_BASE32[c]) < 0) {
-                throw new IOException("Illigal DeviceID character: " + c);
+                throw new CryptoException("Illigal DeviceID character: " + c);
             }
             if (bitPosition < 4) {
                 if (bitPosition == 0) {
@@ -163,7 +161,7 @@ public class DeviceID {
             bitPosition = (bitPosition + 5) % 8;
         }
         if (!deviceId.equals(getDeviceIdFromHash(hash))) {
-            throw new IOException("DeviceID checksum error");
+            throw new CryptoException("DeviceID checksum error");
         }
     }
 

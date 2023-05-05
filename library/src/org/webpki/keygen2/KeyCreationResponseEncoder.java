@@ -16,8 +16,6 @@
  */
 package org.webpki.keygen2;
 
-import java.io.IOException;
-
 import java.util.ArrayList;
 
 import java.security.PublicKey;
@@ -53,21 +51,21 @@ public class KeyCreationResponseEncoder extends JSONEncoder {
     }
 
 
-    public void addPublicKey(PublicKey publicKey, byte[] attestation, String id) throws IOException {
+    public void addPublicKey(PublicKey publicKey, byte[] attestation, String id) {
         GeneratedPublicKey gk = new GeneratedPublicKey(id);
         gk.publicKey = publicKey;
         gk.attestation = attestation;
     }
 
 
-    public KeyCreationResponseEncoder(KeyCreationRequestDecoder keyCreationRequestDecoder) throws IOException {
+    public KeyCreationResponseEncoder(KeyCreationRequestDecoder keyCreationRequestDecoder) {
         clientSessionId = keyCreationRequestDecoder.getClientSessionId();
         serverSessionId = keyCreationRequestDecoder.getServerSessionId();
     }
 
 
     @Override
-    protected void writeJSONData(JSONObjectWriter wr) throws IOException {
+    protected void writeJSONData(JSONObjectWriter wr) {
         //////////////////////////////////////////////////////////////////////////
         // Session properties
         //////////////////////////////////////////////////////////////////////////

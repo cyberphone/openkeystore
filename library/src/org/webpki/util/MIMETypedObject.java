@@ -16,13 +16,10 @@
  */
 package org.webpki.util;
 
-import java.io.IOException;
-
-
 public interface MIMETypedObject {
 
-    public byte[] getData() throws IOException;
+    public byte[] getData();
 
-    public String getMimeType() throws IOException;
+    public String getMimeType();
 
 }

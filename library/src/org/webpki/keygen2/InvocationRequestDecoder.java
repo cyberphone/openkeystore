@@ -16,8 +16,6 @@
  */
 package org.webpki.keygen2;
 
-import java.io.IOException;
-
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -75,7 +73,7 @@ public class InvocationRequestDecoder extends ClientDecoder {
 
 
     @Override
-    void readServerRequest(JSONObjectReader rd) throws IOException {
+    void readServerRequest(JSONObjectReader rd) {
         /////////////////////////////////////////////////////////////////////////////////////////
         // Session properties
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -83,13 +81,15 @@ public class InvocationRequestDecoder extends ClientDecoder {
 
         languages = rd.getStringArrayConditional(PREFERREDD_LANGUAGES_JSON);
 
-        keyContainerList = KeyContainerTypes.getOptionalKeyContainerSet(rd.getStringArrayConditional(KeyContainerTypes.KCT_TARGET_KEY_CONTAINERS));
+        keyContainerList = KeyContainerTypes.getOptionalKeyContainerSet(
+                rd.getStringArrayConditional(KeyContainerTypes.KCT_TARGET_KEY_CONTAINERS));
 
         privacyEnabled = rd.getBooleanConditional(PRIVACY_ENABLED_JSON);
 
         serverSessionId = getID(rd, SERVER_SESSION_ID_JSON);
 
-        String[] capabilityUris = KeyGen2Validator.getURIListConditional(rd, CLIENT_CAPABILITY_QUERY_JSON);
+        String[] capabilityUris = 
+                KeyGen2Validator.getURIListConditional(rd, CLIENT_CAPABILITY_QUERY_JSON);
         if (capabilityUris != null) {
             for (String uri : capabilityUris) {
                 if (queriedCapabilities.put(uri, CAPABILITY.UNDEFINED) != null) {

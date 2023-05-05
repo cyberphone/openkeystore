@@ -16,10 +16,6 @@
  */
 package org.webpki.json;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
-
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.SignatureAlgorithms;
 
@@ -43,11 +39,11 @@ public abstract class JSONSigner extends JSONCryptoHelper.ExtensionsEncoder {
     JSONSigner() {
     }
     
-    abstract SignatureAlgorithms getAlgorithm() throws IOException, GeneralSecurityException;
+    abstract SignatureAlgorithms getAlgorithm();
     
-    abstract byte[] signData(byte[] data) throws IOException, GeneralSecurityException;
+    abstract byte[] signData(byte[] data);
 
-    abstract void writeKeyData(JSONObjectWriter wr) throws IOException, GeneralSecurityException;
+    abstract void writeKeyData(JSONObjectWriter wr);
 
     /**
      * Set (object level) list of permitted extension elements.
@@ -55,9 +51,8 @@ public abstract class JSONSigner extends JSONCryptoHelper.ExtensionsEncoder {
      * scenario
      * @param names A list of permitted extensions 
      * @return <code>this</code>
-     * @throws IOException
      */
-    public JSONSigner setExtensionNames(String[] names) throws IOException {
+    public JSONSigner setExtensionNames(String[] names) {
         super.setExtensionNames(names, false);
         return this;
     }
@@ -66,9 +61,8 @@ public abstract class JSONSigner extends JSONCryptoHelper.ExtensionsEncoder {
      * Set specific extension data for this signature.
      * @param extensions JSON object holding the extension properties and associated values
      * @return <code>this</code>
-     * @throws IOException
-     */
-    public JSONSigner setExtensionData(JSONObjectWriter extensions) throws IOException {
+      */
+    public JSONSigner setExtensionData(JSONObjectWriter extensions) {
         this.extensionData = new JSONObjectReader(extensions);
         JSONCryptoHelper.checkExtensions(this.extensionData.getProperties(), false);
         return this;
@@ -78,9 +72,8 @@ public abstract class JSONSigner extends JSONCryptoHelper.ExtensionsEncoder {
      * Set &quot;excl&quot; for this signature.
      * @param excluded Array holding the names of properties that must be excluded from the signature
      * @return <code>this</code>
-     * @throws IOException
-     */
-    public JSONSigner setExcluded(String[] excluded) throws IOException {
+      */
+    public JSONSigner setExcluded(String[] excluded) {
         this.excluded = excluded;
         JSONSignatureDecoder.checkExcluded(excluded);
         return this;

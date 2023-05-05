@@ -16,8 +16,6 @@
  */
 package org.webpki.sks;
 
-import java.io.IOException;
-
 public enum PassphraseFormat {
 
     NUMERIC      ("numeric",      SecureKeyStore.PASSPHRASE_FORMAT_NUMERIC),
@@ -43,13 +41,13 @@ public enum PassphraseFormat {
         return sksValue;
     }
 
-    public static PassphraseFormat getPassphraseFormatFromString(String name) throws IOException {
+    public static PassphraseFormat getPassphraseFormatFromString(String name) {
         for (PassphraseFormat type : PassphraseFormat.values()) {
             if (name.equals(type.name)) {
                 return type;
             }
         }
-        throw new IOException("Unknown \"" + SecureKeyStore.VAR_FORMAT + "\": " + name);
+        throw new SKSException("Unknown \"" + SecureKeyStore.VAR_FORMAT + "\": " + name);
     }
 
 }

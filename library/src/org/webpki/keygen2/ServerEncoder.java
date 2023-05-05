@@ -16,11 +16,7 @@
  */
 package org.webpki.keygen2;
 
-import java.io.IOException;
-
 import java.math.BigInteger;
-
-import java.security.GeneralSecurityException;
 
 import java.util.GregorianCalendar;
 
@@ -32,8 +28,7 @@ import org.webpki.util.ISODateTime;
 
 abstract class ServerEncoder extends JSONEncoder {
 
-    abstract void writeServerRequest(JSONObjectWriter wr) throws IOException,
-                                                                 GeneralSecurityException;
+    abstract void writeServerRequest(JSONObjectWriter wr);
 
     final void bad(String message) {
         throw new CryptoException(message);
@@ -45,30 +40,29 @@ abstract class ServerEncoder extends JSONEncoder {
     }
 
     @Override
-    final protected void writeJSONData(JSONObjectWriter wr) throws IOException,
-                                                                   GeneralSecurityException {
+    final protected void writeJSONData(JSONObjectWriter wr) {
         writeServerRequest(wr);
     }
 
-    void setOptionalString(JSONObjectWriter wr, String name, String value) throws IOException {
+    void setOptionalString(JSONObjectWriter wr, String name, String value) {
         if (value != null) {
             wr.setString(name, value);
         }
     }
 
-    void setOptionalStringArray(JSONObjectWriter wr, String name, String[] values) throws IOException {
+    void setOptionalStringArray(JSONObjectWriter wr, String name, String[] values) {
         if (values != null) {
             wr.setStringArray(name, values);
         }
     }
 
-    void setOptionalBigInteger(JSONObjectWriter wr, String name, BigInteger value) throws IOException {
+    void setOptionalBigInteger(JSONObjectWriter wr, String name, BigInteger value) {
         if (value != null) {
             wr.setBigInteger(name, value);
         }
     }
 
-    void setOptionalBinary(JSONObjectWriter wr, String name, byte[] value) throws IOException {
+    void setOptionalBinary(JSONObjectWriter wr, String name, byte[] value) {
         if (value != null) {
             wr.setBinary(name, value);
         }
@@ -76,7 +70,7 @@ abstract class ServerEncoder extends JSONEncoder {
 
     void setOptionalDateTime(JSONObjectWriter wr, 
                              String name, 
-                             GregorianCalendar dateTime) throws IOException {
+                             GregorianCalendar dateTime) {
         if (dateTime != null) {
             wr.setDateTime(name, dateTime, ISODateTime.UTC_NO_SUBSECONDS);  // Server UTC
         }

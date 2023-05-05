@@ -16,17 +16,15 @@
  */
 package org.webpki.webauth;
 
-import java.io.IOException;
-
 import org.webpki.crypto.CertificateFilter;
-
+import org.webpki.crypto.CryptoException;
 import org.webpki.json.JSONObjectReader;
 
 
 class CertificateFilterReader {
-    static CertificateFilter read(JSONObjectReader rd) throws IOException {
+    static CertificateFilter read(JSONObjectReader rd) {
         if (rd.getProperties().length == 0) {
-            throw new IOException("Empty certificate filter not allowed");
+            throw new CryptoException("Empty certificate filter not allowed");
         }
         CertificateFilter cf = new CertificateFilter();
         cf.setFingerPrint(rd.getBinaryConditional(CertificateFilter.CF_FINGER_PRINT));

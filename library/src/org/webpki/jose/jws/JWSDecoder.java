@@ -16,15 +16,13 @@
  */
 package org.webpki.jose.jws;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 
 import java.security.cert.X509Certificate;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
+import org.webpki.crypto.CryptoException;
 import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.SignatureAlgorithms;
 
@@ -63,20 +61,20 @@ public class JWSDecoder {
     
     String optionalKeyId;
     
-    private void checkValidation() throws GeneralSecurityException {
+    private void checkValidation() {
         if (!validated) {
-            throw new GeneralSecurityException("Trying to access payload before validation");
+            throw new CryptoException("Trying to access payload before validation");
         }        
     }
     
-    private void decodeJWSString(String jwsString) throws GeneralSecurityException, IOException {
+    private void decodeJWSString(String jwsString) {
 
         // Extract the JWS elements
         int endOfHeader = jwsString.indexOf('.');
         int startOfSignature = jwsString.lastIndexOf('.');
         if (endOfHeader == startOfSignature - 1)
         if (endOfHeader < 10 ||  startOfSignature > jwsString.length() - 10) {
-            throw new GeneralSecurityException("JWS syntax error");
+            throw new CryptoException("JWS syntax error");
         }
         if (endOfHeader < startOfSignature - 1) {
             // In-line signature
@@ -119,7 +117,7 @@ public class JWSDecoder {
         // Decode possible X5C?
         if (jwsHeader.hasProperty(X5C_JSON)) {
             if (optionalPublicKey != null) {
-                throw new GeneralSecurityException("Both X5C and JWK?");
+                throw new CryptoException("Both X5C and JWK?");
             }
             JSONArrayWriter path = new JSONArrayWriter();
             for (String certB64 : jwsHeader.getStringArray(X5C_JSON)) {
@@ -133,7 +131,7 @@ public class JWSDecoder {
             optionalPublicKey = optionalCertificatePath[0].getPublicKey();
         }
         if (signatureAlgorithm.isSymmetric() && optionalPublicKey != null) {
-            throw new GeneralSecurityException("Mix of symmetric and asymmetric elements?");
+            throw new CryptoException("Mix of symmetric and asymmetric elements?");
         }
         
         // Decode possible KID
@@ -143,10 +141,8 @@ public class JWSDecoder {
     /**
      * JWS compact mode signature decoder.
      * @param jwsString The actual JWS string.  If there is no payload detached mode is assumed
-     * @throws IOException
-     * @throws GeneralSecurityException
      */
-    public JWSDecoder(String jwsString) throws IOException, GeneralSecurityException {
+    public JWSDecoder(String jwsString) {
         decodeJWSString(jwsString);
     }
 
@@ -155,17 +151,14 @@ public class JWSDecoder {
      * Note that the <code>jwsCtObject</code> remains <i>unmodified</i>.
      * @param jwsCtObject The signed JSON object
      * @param signatureProperty Name of top-level property holding the JWS string
-     * @throws IOException
-     * @throws GeneralSecurityException
      */
-    public JWSDecoder(JSONObjectReader jwsCtObject, String signatureProperty) 
-            throws IOException, GeneralSecurityException {
+    public JWSDecoder(JSONObjectReader jwsCtObject, String signatureProperty) {
 
         // Do not alter the original!
         savedJWSCtObject = jwsCtObject.clone();
         String jwsString = savedJWSCtObject.getString(signatureProperty);
         if (!jwsString.contains("..")) {
-            throw new GeneralSecurityException("JWS detached mode syntax error");
+            throw new CryptoException("JWS detached mode syntax error");
         }
         savedJWSCtObject.removeProperty(signatureProperty);
         jwsPayloadB64U = Base64URL.encode(
@@ -233,10 +226,8 @@ public class JWSDecoder {
     * {@link org.webpki.jose.jws.JWSDecoder#JWSDecoder(JSONObjectReader, String) signatureProperty}
      * removed.
      * @return Payload binary
-     * @throws GeneralSecurityException
-     * @throws IOException
      */
-    public byte[] getPayload() throws GeneralSecurityException, IOException {
+    public byte[] getPayload() {
         checkValidation();
         return Base64URL.decode(jwsPayloadB64U);
     }
@@ -252,10 +243,8 @@ public class JWSDecoder {
     * {@link org.webpki.jose.jws.JWSDecoder#JWSDecoder(JSONObjectReader, String) signatureProperty}
      * and its JWS argument.
      * @return Payload as JSON
-     * @throws GeneralSecurityException
-     * @throws IOException
      */
-    public JSONObjectReader getPayloadAsJson() throws GeneralSecurityException, IOException {
+    public JSONObjectReader getPayloadAsJson() {
         if (savedJWSCtObject == null) {
             return JSONParser.parse(getPayload());
         }

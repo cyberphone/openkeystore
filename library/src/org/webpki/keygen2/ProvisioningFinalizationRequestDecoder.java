@@ -16,15 +16,14 @@
  */
 package org.webpki.keygen2;
 
-import java.io.IOException;
-
 import java.util.ArrayList;
-import java.security.GeneralSecurityException;
+
 import java.security.cert.X509Certificate;
 
 import org.webpki.sks.SecureKeyStore;
 
 import org.webpki.util.ArrayUtil;
+import org.webpki.util.UTF8;
 
 import org.webpki.crypto.CertificateFilter;
 
@@ -110,13 +109,13 @@ public class ProvisioningFinalizationRequestDecoder extends ClientDecoder {
 
         public abstract byte getSubType();
 
-        public String getQualifier() throws IOException {
+        public String getQualifier() {
             return "";
         }
 
-        public abstract byte[] getExtensionData() throws IOException;
+        public abstract byte[] getExtensionData();
 
-        Extension(JSONObjectReader rd, IssuedCredential cpk) throws IOException {
+        Extension(JSONObjectReader rd, IssuedCredential cpk) {
             type = rd.getString(TYPE_JSON);
             mac = KeyGen2Validator.getMac(rd);
             cpk.extensions.add(this);
@@ -128,7 +127,7 @@ public class ProvisioningFinalizationRequestDecoder extends ClientDecoder {
 
         byte[] data;
 
-        StandardExtension(JSONObjectReader rd, IssuedCredential cpk) throws IOException {
+        StandardExtension(JSONObjectReader rd, IssuedCredential cpk) {
             super(rd, cpk);
             data = rd.getBinary(EXTENSION_DATA_JSON);
         }
@@ -140,7 +139,7 @@ public class ProvisioningFinalizationRequestDecoder extends ClientDecoder {
 
 
         @Override
-        public byte[] getExtensionData() throws IOException {
+        public byte[] getExtensionData() {
             return data;
         }
     }
@@ -150,7 +149,7 @@ public class ProvisioningFinalizationRequestDecoder extends ClientDecoder {
 
         byte[] data;
 
-        EncryptedExtension(JSONObjectReader rd, IssuedCredential cpk) throws IOException {
+        EncryptedExtension(JSONObjectReader rd, IssuedCredential cpk) {
             super(rd, cpk);
             this.data = rd.getBinary(EXTENSION_DATA_JSON);
         }
@@ -163,7 +162,7 @@ public class ProvisioningFinalizationRequestDecoder extends ClientDecoder {
 
 
         @Override
-        public byte[] getExtensionData() throws IOException {
+        public byte[] getExtensionData() {
             return data;
         }
     }
@@ -185,7 +184,7 @@ public class ProvisioningFinalizationRequestDecoder extends ClientDecoder {
 
         ArrayList<Property> properties = new ArrayList<>();
 
-        PropertyBag(JSONObjectReader rd, IssuedCredential cpk) throws IOException {
+        PropertyBag(JSONObjectReader rd, IssuedCredential cpk) {
             super(rd, cpk);
             JSONArrayReader props = rd.getArray(PROPERTIES_JSON);
             do {
@@ -204,13 +203,13 @@ public class ProvisioningFinalizationRequestDecoder extends ClientDecoder {
         }
 
 
-        private byte[] getStringData(String string) throws IOException {
-            byte[] data = string.getBytes("UTF-8");
+        private byte[] getStringData(String string) {
+            byte[] data = UTF8.encode(string);
             return ArrayUtil.add(new byte[]{(byte) (data.length >>> 8), (byte) data.length}, data);
         }
 
         @Override
-        public byte[] getExtensionData() throws IOException {
+        public byte[] getExtensionData() {
             byte[] total = new byte[0];
             for (Property property : properties) {
                 total = ArrayUtil.add(total,
@@ -229,7 +228,7 @@ public class ProvisioningFinalizationRequestDecoder extends ClientDecoder {
 
         String mimeType;
 
-        Logotype(JSONObjectReader rd, IssuedCredential cpk) throws IOException {
+        Logotype(JSONObjectReader rd, IssuedCredential cpk) {
             super(rd, cpk);
             mimeType = rd.getString(MIME_TYPE_JSON);
             data = rd.getBinary(EXTENSION_DATA_JSON);
@@ -246,7 +245,7 @@ public class ProvisioningFinalizationRequestDecoder extends ClientDecoder {
         }
 
         @Override
-        public byte[] getExtensionData() throws IOException {
+        public byte[] getExtensionData() {
             return data;
         }
     }
@@ -278,7 +277,7 @@ public class ProvisioningFinalizationRequestDecoder extends ClientDecoder {
         }
 
 
-        IssuedCredential(JSONObjectReader rd) throws IOException, GeneralSecurityException {
+        IssuedCredential(JSONObjectReader rd) {
             id = rd.getString(ID_JSON);
             certificatePath = rd.getCertificatePath();
             mac = KeyGen2Validator.getMac(rd);
@@ -286,7 +285,8 @@ public class ProvisioningFinalizationRequestDecoder extends ClientDecoder {
             trustAnchor = rd.getBooleanConditional(TRUST_ANCHOR_JSON);
             if (trustAnchor) {
                 if (certificatePath[certificatePath.length - 1].getBasicConstraints() < 0) {
-                    throw new IOException("The \"" + TRUST_ANCHOR_JSON + "\" option requires a CA certificate");
+                    throw new KeyGen2Exception("The \"" +
+                                               TRUST_ANCHOR_JSON + "\" option requires a CA certificate");
                 }
             }
 
@@ -372,7 +372,7 @@ public class ProvisioningFinalizationRequestDecoder extends ClientDecoder {
 
     }
 
-    private PostOperation readPostOperation(JSONObjectReader rd, int postOp) throws IOException {
+    private PostOperation readPostOperation(JSONObjectReader rd, int postOp) {
         return new PostOperation(KeyGen2Validator.getID(rd, CLIENT_SESSION_ID_JSON),
                                  KeyGen2Validator.getID(rd, SERVER_SESSION_ID_JSON),
                                  rd.getBinary(CertificateFilter.CF_FINGER_PRINT),
@@ -432,7 +432,7 @@ public class ProvisioningFinalizationRequestDecoder extends ClientDecoder {
 
 
     @Override
-    void readServerRequest(JSONObjectReader rd) throws IOException, GeneralSecurityException {
+    void readServerRequest(JSONObjectReader rd) {
         /////////////////////////////////////////////////////////////////////////////////////////
         // Session properties
         /////////////////////////////////////////////////////////////////////////////////////////

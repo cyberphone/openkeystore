@@ -16,8 +16,6 @@
  */
 package org.webpki.sks;
 
-import java.io.IOException;
-
 public enum AppUsage {
 
     SIGNATURE      ("signature",      SecureKeyStore.APP_USAGE_SIGNATURE),
@@ -45,12 +43,12 @@ public enum AppUsage {
     }
 
 
-    public static AppUsage getAppUsageFromString(String name) throws IOException {
+    public static AppUsage getAppUsageFromString(String name) {
         for (AppUsage appUsage : AppUsage.values()) {
             if (name.equals(appUsage.name)) {
                 return appUsage;
             }
         }
-        throw new IOException("Unknown \"" + SecureKeyStore.VAR_APP_USAGE + "\": " + name);
+        throw new SKSException("Unknown \"" + SecureKeyStore.VAR_APP_USAGE + "\": " + name);
     }
 }

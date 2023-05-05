@@ -16,8 +16,6 @@
  */
 package org.webpki.json;
 
-import java.io.IOException;
-
 import java.util.ArrayList;
 
 import java.util.regex.Pattern;
@@ -52,7 +50,7 @@ public class JSONParser {
     JSONParser() {
     }
 
-    JSONObjectReader internalParse(String jsonString) throws IOException {
+    JSONObjectReader internalParse(String jsonString) {
         jsonData = jsonString;
         maxLength = jsonData.length();
         JSONObject root = new JSONObject();
@@ -65,7 +63,7 @@ public class JSONParser {
         }
         while (index < maxLength) {
             if (!isWhiteSpace(jsonData.charAt(index++))) {
-                throw new IOException("Improperly terminated JSON object");
+                throw new JSONException("Improperly terminated JSON object");
             }
         }
         return new JSONObjectReader(root);
@@ -75,9 +73,8 @@ public class JSONParser {
      * Parse JSON string data.
      * @param jsonString The data to be parsed in UTF-8
      * @return JSONObjectReader
-     * @throws IOException
      */
-    public static JSONObjectReader parse(String jsonString) throws IOException {
+    public static JSONObjectReader parse(String jsonString) {
         return new JSONParser().internalParse(jsonString);
     }
 
@@ -85,9 +82,8 @@ public class JSONParser {
      * Parse JSON byte array data.
      * @param jsonBytes The data to be parsed in UTF-8
      * @return JSONObjectReader
-     * @throws IOException
      */
-    public static JSONObjectReader parse(byte[] jsonBytes) throws IOException {
+    public static JSONObjectReader parse(byte[] jsonBytes) {
         return parse(UTF8.decode(jsonBytes));
     }
 
@@ -101,7 +97,7 @@ public class JSONParser {
         strictNumericMode = strict;
     }
 
-    JSONValue scanElement() throws IOException {
+    JSONValue scanElement() {
         switch (scan()) {
             case LEFT_CURLY_BRACKET:
                 return scanObject(new JSONObject());
@@ -117,7 +113,7 @@ public class JSONParser {
         }
     }
 
-    JSONValue scanObject(JSONObject holder) throws IOException {
+    JSONValue scanObject(JSONObject holder) {
         boolean next = false;
         while (testNextNonWhiteSpaceChar() != RIGHT_CURLY_BRACKET) {
             if (next) {
@@ -133,7 +129,7 @@ public class JSONParser {
         return new JSONValue(JSONTypes.OBJECT, holder);
     }
 
-    JSONValue scanArray() throws IOException {
+    JSONValue scanArray() {
         ArrayList<JSONValue> array = new ArrayList<>();
         boolean next = false;
         while (testNextNonWhiteSpaceChar() != RIGHT_BRACKET) {
@@ -148,7 +144,7 @@ public class JSONParser {
         return new JSONValue(JSONTypes.ARRAY, array);
     }
 
-    JSONValue scanSimpleType() throws IOException {
+    JSONValue scanSimpleType() {
         index--;
         StringBuilder tempBuffer = new StringBuilder();
         char c;
@@ -160,7 +156,7 @@ public class JSONParser {
         }
         String token = tempBuffer.toString();
         if (token.length() == 0) {
-            throw new IOException("Missing argument");
+            throw new JSONException("Missing argument");
         }
         JSONTypes type = JSONTypes.NUMBER;
         if (NUMBER_PATTERN.matcher(token).matches()) {
@@ -168,7 +164,7 @@ public class JSONParser {
             if (strictNumericMode) {
                 String serializedNumber = NumberToJSON.serializeNumber(number);
                 if (!serializedNumber.equals(token)) {
-                    throw new IOException("In the \"strict\" mode JSON Numbers must be fully normalized " +
+                    throw new JSONException("In the \"strict\" mode JSON Numbers must be fully normalized " +
                                           "according to ECMAScript.  As a consequence " + token + 
                                           " must be expressed as " + serializedNumber);
                 }
@@ -181,17 +177,17 @@ public class JSONParser {
         } else if (token.equals("null")) {
             type = JSONTypes.NULL;
         } else {
-            throw new IOException("Unrecognized or malformed JSON token: " + token);
+            throw new JSONException("Unrecognized or malformed JSON token: " + token);
         }
         return new JSONValue(type, token);
     }
 
-    JSONValue scanQuotedString() throws IOException {
+    JSONValue scanQuotedString() {
         StringBuilder result = new StringBuilder();
         while (true) {
             char c = nextChar();
             if (c < ' ') {
-                throw new IOException(c == '\n' ?
+                throw new JSONException(c == '\n' ?
                         "Unterminated string literal" : "Unescaped control character: 0x" + Integer.toString(c, 16));
             }
             if (c == DOUBLE_QUOTE) {
@@ -232,7 +228,7 @@ public class JSONParser {
                         break;
 
                     default:
-                        throw new IOException("Unsupported escape:" + c);
+                        throw new JSONException("Unsupported escape:" + c);
                 }
             }
             result.append(c);
@@ -240,7 +236,7 @@ public class JSONParser {
         return new JSONValue(JSONTypes.STRING, result.toString());
     }
 
-    char getHexChar() throws IOException {
+    char getHexChar() {
         char c = nextChar();
         switch (c) {
             case '0':
@@ -271,35 +267,35 @@ public class JSONParser {
             case 'F':
                 return (char) (c - 'A' + 10);
         }
-        throw new IOException("Bad hex in \\u escape: " + c);
+        throw new JSONException("Bad hex in \\u escape: " + c);
     }
 
-    char testNextNonWhiteSpaceChar() throws IOException {
+    char testNextNonWhiteSpaceChar() {
         int save = index;
         char c = scan();
         index = save;
         return c;
     }
 
-    void scanFor(char expected) throws IOException {
+    void scanFor(char expected) {
         char c = scan();
         if (c != expected) {
-            throw new IOException("Expected '" + expected + "' but got '" + c + "'");
+            throw new JSONException("Expected '" + expected + "' but got '" + c + "'");
         }
     }
 
-    char nextChar() throws IOException {
+    char nextChar() {
         if (index < maxLength) {
             return jsonData.charAt(index++);
         }
-        throw new IOException("Unexpected EOF reached");
+        throw new JSONException("Unexpected EOF reached");
     }
 
     boolean isWhiteSpace(char c) {
         return c == 0x20 || c == 0x0A || c == 0x0D || c == 0x09;
     }
 
-    char scan() throws IOException {
+    char scan() {
         while (true) {
             char c = nextChar();
             if (isWhiteSpace(c)) {

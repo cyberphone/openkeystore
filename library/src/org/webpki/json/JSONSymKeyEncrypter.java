@@ -16,8 +16,6 @@
  */
 package org.webpki.json;
 
-import java.io.IOException;
-
 /**
  * Initiator object for symmetric key encryptions.
  */
@@ -26,14 +24,13 @@ public class JSONSymKeyEncrypter extends JSONEncrypter {
      /**
      * Constructor for JCE based solutions.
      * @param contentEncryptionKey Symmetric key
-     * @throws IOException
      */
-    public JSONSymKeyEncrypter(byte[] contentEncryptionKey) throws IOException {
+    public JSONSymKeyEncrypter(byte[] contentEncryptionKey) {
         this.contentEncryptionKey = contentEncryptionKey;
         this.keyEncryptionAlgorithm = null;
     }
 
     @Override
-    void writeKeyData(JSONObjectWriter wr) throws IOException {
+    void writeKeyData(JSONObjectWriter wr) {
     }
 }

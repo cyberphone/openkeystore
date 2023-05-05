@@ -16,7 +16,6 @@
  */
 package org.webpki.sks;
 
-import java.io.IOException;
 import java.util.Set;
 
 public enum PatternRestriction {
@@ -48,13 +47,13 @@ public enum PatternRestriction {
     }
 
 
-    public static PatternRestriction getPatternRestrictionFromString(String name) throws IOException {
+    public static PatternRestriction getPatternRestrictionFromString(String name) {
         for (PatternRestriction restriction : PatternRestriction.values()) {
             if (name.equals(restriction.name)) {
                 return restriction;
             }
         }
-        throw new IOException("Unknown \"" + SecureKeyStore.VAR_PATTERN_RESTRICTIONS + "\": " + name);
+        throw new SKSException("Unknown \"" + SecureKeyStore.VAR_PATTERN_RESTRICTIONS + "\": " + name);
     }
 
 

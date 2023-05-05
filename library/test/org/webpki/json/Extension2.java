@@ -16,14 +16,12 @@
  */
 package org.webpki.json;
 
-import java.io.IOException;
-
 public class Extension2 extends JSONCryptoHelper.Extension {
     
     String value;
 
     @Override
-    protected void decode(JSONObjectReader rd) throws IOException {
+    protected void decode(JSONObjectReader rd) {
         value = String.valueOf(rd.getObject(getExtensionUri()).getBoolean("life-is-great"));
     }
 

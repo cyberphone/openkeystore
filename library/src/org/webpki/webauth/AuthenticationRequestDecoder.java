@@ -16,8 +16,6 @@
  */
 package org.webpki.webauth;
 
-import java.io.IOException;
-
 import java.util.GregorianCalendar;
 import java.util.LinkedHashSet;
 import java.util.ArrayList;
@@ -103,7 +101,7 @@ public class AuthenticationRequestDecoder extends ClientDecoder {
     /////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
-    void readServerRequest(JSONObjectReader rd) throws IOException {
+    void readServerRequest(JSONObjectReader rd) {
         /////////////////////////////////////////////////////////////////////////////////////////
         // Read the top level properties
         /////////////////////////////////////////////////////////////////////////////////////////

@@ -16,15 +16,13 @@
  */
 package org.webpki.webauth;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
 
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
+import org.webpki.crypto.CertificateUtil;
 import org.webpki.crypto.HashAlgorithms;
 
 import org.webpki.json.JSONArrayWriter;
@@ -55,17 +53,14 @@ public class AuthenticationResponseEncoder extends JSONEncoder {
     public AuthenticationResponseEncoder(JSONX509Signer signer,
                                          AuthenticationRequestDecoder auth_req_decoder,
                                          GregorianCalendar clientTime,
-                                         X509Certificate server_certificate) throws IOException {
+                                         X509Certificate server_certificate) {
         this.signer = signer;
         this.id = auth_req_decoder.getID();
         this.serverTime = auth_req_decoder.getServerTime();
         this.clientTime = clientTime;
         if (server_certificate != null) {
-            try {
-                this.serverCertificateFingerprint = HashAlgorithms.SHA256.digest(server_certificate.getEncoded());
-            } catch (GeneralSecurityException e) {
-                throw new IOException(e);
-            }
+            this.serverCertificateFingerprint = 
+                    HashAlgorithms.SHA256.digest(CertificateUtil.getBlobFromCertificate(server_certificate));
         }
     }
 
@@ -79,8 +74,7 @@ public class AuthenticationResponseEncoder extends JSONEncoder {
     }
 
     @Override
-    protected void writeJSONData(JSONObjectWriter wr)
-            throws IOException, GeneralSecurityException {
+    protected void writeJSONData(JSONObjectWriter wr) {
         wr.setString(ID_JSON, id);
 
         wr.setDateTime(SERVER_TIME_JSON, serverTime, ISODateTime.UTC_NO_SUBSECONDS);

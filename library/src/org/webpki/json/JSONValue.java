@@ -16,8 +16,6 @@
  */
 package org.webpki.json;
 
-import java.io.IOException;
-
 /**
  * Local support class for holding individual values of JSON objects.
  */
@@ -31,11 +29,11 @@ class JSONValue {
 
     boolean readFlag;  // For verifying that we didn't forgot something
 
-    JSONValue(JSONTypes type, Object value) throws IOException {
+    JSONValue(JSONTypes type, Object value) {
         this.type = type;
         this.value = value;
         if (value == null) {
-            throw new IOException("Value of type " + type.toString() + " must not be null");
+            throw new JSONException("Value of type " + type.toString() + " must not be null");
         }
     }
 }

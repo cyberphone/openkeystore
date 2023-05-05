@@ -5,6 +5,8 @@
   <property name="android-main" value="${android-saturn-project}/app/src/main/java"/>
   <property name="android-sks" value="${android-main}/org/webpki/mobile/android/sks"/>
   <property name="android-test" value="${android-saturn-project}/app/src/androidTest/java"/>
+  <property name="android-saturn-common" value="${android-main}/org/webpki/mobile/android/saturn/common"/>
+  <property name="main-saturn-project" location="../../saturn"/>
   <property environment="env"/>
 
   <target name="help">
@@ -28,12 +30,18 @@
         <exclude name="**/mobile/**"/>
       </fileset>
     </delete>
+    <delete>
+      <fileset dir="${android-saturn-common}">
+        <exclude name="Wallet*.java"/>
+        <exclude name="PayerAuthorizationEncoder.java"/>
+      </fileset>
+    </delete>  	
     <delete dir="${android-sks}"/>
     <delete dir="${android-test}/org"/>
     <delete dir="${bin_dir}"/>
     <mkdir dir="${bin_dir}"/>
 
-    <copy todir="${android-main}" preservelastmodified="true">
+  	<copy todir="${android-main}" preservelastmodified="true">
       <fileset dir="${src_dir}">
         <exclude name="**/tools/**"/>
         <exclude name="**/xml/**"/>
@@ -150,7 +158,7 @@
    	       <include name="**/CertSpec.java"/>
   		</fileset>
   	</copy>
-
+  	
 	<!-- Compile to verfify that it is complete -->
   	<javac debug="${debug}" 
   		   srcdir="${android-main}:androidrefsrc:${android-test}"
@@ -161,8 +169,43 @@
         <exclude name="**/webpki/mobile/**/*.java"/>
   	</javac>
 
-	<fail message="hyh"/>
-
+    <copy todir="${android-saturn-common}" preservelastmodified="true">
+      <fileset dir="${main-saturn-project}/resources/common/org/webpki/saturn/common">
+        <include name="AuthorizationDataEncoder.java"/>
+        <include name="KnownExtensions.java"/>
+        <include name="BalanceRequestEncoder.java"/>
+        <include name="BalanceResponseDecoder.java"/>
+        <include name="BaseProperties.java"/>
+        <include name="CardDataDecoder.java"/>
+        <include name="ClientPlatform.java"/>
+        <include name="Currencies.java"/>
+        <include name="Messages.java"/>
+        <include name="EncryptedMessage.java"/>
+        <include name="PaymentRequestDecoder.java"/>
+        <include name="NonDirectPaymentDecoder.java"/>
+        <include name="NonDirectPaymentTypes.java"/>
+        <include name="ReservationSubTypes.java"/>
+        <include name="RecurringPaymentIntervals.java"/>
+        <include name="CryptoUtils.java"/>
+        <include name="Software.java"/>
+        <include name="UserChallengeItem.java"/>
+        <include name="UserResponseItem.java"/>
+        <include name="UserAuthorizationMethods.java"/>
+        <include name="MobileProxyParameters.java"/>
+        <include name="ReceiptDecoder.java"/>
+        <include name="ReceiptLineItem.java"/>
+        <include name="ReceiptBarcode.java"/>
+        <include name="ReceiptShippingRecord.java"/>
+        <include name="ReceiptTaxRecord.java"/>
+        <include name="SaturnException.java"/>
+        <include name="ProviderUserResponseDecoder.java"/>
+      </fileset>
+    </copy>
+    <replace dir="${android-saturn-common}" value="org.webpki.mobile.android.saturn.common">
+      <include name="*.java"/>
+      <replacetoken>org.webpki.saturn.common</replacetoken>
+    </replace>
+  	
     <delete dir="${bin_dir}"/>
   </target>
 	

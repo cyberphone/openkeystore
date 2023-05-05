@@ -257,11 +257,8 @@ public class KeyGen2Test {
         private static JSONDecoderCache json_cache;
 
         static {
-            try {
-                json_cache = new JSONDecoderCache();
-                json_cache.addToCache(KeyCreationRequestDecoder.class);
-            } catch (IOException e) {
-            }
+            json_cache = new JSONDecoderCache();
+            json_cache.addToCache(KeyCreationRequestDecoder.class);
         }
 
         private StringBuilder json = new StringBuilder(kg2keycre);

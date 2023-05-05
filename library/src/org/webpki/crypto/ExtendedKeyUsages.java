@@ -16,8 +16,6 @@
  */
 package org.webpki.crypto;
 
-import java.io.IOException;
-
 public enum ExtendedKeyUsages {
 
     SERVER_AUTH             ("1.3.6.1.5.5.7.3.1", "serverAuth"),
@@ -41,16 +39,16 @@ public enum ExtendedKeyUsages {
     }
 
 
-    public static ExtendedKeyUsages getExtendedKeyUsage(String x509Name) throws IOException {
+    public static ExtendedKeyUsages getExtendedKeyUsage(String x509Name) {
         for (ExtendedKeyUsages eku : ExtendedKeyUsages.values()) {
             if (x509Name.equals(eku.x509Name)) {
                 return eku;
             }
         }
-        throw new IOException("Unknown EKU: " + x509Name);
+        throw new CryptoException("Unknown EKU: " + x509Name);
     }
 
-    public static String getOptionallyTranslatedEku(String oid) throws IOException {
+    public static String getOptionallyTranslatedEku(String oid) {
         for (ExtendedKeyUsages eku : ExtendedKeyUsages.values()) {
             if (oid.equals(eku.oid)) {
                 return eku.x509Name;

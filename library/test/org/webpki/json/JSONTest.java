@@ -2314,12 +2314,12 @@ public class JSONTest {
     }
 
     public static class Reader extends JSONDecoder {
-        void test(boolean ok) throws IOException {
-            if (!ok) throw new IOException("Bad");
+        void test(boolean ok) {
+            if (!ok) throw new JSONException("Bad");
         }
 
         @Override
-        protected void readJSONData(JSONObjectReader rd) throws IOException {
+        protected void readJSONData(JSONObjectReader rd) {
             test(rd.getBoolean(BOOL_TRUE));
             test(!rd.getBoolean(BOOL_FALSE));
             test(!rd.getBooleanConditional(BOOL_UNKNOWM));
@@ -2353,7 +2353,7 @@ public class JSONTest {
 
     static class Writer extends JSONEncoder {
         @Override
-        protected void writeJSONData(JSONObjectWriter wr) throws IOException {
+        protected void writeJSONData(JSONObjectWriter wr) {
             wr.setBoolean(BOOL_TRUE, true);
             wr.setBoolean(BOOL_FALSE, false);
             wr.setString(STRING, STRING_VALUE);
@@ -2377,7 +2377,7 @@ public class JSONTest {
         String escape;
 
         @Override
-        protected void readJSONData(JSONObjectReader rd) throws IOException {
+        protected void readJSONData(JSONObjectReader rd) {
             escape = rd.getString("Esca\npe");
         }
 
@@ -2408,7 +2408,7 @@ public class JSONTest {
 
     PARSER_ERR expected_error;
 
-    void checkException(IOException e) {
+    void checkException(Exception e) {
         if (expected_error == null) {
             fail(e.getMessage());
         }
@@ -2604,7 +2604,7 @@ public class JSONTest {
             fail("Didn't bomb");
             simpleArrayType(string);
             fail("Didn't bomb");
-        } catch (IOException e) {
+        } catch (Exception e) {
             checkException(e);
         }
     }
@@ -2629,7 +2629,7 @@ public class JSONTest {
             try {
                 JSONParser.parse("{\"i\":" + string + "}").getInt("i");
                 fail("Should fail");
-            } catch (IOException e) {
+            } catch (Exception e) {
                 return;
             }
         }
@@ -2804,40 +2804,40 @@ public class JSONTest {
         try {
             assertTrue(ar.getInt() == 3);
             fail("Didn't bomb");
-        } catch (IOException e) {
+        } catch (Exception e) {
             checkException(e);
         }
         expected_error = PARSER_ERR.MISS_ARG;
         try {
             assertTrue(simpleArrayType(",0").getInt() == 0);
             fail("Didn't bomb");
-        } catch (IOException e) {
+        } catch (Exception e) {
             checkException(e);
         }
         try {
             assertTrue(simpleArrayType("0,").getInt() == 0);
             fail("Didn't bomb");
-        } catch (IOException e) {
+        } catch (Exception e) {
             checkException(e);
         }
         try {
             assertTrue(simpleObjectType("").getInt("name") == 0);
             fail("Didn't bomb");
-        } catch (IOException e) {
+        } catch (Exception e) {
             checkException(e);
         }
         expected_error = PARSER_ERR.ARRAY_LIMIT;
         try {
             assertTrue(simpleArrayType("").getInt() == 0);
             fail("Didn't bomb");
-        } catch (IOException e) {
+        } catch (Exception e) {
             checkException(e);
         }
         assertTrue((ar = simpleArrayType("4")).getInt() == 4);
         try {
             assertTrue(ar.getInt() == 0);
             fail("Didn't bomb");
-        } catch (IOException e) {
+        } catch (Exception e) {
             checkException(e);
         }
         expected_error = PARSER_ERR.SYNTAX;
@@ -2946,7 +2946,7 @@ public class JSONTest {
         try {
             or.getStringArray("arr");
             fail("Didn't bomb");
-        } catch (IOException e) {
+        } catch (Exception e) {
             checkException(e, "Incompatible types, expected: STRING actual: BOOLEAN");
         }
         ow = new JSONObjectWriter();
@@ -3350,7 +3350,7 @@ public class JSONTest {
         }
 
         @Override
-        protected void decode(JSONObjectReader reader) throws IOException {
+        protected void decode(JSONObjectReader reader) {
         }
     }
 
@@ -3366,7 +3366,7 @@ public class JSONTest {
         }
 
         @Override
-        protected void decode(JSONObjectReader reader) throws IOException {
+        protected void decode(JSONObjectReader reader) {
             data = reader.getString(URI);
         }
 
@@ -3388,7 +3388,7 @@ public class JSONTest {
         }
 
         @Override
-        protected void decode(JSONObjectReader reader) throws IOException {
+        protected void decode(JSONObjectReader reader) {
             data = reader.getString(URI);
         }
     }
@@ -3406,7 +3406,7 @@ public class JSONTest {
         }
 
         @Override
-        protected void decode(JSONObjectReader reader) throws IOException {
+        protected void decode(JSONObjectReader reader) {
             data = reader.getString(URI);
         }
     }

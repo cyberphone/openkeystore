@@ -16,9 +16,6 @@
  */
 package org.webpki.jose.jws;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
@@ -28,6 +25,7 @@ import java.util.Base64;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
+import org.webpki.crypto.CertificateUtil;
 import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.SignatureWrapper;
@@ -53,12 +51,9 @@ public class JWSAsymKeySigner extends JWSSigner {
      * thread-safe.
      * @param privateKey The key to sign with
      * @param signatureAlgorithm The algorithm to use
-     * @throws IOException 
-     * @throws GeneralSecurityException 
      */
     public JWSAsymKeySigner(PrivateKey privateKey, 
-                            AsymSignatureAlgorithms signatureAlgorithm)
-            throws IOException, GeneralSecurityException {
+                            AsymSignatureAlgorithms signatureAlgorithm) {
         super(signatureAlgorithm);
         this.privateKey = privateKey;
         this.signatureAlgorithm = signatureAlgorithm;
@@ -76,11 +71,8 @@ public class JWSAsymKeySigner extends JWSSigner {
      * The default signature algorithm to use is based on the recommendations
      * in RFC 7518.
      * @param privateKey The key to sign with
-     * @throws IOException 
-     * @throws GeneralSecurityException 
      */
-    public JWSAsymKeySigner(PrivateKey privateKey)
-            throws IOException, GeneralSecurityException {
+    public JWSAsymKeySigner(PrivateKey privateKey) {
         this(privateKey, 
              KeyAlgorithms.getKeyAlgorithm(privateKey).getRecommendedSignatureAlgorithm());
     }
@@ -89,9 +81,8 @@ public class JWSAsymKeySigner extends JWSSigner {
      * Adds "jwk" to the JWS header.
      * @param publicKey The public key to be included
      * @return JwsAsymKeySigner
-     * @throws IOException 
      */
-    public JWSAsymKeySigner setPublicKey(PublicKey publicKey) throws IOException {
+    public JWSAsymKeySigner setPublicKey(PublicKey publicKey) {
         jwsProtectedHeader.setObject(JWK_JSON, 
                                      JSONObjectWriter.createCorePublicKey(
                                              publicKey,
@@ -104,22 +95,18 @@ public class JWSAsymKeySigner extends JWSSigner {
      * Adds "x5c" to the JWS header.
      * @param certificatePath The certificate(s) to be included
      * @return JwsAsymKeySigner
-     * @throws IOException 
-     * @throws GeneralSecurityException 
      */
-    public JWSAsymKeySigner setCertificatePath(X509Certificate[] certificatePath) 
-            throws IOException, GeneralSecurityException {
+    public JWSAsymKeySigner setCertificatePath(X509Certificate[] certificatePath) {
         JSONArrayWriter certPath = jwsProtectedHeader.setArray(X5C_JSON);
         for (X509Certificate cert : certificatePath) {
-            certPath.setString(Base64.getEncoder().encodeToString(cert.getEncoded()));
+            certPath.setString(
+                    Base64.getEncoder().encodeToString(CertificateUtil.getBlobFromCertificate(cert)));
         }
         return this;
     }
 
     @Override
-    byte[] signObject(byte[] dataToBeSigned) throws IOException, GeneralSecurityException {
-        return new SignatureWrapper(signatureAlgorithm, privateKey, provider)
-                .update(dataToBeSigned)
-                .sign();
+    byte[] signObject(byte[] dataToBeSigned) {
+        return SignatureWrapper.sign(privateKey, signatureAlgorithm, dataToBeSigned, provider);
     }
 }

@@ -16,10 +16,6 @@
  */
 package org.webpki.crypto;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
-
 import java.security.cert.X509Certificate;
 
 /**
@@ -33,10 +29,7 @@ public interface X509VerifierInterface {
      * 
      * @param certificatePath The path to be validated
      * @return <code>true</code> if the path is verified and trusted
-     * @throws IOException
-     * @throws GeneralSecurityException
      */
-    boolean verifyCertificatePath(X509Certificate[] certificatePath) 
-            throws IOException, GeneralSecurityException;
+    boolean verifyCertificatePath(X509Certificate[] certificatePath);
 
 }

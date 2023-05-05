@@ -16,8 +16,6 @@
  */
 package org.webpki.json;
 
-import java.io.IOException;
-
 import java.util.LinkedHashMap;
 import java.util.ArrayList;
 
@@ -33,17 +31,17 @@ class JSONObject {
     JSONObject() {
     }
 
-    void setProperty(String name, JSONValue value) throws IOException {
+    void setProperty(String name, JSONValue value) {
         if (properties.put(name, value) != null) {
-            throw new IOException("Duplicate property: " + name);
+            throw new JSONException("Duplicate property: " + name);
         }
     }
 
-    static void checkObjectForUnread(JSONObject jsonObject) throws IOException {
+    static void checkObjectForUnread(JSONObject jsonObject) {
         for (String name : jsonObject.properties.keySet()) {
             JSONValue value = jsonObject.properties.get(name);
             if (!value.readFlag) {
-                throw new IOException("Property \"" + name + "\" was never read");
+                throw new JSONException("Property \"" + name + "\" was never read");
             }
             if (value.type == JSONTypes.OBJECT) {
                 checkObjectForUnread((JSONObject) value.value);
@@ -54,19 +52,21 @@ class JSONObject {
     }
 
     @SuppressWarnings("unchecked")
-    static void checkArrayForUnread(JSONValue array, String name) throws IOException {
+    static void checkArrayForUnread(JSONValue array, String name) {
         for (JSONValue arrayElement : (ArrayList<JSONValue>) array.value) {
             if (arrayElement.type == JSONTypes.OBJECT) {
                 checkObjectForUnread((JSONObject) arrayElement.value);
             } else if (arrayElement.type == JSONTypes.ARRAY) {
                 checkArrayForUnread(arrayElement, name);
             } else if (!arrayElement.readFlag) {
-                throw new IOException("Value \"" + (String) arrayElement.value + "\" of array \"" + name + "\" was never read");
+                throw new JSONException("Value \"" + 
+                                        (String) arrayElement.value + 
+                                        "\" of array \"" + name + "\" was never read");
             }
         }
     }
 
-    static void setObjectAsRead(JSONObject jsonObject) throws IOException {
+    static void setObjectAsRead(JSONObject jsonObject) {
         for (String name : jsonObject.properties.keySet()) {
             JSONValue value = jsonObject.properties.get(name);
             value.readFlag = true;
@@ -79,7 +79,7 @@ class JSONObject {
     }
 
     @SuppressWarnings("unchecked")
-    static void setArrayAsRead(JSONValue array) throws IOException {
+    static void setArrayAsRead(JSONValue array) {
         for (JSONValue arrayElement : (ArrayList<JSONValue>) array.value) {
             if (arrayElement.type == JSONTypes.OBJECT) {
                 setObjectAsRead((JSONObject) arrayElement.value);

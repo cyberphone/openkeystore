@@ -16,8 +16,6 @@
  */
 package org.webpki.sks;
 
-import java.io.IOException;
-
 public enum Grouping {
 
     NONE                    ("none",               SecureKeyStore.PIN_GROUPING_NONE),
@@ -45,13 +43,13 @@ public enum Grouping {
     }
 
 
-    public static Grouping getGroupingFromString(String name) throws IOException {
+    public static Grouping getGroupingFromString(String name) {
         for (Grouping option : Grouping.values()) {
             if (name.equals(option.name)) {
                 return option;
             }
         }
-        throw new IOException("Unknown \"" + SecureKeyStore.VAR_GROUPING + "\": " + name);
+        throw new SKSException("Unknown \"" + SecureKeyStore.VAR_GROUPING + "\": " + name);
     }
 
 }

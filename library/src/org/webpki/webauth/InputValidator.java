@@ -16,8 +16,6 @@
  */
 package org.webpki.webauth;
 
-import java.io.IOException;
-
 import java.math.BigInteger;
 
 import java.net.URI;
@@ -28,15 +26,16 @@ import java.util.ArrayList;
 
 import org.webpki.json.JSONArrayReader;
 import org.webpki.json.JSONDecoder;
+import org.webpki.json.JSONException;
 import org.webpki.json.JSONObjectReader;
 
 abstract class InputValidator extends JSONDecoder {
 
-    static String getID(JSONObjectReader rd, String name) throws IOException {
+    static String getID(JSONObjectReader rd, String name) {
         return rd.getString(name);
     }
 
-    static String getURL(JSONObjectReader rd, String name) throws IOException {
+    static String getURL(JSONObjectReader rd, String name) {
         String url = getURI(rd, name);
         if (!url.matches("https?://.*")) {
             bad("Bad URL: " + url);
@@ -44,28 +43,28 @@ abstract class InputValidator extends JSONDecoder {
         return url;
     }
 
-    static private void validateURI(String uriString) throws IOException {
+    static private void validateURI(String uriString) {
         try {
             URI uri = new URI(uriString);
             if (!uri.isAbsolute()) {
                 bad("Bad URI: " + uri);
             }
         } catch (URISyntaxException e) {
-            throw new IOException(e);
+            throw new JSONException(e);
         }
     }
 
-    static String getURI(JSONObjectReader rd, String name) throws IOException {
+    static String getURI(JSONObjectReader rd, String name) {
         String uri = rd.getString(name);
         validateURI(uri);
         return uri;
     }
 
-    static void bad(String message) throws IOException {
-        throw new IOException(message);
+    static void bad(String message) {
+        throw new JSONException(message);
     }
 
-    static String[] getNonEmptyList(JSONObjectReader rd, String name) throws IOException {
+    static String[] getNonEmptyList(JSONObjectReader rd, String name) {
         String[] list = rd.getStringArray(name);
         if (list.length == 0) {
             bad("Empty list not allowed: " + name);
@@ -73,11 +72,11 @@ abstract class InputValidator extends JSONDecoder {
         return list;
     }
 
-    static String[] getListConditional(JSONObjectReader rd, String name) throws IOException {
+    static String[] getListConditional(JSONObjectReader rd, String name) {
         return rd.hasProperty(name) ? getNonEmptyList(rd, name) : null;
     }
 
-    static String[] getURIList(JSONObjectReader rd, String name) throws IOException {
+    static String[] getURIList(JSONObjectReader rd, String name) {
         String[] uris = getNonEmptyList(rd, name);
         for (String uri : uris) {
             validateURI(uri);
@@ -85,22 +84,22 @@ abstract class InputValidator extends JSONDecoder {
         return uris;
     }
 
-    static String[] getURIListConditional(JSONObjectReader rd, String name) throws IOException {
+    static String[] getURIListConditional(JSONObjectReader rd, String name) {
         return rd.hasProperty(name) ? getURIList(rd, name) : null;
     }
 
-    static BigInteger getBigIntegerConditional(JSONObjectReader rd, String name) throws IOException {
+    static BigInteger getBigIntegerConditional(JSONObjectReader rd, String name) {
         return rd.hasProperty(name) ? rd.getBigInteger(name) : null;
     }
 
-    static ArrayList<JSONObjectReader> getObjectArrayConditional(JSONObjectReader rd, String name) throws IOException {
+    static ArrayList<JSONObjectReader> getObjectArrayConditional(JSONObjectReader rd, String name) {
         if (rd.hasProperty(name)) {
             return getObjectArray(rd, name);
         }
         return new ArrayList<>();
     }
 
-    static ArrayList<JSONObjectReader> getObjectArray(JSONObjectReader rd, String name) throws IOException {
+    static ArrayList<JSONObjectReader> getObjectArray(JSONObjectReader rd, String name) {
         ArrayList<JSONObjectReader> result = new ArrayList<>();
         JSONArrayReader arr = rd.getArray(name);
         do {

@@ -16,7 +16,6 @@
  */
 package org.webpki.util;
 
-import java.io.IOException;
 import java.io.Serializable;
 
 
@@ -36,12 +35,12 @@ public class ImageData implements MIMETypedObject, Serializable {
         this.mimeType = mimeType;
     }
 
-    public byte[] getData() throws IOException {
+    public byte[] getData() {
         return data;
     }
 
 
-    public String getMimeType() throws IOException {
+    public String getMimeType() {
         return mimeType;
     }
 }

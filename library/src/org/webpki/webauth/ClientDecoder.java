@@ -16,10 +16,6 @@
  */
 package org.webpki.webauth;
 
-import java.io.IOException;
-
-import java.security.GeneralSecurityException;
-
 import org.webpki.crypto.X509VerifierInterface;
 
 import org.webpki.json.JSONCryptoHelper;
@@ -32,10 +28,9 @@ abstract class ClientDecoder extends InputValidator {
 
     private JSONSignatureDecoder signature;  // Optional
 
-    abstract void readServerRequest(JSONObjectReader rd) throws IOException;
+    abstract void readServerRequest(JSONObjectReader rd);
 
-    public void verifySignature(X509VerifierInterface verifier) throws IOException,
-                                                                   GeneralSecurityException {
+    public void verifySignature(X509VerifierInterface verifier) {
         signature.verify(new JSONX509Verifier(verifier));
     }
 
@@ -44,8 +39,7 @@ abstract class ClientDecoder extends InputValidator {
     }
 
     @Override
-    final protected void readJSONData(JSONObjectReader rd) throws IOException,
-                                                                  GeneralSecurityException {
+    final protected void readJSONData(JSONObjectReader rd) {
         readServerRequest(rd);
 
         //////////////////////////////////////////////////////////////////

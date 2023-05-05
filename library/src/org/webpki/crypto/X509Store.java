@@ -16,8 +16,6 @@
  */
 package org.webpki.crypto;
 
-import java.io.IOException;
-
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.ArrayList;
@@ -26,7 +24,7 @@ import java.security.KeyStore;
 
 import java.security.cert.X509Certificate;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateFactory;
+
 import java.security.GeneralSecurityException;
 
 import org.webpki.asn1.cert.*;
@@ -39,7 +37,7 @@ public class X509Store {
 
     private Hashtable<DistinguishedName, ArrayList<X509Certificate>> store = new Hashtable<>();
 
-    private void add(X509Certificate certificate) throws IOException, GeneralSecurityException {
+    private void add(X509Certificate certificate) {
         if (certificate == null) {
             return;
         }
@@ -57,7 +55,7 @@ public class X509Store {
         }
     }
 
-    private boolean add(Certificate[] certificates) throws IOException, GeneralSecurityException {
+    private boolean add(Certificate[] certificates) {
         if (certificates == null) {
             return false;
         }
@@ -74,8 +72,9 @@ public class X509Store {
     /*
      * Create a X509Store containing all certificates in keyStore.
      */
-    public X509Store(KeyStore keyStore) throws IOException, GeneralSecurityException {
+    public X509Store(KeyStore keyStore) {
         this();
+        try {
         for (Enumeration<String> e = keyStore.aliases(); e.hasMoreElements(); ) {
             String alias = e.nextElement();
 
@@ -84,12 +83,15 @@ public class X509Store {
                 add((X509Certificate) keyStore.getCertificate(alias));
             }
         }
+        } catch (GeneralSecurityException e) {
+            throw new CryptoException(e);
+        }
     }
 
     /*
      * Create a X509Store containing all certificates in an array.
      */
-    public X509Store(X509Certificate[] certificates) throws IOException, GeneralSecurityException {
+    public X509Store(X509Certificate[] certificates) {
         this();
         add(certificates);
     }
@@ -97,13 +99,10 @@ public class X509Store {
     /*
      * Create a X509Store containing all certificates in an array.
      */
-    public X509Store(byte[][] certificates) throws IOException, GeneralSecurityException {
+    public X509Store(byte[][] certificates) {
         this();
-
-        CertificateFactory cf = CertificateFactory.getInstance("X.509");
-
         for (int i = 0; i < certificates.length; i++) {
-            add((X509Certificate) cf.generateCertificate(new java.io.ByteArrayInputStream(certificates[i])));
+            add(CertificateUtil.getCertificateFromBlob(certificates[i]));
         }
     }
 
@@ -117,7 +116,7 @@ public class X509Store {
     /*
      * Returns true if this store contains certificate
      */
-    public boolean hasCertificate(X509Certificate certificate) throws IOException, GeneralSecurityException {
+    public boolean hasCertificate(X509Certificate certificate) {
         DistinguishedName subject = DistinguishedName.subjectDN(certificate);
 
         for (X509Certificate e : getCertificates(subject)) {
@@ -145,18 +144,18 @@ public class X509Store {
      * can be verified by a certificate in the store.
      * 
      */
-    public boolean verifyCertificate(X509Certificate certificate) throws IOException, GeneralSecurityException {
+    public boolean verifyCertificate(X509Certificate certificate) {
         return hasCertificate(certificate) || verifyCertificateByIssuer(certificate);
     }
 
-    private boolean verifyCertificateByIssuer(X509Certificate certificate) throws IOException, GeneralSecurityException {
+    private boolean verifyCertificateByIssuer(X509Certificate certificate) {
         return getVerifiedIssuer(certificate) != null;
     }
 
     /*
      * Returns the (verified) issuer of a certificate if present in this store.
      */
-    public X509Certificate getVerifiedIssuer(X509Certificate certificate) throws IOException, GeneralSecurityException {
+    public X509Certificate getVerifiedIssuer(X509Certificate certificate) {
         DistinguishedName issuer = DistinguishedName.issuerDN(certificate);
 
         for (X509Certificate e : getCertificates(issuer)) {
@@ -179,8 +178,7 @@ public class X509Store {
      * certificate is self-signed.
      */
     public static X509Certificate getVerifiedIssuer(X509Certificate[] certificates,
-                                                    X509Certificate certificate)
-            throws IOException, GeneralSecurityException {
+                                                    X509Certificate certificate) {
         for (int i = 0; i < certificates.length; i++) {
             try {
                 certificate.verify(certificates[i].getPublicKey());
@@ -201,8 +199,7 @@ public class X509Store {
      * possibly using a certificate chain constructed from other 
      * certificates in the supplied store.
      */
-    public boolean verifyCertificate(X509Store chainStore, X509Certificate certificate)
-            throws IOException, GeneralSecurityException {
+    public boolean verifyCertificate(X509Store chainStore, X509Certificate certificate) {
         return certificate != null &&
                 (hasCertificate(certificate) ||
                         verifyCertificate(chainStore, chainStore.getVerifiedIssuer(certificate)) ||
@@ -217,8 +214,7 @@ public class X509Store {
      * possibly using a certificate chain constructed from other 
      * certificates in the supplied stores.
      */
-    public boolean verifyCertificate(X509Store chainStore1, X509Store chainStore2, X509Certificate certificate)
-            throws IOException, GeneralSecurityException {
+    public boolean verifyCertificate(X509Store chainStore1, X509Store chainStore2, X509Certificate certificate) {
         return certificate != null &&
                 (hasCertificate(certificate) ||
                         verifyCertificate(chainStore1, chainStore2, chainStore1.getVerifiedIssuer(certificate)) ||
@@ -234,8 +230,7 @@ public class X509Store {
      * possibly using a certificate chain constructed from other 
      * certificates in the array.
      */
-    public boolean verifyCertificate(X509Certificate[] certificates, int i)
-            throws IOException, GeneralSecurityException {
+    public boolean verifyCertificate(X509Certificate[] certificates, int i) {
         return verifyCertificate(certificates, certificates[i]);
     }
 
@@ -247,8 +242,7 @@ public class X509Store {
      * possibly using a certificate chain constructed from
      * certificates in the array.
      */
-    public boolean verifyCertificate(X509Certificate[] certificates, X509Certificate certificate)
-            throws IOException, GeneralSecurityException {
+    public boolean verifyCertificate(X509Certificate[] certificates, X509Certificate certificate) {
         return verifyCertificate(new X509Store(certificates), certificate);
     }
 
@@ -260,8 +254,7 @@ public class X509Store {
      * possibly using certificate chains constructed from
      * certificates in the array.
      */
-    public boolean verifyCertificates(X509Certificate[] certificates)
-            throws IOException, GeneralSecurityException {
+    public boolean verifyCertificates(X509Certificate[] certificates) {
         X509Store approved = new X509Store();
 
         boolean[] done = new boolean[certificates.length];

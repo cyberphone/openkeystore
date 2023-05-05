@@ -40,57 +40,47 @@ public class KeyStoreVerifier implements X509VerifierInterface {
      * Verifier based on a specific keystore.
      *
      * @param caCertsKeyStore Use this keystore for verification
-     * @throws IOException for various errors
      */
-    public KeyStoreVerifier(KeyStore caCertsKeyStore) throws IOException {
-        try {
-            caCertificates = new X509Store(caCertsKeyStore);
-        } catch (GeneralSecurityException e) {
-            throw new IOException(e.getMessage());
-        }
+    public KeyStoreVerifier(KeyStore caCertsKeyStore) {
+        caCertificates = new X509Store(caCertsKeyStore);
     }
 
     /**
      * Dummy verifier accepting any certificate.
-     *
-     * @throws IOException for various errors
      */
-    public KeyStoreVerifier() throws IOException {
+    public KeyStoreVerifier() {
         try {
             KeyStore ks = KeyStore.getInstance("JKS");
             ks.load(null);
             caCertificates = new X509Store(ks);
-        } catch (GeneralSecurityException e) {
-            throw new IOException(e.getMessage());
+        } catch (GeneralSecurityException | IOException e) {
+            throw new CryptoException(e);
         }
         abortOnNonTrusted = false;
     }
 
 
-    public boolean verifyCertificatePath(X509Certificate[] inCertificatePath) throws IOException {
-        try {
-            certificatePath = inCertificatePath;
-            trusted = caCertificates.verifyCertificates(certificatePath);
-            if (abortOnNonTrusted && !trusted) {
-                throw new IOException("Unknown CA: " + certificatePath[certificatePath.length - 1].getIssuerX500Principal().getName());
-            }
-        } catch (GeneralSecurityException e) {
-            throw new IOException(e.getMessage());
+    public boolean verifyCertificatePath(X509Certificate[] inCertificatePath) {
+        certificatePath = inCertificatePath;
+        trusted = caCertificates.verifyCertificates(certificatePath);
+        if (abortOnNonTrusted && !trusted) {
+            throw new CryptoException("Unknown CA: " + 
+                       certificatePath[certificatePath.length - 1].getIssuerX500Principal().getName());
         }
         return trusted;
     }
 
-    public void setTrustedRequired(boolean flag) throws IOException {
+    public void setTrustedRequired(boolean flag) {
         abortOnNonTrusted = flag;
     }
 
 
-    public X509Certificate[] getCertificatePath() throws IOException {
+    public X509Certificate[] getCertificatePath() {
         return certificatePath;
     }
 
 
-    public X509Certificate getSignerCertificate() throws IOException {
+    public X509Certificate getSignerCertificate() {
         return certificatePath[0];
     }
 }

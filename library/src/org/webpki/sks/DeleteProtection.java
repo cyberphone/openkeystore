@@ -16,8 +16,6 @@
  */
 package org.webpki.sks;
 
-import java.io.IOException;
-
 public enum DeleteProtection {
 
     NONE          ("none",          SecureKeyStore.EXPORT_DELETE_PROTECTION_NONE),
@@ -45,13 +43,13 @@ public enum DeleteProtection {
     }
 
 
-    public static DeleteProtection getDeletePolicyFromString(String name) throws IOException {
+    public static DeleteProtection getDeletePolicyFromString(String name) {
         for (DeleteProtection del_pol : DeleteProtection.values()) {
             if (name.equals(del_pol.name)) {
                 return del_pol;
             }
         }
-        throw new IOException("Unknown \"" + SecureKeyStore.VAR_DELETE_PROTECTION + "\": " + name);
+        throw new SKSException("Unknown \"" + SecureKeyStore.VAR_DELETE_PROTECTION + "\": " + name);
     }
 
 }

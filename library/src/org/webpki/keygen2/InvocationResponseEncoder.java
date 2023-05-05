@@ -32,8 +32,6 @@ package org.webpki.keygen2;
  *
  */
 
-import java.io.IOException;
-
 import java.util.LinkedHashMap;
 
 import org.webpki.json.JSONArrayWriter;
@@ -60,7 +58,7 @@ public class InvocationResponseEncoder extends JSONEncoder {
 
     LinkedHashMap<String, ImageAttributes> image_preferences = new LinkedHashMap<>();
 
-    void addCapability(String typeUri, InvocationRequestDecoder.CAPABILITY capability) throws IOException {
+    void addCapability(String typeUri, InvocationRequestDecoder.CAPABILITY capability) {
         InvocationRequestDecoder.CAPABILITY current = queriedCapabilities.get(typeUri);
         if (current == null || current != InvocationRequestDecoder.CAPABILITY.UNDEFINED) {
             KeyGen2Validator.bad("State error for URI: " + typeUri);
@@ -71,7 +69,7 @@ public class InvocationResponseEncoder extends JSONEncoder {
     public InvocationResponseEncoder addImagePreference(String typeUri,
                                                         String mimeType,
                                                         int width,
-                                                        int height) throws IOException {
+                                                        int height) {
         addCapability(typeUri, InvocationRequestDecoder.CAPABILITY.IMAGE_ATTRIBUTES);
         ImageAttributes im_pref = new ImageAttributes();
         im_pref.mimeType = mimeType;
@@ -81,12 +79,12 @@ public class InvocationResponseEncoder extends JSONEncoder {
         return this;
     }
 
-    public InvocationResponseEncoder addSupportedFeature(String typeUri) throws IOException {
+    public InvocationResponseEncoder addSupportedFeature(String typeUri) {
         addCapability(typeUri, InvocationRequestDecoder.CAPABILITY.URI_FEATURE);
         return this;
     }
 
-    public InvocationResponseEncoder addClientValues(String typeUri, String[] values) throws IOException {
+    public InvocationResponseEncoder addClientValues(String typeUri, String[] values) {
         addCapability(typeUri, InvocationRequestDecoder.CAPABILITY.VALUES);
         if (values.length == 0) {
             KeyGen2Validator.bad("Zero length array not allowed, URI: " + typeUri);
@@ -106,7 +104,7 @@ public class InvocationResponseEncoder extends JSONEncoder {
 
     @Override
     @SuppressWarnings("fallthrough")
-    protected void writeJSONData(JSONObjectWriter wr) throws IOException {
+    protected void writeJSONData(JSONObjectWriter wr) {
         ////////////////////////////////////////////////////////////////////////
         // Session properties
         ////////////////////////////////////////////////////////////////////////
