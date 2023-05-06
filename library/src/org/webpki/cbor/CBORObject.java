@@ -186,8 +186,8 @@ public abstract class CBORObject implements Cloneable {
     }
 
     /**
-     * Gets Java <code>long</code> value.
-      * <p>
+     * Returns <code>long</code> value.
+     * <p>
      * This method requires that the object is a
      * {@link CBORInteger} and fits a Java <code>long</code>, 
      *({@link Long#MIN_VALUE} to {@link Long#MAX_VALUE}), 
@@ -207,7 +207,7 @@ public abstract class CBORObject implements Cloneable {
     }
 
     /**
-     * Gets Java <i>unsigned</i> <code>long</code> value.
+     * Returns <i>unsigned</i> <code>long</code> value.
      * <p>
      * This method requires that the object is an <i>unsigned</i>
      * {@link CBORInteger}, otherwise a {@link CBORException} is thrown.
@@ -224,7 +224,7 @@ public abstract class CBORObject implements Cloneable {
     }
 
     /**
-     * Gets Java <code>int</code> value.
+     * Returns <code>int</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInteger} and fits a Java <code>int</code>
@@ -244,7 +244,7 @@ public abstract class CBORObject implements Cloneable {
     }
 
     /**
-     * Gets Java <i>unsigned</i> <code>int</code> value.
+     * Returns <i>unsigned</i> <code>int</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInteger} and fits a Java <code>int</code>
@@ -264,7 +264,7 @@ public abstract class CBORObject implements Cloneable {
     }    
 
     /**
-     * Gets Java <code>short</code> value.
+     * Returns <code>short</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInteger} and fits a Java <code>short</code>
@@ -284,7 +284,7 @@ public abstract class CBORObject implements Cloneable {
     }
 
     /**
-     * Gets Java <i>unsigned</i> <code>short</code> value.
+     * Returns <i>unsigned</i> <code>short</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInteger} and fits a Java <code>short</code>
@@ -304,7 +304,7 @@ public abstract class CBORObject implements Cloneable {
     }    
 
     /**
-     * Gets Java <code>byte</code> value.
+     * Returns <code>byte</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInteger} and fits a Java <code>byte</code>
@@ -324,7 +324,7 @@ public abstract class CBORObject implements Cloneable {
     }
 
     /**
-     * Gets Java <i>unsigned</i> <code>byte</code> value.
+     * Returns <i>unsigned</i> <code>byte</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInteger} and fits a Java <code>byte</code>
@@ -344,7 +344,7 @@ public abstract class CBORObject implements Cloneable {
     }    
 
     /**
-     * Gets <code>double</code> value.
+     * Returns <code>double</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORFloatingPoint}, otherwise a {@link CBORException} is thrown.
@@ -358,7 +358,7 @@ public abstract class CBORObject implements Cloneable {
     }
  
     /**
-     * Gets <code>float</code> value.
+     * Returns <code>float</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORFloatingPoint} holding a 16 or 32-bit IEEE 754 value, 
@@ -377,7 +377,7 @@ public abstract class CBORObject implements Cloneable {
     }
 
     /**
-     * Gets <code>boolean</code> value.
+     * Returns <code>boolean</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORBoolean}, otherwise a {@link CBORException} is thrown.
@@ -412,7 +412,7 @@ public abstract class CBORObject implements Cloneable {
     }
     
     /**
-     * Gets <code>text string</code> value.
+     * Returns <code>text string</code> value.
      * <p>
      * This method requires that the object is a 
      * {@link CBORString}, otherwise a {@link CBORException} is thrown.
@@ -426,7 +426,7 @@ public abstract class CBORObject implements Cloneable {
     }
 
     /**
-     * Gets <code>byte string</code> value.
+     * Returns <code>byte string</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORBytes}, otherwise a {@link CBORException} is thrown.
@@ -440,7 +440,7 @@ public abstract class CBORObject implements Cloneable {
     }
 
     /**
-     * Gets <code>map</code> object.
+     * Returns <code>map</code> object.
      * <p>
      * This method requires that the object is a
      * {@link CBORMap}, otherwise a {@link CBORException} is thrown.
@@ -454,7 +454,7 @@ public abstract class CBORObject implements Cloneable {
     }
 
     /**
-     * Gets <code>array</code> object.
+     * Returns <code>array</code> object.
      * <p>
      * This method requires that the object is a
      * {@link CBORArray}, otherwise a {@link CBORException} is thrown.
@@ -468,7 +468,7 @@ public abstract class CBORObject implements Cloneable {
     }
     
     /**
-     * Gets a fixed-length <code>array</code> object.
+     * Returns fixed-length <code>array</code> object.
      * <p>
      * This method requires that the object is a
      * {@link CBORArray} as well as holding
@@ -488,7 +488,7 @@ public abstract class CBORObject implements Cloneable {
     }
     
     /**
-     * Gets tag object.
+     * Returns tag object.
      * <p>
      * This method requires that the object is a
      * {@link CBORTag}, otherwise a {@link CBORException} is thrown.
