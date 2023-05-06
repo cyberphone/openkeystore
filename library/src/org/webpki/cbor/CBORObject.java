@@ -168,7 +168,7 @@ public abstract class CBORObject implements Cloneable {
     }
 
     /**
-     * Gets {@link BigInteger} value.
+     * Returns {@link BigInteger} value.
      * <p>
      * This method requires that the object is a
      * {@link CBORBigInteger} or {@link CBORInteger},
@@ -966,7 +966,7 @@ public abstract class CBORObject implements Cloneable {
     }
 
     /**
-     * Gets the CBOR object in pretty-printed 
+     * Returns the CBOR object in pretty-printed 
      * <a href='package-summary.html#diagnostic-notation'>Diagnostic Notation</a>.
      */
     @Override

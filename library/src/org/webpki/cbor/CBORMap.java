@@ -84,7 +84,7 @@ public class CBORMap extends CBORObject {
     }
 
     /**
-     * Sets map object.
+     * Sets mapped object.
      * <p>
      * If <code>key</code> is already present, a {@link CBORException} is thrown.
      * </p>
@@ -185,7 +185,7 @@ public class CBORMap extends CBORObject {
     }
 
      /**
-     * Retrieves map object.
+     * Returns mapped object.
      * <p>
      * If <code>key</code> is not present, a {@link CBORException} is thrown.
      * </p>
@@ -198,7 +198,7 @@ public class CBORMap extends CBORObject {
     }
 
     /**
-     * Retrieves map object conditionally.
+     * Returns mapped object conditionally.
      * <p>
      * If <code>key</code> is not present, <code>defaultValue</code> is returned.
      * <code>defaultValue</code> may be <code>null</code>.
@@ -211,6 +211,25 @@ public class CBORMap extends CBORObject {
     public CBORObject getConditionally(CBORObject key, CBORObject defaultValue) {
        Entry entry = lookup(key, false);
        return entry == null ? defaultValue : entry.value; 
+    }
+
+    /**
+     * Returns <code>byte string</code> value, then deletes key.
+     * <p>
+     * If <code>key</code> is not present or the
+     * mapped data is not a CBOR <code>byte&nbsp;string</code>,
+     * a {@link CBORException} is thrown.
+     * </p>
+     * <p>
+     * This convenience method is provided for supporting the validation phase
+     * of enveloped cryptographic constructs like CSF and CEF.
+     * </p>
+     * 
+     * @param key Key
+     * @return <code>byteArray</code>
+     */
+    public byte[] getBytesAndRemoveKey(CBORObject key) {
+        return remove(key).getBytes();
     }
 
     /**
@@ -265,25 +284,6 @@ public class CBORMap extends CBORObject {
             keys[i++] = entry.key;
         }
         return keys;
-    }
-
-    /**
-     * Reads a <code>byte string</code> value, then deletes key.
-     * <p>
-     * If <code>key</code> is not present or the
-     * mapped data is not a CBOR <code>byte&nbsp;string</code>,
-     * a {@link CBORException} is thrown.
-     * </p>
-     * <p>
-     * This convenience method is provided for supporting the validation phase
-     * of enveloped cryptographic constructs like CSF and CEF.
-     * </p>
-     * 
-     * @param key Key
-     * @return byte string
-     */
-    public byte[] readBytesAndRemoveKey(CBORObject key) {
-        return remove(key).getBytes();
     }
 
     @Override
