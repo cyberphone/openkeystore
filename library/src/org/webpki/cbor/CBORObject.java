@@ -168,7 +168,7 @@ public abstract class CBORObject implements Cloneable {
     }
 
     /**
-     * Returns {@link BigInteger} value.
+     * Gets {@link BigInteger} value.
      * <p>
      * This method requires that the object is a
      * {@link CBORBigInteger} or {@link CBORInteger},
@@ -186,7 +186,7 @@ public abstract class CBORObject implements Cloneable {
     }
 
     /**
-     * Returns Java <code>long</code> value.
+     * Gets Java <code>long</code> value.
       * <p>
      * This method requires that the object is a
      * {@link CBORInteger} and fits a Java <code>long</code>, 
@@ -207,7 +207,7 @@ public abstract class CBORObject implements Cloneable {
     }
 
     /**
-     * Returns Java <i>unsigned</i> <code>long</code> value.
+     * Gets Java <i>unsigned</i> <code>long</code> value.
      * <p>
      * This method requires that the object is an <i>unsigned</i>
      * {@link CBORInteger}, otherwise a {@link CBORException} is thrown.
@@ -224,7 +224,7 @@ public abstract class CBORObject implements Cloneable {
     }
 
     /**
-     * Returns Java <code>int</code> value.
+     * Gets Java <code>int</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInteger} and fits a Java <code>int</code>
@@ -244,7 +244,7 @@ public abstract class CBORObject implements Cloneable {
     }
 
     /**
-     * Returns Java <i>unsigned</i> <code>int</code> value.
+     * Gets Java <i>unsigned</i> <code>int</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInteger} and fits a Java <code>int</code>
@@ -253,18 +253,18 @@ public abstract class CBORObject implements Cloneable {
      * </p>
      * Also see {@link #getBigInteger()}.
      * 
-     * @return <code>int</code>
+     * @return <code>long</code>
      */
-    public int getUnsignedInt() {
+    public long getUnsignedInt() {
         long value = getUnsignedLong();
         if ((value & UINT32_MASK) != 0) {
             integerRangeError("int");
         }
-        return (int)value;
+        return value;
     }    
 
     /**
-     * Returns Java <code>short</code> value.
+     * Gets Java <code>short</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInteger} and fits a Java <code>short</code>
@@ -273,18 +273,18 @@ public abstract class CBORObject implements Cloneable {
      * </p>
      * Also see {@link #getBigInteger()}.
      * 
-     * @return <code>short</code>
+     * @return <code>int</code>
      */
-    public short getShort() {
+    public int getShort() {
         long value = getLong();
         if (value > Short.MAX_VALUE || value < Short.MIN_VALUE) {
             integerRangeError("short");
         }
-        return (short)value;
+        return (int)value;
     }
 
     /**
-     * Returns Java <i>unsigned</i> <code>short</code> value.
+     * Gets Java <i>unsigned</i> <code>short</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInteger} and fits a Java <code>short</code>
@@ -293,18 +293,18 @@ public abstract class CBORObject implements Cloneable {
      * </p>
      * Also see {@link #getBigInteger()}.
      * 
-     * @return <code>short</code>
+     * @return <code>int</code>
      */
-    public short getUnsignedShort() {
+    public int getUnsignedShort() {
         long value = getUnsignedLong();
         if ((value & UINT16_MASK) != 0) {
             integerRangeError("short");
         }
-        return (short)value;
+        return (int)value;
     }    
 
     /**
-     * Returns Java <code>byte</code> value.
+     * Gets Java <code>byte</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInteger} and fits a Java <code>byte</code>
@@ -313,18 +313,18 @@ public abstract class CBORObject implements Cloneable {
      * </p>
      * Also see {@link #getBigInteger()}.
      * 
-     * @return <code>byte</code>
+     * @return <code>int</code>
      */
-    public byte getByte() {
+    public int getByte() {
         long value = getLong();
         if (value > Byte.MAX_VALUE || value < Byte.MIN_VALUE) {
             integerRangeError("byte");
         }
-        return (byte)value;
+        return (int)value;
     }
 
     /**
-     * Returns Java <i>unsigned</i> <code>byte</code> value.
+     * Gets Java <i>unsigned</i> <code>byte</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInteger} and fits a Java <code>byte</code>
@@ -333,18 +333,18 @@ public abstract class CBORObject implements Cloneable {
      * </p>
      * Also see {@link #getBigInteger()}.
      * 
-     * @return <code>byte</code>
+     * @return <code>int</code>
      */
-    public byte getUnsignedByte() {
+    public int getUnsignedByte() {
         long value = getUnsignedLong();
         if ((value & UINT8_MASK) != 0) {
             integerRangeError("byte");
         }
-        return (byte)value;
+        return (int)value;
     }    
 
     /**
-     * Returns <code>double</code> value.
+     * Gets <code>double</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORFloatingPoint}, otherwise a {@link CBORException} is thrown.
@@ -358,7 +358,7 @@ public abstract class CBORObject implements Cloneable {
     }
  
     /**
-     * Returns <code>float</code> value.
+     * Gets <code>float</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORFloatingPoint} holding a 16 or 32-bit IEEE 754 value, 
@@ -377,7 +377,7 @@ public abstract class CBORObject implements Cloneable {
     }
 
     /**
-     * Returns <code>boolean</code> value.
+     * Gets <code>boolean</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORBoolean}, otherwise a {@link CBORException} is thrown.
@@ -412,7 +412,7 @@ public abstract class CBORObject implements Cloneable {
     }
     
     /**
-     * Returns <code>text string</code> value.
+     * Gets <code>text string</code> value.
      * <p>
      * This method requires that the object is a 
      * {@link CBORString}, otherwise a {@link CBORException} is thrown.
@@ -426,7 +426,7 @@ public abstract class CBORObject implements Cloneable {
     }
 
     /**
-     * Returns <code>byte string</code> value.
+     * Gets <code>byte string</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORBytes}, otherwise a {@link CBORException} is thrown.
@@ -440,7 +440,7 @@ public abstract class CBORObject implements Cloneable {
     }
 
     /**
-     * Returns <code>map</code> object.
+     * Gets <code>map</code> object.
      * <p>
      * This method requires that the object is a
      * {@link CBORMap}, otherwise a {@link CBORException} is thrown.
@@ -454,7 +454,7 @@ public abstract class CBORObject implements Cloneable {
     }
 
     /**
-     * Returns <code>array</code> object.
+     * Gets <code>array</code> object.
      * <p>
      * This method requires that the object is a
      * {@link CBORArray}, otherwise a {@link CBORException} is thrown.
@@ -468,7 +468,7 @@ public abstract class CBORObject implements Cloneable {
     }
     
     /**
-     * Returns a fixed-length <code>array</code> object.
+     * Gets a fixed-length <code>array</code> object.
      * <p>
      * This method requires that the object is a
      * {@link CBORArray} as well as holding
@@ -488,7 +488,7 @@ public abstract class CBORObject implements Cloneable {
     }
     
     /**
-     * Returns tag object.
+     * Gets tag object.
      * <p>
      * This method requires that the object is a
      * {@link CBORTag}, otherwise a {@link CBORException} is thrown.
@@ -966,7 +966,7 @@ public abstract class CBORObject implements Cloneable {
     }
 
     /**
-     * Returns the CBOR object in pretty-printed 
+     * Gets the CBOR object in pretty-printed 
      * <a href='package-summary.html#diagnostic-notation'>Diagnostic Notation</a>.
      */
     @Override

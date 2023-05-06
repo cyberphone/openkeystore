@@ -202,9 +202,7 @@ public class CBORTest {
     
     long ucheck(long v, long mask) {
         if (v < 0) {
-            long hmask = ~mask;
-            assertTrue("<", (v & hmask) == hmask);
-            v &= mask;
+            fail("<");
         } else {
             assertTrue(">=0", (v & mask) == v);
         }
