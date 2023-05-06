@@ -170,7 +170,7 @@ public abstract class CBORSigner {
         mapToSign.set(key, csfContainer);
 
         // Finally, sign all but the signature label and associated value.
-        csfContainer.setBytes(SIGNATURE_LABEL, coreSigner(objectToSign.encode()));
+        csfContainer.set(SIGNATURE_LABEL, new CBORBytes(coreSigner(objectToSign.encode())));
 
         // Return the now signed object.
         return objectToSign;

@@ -153,24 +153,6 @@ public class CBORMap extends CBORObject {
         return this;
     }
 
-    /**
-     * Sets a <code>byte string</code> value.
-     * <p>
-     * If <code>key</code> is not present a {@link CBORException} is thrown.
-     * </p>
-     * <p>
-     * This convenience method is provided for supporting
-     * cryptographic constructs like CSF and CEF.
-     * </p>
-     * 
-     * @param key Key
-     * @param byteString Byte string
-     * @return <code>this</code>
-     */
-    public CBORMap setBytes(CBORObject key, byte[] byteString) {
-        return set(key, new CBORBytes(byteString));
-    }
-
     private Entry lookup(CBORObject key, boolean mustExist) {
         byte[] encodedKey = getKey(key).encode();
         for (Entry entry = root; entry != null; entry = entry.next) {
@@ -211,25 +193,6 @@ public class CBORMap extends CBORObject {
     public CBORObject getConditionally(CBORObject key, CBORObject defaultValue) {
        Entry entry = lookup(key, false);
        return entry == null ? defaultValue : entry.value; 
-    }
-
-    /**
-     * Returns <code>byte string</code> value, then deletes key.
-     * <p>
-     * If <code>key</code> is not present or the
-     * mapped data is not a CBOR <code>byte&nbsp;string</code>,
-     * a {@link CBORException} is thrown.
-     * </p>
-     * <p>
-     * This convenience method is provided for supporting the validation phase
-     * of enveloped cryptographic constructs like CSF and CEF.
-     * </p>
-     * 
-     * @param key Key
-     * @return <code>byteArray</code>
-     */
-    public byte[] getBytesAndRemoveKey(CBORObject key) {
-        return remove(key).getBytes();
     }
 
     /**

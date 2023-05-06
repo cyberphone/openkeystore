@@ -99,24 +99,24 @@ public class CBORKeyPair {
             case RSA:
                 RSAPrivateCrtKey rsaPrivateKey = (RSAPrivateCrtKey)keyPair.getPrivate();
                 cosePrivateKey
-                    .setBytes(COSE_RSA_D_LABEL, 
-                              CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrivateExponent()))
-                    .setBytes(COSE_RSA_P_LABEL, 
-                              CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrimeP()))
-                    .setBytes(COSE_RSA_Q_LABEL, 
-                              CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrimeQ()))
-                    .setBytes(COSE_RSA_DP_LABEL, 
-                              CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrimeExponentP()))
-                    .setBytes(COSE_RSA_DQ_LABEL, 
-                              CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrimeExponentQ()))
-                    .setBytes(COSE_RSA_QINV_LABEL,
-                              CBORPublicKey.cryptoBinary(rsaPrivateKey.getCrtCoefficient()));
+                    .set(COSE_RSA_D_LABEL, 
+                         CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrivateExponent()))
+                    .set(COSE_RSA_P_LABEL, 
+                         CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrimeP()))
+                    .set(COSE_RSA_Q_LABEL, 
+                         CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrimeQ()))
+                    .set(COSE_RSA_DP_LABEL, 
+                         CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrimeExponentP()))
+                    .set(COSE_RSA_DQ_LABEL, 
+                         CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrimeExponentQ()))
+                    .set(COSE_RSA_QINV_LABEL,
+                         CBORPublicKey.cryptoBinary(rsaPrivateKey.getCrtCoefficient()));
                 break;
 
             case EC:
-                cosePrivateKey.set(COSE_EC2_D_LABEL, new CBORBytes(
+                cosePrivateKey.set(COSE_EC2_D_LABEL,
                         CBORPublicKey.curvePoint(((ECPrivateKey)keyPair.getPrivate()).getS(), 
-                                                 keyAlg)));
+                                                 keyAlg));
                 break;
 
             default:

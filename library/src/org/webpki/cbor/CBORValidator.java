@@ -109,7 +109,7 @@ public abstract class CBORValidator {
         CBORMap csfContainer = signedMap.get(key).getMap();
 
         // Get the signature value and remove it from the (map) object.
-        byte[] signatureValue = csfContainer.getBytesAndRemoveKey(SIGNATURE_LABEL);
+        byte[] signatureValue = csfContainer.remove(SIGNATURE_LABEL).getBytes();
 
         // Fetch optional keyId.
         CBORObject optionalKeyId = CBORCryptoUtils.getKeyId(csfContainer);

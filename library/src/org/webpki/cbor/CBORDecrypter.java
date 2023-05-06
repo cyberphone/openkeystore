@@ -126,9 +126,9 @@ public abstract class CBORDecrypter {
         
         // Read and remove the encryption object (map) parameters that
         // do not participate (because they cannot) in "authData".
-        byte[] iv = cefContainer.getBytesAndRemoveKey(IV_LABEL);
-        byte[] tag = cefContainer.getBytesAndRemoveKey(TAG_LABEL);
-        byte[] cipherText = cefContainer.getBytesAndRemoveKey(CIPHER_TEXT_LABEL);
+        byte[] iv = cefContainer.remove(IV_LABEL).getBytes();
+        byte[] tag = cefContainer.remove(TAG_LABEL).getBytes();
+        byte[] cipherText = cefContainer.remove(CIPHER_TEXT_LABEL).getBytes();
         
         // Check that there is no unread (illegal) data like public 
         // keys in symmetric encryption or just plain unknown elements.
@@ -144,9 +144,9 @@ public abstract class CBORDecrypter {
         byte[] authData = encryptionObject.encode();
         
         // Be nice and restore the object as well.
-        cefContainer.setBytes(IV_LABEL, iv);
-        cefContainer.setBytes(TAG_LABEL, tag);
-        cefContainer.setBytes(CIPHER_TEXT_LABEL, cipherText);
+        cefContainer.set(IV_LABEL, new CBORBytes(iv));
+        cefContainer.set(TAG_LABEL, new CBORBytes(tag));
+        cefContainer.set(CIPHER_TEXT_LABEL, new CBORBytes(cipherText));
          
         // Perform the actual decryption.
         return EncryptionCore.contentDecryption(contentEncryptionAlgorithm,
