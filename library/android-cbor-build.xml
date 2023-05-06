@@ -41,7 +41,6 @@
         <include name="**/util/ISODateTime.java"/>
         <include name="**/util/IO.java"/>
         <include name="**/util/package.html"/>
-        <include name="**/crypto/X509VerifierInterface.java"/>
         <include name="**/crypto/HmacVerifierInterface.java"/>
         <include name="**/crypto/X509SignerInterface.java"/>
         <include name="**/crypto/AsymKeySignerInterface.java"/>
