@@ -19,7 +19,6 @@ package org.webpki.json;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.PublicKey;
 
