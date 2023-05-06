@@ -84,22 +84,6 @@ public class CBORMap extends CBORObject {
     }
 
     /**
-     * Checks map for key presence.
-     * 
-     * @param key Key
-     * @return <code>true</code> if the key is present
-     */
-    public boolean containsKey(CBORObject key) {
-        byte[] testKey = getKey(key).encode();
-        for (Entry entry = root; entry != null; entry = entry.next) {
-            if (Arrays.equals(entry.encodedKey, testKey)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Sets map object.
      * <p>
      * If <code>key</code> is already present, a {@link CBORException} is thrown.
@@ -169,6 +153,37 @@ public class CBORMap extends CBORObject {
         return this;
     }
 
+    /**
+     * Sets a <code>byte string</code> value.
+     * <p>
+     * If <code>key</code> is not present a {@link CBORException} is thrown.
+     * </p>
+     * <p>
+     * This convenience method is provided for supporting
+     * cryptographic constructs like CSF and CEF.
+     * </p>
+     * 
+     * @param key Key
+     * @param byteString Byte string
+     * @return <code>this</code>
+     */
+    public CBORMap setBytes(CBORObject key, byte[] byteString) {
+        return set(key, new CBORBytes(byteString));
+    }
+
+    private Entry lookup(CBORObject key, boolean mustExist) {
+        byte[] encodedKey = getKey(key).encode();
+        for (Entry entry = root; entry != null; entry = entry.next) {
+            if (Arrays.equals(entry.encodedKey, encodedKey)) {
+                return entry;
+            }
+        }
+        if (mustExist) {
+            reportError(STDERR_MISSING_KEY + key);
+        }
+        return null;
+    }
+
      /**
      * Retrieves map object.
      * <p>
@@ -176,17 +191,36 @@ public class CBORMap extends CBORObject {
      * </p>
      * 
      * @param key Key
-     * @return Object
+     * @return <code>CBORObject</code>
      */
     public CBORObject get(CBORObject key) {
-        byte[] testKey = getKey(key).encode();
-        for (Entry entry = root; entry != null; entry = entry.next) {
-            if (entry.compare(testKey) == 0) {
-                return entry.value;
-            }
-        }
-        reportError(STDERR_MISSING_KEY + key);
-        return null;
+        return lookup(key, true).value;
+    }
+
+    /**
+     * Retrieves map object conditionally.
+     * <p>
+     * If <code>key</code> is not present, <code>defaultValue</code> is returned.
+     * <code>defaultValue</code> may be <code>null</code>.
+     * </p>
+     * 
+     * @param key Key
+     * @param defaultValue Default value
+     * @return <code>CBORObject</code> or <code>defaultValue</code>
+     */
+    public CBORObject getConditionally(CBORObject key, CBORObject defaultValue) {
+       Entry entry = lookup(key, false);
+       return entry == null ? defaultValue : entry.value; 
+    }
+
+    /**
+     * Checks map for key presence.
+     * 
+     * @param key Key
+     * @return <code>true</code> if the key is present
+     */
+    public boolean containsKey(CBORObject key) {
+        return lookup(key, false) != null;
     }
 
     /**
@@ -196,19 +230,19 @@ public class CBORMap extends CBORObject {
      * </p>
      * 
      * @param key Key
-     * @return The value mapped by the <code>key</code>
+     * @return The <code>CBORObject</code> mapped by <code>key</code>
      */
     public CBORObject remove(CBORObject key) {
-        byte[] testKey = getKey(key).encode();
+        byte[] encodedKey = getKey(key).encode();
         Entry precedingEntry = null;
         for (Entry entry = root; entry != null; entry = entry.next) {
-            int diff = entry.compare(testKey);
+            int diff = entry.compare(encodedKey);
             if (diff == 0) {
                 if (precedingEntry == null) {
                     // Remove root key.  It may be alone.
                     root = entry.next;
                 } else {
-                    // Remove key above root.  It may be the top most.
+                    // Remove key somewhere above root.
                     precedingEntry.next = entry.next;
                 }
                 return entry.value;
@@ -241,7 +275,7 @@ public class CBORMap extends CBORObject {
      * a {@link CBORException} is thrown.
      * </p>
      * <p>
-     * This method is provided for supporting the validation phase
+     * This convenience method is provided for supporting the validation phase
      * of enveloped cryptographic constructs like CSF and CEF.
      * </p>
      * 
@@ -252,24 +286,6 @@ public class CBORMap extends CBORObject {
         return remove(key).getBytes();
     }
 
-    /**
-     * Sets a <code>byte string</code> value.
-     * <p>
-     * If <code>key</code> is not present a {@link CBORException} is thrown.
-     * </p>
-     * <p>
-     * This convenience method is provided for supporting
-     * cryptographic constructs like CSF and CEF.
-     * </p>
-     * 
-     * @param key Key
-     * @param byteString Byte string
-     * @return <code>this</code>
-     */
-    public CBORMap setBytes(CBORObject key, byte[] byteString) {
-        return set(key, new CBORBytes(byteString));
-    }
-    
     @Override
     public byte[] encode() {
         byte[] encoded = encodeTagAndN(MT_MAP, size());

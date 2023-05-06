@@ -200,32 +200,43 @@ public class CBORTest {
         integerTest(value, false, false, hex);
     }
     
+    long ucheck(long v, long mask) {
+        if (v < 0) {
+            long hmask = ~mask;
+            assertTrue("<", (v & hmask) == hmask);
+            v &= mask;
+        } else {
+            assertTrue(">=0", (v & mask) == v);
+        }
+        return v;
+    }
+    
     void integerTest(String value, IntegerVariations variation, boolean mustFail) {
         BigInteger bigInteger = new BigInteger(value);
         CBORObject cborBigInteger = new CBORBigInteger(bigInteger);
         byte[] cbor = cborBigInteger.encode();
         CBORObject res = CBORObject.decode(cbor);
         assertTrue("int", res.equals(cborBigInteger));
-        long v;
+        long v = 0;
         try {
             switch (variation) {
                 case BYTE:
                     v = res.getByte();
                     break;
                 case UBYTE:
-                    v = res.getUnsignedByte();
+                    v = ucheck(res.getUnsignedByte(), 0xff);
                     break;
                 case SHORT:
                     v = res.getShort();
                     break;
                 case USHORT:
-                    v = res.getUnsignedShort();
+                    v = ucheck(res.getUnsignedShort(), 0xffff);
                     break;
                 case INT:
                     v = res.getInt();
                     break;
                 case UINT:
-                    v = res.getUnsignedInt();
+                    v = ucheck(res.getUnsignedInt(), 0xffffffffL);
                     break;
                 case LONG:
                     v = res.getLong();
@@ -235,6 +246,7 @@ public class CBORTest {
                     break;
             }
             assertFalse("Should not run: " + value, mustFail);
+            assertTrue("=" + value, v == bigInteger.longValue());
         } catch (Exception e) {
             if (res.getType() == CBORTypes.BIG_INTEGER) {
                 checkException(e, "Is type: BIG_INTEGER");
@@ -709,6 +721,12 @@ public class CBORTest {
  
         assertTrue("v1", ((CBORArray) cbor).get(1).getMap()
                 .get(new CBORInteger(58)).getInt() == 3);
+
+        assertTrue("v1", ((CBORArray) cbor).get(1).getMap()
+                .getConditionally(new CBORInteger(58), null).getInt() == 3);
+
+        assertTrue("v1", ((CBORArray) cbor).get(1).getMap()
+                .getConditionally(new CBORString("no way"), new CBORInteger(10)).getInt() == 10);
 
         assertTrue("tag5", parseCborHex("C5626869").getTag().getTagNumber() == 5);
     }
