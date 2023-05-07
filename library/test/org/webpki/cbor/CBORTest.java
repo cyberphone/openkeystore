@@ -2257,4 +2257,20 @@ public class CBORTest {
         utf8EncoderTest("\uD83D", false);
         utf8EncoderTest("\uD83D\uDE2D", true);
     }
+    
+    void compareHash(String hex) {
+        String reverse = "";
+        for (int q = Math.min(hex.length(), 8) - 1; q > 0; q -= 2) {
+            reverse += hex.charAt(q - 1) + "" + hex.charAt(q);
+        }
+        assertTrue("hash" + reverse, parseCborHex(hex).hashCode() == Integer.parseInt(reverse, 16));
+    }
+    
+    @Test
+    public void hashTest() {
+        compareHash("626869");
+        compareHash("63686944");
+        compareHash("6468694466");
+        compareHash("60");
+    }
  }
