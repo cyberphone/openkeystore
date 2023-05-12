@@ -213,7 +213,7 @@ public class CBORCryptoUtils {
 
         // The mandatory key encryption algorithm
         keyEncryption.set(ALGORITHM_LABEL,
-                          new CBORInteger(keyEncryptionAlgorithm.getCoseAlgorithmId()));
+                          new CBORInt(keyEncryptionAlgorithm.getCoseAlgorithmId()));
         
         // The sole cryptographic operation 
         EncryptionCore.AsymmetricEncryptionResult result = EncryptionCore.encryptKey(

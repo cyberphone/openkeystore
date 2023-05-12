@@ -26,7 +26,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.webpki.cbor.CBORDiagnosticNotationDecoder;
+import org.webpki.cbor.CBORDiagnosticNotation;
 import org.webpki.cbor.CBORObject;
 
 import org.webpki.json.JSONObjectReader;
@@ -62,10 +62,10 @@ public class ConvertServlet extends CoreRequestServlet {
                 case DIAG:
                     if (sequenceFlag) {
                         cborBytes = getBytesFromCborSequence(
-                                CBORDiagnosticNotationDecoder.decodeSequence(inData));
+                                CBORDiagnosticNotation.decodeSequence(inData));
                         break;
                     }
-                    cborBytes = CBORDiagnosticNotationDecoder.decode(inData).encode();
+                    cborBytes = CBORDiagnosticNotation.decode(inData).encode();
                     break;
     
                 case CSTYLE:

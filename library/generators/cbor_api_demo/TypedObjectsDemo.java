@@ -1,6 +1,6 @@
 package cbor_api_demo;
 
-import org.webpki.cbor.CBORInteger;
+import org.webpki.cbor.CBORInt;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORString;
@@ -16,7 +16,7 @@ public class TypedObjectsDemo {
         int number;
         
         static final String OBJECT_ID   = "https://example.com/object-one";
-        static final CBORObject INT_KEY = new CBORInteger(1);
+        static final CBORObject INT_KEY = new CBORInt(1);
         
         @Override
         protected void decode(CBORObject cborBody) {
@@ -56,7 +56,7 @@ public class TypedObjectsDemo {
     public static void main(String[] args) {
         // Create typed CBOR messages.
         byte[] objectOne = new CBORTag(ObjectOne.OBJECT_ID,
-                new CBORMap().set(ObjectOne.INT_KEY, new CBORInteger(-343)))
+                new CBORMap().set(ObjectOne.INT_KEY, new CBORInt(-343)))
                     .encode();
         
         byte[] objectTwo = new CBORTag(ObjectTwo.OBJECT_ID, 

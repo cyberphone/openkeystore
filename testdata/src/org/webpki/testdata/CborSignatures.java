@@ -39,10 +39,10 @@ import org.webpki.cbor.CBORX509Signer;
 import org.webpki.cbor.CBORX509Validator;
 import org.webpki.cbor.CBORAsymKeySigner;
 import org.webpki.cbor.CBORAsymKeyValidator;
-import org.webpki.cbor.CBORFloatingPoint;
+import org.webpki.cbor.CBORFloat;
 import org.webpki.cbor.CBORHmacSigner;
 import org.webpki.cbor.CBORHmacValidator;
-import org.webpki.cbor.CBORInteger;
+import org.webpki.cbor.CBORInt;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORCryptoConstants;
 import org.webpki.cbor.CBORCryptoUtils;
@@ -256,7 +256,7 @@ public class CborSignatures {
         return new CBORMap()
             .set(new CBORString("instant"), new CBORString("2021-06-10T11:23:06Z"))
             .set(new CBORString("name"), new CBORString("John Doe"))
-            .set(new CBORString("id"), new CBORInteger(123456))
+            .set(new CBORString("id"), new CBORInt(123456))
             .encode();
     }
     
@@ -457,21 +457,21 @@ public class CborSignatures {
         KeyPair keyPair = readJwk("p256");
         CBORAsymKeySigner signer = 
                 new CBORAsymKeySigner(keyPair.getPrivate()).setPublicKey(keyPair.getPublic());
-        byte[] signedData = signer.sign(new CBORInteger(-1), 
-                new CBORMap().set(new CBORInteger(1), 
+        byte[] signedData = signer.sign(new CBORInt(-1), 
+                new CBORMap().set(new CBORInt(1), 
                                         new CBORMap()
-                                            .set(new CBORInteger(1), new CBORString("Space Shop"))
-                                            .set(new CBORInteger(2), new CBORString("435.00"))
-                                            .set(new CBORInteger(3), new CBORString("USD")))
-                             .set(new CBORInteger(2), new CBORString("spaceshop.com"))
-                             .set(new CBORInteger(3), new CBORString("FR7630002111110020050014382"))
-                             .set(new CBORInteger(4), new CBORString("https://banknet2.org"))
-                             .set(new CBORInteger(5), new CBORString("05768401"))
-                             .set(new CBORInteger(6), new CBORString("2022-09-29T09:34:08-05:00"))
-                             .set(new CBORInteger(7),
+                                            .set(new CBORInt(1), new CBORString("Space Shop"))
+                                            .set(new CBORInt(2), new CBORString("435.00"))
+                                            .set(new CBORInt(3), new CBORString("USD")))
+                             .set(new CBORInt(2), new CBORString("spaceshop.com"))
+                             .set(new CBORInt(3), new CBORString("FR7630002111110020050014382"))
+                             .set(new CBORInt(4), new CBORString("https://banknet2.org"))
+                             .set(new CBORInt(5), new CBORString("05768401"))
+                             .set(new CBORInt(6), new CBORString("2022-09-29T09:34:08-05:00"))
+                             .set(new CBORInt(7),
                                         new CBORMap()
-                                            .set(new CBORInteger(1), new CBORFloatingPoint(38.8882))
-                                            .set(new CBORInteger(2), new CBORFloatingPoint(77.0199))))
+                                            .set(new CBORInt(1), new CBORFloat(38.8882))
+                                            .set(new CBORInt(2), new CBORFloat(77.0199))))
                 .encode();
         CBORAsymKeyValidator validator = new CBORAsymKeyValidator(keyPair.getPublic());
         boolean changed = true;
@@ -479,7 +479,7 @@ public class CborSignatures {
         try {
             oldSignature = IO.readFile(fileName);
             try {
-                validator.validate(new CBORInteger(-1), CBORObject.decode(oldSignature).getMap());
+                validator.validate(new CBORInt(-1), CBORObject.decode(oldSignature).getMap());
             } catch (Exception e) {
                 throw new GeneralSecurityException(
                         "ERROR - Old signature '" + fileName + "' did not validate");

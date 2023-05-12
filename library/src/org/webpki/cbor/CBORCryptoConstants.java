@@ -28,92 +28,92 @@ public interface CBORCryptoConstants {
     /**
      * COSE "kty" label (1).
      */
-    CBORInteger COSE_KTY_LABEL          = new CBORInteger(1);
+    CBORInt COSE_KTY_LABEL          = new CBORInt(1);
 
     /**
      * COSE OKP "kty" identifier (1).
      */
-    CBORInteger COSE_OKP_KTY            = new CBORInteger(1);
+    CBORInt COSE_OKP_KTY            = new CBORInt(1);
 
     /**
      * COSE OKP "crv" label (-1).
      */
-    CBORInteger COSE_OKP_CRV_LABEL      = new CBORInteger(-1);
+    CBORInt COSE_OKP_CRV_LABEL      = new CBORInt(-1);
 
     /**
      * COSE OKP "x" label (-2).
      */
-    CBORInteger COSE_OKP_X_LABEL        = new CBORInteger(-2);
+    CBORInt COSE_OKP_X_LABEL        = new CBORInt(-2);
 
     /**
      * COSE EC2 "kty" identifier (2).
      */
-    CBORInteger COSE_EC2_KTY            = new CBORInteger(2);
+    CBORInt COSE_EC2_KTY            = new CBORInt(2);
 
     /**
      * COSE EC2 "crv" label (-1).
      */
-    CBORInteger COSE_EC2_CRV_LABEL      = new CBORInteger(-1);
+    CBORInt COSE_EC2_CRV_LABEL      = new CBORInt(-1);
 
     /**
      * COSE EC2 "x" label (-2).
      */
-    CBORInteger COSE_EC2_X_LABEL        = new CBORInteger(-2);
+    CBORInt COSE_EC2_X_LABEL        = new CBORInt(-2);
 
     /**
      * COSE EC2 "y" label (-3).
      */
-    CBORInteger COSE_EC2_Y_LABEL        = new CBORInteger(-3);
+    CBORInt COSE_EC2_Y_LABEL        = new CBORInt(-3);
     
     /**
      * COSE RSA "kty" identifier (3).
      */
-    CBORInteger COSE_RSA_KTY            = new CBORInteger(3);
+    CBORInt COSE_RSA_KTY            = new CBORInt(3);
 
     /**
      * COSE RSA modulus label (-1).
      */
-    CBORInteger COSE_RSA_N_LABEL        = new CBORInteger(-1);
+    CBORInt COSE_RSA_N_LABEL        = new CBORInt(-1);
 
     /**
      * COSE RSA exponent label (-2).
      */
-    CBORInteger COSE_RSA_E_LABEL        = new CBORInteger(-2);
+    CBORInt COSE_RSA_E_LABEL        = new CBORInt(-2);
     
     /**
      * COSE "crv" identifier (1).
      */
-    CBORInteger COSE_CRV_P_256          = new CBORInteger(1);
+    CBORInt COSE_CRV_P_256          = new CBORInt(1);
 
     /**
      * COSE "crv" identifier (2).
      */
-    CBORInteger COSE_CRV_P_384          = new CBORInteger(2);
+    CBORInt COSE_CRV_P_384          = new CBORInt(2);
 
     /**
      * COSE "crv" identifier (3).
      */
-    CBORInteger COSE_CRV_P_521          = new CBORInteger(3);
+    CBORInt COSE_CRV_P_521          = new CBORInt(3);
 
     /**
      * COSE "crv" identifier (4).
      */
-    CBORInteger COSE_CRV_X25519         = new CBORInteger(4);
+    CBORInt COSE_CRV_X25519         = new CBORInt(4);
 
     /**
      * COSE "crv" identifier (5).
      */
-    CBORInteger COSE_CRV_X448           = new CBORInteger(5);
+    CBORInt COSE_CRV_X448           = new CBORInt(5);
 
     /**
      * COSE "crv" identifier (6).
      */
-    CBORInteger COSE_CRV_ED25519        = new CBORInteger(6);
+    CBORInt COSE_CRV_ED25519        = new CBORInt(6);
 
     /**
      * COSE "crv" identifier (7).
      */
-    CBORInteger COSE_CRV_ED448          = new CBORInteger(7);
+    CBORInt COSE_CRV_ED448          = new CBORInt(7);
     
     /////////////////////////////////////////////////////////////////
     //                                                             //
@@ -129,60 +129,60 @@ public interface CBORCryptoConstants {
      * Passes through <i>without any interpretation</i> and is protected by 
      * being a part of the signed data respectively AAD.
      */
-    CBORInteger CUSTOM_DATA_LABEL    = new CBORInteger(0);
+    CBORInt CUSTOM_DATA_LABEL    = new CBORInt(0);
     
     /**
      * CSF/CEF "algorithm" label (1).
      * Note: This label is also used in key encryption sub-maps.
      */
-    CBORInteger ALGORITHM_LABEL      = new CBORInteger(1);
+    CBORInt ALGORITHM_LABEL      = new CBORInt(1);
 
     /**
      * CEF "keyEncryption" label (2).
      */
-    CBORInteger KEY_ENCRYPTION_LABEL = new CBORInteger(2);
+    CBORInt KEY_ENCRYPTION_LABEL = new CBORInt(2);
 
     /**
      * CSF/CEF "keyId" label (3).
      * Note: This label may also be used in key encryption sub-maps.
      */
-    CBORInteger KEY_ID_LABEL         = new CBORInteger(3);
+    CBORInt KEY_ID_LABEL         = new CBORInt(3);
 
     /**
      * CSF/CEF "publicKey" label (4).
      */
-    CBORInteger PUBLIC_KEY_LABEL     = new CBORInteger(4);
+    CBORInt PUBLIC_KEY_LABEL     = new CBORInt(4);
 
     /**
      * CSF/CEF "certificatePath" label (5).
      */
-    CBORInteger CERT_PATH_LABEL      = new CBORInteger(5);
+    CBORInt CERT_PATH_LABEL      = new CBORInt(5);
 
     /**
      * CSF "signature" label (6).
      */
-    CBORInteger SIGNATURE_LABEL      = new CBORInteger(6);
+    CBORInt SIGNATURE_LABEL      = new CBORInt(6);
     
     /**
      * CEF "ephemeralKey" label (7).
      * Note: This label is only used in key encryption sub-maps.
      */
-    CBORInteger EPHEMERAL_KEY_LABEL  = new CBORInteger(7);
+    CBORInt EPHEMERAL_KEY_LABEL  = new CBORInt(7);
 
     /**
      * CEF "tag" label (8).
      */
-    CBORInteger TAG_LABEL            = new CBORInteger(8);
+    CBORInt TAG_LABEL            = new CBORInt(8);
  
     /**
      * CEF "iv" label (9).
      */
-    CBORInteger IV_LABEL             = new CBORInteger(9);
+    CBORInt IV_LABEL             = new CBORInt(9);
 
     /**
      * CEF "cipherText" label (10).
      * Note: This label is also used in key encryption sub-maps using key-wrapping.
      */
-    CBORInteger CIPHER_TEXT_LABEL    = new CBORInteger(10);
+    CBORInt CIPHER_TEXT_LABEL    = new CBORInt(10);
 
 }

@@ -1,11 +1,11 @@
 package cbor_api_demo;
 
 import org.webpki.cbor.CBORArray;
-import org.webpki.cbor.CBORBoolean;
-import org.webpki.cbor.CBORFloatingPoint;
+import org.webpki.cbor.CBORBool;
+import org.webpki.cbor.CBORFloat;
 import org.webpki.cbor.CBORHmacSigner;
 import org.webpki.cbor.CBORHmacValidator;
-import org.webpki.cbor.CBORInteger;
+import org.webpki.cbor.CBORInt;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORString;
@@ -19,17 +19,17 @@ public class SignatureDemo {
     static final byte[] HMAC_KEY = HexaDecimal.decode(
             "7fdd851a3b9d2dafc5f0d00030e22b9343900cd42ede4948568a4a2ee655291a");
     
-    static final CBORInteger HELLO_LABEL     = new CBORInteger(1);
-    static final CBORInteger ARRAY_LABEL     = new CBORInteger(2);
-    static final CBORInteger SIGNATURE_LABEL = new CBORInteger(-1);
+    static final CBORInt HELLO_LABEL     = new CBORInt(1);
+    static final CBORInt ARRAY_LABEL     = new CBORInt(2);
+    static final CBORInt SIGNATURE_LABEL = new CBORInt(-1);
     
     public static void main(String[] args) {
         // Create CBOR data to be signed.
         CBORMap dataToBeSigned = new CBORMap()
             .set(HELLO_LABEL, new CBORString("Hello Signed CBOR World!"))
             .set(ARRAY_LABEL, new CBORArray()
-                .add(new CBORFloatingPoint(-4.5))
-                .add(new CBORBoolean(true)));
+                .add(new CBORFloat(-4.5))
+                .add(new CBORBool(true)));
         
         // Sign data using CSF.
         byte[] signatureObject = new CBORHmacSigner(HMAC_KEY, HmacAlgorithms.HMAC_SHA256)

@@ -49,8 +49,8 @@ public class CBORKeyPair {
     
     private CBORKeyPair() {}
     
-    static final CBORInteger COSE_EC2_D_LABEL        = new CBORInteger(-4);
-    static final CBORInteger COSE_OKP_D_LABEL        = new CBORInteger(-4);
+    static final CBORInt COSE_EC2_D_LABEL        = new CBORInt(-4);
+    static final CBORInt COSE_OKP_D_LABEL        = new CBORInt(-4);
 
     /*
             https://datatracker.ietf.org/doc/html/rfc8230
@@ -79,12 +79,12 @@ public class CBORKeyPair {
         +-------+-------+-------+-------+-----------------------------------+
     */
 
-    static final CBORInteger COSE_RSA_D_LABEL        = new CBORInteger(-3);
-    static final CBORInteger COSE_RSA_P_LABEL        = new CBORInteger(-4);
-    static final CBORInteger COSE_RSA_Q_LABEL        = new CBORInteger(-5);
-    static final CBORInteger COSE_RSA_DP_LABEL       = new CBORInteger(-6);
-    static final CBORInteger COSE_RSA_DQ_LABEL       = new CBORInteger(-7);
-    static final CBORInteger COSE_RSA_QINV_LABEL     = new CBORInteger(-8);
+    static final CBORInt COSE_RSA_D_LABEL        = new CBORInt(-3);
+    static final CBORInt COSE_RSA_P_LABEL        = new CBORInt(-4);
+    static final CBORInt COSE_RSA_Q_LABEL        = new CBORInt(-5);
+    static final CBORInt COSE_RSA_DP_LABEL       = new CBORInt(-6);
+    static final CBORInt COSE_RSA_DQ_LABEL       = new CBORInt(-7);
+    static final CBORInt COSE_RSA_QINV_LABEL     = new CBORInt(-8);
 
     /**
     * Converts JCE key pair to COSE.

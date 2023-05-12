@@ -26,35 +26,35 @@ import org.webpki.util.UTF8;
 /**
  * Class for converting diagnostic CBOR to CBOR.
  */
-public class CBORDiagnosticNotationDecoder {
+public class CBORDiagnosticNotation {
 
-    char[] cborDiagnostic;
+    char[] cborText;
     int index;
     boolean sequence;
     
-    CBORDiagnosticNotationDecoder(String cborDiagnostic, boolean sequence) {
-        this.cborDiagnostic = cborDiagnostic.toCharArray();
+    CBORDiagnosticNotation(String cborText, boolean sequence) {
+        this.cborText = cborText.toCharArray();
         this.sequence = sequence;
     }
     
     /**
      * Decodes diagnostic notation CBOR to CBOR.
      * 
-     * @param cborDiagnostic String holding diagnostic (textual) CBOR
+     * @param cborText String holding diagnostic (textual) CBOR
      * @return {@link CBORObject}
      */
-    public static CBORObject decode(String cborDiagnostic) {
-        return new CBORDiagnosticNotationDecoder(cborDiagnostic, false).readToEOF();
+    public static CBORObject decode(String cborText) {
+        return new CBORDiagnosticNotation(cborText, false).readToEOF();
     }
 
     /**
      * Decodes diagnostic notation CBOR sequence to CBOR.
      * 
-     * @param cborDiagnostic String holding diagnostic (textual) CBOR
+     * @param cborText String holding diagnostic (textual) CBOR
      * @return {@link CBORObject}[] Non-empty array of CBOR objects
      */
-    public static CBORObject[] decodeSequence(String cborDiagnostic) {
-        return new CBORDiagnosticNotationDecoder(cborDiagnostic, true).readSequenceToEOF();
+    public static CBORObject[] decodeSequence(String cborText) {
+        return new CBORDiagnosticNotation(cborText, true).readSequenceToEOF();
     }
 
     private void reportError(String error) {
@@ -65,23 +65,23 @@ public class CBORDiagnosticNotationDecoder {
         }
         int linePos = 0;
         while (start < index - 1) {
-            if (cborDiagnostic[start++] == '\n') {
+            if (cborText[start++] == '\n') {
                 linePos = start;
             }
         }
         StringBuilder complete = new StringBuilder();
-        if (index > 0 && cborDiagnostic[index - 1] == '\n') {
+        if (index > 0 && cborText[index - 1] == '\n') {
             index--;
         }
         int endLine = index;
-        while (endLine < cborDiagnostic.length) {
-            if (cborDiagnostic[endLine] == '\n') {
+        while (endLine < cborText.length) {
+            if (cborText[endLine] == '\n') {
                 break;
             }
             endLine++;
         }
         for (int q = linePos; q < endLine; q++) {
-            complete.append(cborDiagnostic[q]);
+            complete.append(cborText[q]);
         }
         complete.append('\n');
         for (int q = linePos; q < index; q++) {
@@ -89,7 +89,7 @@ public class CBORDiagnosticNotationDecoder {
         }
         int lineNumber = 1;
         for (int q = 0; q < index - 1; q++) {
-            if (cborDiagnostic[q] == '\n') {
+            if (cborText[q] == '\n') {
                 lineNumber++;
             }
         }
@@ -101,7 +101,7 @@ public class CBORDiagnosticNotationDecoder {
     
     private CBORObject readToEOF() {
         CBORObject cborObject = getObject();
-        if (index < cborDiagnostic.length) {
+        if (index < cborText.length) {
             readChar();
             reportError("Unexpected data after token");
         }
@@ -112,7 +112,7 @@ public class CBORDiagnosticNotationDecoder {
         ArrayList<CBORObject> sequence = new ArrayList<>();
         while (true) {
             sequence.add(getObject());
-            if (index < cborDiagnostic.length) {
+            if (index < cborText.length) {
                 scanFor(",");
             } else {
                 return sequence.toArray(new CBORObject[0]);
@@ -190,11 +190,11 @@ public class CBORDiagnosticNotationDecoder {
                 
             case 't':
                 scanFor("rue");
-                return new CBORBoolean(true);
+                return new CBORBool(true);
        
             case 'f':
                 scanFor("alse");
-                return new CBORBoolean(false);
+                return new CBORBool(false);
        
             case 'n':
                 scanFor("ull");
@@ -203,7 +203,7 @@ public class CBORDiagnosticNotationDecoder {
             case '-':
                 if (readChar() == 'I') {
                     scanFor("nfinity");
-                    return new CBORFloatingPoint(Double.NEGATIVE_INFINITY);
+                    return new CBORFloat(Double.NEGATIVE_INFINITY);
                 }
                 return getNumberOrTag(true);
 
@@ -221,11 +221,11 @@ public class CBORDiagnosticNotationDecoder {
 
             case 'N':
                 scanFor("aN");
-                return new CBORFloatingPoint(Double.NaN);
+                return new CBORFloat(Double.NaN);
 
             case 'I':
                 scanFor("nfinity");
-                return new CBORFloatingPoint(Double.POSITIVE_INFINITY);
+                return new CBORFloat(Double.POSITIVE_INFINITY);
                 
             default:
                 index--;
@@ -296,7 +296,7 @@ public class CBORDiagnosticNotationDecoder {
                 if (value.isInfinite()) {
                     reportError("Floating point value out of range");
                 }
-                return new CBORFloatingPoint(negative ? -value : value);
+                return new CBORFloat(negative ? -value : value);
             }
             if (nextChar() == '(') {
                 // Do not accept '-', 0xhhh, or leading zeros
@@ -321,7 +321,7 @@ public class CBORDiagnosticNotationDecoder {
             }
             BigInteger bigInteger = new BigInteger(number, prefix == null ? 10 : prefix);
             // Clone: slight quirk to get the proper CBOR integer type  
-            return new CBORBigInteger(negative ? bigInteger.negate() : bigInteger).clone();
+            return new CBORBigInt(negative ? bigInteger.negate() : bigInteger).clone();
         } catch (IllegalArgumentException e) {
             reportError(e.getMessage());
         }
@@ -335,7 +335,7 @@ public class CBORDiagnosticNotationDecoder {
     }
 
     private char nextChar() {
-        if (index == cborDiagnostic.length) return 0;
+        if (index == cborText.length) return 0;
         char c = readChar();
         index--;
         return c;
@@ -486,15 +486,15 @@ public class CBORDiagnosticNotationDecoder {
     }
 
     private char readChar() {
-        if (index >= cborDiagnostic.length) {
+        if (index >= cborText.length) {
             reportError("Unexpected EOF");
         }
-        return cborDiagnostic[index++];
+        return cborText[index++];
     }
 
     @SuppressWarnings("fallthrough")
     private void scanNonSignficantData() {
-        while (index < cborDiagnostic.length) {
+        while (index < cborText.length) {
             switch (nextChar()) {
                 case ' ':
                 case '\n':
@@ -513,7 +513,7 @@ public class CBORDiagnosticNotationDecoder {
                 // Yes, '//' is currently considered as equivalent to '#'
                 case '#':
                     readChar();
-                    while (index < cborDiagnostic.length && readChar() != '\n') {
+                    while (index < cborText.length && readChar() != '\n') {
                     }
                     continue;
 

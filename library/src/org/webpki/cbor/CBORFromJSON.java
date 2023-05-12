@@ -152,11 +152,11 @@ public class CBORFromJSON {
                 
             case 't':
                 scanFor("rue");
-                return new CBORBoolean(true);
+                return new CBORBool(true);
        
             case 'f':
                 scanFor("alse");
-                return new CBORBoolean(false);
+                return new CBORBool(false);
        
             case 'n':
                 scanFor("ull");
@@ -197,7 +197,7 @@ public class CBORFromJSON {
             if (Math.abs(value) > MAX_JSON_INTEGER) {
                 reportError("JSON integer outside of the 2^53 range: " + value);
             }
-            return new CBORInteger(value);
+            return new CBORInt(value);
         } catch (IllegalArgumentException e) {
             reportError(e.getMessage());
         }

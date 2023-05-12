@@ -123,7 +123,7 @@ public class CBORTest {
         }
     };
     
-    static CBORInteger SIGNATURE_LABEL = new CBORInteger(-1);
+    static CBORInt SIGNATURE_LABEL = new CBORInt(-1);
     
     static KeyPair readJwk(String keyType) throws Exception {
         JSONObjectReader jwkPlus = JSONParser.parse(
@@ -174,7 +174,7 @@ public class CBORTest {
                      boolean set, 
                      String hex) {
         CBORObject cborObject = set ? 
-                new CBORInteger(value, forceUnsigned) : new CBORInteger(value);
+                new CBORInt(value, forceUnsigned) : new CBORInt(value);
         byte[] cbor = cborObject.encode();
         String calc = HexaDecimal.encode(cbor);
         assertTrue("int=" + value + " c=" + calc + " h=" + hex, hex.equals(calc));
@@ -211,10 +211,10 @@ public class CBORTest {
     
     void integerTest(String value, IntegerVariations variation, boolean mustFail) {
         BigInteger bigInteger = new BigInteger(value);
-        CBORObject cborBigInteger = new CBORBigInteger(bigInteger);
-        byte[] cbor = cborBigInteger.encode();
+        CBORObject CBORBigInt = new CBORBigInt(bigInteger);
+        byte[] cbor = CBORBigInt.encode();
         CBORObject res = CBORObject.decode(cbor);
-        assertTrue("int", res.equals(cborBigInteger));
+        assertTrue("int", res.equals(CBORBigInt));
         long v = 0;
         try {
             switch (variation) {
@@ -264,7 +264,7 @@ public class CBORTest {
     }
 
     void bigIntegerTest(String value, String hex) {
-        byte[] cbor = new CBORBigInteger(new BigInteger(value)).encode();
+        byte[] cbor = new CBORBigInt(new BigInteger(value)).encode();
         String calc = HexaDecimal.encode(cbor);
         assertTrue("big int=" + value + " c=" + calc + " h=" + hex,
                 hex.equals(HexaDecimal.encode(cbor)));
@@ -306,7 +306,7 @@ public class CBORTest {
             CBORObject cborObject = parseCborHex(hex);
             int l;
             if (mustFail == 0) {
-                switch (((CBORFloatingPoint) cborObject).getIeeeVariant()) {
+                switch (((CBORFloat) cborObject).getIeeeVariant()) {
                     case F16:
                         l = 3;
                         break;
@@ -347,43 +347,43 @@ public class CBORTest {
     @Test
     public void assortedTests() {
         CBORArray cborArray = new CBORArray()
-            .add(new CBORInteger(1))
+            .add(new CBORInt(1))
             .add(new CBORArray()
-                .add(new CBORInteger(2))
-                .add(new CBORInteger(3)))
+                .add(new CBORInt(2))
+                .add(new CBORInt(3)))
             .add(new CBORArray()
-                .add(new CBORInteger(4))
-                .add(new CBORInteger(5)));
+                .add(new CBORInt(4))
+                .add(new CBORInt(5)));
         textCompare(cborArray,
                 "[1, [2, 3], [4, 5]]");
         binaryCompare(cborArray,"8301820203820405");
 
         cborArray = new CBORArray()
-            .add(new CBORInteger(1))
+            .add(new CBORInt(1))
             .add(new CBORMap()
-                .set(new CBORString("best"), new CBORInteger(2))
-                .set(new CBORString("best2"), new CBORInteger(3))
-                .set(new CBORString("another"), new CBORInteger(4)))
+                .set(new CBORString("best"), new CBORInt(2))
+                .set(new CBORString("best2"), new CBORInt(3))
+                .set(new CBORString("another"), new CBORInt(4)))
             .add(new CBORArray()
-                .add(new CBORInteger(5))
-                .add(new CBORInteger(6)));
+                .add(new CBORInt(5))
+                .add(new CBORInt(6)));
         textCompare(cborArray,
                 "[1, {\n  \"best\": 2,\n  \"best2\": 3,\n  \"another\": 4\n}, [5, 6]]");
         binaryCompare(cborArray,
                       "8301a36462657374026562657374320367616e6f7468657204820506");
 
         cborArray = new CBORArray()
-            .add(new CBORInteger(1))
+            .add(new CBORInt(1))
             .add(new CBORMap()
-                .set(new CBORInteger(8), new CBORInteger(2))
-                .set(new CBORInteger(58), new CBORInteger(3))
-                .set(new CBORInteger(-90), new CBORNull())
-                .set(new CBORInteger(-4), new CBORArray()
-                    .add(new CBORBoolean(true))
-                    .add(new CBORBoolean(false))))
+                .set(new CBORInt(8), new CBORInt(2))
+                .set(new CBORInt(58), new CBORInt(3))
+                .set(new CBORInt(-90), new CBORNull())
+                .set(new CBORInt(-4), new CBORArray()
+                    .add(new CBORBool(true))
+                    .add(new CBORBool(false))))
             .add(new CBORArray()
-                .add(new CBORInteger(4))
-                .add(new CBORInteger(5)));
+                .add(new CBORInt(4))
+                .add(new CBORInt(5)));
         textCompare(cborArray,
                 "[1, {\n  8: 2,\n  58: 3,\n  -4: [true, false],\n  -90: null\n}, [4, 5]]");
         binaryCompare(cborArray,"8301a40802183a032382f5f43859f6820405");
@@ -484,9 +484,9 @@ public class CBORTest {
         
         arrayTest(new CBORArray(), "80");
         arrayTest(new CBORArray()
-                .add(new CBORInteger(1))
-                .add(new CBORInteger(2))
-                .add(new CBORInteger(3)), "83010203");
+                .add(new CBORInt(1))
+                .add(new CBORInt(2))
+                .add(new CBORInt(3)), "83010203");
         
 //        unsupportedTag("C07819323032312D30352D30315430363A33373A35352B30313A3030");
         unsupportedTag("1C");
@@ -579,7 +579,7 @@ public class CBORTest {
         
         int objectNumber;
         MapTest insert(CBORObject key) throws IOException {
-            set(key, new CBORInteger(objectNumber++));
+            set(key, new CBORInt(objectNumber++));
             return this;
         }
     }
@@ -598,12 +598,12 @@ public class CBORTest {
     
     void sortingTest(String[] expectedOrder) throws Exception{
         MapTest m = new MapTest();
-        m.insert(new CBORInteger(10))
-         .insert(new CBORArray().add(new CBORInteger(100)))
-         .insert(new CBORInteger(-1))
-         .insert(new CBORBoolean(false))
-         .insert(new CBORArray().add(new CBORInteger(-1)))
-         .insert(new CBORInteger(100))
+        m.insert(new CBORInt(10))
+         .insert(new CBORArray().add(new CBORInt(100)))
+         .insert(new CBORInt(-1))
+         .insert(new CBORBool(false))
+         .insert(new CBORArray().add(new CBORInt(-1)))
+         .insert(new CBORInt(100))
          .insert(new CBORString("aaa"))
          .insert(new CBORString("z"))
          .insert(new CBORString("aa"));
@@ -711,20 +711,20 @@ public class CBORTest {
 
         try {
             ((CBORArray) cbor).get(1).getMap()
-                    .get(new CBORInteger(-91)).getInt();
+                    .get(new CBORInt(-91)).getInt();
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, "Missing key: -91");
         }
  
         assertTrue("v1", ((CBORArray) cbor).get(1).getMap()
-                .get(new CBORInteger(58)).getInt() == 3);
+                .get(new CBORInt(58)).getInt() == 3);
 
         assertTrue("v1", ((CBORArray) cbor).get(1).getMap()
-                .getConditionally(new CBORInteger(58), null).getInt() == 3);
+                .getConditionally(new CBORInt(58), null).getInt() == 3);
 
         assertTrue("v1", ((CBORArray) cbor).get(1).getMap()
-                .getConditionally(new CBORString("no way"), new CBORInteger(10)).getInt() == 10);
+                .getConditionally(new CBORString("no way"), new CBORInt(10)).getInt() == 10);
 
         assertTrue("tag5", parseCborHex("C5626869").getTag().getTagNumber() == 5);
     }
@@ -745,9 +745,9 @@ public class CBORTest {
         try {
             unread = parseCborHex("8301a40802183a032382f5f43859f6820405");
             unread = ((CBORArray) unread).get(1).getMap();
-            ((CBORMap)unread).get(new CBORInteger(8)).getInt();
-            ((CBORMap)unread).get(new CBORInteger(58)).getInt();
-            ((CBORArray)((CBORMap)unread).get(new CBORInteger(-4))).get(0).getBoolean();
+            ((CBORMap)unread).get(new CBORInt(8)).getInt();
+            ((CBORMap)unread).get(new CBORInt(58)).getInt();
+            ((CBORArray)((CBORMap)unread).get(new CBORInt(-4))).get(0).getBoolean();
             unread.checkForUnread();
             fail("must not execute");
         } catch (Exception e) {
@@ -768,23 +768,23 @@ public class CBORTest {
         unread.checkForUnread();
         
         /*
-             .addObject(new CBORInteger(1))
+             .addObject(new CBORInt(1))
             .addObject(new CBORMap()
-                .setObject(8, new CBORInteger(2))
-                .setObject(58, new CBORInteger(3))
+                .setObject(8, new CBORInt(2))
+                .setObject(58, new CBORInt(3))
                 .setObject(-90, new CBORNull())
                 .setObject(-4, new CBORArray()
-                    .addObject(new CBORBoolean(true))
-                    .addObject(new CBORBoolean(false))))
+                    .addObject(new CBORBool(true))
+                    .addObject(new CBORBool(false))))
  */
 
         // If you just want to mark an item as "read" you can use scan();
         try {
             unread = parseCborHex("8301a40802183a032382f5f43859f6820405");
             unread = ((CBORArray) unread).get(1).getMap();
-            ((CBORMap)unread).get(new CBORInteger(8)).getInt();
-            ((CBORMap)unread).get(new CBORInteger(58)).getInt();
-            ((CBORArray)((CBORMap)unread).get(new CBORInteger(-4))).get(0).scan();
+            ((CBORMap)unread).get(new CBORInt(8)).getInt();
+            ((CBORMap)unread).get(new CBORInt(58)).getInt();
+            ((CBORArray)((CBORMap)unread).get(new CBORInt(-4))).get(0).scan();
             unread.checkForUnread();
             fail("must not execute");
         } catch (Exception e) {
@@ -796,9 +796,9 @@ public class CBORTest {
         try {
             unread = parseCborHex("8301a40802183a032382f5f43859f6820405");
             unread = ((CBORArray) unread).get(1).getMap();
-            ((CBORMap)unread).get(new CBORInteger(8)).getInt();
-            ((CBORMap)unread).get(new CBORInteger(58)).getInt();
-            ((CBORArray)((CBORMap)unread).get(new CBORInteger(-4))).get(0);
+            ((CBORMap)unread).get(new CBORInt(8)).getInt();
+            ((CBORMap)unread).get(new CBORInt(58)).getInt();
+            ((CBORArray)((CBORMap)unread).get(new CBORInt(-4))).get(0);
             unread.checkForUnread();
             fail("must not execute");
         } catch (Exception e) {
@@ -870,13 +870,13 @@ public class CBORTest {
                 "Is type: INTEGER, requested: FLOATING_POINT");
         }
         try {
-            new CBORMap().set(null, new CBORInteger(1));
+            new CBORMap().set(null, new CBORInt(1));
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, CBORObject.STDERR_ARGUMENT_IS_NULL);
         }
         try {
-            new CBORMap().set(new CBORInteger(1), null);
+            new CBORMap().set(new CBORInt(1), null);
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, CBORObject.STDERR_ARGUMENT_IS_NULL);
@@ -992,15 +992,15 @@ public class CBORTest {
     
     CBORMap createDataToBeSigned() throws IOException {
         return new CBORMap()
-        .set(new CBORInteger(1), new CBORMap()
-                .set(new CBORInteger(1), new CBORString("Space Shop"))
-                .set(new CBORInteger(2), new CBORString("100.00"))
-                .set(new CBORInteger(3), new CBORString("EUR")))
-            .set(new CBORInteger(2), new CBORString("spaceshop.com"))
-            .set(new CBORInteger(3), new CBORString("FR7630002111110020050014382"))
-            .set(new CBORInteger(4), new CBORString("https://europeanpaymentsinitiative.eu/fwp"))
-            .set(new CBORInteger(5), new CBORString("62932"))
-            .set(new CBORInteger(6), new CBORString("2021-05-03T09:50:08Z"));
+        .set(new CBORInt(1), new CBORMap()
+                .set(new CBORInt(1), new CBORString("Space Shop"))
+                .set(new CBORInt(2), new CBORString("100.00"))
+                .set(new CBORInt(3), new CBORString("EUR")))
+            .set(new CBORInt(2), new CBORString("spaceshop.com"))
+            .set(new CBORInt(3), new CBORString("FR7630002111110020050014382"))
+            .set(new CBORInt(4), new CBORString("https://europeanpaymentsinitiative.eu/fwp"))
+            .set(new CBORInt(5), new CBORString("62932"))
+            .set(new CBORInt(6), new CBORString("2021-05-03T09:50:08Z"));
     }
     
     void backAndForth(KeyPair keyPair) throws Exception {
@@ -1583,7 +1583,7 @@ public class CBORTest {
                         p256.getPrivate()).decrypt(
                             
                                     p256Encrypted.getMap()
-                                        .set(new CBORInteger(-2), new CBORInteger(5)));
+                                        .set(new CBORInt(-2), new CBORInt(5)));
             fail("must not run");
         } catch (Exception e) {
             checkException(e, "Map key -2 with argument of type=INTEGER with value=5 was never read");
@@ -1658,7 +1658,7 @@ public class CBORTest {
             a256Decrypter.decrypt(
                 a256Encrypted.getMap().set(KEY_ENCRYPTION_LABEL, 
                         new CBORMap().set(ALGORITHM_LABEL,
-                                new CBORInteger(600))));
+                                new CBORInt(600))));
             fail("must not run");
         } catch (Exception e) {
             checkException(e, "Map key 1 with argument of type=INTEGER with value=600 was never read");
@@ -1693,7 +1693,7 @@ public class CBORTest {
                 @Override
                 public CBORObject getCustomData() {
                     // Custom data as well
-                    return new CBORArray().add(new CBORInteger(500));
+                    return new CBORArray().add(new CBORInt(500));
                 }
                 
             });
@@ -1895,8 +1895,8 @@ public class CBORTest {
         sequence = new CBORSequenceBuilder()
             .addObject(new CBORString("Hello CBOR Sequence World!"))
             .addObject(new CBORArray()
-                .add(new CBORFloatingPoint(4.5))
-                .add(new CBORBoolean(true)))
+                .add(new CBORFloat(4.5))
+                .add(new CBORBool(true)))
             .encode();
         inputStream = new ByteArrayInputStream(sequence);
         position = 0;
@@ -1915,7 +1915,7 @@ public class CBORTest {
                 "{", "\"lab\"", ":", "true", "}"
         };
         CBORMap cborMap = new CBORMap()
-            .set(new CBORString("lab"), new CBORBoolean(true));
+            .set(new CBORString("lab"), new CBORBool(true));
         assertTrue("json", cborMap.equals(serializeJson(jsonTokens)));
         
         assertTrue("json", new CBORMap().equals(serializeJson(new String[] {"{","}"})));
@@ -1924,8 +1924,8 @@ public class CBORTest {
                 "{", "\"lab\"", ":", "true", "," ,"\"j\"",":", "2000", "}"
         };
         cborMap = new CBORMap()
-            .set(new CBORString("lab"), new CBORBoolean(true))
-            .set(new CBORString("j"), new CBORInteger(2000));
+            .set(new CBORString("lab"), new CBORBool(true))
+            .set(new CBORString("j"), new CBORInt(2000));
         assertTrue("json", cborMap.equals(serializeJson(jsonTokens)));
         
         assertTrue("json", new CBORArray().equals(serializeJson(new String[] {"[","]"})));
@@ -1936,21 +1936,21 @@ public class CBORTest {
                                               "\"\\u20ac$\\u000a\\b\\r\\t\\\"\\\\ \"")));
         assertTrue("json", new CBORString("\u0123\u4567\u89ab\ucdef\uABCD\uEF00").equals(serializeJson(
                                               "\"\\u0123\\u4567\\u89ab\\ucdef\\uABCD\\uEF00\"")));
-        assertTrue("json", new CBORBoolean(true).equals(serializeJson("true")));
-        assertTrue("json", new CBORBoolean(false).equals(serializeJson("false")));
+        assertTrue("json", new CBORBool(true).equals(serializeJson("true")));
+        assertTrue("json", new CBORBool(false).equals(serializeJson("false")));
         assertTrue("json", new CBORNull().equals(serializeJson("null")));
-        assertTrue("json", new CBORInteger(-234).equals(serializeJson("-234")));
-        assertTrue("json", new CBORInteger(234).equals(serializeJson("234")));
-        assertTrue("json", new CBORInteger(1).equals(serializeJson("1")));
-        assertTrue("json", new CBORInteger(987654321).equals(serializeJson("0987654321")));
-        assertTrue("json", new CBORBigInteger(new BigInteger("9007199254740992")).equals(serializeJson(
+        assertTrue("json", new CBORInt(-234).equals(serializeJson("-234")));
+        assertTrue("json", new CBORInt(234).equals(serializeJson("234")));
+        assertTrue("json", new CBORInt(1).equals(serializeJson("1")));
+        assertTrue("json", new CBORInt(987654321).equals(serializeJson("0987654321")));
+        assertTrue("json", new CBORBigInt(new BigInteger("9007199254740992")).equals(serializeJson(
                                                              "9007199254740992")));
         
         CBORArray cborArray = new CBORArray()
             .add(new CBORString("hi"));
         assertTrue("json", cborArray.equals(serializeJson(new String[] {"[","\"hi\"","]"})));
         cborArray.add(new CBORMap())
-                 .add(new CBORInteger(4));
+                 .add(new CBORInt(4));
         assertTrue("json", cborArray.equals(serializeJson(new String[] {
                 "[","\"hi\"",",","{","}",",","4","]"})));
         cborArray.get(1).getMap().set(new CBORString("kurt"),
@@ -2017,7 +2017,7 @@ public class CBORTest {
         int number;
         
         static final String OBJECT_ID   = "https://example.com/object-1";
-        static final CBORObject INT_KEY = new CBORInteger(1);
+        static final CBORObject INT_KEY = new CBORInt(1);
         
         @Override
         protected void decode(CBORObject cborBody) {
@@ -2035,7 +2035,7 @@ public class CBORTest {
         int number;
         
         static final String OBJECT_ID   = "https://example.com/object-unc";
-        static final CBORObject INT_KEY = new CBORInteger(1);
+        static final CBORObject INT_KEY = new CBORInt(1);
         
         @Override
         protected void decode(CBORObject cborBody) {
@@ -2094,7 +2094,7 @@ public class CBORTest {
     @Test
     public void schemas() throws IOException, GeneralSecurityException {
         CBORObject objectOne = new CBORTag(ObjectOne.OBJECT_ID,
-                new CBORMap().set(ObjectOne.INT_KEY, new CBORInteger(-343)));
+                new CBORMap().set(ObjectOne.INT_KEY, new CBORInt(-343)));
         CBORObject objectTwo = new CBORTag(ObjectTwo.OBJECT_ID, 
                 new CBORString("Hi there!"));
         CBORObject o3 = new CBORTag("https://example.com/o3", 
@@ -2106,7 +2106,7 @@ public class CBORTest {
             
         }
         CBORObject noGoodObjectOne = new CBORTag(ObjectOne.OBJECT_ID,
-                new CBORMap().set(ObjectOne.INT_KEY, new CBORInteger(-343))
+                new CBORMap().set(ObjectOne.INT_KEY, new CBORInt(-343))
                              .set(new CBORString("key"), new CBORString("value")));
         
         CBORTypedObjectDecoder sco = schemaCache.decode(objectOne);
@@ -2130,7 +2130,7 @@ public class CBORTest {
         }
         
         CBORObject uncheckedObject = new CBORTag(UncheckedObject.OBJECT_ID,
-                new CBORMap().set(ObjectOne.INT_KEY, new CBORInteger(-343))
+                new CBORMap().set(ObjectOne.INT_KEY, new CBORInt(-343))
                              .set(new CBORString("key"), new CBORString("value")));
         sco = schemaCache.decode(uncheckedObject);
     }
@@ -2142,7 +2142,7 @@ public class CBORTest {
     static {
         try {
             DIAG_CBOR = new CBORMap()
-                    .set(new CBORInteger(1), 
+                    .set(new CBORInt(1), 
                             new CBORArray().add(new CBORString("Hi!")));
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -2151,7 +2151,7 @@ public class CBORTest {
     
     void diagFlag(String wrongs) {
         try {
-            CBORDiagnosticNotationDecoder.decode(wrongs);
+            CBORDiagnosticNotation.decode(wrongs);
             fail("Should not");
         } catch (Exception e) {
             
@@ -2161,51 +2161,51 @@ public class CBORTest {
     @Test
     public void diagnosticNotation() throws Exception {
         assertTrue("#",
-                   CBORDiagnosticNotationDecoder.decode("# hi\r\n 1#commnt").getInt() == 1);
+                   CBORDiagnosticNotation.decode("# hi\r\n 1#commnt").getInt() == 1);
         assertTrue("/",
-                   CBORDiagnosticNotationDecoder.decode("/ comment\n /1").getInt() == 1);
+                   CBORDiagnosticNotation.decode("/ comment\n /1").getInt() == 1);
         String b64u = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
-        CBORObject decoded = CBORDiagnosticNotationDecoder.decode("b64'" + b64u + "'");
+        CBORObject decoded = CBORDiagnosticNotation.decode("b64'" + b64u + "'");
         assertTrue("b64u", b64u.equals(Base64URL.encode(decoded.getBytes())));
         String b64 = b64u.replace('-', '+').replace('_', '/');
-        decoded = CBORDiagnosticNotationDecoder.decode("b64'" + b64 + "'");
+        decoded = CBORDiagnosticNotation.decode("b64'" + b64 + "'");
         assertTrue("b64", b64u.equals(Base64URL.encode(decoded.getBytes())));
-        assertTrue("dbl", CBORDiagnosticNotationDecoder.decode("3.5").getDouble() == 3.5);
-        assertTrue("int", CBORDiagnosticNotationDecoder.decode("1000").getInt() == 1000);
-        assertTrue("big", CBORDiagnosticNotationDecoder.decode(DIAG_BIG).getBigInteger().equals(
+        assertTrue("dbl", CBORDiagnosticNotation.decode("3.5").getDouble() == 3.5);
+        assertTrue("int", CBORDiagnosticNotation.decode("1000").getInt() == 1000);
+        assertTrue("big", CBORDiagnosticNotation.decode(DIAG_BIG).getBigInteger().equals(
                 new BigInteger(DIAG_BIG)));
-        assertTrue("bigb", CBORDiagnosticNotationDecoder.decode(
+        assertTrue("bigb", CBORDiagnosticNotation.decode(
                 "0b" + DIAG_BIG).getBigInteger().equals(new BigInteger(DIAG_BIG, 2)));
-        assertTrue("bigo", CBORDiagnosticNotationDecoder.decode(
+        assertTrue("bigo", CBORDiagnosticNotation.decode(
                 "0o" + DIAG_BIG).getBigInteger().equals(new BigInteger(DIAG_BIG, 8)));
-        assertTrue("bigh", CBORDiagnosticNotationDecoder.decode(
+        assertTrue("bigh", CBORDiagnosticNotation.decode(
                 "0x" + DIAG_BIG).getBigInteger().equals(new BigInteger(DIAG_BIG, 16)));
-        assertTrue("bigh-", CBORDiagnosticNotationDecoder.decode(
+        assertTrue("bigh-", CBORDiagnosticNotation.decode(
                 "-0x" + DIAG_BIG).getBigInteger().equals(new BigInteger(DIAG_BIG, 16).negate()));
-        assertTrue("hex", CBORDiagnosticNotationDecoder.decode(
+        assertTrue("hex", CBORDiagnosticNotation.decode(
                 "-0x" + DIAG_HEX).getInt() == -30);
         assertTrue("bstr", 
                     Arrays.equals(
-                            CBORDiagnosticNotationDecoder.decode(
+                            CBORDiagnosticNotation.decode(
                                     "'" + DIAG_TEXT + "'").getBytes(),
                             DIAG_TEXT.getBytes("utf-8")));
         assertTrue("tstr", 
-                   DIAG_TEXT.equals(CBORDiagnosticNotationDecoder.decode(
+                   DIAG_TEXT.equals(CBORDiagnosticNotation.decode(
                            "\"" + DIAG_TEXT + "\"").getString()));
         assertTrue("tstr", 
-                   DIAG_TEXT.equals(CBORDiagnosticNotationDecoder.decode(
+                   DIAG_TEXT.equals(CBORDiagnosticNotation.decode(
                         "\"" + DIAG_TEXT.replace("te", "te\\\n") + "\"").getString()));
         assertTrue("emb", Arrays.equals(
-                          CBORDiagnosticNotationDecoder.decode(
+                          CBORDiagnosticNotation.decode(
                                   "<< " + DIAG_CBOR.toString() + ">>").getBytes(),
                           DIAG_CBOR.encode()));
-        Double v = CBORDiagnosticNotationDecoder.decode("Infinity").getDouble();
+        Double v = CBORDiagnosticNotation.decode("Infinity").getDouble();
         assertTrue("inf", v == Double.POSITIVE_INFINITY);
-        v = CBORDiagnosticNotationDecoder.decode("-Infinity").getDouble();
+        v = CBORDiagnosticNotation.decode("-Infinity").getDouble();
         assertTrue("-inf", v == Double.NEGATIVE_INFINITY);
-        v = CBORDiagnosticNotationDecoder.decode("NaN").getDouble();
+        v = CBORDiagnosticNotation.decode("NaN").getDouble();
         assertTrue("nan", v.isNaN());
-        CBORObject[] seq = CBORDiagnosticNotationDecoder.decodeSequence("1,\"" + DIAG_TEXT + "\"");
+        CBORObject[] seq = CBORDiagnosticNotation.decodeSequence("1,\"" + DIAG_TEXT + "\"");
         assertTrue("seq", seq.length == 2);
         assertTrue("seqi", seq[0].getInt() == 1);
         assertTrue("seqs", seq[1].getString().equals(DIAG_TEXT));
@@ -2213,9 +2213,9 @@ public class CBORTest {
         diagFlag("0x ");
         diagFlag("056(8)");  // leading zero
         diagFlag("-56(8)");  // Neg
-        CBORDiagnosticNotationDecoder.decode("18446744073709551615(8)");
+        CBORDiagnosticNotation.decode("18446744073709551615(8)");
         diagFlag("18446744073709551616(8)");  // Too large
-        CBORDiagnosticNotationDecoder.decode("1.0e+300");
+        CBORDiagnosticNotation.decode("1.0e+300");
         diagFlag("1.0e+500");  // Too large
         diagFlag("b64'00'");  // Bad B64
         diagFlag("h'0'");  // Bad Hex
@@ -2236,11 +2236,11 @@ public class CBORTest {
 
     void utf8EncoderTest(String string, boolean ok) {
          try {
-            String encodedString = CBORDiagnosticNotationDecoder.decode(
+            String encodedString = CBORDiagnosticNotation.decode(
                     "\"" + string + "\"").getString();
             assertTrue("OK", ok);
             assertTrue("Conv", string.equals(encodedString));
-            byte[] encodedBytes = CBORDiagnosticNotationDecoder.decode(
+            byte[] encodedBytes = CBORDiagnosticNotation.decode(
                     "'" + string + "'").getBytes();
             assertTrue("OK", ok);
             assertTrue("Conv2", Arrays.equals(encodedBytes, string.getBytes("utf-8")));

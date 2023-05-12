@@ -5,7 +5,7 @@
   <property name="javaapi-project" location="../../javaapi"/>
   <property name="android-cbor-src" value="${android-cbor-project}/jlibcbor/src/main/java"/>
   <property name="android-cbor-apidoc" value="${android-cbor-project}/distribution/apidoc"/>
-  <property name="jlib.ver" value="1.0.3"/>
+  <property name="jlib.ver" value="1.0.4"/>
   <property name="aar.file" 
   	location="${android-cbor-project}/distribution/org.webpki-jlibcbor-${jlib.ver}.aar"/>
 

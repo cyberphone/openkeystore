@@ -156,7 +156,7 @@ public abstract class CBORSigner {
         }
 
         // Add the mandatory signature algorithm.
-        csfContainer.set(ALGORITHM_LABEL, new CBORInteger(getAlgorithm().getCoseAlgorithmId()));
+        csfContainer.set(ALGORITHM_LABEL, new CBORInt(getAlgorithm().getCoseAlgorithmId()));
         
         // Add a keyId if there is one.
         if (optionalKeyId != null) {

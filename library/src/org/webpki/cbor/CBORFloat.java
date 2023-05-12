@@ -25,7 +25,7 @@ package org.webpki.cbor;
  * required to (minimally) correctly represent a number.
  * </p>
  */
-public class CBORFloatingPoint extends CBORObject {
+public class CBORFloat extends CBORObject {
 
     /**
      * Underlying IEEE 754 type.  
@@ -53,7 +53,7 @@ public class CBORFloatingPoint extends CBORObject {
      * 
      * @param value Java double
      */
-    public CBORFloatingPoint(double value) {
+    public CBORFloat(double value) {
         this.value = value;
 
         // Initial assumption: the number is a plain vanilla 64-bit double.

@@ -25,11 +25,8 @@ import java.math.BigInteger;
  * representation in order to produce a fully deterministic result.
  * </p>
  */
-public class CBORBigInteger extends CBORObject {
+public class CBORBigInt extends CBORObject {
 
-    static final BigInteger MAX_INT64 = new BigInteger("18446744073709551615");
-    static final BigInteger MIN_INT64 = new BigInteger("-18446744073709551616");
-    
     static final byte[] UNSIGNED_BIG_INTEGER_TAG = {(byte)MT_BIG_UNSIGNED};
     static final byte[] NEGATIVE_BIG_INTEGER_TAG = {(byte)MT_BIG_NEGATIVE};
 
@@ -45,13 +42,9 @@ public class CBORBigInteger extends CBORObject {
      * 
      * @param value Integer in BigInteger format
      */
-    public CBORBigInteger(BigInteger value) {
+    public CBORBigInt(BigInteger value) {
         this.value = value;
         nullCheck(value);
-    }
-
-    boolean fitsAnInteger() {
-        return value.compareTo(MAX_INT64) <= 0 && value.compareTo(MIN_INT64) >= 0;
     }
     
     @Override
@@ -63,18 +56,18 @@ public class CBORBigInteger extends CBORObject {
     public byte[] encode() {
         boolean unsigned = value.compareTo(BigInteger.ZERO) >= 0;
         BigInteger cborAdjusted = unsigned ? value : value.negate().subtract(BigInteger.ONE);
-        if (fitsAnInteger()) {
-            // Fits in "int65" decoding
-            return new CBORInteger(cborAdjusted.longValue(), unsigned).encode();
-        }
-        // Does not fit "int65" so we must use big integer encoding
         byte[] encoded = cborAdjusted.toByteArray();
         if (encoded[0] == 0) {
-            // Remove leading zero
+            // Remove leading zero which may be present due to two-complement encoding.
             byte[] temp = new byte[encoded.length - 1];
             System.arraycopy(encoded, 1, temp, 0, temp.length);
             encoded = temp;
         }
+        if (encoded.length <= 8) {
+            // Fits in "int65" decoding.
+            return new CBORInt(cborAdjusted.longValue(), unsigned).encode();
+        }
+        // Does not fit "int65" so we must use big integer encoding.
         return addByteArrays(unsigned ? UNSIGNED_BIG_INTEGER_TAG : NEGATIVE_BIG_INTEGER_TAG, 
                              new CBORBytes(encoded).encode());
     }

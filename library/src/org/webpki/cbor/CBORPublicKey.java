@@ -48,7 +48,7 @@ public class CBORPublicKey {
     
     private CBORPublicKey() {}
     
-    static final HashMap<KeyAlgorithms, CBORInteger> WEBPKI_2_COSE_CRV = new HashMap<>();
+    static final HashMap<KeyAlgorithms, CBORInt> WEBPKI_2_COSE_CRV = new HashMap<>();
 
     static {
         WEBPKI_2_COSE_CRV.put(KeyAlgorithms.P_256,   COSE_CRV_P_256);

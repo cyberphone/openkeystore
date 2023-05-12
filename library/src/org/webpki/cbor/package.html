@@ -9,13 +9,13 @@ primitives and their mapping to Java:
 <table class='webpkitable' style='margin-left:2em'>
 <tr><th>CBOR&nbsp;Primitive</th><th>Notes</th><th>Java&nbsp;Mapping</th>
 <th>Implementation</th></tr>
-<tr><td><code>integer</code></td><td>1</td><td><code>long</code></td><td>{@link CBORInteger}</td></tr>
-<tr><td><code>big&nbsp;integer</code></td><td>1, 2</td><td><code>BigInteger</code></td><td>{@link CBORBigInteger}</td></tr>
-<tr><td><code>floating&nbsp;point</code></td><td>3</td><td><code>double</code></td><td>{@link CBORFloatingPoint}</td></tr>
+<tr><td><code>integer</code></td><td>1</td><td><code>long</code></td><td>{@link CBORInt}</td></tr>
+<tr><td><code>big&nbsp;integer</code></td><td>1, 2</td><td><code>BigInteger</code></td><td>{@link CBORBigInt}</td></tr>
+<tr><td><code>floating&nbsp;point</code></td><td>3</td><td><code>double</code></td><td>{@link CBORFloat}</td></tr>
 <tr><td><code>byte&nbsp;string</code></td><td></td><td><code>byte[]</code></td><td>{@link CBORBytes}</td></tr>
 <tr><td><code>text&nbsp;string</code></td><td></td><td><code>String</code></td><td>{@link CBORString}</td></tr>
-<tr><td><code>true</code></td><td></td><td><code>boolean</code></td><td>{@link CBORBoolean}</td></tr>
-<tr><td><code>false</code></td><td></td><td><code>boolean</code></td><td>{@link CBORBoolean}</td></tr>
+<tr><td><code>true</code></td><td></td><td><code>boolean</code></td><td>{@link CBORBool}</td></tr>
+<tr><td><code>false</code></td><td></td><td><code>boolean</code></td><td>{@link CBORBool}</td></tr>
 <tr><td><code>null</code></td><td></td><td><code>null</code></td><td>{@link CBORNull}</td></tr>
 </table>
 </div>
@@ -199,7 +199,7 @@ access to individual CBOR objects of the structure.
 </p>
 <p>
 If the underlying CBOR data type does not match the access method
-(like performing {@link CBORObject#getInt()} on a {@link CBORBigInteger}),
+(like performing {@link CBORObject#getInt()} on a {@link CBORBigInt}),
 an exception is thrown.
 That is, this implementation performs <i>strict type checking</i>. 
 </p>
@@ -231,7 +231,7 @@ To aid the use of cryptography, support for
 <a href='doc-files/signatures.html'>Signatures</a> and 
 <a href='doc-files/encryption.html'>Encryption</a> is integrated in the package.
 <h3 id='diagnostic-notation'>Diagnostic Notation</h3>
-Through the {@link CBORDiagnosticNotationDecoder} class, CBOR data may be provided
+Through the {@link CBORDiagnosticNotation} class, CBOR data may be provided
 in diagnostic (textual) notation (as described in section 8 of RFC&nbsp;8949),
 making CBOR useful for "config" and test data files as well.
 <p>
@@ -240,8 +240,8 @@ By adhering to the
 specification above, CBOR data can be <i>bidirectionally</i>
 converted between its native (binary) format and diagnostic notation
 without getting corrupted.  Note though that a text-binary-text "roundtrip"
-does not necessarily return identical text; only the binary
-representation needs to remain deterministic.
+does not necessarily return identical text; <i>only the binary
+representation needs to remain deterministic</i>.
 Caveat: for reliable conversions, floating point values <b>must</b>
 be aligned with IEEE&nbsp;754 encoding and rounding rules.
 </p>
@@ -325,7 +325,7 @@ immediately preceding the newline may be used.</li>
 <li>Text strings may also include JavaScript compatible escape sequences
 (<code>'\''</code>, <code>'\"'</code>, <code>'\\'</code>, 
 <code>'\b'</code>, <code>'\f'</code>, <code>'\n'</code>, 
-<code>'\r'</code>, <code>'\t'</code>, <code>'\u'</code>).</li>
+<code>'\r'</code>, <code>'\t'</code>, <code>'\u</code><i>hhhh</i><code>'</code>).</li>
 <li>Zero-length strings (<code>''</code>) return byte strings of length zero.</li>
 <li>The IETF have yet to define a single line comment.</li>
 </ol>

@@ -40,7 +40,7 @@ import java.math.BigInteger;
  * Also see {@link CBORObject#getInt()}.
  * </div>
  */
-public class CBORInteger extends CBORObject {
+public class CBORInt extends CBORObject {
 
     static final byte[] UNSIGNED_INTEGER_TAG = {(byte)MT_UNSIGNED};
     static final byte[] NEGATIVE_INTEGER_TAG = {(byte)MT_NEGATIVE};
@@ -76,13 +76,13 @@ public class CBORInteger extends CBORObject {
      * respectively.
      * <p>
      * Also see <a href='#range-constraints'>Range&nbsp;Constraints</a> and 
-     * {@link CBORBigInteger#CBORBigInteger(BigInteger)}.
+     * {@link CBORBigInt#CBORBigInt(BigInteger)}.
      * </p>
      *
      * @param value long value
      * @param unsigned <code>true</code> if value should be considered as unsigned
      */
-    public CBORInteger(long value, boolean unsigned) {
+    public CBORInt(long value, boolean unsigned) {
         this.value = value;
         this.unsigned = unsigned;
     }
@@ -90,13 +90,13 @@ public class CBORInteger extends CBORObject {
     /**
      * Creates a CBOR signed <code>integer</code> value.
      * <p>
-     * Also see {@link CBORInteger(long, boolean)} and 
-     * {@link CBORBigInteger#CBORBigInteger(BigInteger)}.
+     * Also see {@link CBORInt(long, boolean)} and 
+     * {@link CBORBigInt#CBORBigInt(BigInteger)}.
      * </p>
      * 
      * @param value Java (signed) long type
      */
-    public CBORInteger(long value) {
+    public CBORInt(long value) {
         this(value >= 0 ? value : ~value, value >= 0);
     }
     

@@ -26,7 +26,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.webpki.cbor.CBORInteger;
+import org.webpki.cbor.CBORBytes;
+import org.webpki.cbor.CBORInt;
 import org.webpki.cbor.CBORKeyPair;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;
@@ -52,7 +53,7 @@ public class CoseKeyServlet extends CoreRequestServlet {
     
     void setRSAParameter(JSONObjectReader jwk, String jsonArgument, CBORMap cbor, int cborLabel)
             throws IOException {
-        cbor.setBytes(new CBORInteger(cborLabel), jwk.getBinary(jsonArgument));
+        cbor.set(new CBORInt(cborLabel), new CBORBytes(jwk.getBinary(jsonArgument)));
     }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response)
