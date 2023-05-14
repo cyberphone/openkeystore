@@ -35,8 +35,8 @@ public class CBORBigInt extends CBORObject {
     /**
      * Creates a CBOR integer value of any size.
      * <p>
-     * Note: if the <code>value</code> is within the CBOR <code>integer</code> range,
-     * <code>integer</code> encoding will be used, otherwise the <code>value</code>
+     * Note: if <code>value</code> is within the CBOR <code>integer</code> range,
+     * <code>integer</code> encoding ({@link CBORInt}) will be used, otherwise <code>value</code>
      * will be encoded as a CBOR <code>big&nbsp;integer</code>.
      * </p>
      * 
