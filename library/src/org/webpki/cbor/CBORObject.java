@@ -837,7 +837,9 @@ public abstract class CBORObject implements Cloneable {
      * @param inputStream Stream holding CBOR data
      * @param sequenceFlag If <code>true</code> stop reading after decoding a CBOR object
      * (no object returns <code>null</code>)
-     * @param nonDeterministic If <code>true</code> disable deterministic encoding check
+     * @param nonDeterministic If <code>true</code> disable 
+     * <a href='package-summary.html#deterministic-encoding'>Deterministic&nbsp;Encoding</a>
+     * checks for number serialization and map sorting
      * @param constrainedKeys If <code>true</code> limit {@link CBORMap} keys to {@link CBORString} and {@link CBORInt} objects,
      * including flagging <i>mixing</i> of these objects in maps
      * @param maxLength Holds maximum input size in 

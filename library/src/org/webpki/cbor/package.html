@@ -53,7 +53,7 @@ is intended as a <i>standard</i>, not limited to specific platforms.
 To facilitate mainstream adoption, the encoding scheme is aligned with
 current best practices for encoding CBOR primitives and should
 with moderate efforts work with most existing CBOR encoders and decoders.
-In fact, having a <i>single</i> way of representing CBOR data
+In fact, having a <i>single</i> way of encoding CBOR data
 should simplify both implementations and associated testing.
 The encoding scheme has been verified to also be usable in highly
 constrained systems, albeit requiring detailed knowledge of how
@@ -191,7 +191,7 @@ After successful decoding, the CBOR data is provided as a {@link CBORObject}.
 For extracting the data of CBOR primitives in a Java compatible way,
 there are type specific access methods such as 
 {@link CBORObject#getInt()} and {@link CBORObject#getString()}.
-For accessing structured CBOR objects, the type specific
+For accessing structured CBOR objects, the
 {@link CBORObject#getMap()},
 {@link CBORObject#getArray()},
 and {@link CBORObject#getTag()}

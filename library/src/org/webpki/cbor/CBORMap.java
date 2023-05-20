@@ -127,13 +127,14 @@ public class CBORMap extends CBORObject {
                         reportError(STDERR_DUPLICATE_KEY + key);                      
                     }
                     if (diff > 0) {
-                        // New key is less than a current entry.
+                        // New key is (lexicographically) smaller than current entry.
                         if (precedingEntry == null) {
-                            // Less than root, means the root must be redefined.
+                            // New key is smaller than root. New key becomes root.
                             newEntry.next = root;
                             root = newEntry;
                         } else {
-                            // Somewhere above root. Insert after preceding entry.
+                            // New key is smaller than an entry above root.
+                            // Insert before current entry.
                             newEntry.next = entry;
                             precedingEntry.next = newEntry;
                         }

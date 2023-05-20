@@ -51,7 +51,7 @@ public class CBORString extends CBORObject {
     }
 
     // JavaScript/JSON compatible escape character support
-    static final char[] SPECIAL_CHARACTERS = {
+    static final char[] ESCAPE_CHARACTERS = {
     //   0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F
          1 ,  1 ,  1 ,  1 ,  1 ,  1 ,  1 ,  1 , 'b', 't', 'n',  1 , 'f', 'r',  1 ,  1 ,
          1 ,  1 ,  1 ,  1 ,  1 ,  1 ,  1 ,  1 ,  1 ,  1 ,  1 ,  1 ,  1 ,  1 ,  1 ,  1 ,
@@ -66,7 +66,7 @@ public class CBORString extends CBORObject {
         for (char c : textString.toCharArray()) {
             if (c <= '\\') {
                 char convertedCharacter;
-                if ((convertedCharacter = SPECIAL_CHARACTERS[c]) != 0) {
+                if ((convertedCharacter = ESCAPE_CHARACTERS[c]) != 0) {
                     cborPrinter.append('\\');
                     if (convertedCharacter == 1) {
                         cborPrinter.append(String.format("u%04x", (int)c));
