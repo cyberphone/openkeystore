@@ -32,13 +32,13 @@ public class CBORMap extends CBORObject {
     // Similar to the Java Map.Entry but optimized for CBOR. 
     static class Entry {
         CBORObject key;
-        CBORObject object;
+        CBORObject value;
         byte[] encodedKey;
         Entry next;
         
         Entry(CBORObject key, CBORObject object) {
             this.key = key;
-            this.object = object;
+            this.value = object;
             this.encodedKey = key.encode();
         }
         
@@ -87,16 +87,16 @@ public class CBORMap extends CBORObject {
      * </p>
      * 
      * @param key Key
-     * @param object Object
+     * @param value Value
      * @return <code>this</code>
      */
-    public CBORMap set(CBORObject key, CBORObject object) {
+    public CBORMap set(CBORObject key, CBORObject value) {
         key = getKey(key);
-        nullCheck(object);
+        nullCheck(value);
         if (constrainedKeys && !key.getType().permittedConstrainedKey) {
             reportError(STDERR_CONSTRAINED_KEYS + key);
         }
-        Entry newEntry = new Entry(key, object);
+        Entry newEntry = new Entry(key, value);
         if (root == null) {
             root = newEntry;
         } else {
@@ -174,7 +174,7 @@ public class CBORMap extends CBORObject {
      * @return <code>CBORObject</code>
      */
     public CBORObject get(CBORObject key) {
-        return lookup(key, true).object;
+        return lookup(key, true).value;
     }
 
     /**
@@ -190,7 +190,7 @@ public class CBORMap extends CBORObject {
      */
     public CBORObject getConditionally(CBORObject key, CBORObject defaultValue) {
        Entry entry = lookup(key, false);
-       return entry == null ? defaultValue : entry.object; 
+       return entry == null ? defaultValue : entry.value; 
     }
 
     /**
@@ -226,7 +226,7 @@ public class CBORMap extends CBORObject {
                     precedingEntry.next = entry.next;
                 }
                 numberOfEntries--;
-                return entry.object;
+                return entry.value;
             }
             precedingEntry = entry;
         }
@@ -253,7 +253,7 @@ public class CBORMap extends CBORObject {
         byte[] encoded = encodeTagAndN(MT_MAP, numberOfEntries);
         for (Entry entry = root; entry != null; entry = entry.next) {
             encoded = addByteArrays(encoded,
-                                    addByteArrays(entry.encodedKey, entry.object.encode()));
+                                    addByteArrays(entry.encodedKey, entry.value.encode()));
         }
         return encoded;
     }
@@ -270,7 +270,7 @@ public class CBORMap extends CBORObject {
             cborPrinter.newlineAndIndent();
             entry.key.internalToString(cborPrinter);
             cborPrinter.append(": ");
-            entry.object.internalToString(cborPrinter);
+            entry.value.internalToString(cborPrinter);
         }
         cborPrinter.endMap(notFirst);
     }

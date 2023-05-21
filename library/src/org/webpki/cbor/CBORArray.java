@@ -53,12 +53,12 @@ public class CBORArray extends CBORObject {
     /**
      * Appends object to the list.
      * 
-     * @param object Object to be appended
+     * @param element Object to be appended
      * @return <code>this</code>
      */
-    public CBORArray add(CBORObject object) {
-        nullCheck(object);
-        objectList.add(object);
+    public CBORArray add(CBORObject element) {
+        nullCheck(element);
+        objectList.add(element);
         return this;
     }
     
