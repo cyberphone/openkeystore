@@ -31,13 +31,13 @@ public class CBORMap extends CBORObject {
     // Similar to the Java Map.Entry but optimized for CBOR. 
     static class Entry {
         CBORObject key;
-        CBORObject value;
+        CBORObject object;
         byte[] encodedKey;
         Entry next;
         
-        Entry(CBORObject key, CBORObject value) {
+        Entry(CBORObject key, CBORObject object) {
             this.key = key;
-            this.value = value;
+            this.object = object;
             this.encodedKey = key.encode();
         }
         
@@ -90,21 +90,20 @@ public class CBORMap extends CBORObject {
      * </p>
      * 
      * @param key Key
-     * @param value Object
+     * @param object Object
      * @return <code>this</code>
      */
-    public CBORMap set(CBORObject key, CBORObject value) {
+    public CBORMap set(CBORObject key, CBORObject object) {
         key = getKey(key);
-        nullCheck(value);
+        nullCheck(object);
         if (constrainedKeys && !key.getType().permittedConstrainedKey) {
             reportError(STDERR_CONSTRAINED_KEYS + key);
         }
-        Entry newEntry = new Entry(key, value);
+        Entry newEntry = new Entry(key, object);
         if (root == null) {
             root = newEntry;
         } else {
-            // Note: the keys are always sorted, making the verification process simple.
-            // This is also the reason why the Java "TreeMap" was not used. 
+            // Keys are always sorted, making the verification process simple.
             if (constrainedKeys && lastEntry.key.getType() != key.getType()) {
                 reportError(STDERR_CONSTRAINED_KEYS + key);
             }
@@ -177,7 +176,7 @@ public class CBORMap extends CBORObject {
      * @return <code>CBORObject</code>
      */
     public CBORObject get(CBORObject key) {
-        return lookup(key, true).value;
+        return lookup(key, true).object;
     }
 
     /**
@@ -193,7 +192,7 @@ public class CBORMap extends CBORObject {
      */
     public CBORObject getConditionally(CBORObject key, CBORObject defaultValue) {
        Entry entry = lookup(key, false);
-       return entry == null ? defaultValue : entry.value; 
+       return entry == null ? defaultValue : entry.object; 
     }
 
     /**
@@ -228,7 +227,7 @@ public class CBORMap extends CBORObject {
                     // Remove key somewhere above root.
                     precedingEntry.next = entry.next;
                 }
-                return entry.value;
+                return entry.object;
             }
             precedingEntry = entry;
         }
@@ -255,7 +254,7 @@ public class CBORMap extends CBORObject {
         byte[] encoded = encodeTagAndN(MT_MAP, size());
         for (Entry entry = root; entry != null; entry = entry.next) {
             encoded = addByteArrays(encoded,
-                                    addByteArrays(entry.encodedKey, entry.value.encode()));
+                                    addByteArrays(entry.encodedKey, entry.object.encode()));
         }
         return encoded;
     }
@@ -272,7 +271,7 @@ public class CBORMap extends CBORObject {
             cborPrinter.newlineAndIndent();
             entry.key.internalToString(cborPrinter);
             cborPrinter.append(": ");
-            entry.value.internalToString(cborPrinter);
+            entry.object.internalToString(cborPrinter);
         }
         cborPrinter.endMap(notFirst);
     }

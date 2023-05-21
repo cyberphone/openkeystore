@@ -34,7 +34,7 @@ public class CBORArray extends CBORObject {
     /**
      * Returns the size of the array.
      * 
-     * @return The number of elements in the array
+     * @return The number of objects in the array
      */
     public int size() {
         return objectList.size();
@@ -53,12 +53,12 @@ public class CBORArray extends CBORObject {
     /**
      * Appends object to the list.
      * 
-     * @param cborObject
+     * @param object Object to be appended
      * @return <code>this</code>
      */
-    public CBORArray add(CBORObject cborObject) {
-        nullCheck(cborObject);
-        objectList.add(cborObject);
+    public CBORArray add(CBORObject object) {
+        nullCheck(object);
+        objectList.add(object);
         return this;
     }
     
@@ -89,12 +89,12 @@ public class CBORArray extends CBORObject {
     void internalToString(CBORObject.DiagnosticNotation cborPrinter) {
         cborPrinter.append('[');
         boolean notFirst = false;
-        for (CBORObject cborObject : toArray()) {
+        for (CBORObject object : toArray()) {
             if (notFirst) {
                 cborPrinter.append(", ");
             }
             notFirst = true;
-            cborObject.internalToString(cborPrinter);
+            object.internalToString(cborPrinter);
         }
         cborPrinter.append(']');
     }

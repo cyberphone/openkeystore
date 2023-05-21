@@ -540,7 +540,7 @@ public abstract class CBORObject implements Cloneable {
             case MAP:
                 CBORMap cborMap = (CBORMap) this;
                 for (CBORMap.Entry entry = cborMap.root; entry != null; entry = entry.next) {
-                     entry.value.traverse(entry.key, check);
+                     entry.object.traverse(entry.key, check);
                 }
                 break;
         
