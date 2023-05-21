@@ -61,7 +61,7 @@ public class CBORString extends CBORObject {
          0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 , '\\'};
     
     @Override
-    void internalToString(CBORObject.DiagnosticNotation cborPrinter) {
+    void internalToString(DiagnosticNotation cborPrinter) {
         cborPrinter.append('"');
         for (char c : textString.toCharArray()) {
             if (c <= '\\') {

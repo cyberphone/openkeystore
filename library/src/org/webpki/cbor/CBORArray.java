@@ -23,7 +23,7 @@ import java.util.ArrayList;
  */
 public class CBORArray extends CBORObject {
 
-    ArrayList<CBORObject> objectList = new ArrayList<>();
+    ArrayList<CBORObject> elements = new ArrayList<>();
 
     /**
      * Creates an empty CBOR array <code>[]</code>.
@@ -37,7 +37,7 @@ public class CBORArray extends CBORObject {
      * @return The number of objects in the array
      */
     public int size() {
-        return objectList.size();
+        return elements.size();
     }
     
     /**
@@ -47,7 +47,7 @@ public class CBORArray extends CBORObject {
      * @return CBOR object
      */
     public CBORObject get(int index) {
-        return objectList.get(index);
+        return elements.get(index);
     }
     
     /**
@@ -58,7 +58,7 @@ public class CBORArray extends CBORObject {
      */
     public CBORArray add(CBORObject element) {
         nullCheck(element);
-        objectList.add(element);
+        elements.add(element);
         return this;
     }
     
@@ -68,7 +68,7 @@ public class CBORArray extends CBORObject {
      * @return Array of CBOR objects
      */
     public CBORObject[] toArray() {
-        return objectList.toArray(new CBORObject[0]);
+        return elements.toArray(new CBORObject[0]);
     }
 
     @Override
@@ -78,7 +78,7 @@ public class CBORArray extends CBORObject {
 
     @Override
     public byte[] encode() {
-        byte[] encoded = encodeTagAndN(MT_ARRAY, objectList.size());
+        byte[] encoded = encodeTagAndN(MT_ARRAY, elements.size());
         for (CBORObject cborObject : toArray()) {
             encoded = addByteArrays(encoded, cborObject.encode());
         }
@@ -86,7 +86,7 @@ public class CBORArray extends CBORObject {
     }
 
     @Override
-    void internalToString(CBORObject.DiagnosticNotation cborPrinter) {
+    void internalToString(DiagnosticNotation cborPrinter) {
         cborPrinter.append('[');
         boolean notFirst = false;
         for (CBORObject object : toArray()) {

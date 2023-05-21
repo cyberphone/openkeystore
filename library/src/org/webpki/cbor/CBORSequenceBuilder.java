@@ -39,12 +39,12 @@ public class CBORSequenceBuilder {
     /**
      * Appends object to the sequence.
      * 
-     * @param cborObject
+     * @param object Object to be appended
      * @return <code>this</code>
      */
-    public CBORSequenceBuilder addObject(CBORObject cborObject) {
-        CBORObject.nullCheck(cborObject);
-        sequence.add(cborObject);
+    public CBORSequenceBuilder add(CBORObject object) {
+        CBORObject.nullCheck(object);
+        sequence.add(object);
         return this;
     }
     
@@ -59,5 +59,18 @@ public class CBORSequenceBuilder {
             cborBinary = CBORObject.addByteArrays(cborBinary, cborObject.encode());
         }
         return cborBinary;
+    }
+
+    public String toString() {
+        StringBuilder s = new StringBuilder();
+        boolean notFirst = false;
+        for (CBORObject object : sequence) {
+            if (notFirst) {
+                s.append(",\n");
+            }
+            notFirst = true;
+            s.append(object.toString());
+        }
+        return s.toString();
     }
 }

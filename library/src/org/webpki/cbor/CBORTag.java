@@ -110,7 +110,7 @@ public class CBORTag extends CBORObject {
     }
     
     @Override
-    void internalToString(CBORObject.DiagnosticNotation cborPrinter) {
+    void internalToString(DiagnosticNotation cborPrinter) {
          cborPrinter.append(Long.toUnsignedString(tagNumber)).append('(');
          object.internalToString(cborPrinter);
          cborPrinter.append(')');

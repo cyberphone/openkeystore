@@ -1893,8 +1893,8 @@ public class CBORTest {
                                                 false,
                                                 null) == null);
         sequence = new CBORSequenceBuilder()
-            .addObject(new CBORString("Hello CBOR Sequence World!"))
-            .addObject(new CBORArray()
+            .add(new CBORString("Hello CBOR Sequence World!"))
+            .add(new CBORArray()
                 .add(new CBORFloat(4.5))
                 .add(new CBORBool(true)))
             .encode();
