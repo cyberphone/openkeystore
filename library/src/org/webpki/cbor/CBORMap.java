@@ -27,6 +27,7 @@ public class CBORMap extends CBORObject {
     boolean constrainedKeys;
     Entry root;
     private Entry lastEntry;
+    private int numberOfEntries;
 
     // Similar to the Java Map.Entry but optimized for CBOR. 
     static class Entry {
@@ -76,11 +77,7 @@ public class CBORMap extends CBORObject {
      * @return The number of entries (keys) in the map
      */
     public int size() {
-        int i = 0;
-        for (Entry entry = root; entry != null; entry = entry.next) {
-            i++;
-        }
-        return i;
+        return numberOfEntries;
     }
 
     /**
@@ -150,6 +147,7 @@ public class CBORMap extends CBORObject {
             }
         }
         lastEntry = newEntry;
+        numberOfEntries++;
         return this;
     }
 
@@ -227,6 +225,7 @@ public class CBORMap extends CBORObject {
                     // Remove key somewhere above root.
                     precedingEntry.next = entry.next;
                 }
+                numberOfEntries--;
                 return entry.object;
             }
             precedingEntry = entry;
@@ -241,7 +240,7 @@ public class CBORMap extends CBORObject {
      * @return Array of keys
      */
     public CBORObject[] getKeys() {
-        CBORObject[] keys = new CBORObject[size()];
+        CBORObject[] keys = new CBORObject[numberOfEntries];
         int i = 0;
         for (Entry entry = root; entry != null; entry = entry.next) {
             keys[i++] = entry.key;
@@ -251,7 +250,7 @@ public class CBORMap extends CBORObject {
 
     @Override
     public byte[] encode() {
-        byte[] encoded = encodeTagAndN(MT_MAP, size());
+        byte[] encoded = encodeTagAndN(MT_MAP, numberOfEntries);
         for (Entry entry = root; entry != null; entry = entry.next) {
             encoded = addByteArrays(encoded,
                                     addByteArrays(entry.encodedKey, entry.object.encode()));
