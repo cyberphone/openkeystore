@@ -1892,12 +1892,15 @@ public class CBORTest {
                                                 false,
                                                 false,
                                                 null) == null);
-        sequence = new CBORSequenceBuilder()
+        CBORSequenceBuilder sequenceBuilder = new CBORSequenceBuilder()
             .add(new CBORString("Hello CBOR Sequence World!"))
             .add(new CBORArray()
                 .add(new CBORFloat(4.5))
-                .add(new CBORBool(true)))
-            .encode();
+                .add(new CBORBool(true)));
+        assertTrue("seqs",
+                   sequenceBuilder.toString().equals("\"Hello CBOR Sequence World!\",\n" +
+                                                     "[4.5, true]"));
+        sequence = sequenceBuilder.encode();
         inputStream = new ByteArrayInputStream(sequence);
         position = 0;
         while ((cborObject = CBORObject.decode(inputStream, true, false, false, null)) != null) {

@@ -61,6 +61,7 @@ public class CBORSequenceBuilder {
         return cborBinary;
     }
 
+    @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
         boolean notFirst = false;

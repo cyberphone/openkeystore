@@ -581,7 +581,7 @@ public abstract class CBORObject implements Cloneable {
         private InputStream inputStream;
         private boolean sequenceFlag;
         private boolean deterministicMode;
-        private boolean constrainedMapKeys;
+        private boolean constrainedKeys;
         private boolean atFirstByte = true;
         private int maxLength;
         private int byteCount;
@@ -589,12 +589,12 @@ public abstract class CBORObject implements Cloneable {
         private CBORDecoder(InputStream inputStream,
                             boolean sequenceFlag,
                             boolean acceptNonDeterministic,
-                            boolean constrainedMapKeys,
+                            boolean constrainedKeys,
                             int maxLength) {
             this.inputStream = inputStream;
             this.sequenceFlag = sequenceFlag;
             this.deterministicMode = !acceptNonDeterministic;
-            this.constrainedMapKeys = constrainedMapKeys;
+            this.constrainedKeys = constrainedKeys;
             this.maxLength = maxLength;
             if (maxLength < 1) {
                 reportError("Invalid \"maxLength\"");
@@ -810,7 +810,7 @@ public abstract class CBORObject implements Cloneable {
                 case MT_MAP:
                     CBORMap cborMap = new CBORMap();
                     cborMap.deterministicMode = deterministicMode;
-                    cborMap.constrainedKeys = constrainedMapKeys;
+                    cborMap.constrainedKeys = constrainedKeys;
                     for (int q = checkLength(n); --q >= 0; ) {
                         cborMap.set(getObject(), getObject());
                     }
