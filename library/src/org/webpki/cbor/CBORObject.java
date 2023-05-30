@@ -778,15 +778,15 @@ public abstract class CBORObject implements Cloneable {
             // N successfully decoded, now switch on major type (upper three bits).
             switch (tag & 0xe0) {
                 case MT_TAG:
-                    CBORObject tagData = getObject();
+                    CBORObject taggedbject = getObject();
                     if (n == CBORTag.RESERVED_TAG_COTX) {
-                        CBORArray holder = tagData.getArray(2);
+                        CBORArray holder = taggedbject.getArray(2);
                         if (holder.get(0).getType() != CBORTypes.TEXT_STRING) {
-                            reportError("Tag syntax " +  CBORTag.RESERVED_TAG_COTX +
+                            reportError("Tag syntax " + CBORTag.RESERVED_TAG_COTX +
                                         "([\"string\", CBOR object]) expected");
                         }
                     }
-                    return new CBORTag(n, tagData);
+                    return new CBORTag(n, taggedbject);
 
                 case MT_UNSIGNED:
                     return new CBORInt(n, true);
