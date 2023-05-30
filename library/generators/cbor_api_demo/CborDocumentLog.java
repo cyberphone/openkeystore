@@ -44,7 +44,7 @@ public class CborDocumentLog {
                 for (CBORObject key : refMap.getKeys()) {
                     CBORObject refValue = refMap.get(key);
                     CBORObject newValue = newMap.get(key);
-                    if (refValue.getType() == CBORTypes.BYTE_STRING) {
+                    if (refValue.getType() == CBORTypes.BYTES) {
                         byte[] refBlob = refValue.getBytes();
                         byte[] newBlob = newValue.getBytes();
                         if (refBlob.length != newBlob.length) {

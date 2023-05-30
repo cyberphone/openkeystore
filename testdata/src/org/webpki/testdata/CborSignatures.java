@@ -167,7 +167,7 @@ public class CborSignatures {
                 if (possibleSignature.containsKey(CBORCryptoConstants.SIGNATURE_LABEL)) {
                     CBORObject sig =
                             possibleSignature.get(CBORCryptoConstants.SIGNATURE_LABEL);
-                    if (sig.getType() != CBORTypes.BYTE_STRING) continue;
+                    if (sig.getType() != CBORTypes.BYTES) continue;
                 }
                 // This is with 99% certainty a CSF signature.  Bump the signature value.
                 possibleSignature.remove(CBORCryptoConstants.SIGNATURE_LABEL);

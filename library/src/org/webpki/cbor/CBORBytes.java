@@ -37,12 +37,12 @@ public class CBORBytes extends CBORObject {
     
     @Override
     public CBORTypes getType() {
-        return CBORTypes.BYTE_STRING;
+        return CBORTypes.BYTES;
     }
 
     @Override
     public byte[] encode() {
-        return addByteArrays(encodeTagAndN(MT_BYTE_STRING, byteString.length), byteString);
+        return addByteArrays(encodeTagAndN(MT_BYTES, byteString.length), byteString);
     }
 
     @Override

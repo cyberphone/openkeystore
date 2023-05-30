@@ -762,7 +762,7 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Data of type=TEXT_STRING with value=\"hi\" was never read");
+                "Data of type=STRING with value=\"hi\" was never read");
         }
         unread.getString();
         unread.checkForUnread();
@@ -821,7 +821,7 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Map key 7 with argument of type=TEXT_STRING with value=\"mydata\" was never read");
+                "Map key 7 with argument of type=STRING with value=\"mydata\" was never read");
         }
 
         try {
@@ -860,7 +860,7 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Is type: INTEGER, requested: BYTE_STRING");
+                "Is type: INTEGER, requested: BYTES");
         }
         try {
             cborObject.getDouble();  
@@ -2002,7 +2002,7 @@ public class CBORTest {
                 fail("must not execute");
             } catch (Exception e) {
                 checkException(e, 
-                    "Map key \"key\" with argument of type=TEXT_STRING with value=\"value\" was never read");
+                    "Map key \"key\" with argument of type=STRING with value=\"value\" was never read");
             }
             try {
                 cborPublicKey.set(new CBORString("key"), new CBORString("value"));
@@ -2010,7 +2010,7 @@ public class CBORTest {
                 fail("must not execute");
             } catch (Exception e) {
                 checkException(e, 
-                    "Map key \"key\" with argument of type=TEXT_STRING with value=\"value\" was never read");
+                    "Map key \"key\" with argument of type=STRING with value=\"value\" was never read");
             }
         }
     }

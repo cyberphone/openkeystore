@@ -311,7 +311,7 @@ public class CBORDiagnosticNotation {
                     CBORArray array;
                     if (taggedObject.getType() != CBORTypes.ARRAY ||
                         (array = taggedObject.getArray()).size() != 2 ||
-                        (array.get(0).getType() != CBORTypes.TEXT_STRING)) {
+                        (array.get(0).getType() != CBORTypes.STRING)) {
                         reportError("Special tag " + CBORTag.RESERVED_TAG_COTX + " syntax error");
                     }
                 }

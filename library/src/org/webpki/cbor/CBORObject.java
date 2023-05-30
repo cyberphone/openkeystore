@@ -42,8 +42,8 @@ public abstract class CBORObject implements Cloneable {
     // Supported CBOR types
     static final int MT_UNSIGNED      = 0x00;
     static final int MT_NEGATIVE      = 0x20;
-    static final int MT_BYTE_STRING   = 0x40;
-    static final int MT_TEXT_STRING   = 0x60;
+    static final int MT_BYTES         = 0x40;
+    static final int MT_STRING        = 0x60;
     static final int MT_ARRAY         = 0x80;
     static final int MT_MAP           = 0xa0;
     static final int MT_TAG           = 0xc0;
@@ -421,7 +421,7 @@ public abstract class CBORObject implements Cloneable {
      * @return <code>String</code>
      */
     public String getString() {
-        checkTypeAndMarkAsRead(CBORTypes.TEXT_STRING);
+        checkTypeAndMarkAsRead(CBORTypes.STRING);
         return ((CBORString) this).textString;
     }
 
@@ -435,7 +435,7 @@ public abstract class CBORObject implements Cloneable {
      * @return <code>byteArray</code>
      */
     public byte[] getBytes() {
-        checkTypeAndMarkAsRead(CBORTypes.BYTE_STRING);
+        checkTypeAndMarkAsRead(CBORTypes.BYTES);
         return ((CBORBytes) this).byteString;
     }
 
@@ -781,7 +781,7 @@ public abstract class CBORObject implements Cloneable {
                     CBORObject taggedbject = getObject();
                     if (n == CBORTag.RESERVED_TAG_COTX) {
                         CBORArray holder = taggedbject.getArray(2);
-                        if (holder.get(0).getType() != CBORTypes.TEXT_STRING) {
+                        if (holder.get(0).getType() != CBORTypes.STRING) {
                             reportError("Tag syntax " + CBORTag.RESERVED_TAG_COTX +
                                         "([\"string\", CBOR object]) expected");
                         }
@@ -794,10 +794,10 @@ public abstract class CBORObject implements Cloneable {
                 case MT_NEGATIVE:
                     return new CBORInt(n, false);
     
-                case MT_BYTE_STRING:
+                case MT_BYTES:
                     return new CBORBytes(readBytes(checkLength(n)));
     
-                case MT_TEXT_STRING:
+                case MT_STRING:
                     return new CBORString(UTF8.decode(readBytes(checkLength(n))));
     
                 case MT_ARRAY:

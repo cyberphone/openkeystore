@@ -28,8 +28,8 @@ public enum CBORTypes {
     BIG_INTEGER     (false),
     TAG             (false), 
     FLOATING_POINT  (false), 
-    BYTE_STRING     (false),
-    TEXT_STRING     (true), 
+    BYTES           (false),
+    STRING          (true), 
     BOOLEAN         (false), 
     NULL            (false);
     
