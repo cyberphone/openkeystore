@@ -54,6 +54,7 @@ public class CBORFloat extends CBORObject {
      * @param value Java double
      */
     public CBORFloat(double value) {
+        super(CBORTypes.FLOATING_POINT);
         this.value = value;
 
         // Initial assumption: the number is a plain vanilla 64-bit double.
@@ -155,11 +156,6 @@ public class CBORFloat extends CBORObject {
      */
     public static String formatDouble(double value) {
         return Double.toString(value).replace('E', 'e').replaceAll("e(\\d)", "e+$1");
-    }
-
-    @Override
-    public CBORTypes getType() {
-        return CBORTypes.FLOATING_POINT;
     }
 
     /**

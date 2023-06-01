@@ -43,15 +43,11 @@ public class CBORBigInt extends CBORObject {
      * @param value Integer in BigInteger format
      */
     public CBORBigInt(BigInteger value) {
+        super(CBORTypes.BIG_INTEGER);
         this.value = value;
         nullCheck(value);
     }
     
-    @Override
-    public CBORTypes getType() {
-        return CBORTypes.BIG_INTEGER;
-    }
-
     @Override
     public byte[] encode() {
         boolean unsigned = value.compareTo(BigInteger.ZERO) >= 0;

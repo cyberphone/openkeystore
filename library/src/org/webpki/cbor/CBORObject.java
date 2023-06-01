@@ -34,7 +34,11 @@ import org.webpki.util.UTF8;
  */
 public abstract class CBORObject implements Cloneable {
     
-    CBORObject() {}
+    CBORTypes cborType;
+    
+    CBORObject(CBORTypes cborType) {
+        this.cborType = cborType;
+    }
     
     // True if object has been read
     private boolean readFlag;
@@ -91,7 +95,9 @@ public abstract class CBORObject implements Cloneable {
      * 
      * @return CBOR core type
      */
-    public abstract CBORTypes getType();
+    public CBORTypes getType() {
+        return cborType;
+    }
  
     /**
      * Encodes CBOR object.
@@ -156,8 +162,8 @@ public abstract class CBORObject implements Cloneable {
     }
 
     void checkTypeAndMarkAsRead(CBORTypes requestedCborType) {
-        if (getType() != requestedCborType) {
-            reportError("Is type: " + getType() + ", requested: " + requestedCborType);
+        if (cborType != requestedCborType) {
+            reportError("Is type: " + cborType + ", requested: " + requestedCborType);
         }
         readFlag = true;
     }
@@ -178,7 +184,7 @@ public abstract class CBORObject implements Cloneable {
      * @return <code>BigInteger</code>
      */
     public BigInteger getBigInteger() {
-        if (getType() == CBORTypes.INTEGER) {
+        if (cborType == CBORTypes.INTEGER) {
             return getCBORInt().toBigInteger();
         }
         checkTypeAndMarkAsRead(CBORTypes.BIG_INTEGER);
@@ -404,7 +410,7 @@ public abstract class CBORObject implements Cloneable {
      * @return <code>boolean</code>
      */
     public boolean isNull() {
-        if (getType() == CBORTypes.NULL) {
+        if (cborType == CBORTypes.NULL) {
             readFlag = true;
             return true;
         }
@@ -536,7 +542,7 @@ public abstract class CBORObject implements Cloneable {
     }
 
     private void traverse(CBORObject holderObject, boolean check) {
-        switch (getType()) {
+        switch (cborType) {
             case MAP:
                 CBORMap cborMap = (CBORMap) this;
                 for (CBORMap.Entry entry = cborMap.root; entry != null; entry = entry.next) {
@@ -566,7 +572,7 @@ public abstract class CBORObject implements Cloneable {
                                 "Tagged object " +
                                 Long.toUnsignedString(((CBORTag)holderObject).tagNumber) : 
                                 "Map key " + holderObject.toString() + " with argument") +                    
-                            " of type=" + getType() + 
+                            " of type=" + cborType + 
                             " with value=" + toString() + " was never read");
             }
         } else {
@@ -781,7 +787,7 @@ public abstract class CBORObject implements Cloneable {
                     CBORObject taggedbject = getObject();
                     if (n == CBORTag.RESERVED_TAG_COTX) {
                         CBORArray holder = taggedbject.getArray(2);
-                        if (holder.get(0).getType() != CBORTypes.STRING) {
+                        if (holder.get(0).cborType != CBORTypes.STRING) {
                             reportError("Tag syntax " + CBORTag.RESERVED_TAG_COTX +
                                         "([\"string\", CBOR object]) expected");
                         }

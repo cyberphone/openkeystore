@@ -77,6 +77,7 @@ public class CBORTag extends CBORObject {
      * @param object Object
      */
     public CBORTag(long tagNumber, CBORObject object) {
+        super(CBORTypes.TAG);
         this.tagNumber = tagNumber;
         this.object = object;
         nullCheck(object);
@@ -98,11 +99,6 @@ public class CBORTag extends CBORObject {
         return tagNumber;
     }
 
-    @Override
-    public CBORTypes getType() {
-        return CBORTypes.TAG;
-    }
-    
     @Override
     public byte[] encode() {
         return addByteArrays(encodeTagAndN(MT_TAG, tagNumber), object.encode());

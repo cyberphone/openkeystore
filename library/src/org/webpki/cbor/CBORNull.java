@@ -26,11 +26,8 @@ public class CBORNull extends CBORObject {
     /**
      * Creates a CBOR <code>null</code>.
      */
-    public CBORNull() {}
-
-    @Override
-    public CBORTypes getType() {
-        return CBORTypes.NULL;
+    public CBORNull() {
+        super(CBORTypes.NULL);
     }
 
     @Override

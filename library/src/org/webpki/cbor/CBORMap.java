@@ -58,12 +58,7 @@ public class CBORMap extends CBORObject {
      * Creates an empty CBOR <code>map</code>.
      */
     public CBORMap() {
-    }
-    
-
-    @Override
-    public CBORTypes getType() {
-        return CBORTypes.MAP;
+        super(CBORTypes.MAP);
     }
 
     private CBORObject getKey(CBORObject key) {

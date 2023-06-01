@@ -35,13 +35,9 @@ public class CBORString extends CBORObject {
      * </p>
      */
     public CBORString(String textString) {
+        super(CBORTypes.STRING);
         this.textString = textString;
         nullCheck(textString);
-    }
-
-    @Override
-    public CBORTypes getType() {
-        return CBORTypes.STRING;
     }
 
     @Override

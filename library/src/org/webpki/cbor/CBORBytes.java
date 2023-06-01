@@ -31,13 +31,9 @@ public class CBORBytes extends CBORObject {
      * @param byteString The bytes constituting the string
      */
     public CBORBytes(byte[] byteString) {
+        super(CBORTypes.BYTES);
         this.byteString = byteString;
         nullCheck(byteString);
-   }
-    
-    @Override
-    public CBORTypes getType() {
-        return CBORTypes.BYTES;
     }
 
     @Override

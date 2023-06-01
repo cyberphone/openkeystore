@@ -29,7 +29,9 @@ public class CBORArray extends CBORObject {
      * Creates an empty CBOR array <code>[]</code>.
      * 
      */
-    public CBORArray() {}
+    public CBORArray() {
+        super(CBORTypes.ARRAY);
+    }
     
     /**
      * Returns the size of the array.
@@ -69,11 +71,6 @@ public class CBORArray extends CBORObject {
      */
     public CBORObject[] toArray() {
         return elements.toArray(new CBORObject[0]);
-    }
-
-    @Override
-    public CBORTypes getType() {
-        return CBORTypes.ARRAY;
     }
 
     @Override

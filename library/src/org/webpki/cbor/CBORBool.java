@@ -32,12 +32,8 @@ public class CBORBool extends CBORObject {
      * @param value <code>true</code> or <code>false</code>
      */
     public CBORBool(boolean value) {
+        super(CBORTypes.BOOLEAN);
         this.value = value;
-    }
-
-    @Override
-    public CBORTypes getType() {
-        return CBORTypes.BOOLEAN;
     }
 
     @Override
