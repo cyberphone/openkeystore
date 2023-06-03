@@ -333,12 +333,7 @@ public class CBORDiagnosticNotation {
             long tagNumber = Long.parseUnsignedLong(number);
             CBORObject taggedObject = getObject();
             if (tagNumber == CBORTag.RESERVED_TAG_COTX) {
-                CBORArray array;
-                if (taggedObject.getType() != CBORTypes.ARRAY ||
-                    (array = taggedObject.getArray()).size() != 2 ||
-                    (array.get(0).getType() != CBORTypes.STRING)) {
-                    reportError("Special tag " + CBORTag.RESERVED_TAG_COTX + " syntax error");
-                }
+                CBORObject.checkCOTX(taggedObject);
             }
             CBORTag cborTag = new CBORTag(tagNumber, taggedObject);
             scanFor(")");

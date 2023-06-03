@@ -116,6 +116,16 @@ public abstract class CBORObject implements Cloneable {
         throw new CBORException(error);
     }
 
+    static CBORArray checkCOTX(CBORObject taggedObject) {
+        CBORArray holder = taggedObject.cborType == CBORTypes.ARRAY ? 
+                                            taggedObject.getArray() : null;
+        if (holder == null || holder.size() != 2 || holder.get(0).cborType != CBORTypes.STRING) {
+            reportError("Tag syntax " + CBORTag.RESERVED_TAG_COTX +
+                        "([\"string\", CBOR object]) expected");
+        }
+        return holder;
+    }
+
     static void unsupportedTag(int tag) {
         reportError(String.format(STDERR_UNSUPPORTED_TAG + "%02x", tag));
     }
@@ -474,26 +484,6 @@ public abstract class CBORObject implements Cloneable {
     }
     
     /**
-     * Returns fixed-length <code>array</code> object.
-     * <p>
-     * This method requires that the object is a
-     * {@link CBORArray} as well as holding
-     * <code>requiredLength</code> number of elements, 
-     * otherwise a {@link CBORException} is thrown.
-     * </p>
-     * 
-     * @param requiredLength Required number of elements
-     * @return CBOR <code>array</code> object
-     */
-    public CBORArray getArray(int requiredLength) {
-        CBORArray cborArray = getArray();
-        if (cborArray.size() != requiredLength) {
-            reportError(STDERR_ARRAY_LENGTH);
-        }
-        return cborArray;
-    }
-    
-    /**
      * Returns tag object.
      * <p>
      * This method requires that the object is a
@@ -784,15 +774,11 @@ public abstract class CBORObject implements Cloneable {
             // N successfully decoded, now switch on major type (upper three bits).
             switch (tag & 0xe0) {
                 case MT_TAG:
-                    CBORObject taggedbject = getObject();
+                    CBORObject taggedObject = getObject();
                     if (n == CBORTag.RESERVED_TAG_COTX) {
-                        CBORArray holder = taggedbject.getArray(2);
-                        if (holder.get(0).cborType != CBORTypes.STRING) {
-                            reportError("Tag syntax " + CBORTag.RESERVED_TAG_COTX +
-                                        "([\"string\", CBOR object]) expected");
-                        }
+                        checkCOTX(taggedObject);
                     }
-                    return new CBORTag(n, taggedbject);
+                    return new CBORTag(n, taggedObject);
 
                 case MT_UNSIGNED:
                     return new CBORInt(n, true);
@@ -1027,9 +1013,6 @@ public abstract class CBORObject implements Cloneable {
     
     static final String STDERR_ARGUMENT_IS_NULL =
             "Argument \"null\" is not permitted";
-
-    static final String STDERR_ARRAY_LENGTH =
-            "Array length does not march request";
 
     static final String STDERR_FLOAT_RANGE =
             "Value out of range for\"float\"";

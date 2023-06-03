@@ -61,7 +61,7 @@ public class CBORTypedObjectDecoderCache {
         if (tag.tagNumber != CBORTag.RESERVED_TAG_COTX) {
             throw new CBORException("COTX expcted, got: " + tag.tagNumber);
         }
-        CBORArray cborArray = tag.getObject().getArray(2);
+        CBORArray cborArray = CBORObject.checkCOTX(tag.getObject());
         String objectId = cborArray.get(0).getString();
         Class<? extends CBORTypedObjectDecoder> schemaClass = classMap.get(objectId);
         if (schemaClass == null) {
