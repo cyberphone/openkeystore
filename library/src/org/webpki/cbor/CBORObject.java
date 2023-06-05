@@ -774,11 +774,7 @@ public abstract class CBORObject implements Cloneable {
             // N successfully decoded, now switch on major type (upper three bits).
             switch (tag & 0xe0) {
                 case MT_TAG:
-                    CBORObject taggedObject = getObject();
-                    if (n == CBORTag.RESERVED_TAG_COTX) {
-                        checkCOTX(taggedObject);
-                    }
-                    return new CBORTag(n, taggedObject);
+                    return new CBORTag(n, getObject());
 
                 case MT_UNSIGNED:
                     return new CBORInt(n, true);

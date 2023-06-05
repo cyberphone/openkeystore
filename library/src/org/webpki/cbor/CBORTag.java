@@ -16,6 +16,8 @@
  */
 package org.webpki.cbor;
 
+import java.util.regex.Pattern;
+
 /**
  * Class for holding CBOR <code>tag</code> objects.
  * <p>
@@ -59,12 +61,22 @@ public class CBORTag extends CBORObject {
     public static final int RESERVED_TAG_COTX  = 1010;
 
     /**
+     * DATE tag: {@value #RESERVED_TAG_DATE}
+     */
+    public static final int RESERVED_TAG_DATE  = 0;
+    
+    static final Pattern DATE_PATTERN = Pattern.compile("(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d" +
+                                                        "{2})(\\.\\d{1,9})?([+-]\\d{2}:\\d{2}|Z)");
+
+
+    /**
      * Creates a COTX-tagged object.
      * 
      * @param typeUrl Type URL (or other string)
      * @param object Object
      */
     public CBORTag(String typeUrl, CBORObject object) {
+        // Yeah, there will be a redundant test...
         this(RESERVED_TAG_COTX, new CBORArray()
                                     .add(new CBORString(typeUrl))
                                     .add(object));
@@ -81,6 +93,14 @@ public class CBORTag extends CBORObject {
         this.tagNumber = tagNumber;
         this.object = object;
         nullCheck(object);
+         if (tagNumber == RESERVED_TAG_COTX) {
+            checkCOTX(object);
+        } else if (tagNumber == RESERVED_TAG_DATE) {
+            if (object.cborType != CBORTypes.STRING ||
+                !DATE_PATTERN.matcher(object.getString()).matches()) {
+                CBORObject.reportError(STDERR_ISO_DATE_ERROR);
+            }
+        }
     }
 
     /**
@@ -111,4 +131,7 @@ public class CBORTag extends CBORObject {
          object.internalToString(cborPrinter);
          cborPrinter.append(')');
     }
+    
+    static final String STDERR_ISO_DATE_ERROR =
+            "Invalid ISO date string";
 }

@@ -42,11 +42,11 @@ public class CBORDiagnosticNotation {
     
     char[] cborText;
     int index;
-    boolean sequence;
+    boolean sequenceFlag;
     
-    CBORDiagnosticNotation(String cborText, boolean sequence) {
+    CBORDiagnosticNotation(String cborText, boolean sequenceFlag) {
         this.cborText = cborText.toCharArray();
-        this.sequence = sequence;
+        this.sequenceFlag = sequenceFlag;
     }
     
     /**
@@ -56,7 +56,7 @@ public class CBORDiagnosticNotation {
      * @return {@link CBORObject}
      */
     public static CBORObject decode(String cborText) {
-        return new CBORDiagnosticNotation(cborText, false).readToEOF();
+        return new CBORDiagnosticNotation(cborText, false).readSequenceToEOF()[0];
     }
 
     /**
@@ -111,29 +111,18 @@ public class CBORDiagnosticNotation {
                                           .append(error).toString());
     }
     
-    private CBORObject readToEOF() {
-        try {
-            CBORObject cborObject = getObject();
-            if (index < cborText.length) {
-                readChar();
-                reportError("Unexpected data after token");
-            }
-        return cborObject;
-        } catch (ParserException pe) {
-            throw pe;
-        } catch (Exception e) {
-            reportError(e.getMessage());
-        }
-        return null;  // For the compiler...
-    }
-
     private CBORObject[] readSequenceToEOF() {
         try {
             ArrayList<CBORObject> sequence = new ArrayList<>();
             while (true) {
                 sequence.add(getObject());
                 if (index < cborText.length) {
-                    scanFor(",");
+                    if (sequenceFlag) {
+                        scanFor(",");
+                    } else {
+                        readChar();
+                        reportError("Unexpected data after token");
+                    }
                 } else {
                     return sequence.toArray(new CBORObject[0]);
                 }
