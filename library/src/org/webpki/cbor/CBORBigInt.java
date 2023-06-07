@@ -49,7 +49,7 @@ public class CBORBigInt extends CBORObject {
     }
     
     @Override
-    public byte[] encode() {
+    byte[] internalEncode() {
         boolean unsigned = value.compareTo(BigInteger.ZERO) >= 0;
         BigInteger cborAdjusted = unsigned ? value : value.negate().subtract(BigInteger.ONE);
         byte[] encoded = cborAdjusted.toByteArray();

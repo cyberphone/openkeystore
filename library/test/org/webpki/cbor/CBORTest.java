@@ -2224,6 +2224,19 @@ public class CBORTest {
         diagFlag("h'0'");  // Bad Hex
         diagFlag("'unterminated");  // Bad string
         diagFlag("\"unterminated");  // Bad string
+        
+        String pretty = 
+                "{\n" +
+                "  1: \"text\\nnext\",\n" +
+                "  2: [5.960465188081798e-8, h'abcdef', " + 
+                "true, 0(\"2023-06-02T07:53:19Z\")]\n" +
+                "}";
+        
+        CBORObject diag = CBORDiagnosticNotation.decode(pretty);
+        assertTrue("diag1", pretty.equals(diag.toString()));
+        assertTrue("diag2", pretty.replace(" ", "")
+                                  .replace("\n", "").equals(diag.toDiagnosticNotation(false)));
+        assertTrue("diag3", pretty.equals(diag.toDiagnosticNotation(true)));
     }
 
     void utf8DecoderTest(String hex, boolean ok) {

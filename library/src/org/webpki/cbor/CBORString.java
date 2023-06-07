@@ -41,7 +41,7 @@ public class CBORString extends CBORObject {
     }
 
     @Override
-    public byte[] encode() {
+    byte[] internalEncode() {
         byte[] utf8Bytes = UTF8.encode(textString);
         return addByteArrays(encodeTagAndN(MT_STRING, utf8Bytes.length), utf8Bytes);
     }

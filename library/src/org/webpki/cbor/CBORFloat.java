@@ -169,7 +169,7 @@ public class CBORFloat extends CBORObject {
     }
 
     @Override
-    public byte[] encode() {
+    byte[] internalEncode() {
         return encodeTagAndValue(tag, 2 << (tag - MT_FLOAT16), bitFormat);
     }
     

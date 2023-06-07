@@ -120,7 +120,7 @@ public class CBORTag extends CBORObject {
     }
 
     @Override
-    public byte[] encode() {
+    byte[] internalEncode() {
         return addByteArrays(encodeTagAndN(MT_TAG, tagNumber), object.encode());
 
     }

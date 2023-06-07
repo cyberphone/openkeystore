@@ -74,7 +74,7 @@ public class CBORArray extends CBORObject {
     }
 
     @Override
-    public byte[] encode() {
+    byte[] internalEncode() {
         byte[] encoded = encodeTagAndN(MT_ARRAY, elements.size());
         for (CBORObject cborObject : toArray()) {
             encoded = addByteArrays(encoded, cborObject.encode());
@@ -88,7 +88,8 @@ public class CBORArray extends CBORObject {
         boolean notFirst = false;
         for (CBORObject object : toArray()) {
             if (notFirst) {
-                cborPrinter.append(", ");
+                cborPrinter.append(',');
+                cborPrinter.space();
             }
             notFirst = true;
             object.internalToString(cborPrinter);

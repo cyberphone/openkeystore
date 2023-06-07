@@ -244,7 +244,7 @@ public class CBORMap extends CBORObject {
     }
 
     @Override
-    public byte[] encode() {
+    byte[] internalEncode() {
         byte[] encoded = encodeTagAndN(MT_MAP, numberOfEntries);
         for (Entry entry = root; entry != null; entry = entry.next) {
             encoded = addByteArrays(encoded,
@@ -264,7 +264,8 @@ public class CBORMap extends CBORObject {
             notFirst = true;
             cborPrinter.newlineAndIndent();
             entry.key.internalToString(cborPrinter);
-            cborPrinter.append(": ");
+            cborPrinter.append(':');
+            cborPrinter.space();
             entry.value.internalToString(cborPrinter);
         }
         cborPrinter.endMap(notFirst);

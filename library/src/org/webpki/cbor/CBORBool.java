@@ -37,7 +37,7 @@ public class CBORBool extends CBORObject {
     }
 
     @Override
-    public byte[] encode() {
+    byte[] internalEncode() {
         return value ? TRUE : FALSE;
     }
 

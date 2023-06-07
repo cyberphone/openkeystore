@@ -98,7 +98,10 @@ public abstract class CBORObject implements Cloneable {
     public CBORTypes getType() {
         return cborType;
     }
- 
+
+    // This solution is simply to get a JavaDoc that is more logical...
+    abstract byte[] internalEncode();
+
     /**
      * Encodes CBOR object.
      * <p>
@@ -108,7 +111,9 @@ public abstract class CBORObject implements Cloneable {
      * 
      * @return CBOR encoded <code>byteArray</code>
      */
-    public abstract byte[] encode();
+    public byte[] encode() {
+        return internalEncode();
+    }
     
     abstract void internalToString(DiagnosticNotation outputBuffer);
 
@@ -892,21 +897,31 @@ public abstract class CBORObject implements Cloneable {
         
         private int indentationLevel;
         private StringBuilder outputBuffer;
+        private boolean prettyPrint;
                
-        private DiagnosticNotation() {
+        private DiagnosticNotation(boolean prettyPrint) {
             outputBuffer = new StringBuilder();
+            this.prettyPrint = prettyPrint;
         }
 
         void newlineAndIndent() {
-            outputBuffer.append('\n');
-            for (int i = 0; i < indentationLevel; i++) {
-                outputBuffer.append(INDENT);
+            if (prettyPrint) {
+                outputBuffer.append('\n');
+                for (int i = 0; i < indentationLevel; i++) {
+                    outputBuffer.append(INDENT);
+                }
             }
         }
         
         void beginMap() {
             outputBuffer.append('{');
             indentationLevel++;
+        }
+        
+        void space() {
+            if (prettyPrint) {
+                outputBuffer.append(' ');
+            }
         }
 
         void endMap(boolean notEmpty) {
@@ -956,14 +971,30 @@ public abstract class CBORObject implements Cloneable {
     }
 
     /**
-     * Returns the CBOR object in pretty-printed 
+     * Returns the CBOR object in
      * <a href='package-summary.html#diagnostic-notation'>Diagnostic Notation</a>.
+     * <p>
+     * @param prettyPrint If <code>true</code> white space is added to make the 
+     * result easier to read.  If <code>false</code> elements are output
+     * without additional white space (=single line).
+     * </p>
+     */
+    public String toDiagnosticNotation(boolean prettyPrint) {
+        DiagnosticNotation outputBuffer = new DiagnosticNotation(prettyPrint);
+        internalToString(outputBuffer);
+        return outputBuffer.getTextualCbor();
+    }
+
+    /**
+     * Returns the CBOR object in a pretty-printed form.
+     * <p>
+     * Equivalent to @{link {@link #toDiagnosticNotation(boolean)}
+     * with the argument set to <code>true</code>.
+     * </p>
      */
     @Override
     public String toString() {
-        DiagnosticNotation outputBuffer = new DiagnosticNotation();
-        internalToString(outputBuffer);
-        return outputBuffer.getTextualCbor();
+        return toDiagnosticNotation(true);
     }
     
     /**

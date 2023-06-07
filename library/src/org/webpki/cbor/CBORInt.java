@@ -102,7 +102,7 @@ public class CBORInt extends CBORObject {
     }
 
     @Override
-    public byte[] encode() {
+    byte[] internalEncode() {
         return encodeTagAndN(unsigned ? MT_UNSIGNED : MT_NEGATIVE, value);
     }
 

@@ -37,7 +37,7 @@ public class CBORBytes extends CBORObject {
     }
 
     @Override
-    public byte[] encode() {
+    byte[] internalEncode() {
         return addByteArrays(encodeTagAndN(MT_BYTES, byteString.length), byteString);
     }
 

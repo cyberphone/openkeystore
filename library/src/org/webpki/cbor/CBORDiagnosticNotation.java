@@ -121,7 +121,7 @@ public class CBORDiagnosticNotation {
                         scanFor(",");
                     } else {
                         readChar();
-                        reportError("Unexpected data after token");
+                        reportError(CBORObject.STDERR_UNEXPECTED_DATA);
                     }
                 } else {
                     return sequence.toArray(new CBORObject[0]);
@@ -130,6 +130,7 @@ public class CBORDiagnosticNotation {
         } catch (ParserException pe) {
             throw pe;
         } catch (Exception e) {
+            // Exception from a deeper layer; convert to ParserError.
             reportError(e.getMessage());
         }
         return null;  // for the compiler...

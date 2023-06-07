@@ -31,7 +31,7 @@ public class CBORNull extends CBORObject {
     }
 
     @Override
-    public byte[] encode() {
+    byte[] internalEncode() {
         return NULL_TAG;
     }
 
