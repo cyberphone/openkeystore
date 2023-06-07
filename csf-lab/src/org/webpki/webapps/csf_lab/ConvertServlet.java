@@ -20,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 
 import javax.servlet.ServletException;
 
@@ -34,6 +35,7 @@ import org.webpki.json.JSONObjectWriter;
 import org.webpki.json.JSONParser;
 
 import org.webpki.util.Base64URL;
+import org.webpki.util.ISODateTime;
 
 import org.webpki.webutil.ServletUtil;
 
@@ -154,7 +156,11 @@ public class ConvertServlet extends CoreRequestServlet {
                         true,
                         CBOR_IN,
                         10, 
-                        "{\n  5: \"data\"\n}",
+                        "{\n  1: \"next\\nline\",\n  2: [5.960465188081798e-8, " +
+                        "0b100_000000001, b64'oQVkZGF0YQ', true, 0(\"" +
+                        ISODateTime.encode(new GregorianCalendar(), 
+                                           ISODateTime.UTC_NO_SUBSECONDS) +
+                        "\")]\n}",
                         selector(SEL_IN, true) +
                           "Paste a CBOR object in the text box or try with the default"))
             .append(HTML.fancyBox(

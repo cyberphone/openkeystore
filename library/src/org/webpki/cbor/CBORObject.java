@@ -988,7 +988,7 @@ public abstract class CBORObject implements Cloneable {
     /**
      * Returns the CBOR object in a pretty-printed form.
      * <p>
-     * Equivalent to @{link {@link #toDiagnosticNotation(boolean)}
+     * Equivalent to {@link #toDiagnosticNotation(boolean)}
      * with the argument set to <code>true</code>.
      * </p>
      */

@@ -250,6 +250,7 @@ public class CBORDiagnosticNotation {
         }
     }
 
+    @SuppressWarnings("fallthrough")
     private CBORObject getNumberOrTag(boolean negative) {
         StringBuilder token = new StringBuilder();
         index--;
@@ -297,6 +298,12 @@ public class CBORDiagnosticNotation {
                 case '.':
                     floatingPoint = true;
                     continue;
+                    
+                case '_':
+                    if (prefix == null) {
+                        reportError("'_' is only permitted for 0b, 0o, and 0x numbers");
+                    }
+                    readChar();
 
                 default:
                     continue;

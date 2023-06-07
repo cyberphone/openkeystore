@@ -2222,6 +2222,8 @@ public class CBORTest {
         diagFlag("1.0e+500");  // Too large
         diagFlag("b64'00'");  // Bad B64
         diagFlag("h'0'");  // Bad Hex
+        diagFlag("6_0");  // _ not permitted here
+        assertTrue("_", CBORDiagnosticNotation.decode("0b100_000000001").getInt() == 2049);
         diagFlag("'unterminated");  // Bad string
         diagFlag("\"unterminated");  // Bad string
         

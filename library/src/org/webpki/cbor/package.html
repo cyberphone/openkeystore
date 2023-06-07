@@ -262,16 +262,18 @@ Multi-line comments are treated as whitespace and may thus also be used
 <td rowspan='2'>7</td><td rowspan='2'>Single-line comment.
 Single-line comments are terminated by a newline character (<code>'\n'</code>) or <code>EOF</code>.</td></tr>
 <tr><td><code>//</code>&nbsp;<i>comment&nbsp;text</i></td></tr>
-<tr><td><code>integer</code></td>
+<tr id='integer-diag'><td><code>integer</code></td>
 <td rowspan='2'><span style='white-space:nowrap'>{<i>sign</i>}{<code>0b</code>|<code>0o</code>|<code>0x</code>}<i>n</i></span></td>
 <td rowspan='2'>1, 2</td><td rowspan='2'>
 Arbitrary sized integers without fractional components or exponents.
 See <a href='#integer-encoding'>CBOR integer encoding</a>.
 Binary, octal, and hexadecimal notation is supported by prepending numbers
 with <code>0b</code>, <code>0o</code>, and <code>0x</code> respectively.
+The latter also permit arbitrary insertions of <code>'_'</code> characters between digits to
+enable grouping of data like <code>0b100_000000001</code>.
 </td></tr>
 <tr><td><code>big&nbsp;integer</code></tr>
-<tr><td rowspan='3'><code>floating&nbsp;point</code></td>
+<tr id='float-diag'><td rowspan='3'><code>floating&nbsp;point</code></td>
 <td>{<i>sign</i>}<i>n</i><code>.</code><i>n</i>{<code>e&pm;</code><i>n</i>}</td>
 <td>1, 2</td><td>Floating point values
 must include a decimal point and an <i>optional</i> exponent.
