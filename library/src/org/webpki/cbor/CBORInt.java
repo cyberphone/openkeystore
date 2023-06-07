@@ -116,7 +116,7 @@ public class CBORInt extends CBORObject {
     }
 
     @Override
-    void internalToString(DiagnosticNotation cborPrinter) {
+    void internalToString(CborPrinter cborPrinter) {
         cborPrinter.append(toBigInteger().toString());
     }
 }

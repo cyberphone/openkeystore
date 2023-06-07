@@ -115,7 +115,7 @@ public abstract class CBORObject implements Cloneable {
         return internalEncode();
     }
     
-    abstract void internalToString(DiagnosticNotation outputBuffer);
+    abstract void internalToString(CborPrinter outputBuffer);
 
     static void reportError(String error) {
         throw new CBORException(error);
@@ -891,7 +891,7 @@ public abstract class CBORObject implements Cloneable {
                       cborData.length);
     }
     
-    class DiagnosticNotation {
+    class CborPrinter {
  
         static final String INDENT = "  ";
         
@@ -899,7 +899,7 @@ public abstract class CBORObject implements Cloneable {
         private StringBuilder outputBuffer;
         private boolean prettyPrint;
                
-        private DiagnosticNotation(boolean prettyPrint) {
+        private CborPrinter(boolean prettyPrint) {
             outputBuffer = new StringBuilder();
             this.prettyPrint = prettyPrint;
         }
@@ -932,12 +932,12 @@ public abstract class CBORObject implements Cloneable {
             outputBuffer.append('}');
         }
 
-        DiagnosticNotation append(String text) {
+        CborPrinter append(String text) {
             outputBuffer.append(text);
             return this;
         }
 
-        DiagnosticNotation append(char c) {
+        CborPrinter append(char c) {
             outputBuffer.append(c);
             return this;
         }
@@ -980,7 +980,7 @@ public abstract class CBORObject implements Cloneable {
      * </p>
      */
     public String toDiagnosticNotation(boolean prettyPrint) {
-        DiagnosticNotation outputBuffer = new DiagnosticNotation(prettyPrint);
+        CborPrinter outputBuffer = new CborPrinter(prettyPrint);
         internalToString(outputBuffer);
         return outputBuffer.getTextualCbor();
     }

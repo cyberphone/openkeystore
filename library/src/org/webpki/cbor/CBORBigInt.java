@@ -69,7 +69,7 @@ public class CBORBigInt extends CBORObject {
     }
     
     @Override
-    void internalToString(DiagnosticNotation cborPrinter) {
+    void internalToString(CborPrinter cborPrinter) {
         cborPrinter.append(value.toString());
     }
 }

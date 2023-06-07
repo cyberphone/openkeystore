@@ -42,7 +42,7 @@ public class CBORBool extends CBORObject {
     }
 
     @Override
-    void internalToString(DiagnosticNotation cborPrinter) {
+    void internalToString(CborPrinter cborPrinter) {
         cborPrinter.append(String.valueOf(value));
     }
 }

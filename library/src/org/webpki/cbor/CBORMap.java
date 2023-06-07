@@ -254,7 +254,7 @@ public class CBORMap extends CBORObject {
     }
         
     @Override
-    void internalToString(DiagnosticNotation cborPrinter) {
+    void internalToString(CborPrinter cborPrinter) {
         cborPrinter.beginMap();
         boolean notFirst = false;
         for (Entry entry = root; entry != null; entry = entry.next) {

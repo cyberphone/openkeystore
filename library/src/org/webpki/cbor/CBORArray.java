@@ -83,7 +83,7 @@ public class CBORArray extends CBORObject {
     }
 
     @Override
-    void internalToString(DiagnosticNotation cborPrinter) {
+    void internalToString(CborPrinter cborPrinter) {
         cborPrinter.append('[');
         boolean notFirst = false;
         for (CBORObject object : toArray()) {
