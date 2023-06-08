@@ -303,24 +303,24 @@ public class CBORTest {
     void doubleTest(String asText, String hex, int mustFail) {
         double v = Double.valueOf(asText);
         try {
-            CBORObject cborObject = parseCborHex(hex);
+            CBORFloat cborFloat = (CBORFloat)parseCborHex(hex);
             int l;
             if (mustFail == 0) {
-                switch (((CBORFloat) cborObject).getIeeeVariant()) {
-                    case F16:
+                switch (cborFloat.size()) {
+                    case 2:
                         l = 3;
                         break;
-                    case F32:
+                    case 4:
                         l = 5;
                         break;
                     default:
                         l = 9;
                         break;
                 }
-                assertTrue("ieee", l == cborObject.encode().length);
+                assertTrue("ieee", l == cborFloat.encode().length);
             }
             assertFalse("Double should fail", mustFail == 1);
-            Double d = cborObject.getDouble();
+            Double d = cborFloat.getDouble();
             assertTrue("Equal d=" + d + " v=" + v, (d.compareTo(v)) == 0 ^ (mustFail != 0));
         } catch (Exception e) {
             assertTrue("Ok fail", mustFail != 0);

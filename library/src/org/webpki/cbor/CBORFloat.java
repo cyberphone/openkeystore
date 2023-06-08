@@ -27,16 +27,10 @@ package org.webpki.cbor;
  */
 public class CBORFloat extends CBORObject {
 
-    /**
-     * Underlying IEEE 754 type.  
-     */
-    public enum IeeeVariant {F16, F32, F64};
-
+    // Actual value.
     double value;
     
-    /**
-     * CBOR representation of value
-     */
+    // CBOR representation of value.
     int tag;
     long bitFormat;
     
@@ -160,18 +154,20 @@ public class CBORFloat extends CBORObject {
     }
 
     /**
-     * Returns actual IEEE 754 type.
-     * @return {@link IeeeVariant}
+     * Returns the size of the optimized IEEE 754 type.
+     * <p>
+     * Note that you must cast a {@link CBORObject} to {@link CBORFloat}
+     * in order to access {@link CBORFloat#size()}.
+     * </p>
+     * @return Size in bytes: 2, 4, or 8.
      */
-    public IeeeVariant getIeeeVariant() {
-       return tag == MT_FLOAT16 ?
-                IeeeVariant.F16 : tag == MT_FLOAT32 ? 
-                                    IeeeVariant.F32 : IeeeVariant.F64;
+    public int size() {
+       return 2 << (tag - MT_FLOAT16);
     }
 
     @Override
     byte[] internalEncode() {
-        return encodeTagAndValue(tag, 2 << (tag - MT_FLOAT16), bitFormat);
+        return encodeTagAndValue(tag, size(), bitFormat);
     }
     
     @Override

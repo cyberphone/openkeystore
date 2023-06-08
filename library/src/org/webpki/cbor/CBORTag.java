@@ -22,15 +22,16 @@ import java.util.regex.Pattern;
  * Class for holding CBOR <code>tag</code> objects.
  * <p>
  * Tagged objects are based on CBOR major type 6.
- * This implementation accepts two variants of tags:
+ * This implementation accepts three variants of tags:
  * </p>
  * <div style='margin-left:4em'>
  * <code>nnn(</code><i>CBOR&nbsp;object&nbsp;</i><code>)</code><br>
+ * <code>{@value #RESERVED_TAG_DATE}(</code><i>ISO&nbsp;date&nbsp;string</i><code>)</code><br>
  * <code>{@value #RESERVED_TAG_COTX}([</code><i>CBOR&nbsp;text&nbsp;string</i><code>,
  * </code><i>CBOR&nbsp;object&nbsp;</i><code>])</code>
  * </div>
  * <p>
- * The purpose of the second construct is to provide a
+ * The purpose of the last construct is to provide a
  * generic way of adding an object type identifier in the
  * form of a URL or other text data to CBOR objects.
  * The CBOR tag <b>must</b> in this case be <code>{@value #RESERVED_TAG_COTX}</code>. 
