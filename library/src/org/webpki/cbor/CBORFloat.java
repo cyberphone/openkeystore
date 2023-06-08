@@ -115,18 +115,19 @@ public class CBORFloat extends CBORObject {
 
             // Check if we need to denormalize data.
             if (exponent <= 0) {
+                // For very small values we give up float16 immediately.
+                if (exponent < -FLOAT16_SIGNIFICAND_SIZE) {
+                    return;
+                }
                 // The implicit "1" becomes explicit using subnormal representation.
                 significand += 1l << FLOAT16_SIGNIFICAND_SIZE;
-                exponent--;
-                // Always perform at least one turn.
-                do {
-                    if ((significand & 1) != 0) {
-                        // Too off scale for float16.
-                        // This test also catches subnormal float32 numbers.
-                        return;
-                    }
-                    significand >>= 1;
-                } while (++exponent < 0);
+                long significandCopy = significand;
+                significand >>= (1 - exponent);
+                if (significandCopy != (significand << (1 - exponent))) {
+                    // Too off scale for float16.
+                    return;
+                }
+                exponent = 0;
             }
 
             // Seems like 16 bits indeed are sufficient!
