@@ -90,6 +90,8 @@ public abstract class CBORObject implements Cloneable {
     static final long UINT16_MASK             = 0xffffffffffff0000L;
     static final long UINT8_MASK              = 0xffffffffffffff00L;
     
+    static final int  MAX_ERROR_MESSAGE       = 100;
+    
     /**
      * Returns core CBOR type.
      * 
@@ -118,6 +120,9 @@ public abstract class CBORObject implements Cloneable {
     abstract void internalToString(CborPrinter outputBuffer);
 
     static void reportError(String error) {
+        if (error.length() > MAX_ERROR_MESSAGE) {
+            error = error.substring(0, MAX_ERROR_MESSAGE - 3) + " ...";
+        }
         throw new CBORException(error);
     }
 
@@ -125,8 +130,7 @@ public abstract class CBORObject implements Cloneable {
         CBORArray holder = taggedObject.cborType == CBORTypes.ARRAY ? 
                                             taggedObject.getArray() : null;
         if (holder == null || holder.size() != 2 || holder.get(0).cborType != CBORTypes.STRING) {
-            reportError("Tag syntax " + CBORTag.RESERVED_TAG_COTX +
-                        "([\"string\", CBOR object]) expected");
+            reportError("Invalid COTX object: " + taggedObject.toDiagnosticNotation(false));
         }
         return holder;
     }

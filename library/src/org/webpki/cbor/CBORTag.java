@@ -98,7 +98,7 @@ public class CBORTag extends CBORObject {
         } else if (tagNumber == RESERVED_TAG_DATE) {
             if (object.cborType != CBORTypes.STRING ||
                 !DATE_PATTERN.matcher(object.getString()).matches()) {
-                CBORObject.reportError(STDERR_ISO_DATE_ERROR);
+                CBORObject.reportError(STDERR_ISO_DATE_ERROR + object.toDiagnosticNotation(false));
             }
         }
     }
@@ -133,5 +133,5 @@ public class CBORTag extends CBORObject {
     }
     
     static final String STDERR_ISO_DATE_ERROR =
-            "Invalid ISO date string";
+            "Invalid ISO date string: ";
 }
