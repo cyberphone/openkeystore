@@ -99,7 +99,7 @@ public class CBORTag extends CBORObject {
         } else if (tagNumber == RESERVED_TAG_DATE) {
             if (object.cborType != CBORTypes.STRING ||
                 !DATE_PATTERN.matcher(object.getString()).matches()) {
-                CBORObject.reportError(STDERR_ISO_DATE_ERROR + object.toDiagnosticNotation(false));
+                CBORObject.cborError(STDERR_ISO_DATE_ERROR + object.toDiagnosticNotation(false));
             }
         }
     }

@@ -119,7 +119,7 @@ public abstract class CBORObject implements Cloneable {
     
     abstract void internalToString(CborPrinter outputBuffer);
 
-    static void reportError(String error) {
+    static void cborError(String error) {
         if (error.length() > MAX_ERROR_MESSAGE) {
             error = error.substring(0, MAX_ERROR_MESSAGE - 3) + " ...";
         }
@@ -130,13 +130,13 @@ public abstract class CBORObject implements Cloneable {
         CBORArray holder = taggedObject.cborType == CBORTypes.ARRAY ? 
                                             taggedObject.getArray() : null;
         if (holder == null || holder.size() != 2 || holder.get(0).cborType != CBORTypes.STRING) {
-            reportError("Invalid COTX object: " + taggedObject.toDiagnosticNotation(false));
+            cborError("Invalid COTX object: " + taggedObject.toDiagnosticNotation(false));
         }
         return holder;
     }
 
     static void unsupportedTag(int tag) {
-        reportError(String.format(STDERR_UNSUPPORTED_TAG + "%02x", tag));
+        cborError(String.format(STDERR_UNSUPPORTED_TAG + "%02x", tag));
     }
     
     static void nullCheck(Object object) {
@@ -152,7 +152,7 @@ public abstract class CBORObject implements Cloneable {
     }
 
     static void integerRangeError(String integerType) {
-        reportError(STDERR_INT_RANGE + integerType);
+        cborError(STDERR_INT_RANGE + integerType);
     }
 
     byte[] encodeTagAndValue(int tag, int length, long value) {
@@ -182,7 +182,7 @@ public abstract class CBORObject implements Cloneable {
 
     void checkTypeAndMarkAsRead(CBORTypes requestedCborType) {
         if (cborType != requestedCborType) {
-            reportError("Is type: " + cborType + ", requested: " + requestedCborType);
+            cborError("Is type: " + cborType + ", requested: " + requestedCborType);
         }
         readFlag = true;
     }
@@ -243,7 +243,7 @@ public abstract class CBORObject implements Cloneable {
     public long getUnsignedLong() {
         CBORInt CBORInt = getCBORInt();
         if (!CBORInt.unsigned) {
-            reportError(STDERR_NOT_UNSIGNED);
+            cborError(STDERR_NOT_UNSIGNED);
         }
         return CBORInt.value;
     }
@@ -396,7 +396,7 @@ public abstract class CBORObject implements Cloneable {
         checkTypeAndMarkAsRead(CBORTypes.FLOATING_POINT);
         CBORFloat floatingPoint = (CBORFloat) this;
         if (floatingPoint.tag == MT_FLOAT64) {
-            reportError(STDERR_FLOAT_RANGE);
+            cborError(STDERR_FLOAT_RANGE);
         }
         return (float)floatingPoint.value;
     }
@@ -565,7 +565,7 @@ public abstract class CBORObject implements Cloneable {
         }
         if (check) {
             if (!readFlag) {
-                reportError((holderObject == null ? "Data" : 
+                cborError((holderObject == null ? "Data" : 
                             holderObject instanceof CBORArray ? "Array element" :
                                 holderObject instanceof CBORTag ?
                                 "Tagged object " +
@@ -602,17 +602,17 @@ public abstract class CBORObject implements Cloneable {
             this.constrainedKeys = constrainedKeys;
             this.maxLength = maxLength;
             if (maxLength < 1) {
-                reportError("Invalid \"maxLength\"");
+                cborError("Invalid \"maxLength\"");
             }
         }
         
         private void eofError() {
-            reportError(STDERR_CBOR_EOF);
+            cborError(STDERR_CBOR_EOF);
         }
         
         private void outOfLimitTest(int increment) {
             if ((byteCount += increment) > maxLength || byteCount < 0) {
-                reportError(STDERR_READING_LIMIT);
+                cborError(STDERR_READING_LIMIT);
             }
         }
         
@@ -655,7 +655,7 @@ public abstract class CBORObject implements Cloneable {
 
         private int checkLength(long n) {
             if (n < 0 || n > Integer.MAX_VALUE) {
-                reportError(STDERR_N_RANGE_ERROR + n);
+                cborError(STDERR_N_RANGE_ERROR + n);
             }
             return (int)n;
         }
@@ -664,7 +664,7 @@ public abstract class CBORObject implements Cloneable {
                  {
             CBORFloat value = new CBORFloat(Double.longBitsToDouble(rawDouble));
             if ((value.tag != tag || value.bitFormat != bitFormat) && deterministicMode) {
-                reportError(String.format(STDERR_NON_DETERMINISTIC_FLOAT + "%2x", tag & 0xff));
+                cborError(String.format(STDERR_NON_DETERMINISTIC_FLOAT + "%2x", tag & 0xff));
             }
             return value;
         }
@@ -680,7 +680,7 @@ public abstract class CBORObject implements Cloneable {
                     if (byteArray.length == 0) {
                         byteArray = ZERO_BYTE;  // Zero length byte string => n == 0.
                     } else if (byteArray[0] == 0 && deterministicMode) {
-                        reportError(STDERR_LEADING_ZERO);
+                        cborError(STDERR_LEADING_ZERO);
                     }
                     CBORBigInt CBORBigInt = new CBORBigInt(
                         (tag == MT_BIG_NEGATIVE) ?
@@ -688,7 +688,7 @@ public abstract class CBORObject implements Cloneable {
                                                :
                             new BigInteger(1, byteArray));
                     if (byteArray.length <= 8 && deterministicMode) {
-                        reportError(STDERR_NON_DETERMINISTIC_INT);
+                        cborError(STDERR_NON_DETERMINISTIC_INT);
                     }
                     return CBORBigInt;
 
@@ -777,7 +777,7 @@ public abstract class CBORObject implements Cloneable {
                 // N is zero, a shorter variant should have been used.
                 // In addition, a single byte N must be > 23. 
                 if (((n & mask) == 0 || (n > 0 && n < 24)) && deterministicMode) {
-                    reportError(STDERR_NON_DETERMINISTIC_N);
+                    cborError(STDERR_NON_DETERMINISTIC_N);
                 }
             }
             // N successfully decoded, now switch on major type (upper three bits).
@@ -861,7 +861,7 @@ public abstract class CBORObject implements Cloneable {
                     return null;
                 }
             } else if (inputStream.read() != -1) {
-                reportError(STDERR_UNEXPECTED_DATA);
+                cborError(STDERR_UNEXPECTED_DATA);
             }
             return cborObject;
         } catch (IOException e) {

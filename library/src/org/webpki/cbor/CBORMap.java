@@ -89,7 +89,7 @@ public class CBORMap extends CBORObject {
         key = getKey(key);
         nullCheck(value);
         if (constrainedKeys && !key.getType().permittedConstrainedKey) {
-            reportError(STDERR_CONSTRAINED_KEYS + key);
+            cborError(STDERR_CONSTRAINED_KEYS + key);
         }
         Entry newEntry = new Entry(key, value);
         if (root == null) {
@@ -97,13 +97,13 @@ public class CBORMap extends CBORObject {
         } else {
             // Keys are always sorted, making the verification process simple.
             if (constrainedKeys && lastEntry.key.getType() != key.getType()) {
-                reportError(STDERR_CONSTRAINED_KEYS + key);
+                cborError(STDERR_CONSTRAINED_KEYS + key);
             }
             if (deterministicMode) {
                 // Normal case for parsing.
                 int diff = lastEntry.compare(newEntry.encodedKey);
                 if (diff >= 0) {
-                    reportError((diff == 0 ? 
+                    cborError((diff == 0 ? 
                       STDERR_DUPLICATE_KEY : STDERR_NON_DET_SORT_ORDER) + key);
                 }
                 lastEntry.next = newEntry;
@@ -115,7 +115,7 @@ public class CBORMap extends CBORObject {
                 for (Entry entry = root; entry != null; entry = entry.next) {
                     diff = entry.compare(newEntry.encodedKey);
                     if (diff == 0) {
-                        reportError(STDERR_DUPLICATE_KEY + key);                      
+                        cborError(STDERR_DUPLICATE_KEY + key);                      
                     }
                     if (diff > 0) {
                         // New key is (lexicographically) smaller than current entry.
@@ -154,7 +154,7 @@ public class CBORMap extends CBORObject {
             }
         }
         if (mustExist) {
-            reportError(STDERR_MISSING_KEY + key);
+            cborError(STDERR_MISSING_KEY + key);
         }
         return null;
     }
@@ -225,7 +225,7 @@ public class CBORMap extends CBORObject {
             }
             precedingEntry = entry;
         }
-        reportError(STDERR_MISSING_KEY + key);
+        cborError(STDERR_MISSING_KEY + key);
         return null;
     }
 

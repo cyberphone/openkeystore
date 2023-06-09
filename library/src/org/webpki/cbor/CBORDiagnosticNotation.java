@@ -69,7 +69,7 @@ public class CBORDiagnosticNotation {
         return new CBORDiagnosticNotation(cborText, true).readSequenceToEOF();
     }
 
-    private void reportError(String error) {
+    private void parserError(String error) {
         // Unsurprisingly, error handling turned out to be the most complex part...
         int start = index - 100;
         if (start < 0) {
@@ -121,7 +121,7 @@ public class CBORDiagnosticNotation {
                         scanFor(",");
                     } else {
                         readChar();
-                        reportError(CBORObject.STDERR_UNEXPECTED_DATA);
+                        parserError(CBORObject.STDERR_UNEXPECTED_DATA);
                     }
                 } else {
                     return sequence.toArray(new CBORObject[0]);
@@ -131,7 +131,7 @@ public class CBORDiagnosticNotation {
             throw pe;
         } catch (Exception e) {
             // Exception from a deeper layer; convert to ParserError.
-            reportError(e.getMessage());
+            parserError(e.getMessage());
         }
         return null;  // for the compiler...
     }
@@ -199,7 +199,7 @@ public class CBORDiagnosticNotation {
             case 'b':
                 if (nextChar() == '3') {
                     scanFor("32'");
-                    reportError("b32 not implemented");
+                    parserError("b32 not implemented");
                 }
                 scanFor("64");
                 return getBytes(true);
@@ -245,7 +245,7 @@ public class CBORDiagnosticNotation {
                 
             default:
                 index--;
-                reportError(String.format("Unexpected character: %s", toChar(readChar())));
+                parserError(String.format("Unexpected character: %s", toChar(readChar())));
                 return null;  // For the compiler...
         }
     }
@@ -301,7 +301,7 @@ public class CBORDiagnosticNotation {
                     
                 case '_':
                     if (prefix == null) {
-                        reportError("'_' is only permitted for 0b, 0o, and 0x numbers");
+                        parserError("'_' is only permitted for 0b, 0o, and 0x numbers");
                     }
                     readChar();
 
@@ -316,7 +316,7 @@ public class CBORDiagnosticNotation {
             Double value = Double.valueOf(number);
             // Implicit overflow is not permitted
             if (value.isInfinite()) {
-                reportError("Floating point value out of range");
+                parserError("Floating point value out of range");
             }
             return new CBORFloat(negative ? -value : value);
         }
@@ -324,7 +324,7 @@ public class CBORDiagnosticNotation {
             // Do not accept '-', 0xhhh, or leading zeros
             testForNonDecimal(prefix);
             if (negative || (number.length() > 1 && number.charAt(0) == '0')) {
-                reportError("Tag syntax error");
+                parserError("Tag syntax error");
             }
             readChar();
             long tagNumber = Long.parseUnsignedLong(number);
@@ -343,7 +343,7 @@ public class CBORDiagnosticNotation {
 
     private void testForNonDecimal(Integer nonDecimal) {
         if (nonDecimal != null) {
-            reportError("Hexadecimal not permitted here");
+            parserError("Hexadecimal not permitted here");
         }
     }
 
@@ -362,7 +362,7 @@ public class CBORDiagnosticNotation {
         for (char c : expected.toCharArray()) {
             char actual = readChar(); 
             if (c != actual) {
-                reportError(String.format("Expected: '%c' actual: %s", c, toChar(actual)));
+                parserError(String.format("Expected: '%c' actual: %s", c, toChar(actual)));
             }
         }
     }
@@ -416,7 +416,7 @@ public class CBORDiagnosticNotation {
                             break;
     
                         default:
-                            reportError(String.format("Invalid escape character %s", toChar(c)));
+                            parserError(String.format("Invalid escape character %s", toChar(c)));
                     }
                     break;
  
@@ -436,7 +436,7 @@ public class CBORDiagnosticNotation {
                     
                 default:
                     if (c < ' ') {
-                        reportError(String.format("Unexpected control character: %s", toChar(c)));
+                        parserError(String.format("Unexpected control character: %s", toChar(c)));
                     }
             }
             s.append(c);
@@ -471,7 +471,7 @@ public class CBORDiagnosticNotation {
         }
         int length = encoded.length();
         if ((length & 1) != 0) {
-            reportError("Uneven number of hex characters");
+            parserError("Uneven number of hex characters");
         }
         byte[] bytes = new byte[length >> 1];
         int q = 0;
@@ -492,13 +492,13 @@ public class CBORDiagnosticNotation {
         if (c >= 'A' && c <= 'F') {
             return (char) (c - 'A' + 10);
         }
-        reportError(String.format("Bad hex character: %s", toChar(c)));
+        parserError(String.format("Bad hex character: %s", toChar(c)));
         return 0;  // For the compiler...
     }
 
     private char readChar() {
         if (index >= cborText.length) {
-            reportError("Unexpected EOF");
+            parserError("Unexpected EOF");
         }
         return cborText[index++];
     }
