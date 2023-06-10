@@ -660,8 +660,7 @@ public abstract class CBORObject implements Cloneable {
             return (int)n;
         }
 
-        private CBORFloat checkDoubleConversion(int tag, long bitFormat, long rawDouble)
-                 {
+        private CBORFloat checkDoubleConversion(int tag, long bitFormat, long rawDouble) {
             CBORFloat value = new CBORFloat(Double.longBitsToDouble(rawDouble));
             if ((value.tag != tag || value.bitFormat != bitFormat) && deterministicMode) {
                 cborError(String.format(STDERR_NON_DETERMINISTIC_FLOAT + "%2x", tag & 0xff));

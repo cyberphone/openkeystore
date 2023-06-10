@@ -155,7 +155,8 @@ public class ConvertServlet extends CoreRequestServlet {
             .append(HTML.fancyText(
                         true,
                         CBOR_IN,
-                        10, 
+                        10,
+                        "# CBOR sample, here expressed in Diagnostic Notation\n" +
                         "{\n  1: \"next\\nline\",\n  2: [5.960465188081798e-8, " +
                         "0b100_000000001, b64'oQVkZGF0YQ', true, 0(\"" +
                         ISODateTime.encode(new GregorianCalendar(), 
