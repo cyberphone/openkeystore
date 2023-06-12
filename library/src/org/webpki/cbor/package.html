@@ -240,9 +240,10 @@ By adhering to the
 <a href='#deterministic-encoding'>Deterministic Encoding</a> 
 specification above, CBOR data can be <i>bidirectionally</i>
 converted between its native (binary) format and diagnostic notation
-without getting corrupted.  Note though that a text-binary-text "roundtrip"
-does not necessarily return identical text; <i>only the binary
-representation needs to remain deterministic</i>.
+without getting corrupted.  Note though that text-binary-text "roundtrips"
+do not necessarily return identical text: <code>0x10</code> used
+as diagnostic notation input will return <code>16</code> as
+diagnostic notation output.
 Caveat: for reliable conversions, floating point values <b>must</b>
 be aligned with IEEE&nbsp;754 encoding and rounding rules.
 </p>
