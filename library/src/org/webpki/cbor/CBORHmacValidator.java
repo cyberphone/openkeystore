@@ -62,7 +62,7 @@ public class CBORHmacValidator extends CBORValidator {
     }
 
     @Override
-    void coreValidation(CBORMap signatureObject, 
+    void coreValidation(CBORMap csfContainer, 
                         int coseAlgorithmId,
                         CBORObject optionalKeyId,
                         byte[] signatureValue,

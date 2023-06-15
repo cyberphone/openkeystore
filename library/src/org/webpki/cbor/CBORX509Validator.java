@@ -66,7 +66,7 @@ public class CBORX509Validator extends CBORValidator {
     }
  
     @Override
-    void coreValidation(CBORMap signatureObject, 
+    void coreValidation(CBORMap csfContainer, 
                         int coseAlgorithmId,
                         CBORObject optionalKeyId,
                         byte[] signatureValue,
@@ -81,7 +81,7 @@ public class CBORX509Validator extends CBORValidator {
         
         // Fetch certificate(path).
         X509Certificate[] certificatePath = CBORCryptoUtils.decodeCertificateArray(
-                signatureObject.get(CERT_PATH_LABEL).getArray());
+                csfContainer.get(CERT_PATH_LABEL).getArray());
         
         // Now we have everything needed for validating the signature.
         SignatureWrapper.validate(certificatePath[0].getPublicKey(),

@@ -36,7 +36,7 @@ public abstract class CBORValidator {
     
     CBORValidator() {}
 
-    abstract void coreValidation(CBORMap signatureObject, 
+    abstract void coreValidation(CBORMap csfContainer, 
                                  int coseAlgorithmId,
                                  CBORObject optionalKeyId,
                                  byte[] signatureValue,

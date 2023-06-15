@@ -100,7 +100,7 @@ public class CBORAsymKeyValidator extends CBORValidator {
     }
 
     @Override
-    void coreValidation(CBORMap signatureObject, 
+    void coreValidation(CBORMap csfContainer, 
                         int coseAlgorithmId,
                         CBORObject optionalKeyId,
                         byte[] signatureValue,
@@ -112,8 +112,8 @@ public class CBORAsymKeyValidator extends CBORValidator {
         
         // Fetch public key if there is one.
         PublicKey inLinePublicKey = null;
-        if (signatureObject.containsKey(PUBLIC_KEY_LABEL)) {
-            inLinePublicKey = CBORPublicKey.convert(signatureObject.get(PUBLIC_KEY_LABEL));
+        if (csfContainer.containsKey(PUBLIC_KEY_LABEL)) {
+            inLinePublicKey = CBORPublicKey.convert(csfContainer.get(PUBLIC_KEY_LABEL));
             // Please select ONE method for identifying the signature key.
             CBORCryptoUtils.rejectPossibleKeyId(optionalKeyId);
         }
