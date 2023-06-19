@@ -570,9 +570,9 @@ public abstract class CBORObject implements Cloneable {
                                 holderObject instanceof CBORTag ?
                                 "Tagged object " +
                                 Long.toUnsignedString(((CBORTag)holderObject).tagNumber) : 
-                                "Map key " + holderObject.toString() + " with argument") +                    
+                                "Map key " + holderObject.toDiagnosticNotation(false) + " with argument") +                    
                             " of type=" + cborType + 
-                            " with value=" + toString() + " was never read");
+                            " with value=" + toDiagnosticNotation(false) + " was never read");
             }
         } else {
             readFlag = true;
