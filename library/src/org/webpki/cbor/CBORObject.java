@@ -531,7 +531,7 @@ public abstract class CBORObject implements Cloneable {
      * Verifies that all data from the current object including
      * possible child objects have been read
      * (through calling {@link #getBytes()} etc.),
-     * and throws {@link CBORException} if this is not the case.
+     * and throws a {@link CBORException} if this is not the case.
      * </p>
      * Also see {@link #scan()}.
      * 
@@ -1002,6 +1002,10 @@ public abstract class CBORObject implements Cloneable {
     
     /**
      * Deep copy of <code>CBORObject</code>.
+     * <p>
+     * Note that the copy is assumed to be &quot;unread&quot;
+     * ({@link #checkForUnread()}).
+     * </p>
      */
     @Override
     public CBORObject clone() {
