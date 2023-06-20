@@ -108,7 +108,7 @@ public class CBORTag extends CBORObject {
      * Returns tagged object.
      * @return CBOR object
      */
-    public CBORObject getObject() {
+    public CBORObject getTaggedObject() {
         return object;
     }
 

@@ -34,7 +34,8 @@ public class CBORTypedObjectDecoderCache {
     private final Hashtable<String, 
                             Class<? extends CBORTypedObjectDecoder>> classMap = new Hashtable<>();
     
-    private CBORTypedObjectDecoder getInstance(Class<? extends CBORTypedObjectDecoder> decoderClass) {
+    private CBORTypedObjectDecoder getInstance(
+            Class<? extends CBORTypedObjectDecoder> decoderClass) {
         try {
             return decoderClass.getDeclaredConstructor().newInstance();
         } catch (InstantiationException | InvocationTargetException | 
@@ -61,7 +62,7 @@ public class CBORTypedObjectDecoderCache {
         if (tag.tagNumber != CBORTag.RESERVED_TAG_COTX) {
             throw new CBORException("COTX expcted, got: " + tag.tagNumber);
         }
-        CBORArray cborArray = CBORObject.checkCOTX(tag.getObject());
+        CBORArray cborArray = CBORObject.checkCOTX(tag.getTaggedObject());
         String objectId = cborArray.get(0).getString();
         Class<? extends CBORTypedObjectDecoder> schemaClass = classMap.get(objectId);
         if (schemaClass == null) {
@@ -83,7 +84,8 @@ public class CBORTypedObjectDecoderCache {
      * @param decoderClass Typed decoder class
      * @return {@link CBORTypedObjectDecoderCache}
      */
-    public CBORTypedObjectDecoderCache addToCache(Class<? extends CBORTypedObjectDecoder> decoderClass) {
+    public CBORTypedObjectDecoderCache addToCache(
+            Class<? extends CBORTypedObjectDecoder> decoderClass) {
         CBORTypedObjectDecoder schemaObject = getInstance(decoderClass);
         String objectId = schemaObject.getObjectId();
         if (classMap.put(objectId, schemaObject.getClass()) != null) {

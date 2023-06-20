@@ -757,7 +757,7 @@ public class CBORTest {
         
         try {
             unread = parseCborHex("C5626869");
-            unread = ((CBORTag) unread).getTag().getObject();
+            unread = ((CBORTag) unread).getTag().getTaggedObject();
             unread.checkForUnread();
             fail("must not execute");
         } catch (Exception e) {
@@ -1036,7 +1036,7 @@ public class CBORTest {
                     } else {
                         assertTrue("id", 
                                    objectOrNull.getTag()
-                                       .getObject()
+                                       .getTaggedObject()
                                            .getArray()
                                                .get(0)
                                                    .getString().equals(objectId));
@@ -1416,7 +1416,7 @@ public class CBORTest {
                 public void foundData(CBORObject objectOrNull) {
                     assertTrue("id", 
                                objectOrNull.getTag()
-                                   .getObject()
+                                   .getTaggedObject()
                                        .getArray()
                                            .get(0)
                                                .getString().equals(objectId));
@@ -1429,7 +1429,7 @@ public class CBORTest {
                 public void foundData(CBORObject objectOrNull) {
                     assertTrue("id", 
                                objectOrNull.getTag()
-                                   .getObject()
+                                   .getTaggedObject()
                                        .getArray()
                                            .get(0)
                                                .getString().equals(objectId));
@@ -1740,7 +1740,7 @@ public class CBORTest {
                             public void foundData(CBORObject objectOrNull) {
                                 assertTrue("id", 
                                            objectOrNull.getTag()
-                                               .getObject()
+                                               .getTaggedObject()
                                                    .getArray()
                                                        .get(0)
                                                            .getString().equals(objectId));
