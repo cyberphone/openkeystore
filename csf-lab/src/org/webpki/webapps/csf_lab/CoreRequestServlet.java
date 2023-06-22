@@ -239,7 +239,7 @@ public class CoreRequestServlet extends HttpServlet {
     CBORMap unwrapOptionalTag(CBORObject rawContainer) throws IOException {
         // It might be tagged
         if (rawContainer.getType() == CBORTypes.TAG) {
-            CBORObject container = rawContainer.getTag().getObject();
+            CBORObject container = rawContainer.getTag().getTaggedObject();
             if (container.getType() == CBORTypes.ARRAY) {
                 container = container.getArray().get(1);
             }

@@ -16,7 +16,7 @@
  */
 package org.webpki.cbor;
 
-import java.util.regex.Pattern;
+import org.webpki.util.ISODateTime;
 
 /**
  * Class for holding CBOR <code>tag</code> objects.
@@ -66,10 +66,6 @@ public class CBORTag extends CBORObject {
      */
     public static final int RESERVED_TAG_DATE  = 0;
     
-    static final Pattern DATE_PATTERN = Pattern.compile("(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d" +
-                                                        "{2})(\\.\\d{1,9})?([+-]\\d{2}:\\d{2}|Z)");
-
-
     /**
      * Creates a COTX-tagged object.
      * 
@@ -97,10 +93,13 @@ public class CBORTag extends CBORObject {
          if (tagNumber == RESERVED_TAG_COTX) {
             checkCOTX(object);
         } else if (tagNumber == RESERVED_TAG_DATE) {
-            if (object.cborType != CBORTypes.STRING ||
-                !DATE_PATTERN.matcher(object.getString()).matches()) {
-                CBORObject.cborError(STDERR_ISO_DATE_ERROR + object.toDiagnosticNotation(false));
+            if (object.cborType == CBORTypes.STRING) {
+                try {
+                    ISODateTime.decode(object.getString(), ISODateTime.COMPLETE);
+                    return;
+                } catch (Exception e) {}
             }
+            CBORObject.cborError(STDERR_ISO_DATE_ERROR + object.toDiagnosticNotation(false));
         }
     }
 

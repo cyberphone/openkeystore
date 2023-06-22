@@ -100,9 +100,16 @@ public class ISODateTime {
      */
     public static final EnumSet<DatePatterns> COMPLETE = EnumSet.allOf(DatePatterns.class);
 
-    static final Pattern DATE_PATTERN = Pattern.compile("(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d" +
-                                                        "{2})(\\.\\d{1,9})?([+-]\\d{2}:\\d{2}|Z)");
+    static final Pattern DATE_PATTERN = Pattern.compile(
+            "(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2})(\\.\\d{1,9})?([+-]\\d{2}:\\d{2}|Z)");
 
+    static int checkNumber(String number, int min, int max) {
+        int value = Integer.parseInt(number);
+        if (value < min || value > max) {
+            throw new IllegalArgumentException("Value must be within " + min + "-" + max);
+        }
+        return value;
+    }
     
     /**
      * Decodes an <a href='#iso'>ISO compliant</a> <code>dateTime</code> string.
@@ -120,18 +127,18 @@ public class ISODateTime {
         
         GregorianCalendar gc = new GregorianCalendar();
         gc.clear();
-
+// TODO  This should be rewritten using the "time" API introduced in Java 8.
         gc.set(GregorianCalendar.ERA, GregorianCalendar.AD);
         gc.set(GregorianCalendar.YEAR, Integer.parseInt(dateTime.substring(0, 4)));
-        gc.set(GregorianCalendar.MONTH, Integer.parseInt(dateTime.substring(5, 7)) - 1);
+        gc.set(GregorianCalendar.MONTH, checkNumber(dateTime.substring(5, 7), 1, 12) - 1);
 
-        gc.set(GregorianCalendar.DAY_OF_MONTH, Integer.parseInt(dateTime.substring(8, 10)));
+        gc.set(GregorianCalendar.DAY_OF_MONTH, checkNumber(dateTime.substring(8, 10), 1, 31));
 
-        gc.set(GregorianCalendar.HOUR_OF_DAY, Integer.parseInt(dateTime.substring(11, 13)));
+        gc.set(GregorianCalendar.HOUR_OF_DAY, checkNumber(dateTime.substring(11, 13), 0, 23));
 
-        gc.set(GregorianCalendar.MINUTE, Integer.parseInt(dateTime.substring(14, 16)));
+        gc.set(GregorianCalendar.MINUTE, checkNumber(dateTime.substring(14, 16), 0, 59));
 
-        gc.set(GregorianCalendar.SECOND, Integer.parseInt(dateTime.substring(17, 19)));
+        gc.set(GregorianCalendar.SECOND, checkNumber(dateTime.substring(17, 19), 0, 59));
 
         String subSeconds = null;
 
@@ -153,8 +160,8 @@ public class ISODateTime {
                 factor = -factor;
             }
             subSeconds = dateTime.substring(19, i);
-            int tzHour = Integer.parseInt(dateTime.substring(++i, i + 2));
-            int tzMinute = Integer.parseInt(dateTime.substring(i + 3, i + 5));
+            int tzHour = checkNumber(dateTime.substring(++i, i + 2), 0, 23);
+            int tzMinute = checkNumber(dateTime.substring(i + 3, i + 5), 0, 59);
             gc.setTimeZone(new SimpleTimeZone(((60 * tzHour) + tzMinute) * factor, ""));
         }
         if (subSeconds.length() > 0) {
