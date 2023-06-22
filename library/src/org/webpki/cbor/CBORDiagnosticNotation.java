@@ -146,7 +146,6 @@ public class CBORDiagnosticNotation {
     private boolean continueList(char validStop) {
         if (nextChar() == ',') {
             readChar();
-            scanNonSignficantData();
             return true;
         }
         scanFor(String.valueOf(validStop));
