@@ -94,8 +94,8 @@ public class CBORFloat extends CBORObject {
             long exponent = ((bitFormat >>> FLOAT32_SIGNIFICAND_SIZE) & 
                 ((1l << FLOAT32_EXPONENT_SIZE) - 1)) -
                     (FLOAT32_EXPONENT_BIAS - FLOAT16_EXPONENT_BIAS);
-            if (exponent > (FLOAT16_EXPONENT_BIAS << 1)) {
-                // Too big for float16 or into the space reserved for NaN and Infinity.
+            if (exponent < -FLOAT16_SIGNIFICAND_SIZE || exponent > (FLOAT16_EXPONENT_BIAS << 1)) {
+                // Too small or too big for float16, or running into float16 NaN/Infinity space.
                 return;
             }
 
@@ -109,10 +109,6 @@ public class CBORFloat extends CBORObject {
 
             // Check if we need to denormalize data.
             if (exponent <= 0) {
-                // For very small values we give up float16 immediately.
-                if (exponent < -FLOAT16_SIGNIFICAND_SIZE) {
-                    return;
-                }
                 // The implicit "1" becomes explicit using subnormal representation.
                 significand += 1l << FLOAT16_SIGNIFICAND_SIZE;
                 long significandCopy = significand;
