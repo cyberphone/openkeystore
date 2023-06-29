@@ -660,12 +660,12 @@ public abstract class CBORObject implements Cloneable {
             return (int)n;
         }
 
-        private CBORFloat checkDoubleConversion(int tag, long bitFormat, long rawDouble) {
-            CBORFloat value = new CBORFloat(Double.longBitsToDouble(rawDouble));
-            if ((value.tag != tag || value.bitFormat != bitFormat) && deterministicMode) {
+        private CBORFloat checkDoubleConversion(int tag, long bitFormat, double value) {
+            CBORFloat cborFloat = new CBORFloat(value);
+            if ((cborFloat.tag != tag || cborFloat.bitFormat != bitFormat) && deterministicMode) {
                 cborError(String.format(STDERR_NON_DETERMINISTIC_FLOAT + "%2x", tag & 0xff));
             }
-            return value;
+            return cborFloat;
         }
 
         private CBORObject getObject() throws IOException {
@@ -692,59 +692,50 @@ public abstract class CBORObject implements Cloneable {
                     return CBORBigInt;
 
                 case MT_FLOAT16:
-                    long float16 = getLongFromBytes(2);
-                    long unsignedResult = float16 & ~FLOAT16_NEG_ZERO;
+                    double float64;
+                    long f16Bin = getLongFromBytes(2);
+                    long unsignedF16Bin = f16Bin & ~FLOAT16_NEG_ZERO;
 
                     // Begin with the edge cases.
                     
-                    if ((unsignedResult & FLOAT16_POS_INFINITY) == FLOAT16_POS_INFINITY) {
+                    if ((unsignedF16Bin & FLOAT16_POS_INFINITY) == FLOAT16_POS_INFINITY) {
+
                         // Special "number"
-                        unsignedResult = (unsignedResult == FLOAT16_POS_INFINITY) ?
+                        float64 = unsignedF16Bin == FLOAT16_POS_INFINITY ?
                             // Non-deterministic representations of NaN will be flagged later.
                             // NaN "signaling" is not supported, "quiet" NaN is all there is.
-                            FLOAT64_POS_INFINITY : FLOAT64_NOT_A_NUMBER;
+                            Double.POSITIVE_INFINITY : Double.NaN;
 
-                    } else if (unsignedResult != FLOAT16_POS_ZERO){
+                    } else {
 
-                        // It is a "regular" non-zero number.
-                    
-                        // Get the bare (but still biased) float16 exponent.
-                        long exponent = (unsignedResult >>> FLOAT16_SIGNIFICAND_SIZE);
-                        // Relocate float16 significand bits to their proper float64 position.
-                        long significand = 
-                            (unsignedResult << (FLOAT64_SIGNIFICAND_SIZE - FLOAT16_SIGNIFICAND_SIZE));
-                        if (exponent == 0) {
-                            // Subnormal float16 - In float64 that must translate to normalized.
-                            exponent++;
-                            do {
-                                exponent--;
-                                significand <<= 1;
-                                // Continue until the implicit "1" is in the proper position.
-                            } while ((significand & (1l << FLOAT64_SIGNIFICAND_SIZE)) == 0);
+                        // It is a "regular" number.
+                     
+                        // Get the exponent.
+                        long exponent = unsignedF16Bin & FLOAT16_POS_INFINITY;
+                        // Get the significand
+                        long significand = unsignedF16Bin - exponent;
+                        if (exponent > 0) {
+                            // Normal representation, add the implicit "1.".
+                            significand += (1l << FLOAT16_SIGNIFICAND_SIZE);
+                            // -1: Keep fractional point in line with subnormal numbers.
+                            significand <<= (exponent / (1l << FLOAT16_SIGNIFICAND_SIZE)) - 1;
                         }
-                        unsignedResult = 
-                        // Exponent.  Set the proper bias and put result in front of significand.
-                        ((exponent + (FLOAT64_EXPONENT_BIAS - FLOAT16_EXPONENT_BIAS)) 
-                            << FLOAT64_SIGNIFICAND_SIZE) +
-                        // Significand.  Remove everything above.
-                        (significand & ((1l << FLOAT64_SIGNIFICAND_SIZE) - 1));
+                        // Divide with: 2 ^ (Exponent offset + Size of significand - 1).
+                        // -1: Because the algorithm does not normalize significands.
+                        float64 = (double)significand / 
+                            (double)(1 << (FLOAT16_EXPONENT_BIAS + FLOAT16_SIGNIFICAND_SIZE - 1));
                     }
                     return checkDoubleConversion(tag,
-                                                 float16, 
-                                                 unsignedResult +
-                                                 // Put sign bit in position.
-                                                 ((float16 & FLOAT16_NEG_ZERO) << (64 - 16)));
+                                                 f16Bin,
+                                                 f16Bin >= FLOAT16_NEG_ZERO ? -float64 : float64);
 
                 case MT_FLOAT32:
-                    long float32 = getLongFromBytes(4);
-                    return checkDoubleConversion(tag, 
-                                                 float32,
-                                                 Double.doubleToLongBits(
-                                                         Float.intBitsToFloat((int)float32)));
+                    long f32Bin = getLongFromBytes(4);
+                    return checkDoubleConversion(tag, f32Bin, Float.intBitsToFloat((int)f32Bin));
  
                 case MT_FLOAT64:
-                    long float64 = getLongFromBytes(8);
-                    return checkDoubleConversion(tag, float64, float64);
+                    long f64Bin = getLongFromBytes(8);
+                    return checkDoubleConversion(tag, f64Bin, Double.longBitsToDouble(f64Bin));
 
                 case MT_NULL:
                     return new CBORNull();
