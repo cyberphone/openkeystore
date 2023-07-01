@@ -720,10 +720,10 @@ public abstract class CBORObject implements Cloneable {
                             // -1: Keep fractional point in line with subnormal numbers.
                             significand <<= ((exponent >> FLOAT16_SIGNIFICAND_SIZE) - 1);
                         }
-                        // Divide with: 2 ^ (Exponent offset + Size of significand - 1).
+                        // Multiply with: 1 / (2 ^ (Exponent offset + Size of significand - 1)).
                         // -1: Because the algorithm does not normalize significands.
-                        float64 = (double)significand / 
-                            (double)(1 << (FLOAT16_EXPONENT_BIAS + FLOAT16_SIGNIFICAND_SIZE - 1));
+                        float64 = (double)significand * 
+                            (1.0 / (1 << (FLOAT16_EXPONENT_BIAS + FLOAT16_SIGNIFICAND_SIZE - 1)));
                     }
                     return checkDoubleConversion(tag,
                                                  f16Bin,
