@@ -718,7 +718,7 @@ public abstract class CBORObject implements Cloneable {
                             // Normal representation, add the implicit "1.".
                             significand += (1l << FLOAT16_SIGNIFICAND_SIZE);
                             // -1: Keep fractional point in line with subnormal numbers.
-                            significand <<= (exponent / (1l << FLOAT16_SIGNIFICAND_SIZE)) - 1;
+                            significand <<= ((exponent >> FLOAT16_SIGNIFICAND_SIZE) - 1);
                         }
                         // Divide with: 2 ^ (Exponent offset + Size of significand - 1).
                         // -1: Because the algorithm does not normalize significands.
