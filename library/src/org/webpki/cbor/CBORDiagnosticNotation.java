@@ -342,7 +342,7 @@ public class CBORDiagnosticNotation {
 
     private void testForNonDecimal(Integer nonDecimal) {
         if (nonDecimal != null) {
-            parserError("Hexadecimal not permitted here");
+            parserError("0b, 0o, and 0x prefixes are only permited for integers");
         }
     }
 
