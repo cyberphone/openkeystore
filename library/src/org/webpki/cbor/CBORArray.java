@@ -23,7 +23,7 @@ import java.util.ArrayList;
  */
 public class CBORArray extends CBORObject {
 
-    ArrayList<CBORObject> elements = new ArrayList<>();
+    ArrayList<CBORObject> objects = new ArrayList<>();
 
     /**
      * Creates an empty CBOR array <code>[]</code>.
@@ -39,28 +39,28 @@ public class CBORArray extends CBORObject {
      * @return The number of objects in the array
      */
     public int size() {
-        return elements.size();
+        return objects.size();
     }
     
     /**
      * Retrieves object at a specific position.
      * 
-     * @param index The position (0 - size-1)
+     * @param index The position (0..size()-1)
      * @return CBOR object
      */
     public CBORObject get(int index) {
-        return elements.get(index);
+        return objects.get(index);
     }
     
     /**
-     * Appends object to the list.
+     * Appends object to the array.
      * 
-     * @param element Object to be appended
+     * @param cborObject Object to be appended to the array.
      * @return <code>this</code>
      */
-    public CBORArray add(CBORObject element) {
-        nullCheck(element);
-        elements.add(element);
+    public CBORArray add(CBORObject cborObject) {
+        nullCheck(cborObject);
+        objects.add(cborObject);
         return this;
     }
     
@@ -70,12 +70,12 @@ public class CBORArray extends CBORObject {
      * @return Array of CBOR objects
      */
     public CBORObject[] toArray() {
-        return elements.toArray(new CBORObject[0]);
+        return objects.toArray(new CBORObject[0]);
     }
 
     @Override
     byte[] internalEncode() {
-        byte[] encoded = encodeTagAndN(MT_ARRAY, elements.size());
+        byte[] encoded = encodeTagAndN(MT_ARRAY, objects.size());
         for (CBORObject cborObject : toArray()) {
             encoded = addByteArrays(encoded, cborObject.encode());
         }
@@ -86,13 +86,13 @@ public class CBORArray extends CBORObject {
     void internalToString(CborPrinter cborPrinter) {
         cborPrinter.append('[');
         boolean notFirst = false;
-        for (CBORObject object : toArray()) {
+        for (CBORObject cborObject : toArray()) {
             if (notFirst) {
                 cborPrinter.append(',');
                 cborPrinter.space();
             }
             notFirst = true;
-            object.internalToString(cborPrinter);
+            cborObject.internalToString(cborPrinter);
         }
         cborPrinter.append(']');
     }

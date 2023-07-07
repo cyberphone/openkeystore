@@ -58,8 +58,8 @@ public class CBORCryptoUtils {
         ArrayList<byte[]> blobs = new ArrayList<>();
         int index = 0;
         do {
-            blobs.add(array.elements.get(index).getBytes());
-        } while (++index < array.elements.size());
+            blobs.add(array.objects.get(index).getBytes());
+        } while (++index < array.objects.size());
         return CertificateUtil.makeCertificatePath(blobs);
     }
 
