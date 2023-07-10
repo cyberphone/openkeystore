@@ -693,28 +693,27 @@ public abstract class CBORObject implements Cloneable {
 
                 case MT_FLOAT16:
                     double float64;
-                    long f16Bin = getLongFromBytes(2);
-                    long unsignedF16Bin = f16Bin & ~FLOAT16_NEG_ZERO;
+                    long f16Binary = getLongFromBytes(2);
 
+                    // Get the significand
+                    long significand = f16Binary & ((1l << FLOAT16_SIGNIFICAND_SIZE) - 1);
                     // Get the exponent.
-                    long exponent = unsignedF16Bin & FLOAT16_POS_INFINITY;
+                    long exponent = f16Binary & FLOAT16_POS_INFINITY;
 
                     // Begin with the edge cases.
           
                     if (exponent == FLOAT16_POS_INFINITY) {
 
                         // Special "number"
-                        float64 = unsignedF16Bin == FLOAT16_POS_INFINITY ?
-                            // Non-deterministic representations of NaN will be flagged later.
-                            // NaN "signaling" is not supported, "quiet" NaN is all there is.
-                            Double.POSITIVE_INFINITY : Double.NaN;
-
+                        
+                        // Non-deterministic representations of NaN will be flagged later.
+                        // NaN "signaling" is not supported, "quiet" NaN is all there is.
+                        float64 = significand == 0 ? Double.POSITIVE_INFINITY : Double.NaN;
+                            
                     } else {
 
                         // It is a "regular" number.
                      
-                        // Get the significand
-                        long significand = unsignedF16Bin & ((1l << FLOAT16_SIGNIFICAND_SIZE) - 1);
                         if (exponent > 0) {
                             // Normal representation, add the implicit "1.".
                             significand += (1l << FLOAT16_SIGNIFICAND_SIZE);
@@ -726,8 +725,9 @@ public abstract class CBORObject implements Cloneable {
                             (1.0 / (1l << (FLOAT16_EXPONENT_BIAS + FLOAT16_SIGNIFICAND_SIZE - 1)));
                     }
                     return checkDoubleConversion(tag,
-                                                 f16Bin,
-                                                 f16Bin >= FLOAT16_NEG_ZERO ? -float64 : float64);
+                                                 f16Binary,
+                                                 f16Binary >= FLOAT16_NEG_ZERO ? 
+                                                                      -float64 : float64);
 
                 case MT_FLOAT32:
                     long f32Bin = getLongFromBytes(4);
