@@ -721,7 +721,6 @@ public abstract class CBORObject implements Cloneable {
                             significand <<= ((exponent >> FLOAT16_SIGNIFICAND_SIZE) - 1);
                         }
                         // Multiply with: 1 / (2 ^ (Exponent offset + Size of significand - 1)).
-                        // -1: Because the algorithm does not normalize significands.
                         float64 = (double)significand * 
                             (1.0 / (1 << (FLOAT16_EXPONENT_BIAS + FLOAT16_SIGNIFICAND_SIZE - 1)));
                     }
