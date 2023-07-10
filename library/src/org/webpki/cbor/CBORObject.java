@@ -696,9 +696,12 @@ public abstract class CBORObject implements Cloneable {
                     long f16Bin = getLongFromBytes(2);
                     long unsignedF16Bin = f16Bin & ~FLOAT16_NEG_ZERO;
 
+                    // Get the exponent.
+                    long exponent = unsignedF16Bin & FLOAT16_POS_INFINITY;
+
                     // Begin with the edge cases.
-                    
-                    if ((unsignedF16Bin & FLOAT16_POS_INFINITY) == FLOAT16_POS_INFINITY) {
+          
+                    if (exponent == FLOAT16_POS_INFINITY) {
 
                         // Special "number"
                         float64 = unsignedF16Bin == FLOAT16_POS_INFINITY ?
@@ -710,10 +713,8 @@ public abstract class CBORObject implements Cloneable {
 
                         // It is a "regular" number.
                      
-                        // Get the exponent.
-                        long exponent = unsignedF16Bin & FLOAT16_POS_INFINITY;
                         // Get the significand
-                        long significand = unsignedF16Bin - exponent;
+                        long significand = unsignedF16Bin & ((1l << FLOAT16_SIGNIFICAND_SIZE) - 1);
                         if (exponent > 0) {
                             // Normal representation, add the implicit "1.".
                             significand += (1l << FLOAT16_SIGNIFICAND_SIZE);
@@ -722,7 +723,7 @@ public abstract class CBORObject implements Cloneable {
                         }
                         // Multiply with: 1 / (2 ^ (Exponent offset + Size of significand - 1)).
                         float64 = (double)significand * 
-                            (1.0 / (1 << (FLOAT16_EXPONENT_BIAS + FLOAT16_SIGNIFICAND_SIZE - 1)));
+                            (1.0 / (1l << (FLOAT16_EXPONENT_BIAS + FLOAT16_SIGNIFICAND_SIZE - 1)));
                     }
                     return checkDoubleConversion(tag,
                                                  f16Bin,
