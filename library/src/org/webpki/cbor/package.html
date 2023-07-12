@@ -232,9 +232,12 @@ To aid the use of cryptography, support for
 <a href='doc-files/signatures.html'>Signatures</a> and 
 <a href='doc-files/encryption.html'>Encryption</a> is integrated in the package.
 <h3 id='diagnostic-notation'>Diagnostic Notation</h3>
-Through the {@link CBORDiagnosticNotation} class, CBOR data may be provided
-in diagnostic (textual) notation (as described in section 8 of RFC&nbsp;8949),
-making CBOR useful for "config" and test data files as well.
+Creating CBOR data in diagnostic notation (as described in section 8 of RFC&nbsp;8949),
+is provided by the {@link CBORObject#toString()} method.
+<p>
+However, through the {@link CBORDiagnosticNotation} class, CBOR data may also be provided
+in diagnostic (textual) notation, making CBOR useful for "config" and test data files as well.
+</p>
 <p>
 By adhering to the
 <a href='#deterministic-encoding'>Deterministic Encoding</a> 
@@ -246,9 +249,6 @@ as diagnostic notation input will return <code>16</code> as
 diagnostic notation output.
 Caveat: for reliable conversions, floating point values <b>must</b>
 be aligned with IEEE&nbsp;754 encoding and rounding rules.
-</p>
-<p>
-Creating CBOR data in diagnostic notation is provided by {@link CBORObject#toString()}.
 </p>
 The following table shows how CBOR objects should be represented in 
 diagnostic notation:
