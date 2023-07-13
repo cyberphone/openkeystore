@@ -586,20 +586,17 @@ public abstract class CBORObject implements Cloneable {
         private InputStream inputStream;
         private boolean sequenceFlag;
         private boolean deterministicMode;
-        private boolean constrainedKeys;
-        private boolean atFirstByte = true;
+         private boolean atFirstByte = true;
         private int maxLength;
         private int byteCount;
          
         private CBORDecoder(InputStream inputStream,
                             boolean sequenceFlag,
                             boolean acceptNonDeterministic,
-                            boolean constrainedKeys,
                             int maxLength) {
             this.inputStream = inputStream;
             this.sequenceFlag = sequenceFlag;
             this.deterministicMode = !acceptNonDeterministic;
-            this.constrainedKeys = constrainedKeys;
             this.maxLength = maxLength;
             if (maxLength < 1) {
                 cborError("Invalid \"maxLength\"");
@@ -797,7 +794,6 @@ public abstract class CBORObject implements Cloneable {
                 case MT_MAP:
                     CBORMap cborMap = new CBORMap();
                     cborMap.deterministicMode = deterministicMode;
-                    cborMap.constrainedKeys = constrainedKeys;
                     for (int q = checkLength(n); --q >= 0; ) {
                         cborMap.set(getObject(), getObject());
                     }
@@ -827,8 +823,6 @@ public abstract class CBORObject implements Cloneable {
      * @param nonDeterministic If <code>true</code> disable 
      * <a href='package-summary.html#deterministic-encoding'>Deterministic&nbsp;Encoding</a>
      * checks for number serialization and map sorting
-     * @param constrainedKeys If <code>true</code> limit {@link CBORMap} keys to {@link CBORString} and {@link CBORInt} objects,
-     * including flagging <i>mixing</i> of these objects in maps
      * @param maxLength Holds maximum input size in 
      * bytes or <code>null</code> ({@link Integer#MAX_VALUE} is assumed)
      * @return <code>CBORObject</code>
@@ -836,12 +830,10 @@ public abstract class CBORObject implements Cloneable {
     public static CBORObject decode(InputStream inputStream,
                                     boolean sequenceFlag,
                                     boolean nonDeterministic,
-                                    boolean constrainedKeys,
                                     Integer maxLength) {
         CBORDecoder cborDecoder = new CBORDecoder(inputStream, 
                                                   sequenceFlag, 
                                                   nonDeterministic,
-                                                  constrainedKeys,
                                                   maxLength == null ? Integer.MAX_VALUE : maxLength);
         
         try {
@@ -866,7 +858,6 @@ public abstract class CBORObject implements Cloneable {
      * <pre>  decode(new ByteArrayInputStream(cborData),
      *         false, 
      *         false,
-     *         false,
      *         cborData.length);
      *</pre>
      * </p>
@@ -880,7 +871,6 @@ public abstract class CBORObject implements Cloneable {
     public static CBORObject decode(byte[] cborData) {
         return decode(new ByteArrayInputStream(cborData),
                       false, 
-                      false,
                       false,
                       cborData.length);
     }

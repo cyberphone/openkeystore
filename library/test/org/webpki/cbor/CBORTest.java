@@ -663,36 +663,36 @@ public class CBORTest {
         assertTrue("bt", 
                 Arrays.equals(cbor,
                           CBORObject.decode(
-                                  new StrangeReader(cbor), false, false, false, null).encode()));
+                                  new StrangeReader(cbor), false, false, null).encode()));
 
         assertTrue("bt", 
                 Arrays.equals(cbor,
                           CBORObject.decode(new StrangeReader(cbor), 
-                                            false, false, false, cbor.length).encode()));
+                                            false, false, cbor.length).encode()));
         try {
             CBORObject.decode(new ByteArrayInputStream(HexaDecimal.decode("7BFFFFFFFFFFFFFFFF00")), 
-                              false, false, false, null);
+                              false, false, null);
             fail("Not valid");
         } catch (Exception e) {
             checkException(e, CBORObject.STDERR_N_RANGE_ERROR + "-1");
         }
         try {
             CBORObject.decode(new ByteArrayInputStream(HexaDecimal.decode("7AFFFFFFFF00")), 
-                              false, false, false, null);
+                              false, false, null);
             fail("Not valid");
         } catch (Exception e) {
             checkException(e, CBORObject.STDERR_N_RANGE_ERROR + "4294967295");
         }
         try {
             CBORObject.decode(new ByteArrayInputStream(HexaDecimal.decode("797FFF00")), 
-                              false, false, false, 100);
+                              false, false, 100);
             fail("Not valid");
         } catch (Exception e) {
             checkException(e, CBORObject.STDERR_READING_LIMIT);
         }
         try {
             CBORObject.decode(new ByteArrayInputStream(HexaDecimal.decode("7A7FFFFFFF00")), 
-                              false, false, false, null);
+                              false, false, null);
             fail("Not valid");
         } catch (Exception e) {
             checkException(e, CBORObject.STDERR_READING_LIMIT);
@@ -1784,27 +1784,10 @@ public class CBORTest {
                 CBORObject.decode(new ByteArrayInputStream(HexaDecimal.decode(hexInput)),
                                   sequenceFlag,
                                   acceptNonDeterministic,
-                                  false,
                                   null).encode()).toUpperCase();
         assertTrue("Strange=" + result, hexExpectedResult.equals(result));
     }
     
-    void constrainedMapKeyTest(String hexInput, 
-                               boolean acceptNonDeterministic, 
-                               boolean ok) throws IOException {
-        try {
-            CBORObject.decode(new ByteArrayInputStream(HexaDecimal.decode(hexInput)),
-                              false,
-                              acceptNonDeterministic,
-                              true,
-                              null);
-            assertTrue("Should not execute", ok);
-        } catch (Exception e) {
-            assertFalse("Should not fail", ok);
-            checkException(e, CBORMap.STDERR_CONSTRAINED_KEYS);
-        }
-    }
-
     @Test
     public void decodeWithOptions() throws Exception {
         parseStrangeCborHex("A204616B026166", "A202616604616B", false, true);
@@ -1820,19 +1803,6 @@ public class CBORTest {
         // Note: read one object but don't care of the next which in this case is invalid as well
         parseStrangeCborHex("A202616604616BFF", "A202616604616B", true, false);
         
-        constrainedMapKeyTest("A204646461746101656461746132", true, true);
-        constrainedMapKeyTest("a204656461746132056464617461", false, true);
-        constrainedMapKeyTest("A2613464646174616131656461746132", true, true);
-        constrainedMapKeyTest("a2613165646174613261346464617461", false, true);
-        constrainedMapKeyTest("a204656461746132056464617461", false, true);
-        constrainedMapKeyTest("a205646461746165616c706861656461746132", true, false);
-        constrainedMapKeyTest("a205646461746165616c706861656461746132", false, false);
-        constrainedMapKeyTest("a2056464617461f94400656461746132", true, false);
-        constrainedMapKeyTest("a2056464617461f94400656461746132", false, false);
-        constrainedMapKeyTest("a2056464617461c24f07b426fab61f00de36399000000000656461746132", 
-                              true, false);
-        constrainedMapKeyTest("a2056464617461c24f07b426fab61f00de36399000000000656461746132",
-                              false, false);
     }
 
     private String serializeJson(String[] jsonTokens, boolean addWhiteSpace) {
@@ -1878,7 +1848,7 @@ public class CBORTest {
         InputStream inputStream = new ByteArrayInputStream(sequence);
         int position = 0;
         CBORObject cborObject;
-        while ((cborObject = CBORObject.decode(inputStream, true, false, false, null)) != null) {
+        while ((cborObject = CBORObject.decode(inputStream, true, false, null)) != null) {
             byte[] rawCbor = cborObject.encode();
             assertTrue("Seq", Arrays.equals(rawCbor, 0, rawCbor.length, 
                                             sequence, position, position + rawCbor.length));
@@ -1889,7 +1859,6 @@ public class CBORTest {
         assertTrue("SeqNull", 
                    CBORObject.decode(new ByteArrayInputStream(new byte[0]),
                                                 true, 
-                                                false,
                                                 false,
                                                 null) == null);
         CBORSequenceBuilder sequenceBuilder = new CBORSequenceBuilder()
@@ -1903,7 +1872,7 @@ public class CBORTest {
         sequence = sequenceBuilder.encode();
         inputStream = new ByteArrayInputStream(sequence);
         position = 0;
-        while ((cborObject = CBORObject.decode(inputStream, true, false, false, null)) != null) {
+        while ((cborObject = CBORObject.decode(inputStream, true, false, null)) != null) {
             byte[] rawCbor = cborObject.encode();
             assertTrue("Seq", Arrays.equals(rawCbor, 0, rawCbor.length,
                                             sequence, position, position + rawCbor.length));

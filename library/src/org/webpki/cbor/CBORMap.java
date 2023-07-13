@@ -24,7 +24,6 @@ import java.util.Arrays;
 public class CBORMap extends CBORObject {
 
     boolean deterministicMode;
-    boolean constrainedKeys;
     Entry root;
     private Entry lastEntry;
     private int numberOfEntries;
@@ -88,17 +87,11 @@ public class CBORMap extends CBORObject {
     public CBORMap set(CBORObject key, CBORObject value) {
         key = getKey(key);
         nullCheck(value);
-        if (constrainedKeys && !key.getType().permittedConstrainedKey) {
-            cborError(STDERR_CONSTRAINED_KEYS + key);
-        }
         Entry newEntry = new Entry(key, value);
         if (root == null) {
             root = newEntry;
         } else {
             // Keys are always sorted, making the verification process simple.
-            if (constrainedKeys && lastEntry.key.getType() != key.getType()) {
-                cborError(STDERR_CONSTRAINED_KEYS + key);
-            }
             if (deterministicMode) {
                 // Normal case for parsing.
                 int diff = lastEntry.compare(newEntry.encodedKey);
@@ -270,9 +263,6 @@ public class CBORMap extends CBORObject {
         }
         cborPrinter.endMap(notFirst);
     }
-    
-    static final String STDERR_CONSTRAINED_KEYS = 
-            "Constrained mode type error for map key: ";
     
     static final String STDERR_NON_DET_SORT_ORDER =
             "Non-deterministic sort order for map key: ";

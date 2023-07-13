@@ -57,7 +57,6 @@ public class ConvertServlet extends CoreRequestServlet {
             JSONObjectReader parsedJson = JSONParser.parse(ServletUtil.getData(request));
             boolean sequenceFlag = parsedJson.getBoolean(SEQUENCE);
             boolean deterministicFlag = parsedJson.getBoolean(DETERMINISTIC);
-            boolean constrainedMapFlag = parsedJson.getBoolean(CONSTRAINED_MAP);
             String inData = parsedJson.getString(CBOR_IN);
             byte[] cborBytes;
             switch (parsedJson.getString(SEL_IN)) {
@@ -84,7 +83,6 @@ public class ConvertServlet extends CoreRequestServlet {
             while ((cborObject = CBORObject.decode(bais, 
                                                    sequenceFlag,
                                                    !deterministicFlag,
-                                                   constrainedMapFlag,
                                                    cborBytes.length)) != null) {
                 sequence.add(cborObject);
                 if (!sequenceFlag) {
@@ -126,7 +124,6 @@ public class ConvertServlet extends CoreRequestServlet {
                    SEL_OUT + ": getRadioValue('" + SEL_OUT + "')," +
                    SEQUENCE + ": document.getElementById('" + SEQUENCE + "').checked," +
                    DETERMINISTIC + ": document.getElementById('" + DETERMINISTIC + "').checked," +
-                   CONSTRAINED_MAP + ": document.getElementById('" + CONSTRAINED_MAP + "').checked" +
                    "};\n" +
                 "  let html = 'unknown error';\n" +
                 "  try {\n" +
