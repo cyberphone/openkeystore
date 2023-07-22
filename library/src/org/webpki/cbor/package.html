@@ -10,8 +10,8 @@ primitives and their mapping to Java:
 <tr><th>CBOR&nbsp;Primitive</th><th>Notes</th><th>Java&nbsp;Mapping</th>
 <th>Implementation</th></tr>
 <tr><td><code>integer</code></td><td>1</td><td><code>long</code></td><td>{@link CBORInt}</td></tr>
-<tr><td><code>big&nbsp;integer</code></td><td>1, 2</td><td><code>BigInteger</code></td><td>{@link CBORBigInt}</td></tr>
-<tr><td><code>floating&nbsp;point</code></td><td>3</td><td><code>double</code></td><td>{@link CBORFloat}</td></tr>
+<tr><td><code>bignum</code></td><td>1</td><td><code>BigInteger</code></td><td>{@link CBORBigInt}</td></tr>
+<tr><td><code>floating&nbsp;point</code></td><td>2</td><td><code>double</code></td><td>{@link CBORFloat}</td></tr>
 <tr><td><code>byte&nbsp;string</code></td><td></td><td><code>byte[]</code></td><td>{@link CBORBytes}</td></tr>
 <tr><td><code>text&nbsp;string</code></td><td></td><td><code>String</code></td><td>{@link CBORString}</td></tr>
 <tr><td><code>true</code></td><td></td><td><code>boolean</code></td><td>{@link CBORBoolean}</td></tr>
@@ -22,8 +22,6 @@ primitives and their mapping to Java:
 <ol style='margin:0 0'>
 <li>The distinction between unsigned and negative values is
  dealt with automatically.</li>
-<li><code>big&nbsp;integer</code> is in this implementation 
-identical to "<code>Bignums</code>" in the RFC.</li>
 <li>Floating point data covers the 16, 32, and 64-bit IEEE&nbsp;754 variants.</li>
 </ol>
 <p>
@@ -70,11 +68,11 @@ The encoding rules are as follows:
 <ul>
 <li id='integer-encoding' class='webpkilistspacing'>
   RFC: Integers, represented by the <code>integer</code> and 
-<code>big&nbsp;integer</code> types, <b>must</b> use the <code>integer</code>
+<code>bignum</code> types, <b>must</b> use the <code>integer</code>
 type if the value is between 
 <span style='white-space:nowrap'><code>-2<div class='webpkisuper'>64</div></code></span> 
 and <span style='white-space:nowrap'><code>2<div class='webpkisuper'>64</div>-1</code></span>,
-otherwise the <code>big&nbsp;integer</code> type <b>must</b> be used.
+otherwise the <code>bignum</code> type <b>must</b> be used.
 The following table holds a few sample values and their proper CBOR encoding:
 <div class='webpkifloat'>
 <table class='webpkitable' style='margin-left:2em'>
@@ -100,7 +98,7 @@ Note that the integer encoding scheme above does not always return the
 most compact representation; the value 
 <code>1099511627775</code> 
 (<code>0xffffffffff</code>)
-would actually yield two bytes less using the <code>big&nbsp;integer</code> type. 
+would actually yield two bytes less using the <code>bignum</code> type. 
 </div>
 </li>
 <li id='floating-point-encoding' class='webpkilistspacing'>
@@ -254,19 +252,19 @@ The following table shows how CBOR objects should be represented in
 diagnostic notation:
  <div class='webpkifloat'>
 <table class='webpkitable' style='margin-left:2em'>
-<tr><th>CBOR&nbsp;Object</th><th>Syntax</th><th>Notes</th><th style='min-width:30em'>Description</th></tr>
-<tr><td rowspan='3'></td><td><code>/</code>&nbsp;<i>comment&nbsp;text</i>&nbsp;<code>/</code></td>
-<td></td><td>Multi-line comment.
+<tr style='text-align:center'><th>CBOR&nbsp;Object</th><th>Syntax</th><th>Notes</th><th style='min-width:30em'>Description</th></tr>
+<tr style='text-align:center'><td rowspan='3'></td><td><code>/</code>&nbsp;<i>comment&nbsp;text</i>&nbsp;<code>/</code></td>
+<td></td><td style='text-align:left'>Multi-line comment.
 Multi-line comments are treated as whitespace and may thus also be used 
 <i>between</i> CBOR objects.</td></tr>
-<tr><td><code>#</code>&nbsp;<i>comment&nbsp;text</i></td>
-<td rowspan='2'>7</td><td rowspan='2'>Single-line comment.
+<tr style='text-align:center'><td><code>#</code>&nbsp;<i>comment&nbsp;text</i></td>
+<td rowspan='2'>7</td><td style='text-align:left' rowspan='2'>Single-line comment.
 Single-line comments are terminated by a newline character (<code>'\n'</code>) or <code>EOF</code>.
 Single-line comments may also terminate lines holding regular CBOR items.</td></tr>
-<tr><td><code>//</code>&nbsp;<i>comment&nbsp;text</i></td></tr>
-<tr id='integer-diag'><td><code>integer</code></td>
+<tr style='text-align:center'><td><code>//</code>&nbsp;<i>comment&nbsp;text</i></td></tr>
+<tr style='text-align:center' id='integer-diag'><td><code>integer</code></td>
 <td rowspan='2'><span style='white-space:nowrap'>{<i>sign</i>}{<code>0b</code>|<code>0o</code>|<code>0x</code>}<i>n</i></span></td>
-<td rowspan='2'>1, 2</td><td rowspan='2'>
+<td rowspan='2'>1, 2</td><td style='text-align:left' rowspan='2'>
 Arbitrary sized integers without fractional components or exponents.
 See <a href='#integer-encoding'>CBOR integer encoding</a>.
 Binary, octal, and hexadecimal notation is supported by prepending numbers
@@ -274,44 +272,45 @@ with <code>0b</code>, <code>0o</code>, and <code>0x</code> respectively.
 The latter also permit arbitrary insertions of <code>'_'</code> characters between digits to
 enable grouping of data like <code>0b100_000000001</code>.
 </td></tr>
-<tr><td><code>big&nbsp;integer</code></tr>
-<tr id='float-diag'><td rowspan='3'><code>floating&nbsp;point</code></td>
+<tr style='text-align:center'><td><code>bignum</code></tr>
+<tr style='text-align:center' id='float-diag'><td rowspan='3'><code>floating&nbsp;point</code></td>
 <td>{<i>sign</i>}<i>n</i><code>.</code><i>n</i>{<code>e&pm;</code><i>n</i>}</td>
-<td>1, 2</td><td>Floating point values
+<td>1, 2</td><td style='text-align:left'>Floating point values
 must include a decimal point and an <i>optional</i> exponent.
 See <a href='#floating-point-encoding'>CBOR floating point encoding</a>.
 </td></tr>
-<tr><td><code>NaN</code></td><td></td><td>Not a number.
+<tr style='text-align:center'><td><code>NaN</code></td><td></td><td style='text-align:left'>Not a number.
 See <a href='#floating-point-encoding'>CBOR floating point encoding</a>.
 </td></tr>
-<tr><td>{<i>sign</i>}<code>Infinity</code></td><td>2</td>
-<td>Infinity.
+<tr style='text-align:center'><td>{<i>sign</i>}<code>Infinity</code></td><td>2</td>
+<td style='text-align:left'>Infinity.
 See <a href='#floating-point-encoding'>CBOR floating point encoding</a>.
 </td></tr>
-<tr><td rowspan='4'><code>byte&nbsp;string</code></td>
+<tr style='text-align:center'><td rowspan='4'><code>byte&nbsp;string</code></td>
 <td><code>h'</code><i>hex&nbsp;data</i><code>'</code></td><td>3, 6</td>
-<td>Byte data provided in hexadecimal notation.
+<td style='text-align:left'>Byte data provided in hexadecimal notation.
 Each byte must be represented by two hexadecimal digits.</td></tr>
-<tr><td><code>b64'</code><i>base64&nbsp;data</i><code>'</code></td><td>3, 6</td>
-<td>Byte data provided in base64 or base64URL notation.
+<tr style='text-align:center'><td><code>b64'</code><i>base64&nbsp;data</i><code>'</code></td><td>3, 6</td>
+<td style='text-align:left'>Byte data provided in base64 or base64URL notation.
 Padding with <code>'='</code> characters is <i>optional</i>.</td></tr>
-<tr><td><code>'</code><i>text</i><code>'</code></td><td>4, 5</td>
-<td>Byte data provided as UTF-8 encoded text.</td></tr>
-<tr><td><code>&lt;&lt;</code>&nbsp;<i>object</i>&nbsp;<code>&gt;&gt;</code></td><td></td>
-<td>Construct holding a CBOR object which is subsequently embedded in a byte string.</td></tr>
-<tr><td><code>text&nbsp;string</code></td>
-<td><code>&quot;</code><i>text</i><code>&quot;</code><td>4, 5</td><td>UTF-8 encoded text string.</td></tr>
-<tr><td><code>true</code></td><td><code>true</code></td><td rowspan='2'></td>
-<td rowspan='2'>Boolean value.</td></tr>
-<tr><td><code>false</code></td><td><code>false</code></td></tr>
-<tr><td><code>null</code></td><td><code>null</code></td><td></td><td>Null value.</td></tr>
-<tr><td><code>array</code></td><td><code>[</code>&nbsp;<i>objects</i>&nbsp;<code>]</code></td>
-<td></td><td>Array with zero or more comma separated CBOR objects.</td></tr>
-<tr><td><code>map</code></td><td><code>{</code>&nbsp;<i>key</i><code>:</code><i>value</i>&nbsp;<code>}</code></td>
-<td></td><td>Map with zero or more comma separated key/value pairs.
+<tr style='text-align:center'><td><code>'</code><i>text</i><code>'</code></td><td>4, 5</td>
+<td style='text-align:left'>Byte data provided as UTF-8 encoded text.</td></tr>
+<tr style='text-align:center'><td><code>&lt;&lt;</code>&nbsp;<i>object</i>&nbsp;<code>&gt;&gt;</code></td><td></td>
+<td style='text-align:left'>Construct holding a CBOR object which is subsequently embedded in a byte string.</td></tr>
+<tr style='text-align:center'><td><code>text&nbsp;string</code></td>
+<td><code>&quot;</code><i>text</i><code>&quot;</code><td>4, 5</td><td style='text-align:left'>UTF-8 encoded text string.</td></tr>
+<tr style='text-align:center'><td><code>true</code></td><td><code>true</code></td><td rowspan='2'></td>
+<td style='text-align:left' rowspan='2'>Boolean value.</td></tr>
+<tr style='text-align:center'><td><code>false</code></td><td><code>false</code></td></tr>
+<tr style='text-align:center'><td><code>null</code></td><td><code>null</code></td><td></td><td style='text-align:left'>Null value.</td></tr>
+<tr style='text-align:center'><td><code>array</code></td><td><code>[</code>&nbsp;<i>objects</i>&nbsp;<code>]</code></td>
+<td></td><td style='text-align:left'>Array with zero or more comma separated CBOR objects.</td></tr>
+<tr style='text-align:center'><td><code>map</code></td><td><code>{</code>&nbsp;<i>key</i><code>:</code><i>value</i>&nbsp;<code>}</code></td>
+<td></td><td style='text-align:left'>Map with zero or more comma separated key/value pairs.
 Keys and values are expressed as CBOR objects.</td></tr>
-<tr><td><code>tag</code></td><td><i>n</i><code>(</code>&nbsp;<i>object</i>&nbsp;<code>)</code></td>
-<td>1</td><td>Tag holding a CBOR object.</td></tr>
+<tr style='text-align:center'><td><code>tag</code></td><td><i>n</i><code>(</code>&nbsp;<i>object</i>&nbsp;<code>)</code></td>
+<td>1</td><td style='text-align:left'>Tag holding a CBOR object.</td></tr>
+<tr style='text-align:center'><td></td><td><code>,</code></td><td></td><td style='text-align:left'>Sequence separator.</td></tr>
 </table>
 </div>
 <ol style='margin:0 0'>

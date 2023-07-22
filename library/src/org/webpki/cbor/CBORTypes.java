@@ -25,7 +25,7 @@ public enum CBORTypes {
     ARRAY, 
     MAP,
     INTEGER,
-    BIG_INTEGER,
+    BIGNUM,
     TAG, 
     FLOATING_POINT, 
     BYTES,

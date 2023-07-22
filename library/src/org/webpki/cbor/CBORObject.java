@@ -206,7 +206,7 @@ public abstract class CBORObject implements Cloneable {
         if (cborType == CBORTypes.INTEGER) {
             return getCBORInt().toBigInteger();
         }
-        checkTypeAndMarkAsRead(CBORTypes.BIG_INTEGER);
+        checkTypeAndMarkAsRead(CBORTypes.BIGNUM);
         return ((CBORBigInt) this).value;
     }
 
@@ -678,7 +678,7 @@ public abstract class CBORObject implements Cloneable {
                     } else if (byteArray[0] == 0 && deterministicMode) {
                         cborError(STDERR_LEADING_ZERO);
                     }
-                    CBORBigInt CBORBigInt = new CBORBigInt(
+                    CBORBigInt cborBigInt = new CBORBigInt(
                         (tag == MT_BIG_NEGATIVE) ?
                             new BigInteger(-1, byteArray).subtract(BigInteger.ONE)
                                                :
@@ -686,7 +686,7 @@ public abstract class CBORObject implements Cloneable {
                     if (byteArray.length <= 8 && deterministicMode) {
                         cborError(STDERR_NON_DETERMINISTIC_INT);
                     }
-                    return CBORBigInt;
+                    return cborBigInt;
 
                 case MT_FLOAT16:
                     double float64;

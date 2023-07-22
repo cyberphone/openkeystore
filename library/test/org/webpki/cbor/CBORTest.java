@@ -246,8 +246,8 @@ public class CBORTest {
             assertFalse("Should not run: " + value, mustFail);
             assertTrue("=" + value, v == bigInteger.longValue());
         } catch (Exception e) {
-            if (res.getType() == CBORTypes.BIG_INTEGER) {
-                checkException(e, "Is type: BIG_INTEGER");
+            if (res.getType() == CBORTypes.BIGNUM) {
+                checkException(e, "Is type: BIGNUM");
             } else {
                 if (bigInteger.compareTo(BigInteger.TWO) < 0 && variation.unsigned) {
                     checkException(e, CBORObject.STDERR_NOT_UNSIGNED);

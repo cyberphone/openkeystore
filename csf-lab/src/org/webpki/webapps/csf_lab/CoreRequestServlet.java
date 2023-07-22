@@ -136,7 +136,7 @@ public class CoreRequestServlet extends HttpServlet {
             "<tr><td><input type='radio' name='" + name + "' " +
             "value='" + B64U + "'></td><td>Base64Url notation</td></tr>" +
             (input ? "<tr><td><input type='checkbox' id='" + SEQUENCE + "'>" +
-                    "</td><td>Sequence</td></tr>" +
+                    "</td><td>Sequence using <code>','</code> as separator</td></tr>" +
                     "<tr><td><input type='checkbox' checked id='" + DETERMINISTIC + "'>" +
                     "</td><td>Require " + DETERMINISTIC_LINK + " for hex/b64u data</td></tr>"
                     : "") + 

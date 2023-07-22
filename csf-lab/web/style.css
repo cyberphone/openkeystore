@@ -14,6 +14,10 @@ li {
   padding-top:5pt
 }
 
+code {
+  font-family:'DejaVu Sans Mono', monospace;
+}
+
 .staticbox, .textbox {
   box-sizing:border-box;
   width:100%;word-break:break-all;

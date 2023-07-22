@@ -19,7 +19,7 @@ package org.webpki.cbor;
 import java.math.BigInteger;
 
 /**
- * Class for holding CBOR <code>big&nbsp;integer</code> objects.
+ * Class for holding CBOR <code>bignum</code> objects.
  * <p>
  * Note that the encoder is adaptive, selecting the shortest possible
  * representation in order to produce a fully deterministic result.
@@ -27,8 +27,8 @@ import java.math.BigInteger;
  */
 public class CBORBigInt extends CBORObject {
 
-    static final byte[] UNSIGNED_BIG_INTEGER_TAG = {(byte)MT_BIG_UNSIGNED};
-    static final byte[] NEGATIVE_BIG_INTEGER_TAG = {(byte)MT_BIG_NEGATIVE};
+    static final byte[] UNSIGNED_BIGNUM_TAG = {(byte)MT_BIG_UNSIGNED};
+    static final byte[] NEGATIVE_BIGNUM_TAG = {(byte)MT_BIG_NEGATIVE};
 
     BigInteger value;
  
@@ -36,14 +36,14 @@ public class CBORBigInt extends CBORObject {
      * Creates a CBOR integer value of any size.
      * <p>
      * Note: if <code>value</code> is within the CBOR <code>integer</code> range,
-     * <code>integer</code> encoding ({@link CBORInt}) will be used, otherwise <code>value</code>
-     * will be encoded as a CBOR <code>big&nbsp;integer</code>.
+     * <code>integer</code> encoding will be used, otherwise <code>value</code>
+     * will be encoded as a CBOR <code>bignum</code>.
      * </p>
      * 
      * @param value Integer in BigInteger format
      */
     public CBORBigInt(BigInteger value) {
-        super(CBORTypes.BIG_INTEGER);
+        super(CBORTypes.BIGNUM);
         this.value = value;
         nullCheck(value);
     }
@@ -64,7 +64,7 @@ public class CBORBigInt extends CBORObject {
             return new CBORInt(cborAdjusted.longValue(), unsigned).encode();
         }
         // Does not fit "int65" so we must use big integer encoding.
-        return addByteArrays(unsigned ? UNSIGNED_BIG_INTEGER_TAG : NEGATIVE_BIG_INTEGER_TAG, 
+        return addByteArrays(unsigned ? UNSIGNED_BIGNUM_TAG : NEGATIVE_BIGNUM_TAG, 
                              new CBORBytes(encoded).encode());
     }
     

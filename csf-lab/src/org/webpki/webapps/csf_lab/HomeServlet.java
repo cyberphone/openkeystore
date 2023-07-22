@@ -29,10 +29,11 @@ public class HomeServlet extends CoreRequestServlet {
     
     static final String SUPPORTED_CBOR = "This implementation supports the " +
             "following subset of CBOR primitives: " +
-            "<i>text&nbsp;string</i>, <i>byte&nbsp;string</i>, " +
-            "<i>integer</i>, <i>big&nbsp;integer</i>, <i>floating&nbsp;point</i> (16/32/64 bit), " +
+            "<code><i>text&nbsp;string</i></code>, <code><i>byte&nbsp;string</i></code>, " +
+            "<code><i>integer</i></code>, <code><i>bignum</i></code>, " +
+            "<code><i>floating&nbsp;point</i></code> (16/32/64 bit), " +
             "<code>true</code>, <code>false</code>, <code>null</code>, " +
-            "and <i>tagged data</i> (CBOR major type 6).";
+            "and <code><i>tagged data</i></code> (CBOR major type 6).";
 
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
