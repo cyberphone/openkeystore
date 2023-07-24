@@ -254,11 +254,11 @@ diagnostic notation:
 <table class='webpkitable' style='margin-left:2em'>
 <tr style='text-align:center'><th>CBOR&nbsp;Object</th><th>Syntax</th><th>Notes</th><th style='min-width:30em'>Description</th></tr>
 <tr style='text-align:center'><td rowspan='3'></td><td><code>/</code>&nbsp;<i>comment&nbsp;text</i>&nbsp;<code>/</code></td>
-<td></td><td style='text-align:left'>Multi-line comment.
+<td>8</td><td style='text-align:left'>Multi-line comment.
 Multi-line comments are treated as whitespace and may thus also be used 
 <i>between</i> CBOR objects.</td></tr>
 <tr style='text-align:center'><td><code>#</code>&nbsp;<i>comment&nbsp;text</i></td>
-<td rowspan='2'>7</td><td style='text-align:left' rowspan='2'>Single-line comment.
+<td rowspan='2'>7, 8</td><td style='text-align:left' rowspan='2'>Single-line comment.
 Single-line comments are terminated by a newline character (<code>'\n'</code>) or <code>EOF</code>.
 Single-line comments may also terminate lines holding regular CBOR items.</td></tr>
 <tr style='text-align:center'><td><code>//</code>&nbsp;<i>comment&nbsp;text</i></td></tr>
@@ -290,12 +290,12 @@ See <a href='#floating-point-encoding'>CBOR floating point encoding</a>.
 <td><code>h'</code><i>hex&nbsp;data</i><code>'</code></td><td>3, 6</td>
 <td style='text-align:left'>Byte data provided in hexadecimal notation.
 Each byte must be represented by two hexadecimal digits.</td></tr>
-<tr style='text-align:center'><td><code>b64'</code><i>base64&nbsp;data</i><code>'</code></td><td>3, 6</td>
+<tr style='text-align:center'><td><code>b64'</code><i>base64&nbsp;data</i><code>'</code></td><td>3,&nbsp;6,&nbsp;8</td>
 <td style='text-align:left'>Byte data provided in base64 or base64URL notation.
 Padding with <code>'='</code> characters is <i>optional</i>.</td></tr>
-<tr style='text-align:center'><td><code>'</code><i>text</i><code>'</code></td><td>4, 5</td>
+<tr style='text-align:center'><td><code>'</code><i>text</i><code>'</code></td><td>4, 5, 8</td>
 <td style='text-align:left'>Byte data provided as UTF-8 encoded text.</td></tr>
-<tr style='text-align:center'><td><code>&lt;&lt;</code>&nbsp;<i>object</i>&nbsp;<code>&gt;&gt;</code></td><td></td>
+<tr style='text-align:center'><td><code>&lt;&lt;</code>&nbsp;<i>object</i>&nbsp;<code>&gt;&gt;</code></td><td>8</td>
 <td style='text-align:left'>Construct holding a CBOR object which is subsequently embedded in a byte string.</td></tr>
 <tr style='text-align:center'><td><code>text&nbsp;string</code></td>
 <td><code>&quot;</code><i>text</i><code>&quot;</code><td>4, 5</td><td style='text-align:left'>UTF-8 encoded text string.</td></tr>
@@ -310,7 +310,7 @@ Padding with <code>'='</code> characters is <i>optional</i>.</td></tr>
 Keys and values are expressed as CBOR objects.</td></tr>
 <tr style='text-align:center'><td><code>tag</code></td><td><i>n</i><code>(</code>&nbsp;<i>object</i>&nbsp;<code>)</code></td>
 <td>1</td><td style='text-align:left'>Tag holding a CBOR object.</td></tr>
-<tr style='text-align:center'><td></td><td><code>,</code></td><td></td><td style='text-align:left'>Sequence separator.</td></tr>
+<tr style='text-align:center'><td></td><td><code>,</code></td><td>8</td><td style='text-align:left'>Separator character for CBOR sequences.</td></tr>
 </table>
 </div>
 <ol style='margin:0 0'>
@@ -332,5 +332,8 @@ immediately preceding the newline may be used.</li>
 <code>'\r'</code>, <code>'\t'</code>, <code>'\u</code><i>hhhh</i><code>'</code>).</li>
 <li>Zero-length strings (<code>''</code>) return byte strings of length zero.</li>
 <li>The IETF have yet to define a single line comment.</li>
+<li>Only applicable for <i>input</i>.
+That is, {@link CBORObject#toString()} does not produce this item.</li>
+
 </ol>
 </body>
