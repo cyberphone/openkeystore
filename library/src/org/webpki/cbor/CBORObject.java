@@ -581,8 +581,6 @@ public abstract class CBORObject implements Cloneable {
 
     static class CBORDecoder {
 
-        private static final byte[] ZERO_BYTE = {0};
-
         private InputStream inputStream;
         private boolean sequenceFlag;
         private boolean deterministicMode;
@@ -673,21 +671,14 @@ public abstract class CBORObject implements Cloneable {
                 case MT_BIG_NEGATIVE:
                 case MT_BIG_UNSIGNED:
                     byte[] byteArray = getObject().getBytes();
-                    if (byteArray.length == 0) {
-                        byteArray = ZERO_BYTE;  // Zero length byte string => n == 0.
-                    } else if (byteArray[0] == 0 && deterministicMode) {
-                        cborError(STDERR_LEADING_ZERO);
+                    if ((byteArray.length <= 8 || byteArray[0] == 0) && deterministicMode) {
+                        cborError(STDERR_NON_DETERMINISTIC_BIGNUM);
                     }
-                    CBORBigInt cborBigInt = new CBORBigInt(
-                        (tag == MT_BIG_NEGATIVE) ?
-                            new BigInteger(-1, byteArray).subtract(BigInteger.ONE)
-                                               :
-                            new BigInteger(1, byteArray));
-                    if (byteArray.length <= 8 && deterministicMode) {
-                        cborError(STDERR_NON_DETERMINISTIC_INT);
-                    }
-                    return cborBigInt;
-
+                    return new CBORBigInt((tag == MT_BIG_NEGATIVE) ?
+                        new BigInteger(-1, byteArray).subtract(BigInteger.ONE)
+                                           :
+                        new BigInteger(1, byteArray));
+ 
                 case MT_FLOAT16:
                     double float64;
                     long f16Binary = getLongFromBytes(2);
@@ -1005,8 +996,8 @@ public abstract class CBORObject implements Cloneable {
     static final String STDERR_INT_RANGE =
             "CBOR integer does not fit a Java \"";
 
-    static final String STDERR_NON_DETERMINISTIC_INT =
-            "Non-deterministic encoding: big integer fits integer";
+    static final String STDERR_NON_DETERMINISTIC_BIGNUM =
+            "Non-deterministic encoding of bignum";
 
     static final String STDERR_NON_DETERMINISTIC_FLOAT =
             "Non-deterministic encoding of floating point value, tag: ";
@@ -1014,9 +1005,6 @@ public abstract class CBORObject implements Cloneable {
     static final String STDERR_NON_DETERMINISTIC_N =
             "Non-deterministic encoding of N";
 
-    static final String STDERR_LEADING_ZERO =
-            "Non-deterministic encoding: leading zero byte";
-    
     static final String STDERR_CBOR_EOF =
             "Malformed CBOR, trying to read past EOF";
     

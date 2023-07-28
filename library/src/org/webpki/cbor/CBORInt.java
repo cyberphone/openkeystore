@@ -112,7 +112,7 @@ public class CBORInt extends CBORObject {
         if (value < 0) {
             bigInteger = bigInteger.add(LONG_SIGN_BIT);
         }
-        return unsigned ? bigInteger : bigInteger.negate().subtract(BigInteger.ONE);
+        return unsigned ? bigInteger : bigInteger.not();
     }
 
     @Override

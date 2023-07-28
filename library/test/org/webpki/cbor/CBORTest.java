@@ -921,14 +921,14 @@ public class CBORTest {
             parseCborHex("c24900ffffffffffffffff");
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, CBORObject.STDERR_LEADING_ZERO);
+            checkException(e, CBORObject.STDERR_NON_DETERMINISTIC_BIGNUM);
         }
 
         try {
             parseCborHex("c24101");
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, CBORObject.STDERR_NON_DETERMINISTIC_INT);
+            checkException(e, CBORObject.STDERR_NON_DETERMINISTIC_BIGNUM);
         }
         
         try {

@@ -51,7 +51,7 @@ public class CBORBigInt extends CBORObject {
     @Override
     byte[] internalEncode() {
         boolean unsigned = value.compareTo(BigInteger.ZERO) >= 0;
-        BigInteger cborAdjusted = unsigned ? value : value.negate().subtract(BigInteger.ONE);
+        BigInteger cborAdjusted = unsigned ? value : value.not();
         byte[] encoded = cborAdjusted.toByteArray();
         if (encoded[0] == 0) {
             // Remove leading zero which may be present due to two-complement encoding.
