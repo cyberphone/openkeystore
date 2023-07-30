@@ -177,8 +177,8 @@ public class CBORMap extends CBORObject {
      * @return <code>CBORObject</code> or <code>defaultValue</code>
      */
     public CBORObject getConditionally(CBORObject key, CBORObject defaultValue) {
-       Entry entry = lookup(key, false);
-       return entry == null ? defaultValue : entry.value; 
+        Entry entry = lookup(key, false);
+        return entry == null ? defaultValue : entry.value; 
     }
 
     /**

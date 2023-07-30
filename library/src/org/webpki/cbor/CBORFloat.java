@@ -158,7 +158,7 @@ public class CBORFloat extends CBORObject {
      * @return Size in bytes: 2, 4, or 8.
      */
     public int size() {
-       return 2 << (tag - MT_FLOAT16);
+        return 2 << (tag - MT_FLOAT16);
     }
 
     @Override

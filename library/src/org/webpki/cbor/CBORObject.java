@@ -584,7 +584,7 @@ public abstract class CBORObject implements Cloneable {
         private InputStream inputStream;
         private boolean sequenceFlag;
         private boolean deterministicMode;
-         private boolean atFirstByte = true;
+        private boolean atFirstByte = true;
         private int maxLength;
         private int byteCount;
          

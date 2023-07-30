@@ -90,7 +90,7 @@ public class CBORTag extends CBORObject {
         this.tagNumber = tagNumber;
         this.object = object;
         nullCheck(object);
-         if (tagNumber == RESERVED_TAG_COTX) {
+        if (tagNumber == RESERVED_TAG_COTX) {
             checkCOTX(object);
         } else if (tagNumber == RESERVED_TAG_DATE) {
             if (object.cborType == CBORTypes.STRING) {
