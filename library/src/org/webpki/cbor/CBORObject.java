@@ -815,7 +815,10 @@ public abstract class CBORObject implements Cloneable {
      * <a href='package-summary.html#deterministic-encoding'>Deterministic&nbsp;Encoding</a>
      * checks for number serialization and map sorting
      * @param maxLength Holds maximum input size in 
-     * bytes or <code>null</code> ({@link Integer#MAX_VALUE} is assumed)
+     * bytes or <code>null</code> ({@link Integer#MAX_VALUE} is assumed).
+     * Since malformed CBOR objects can request arbitrary amounts of memory,
+     * it is <i>highly recommended</i> setting <code>maxLength</code> to
+     * a value that is adapted to the actual application. 
      * @return <code>CBORObject</code>
      */
     public static CBORObject decode(InputStream inputStream,
