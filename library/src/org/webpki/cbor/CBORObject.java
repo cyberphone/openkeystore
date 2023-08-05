@@ -499,7 +499,7 @@ public abstract class CBORObject implements Cloneable {
      * {@link CBORTag}, otherwise a {@link CBORException} is thrown.
      * </p>
      * <p>
-     * Note that the <code>big&nbsp;integer</code> type is dealt with
+     * Note that the CBOR <code>bignum</code> type is dealt with
      * as a specific primitive, in spite of being a tagged object.
      * </p>
 
