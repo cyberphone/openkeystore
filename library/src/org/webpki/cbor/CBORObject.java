@@ -214,7 +214,7 @@ public abstract class CBORObject implements Cloneable {
      * Returns <code>long</code> value.
      * <p>
      * This method requires that the object is a
-     * {@link CBORInt} and fits a Java <code>long</code>, 
+     * {@link CBORInt} and fits a Java <code>long</code>
      *({@link Long#MIN_VALUE} to {@link Long#MAX_VALUE}), 
      * otherwise a {@link CBORException} is thrown.
      * </p>
