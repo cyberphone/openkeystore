@@ -295,9 +295,12 @@ public class CBORDiagnosticNotation {
                     break;
                     
                 case '.':
-                    floatingPoint = true;
+                case 'e':
+                    if (prefix == null) {
+                        floatingPoint = true;
+                    }
                     continue;
-                    
+
                 case '_':
                     if (prefix == null) {
                         parserError("'_' is only permitted for 0b, 0o, and 0x numbers");
