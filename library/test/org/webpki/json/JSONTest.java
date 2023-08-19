@@ -4683,4 +4683,23 @@ public class JSONTest {
             json.append((char) c);
         }
     }
+    
+    void notInJSON(double value) {
+        try {
+            NumberToJSON.serializeNumber(value);
+            fail("must not");
+        } catch (JSONException e) {
+            if (!e.getMessage().contains("NaN")) {
+                throw e;
+            }
+        }
+    }
+    
+    @Test
+    public void WeirdNumbers() throws Exception {
+        assertTrue("-0.0", NumberToJSON.serializeNumber(-0.0).equals("0"));
+        notInJSON(Double.NaN);
+        notInJSON(Double.NEGATIVE_INFINITY);
+        notInJSON(Double.POSITIVE_INFINITY);
+    }
 }
