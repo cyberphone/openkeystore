@@ -39,6 +39,7 @@
         <include name="**/util/HexaDecimal.java"/>
         <include name="**/util/UTF8.java"/>
         <include name="**/util/ISODateTime.java"/>
+        <include name="**/util/DoubleCoreSerializer.java"/>
         <include name="**/util/IO.java"/>
         <include name="**/util/package.html"/>
         <include name="**/crypto/HmacVerifierInterface.java"/>

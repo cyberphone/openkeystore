@@ -71,7 +71,7 @@ public final class DoubleCoreSerializer {
                             .shiftRight(
                                     pow5len - POW5_BITCOUNT + (3 - j)
                                             * POW5_QUARTER_BITCOUNT).and(mask)
-                            .intValueExact();
+                            .intValue();
                 }
             }
 
@@ -85,11 +85,11 @@ public final class DoubleCoreSerializer {
                     if (k == 0) {
                         POW5_INV_SPLIT[i][k] = inv.shiftRight(
                                 (3 - k) * POW5_INV_QUARTER_BITCOUNT)
-                                .intValueExact();
+                                .intValue();
                     } else {
                         POW5_INV_SPLIT[i][k] = inv
                                 .shiftRight((3 - k) * POW5_INV_QUARTER_BITCOUNT)
-                                .and(invMask).intValueExact();
+                                .and(invMask).intValue();
                     }
                 }
             }
