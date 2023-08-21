@@ -101,17 +101,18 @@ public final class DoubleCoreSerializer {
      * <p>
      * This code is emulating 7.1.12.1 of the EcmaScript V6 specification.
      * </p>
-     * Note: {<code>-</code>}<code>0.0</code>, <code>NaN</code>, and <code>e&pm;Infinity</code> 
+     * Note: {<code>-</code>}<code>0.0</code>, <code>NaN</code>, and <code>&pm;Infinity</code> 
      * is out of scope for this method.
      * 
      * @param value Value to be formatted
-     * @param ecmaMode If <code>true</code> use EcmaScript notation else use EcmaScript
-     * but always output a decimal point and a number to make CBOR diagnostic notation happy
+     * @param ecmaOriginalMode If <code>true</code> use EcmaScript notation.
+     * If <code>false</code> use EcmaScript notation but always output a
+     * decimal point and at least one fractional digit.
+     * The latter is compatible with CBOR diagnostic notation
      * @return String representation
      */
-    public static String serialize(double value, boolean ecmaMode) {
-        // Step 1: Decode the floating point number, and unify normalized and
-        // subnormal cases.
+    public static String serialize(double value, boolean ecmaOriginalMode) {
+        // Step 1: Decode the floating point number, and unify normalized and subnormal cases.
         long bits = Double.doubleToLongBits(value);
         int ieeeExponent = (int) ((bits >>> DOUBLE_MANTISSA_BITS) & DOUBLE_EXPONENT_MASK);
         long ieeeMantissa = bits & DOUBLE_MANTISSA_MASK;
@@ -326,7 +327,7 @@ public final class DoubleCoreSerializer {
             if (olength > 1) {
                 result[index + 1] = '.';
             } else {
-                if (ecmaMode) {
+                if (ecmaOriginalMode) {
                     // If there are no decimals, suppress .0
                     index--;
                 } else {
@@ -377,7 +378,7 @@ public final class DoubleCoreSerializer {
                 for (int i = olength; i < exp + 1; i++) {
                     result[index++] = '0';
                 }
-                if (!ecmaMode) {
+                if (!ecmaOriginalMode) {
                     result[index++] = '.';
                     result[index++] = '0';
                 }
