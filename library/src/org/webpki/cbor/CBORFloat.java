@@ -148,7 +148,8 @@ public class CBORFloat extends CBORObject {
      * @return The double in string format
      */
     public static String formatDouble(Double value) {
-        if (value.isInfinite() || value.isNaN()) {
+        // Catch things the serializer is not designed for.
+        if (value == 0 || value.isInfinite() || value.isNaN()) {
             return value.toString();
         }
         return DoubleCoreSerializer.serialize(value, false);

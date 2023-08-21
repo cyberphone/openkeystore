@@ -101,6 +101,8 @@ public final class DoubleCoreSerializer {
      * <p>
      * This code is emulating 7.1.12.1 of the EcmaScript V6 specification.
      * </p>
+     * Note: {<code>-</code>}<code>0.0</code>, <code>NaN</code>, and <code>e&pm;Infinity</code> 
+     * is out of scope for this method.
      * 
      * @param value Value to be formatted
      * @param ecmaMode If <code>true</code> use EcmaScript notation else use EcmaScript
@@ -186,7 +188,7 @@ public final class DoubleCoreSerializer {
             }
             if (DEBUG) {
                 long exact = POW5_INV[q].multiply(BigInteger.valueOf(mv))
-                        .shiftRight(-e2 + q + k).longValueExact();
+                        .shiftRight(-e2 + q + k).longValue();
                 System.out.println(exact + " " + POW5_INV[q].bitCount());
                 if (dv != exact) {
                     throw new IllegalStateException();

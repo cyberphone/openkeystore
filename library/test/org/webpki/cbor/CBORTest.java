@@ -2181,6 +2181,8 @@ public class CBORTest {
         assertTrue("-inf", v == Double.NEGATIVE_INFINITY);
         v = CBORDiagnosticNotation.decode("NaN").getDouble();
         assertTrue("nan", v.isNaN());
+        assertTrue("0.0", CBORDiagnosticNotation.decode("0.0").toString().equals("0.0"));
+        assertTrue("-0.0", CBORDiagnosticNotation.decode("-0.0").toString().equals("-0.0"));
         CBORObject[] seq = CBORDiagnosticNotation.decodeSequence("1,\"" + DIAG_TEXT + "\"");
         assertTrue("seq", seq.length == 2);
         assertTrue("seqi", seq[0].getInt() == 1);
