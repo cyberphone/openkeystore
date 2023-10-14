@@ -505,7 +505,6 @@ public class CBORDiagnosticNotation {
         return cborText[index++];
     }
 
-    @SuppressWarnings("fallthrough")
     private void scanNonSignficantData() {
         while (index < cborText.length) {
             switch (nextChar()) {
@@ -518,12 +517,10 @@ public class CBORDiagnosticNotation {
 
                 case '/':
                     readChar();
-                    if (nextChar() != '/') {
-                        while (readChar() != '/') {
-                        }
-                        continue;
+                    while (readChar() != '/') {
                     }
-                // Yes, '//' is currently considered as equivalent to '#'
+                    continue;
+
                 case '#':
                     readChar();
                     while (index < cborText.length && readChar() != '\n') {
