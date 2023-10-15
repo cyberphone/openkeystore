@@ -27,7 +27,7 @@ import org.webpki.crypto.CryptoException;
 /*
  * Holder of symmetric keys
  */
-public class SymmetricKeys {
+public final class SymmetricKeys {
 
     private LinkedHashMap<Integer,byte[]> keys = new LinkedHashMap<>();
     

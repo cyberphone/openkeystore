@@ -27,10 +27,13 @@ import java.io.PrintWriter;
 
 import java.net.Proxy;
 import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
 import java.net.InetAddress;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import java.net.Socket;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.HttpURLConnection;
 
@@ -419,7 +422,7 @@ public class HTTPSWrapper {
     /* 
      * Sets up request. 
      */
-    private void setupRequest(String url, boolean output) throws IOException {
+    private void setupRequest(String urlString, boolean output) throws IOException {
         ///////////////////////////////////////////////
         // Clear the result
         ///////////////////////////////////////////////
@@ -433,9 +436,9 @@ public class HTTPSWrapper {
         ///////////////////////////////////////////////
         // If HTTPS, setup the security pieces
         ///////////////////////////////////////////////
-        this.url = url;
+        this.url = urlString;
         boolean https_flag = false;
-        if (url.startsWith("https:")) {
+        if (urlString.startsWith("https:")) {
             if (trust_store == null && default_trust_store != null) {
                 trust_store = default_trust_store;
                 ssl_initialized = false;
@@ -448,10 +451,16 @@ public class HTTPSWrapper {
         ///////////////////////////////////////////////
         // Create the connection
         ///////////////////////////////////////////////
+        URL url;
+        try {
+            url = new URI(urlString).toURL();
+        } catch (MalformedURLException | URISyntaxException e) {
+             throw new IOException(e);
+        }
         conn = (proxy == null && default_proxy == null) ?
-                (HttpURLConnection) new URL(url).openConnection()
+                (HttpURLConnection) url.openConnection()
                 :
-                (HttpURLConnection) new URL(url).openConnection(proxy == null ? default_proxy : proxy);
+                (HttpURLConnection) url.openConnection(proxy == null ? default_proxy : proxy);
         conn.setAllowUserInteraction(false);
 
         ///////////////////////////////////////////////

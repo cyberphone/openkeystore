@@ -231,8 +231,7 @@ public class SEReferenceImplementation {
     // Algorithm Support
     /////////////////////////////////////////////////////////////////////////////////////////////
 
-    static class Algorithm implements Serializable {
-        private static final long serialVersionUID = 1L;
+    static class Algorithm {
 
         int mask;
         String jceName;
@@ -894,8 +893,7 @@ public class SEReferenceImplementation {
         return r;
     }
 
-    static class MacBuilder implements Serializable {
-        private static final long serialVersionUID = 1L;
+    static class MacBuilder {
 
         Mac mac;
 

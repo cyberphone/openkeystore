@@ -16,10 +16,7 @@
  */
 package org.webpki.sks;
 
-import java.io.Serializable;
-
-public class KeyProtectionSpec implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class KeyProtectionSpec {
 
     BiometricProtection biometricProtection = BiometricProtection.NONE;
 

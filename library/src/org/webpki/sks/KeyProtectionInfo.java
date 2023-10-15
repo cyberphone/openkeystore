@@ -20,7 +20,7 @@ package org.webpki.sks;
 import java.util.EnumSet;
 import java.util.Set;
 
-public class KeyProtectionInfo {
+public final class KeyProtectionInfo {
 
     ///////////////////////////////////////////////////////////////////////////////////
     // "ProtectionStatus" constants

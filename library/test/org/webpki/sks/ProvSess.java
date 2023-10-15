@@ -65,7 +65,7 @@ import org.webpki.json.JSONParser;
 import org.webpki.util.ArrayUtil;
 import org.webpki.util.HexaDecimal;
 
-public class ProvSess {
+public final class ProvSess {
     
     static X509Certificate[] getCertPath(String json) {
         try {

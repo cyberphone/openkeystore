@@ -22,7 +22,7 @@ package org.webpki.util;
  * Note: the use of RuntimeException is deliberate, declared exceptions only complicate
  * programming and was excluded in .NET.
  */
-public class WrappedException extends RuntimeException {
+public final class WrappedException extends RuntimeException {
     static final long serialVersionUID = 10000000000L;
 
     /**

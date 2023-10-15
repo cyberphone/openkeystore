@@ -39,7 +39,7 @@ import org.webpki.util.IO;
 /**
  * Supports HTML descriptions of JSON protocols.
  */
-public class JSONBaseHTML  {
+public final class JSONBaseHTML  {
     public static final String MANDATORY               = "M";
     public static final String OPTIONAL                = "O";
     
