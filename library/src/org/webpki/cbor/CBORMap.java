@@ -23,7 +23,7 @@ import java.util.Arrays;
  */
 public class CBORMap extends CBORObject {
 
-    boolean deterministicMode;
+    boolean preSortedKeys;
     Entry root;
     private Entry lastEntry;
     private int numberOfEntries;
@@ -55,9 +55,29 @@ public class CBORMap extends CBORObject {
 
     /**
      * Creates an empty CBOR <code>map</code>.
+     * <p>
+     * This constructor provides an opportunity using keys that are <i>sorted</i> 
+     * (in lexicographic order), which in maps with many keys can 
+     * offer a performance improvement.
+     * </p>
+     * 
+     * @param preSortedKeys If <code>true</code>, keys <b>must</b> be
+     * sorted.  If a key is not properly sorted when calling
+     * {@link #set(CBORObject, CBORObject)}, a {@link CBORException} is thrown.
+     */
+    public CBORMap(boolean preSortedKeys) {
+        super(CBORTypes.MAP);
+        this.preSortedKeys = preSortedKeys;
+    }
+
+    /**
+     * Creates an empty CBOR <code>map</code>.
+     * <p>
+     * Equivalent to <code>CBORMap(false)</code>.
+     * </p>
      */
     public CBORMap() {
-        super(CBORTypes.MAP);
+        this(false);
     }
 
     private CBORObject getKey(CBORObject key) {
@@ -92,7 +112,7 @@ public class CBORMap extends CBORObject {
             root = newEntry;
         } else {
             // Keys are always sorted, making the verification process simple.
-            if (deterministicMode) {
+            if (preSortedKeys) {
                 // Normal case for parsing.
                 int diff = lastEntry.compare(newEntry.encodedKey);
                 if (diff >= 0) {

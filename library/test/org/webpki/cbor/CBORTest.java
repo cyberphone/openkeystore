@@ -596,6 +596,18 @@ public class CBORTest {
             "false"
     };
     
+    void preSortTest(CBORMap cborMap1, CBORMap cborMap2, boolean fail) {
+        cborMap1.set(new CBORInt(1), new CBORString("1"));
+        cborMap1.set(new CBORInt(2), new CBORString("2"));
+        try {
+            cborMap2.set(new CBORInt(2), new CBORString("2"));
+            cborMap2.set(new CBORInt(1), new CBORString("1"));
+            assertFalse("Should", fail);
+        } catch (Exception e) {
+            assertTrue("Should not", fail);
+        }
+    }
+    
     void sortingTest(String[] expectedOrder) throws Exception{
         MapTest m = new MapTest();
         m.insert(new CBORInt(10))
@@ -622,6 +634,9 @@ public class CBORTest {
     @Test
     public void mapperTest() throws Exception {
         sortingTest(RFC8949_SORTING);
+        preSortTest(new CBORMap(), new CBORMap(), false);
+        preSortTest(new CBORMap(false), new CBORMap(false), false);
+        preSortTest(new CBORMap(true), new CBORMap(true), true);
     }
     
     class StrangeReader extends InputStream {
