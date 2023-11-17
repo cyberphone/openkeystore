@@ -318,6 +318,7 @@ public class CBORTest {
                         break;
                 }
                 assertTrue("ieee", l == cborFloat.encode().length);
+                assertTrue("diag"+ asText, asText.equals(cborFloat.toString()));
             }
             assertFalse("Double should fail", mustFail == 1);
             Double d = cborFloat.getDouble();
@@ -502,21 +503,14 @@ public class CBORTest {
         doubleTest("-2.938735877055719e-39",     "FA80200000");
         doubleTest("-5.877471754111438e-39",     "FA80400000");
         doubleTest("-1.1754943508222875e-38",    "FA80800000");
-        doubleTest("-5.9604644775390625e-8",     "F98001");
-
         doubleTest("-2.9387358770557184e-39",    "FBB7EFFFFFFFFFFFFF");
-        doubleTest("-2.9387358770557188e-39",    "FA80200000");
-
-        doubleTest("-5.8774717541114375e-39",    "FA80400000");
         doubleTest("-1.1754943508222875e-38",    "FA80800000");
         doubleTest("-3.1691265005705735e+29",    "FAF0800000");
         doubleTest("-2.076918743413931e+34",     "FAF8800000");
-        doubleTest("-5.3169119831396635e+36",    "FAFC800000");
+        doubleTest("-5.316911983139664e+36",     "FAFC800000");
         doubleTest("-2.1267647932558654e+37",    "FAFD800000");
-        
         doubleTest("3.4028234663852886e+38",     "FA7F7FFFFF");
-        doubleTest("3.4028234663852889e+38",     "FB47EFFFFFE0000001");
-
+        doubleTest("3.402823466385289e+38",      "FB47EFFFFFE0000001");
         doubleTest("-8.507059173023462e+37",     "FAFE800000");
         doubleTest("-3.090948894593554e+30",     "FAF21C0D94");
         doubleTest("10.559999942779541",         "FB40251EB850000000");
@@ -524,15 +518,17 @@ public class CBORTest {
         doubleTest("1.0e+48",                    "FB49E5E531A0A1C873");
         doubleTest("18440.0",                    "FA46901000");
         doubleTest("18448.0",                    "F97481");
-        doubleTest("3.0517578125e-5",            "F90200");
-        doubleTest("3.057718276977539e-5",       "F90201");
-        doubleTest("6.097555160522461e-5",       "F903FF");
-        doubleTest("6.103515625e-5",             "F90400");
-        doubleTest("3.0547380447387695e-5",      "FA38002000");
-        doubleTest("3.0584633350372314e-5",      "FA38004800");
-        doubleTest("5.9604644775390625e-8",      "F90001");
+        doubleTest("0.000030517578125",          "F90200");
+        doubleTest("0.00003057718276977539",     "F90201");
+        doubleTest("0.00006097555160522461",     "F903FF");
+        doubleTest("0.00006103515625",           "F90400");
+        doubleTest("0.000030547380447387695",    "FA38002000");
+        doubleTest("0.000030584633350372314",    "FA38004800");
+        doubleTest("-5.960464477539062e-8",      "FBBE6FFFFFFFFFFFFF");
+        doubleTest("5.960464477539063e-8",       "F90001");
+        doubleTest("-5.960464477539064e-8",      "FBBE70000000000001");
         doubleTest("5.960465188081798e-8",       "FA33800001");
-        doubleTest("-5.9604644775390625e-8",     "F98001");
+        doubleTest("-5.960464477539063e-8",      "F98001");
         doubleTest("-5.960465188081798e-8",      "FAB3800001");
         doubleTest("3.4028234663852886e+38",     "FA7F7FFFFF");
         doubleTest("3.402823466385289e+38",      "FB47EFFFFFE0000001");
