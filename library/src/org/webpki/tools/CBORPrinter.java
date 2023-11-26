@@ -35,8 +35,8 @@ public class CBORPrinter {
     ////       DEBUGGING       ////
     ///////////////////////////////
 
-    static void exitCommand() {
-        System.out.println("\nUsage:\n\n  CBORPrinter hex|bin|b64u <infile>\n");
+    static void show() {
+        System.out.println("\nUsage: CBORPrinter hex|bin|b64u text-srgument|pipe");
         System.exit(3);
     }
 
@@ -50,20 +50,22 @@ public class CBORPrinter {
      * @throws Exception If anything unexpected happens...
      */
     public static void main(String[] args) throws Exception {
-        if (args.length != 2) {
-            exitCommand();
+        if (args.length == 0) {
+            show();
         }
-        byte[] readCbor = IO.readFile(args[1]);
+        byte[] readCbor = args.length == 1 ? 
+                IO.getByteArrayFromInputStream(System.in) : UTF8.encode(args[1]);
         String format = args[0];
-        if (format.equals("hex")) {
-            String hex = UTF8.decode(readCbor)
-                    .replaceAll("#.*(\r|\n|$)", "")
-                    .replaceAll("( |\n|\r)", "");
-            readCbor = HexaDecimal.decode(hex);
-        } else if (format.equals("b64u")) {
-            readCbor = Base64URL.decode(UTF8.decode(readCbor));
-        } else if (!format.equals("bin")) {
-            exitCommand();
+        if (!format.equals("bin")) {
+            String text = UTF8.decode(readCbor);
+            if (format.equals("hex")) {
+                readCbor = HexaDecimal.decode(text.replaceAll("#.*(\r|\n|$)", "")
+                                                  .replaceAll("( |\n|\r)", ""));
+            } else if (format.equals("b64u")) {
+                readCbor = Base64URL.decode(text);
+            } else {
+                show();
+            }
         }
         CBORObject decodedCborObject = CBORObject.decode(readCbor);
         byte[] decodedCbor = decodedCborObject.encode();

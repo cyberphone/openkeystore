@@ -11,16 +11,41 @@ public class CBORSortKeyTest {
         }
     }
     
-    static void oneRun(CBORMap cborMap) {
+    static void printTime(String size, long start, boolean sortFlag) {
+        System.out.println(String.format("%s %s map execution time=%d",
+                                         size,
+                                         sortFlag ? "sorted" : "unsorted",
+                                         System.currentTimeMillis() - start));
+        
+    }
+    
+    static void bigMap(boolean sortFlag) {
         long start = System.currentTimeMillis();
+        CBORMap cborMap = new CBORMap(sortFlag);
         for (CBORInt key : sorted) {
             cborMap.set(key, value);
         }
-        System.out.println("Time=" + (System.currentTimeMillis() - start));
+        printTime("Big(1000000)", start, sortFlag);
     }
     
+    static void multipleSmallMaps(boolean smallFlag, boolean sortFlag) {
+        long start = System.currentTimeMillis();
+        int size = smallFlag ? 10 : 50;
+        for (int q = 0; q < 1000000; q++) {
+            CBORMap cborMap = new CBORMap(sortFlag);
+            for (int n = 0; n < size; n++) {
+                cborMap.set(sorted[n], value);
+            }            
+        }
+        printTime(smallFlag ? "Small(10)" : "Medium(50)", start, sortFlag);
+    }    
+
     public static void main(String[] argv)  {
-        oneRun(new CBORMap());
-        oneRun(new CBORMap(true));
+        multipleSmallMaps(true, false);
+        multipleSmallMaps(true, true);
+        multipleSmallMaps(false, false);
+        multipleSmallMaps(false, true);
+        bigMap(false);
+        bigMap(true);
     }
 }

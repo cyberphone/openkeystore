@@ -37,21 +37,33 @@ public class Hex {
     /*  Description: This is a command-line interface for testing only  */
     /*                                                                  */
     /*##################################################################*/
+    
+    static void show() {
+        System.out.println("\n" +
+                           "Usage: Hex hex|dump input-pipe\n" +
+                           "           tobin text-argument-hex|input-pipe-hex");
+        System.exit(3);
+    }
 
     public static void main(String[] args) throws IOException {
-        if (args.length == 3 && args[0].equals("tobin")) {
-            IO.writeFile(args[2], 
-                    HexaDecimal.decode(UTF8.decode(IO.readFile(args[1]))));
-            System.exit(0);
+        if (args.length == 0 || args.length > 2) show();
+        switch (args[0]) {
+            case "hex":
+            case "dump":
+                if (args.length == 2) show();
+                byte[] data = IO.getByteArrayFromInputStream(System.in);
+                System.out.print(args[0].equals("dump") ? 
+                      HexaDecimal.getHexDebugData(data, 16) : HexaDecimal.encode(data));
+                break;
+
+            case "tobin":
+                System.out.write(HexaDecimal.decode(args.length == 2 ? 
+                        args[1] : UTF8.decode(IO.getByteArrayFromInputStream(System.in)).trim()));
+                break;
+
+            default:
+                show();
         }
-        if (args.length != 2 || !(args[0].equals("hex") || args[0].equals("dump"))) {
-            System.out.println("Usage: Hex hex|dump bininputfile \n" +
-                               "           tobin inputfileinhex outputfilebin\n");
-            System.exit(0);
-        }
-        byte[] data = IO.readFile(args[1]);
-        System.out.print(args[0].equals("dump") ? 
-              HexaDecimal.getHexDebugData(data, 16) : HexaDecimal.encode(data));
     }
 
 }

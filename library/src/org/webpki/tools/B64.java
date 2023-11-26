@@ -26,8 +26,10 @@ import org.webpki.util.Base64;
  */
 public class B64 {
 
-    static void exitCommand() {
-        System.out.println("\nUsage:\n\n  B64 [enc|dec|encurl|decurl] <infile> <outfile>\n");
+    static void show() {
+        System.out.println("\n" +
+                           "Usage: B64 enc|encurl input-pipe\n" +
+                           "           dec|decurl text-argument|input-pipe");
         System.exit(3);
     }
 
@@ -36,33 +38,29 @@ public class B64 {
      * @throws Exception If anything unexpected happens...
      */
     public static void main(String[] args) throws Exception {
-        if (args.length != 3) {
-            exitCommand();
-        } else {
-            byte[] output = null;
-            byte[] input = IO.readFile(args[1]);
-            if (args[0].startsWith("dec")) {
-                StringBuilder string = new StringBuilder();
-                for (byte b : input) {
-                    if (b > ' ') {
-                        string.append((char) b);
-                    }
-                }
-                if (args[0].equals("dec")) {
-                    output = Base64.decode(string.toString());
-                } else if (args[0].equals("decurl")) {
-                    output = Base64URL.decode(string.toString());
-                } else {
-                    exitCommand();
-                }
-            } else if (args[0].equals("enc")) {
-                output = UTF8.encode(Base64.encode(input));
-            } else if (args[0].equals("encurl")) {
-                output = UTF8.encode(Base64URL.encode(input));
-            } else {
-                exitCommand();
-            }
-            IO.writeFile(args[2], output);
+        if (args.length == 0 || args.length > 2) show();
+        switch (args[0]) {
+            case "enc":
+            case "encurl":
+                if (args.length == 2) show();
+                byte[] toBeEncoded = IO.getByteArrayFromInputStream(System.in);
+                System.out.print(args[0].equals("enc") ? 
+                            Base64.encode(toBeEncoded) : Base64URL.encode(toBeEncoded));
+                break;
+                
+            case "dec":
+            case "decurl":
+                String toBeDecoded = args.length == 2 ? 
+                        args[1] : UTF8.decode(IO.getByteArrayFromInputStream(System.in))
+                                                  .replace(" ", "")
+                                                  .replace("\n", "")
+                                                  .replace("\r", "");
+                System.out.write(args[0].equals("dec") ?
+                            Base64.decode(toBeDecoded) : Base64URL.decode(toBeDecoded));
+                break;
+                
+            default:
+                show();
         }
     }
 }
