@@ -1,53 +1,58 @@
 package org.webpki.cbor;
 
+// Test program for the "preSortedKeys" CBORMap option
+
 public class CBORSortKeyTest {
     static CBORString VALUE = new CBORString("hi");
     
-    static int SMALL  = 10;
-    static int MEDIUM = 50;
+    static int TOTAL_SET_OPERATION = 1000000;
+
+    static int SMALL_MAP  = 10;
+    static int MEDIUM_MAP = 50;
     
-    static CBORInt[] SORTED = new CBORInt[1000000];
+    static CBORInt[] SORTED_KEYS = new CBORInt[TOTAL_SET_OPERATION];
     
     static {
-        for (int q = 0; q < SORTED.length; q++) {
-            SORTED[q] = new CBORInt(q); 
+        for (int q = 0; q < TOTAL_SET_OPERATION; q++) {
+            SORTED_KEYS[q] = new CBORInt(q); 
         }
     }
     
-    static void printTime(String size, long start, boolean sortFlag) {
-        System.out.println(String.format("%s %s map execution time=%d",
-                                         size,
+    static void printTime(String label, int mapSize, long startTime, boolean sortFlag) {
+        System.out.println(String.format("%s(%d) %s map execution time=%d",
+                                         label,
+                                         mapSize,
                                          sortFlag ? "sorted" : "unsorted",
-                                         System.currentTimeMillis() - start));
+                                         System.currentTimeMillis() - startTime));
         
     }
     
     static void bigMap(boolean sortFlag) {
-        long start = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
         CBORMap cborMap = new CBORMap(sortFlag);
-        for (CBORInt key : SORTED) {
+        for (CBORInt key : SORTED_KEYS) {
             cborMap.set(key, VALUE);
         }
-        printTime("Big(1000000)", start, sortFlag);
+        printTime("Big", TOTAL_SET_OPERATION, startTime, sortFlag);
     }
     
-    static void multipleSmallMaps(int size, boolean sortFlag) {
-        long start = System.currentTimeMillis();
-        int turns = SORTED.length / size;
-        for (int q = 0; q < turns; q++) {
+    static void multipleSmallMaps(int mapSize, boolean sortFlag) {
+        long startTime = System.currentTimeMillis();
+        int maps = TOTAL_SET_OPERATION / mapSize;
+        for (int q = 0; q < maps; q++) {
             CBORMap cborMap = new CBORMap(sortFlag);
-            for (int n = 0; n < size; n++) {
-                cborMap.set(SORTED[n], VALUE);
+            for (int n = 0; n < mapSize; n++) {
+                cborMap.set(SORTED_KEYS[n], VALUE);
             }            
         }
-        printTime((size == SMALL ? "Small" : "Medium") + "(" + size + ")", start, sortFlag);
+        printTime(mapSize == SMALL_MAP ? "Small" : "Medium", mapSize, startTime, sortFlag);
     }    
 
     public static void main(String[] argv)  {
-        multipleSmallMaps(SMALL, false);
-        multipleSmallMaps(SMALL, true);
-        multipleSmallMaps(MEDIUM, false);
-        multipleSmallMaps(MEDIUM, true);
+        multipleSmallMaps(SMALL_MAP, false);
+        multipleSmallMaps(SMALL_MAP, true);
+        multipleSmallMaps(MEDIUM_MAP, false);
+        multipleSmallMaps(MEDIUM_MAP, true);
         bigMap(false);
         bigMap(true);
     }
