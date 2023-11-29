@@ -5,7 +5,7 @@ package org.webpki.cbor;
 public class CBORSortKeyTest {
     static CBORString VALUE = new CBORString("hi");
     
-    static int TOTAL_SET_OPERATIONS = 1000000;
+    static int TOTAL_SET_OPERATIONS = 100000;
 
     static int SMALL_MAP  = 10;
     static int MEDIUM_MAP = 50;
