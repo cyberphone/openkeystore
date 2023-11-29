@@ -5,15 +5,15 @@ package org.webpki.cbor;
 public class CBORSortKeyTest {
     static CBORString VALUE = new CBORString("hi");
     
-    static int TOTAL_SET_OPERATION = 1000000;
+    static int TOTAL_SET_OPERATIONS = 1000000;
 
     static int SMALL_MAP  = 10;
     static int MEDIUM_MAP = 50;
     
-    static CBORInt[] SORTED_KEYS = new CBORInt[TOTAL_SET_OPERATION];
+    static CBORInt[] SORTED_KEYS = new CBORInt[TOTAL_SET_OPERATIONS];
     
     static {
-        for (int q = 0; q < TOTAL_SET_OPERATION; q++) {
+        for (int q = 0; q < TOTAL_SET_OPERATIONS; q++) {
             SORTED_KEYS[q] = new CBORInt(q); 
         }
     }
@@ -33,12 +33,12 @@ public class CBORSortKeyTest {
         for (CBORInt key : SORTED_KEYS) {
             cborMap.set(key, VALUE);
         }
-        printTime("Big", TOTAL_SET_OPERATION, startTime, sortFlag);
+        printTime("Big", TOTAL_SET_OPERATIONS, startTime, sortFlag);
     }
     
     static void multipleSmallMaps(int mapSize, boolean sortFlag) {
         long startTime = System.currentTimeMillis();
-        int maps = TOTAL_SET_OPERATION / mapSize;
+        int maps = TOTAL_SET_OPERATIONS / mapSize;
         for (int q = 0; q < maps; q++) {
             CBORMap cborMap = new CBORMap(sortFlag);
             for (int n = 0; n < mapSize; n++) {
