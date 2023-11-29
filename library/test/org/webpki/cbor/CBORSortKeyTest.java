@@ -19,11 +19,11 @@ public class CBORSortKeyTest {
     }
     
     static void printTime(String label, int mapSize, long startTime, boolean sortFlag) {
-        System.out.println(String.format("%s(%d) %s map execution time=%d",
-                                         label,
-                                         mapSize,
-                                         sortFlag ? "sorted" : "unsorted",
-                                         System.currentTimeMillis() - startTime));
+        System.out.printf("%s(%d) %s map execution time=%d\n",
+                          label,
+                          mapSize,
+                          sortFlag ? "sorted" : "unsorted",
+                          System.currentTimeMillis() - startTime);
         
     }
     
