@@ -32,8 +32,7 @@ public class CBORMap extends CBORObject {
         CBORObject value;
         byte[] encodedKey;
         Entry next;
-        Entry prev;
-        
+         
         Entry(CBORObject key, CBORObject object) {
             this.key = key;
             this.value = object;
@@ -125,7 +124,6 @@ public class CBORMap extends CBORObject {
                     cborError(STDERR_NON_DET_SORT_ORDER + key);
                 }
                 lastEntry.next = newEntry;
-                newEntry.prev = lastEntry;
                 lastEntry = newEntry;
              } else {
                 // Programmatically created key or the result of unconstrained parsing.
@@ -157,18 +155,12 @@ public class CBORMap extends CBORObject {
                 if (below) {
                     // Below current root. Create new root.
                     newEntry.next = root;
-                    root.prev = newEntry;
                     root = newEntry;
                 } else {
                     // "Normal" insert above.
                     Entry nextEntry = targetEntry.next;
                     targetEntry.next = newEntry;
-                    newEntry.prev = targetEntry;
                     newEntry.next = nextEntry;
-                    if (nextEntry != null) {
-                        // The entry is not the last one.
-                        nextEntry.prev = newEntry;
-                    }
                 }  
             }
         }
@@ -263,28 +255,23 @@ public class CBORMap extends CBORObject {
      * @return The <code>CBORObject</code> mapped by <code>key</code>
      */
     public CBORObject remove(CBORObject key) {
-        Entry entry = lookup(key, true);
-        Entry nextEntry = entry.next;
-        Entry prevEntry = entry.prev;
-        if (prevEntry == null) {
-            // Root. Reassign root element.
-            if ((root = nextEntry) != null) {
-                // Not the only element in the list.
-                root.prev = null;
-                if (root.next != null) {
-                    // Not the last element in the list.
-                    root.next.prev = root;
+        Entry targetEntry = lookup(key, true);
+        Entry precedingEntry = null;
+        for (Entry entry = root; entry != null; entry = entry.next) {
+            if (entry == targetEntry) {
+                if (precedingEntry == null) {
+                    // Remove root key.  It may be alone.
+                    root = entry.next;
+                } else {
+                    // Remove key somewhere above root.
+                    precedingEntry.next = entry.next;
                 }
+                break;
             }
-        } else {
-            // Remove element somewhere above the root.
-            if ((prevEntry.next = nextEntry) != null) {
-                // Not the last element in the list.
-                nextEntry.prev = prevEntry;
-            }
+            precedingEntry = entry;
         }
         numberOfEntries--;
-        return entry.value;
+        return targetEntry.value;
     }
 
     /**
