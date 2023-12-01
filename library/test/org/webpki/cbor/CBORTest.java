@@ -603,6 +603,26 @@ public class CBORTest {
             assertTrue("Should not", fail);
         }
     }
+
+    void sortMe(int[] values) {
+        int min = 1000;
+        int max = -1;
+        for (int i : values) {
+            if (i < min) min = i;
+            if (i > max) max = i;
+        }
+        CBORMap cborMap = new CBORMap();
+        for (int i = 0; i < values.length; i++) {
+            cborMap.set(new CBORInt(values[i]), new CBORString("ju"));
+            assertFalse("min", cborMap.containsKey(new CBORInt(min - 1)));
+            assertFalse("max", cborMap.containsKey(new CBORInt(max + 1)));
+            for (int j = 0; j <= i; j++) {
+                assertTrue("yes", cborMap.containsKey(new CBORInt(values[j])));
+                assertFalse("no", cborMap.containsKey(new CBORInt(values[j] + 1)));
+            }
+        }
+        CBORObject.decode(cborMap.encode());
+    }
     
     void sortingTest(String[] expectedOrder) throws Exception{
         MapTest m = new MapTest();
@@ -620,6 +640,7 @@ public class CBORTest {
             CBORObject removed = m.getKeys()[m.size() - 1];
             int i = 0;
             for (CBORObject key : m.getKeys()) {
+                m.get(key);
                 String expected = expectedOrder[i++];
                 assertTrue("key=" + key + " exp=" + expected, key.toString().equals(expected));
             }
@@ -630,6 +651,10 @@ public class CBORTest {
     @Test
     public void mapperTest() throws Exception {
         sortingTest(RFC8949_SORTING);
+        sortMe(new int[] {0, 2, 4, 6});
+        sortMe(new int[] {0, 2, 6, 4});
+        sortMe(new int[] {7,1,5,11,9,13,3});
+        sortMe(new int[] {8, 2, 10});
         preSortTest(new CBORMap(), new CBORMap(), false);
         preSortTest(new CBORMap(false), new CBORMap(false), false);
         preSortTest(new CBORMap(true), new CBORMap(true), true);

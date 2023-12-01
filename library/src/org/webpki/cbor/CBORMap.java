@@ -16,8 +16,6 @@
  */
 package org.webpki.cbor;
 
-import java.util.Arrays;
-
 /**
  * Class for holding CBOR <code>map</code> objects.
  */
@@ -34,6 +32,7 @@ public class CBORMap extends CBORObject {
         CBORObject value;
         byte[] encodedKey;
         Entry next;
+        Entry prev;
         
         Entry(CBORObject key, CBORObject object) {
             this.key = key;
@@ -50,6 +49,14 @@ public class CBORMap extends CBORObject {
                 }
             }
             return encodedKey.length - testKey.length;
+        }
+        
+        boolean compareAndTest(byte[] testKey) {
+            int diff = compare(testKey);
+            if (diff == 0) {
+                cborError(STDERR_DUPLICATE_KEY + key);
+            }
+            return diff > 0;
         }
     }
 
@@ -109,62 +116,97 @@ public class CBORMap extends CBORObject {
         nullCheck(value);
         Entry newEntry = new Entry(key, value);
         if (root == null) {
-            root = newEntry;
+            lastEntry = root = newEntry;
         } else {
             // Keys are always sorted, making the verification process simple.
             if (preSortedKeys) {
                 // Normal case for parsing.
-                int diff = lastEntry.compare(newEntry.encodedKey);
-                if (diff >= 0) {
-                    cborError((diff == 0 ? 
-                      STDERR_DUPLICATE_KEY : STDERR_NON_DET_SORT_ORDER) + key);
+                if (lastEntry.compareAndTest(newEntry.encodedKey)) {
+                    cborError(STDERR_NON_DET_SORT_ORDER + key);
                 }
                 lastEntry.next = newEntry;
+                newEntry.prev = lastEntry;
+                lastEntry = newEntry;
              } else {
                 // Programmatically created key or the result of unconstrained parsing.
                 // Then we need to test and sort (always produce deterministic CBOR).
-                Entry  precedingEntry = null;
-                int diff = 0;
-                for (Entry entry = root; entry != null; entry = entry.next) {
-                    diff = entry.compare(newEntry.encodedKey);
-                    if (diff == 0) {
-                        cborError(STDERR_DUPLICATE_KEY + key);                      
+                // The algorithm is based on binary search and sort.
+                Entry targetEntry = root;
+                boolean below = false;
+                int n = numberOfEntries;
+                do {
+                    int nSave = n;
+                    Entry savePoint = targetEntry;
+                    // Cut the search span in two halves.
+                    n >>= 1;
+                    for (int q = 0; q < n && targetEntry.next != null; q++) {
+                        targetEntry = targetEntry.next;
                     }
-                    if (diff > 0) {
-                        // New key is (lexicographically) smaller than current entry.
-                        if (precedingEntry == null) {
-                            // New key is smaller than root. New key becomes root.
-                            newEntry.next = root;
-                            root = newEntry;
-                        } else {
-                            // New key is smaller than an entry above root.
-                            // Insert before current entry.
-                            newEntry.next = entry;
-                            precedingEntry.next = newEntry;
+                    if (below = targetEntry.compareAndTest(newEntry.encodedKey)) {
+                        // Right half. Tighten interval.
+                        targetEntry = savePoint;
+                    } else {
+                        // Wrong half. Move forward.
+                        if (targetEntry.next == null || nSave <= 1) {
+                            // Done.
+                            break;
                         }
-                        // Done, break out of the loop.
-                        break;
+                        n = nSave;
                     }
-                    // No luck in this round, continue searching.
-                    precedingEntry = entry;
-                }
-                // Biggest key so far, insert at the end.
-                if (diff < 0) {
-                    precedingEntry.next = newEntry;
-                }
+                } while (n > 0);
+                if (below) {
+                    // Below current root. Create new root.
+                    newEntry.next = root;
+                    root.prev = newEntry;
+                    root = newEntry;
+                } else {
+                    // "Normal" insert above.
+                    Entry nextEntry = targetEntry.next;
+                    targetEntry.next = newEntry;
+                    newEntry.prev = targetEntry;
+                    newEntry.next = nextEntry;
+                    if (nextEntry != null) {
+                        // The entry is not the last one.
+                        nextEntry.prev = newEntry;
+                    }
+                }  
             }
         }
-        lastEntry = newEntry;
         numberOfEntries++;
         return this;
     }
 
     private Entry lookup(CBORObject key, boolean mustExist) {
         byte[] encodedKey = getKey(key).encode();
-        for (Entry entry = root; entry != null; entry = entry.next) {
-            if (Arrays.equals(entry.encodedKey, encodedKey)) {
-                return entry;
-            }
+        if (root != null) {
+            Entry targetEntry = root;
+            int n = numberOfEntries;
+            // The algorithm is based on binary search.
+            do {
+                int nSave = n;
+                Entry savePoint = targetEntry;
+                // Cut the search span in two halves.
+                n >>= 1;
+                for (int q = 0; q < n && targetEntry.next != null; q++) {
+                    targetEntry = targetEntry.next;
+                }
+                int diff = targetEntry.compare(encodedKey);
+                if (diff == 0) {
+                    // We got it!
+                    return targetEntry;
+                }
+                if (diff > 0) {
+                    // Right half. Tighten interval.
+                    targetEntry = savePoint;
+                } else {
+                    // Wrong half. Move forward.
+                    if (targetEntry.next == null || nSave <= 1) {
+                        // Sorry, no match.
+                        break;
+                    }
+                    n = nSave;
+                }
+            } while (n > 0);
         }
         if (mustExist) {
             cborError(STDERR_MISSING_KEY + key);
@@ -221,25 +263,28 @@ public class CBORMap extends CBORObject {
      * @return The <code>CBORObject</code> mapped by <code>key</code>
      */
     public CBORObject remove(CBORObject key) {
-        byte[] encodedKey = getKey(key).encode();
-        Entry precedingEntry = null;
-        for (Entry entry = root; entry != null; entry = entry.next) {
-            int diff = entry.compare(encodedKey);
-            if (diff == 0) {
-                if (precedingEntry == null) {
-                    // Remove root key.  It may be alone.
-                    root = entry.next;
-                } else {
-                    // Remove key somewhere above root.
-                    precedingEntry.next = entry.next;
+        Entry entry = lookup(key, true);
+        Entry nextEntry = entry.next;
+        Entry prevEntry = entry.prev;
+        if (prevEntry == null) {
+            // Root. Reassign root element.
+            if ((root = nextEntry) != null) {
+                // Not the only element in the list.
+                root.prev = null;
+                if (root.next != null) {
+                    // Not the last element in the list.
+                    root.next.prev = root;
                 }
-                numberOfEntries--;
-                return entry.value;
             }
-            precedingEntry = entry;
+        } else {
+            // Remove element somewhere above the root.
+            if ((prevEntry.next = nextEntry) != null) {
+                // Not the last element in the list.
+                nextEntry.prev = prevEntry;
+            }
         }
-        cborError(STDERR_MISSING_KEY + key);
-        return null;
+        numberOfEntries--;
+        return entry.value;
     }
 
     /**
