@@ -1,10 +1,9 @@
 package org.webpki.cbor;
 
-import java.math.BigInteger;
-
 // Test program for the "preSortedKeys" CBORMap option
 
 public class CBORSortKeyTest {
+
     static CBORString VALUE = new CBORString("hi");
     
     static int TOTAL_SET_OPERATIONS = 100000;
@@ -12,11 +11,11 @@ public class CBORSortKeyTest {
     static int SMALL_MAP  = 10;
     static int MEDIUM_MAP = 50;
     
-    static CBORBigInt[] SORTED_KEYS = new CBORBigInt[TOTAL_SET_OPERATIONS];
+    static CBORString[] SORTED_KEYS = new CBORString[TOTAL_SET_OPERATIONS];
     
     static {
         for (int q = 0; q < TOTAL_SET_OPERATIONS; q++) {
-            SORTED_KEYS[q] = new CBORBigInt(new BigInteger("5435353387878788886" + q)); 
+            SORTED_KEYS[q] = new CBORString("prefix" + q); 
         }
     }
     
@@ -32,7 +31,7 @@ public class CBORSortKeyTest {
     static void bigMap(boolean sortFlag) {
         long startTime = System.currentTimeMillis();
         CBORMap cborMap = new CBORMap(sortFlag);
-        for (CBORBigInt key : SORTED_KEYS) {
+        for (CBORString key : SORTED_KEYS) {
             cborMap.set(key, VALUE);
         }
         printTime("Big", TOTAL_SET_OPERATIONS, startTime, sortFlag);
@@ -42,6 +41,7 @@ public class CBORSortKeyTest {
         long startTime = System.currentTimeMillis();
         int maps = TOTAL_SET_OPERATIONS / mapSize;
         for (int q = 0; q < maps; q++) {
+            // Creating a CBORMap object is a heavy operation
             CBORMap cborMap = new CBORMap(sortFlag);
             for (int n = 0; n < mapSize; n++) {
                 cborMap.set(SORTED_KEYS[n], VALUE);
