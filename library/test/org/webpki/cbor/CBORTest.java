@@ -495,6 +495,7 @@ public class CBORTest {
         // These numbers are supposed to be tie-breakers...
         doubleTest("10.55999755859375",          "FA4128F5C0");
         doubleTest("-1.401298464324817e-45",     "FA80000001");
+        doubleTest("1.4012986313726115e-45",     "FB36A0000020000000");
         doubleTest("-9.183549615799121e-41",     "FA80010000");
         doubleTest("-1.8367099231598242e-40",    "FA80020000");
         doubleTest("-3.6734198463196485e-40",    "FA80040000");
