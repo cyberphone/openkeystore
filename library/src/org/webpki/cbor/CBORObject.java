@@ -544,14 +544,14 @@ public abstract class CBORObject implements Cloneable {
         switch (cborType) {
             case MAP:
                 CBORMap cborMap = (CBORMap) this;
-                for (CBORMap.Entry entry = cborMap.root; entry != null; entry = entry.next) {
+                for (CBORMap.Entry entry : cborMap.entries) {
                     entry.value.traverse(entry.key, check);
                 }
                 break;
         
             case ARRAY:
                 CBORArray cborArray = (CBORArray) this;
-                for (CBORObject object : cborArray.toArray()) {
+                for (CBORObject object : cborArray.objects) {
                     object.traverse(cborArray, check);
                 }
                 break;

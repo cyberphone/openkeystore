@@ -16,22 +16,21 @@
  */
 package org.webpki.cbor;
 
+import java.util.ArrayList;
+
 /**
  * Class for holding CBOR <code>map</code> objects.
  */
 public class CBORMap extends CBORObject {
 
     boolean preSortedKeys;
-    Entry root;
     private Entry lastEntry;
-    private int numberOfEntries;
 
     // Similar to the Java Map.Entry but optimized for CBOR. 
     static class Entry {
         CBORObject key;
         CBORObject value;
         byte[] encodedKey;
-        Entry next;
          
         Entry(CBORObject key, CBORObject object) {
             this.key = key;
@@ -50,14 +49,16 @@ public class CBORMap extends CBORObject {
             return encodedKey.length - testKey.length;
         }
         
-        boolean compareAndTest(byte[] testKey) {
-            int diff = compare(testKey);
+        boolean compareAndTest(Entry entry) {
+            int diff = compare(entry.encodedKey);
             if (diff == 0) {
                 cborError(STDERR_DUPLICATE_KEY + key);
             }
             return diff > 0;
         }
     }
+
+    ArrayList<Entry> entries = new ArrayList<>();
 
     /**
      * Creates an empty CBOR <code>map</code>.
@@ -97,7 +98,7 @@ public class CBORMap extends CBORObject {
      * @return The number of entries (keys) in the map
      */
     public int size() {
-        return numberOfEntries;
+        return entries.size();
     }
 
     /**
@@ -114,91 +115,56 @@ public class CBORMap extends CBORObject {
         key = getKey(key);
         nullCheck(value);
         Entry newEntry = new Entry(key, value);
-        if (root == null) {
-            lastEntry = root = newEntry;
+        if (entries.isEmpty()) {
+            entries.add(newEntry);
+            lastEntry = newEntry;
         } else {
             // Keys are always sorted, making the verification process simple.
             if (preSortedKeys) {
                 // Normal case for parsing.
-                if (lastEntry.compareAndTest(newEntry.encodedKey)) {
+                if (lastEntry.compareAndTest(newEntry)) {
                     cborError(STDERR_NON_DET_SORT_ORDER + key);
                 }
-                lastEntry.next = newEntry;
+                entries.add(newEntry);
                 lastEntry = newEntry;
              } else {
                 // Programmatically created key or the result of unconstrained parsing.
                 // Then we need to test and sort (always produce deterministic CBOR).
                 // The algorithm is based on binary search and sort.
-                Entry targetEntry = root;
-                boolean below = false;
-                int n = numberOfEntries;
-                do {
-                    int nSave = n;
-                    Entry savePoint = targetEntry;
-                    // Cut the search span in two halves.
-                    n >>= 1;
-                    for (int q = 0; q < n && targetEntry.next != null; q++) {
-                        targetEntry = targetEntry.next;
-                    }
-                    if (below = targetEntry.compareAndTest(newEntry.encodedKey)) {
-                        // Right half. Tighten interval.
-                        targetEntry = savePoint;
+                int startIndex = 0;
+                int endIndex = entries.size() - 1;
+                int insertIndex = 0;
+                while (startIndex <= endIndex) {
+                    int midIndex = startIndex + (endIndex - startIndex) / 2;
+                    if (newEntry.compareAndTest(entries.get(midIndex))) {
+                        insertIndex = startIndex = midIndex + 1;
                     } else {
-                        // Wrong half. Move forward.
-                        if (targetEntry.next == null || nSave <= 1) {
-                            // Done.
-                            break;
-                        }
-                        n = nSave;
+                        endIndex = midIndex - 1;
                     }
-                } while (n > 0);
-                if (below) {
-                    // Below current root. Create new root.
-                    newEntry.next = root;
-                    root = newEntry;
-                } else {
-                    // "Normal" insert above.
-                    Entry nextEntry = targetEntry.next;
-                    targetEntry.next = newEntry;
-                    newEntry.next = nextEntry;
-                }  
+                }
+                entries.add(insertIndex, newEntry);
             }
+
         }
-        numberOfEntries++;
         return this;
     }
 
     private Entry lookup(CBORObject key, boolean mustExist) {
         byte[] encodedKey = getKey(key).encode();
-        if (root != null) {
-            Entry targetEntry = root;
-            int n = numberOfEntries;
-            // The algorithm is based on binary search.
-            do {
-                int nSave = n;
-                Entry savePoint = targetEntry;
-                // Cut the search span in two halves.
-                n >>= 1;
-                for (int q = 0; q < n && targetEntry.next != null; q++) {
-                    targetEntry = targetEntry.next;
-                }
-                int diff = targetEntry.compare(encodedKey);
-                if (diff == 0) {
-                    // We got it!
-                    return targetEntry;
-                }
-                if (diff > 0) {
-                    // Right half. Tighten interval.
-                    targetEntry = savePoint;
-                } else {
-                    // Wrong half. Move forward.
-                    if (targetEntry.next == null || nSave <= 1) {
-                        // Sorry, no match.
-                        break;
-                    }
-                    n = nSave;
-                }
-            } while (n > 0);
+        int startIndex = 0;
+        int endIndex = entries.size() - 1;
+        while (startIndex <= endIndex) {
+            int midIndex = startIndex + (endIndex - startIndex) / 2;
+            Entry entry = entries.get(midIndex);
+            int diff = entry.compare(encodedKey);
+            if (diff == 0) {
+                return entry;
+            }
+            if (diff < 0) {
+                startIndex = midIndex + 1;
+            } else {
+                endIndex = midIndex - 1;
+            }
         }
         if (mustExist) {
             cborError(STDERR_MISSING_KEY + key);
@@ -206,7 +172,7 @@ public class CBORMap extends CBORObject {
         return null;
     }
 
-     /**
+    /**
      * Returns mapped object.
      * <p>
      * If <code>key</code> is not present, a {@link CBORException} is thrown.
@@ -256,21 +222,12 @@ public class CBORMap extends CBORObject {
      */
     public CBORObject remove(CBORObject key) {
         Entry targetEntry = lookup(key, true);
-        Entry precedingEntry = null;
-        for (Entry entry = root; entry != null; entry = entry.next) {
-            if (entry == targetEntry) {
-                if (precedingEntry == null) {
-                    // Remove root key.  It may be alone.
-                    root = entry.next;
-                } else {
-                    // Remove key somewhere above root.
-                    precedingEntry.next = entry.next;
-                }
+        for (int i = 0; i < entries.size(); i++) {
+            if (entries.get(i) == targetEntry) {
+                entries.remove(i);
                 break;
             }
-            precedingEntry = entry;
         }
-        numberOfEntries--;
         return targetEntry.value;
     }
 
@@ -280,9 +237,9 @@ public class CBORMap extends CBORObject {
      * @return Array of keys
      */
     public CBORObject[] getKeys() {
-        CBORObject[] keys = new CBORObject[numberOfEntries];
+        CBORObject[] keys = new CBORObject[entries.size()];
         int i = 0;
-        for (Entry entry = root; entry != null; entry = entry.next) {
+        for (Entry entry : entries) {
             keys[i++] = entry.key;
         }
         return keys;
@@ -290,8 +247,8 @@ public class CBORMap extends CBORObject {
 
     @Override
     byte[] internalEncode() {
-        byte[] encoded = encodeTagAndN(MT_MAP, numberOfEntries);
-        for (Entry entry = root; entry != null; entry = entry.next) {
+        byte[] encoded = encodeTagAndN(MT_MAP, entries.size());
+        for (Entry entry : entries) {
             encoded = addByteArrays(encoded,
                                     addByteArrays(entry.encodedKey, entry.value.encode()));
         }
@@ -302,7 +259,7 @@ public class CBORMap extends CBORObject {
     void internalToString(CborPrinter cborPrinter) {
         cborPrinter.beginMap();
         boolean notFirst = false;
-        for (Entry entry = root; entry != null; entry = entry.next) {
+        for (Entry entry : entries) {
             if (notFirst) {
                 cborPrinter.append(',');
             }
