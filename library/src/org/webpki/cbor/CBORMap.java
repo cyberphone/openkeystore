@@ -17,6 +17,7 @@
 package org.webpki.cbor;
 
 import java.util.ArrayList;
+import java.util.Vector;
 
 /**
  * Class for holding CBOR <code>map</code> objects.
@@ -24,7 +25,6 @@ import java.util.ArrayList;
 public class CBORMap extends CBORObject {
 
     boolean preSortedKeys;
-    private Entry lastEntry;
 
     // Similar to the Java Map.Entry but optimized for CBOR. 
     static class Entry {
@@ -115,41 +115,36 @@ public class CBORMap extends CBORObject {
         key = getKey(key);
         nullCheck(value);
         Entry newEntry = new Entry(key, value);
-        if (entries.isEmpty()) {
-            entries.add(newEntry);
-            lastEntry = newEntry;
+        int insertIndex;
+        // Keys are always sorted, making the verification process simple.
+        if (preSortedKeys) {
+            // Normal case for parsing.
+            insertIndex = entries.size();
+            if (insertIndex > 0 && entries.get(insertIndex - 1).compareAndTest(newEntry)) {
+                cborError(STDERR_NON_DET_SORT_ORDER + key);
+            }
         } else {
-            // Keys are always sorted, making the verification process simple.
-            if (preSortedKeys) {
-                // Normal case for parsing.
-                if (lastEntry.compareAndTest(newEntry)) {
-                    cborError(STDERR_NON_DET_SORT_ORDER + key);
+            // Programmatically created key or the result of unconstrained parsing.
+            // Then we need to test and sort (always produce deterministic CBOR).
+            // The algorithm is based on binary sort and insertion.
+            insertIndex = 0;
+            int startIndex = 0;
+            int endIndex = entries.size() - 1;
+            while (startIndex <= endIndex) {
+                int midIndex = startIndex + (endIndex - startIndex) / 2;
+                if (newEntry.compareAndTest(entries.get(midIndex))) {
+                    // New key is bigger than the looked up entry.
+                    // Preliminary assumption: this is the one, but continue.
+                    insertIndex = startIndex = midIndex + 1;
+                } else {
+                    // New key is smaller, search lower parts of the array.
+                    endIndex = midIndex - 1;
                 }
-                entries.add(newEntry);
-                lastEntry = newEntry;
-             } else {
-                // Programmatically created key or the result of unconstrained parsing.
-                // Then we need to test and sort (always produce deterministic CBOR).
-                // The algorithm is based on binary sort and insertion.
-                int startIndex = 0;
-                int endIndex = entries.size() - 1;
-                int insertIndex = 0;
-                while (startIndex <= endIndex) {
-                    int midIndex = startIndex + (endIndex - startIndex) / 2;
-                    if (newEntry.compareAndTest(entries.get(midIndex))) {
-                        // New key is bigger than the looked up entry.
-                        // Preliminary assumption: this is the one, but continue.
-                        insertIndex = startIndex = midIndex + 1;
-                    } else {
-                        // New key is smaller, search lower parts of the array.
-                        endIndex = midIndex - 1;
-                    }
-                }
-                // If insertIndex == entries.size(), the key will be appended.
-                // If insertIndex == 0, the key will be first in the list.
-                entries.add(insertIndex, newEntry);
             }
         }
+        // If insertIndex == entries.size(), the key will be appended.
+        // If insertIndex == 0, the key will be first in the list.
+        entries.add(insertIndex, newEntry);
         return this;
     }
 
@@ -241,12 +236,11 @@ public class CBORMap extends CBORObject {
      * @return Array of keys
      */
     public CBORObject[] getKeys() {
-        CBORObject[] keys = new CBORObject[entries.size()];
-        int i = 0;
+        Vector<CBORObject> keys = new Vector<>();
         for (Entry entry : entries) {
-            keys[i++] = entry.key;
+            keys.add(entry.key);
         }
-        return keys;
+        return keys.toArray(new CBORObject[0]);
     }
 
     @Override
