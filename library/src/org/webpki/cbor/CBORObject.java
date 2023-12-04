@@ -783,14 +783,12 @@ public abstract class CBORObject implements Cloneable {
                     return cborArray;
     
                 case MT_MAP:
-                    CBORMap cborMap = new CBORMap();
-                    cborMap.preSortedKeys = deterministicMode;
+                    CBORMap cborMap = new CBORMap().setSortingMode(deterministicMode);
                     for (int q = checkLength(n); --q >= 0; ) {
                         cborMap.set(getObject(), getObject());
                     }
                     // Programmatically added elements will be sorted (by default). 
-                    cborMap.preSortedKeys = false;
-                    return cborMap;
+                    return cborMap.setSortingMode(false);
     
                 default:
                     unsupportedTag(tag);
