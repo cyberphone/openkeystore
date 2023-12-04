@@ -38,14 +38,14 @@ public class CBORSortKeyTest {
         for (CBORString key : SORTED_KEYS) {
             cborMap.set(key, VALUES[q++]);
         }
-        printTime("Big", TOTAL_SET_OPERATIONS, startTime, sortFlag);
+        printTime("SET", TOTAL_SET_OPERATIONS, startTime, sortFlag);
         startTime = System.currentTimeMillis();
         for (int n = 0; n < TOTAL_SET_OPERATIONS ; n++) {
             if (cborMap.get(SORTED_KEYS[n]).getInt() != n) {
                 CBORObject.cborError("Big access");
             }
         }
-        printTime("Access big", TOTAL_SET_OPERATIONS, startTime, sortFlag);
+        printTime("GET", TOTAL_SET_OPERATIONS, startTime, sortFlag);
         startTime = System.currentTimeMillis();
         if (sortFlag) return;
         cborMap = new CBORMap();
@@ -53,7 +53,14 @@ public class CBORSortKeyTest {
         for (CBORString key : REVERSE_KEYS) {
             cborMap.set(key, VALUES[q++]);
         }
-        printTime("Reverse big", TOTAL_SET_OPERATIONS, startTime, sortFlag);
+        printTime("Reverse SET", TOTAL_SET_OPERATIONS, startTime, sortFlag);
+        startTime = System.currentTimeMillis();
+        for (int n = 0; n < TOTAL_SET_OPERATIONS ; n++) {
+            if (cborMap.get(REVERSE_KEYS[n]).getInt() != n) {
+                CBORObject.cborError("Big access");
+            }
+        }
+        printTime("Reverse GET", TOTAL_SET_OPERATIONS, startTime, sortFlag);
     }
     
     static void multipleSmallMaps(int mapSize, boolean sortFlag) {
@@ -68,7 +75,7 @@ public class CBORSortKeyTest {
                 cborMap.set(keys[n], VALUES[n]);
             }            
         }
-        printTime(mapSize == SMALL_MAP ? "Small" : "Medium", mapSize, startTime, sortFlag);
+        printTime("SET", mapSize, startTime, sortFlag);
         startTime = System.currentTimeMillis();
         for (int q = 0; q < maps; q++) {
             for (int n = 0; n < mapSize; n++) {
@@ -77,7 +84,7 @@ public class CBORSortKeyTest {
                 }
             }            
         }
-        printTime(mapSize == SMALL_MAP ? "Access small" : "Access medium", mapSize, startTime, sortFlag);
+        printTime("GET", mapSize, startTime, sortFlag);
         if (sortFlag) return;
         startTime = System.currentTimeMillis();
         for (int q = 0; q < maps; q++) {
@@ -87,7 +94,7 @@ public class CBORSortKeyTest {
                 cborMap.set(REVERSE_KEYS[n], VALUES[n]);
             }            
         }
-        printTime(mapSize == SMALL_MAP ? "Reverse small" : "Reverse medium", mapSize, startTime, sortFlag);
+        printTime("Reverse SET", mapSize, startTime, sortFlag);
     }
     
     public static void main(String[] argv)  {
