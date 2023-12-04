@@ -67,19 +67,18 @@ public class CBORSortKeyTest {
         CBORMap cborMap = null;;
         long startTime = System.currentTimeMillis();
         int maps = TOTAL_SET_OPERATIONS / mapSize;
-        CBORString[] keys = sortFlag ? SORTED_KEYS : REVERSE_KEYS;
         for (int q = 0; q < maps; q++) {
             // Creating a CBORMap object is a heavy operation
             cborMap = new CBORMap(sortFlag);
             for (int n = 0; n < mapSize; n++) {
-                cborMap.set(keys[n], VALUES[n]);
+                cborMap.set(SORTED_KEYS[n], VALUES[n]);
             }            
         }
         printTime("SET", mapSize, startTime, sortFlag);
         startTime = System.currentTimeMillis();
         for (int q = 0; q < maps; q++) {
             for (int n = 0; n < mapSize; n++) {
-                if (cborMap.get(keys[n]).getInt() != n) {
+                if (cborMap.get(SORTED_KEYS[n]).getInt() != n) {
                     CBORObject.cborError("Medium access");
                 }
             }            
@@ -95,6 +94,15 @@ public class CBORSortKeyTest {
             }            
         }
         printTime("Reverse SET", mapSize, startTime, sortFlag);
+        startTime = System.currentTimeMillis();
+        for (int q = 0; q < maps; q++) {
+            for (int n = 0; n < mapSize; n++) {
+                if (cborMap.get(REVERSE_KEYS[n]).getInt() != n) {
+                    CBORObject.cborError("Medium access");
+                }
+            }            
+        }
+        printTime("Reverse GET", mapSize, startTime, sortFlag);
     }
     
     public static void main(String[] argv)  {
