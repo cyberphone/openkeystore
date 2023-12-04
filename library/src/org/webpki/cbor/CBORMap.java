@@ -63,28 +63,11 @@ public class CBORMap extends CBORObject {
     /**
      * Creates an empty CBOR <code>map</code>.
      * <p>
-     * This constructor provides an opportunity using keys that are <i>sorted</i> 
-     * (in lexicographic order), which in maps with many keys can 
-     * offer a performance improvement.
-     * </p>
-     * 
-     * @param preSortedKeys If <code>true</code>, keys <b>must</b> be
-     * sorted.  If a key is not properly sorted when calling
-     * {@link #set(CBORObject, CBORObject)}, a {@link CBORException} is thrown.
-     */
-    public CBORMap(boolean preSortedKeys) {
-        super(CBORTypes.MAP);
-        this.preSortedKeys = preSortedKeys;
-    }
-
-    /**
-     * Creates an empty CBOR <code>map</code>.
-     * <p>
-     * Equivalent to <code>CBORMap(false)</code>.
+     * Equivalent to <code>CBORMap().setSortingMode(false)</code>.
      * </p>
      */
     public CBORMap() {
-        this(false);
+        super(CBORTypes.MAP);
     }
 
     private CBORObject getKey(CBORObject key) {
@@ -148,6 +131,31 @@ public class CBORMap extends CBORObject {
         return this;
     }
 
+    /**
+     * Sets sorting mode for a CBOR <code>map</code>.
+     * <p>
+     * This method provides an opportunity using keys that are <i>sorted</i> 
+     * (in lexicographic order), which in maps with many keys can 
+     * offer performance improvements.
+     * </p>
+     * <p>
+     * Note that <code>setSortingMode</code> is only effective during <i>encoding</i>.
+     * The <code>setSortingMode</code> method may be called multiple times,
+     * permitting certain keys to be automatically sorted and others
+     * to be provided in a presorted fashion.
+     * See also {@link CBORObject#decode(java.io.InputStream, boolean, boolean, Integer)}.
+     * </p>
+     *  
+     * @param preSortedKeys If <code>true</code>, keys <b>must</b> be
+     * sorted.  If a key is not properly sorted when calling
+     * {@link #set(CBORObject, CBORObject)}, a {@link CBORException} is thrown.
+     * @return <code>this</code>
+     */
+    public CBORMap setSortingMode(boolean preSortedKeys) {
+        this.preSortedKeys = preSortedKeys;
+        return this;
+    }
+    
     private Entry lookup(CBORObject key, boolean mustExist) {
         byte[] encodedKey = getKey(key).encode();
         int startIndex = 0;

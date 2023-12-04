@@ -783,11 +783,12 @@ public abstract class CBORObject implements Cloneable {
                     return cborArray;
     
                 case MT_MAP:
-                    CBORMap cborMap = new CBORMap(deterministicMode);
+                    CBORMap cborMap = new CBORMap();
+                    cborMap.preSortedKeys = deterministicMode;
                     for (int q = checkLength(n); --q >= 0; ) {
                         cborMap.set(getObject(), getObject());
                     }
-                    // Programmatically added elements will be sorted. 
+                    // Programmatically added elements will be sorted (by default). 
                     cborMap.preSortedKeys = false;
                     return cborMap;
     
@@ -809,10 +810,11 @@ public abstract class CBORObject implements Cloneable {
      * 
      * @param inputStream Stream holding CBOR data
      * @param sequenceFlag If <code>true</code> stop reading after decoding a CBOR object
-     * (no object returns <code>null</code>)
+     * (no object returns <code>null</code>).
      * @param nonDeterministic If <code>true</code> disable 
      * <a href='package-summary.html#deterministic-encoding'>Deterministic&nbsp;Encoding</a>
-     * checks for number serialization and map sorting
+     * checks for number serialization and map <i>sorting</i>.
+     * See also {@link CBORMap#setSortingMode(boolean)}.
      * @param maxLength Holds maximum input size in 
      * bytes or <code>null</code> ({@link Integer#MAX_VALUE} is assumed).
      * Since malformed CBOR objects can request arbitrary amounts of memory,

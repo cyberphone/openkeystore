@@ -33,7 +33,7 @@ public class CBORSortKeyTest {
     
     static void bigMap(boolean sortFlag) {
         long startTime = System.currentTimeMillis();
-        CBORMap cborMap = new CBORMap(sortFlag);
+        CBORMap cborMap = new CBORMap().setSortingMode(sortFlag);
         int q = 0;
         for (CBORString key : SORTED_KEYS) {
             cborMap.set(key, VALUES[q++]);
@@ -69,7 +69,7 @@ public class CBORSortKeyTest {
         int maps = TOTAL_SET_OPERATIONS / mapSize;
         for (int q = 0; q < maps; q++) {
             // Creating a CBORMap object is a heavy operation
-            cborMap = new CBORMap(sortFlag);
+            cborMap = new CBORMap().setSortingMode(sortFlag);
             for (int n = 0; n < mapSize; n++) {
                 cborMap.set(SORTED_KEYS[n], VALUES[n]);
             }            

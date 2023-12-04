@@ -657,8 +657,12 @@ public class CBORTest {
         sortMe(new int[] {7,1,5,11,9,13,3});
         sortMe(new int[] {8, 2, 10});
         preSortTest(new CBORMap(), new CBORMap(), false);
-        preSortTest(new CBORMap(false), new CBORMap(false), false);
-        preSortTest(new CBORMap(true), new CBORMap(true), true);
+        preSortTest(new CBORMap().setSortingMode(false),
+                    new CBORMap().setSortingMode(false),
+                    false);
+        preSortTest(new CBORMap().setSortingMode(true), 
+                    new CBORMap().setSortingMode(true), 
+                    true);
     }
     
     class StrangeReader extends InputStream {
