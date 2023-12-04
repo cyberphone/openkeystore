@@ -130,21 +130,25 @@ public class CBORMap extends CBORObject {
              } else {
                 // Programmatically created key or the result of unconstrained parsing.
                 // Then we need to test and sort (always produce deterministic CBOR).
-                // The algorithm is based on binary search and sort.
+                // The algorithm is based on binary sort and insertion.
                 int startIndex = 0;
                 int endIndex = entries.size() - 1;
                 int insertIndex = 0;
                 while (startIndex <= endIndex) {
                     int midIndex = startIndex + (endIndex - startIndex) / 2;
                     if (newEntry.compareAndTest(entries.get(midIndex))) {
+                        // New key is bigger than the looked up entry.
+                        // Preliminary assumption: this is the one, but continue.
                         insertIndex = startIndex = midIndex + 1;
                     } else {
+                        // New key is smaller, search lower parts of the array.
                         endIndex = midIndex - 1;
                     }
                 }
+                // If insertIndex == entries.size(), the key will be appended.
+                // If insertIndex == 0, the key will be first in the list.
                 entries.add(insertIndex, newEntry);
             }
-
         }
         return this;
     }
