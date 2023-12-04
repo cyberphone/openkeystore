@@ -42,10 +42,10 @@ public class CBORSortKeyTest {
         startTime = System.currentTimeMillis();
         for (int n = 0; n < TOTAL_SET_OPERATIONS ; n++) {
             if (cborMap.get(SORTED_KEYS[n]).getInt() != n) {
-                System.out.println("BIGV");
+                CBORObject.cborError("Big access");
             }
         }
-        printTime("VBig", TOTAL_SET_OPERATIONS, startTime, sortFlag);
+        printTime("Access big", TOTAL_SET_OPERATIONS, startTime, sortFlag);
         startTime = System.currentTimeMillis();
         if (sortFlag) return;
         cborMap = new CBORMap();
@@ -53,7 +53,7 @@ public class CBORSortKeyTest {
         for (CBORString key : REVERSE_KEYS) {
             cborMap.set(key, VALUES[q++]);
         }
-        printTime("RBig", TOTAL_SET_OPERATIONS, startTime, sortFlag);
+        printTime("Reverse big", TOTAL_SET_OPERATIONS, startTime, sortFlag);
     }
     
     static void multipleSmallMaps(int mapSize, boolean sortFlag) {
@@ -73,11 +73,11 @@ public class CBORSortKeyTest {
         for (int q = 0; q < maps; q++) {
             for (int n = 0; n < mapSize; n++) {
                 if (cborMap.get(keys[n]).getInt() != n) {
-                    System.out.println("SMAV");
+                    CBORObject.cborError("Medium access");
                 }
             }            
         }
-        printTime(mapSize == SMALL_MAP ? "VSmall" : "VMedium", mapSize, startTime, sortFlag);
+        printTime(mapSize == SMALL_MAP ? "Access small" : "Access medium", mapSize, startTime, sortFlag);
         if (sortFlag) return;
         startTime = System.currentTimeMillis();
         for (int q = 0; q < maps; q++) {
@@ -87,7 +87,7 @@ public class CBORSortKeyTest {
                 cborMap.set(REVERSE_KEYS[n], VALUES[n]);
             }            
         }
-        printTime(mapSize == SMALL_MAP ? "RSmall" : "RMedium", mapSize, startTime, sortFlag);
+        printTime(mapSize == SMALL_MAP ? "Reverse small" : "Reverse medium", mapSize, startTime, sortFlag);
     }
     
     public static void main(String[] argv)  {
