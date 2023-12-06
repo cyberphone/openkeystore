@@ -67,7 +67,7 @@ public class OkpSupport {
                          HexaDecimal.decode("3042300506032b656f033900"));
     }
 
-    static final byte PRIV_KEY_LENGTH = 15;
+    static final byte PRIV_KEY_LENGTH_INDEX = 15;
 
     static final HashMap<KeyAlgorithms,byte[]> privKeyPrefix = new HashMap<>();
 
@@ -111,7 +111,7 @@ public class OkpSupport {
         byte[] encoded = privateKey.getEncoded();
         int keyLength = okpKeyLength.get(keyAlgorithm);
         byte[] prefix = privKeyPrefix.get(keyAlgorithm);
-        if (encoded.length <= prefix.length || encoded[PRIV_KEY_LENGTH] != keyLength) {
+        if (encoded.length <= prefix.length || encoded[PRIV_KEY_LENGTH_INDEX] != keyLength) {
             throw new CryptoException("Wrong private key length for: " + keyAlgorithm.toString());
         }
         return Arrays.copyOfRange(encoded, prefix.length, prefix.length + keyLength);
