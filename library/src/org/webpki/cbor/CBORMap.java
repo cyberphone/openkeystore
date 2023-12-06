@@ -17,7 +17,6 @@
 package org.webpki.cbor;
 
 import java.util.ArrayList;
-import java.util.Vector;
 
 /**
  * Class for holding CBOR <code>map</code> objects.
@@ -244,7 +243,7 @@ public class CBORMap extends CBORObject {
      * @return Array of keys
      */
     public CBORObject[] getKeys() {
-        Vector<CBORObject> keys = new Vector<>();
+        ArrayList<CBORObject> keys = new ArrayList<>(entries.size());
         for (Entry entry : entries) {
             keys.add(entry.key);
         }
