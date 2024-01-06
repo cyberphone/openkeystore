@@ -515,7 +515,7 @@ public class CommandLineCA {
     CmdLineArgument CMD_rsa_key_size = create(CmdLineArgumentGroup.GENERAL,
             "keysize", "key-size",
             "Set size of the generated public and private RSA keys",
-            "1024");
+            "2048");
 
     CmdLineArgument CMD_ecc_curve = create(CmdLineArgumentGroup.GENERAL,
             "ecccurve", "curve-name",
@@ -530,7 +530,7 @@ public class CommandLineCA {
     CmdLineArgument CMD_sig_alg = create(CmdLineArgumentGroup.GENERAL,
             "sigalg", "signature-algorithm",
             "Set signature algorithm for signing the certificate, select from: " + sigAlgs(),
-            AsymSignatureAlgorithms.RSA_SHA1.toString());
+            AsymSignatureAlgorithms.RSA_SHA256.toString());
 
     CmdLineArgument CMD_out_keystore = create(CmdLineArgumentGroup.GENERAL,
             "out/keystore", "file",
