@@ -615,7 +615,7 @@ public abstract class CBORObject implements Cloneable {
             int i = inputStream.read();
             if (i < 0) {
                 if (sequenceFlag && atFirstByte) {
-                    return MT_NULL;
+                    return 0;
                 }
                 eofError();
             }
