@@ -498,11 +498,7 @@ public abstract class CBORObject implements Cloneable {
      * This method requires that the object is a
      * {@link CBORTag}, otherwise a {@link CBORException} is thrown.
      * </p>
-     * <p>
-     * Note that the CBOR <code>bignum</code> type is dealt with
-     * as a specific primitive, in spite of being a tagged object.
-     * </p>
-
+     * 
      * @return CBOR <code>tag</code> object
      */
     public CBORTag getTag() {
