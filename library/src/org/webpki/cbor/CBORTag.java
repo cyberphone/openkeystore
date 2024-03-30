@@ -44,7 +44,7 @@ import org.webpki.util.ISODateTime;
  * }])</code>
  * </div>
  * <p>
- * Note that the <code>big&nbsp;integer</code> type is dealt with
+ * Note that the <code>bignum</code> type is dealt with
  * as a specific primitive, in spite of being a tagged object.
  * </p>
  */
