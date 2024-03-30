@@ -28,8 +28,6 @@ public interface X509SignerInterface extends AsymKeySignerInterface {
      * Get certificate path.
      * 
      * @return Certificate path
-     * @throws IOException
-     * @throws GeneralSecurityException
      */
     X509Certificate[] getCertificatePath();
 
