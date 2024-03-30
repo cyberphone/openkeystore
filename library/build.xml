@@ -2,7 +2,7 @@
 
   <!-- set global properties for this build -->
   <property name="doc.title" value="&lt;h1&gt;WebPKI.org Support&lt;/h1&gt;"/>
-  <property name="doc.bottom" value="&lt;i&gt;2005-2023 WebPKI.org.&lt;/i&gt;"/>
+  <property name="doc.bottom" value="&lt;i&gt;2005-2024 WebPKI.org.&lt;/i&gt;"/>
   <property name="sks.implementation" value="org.webpki.sks.SKSReferenceImplementation"/>
   <property name="sks.debug" value="true"/>
   <property name="src_dir" value="src"/>
@@ -224,8 +224,8 @@
         <exclude name="org/**/webutil/certview/**"/>
         <exclude name="org/**/webutil/xmlview/**"/>
       </packageset>
-      <link offline="false" href="https://docs.oracle.com/en/java/javase/17/docs/api/index.html"/>
-      <link offline="false" href="https://javaee.github.io/javaee-spec/javadocs/"/>
+      <link href="https://docs.oracle.com/en/java/javase/21/docs/api/"/>
+      <link href="https://javaee.github.io/javaee-spec/javadocs/"/>
       <doctitle>&lt;h3&gt;WebPKI.org Support&lt;/h3&gt;</doctitle>
       <bottom>${doc.bottom}</bottom>
     </javadoc>

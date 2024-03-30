@@ -1,11 +1,11 @@
 /*
- *  Copyright 2006-2021 WebPKI.org (http://webpki.org).
+ *  Copyright 2006-2024 WebPKI.org (https://webpki.org).
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      https://apache.org/licenses/LICENSE-2.0
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -1085,7 +1085,7 @@ public final class JSONBaseHTML  {
          .append("</style></head><body style=\"margin:15pt\">" +
                  "<div style=\"cursor:pointer;padding:2pt 0 0 0;position:absolute;top:15pt;left:15pt;z-index:5;visibility:visible;width:100pt;" +
                  "height:47pt;border-width:1px;border-style:solid;border-color:black;box-shadow:3pt 3pt 3pt #D0D0D0\"" +
-                 " onclick=\"document.location.href='http://webpki.org'\" title=\"Home of WebPKI.org\">")
+                 " onclick=\"document.location.href='https://webpki.org'\" title=\"Home of WebPKI.org\">")
           .append(new String(IO.getByteArrayFromInputStream (getClass().getResourceAsStream ("webpki-logo.svg")),"UTF-8"))
           .append("</div>");
         for (Content division_object : division_objects) {

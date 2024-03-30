@@ -15,9 +15,14 @@
 
   <target name="_aargen" if="aargen">
   	<echo message="generate AAR"/>
-  	<!-- Pardon me, this only works on Windows -->
-    <exec executable="cmd" failonerror="true" dir="${android-cbor-project}">
-      <arg line="/c gradlew clean build"/>
+    <condition property="executable" value="cmd" else="sh">
+      <os family="windows"/>
+    </condition>
+    <condition property="arguments" value="/c gradlew clean build" else="gradlew clean build">
+      <os family="windows"/>
+    </condition>
+    <exec executable="${executable}" failonerror="true" dir="${android-cbor-project}">
+      <arg line="${arguments}"/>
     </exec>
     <copy file="${android-cbor-project}/jlibcbor/build/outputs/aar/jlibcbor-release.aar" 
     	  tofile="${aar.file}"/>
