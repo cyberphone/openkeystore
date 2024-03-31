@@ -32,7 +32,7 @@
 
   <property name="javaversion" value="${ant.java.version}"/>
   <condition property="tested.version" else="false">
-    <equals arg1="17" arg2="${javaversion}"/>
+    <equals arg1="21" arg2="${javaversion}"/>
   </condition>
 
   <!-- Register the jpp ant task -->
