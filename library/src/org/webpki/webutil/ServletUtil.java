@@ -64,7 +64,7 @@ public class ServletUtil {
     }
 
 
-    public static byte[] getData(HttpServletRequest request) throws java.io.IOException {
+    public static byte[] getData(HttpServletRequest request) throws IOException {
         int n = request.getContentLength();
         ServletInputStream is = request.getInputStream();
         if (n >= 0) {

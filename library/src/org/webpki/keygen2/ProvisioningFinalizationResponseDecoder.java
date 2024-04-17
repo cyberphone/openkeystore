@@ -16,8 +16,6 @@
  */
 package org.webpki.keygen2;
 
-import java.io.IOException;
-
 import org.webpki.json.JSONObjectReader;
 
 import static org.webpki.keygen2.KeyGen2Constants.*;

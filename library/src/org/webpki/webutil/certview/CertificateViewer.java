@@ -18,8 +18,6 @@ package org.webpki.webutil.certview;
 
 import java.io.IOException;
 
-import java.security.GeneralSecurityException;
-
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
@@ -41,8 +39,9 @@ import org.webpki.webutil.DefaultHTML;
 import org.webpki.crypto.CertificateInfo;
 
 
-@SuppressWarnings("serial")
 public abstract class CertificateViewer extends HttpServlet {
+
+    private static final long serialVersionUID = 1L;
 
     private String niceDate(GregorianCalendar dateTime) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss z");

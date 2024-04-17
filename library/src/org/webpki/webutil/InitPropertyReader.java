@@ -30,7 +30,6 @@ public class InitPropertyReader {
 
     public void initProperties(ServletContextEvent event) {
         properties = new Properties();
-        @SuppressWarnings("unchecked")
         Enumeration<String> keys = event.getServletContext().getInitParameterNames();
         while (keys.hasMoreElements()) {
             String key = keys.nextElement();
