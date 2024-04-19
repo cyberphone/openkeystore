@@ -7,6 +7,6 @@
     <classpathentry kind="lib" path="../resources/third-party-jars/itext-1.4.2.jar"/>
     <classpathentry kind="lib" path="../resources/third-party-jars/servlet-api.jar"/>
     <classpathentry kind="lib" path="../resources/third-party-jars/junit-4.12.jar"/>
-    <classpathentry kind="lib" path="../resources/third-party-jars/bcprov-jdk15on-166.jar"/>
+    <classpathentry kind="lib" path="../resources/third-party-jars/bcprov-jdk18on-173.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
