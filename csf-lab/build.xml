@@ -30,7 +30,7 @@
   <target name="_jdktest" unless="${tested.version}">
     <echo message="&#10;
 ***************************************************************&#10;
-    WARNING - This package has only been tested with Java 17!&#10;
+    WARNING - This package has only been tested with Java 21!&#10;
 ***************************************************************&#10;&#10;"/>
   </target>
     
