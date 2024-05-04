@@ -161,6 +161,9 @@ public class JSONParser {
         JSONTypes type = JSONTypes.NUMBER;
         if (NUMBER_PATTERN.matcher(token).matches()) {
             double number = Double.valueOf(token);  // Syntax check...
+            if (number == -0) {
+                throw new JSONException("-0 is not permitted in this implementation");
+            }
             if (strictNumericMode) {
                 String serializedNumber = NumberToJSON.serializeNumber(number);
                 if (!serializedNumber.equals(token)) {
