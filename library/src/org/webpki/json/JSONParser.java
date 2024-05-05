@@ -39,6 +39,8 @@ public class JSONParser {
     static final Pattern BOOLEAN_PATTERN = Pattern.compile("true|false");
     static final Pattern NUMBER_PATTERN  = Pattern.compile("-?[0-9]+(\\.[0-9]+)?([eE][-+]?[0-9]+)?");
 
+    static final Double NEGATIVE_ZERO    = Double.valueOf(-0.0);
+
     int index;
 
     int maxLength;
@@ -161,7 +163,7 @@ public class JSONParser {
         JSONTypes type = JSONTypes.NUMBER;
         if (NUMBER_PATTERN.matcher(token).matches()) {
             double number = Double.valueOf(token);  // Syntax check...
-            if (number == -0) {
+            if (NEGATIVE_ZERO.equals(Double.valueOf(number))) {
                 throw new JSONException("-0 is not permitted in this implementation");
             }
             if (strictNumericMode) {
