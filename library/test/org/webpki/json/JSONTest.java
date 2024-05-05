@@ -2397,6 +2397,7 @@ public class JSONTest {
         ARRAY_LIMIT("Trying to read past of array limit: "),
         EXPECTED("In the \"strict\" mode JSON Numbers must be fully normalized according to ECMAScript."),
         COMMA("Expected ',' but got 'e'"),
+        MINUS_ZERO("-0 is not permitted in this implementation"),
         SYNTAX("Unrecognized or malformed JSON token");
 
         String mess;
@@ -2854,6 +2855,7 @@ public class JSONTest {
         floatingPoint("9.999e-100", 0.9999e-99);
         floatingPoint("10000", 10000);
         floatingPoint("1e-20", 1.0e-20);
+        expected_error = PARSER_ERR.MINUS_ZERO;
         badArgument("-0.0");
         expected_error = PARSER_ERR.SYNTAX;
         badArgument(".1");
