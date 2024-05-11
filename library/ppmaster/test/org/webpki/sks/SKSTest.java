@@ -3246,6 +3246,8 @@ public class SKSTest {
                 assertTrue("SKS missing: " + alg.getAlgorithmId(AlgorithmPreferences.SKS), 
                            !alg.isMandatorySksAlgorithm());
                 checkException(e, "Unsupported algorithm: " + alg.getAlgorithmId(AlgorithmPreferences.SKS));
+            } catch (GeneralSecurityException e) {
+                fail("alg=" + alg.getJceName() + " error=" + e.getMessage());
             }
         }
     }
