@@ -96,7 +96,7 @@ public class CBORFloat extends CBORObject {
             long exponent = ((bitFormat >>> FLOAT32_SIGNIFICAND_SIZE) & 
                 ((1l << FLOAT32_EXPONENT_SIZE) - 1)) -
                     (FLOAT32_EXPONENT_BIAS - FLOAT16_EXPONENT_BIAS);
-            if (exponent < -FLOAT16_SIGNIFICAND_SIZE || exponent > (FLOAT16_EXPONENT_BIAS << 1)) {
+            if (exponent <= -FLOAT16_SIGNIFICAND_SIZE || exponent > (FLOAT16_EXPONENT_BIAS << 1)) {
                 // Too small or too big for float16, or running into float16 NaN/Infinity space.
                 return;
             }
