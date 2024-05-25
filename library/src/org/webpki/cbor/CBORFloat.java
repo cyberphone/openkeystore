@@ -110,13 +110,14 @@ public class CBORFloat extends CBORObject {
             significand >>= (FLOAT32_SIGNIFICAND_SIZE - FLOAT16_SIGNIFICAND_SIZE);
 
             // Check if we need to denormalize data.
+
             if (exponent <= 0) {
                 // The implicit "1" becomes explicit using subnormal representation.
                 significand += 1l << FLOAT16_SIGNIFICAND_SIZE;
                 long significandCopy = significand;
                 significand >>= (1 - exponent);
                 if (significandCopy != (significand << (1 - exponent))) {
-                    // Too off scale for float16.
+                    // Too off scale for denormalized float16.
                     return;
                 }
                 exponent = 0;
