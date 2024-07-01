@@ -48,6 +48,7 @@ public class Base64 {
      *
      * @param base64 Encoded data
      * @return Decoded data as a byte array
+     * @throws IllegalArgumentException
      */
     public static byte[] decode(String base64) {
 //#if ANDROID

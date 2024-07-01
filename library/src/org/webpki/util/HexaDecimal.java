@@ -151,7 +151,8 @@ public class HexaDecimal {
      * Decodes a hexadecimal String.
      * 
      * @param hexString String with zero or more hexadecimal pairs (<code>hh</code>)
-     * @return byteArray
+     * @return Decoded data as a byte array
+     * @throws IllegalArgumentException
      */
     public static byte[] decode(String hexString) {
         int l = hexString.length();

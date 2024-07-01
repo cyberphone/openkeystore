@@ -153,6 +153,7 @@ public class PEMDecoder {
      * </p>
      * @param pemBlob PEM input
      * @return Key pair
+     * @throws CryptoException
      */
     public static KeyPair getKeyPair(byte[] pemBlob) {
         try {
@@ -215,6 +216,7 @@ public class PEMDecoder {
      * </p>
      * @param pemBlob PEM input
      * @return Private key
+     * @throws CryptoException
      */
     public static PrivateKey getPrivateKey(byte[] pemBlob) {
         return getPrivateKeyFromPKCS8(getPrivateKeyBlob(pemBlob)); 
@@ -228,6 +230,7 @@ public class PEMDecoder {
      * </p>
      * @param pemBlob PEM input
      * @return Public key
+     * @throws CryptoException
      */
     public static PublicKey getPublicKey(byte[] pemBlob) {
         byte[] publicKeyBlob = decodePemObject(pemBlob, "PUBLIC KEY");
@@ -249,6 +252,7 @@ public class PEMDecoder {
      * </p>
      * @param pemBlob PEM input
      * @return Certficate path
+     * @throws CryptoException
      */
     public static X509Certificate[] getCertificatePath(byte[] pemBlob) {
         return CertificateUtil.makeCertificatePath(decodePemObjects(pemBlob, "CERTIFICATE"));
@@ -262,6 +266,7 @@ public class PEMDecoder {
      * </p>
      * @param pemBlob PEM input
      * @return Initialized KeyStore
+     * @throws CryptoException
      */
     public static KeyStore getKeyStore(byte[] pemBlob, String alias, String password) {
         try {

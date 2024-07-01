@@ -40,6 +40,7 @@ public class Base64URL {
      *
      * @param base64Url Encoded data
      * @return Decoded data as a byte array
+     * @throws IllegalArgumentException
      */
     public static byte[] decode(String base64Url) {
         if (base64Url.contains("=")) {
@@ -60,6 +61,7 @@ public class Base64URL {
      * 
      * @param base64Url Encoded data
      * @return Decoded data as a byte array
+     * @throws IllegalArgumentException
      */
     public static byte[] decodePadded(String base64Url) {
         byte[] bytes = DECODER.decode(base64Url);

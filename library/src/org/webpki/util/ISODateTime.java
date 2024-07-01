@@ -117,6 +117,7 @@ public class ISODateTime {
      * @param dateTime ISO formatted <code>dateTime</code> string
      * @param constraints Permitted input format variants
      * @return GregorianCalendar
+     * @throws IllegalArgumentException
      */
     public static GregorianCalendar decode(String dateTime, 
                                            EnumSet<DatePatterns> constraints) {
