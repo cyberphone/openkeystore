@@ -47,6 +47,7 @@ public class CBORArray extends CBORObject {
      * 
      * @param index The position (0..size()-1)
      * @return CBOR object
+     * @throws IndexOutOfBoundsException If the index is out of range.
      */
     public CBORObject get(int index) {
         return objects.get(index);
