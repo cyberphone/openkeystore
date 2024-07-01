@@ -134,7 +134,7 @@
          <pathelement path="${bin_dir}"/>
       </classpath>
       <packageset dir="${android-cbor-src}"/>
-      <link offline="false" href="https://docs.oracle.com/en/java/javase/17/docs/api/index.html"/>
+      <link href="https://docs.oracle.com/en/java/javase/21/docs/api/"/>
       <doctitle>&lt;h3&gt;CBOR Support for Android&lt;/h3&gt;</doctitle>
       <bottom>${doc.bottom}</bottom>
     </javadoc>
@@ -142,6 +142,9 @@
   	<concat destfile="${android-cbor-apidoc}/stylesheet.css" append="true">
       <filelist dir="." files="javadoc-extrastyles.css"/>
     </concat>
+    <copy todir="${android-cbor-apidoc}/resources/fonts">
+      <fileset dir="fonts"/>
+    </copy>
 
     <copy todir="${android-cbor-apidoc}/org/webpki/cbor">
       <fileset dir="${javaapi-project}/org/webpki/cbor">

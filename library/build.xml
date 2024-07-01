@@ -37,32 +37,32 @@
 
   <!-- Register the jpp ant task -->
   <taskdef resource="jpp.xml" classpath="../resources/third-party-jars/jpp-1.0.3.jar" />
-	
+  
   <target name="_jdktest" unless="${tested.version}">
-  	<echo message="&#10;
+    <echo message="&#10;
 ***************************************************************&#10;
-  	WARNING - This package has only been tested with Java 21!&#10;
+    WARNING - This package has only been tested with Java 21!&#10;
 ***************************************************************&#10;&#10;"/>
   </target>
 
   <path id="compile.classpath">
-	 <fileset dir="${ext.jar}">
-	   <include name="*.jar"/>
-     </fileset>
+    <fileset dir="${ext.jar}">
+      <include name="*.jar"/>
+    </fileset>
   </path>
 
   <condition property="junit.exclude" value="bc*.*" else="nosuchfile.jar">
-     <isset property="jceonly"/>
+    <isset property="jceonly"/>
   </condition>
 
   <path id="junit.classpath">
     <fileset dir="${dist_dir}">
-	   <include name="${webpki-libext}"/>
+      <include name="${webpki-libext}"/>
     </fileset>
-	 <fileset dir="${ext.jar}">
-        <include name="*.jar"/>
-        <exclude name="${junit.exclude}"/>
-	 </fileset>
+    <fileset dir="${ext.jar}">
+      <include name="*.jar"/>
+      <exclude name="${junit.exclude}"/>
+    </fileset>
   </path>
 
   <property environment="env"/>
@@ -76,33 +76,33 @@
 
   <target name="_preprocess">
     <jpp destdir="." verbose="false" force="true">
-        <fileset dir="ppmaster" includes="**/*.java" />
+      <fileset dir="ppmaster" includes="**/*.java" />
     </jpp>
-  	<replace file="${test_dir}/org/webpki/sks/SKSReferenceImplementation.java">
+    <replace file="${test_dir}/org/webpki/sks/SKSReferenceImplementation.java">
       <replacefilter token="MACRO_GET_PRIVATEKEY" value="privateKey"/>
       <replacefilter token="MACRO_IMPORTED_PRIVATEKEY" value="keyEntry.privateKey"/>
     </replace> 
   </target>
-	
+  
   <target name="build">
-  	<antcall target="_jdktest"/>
-  	
+    <antcall target="_jdktest"/>
+    
     <delete dir="${temp_dir}"/>
     <delete dir="${dist_dir}"/>
-  	
+    
     <fixcrlf srcdir="."
-       tab="remove"
-       tablength="4"
-       eol="lf"
-       eof="remove"
-       includes="**/*.java, **/*.xsd"/>
+             tab="remove"
+             tablength="4"
+             eol="lf"
+             eof="remove"
+             includes="**/*.java, **/*.xsd"/>
 
-  	<antcall target="_preprocess">
-  	   <param name="BOUNCYCASTLE" value="${BC}"/>
+    <antcall target="_preprocess">
+      <param name="BOUNCYCASTLE" value="${BC}"/>
     </antcall>
 
     <mkdir dir="${temp_dir}"/>
- 	<!-- Copy all files except .java and doc-related -->
+   <!-- Copy all files except .java and doc-related -->
     <copy todir="${temp_dir}" preservelastmodified="true" includeEmptyDirs="false">
       <fileset dir="${src_dir}">
         <include name="**/*"/>
@@ -120,13 +120,13 @@
 
     <!-- Compile java code from ${src_dir} into ${temp_dir} -->
     <javac debug="${debug}"
-    	   srcdir="${src_dir}:${src_test}"
-    	   destdir="${temp_dir}" 
-    	   classpathref="compile.classpath"
-    	   includeAntRuntime="false">
-       <compilerarg value="-Xlint:all,-rawtypes,-path"/>
+           srcdir="${src_dir}:${src_test}"
+           destdir="${temp_dir}" 
+           classpathref="compile.classpath"
+           includeAntRuntime="false">
+      <compilerarg value="-Xlint:all,-rawtypes,-path"/>
     </javac>
-  	
+    
     <!-- Create the distribution directory -->
     <mkdir dir="${dist_dir}"/>
 
@@ -137,25 +137,25 @@
       </fileset>
     </jar>
 
-  	<jar jarfile="${dist_dir}/${webpki-webutil}">
+    <jar jarfile="${dist_dir}/${webpki-webutil}">
       <fileset dir="${temp_dir}">
         <include name="org/webpki/webutil/**"/>
       </fileset>
     </jar>
 
-  	<!-- Compile generators just to check that they are still in concert with the code -->
+    <!-- Compile generators just to check that they are still in concert with the code -->
     <javac debug="${debug}"
            srcdir="${src_generators}"
            destdir="${temp_dir}" 
            classpathref="compile.classpath"
            includeAntRuntime="false">
-       <compilerarg value="-Xlint:all,-path"/>
+      <compilerarg value="-Xlint:all,-path"/>
     </javac>
 
-  	<property name="restorenonbc" value="false"/>
-  	<antcall target="_preprocess">
-   	   <param name="BOUNCYCASTLE" value="${restorenonbc}"/>
-  	</antcall>
+    <property name="restorenonbc" value="false"/>
+    <antcall target="_preprocess">
+      <param name="BOUNCYCASTLE" value="${restorenonbc}"/>
+    </antcall>
   
   </target>
 
@@ -171,47 +171,48 @@
   </target>
 
   <target name="_setdoc_dir" unless="github.doc.present">
-  	<echo message="Local docs"/>
+    <echo message="Local docs"/>
     <mkdir dir="${public_doc_dir}"/>
     <mkdir dir="${doc_dir}"/>
   </target>
 
   <target name="doc">
-   	<available file="../../../github.repositories/doc" type="dir" property="github.doc.present"/>
-  	<condition property="doc_root" value="../../" else="">
+    <available file="../../../github.repositories/doc" type="dir" property="github.doc.present"/>
+    <condition property="doc_root" value="../../" else="">
       <isset property="github.doc.present"/>
-  	</condition>
+    </condition>
     <property name="public_doc_dir" location="${doc_root}doc/security"/>
     <property name="doc_dir" location="${doc_root}javaapi"/>
-  	<antcall target="_setdoc_dir"/>
-  	
-  	<!-- Create temp directory -->
+    <antcall target="_setdoc_dir"/>
+    
+    <!-- Create temp directory -->
     <delete dir="${temp_dir}"/>
     <mkdir dir="${temp_dir}"/>
 
-  	<!-- Copy all files  -->
+    <!-- Copy all files  -->
     <copy todir="${temp_dir}">
       <fileset dir="${src_dir}"/>
-  	</copy>
+    </copy>
 
-  	<!-- Make documentation but first remove the previous version -->
+    <!-- Make documentation but first remove the previous version -->
     <delete includeEmptyDirs="true">
-    	<fileset dir="${doc_dir}">
-    		<include name="**/*"/>
-    		<exclude name="README*"/>
-            <exclude name="LICENSE*"/>
-            <exclude name=".gitattributes*"/>
-        </fileset>
+      <fileset dir="${doc_dir}">
+        <include name="**/*"/>
+        <exclude name="README*"/>
+        <exclude name="LICENSE*"/>
+        <exclude name=".gitattributes*"/>
+        <exclude name=".gitignore*"/>
+      </fileset>
     </delete>
 
-  	<!--  -Xdoclint:none: https://github.com/AdoptOpenJDK/openjdk-support/issues/131 -->
+    <!--  -Xdoclint:none: https://github.com/AdoptOpenJDK/openjdk-support/issues/131 -->
     <javadoc destdir="${doc_dir}"
-    	     overview="${temp_dir}/overview.html"
+             overview="${temp_dir}/overview.html"
              author="true"
              version="true"
              Package="false"
              Use="false"
-    	     additionalparam="--allow-script-in-comments -Xdoclint:none -notimestamp"
+             additionalparam="--allow-script-in-comments -Xdoclint:none -notimestamp"
              nodeprecated="true"
              nodeprecatedlist="true"
              noindex="true"
@@ -229,15 +230,18 @@
       <doctitle>&lt;h3&gt;WebPKI.org Support&lt;/h3&gt;</doctitle>
       <bottom>${doc.bottom}</bottom>
     </javadoc>
-  	
-  	<concat destfile="${doc_dir}/stylesheet.css" append="true">
-  	  <filelist dir="." files="javadoc-extrastyles.css"/>
-  	</concat>
-  	<!-- Windows... -->
+    
+    <concat destfile="${doc_dir}/stylesheet.css" append="true">
+      <filelist dir="." files="javadoc-extrastyles.css"/>
+    </concat>
+    <copy todir="${doc_dir}/resources/fonts">
+      <fileset dir="fonts"/>
+    </copy>
+    <!-- Windows... -->
     <fixcrlf srcdir="${doc_dir}"
        eol="lf"
        includes="**/*.html, **/*.js, **/*.css, element-list"/>
-  	
+    
     <!-- HTML Doc task for CSF -->
     <antcall target="_java2html">
        <param name="doc.class" value="cbor_api_demo.SignatureDemo"/>
@@ -262,7 +266,7 @@
        <param name="file.base2" value=""/>
        <param name="file.base3" value=""/>
      </antcall>
-  	<!-- HTML Doc task for KeyGen2 -->
+    <!-- HTML Doc task for KeyGen2 -->
     <antcall target="_java2html">
        <param name="doc.class" value="org.webpki.keygen2.KeyGen2HTMLReference"/>
        <param name="doc.file" value="${public_doc_dir}/keygen2.html"/>
@@ -340,57 +344,57 @@
         <include name="**/jose/**/*.java"/>
       </fileset>
     </copy>
-  	<property name="ANDROID" value="true"/>
-  	<property name="ANDROID_PURE" value="true"/>
+    <property name="ANDROID" value="true"/>
+    <property name="ANDROID_PURE" value="true"/>
     <jpp destdir="${android_dir}" verbose="true" force="true">
-        <fileset dir="ppmaster/src" includes="**/*.java">
-        	<exclude name="**/PEMDecoder.java"/>
-            <exclude name="**/CustomCryptoProvider.java"/>
-        </fileset>
+      <fileset dir="ppmaster/src" includes="**/*.java">
+        <exclude name="**/PEMDecoder.java"/>
+        <exclude name="**/CustomCryptoProvider.java"/>
+      </fileset>
     </jpp>
 
-  	<antcall target="_clean_android"/>
-  	<javac debug="${debug}" srcdir="${android_dir}:androidrefsrc" 
-  		destdir="${bin_dir}" 
-  		includeAntRuntime="false">
-  		<exclude name="**/android/**/*.java"/>
- 		<exclude name="**/androidx/**/*.java"/>
-  		<include name="**/*.java"/>
+    <antcall target="_clean_android"/>
+    <javac debug="${debug}" srcdir="${android_dir}:androidrefsrc" 
+      destdir="${bin_dir}" 
+      includeAntRuntime="false">
+      <exclude name="**/android/**/*.java"/>
+      <exclude name="**/androidx/**/*.java"/>
+      <include name="**/*.java"/>
     </javac>
-  	
-  	<!-- Create Android JSON java library -->
+    
+    <!-- Create Android JSON java library -->
     <zip destfile="${dist_dir}/${android-json}.zip">
       <zipfileset dir="${temp_dir}">
-          <include name="**/*.java"/>
-       </zipfileset>
+        <include name="**/*.java"/>
+      </zipfileset>
     </zip>
     <delete dir="${temp_dir}"/>
     <delete dir="${bin_dir}"/>
   </target>
-		
+    
   <target name="android-cbor"> 
-	<ant antfile="android-cbor-build.xml" target="_android-cbor" useNativeBasedir="true"/>
+    <ant antfile="android-cbor-build.xml" target="_android-cbor" useNativeBasedir="true"/>
   </target>
 
   <target name="android-saturn">    
     <ant antfile="android-saturn-build.xml" target="_android-saturn" useNativeBasedir="true"/>
   </target>
-	
+  
   <target name="_test">
-  	<property name="sks.standalone" value="true"/>
+    <property name="sks.standalone" value="true"/>
     <mkdir dir="${testout.dir}"/>
     <junit fork="no" haltonfailure="yes" tempdir="${testout.dir}">
       <test name="${test.class}" unless="method"/>
       <test name="${test.class}" methods="${method}" if="method"/><!-- ANT 1.8.2 and up -->
-    	<sysproperty key="sks.implementation" value="${sks.implementation}"/>
-    	<sysproperty key="testout.dir" value="${testout.dir}"/>
-    	<sysproperty key="sks.standalone" value="${sks.standalone}"/>
-      	<sysproperty key="sks.referenceimplementation" value="${sks.referenceimplementation}"/>
-       	<sysproperty key="bcprovider" value="${bcprovider}"/>
-    	<sysproperty key="test.keys" value="${testdata_dir}/keys"/>
-    	<sysproperty key="test.data" value="${testdata_dir}/data"/>
-    	<sysproperty key="test.encryption" value="${testdata_dir}"/>
-    	<sysproperty key="test.signatures" value="${testdata_dir}"/>
+      <sysproperty key="sks.implementation" value="${sks.implementation}"/>
+      <sysproperty key="testout.dir" value="${testout.dir}"/>
+      <sysproperty key="sks.standalone" value="${sks.standalone}"/>
+      <sysproperty key="sks.referenceimplementation" value="${sks.referenceimplementation}"/>
+      <sysproperty key="bcprovider" value="${bcprovider}"/>
+      <sysproperty key="test.keys" value="${testdata_dir}/keys"/>
+      <sysproperty key="test.data" value="${testdata_dir}/data"/>
+      <sysproperty key="test.encryption" value="${testdata_dir}"/>
+      <sysproperty key="test.signatures" value="${testdata_dir}"/>
       <formatter type="plain" usefile="false"/>
       <classpath refid="junit.classpath"/>
     </junit>
@@ -399,45 +403,45 @@
   <!-- JUnit test of the KeyGen2 protocol and the SKS API -->
   <target name="testkeygen2">
     <antcall target="_test">
-       <param name="test.class" value="org.webpki.keygen2.KeyGen2Test"/>
-     </antcall>
+      <param name="test.class" value="org.webpki.keygen2.KeyGen2Test"/>
+    </antcall>
   </target>
   
   <!-- JUnit test of the SKS API -->
   <target name="testsks">
     <antcall target="_test">
-       <param name="test.class" value="org.webpki.sks.SKSTest"/>
-     </antcall>
+      <param name="test.class" value="org.webpki.sks.SKSTest"/>
+    </antcall>
   </target>
 
   <!-- JUnit test of KeyAlgorithms -->
   <target name="testkeyalgs">
     <antcall target="_test">
-       <param name="test.class" value="org.webpki.crypto.KeyAlgorithmTest"/>
-     </antcall>
+      <param name="test.class" value="org.webpki.crypto.KeyAlgorithmTest"/>
+    </antcall>
   </target>
 
   <!-- JUnit test of the JSON API.  The extra parameters for SKS/KeyGen2 are simply ignored... -->
   <target name="testjson">
     <antcall target="_test">
-       <param name="test.class" value="org.webpki.json.JSONTest"/>
-     </antcall>
+      <param name="test.class" value="org.webpki.json.JSONTest"/>
+    </antcall>
   </target>
 
   <!-- JUnit test of crypto.  The extra parameters for SKS/KeyGen2 are simply ignored... -->
   <target name="testcrypto">
     <antcall target="_test">
-       <param name="test.class" value="org.webpki.crypto.CryptoTest"/>
-     </antcall>
+      <param name="test.class" value="org.webpki.crypto.CryptoTest"/>
+    </antcall>
   </target>
-	
+  
   <!-- JUnit test of the CBOR API.  The extra parameters for SKS/KeyGen2 are simply ignored... -->
   <target name="testcbor">
     <antcall target="_test">
-       <param name="test.class" value="org.webpki.cbor.CBORTest"/>
-     </antcall>
+      <param name="test.class" value="org.webpki.cbor.CBORTest"/>
+    </antcall>
   </target>
-	
+  
   <!-- Java to HTML -->
   <target name="_java2html">
     <echo message="Writing: ${doc.file}"/>
@@ -465,15 +469,15 @@
     <java fork="yes"
           classname="${doc.class}"
           failonerror="true">
-  		<classpath>
-            <pathelement path="${temp_dir}"/>
-  			 <fileset dir="${ext.jar}">
-  		        <include name="*.jar"/>
-  			 </fileset>
-  		</classpath>
+      <classpath>
+        <pathelement path="${temp_dir}"/>
+        <fileset dir="${ext.jar}">
+          <include name="*.jar"/>
+        </fileset>
+      </classpath>
         <arg line="${doc.file} ${file.base1} ${file.base2} ${file.base3}"/>
      </java>
   </target>
-	
+  
 </project>
 
