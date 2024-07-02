@@ -97,30 +97,32 @@ public class CBORMap extends CBORObject {
         key = getKey(key);
         nullCheck(value);
         Entry newEntry = new Entry(key, value);
-        int insertIndex;
+        int insertIndex = entries.size();
         // Keys are always sorted, making the verification process simple.
-        if (preSortedKeys) {
-            // Normal case for parsing.
-            insertIndex = entries.size();
-            if (insertIndex > 0 && entries.get(insertIndex - 1).compareAndTest(newEntry)) {
-                cborError(STDERR_NON_DET_SORT_ORDER + key);
-            }
-        } else {
-            // Programmatically created key or the result of unconstrained parsing.
-            // Then we need to test and sort (always produce deterministic CBOR).
-            // The algorithm is based on binary sort and insertion.
-            insertIndex = 0;
-            int startIndex = 0;
-            int endIndex = entries.size() - 1;
-            while (startIndex <= endIndex) {
-                int midIndex = startIndex + (endIndex - startIndex) / 2;
-                if (newEntry.compareAndTest(entries.get(midIndex))) {
-                    // New key is bigger than the looked up entry.
-                    // Preliminary assumption: this is the one, but continue.
-                    insertIndex = startIndex = midIndex + 1;
-                } else {
-                    // New key is smaller, search lower parts of the array.
-                    endIndex = midIndex - 1;
+        // First element? Just insert.
+        if (insertIndex > 0) {
+            int endIndex = insertIndex - 1;
+            if (preSortedKeys) {
+                // Normal case for determinstic decoding.
+                if (entries.get(endIndex).compareAndTest(newEntry)) {
+                    cborError(STDERR_NON_DET_SORT_ORDER + key);
+                }
+            } else {
+                // Programmatically created key or the result of unconstrained decoding.
+                // Then we need to test and sort (always produce deterministic CBOR).
+                // The algorithm is based on binary sort and insertion.
+                insertIndex = 0;
+                int startIndex = 0;
+                while (startIndex <= endIndex) {
+                    int midIndex = startIndex + (endIndex - startIndex) / 2;
+                    if (newEntry.compareAndTest(entries.get(midIndex))) {
+                        // New key is bigger than the looked up entry.
+                        // Preliminary assumption: this is the one, but continue.
+                        insertIndex = startIndex = midIndex + 1;
+                    } else {
+                        // New key is smaller, search lower parts of the array.
+                        endIndex = midIndex - 1;
+                    }
                 }
             }
         }
