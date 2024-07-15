@@ -42,7 +42,7 @@ public class CBORX509Decrypter extends CBORDecrypter<CBORX509Decrypter> {
          * Implementations should preferably throw {@link org.webpki.crypto.CryptoException} for
          * errors related to cryptography and security.
          * </p>
-         *<p>
+         * <p>
          * This interface also enables encryption parameter verification.
          * </p>
          *
