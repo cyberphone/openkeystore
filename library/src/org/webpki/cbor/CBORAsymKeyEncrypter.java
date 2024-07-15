@@ -26,7 +26,7 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
 /**
  * Class for asymmetric key encryption.
  */
-public class CBORAsymKeyEncrypter extends CBOREncrypter {
+public class CBORAsymKeyEncrypter extends CBOREncrypter<CBORAsymKeyEncrypter> {
 
     KeyEncryptionAlgorithms keyEncryptionAlgorithm;
 
@@ -74,5 +74,10 @@ public class CBORAsymKeyEncrypter extends CBOREncrypter {
                                                    keyEncryption,
                                                    keyEncryptionAlgorithm,
                                                    contentEncryptionAlgorithm);
+    }
+
+    @Override
+    CBORAsymKeyEncrypter getThis() {
+        return this;
     }
 }

@@ -28,7 +28,7 @@ import org.webpki.crypto.HmacVerifierInterface;
  * Also see {@link CBORValidator}.
  *</p>
  */
-public class CBORHmacValidator extends CBORValidator {
+public class CBORHmacValidator extends CBORValidator<CBORHmacValidator> {
     
     HmacVerifierInterface verifier;
 
@@ -73,5 +73,10 @@ public class CBORHmacValidator extends CBORValidator {
                                       optionalKeyId == null ? null : optionalKeyId.getString())) {
             throw new CryptoException("HMAC signature validation error");
         }
+    }
+
+    @Override
+    CBORHmacValidator getThis() {
+        return this;
     }
 }

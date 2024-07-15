@@ -38,7 +38,7 @@ import org.webpki.cbor.CBORCryptoUtils.Intercepter;
  * </p>
  * @see CBORDecrypter
  */
-public abstract class CBOREncrypter {
+public abstract class CBOREncrypter <T extends CBOREncrypter<T>>  {
 
     // The default is to use a map without tagging and custom data.
     Intercepter intercepter = new Intercepter() { };
@@ -54,16 +54,18 @@ public abstract class CBOREncrypter {
     }
     
     abstract byte[] getContentEncryptionKey(CBORMap encryptionObject);
+
+    abstract T getThis();
     
     /**
      * Sets optional Intercepter.
      * 
      * @param intercepter An instance of Intercepter
-     * @return <code>this</code>
+     * @return <code>this</code> of subclass
      */
-    public CBOREncrypter setIntercepter(Intercepter intercepter) {
+    public T setIntercepter(Intercepter intercepter) {
         this.intercepter = intercepter;
-        return this;
+        return getThis();
     }
     
     /**
@@ -86,35 +88,11 @@ public abstract class CBOREncrypter {
      * </p>
      * 
      * @param keyId Key Id or <code>null</code>
-     * @return <code>this</code>
+     * @return <code>this</code> of substack
      */
-    public CBOREncrypter setKeyId(CBORObject keyId) {
+    public T setKeyId(CBORObject keyId) {
         this.optionalKeyId = keyId;
-        return this;
-    }
-
-    /**
-     * Sets optional key Id.
-     * 
-     * The <code>keyId</code> will be represented as a CBOR <code>integer</code>.
-     * 
-     * @param keyId Key Id
-     * @return <code>this</code>
-     */
-    public CBOREncrypter setKeyId(int keyId) {
-        return setKeyId(new CBORInt(keyId));
-    }
-
-    /**
-     * Sets optional key Id.
-     * 
-     * The <code>keyId</code> will be represented as a CBOR <code>text&nbsp;string</code>.
-     * 
-     * @param keyId Key Id
-     * @return <code>this</code>
-     */
-    public CBOREncrypter setKeyId(String keyId) {
-        return setKeyId(new CBORString(keyId));
+        return getThis();
     }
 
     /**

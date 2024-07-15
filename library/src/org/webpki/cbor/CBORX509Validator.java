@@ -32,7 +32,7 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
  * Note that X.509 signatures do not permit the use of a keyId.
  * </p>
  */
-public class CBORX509Validator extends CBORValidator {
+public class CBORX509Validator extends CBORValidator<CBORX509Validator> {
     
     /**
      * Interface for verifying signature meta data.
@@ -92,5 +92,10 @@ public class CBORX509Validator extends CBORValidator {
 
         // Finally, check certificate(path) and signature algorithm.
         parameters.verify(certificatePath, algorithm);
+    }
+
+    @Override
+    CBORX509Validator getThis() {
+        return this;
     }
 }

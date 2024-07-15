@@ -21,13 +21,12 @@ import org.webpki.crypto.ContentEncryptionAlgorithms;
 /**
  * Class for symmetric key decryption.
  */
-public class CBORSymKeyDecrypter extends CBORDecrypter {
+public class CBORSymKeyDecrypter extends CBORDecrypter<CBORSymKeyDecrypter> {
     
     /**
      * Interface for dynamic key retrieval.
      */
     public interface KeyLocator {
-
 
         /**
          * Lookup of secret decryption key.
@@ -73,5 +72,10 @@ public class CBORSymKeyDecrypter extends CBORDecrypter {
                                    ContentEncryptionAlgorithms contentEncryptionAlgorithm,
                                    CBORObject optionalKeyId) {
         return keyLocator.locate(optionalKeyId, contentEncryptionAlgorithm);
+    }
+
+    @Override
+    CBORSymKeyDecrypter getThis() {
+        return this;
     }
 }

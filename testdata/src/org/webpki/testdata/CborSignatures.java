@@ -177,7 +177,7 @@ public class CborSignatures {
         throw new IOException("Signature not found");
     }
     
-    static void optionalUpdate(CBORValidator validator,
+    static void optionalUpdate(CBORValidator<?> validator,
                                String fileName, 
                                byte[] updatedSignature, 
                                boolean cleanFlag) throws Exception {
@@ -264,7 +264,7 @@ public class CborSignatures {
         return CBORObject.decode(getDataToSign()).getMap();
     }
 
-    static byte[] createSignature(CBORSigner signer) throws Exception {
+    static byte[] createSignature(CBORSigner<?> signer) throws Exception {
         return signer.sign(SIGNATURE_LABEL, parseDataToSign()).encode();
     }
     

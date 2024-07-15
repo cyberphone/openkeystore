@@ -260,7 +260,7 @@ public class CborEncryption {
         return cborObject.toString();
     }
     
-    static void optionalUpdate(CBORDecrypter decrypter,
+    static void optionalUpdate(CBORDecrypter<?> decrypter,
                                String fileName, 
                                byte[] updatedEncryption) throws IOException, 
                                                                 GeneralSecurityException {
@@ -288,7 +288,7 @@ public class CborEncryption {
         return;
     }
 
-    static void compareResults(CBORDecrypter decrypter, 
+    static void compareResults(CBORDecrypter<?> decrypter, 
                                byte[] encryptedData) throws Exception {
         if (!Arrays.equals(decrypter.decrypt(CBORObject.decode(encryptedData)), 
                                dataToBeEncrypted)) {

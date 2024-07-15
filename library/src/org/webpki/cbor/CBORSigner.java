@@ -37,7 +37,7 @@ import org.webpki.cbor.CBORCryptoUtils.Intercepter;
  * </p>
  * @see CBORValidator
  */
-public abstract class CBORSigner {
+public abstract class CBORSigner <T extends CBORSigner<?>> {
  
     // The default is to use a map without tagging and custom data.
     Intercepter intercepter = new Intercepter() { };
@@ -57,16 +57,18 @@ public abstract class CBORSigner {
     abstract SignatureAlgorithms getAlgorithm();
     
     abstract void additionalItems(CBORMap signatureObject);
+
+    abstract T getThis();
     
     /**
      * Sets optional Intercepter.
      * 
      * @param intercepter An instance of Intercepter
-     * @return <code>this</code>
+     * @return <code>this</code> of subclass
      */
-    public CBORSigner setIntercepter(Intercepter intercepter) {
+    public T setIntercepter(Intercepter intercepter) {
         this.intercepter = intercepter;
-        return this;
+        return getThis();
     }
     
     /**
@@ -90,22 +92,22 @@ public abstract class CBORSigner {
      * </p>
      * 
      * @param keyId Key Id or <code>null</code>
-     * @return <code>this</code>
+     * @return <code>this</code> of subclass
      */
-    public CBORSigner setKeyId(CBORObject keyId) {
+    public T setKeyId(CBORObject keyId) {
         this.optionalKeyId = keyId;
-        return this;
+        return getThis();
     }
 
     /**
      * Sets cryptographic provider.
      * 
      * @param provider Name of provider like "BC"
-     * @return CBORSigner
+     * @return <code>this</code> of subclass
      */
-    public CBORSigner setProvider(String provider) {
+    public T setProvider(String provider) {
         this.provider = provider;
-        return this;
+        return getThis();
     }
 
     /**
@@ -116,11 +118,11 @@ public abstract class CBORSigner {
      * </p>
      * 
      * @param flag If <code>true</code> input data will be cloned
-     * @return CBORSigner
+     * @return <code>this</code> of subclass
      */
-    public CBORSigner setCloneMode(boolean flag) {
+    public T setCloneMode(boolean flag) {
         this.cloneFlag = flag;
-        return this;
+        return getThis();
     }
   
     /**

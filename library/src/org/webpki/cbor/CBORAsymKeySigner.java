@@ -38,7 +38,7 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
  * Also see {@link CBORSigner#setKeyId(CBORObject)} and {@link #setPublicKey(PublicKey)}.
  * </p>
  */
-public class CBORAsymKeySigner extends CBORSigner {
+public class CBORAsymKeySigner extends CBORSigner<CBORAsymKeySigner> {
 
     PublicKey optionalPublicKey;
     
@@ -121,5 +121,10 @@ public class CBORAsymKeySigner extends CBORSigner {
     @Override
     SignatureAlgorithms getAlgorithm() {
         return signer.getAlgorithm();
+    }
+
+    @Override
+    CBORAsymKeySigner getThis() {
+        return this;
     }
 }

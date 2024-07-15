@@ -30,7 +30,7 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
  * Also see {@link CBORValidator}.
  *</p> 
  */
-public class CBORAsymKeyValidator extends CBORValidator {
+public class CBORAsymKeyValidator extends CBORValidator<CBORAsymKeyValidator> {
     
     /**
      * Interface for dynamic key retrieval.
@@ -136,5 +136,10 @@ public class CBORAsymKeyValidator extends CBORValidator {
                                                       algorithm))) {
             throw new CryptoException("Public keys not identical");
         }
+    }
+
+    @Override
+    CBORAsymKeyValidator getThis() {
+        return this;
     }
 }

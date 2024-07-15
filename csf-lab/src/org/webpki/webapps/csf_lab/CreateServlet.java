@@ -308,7 +308,7 @@ public class CreateServlet extends CoreRequestServlet {
                         "Key Ids must be in CBOR diagnostic notation like \"mykey\" or 31");
  
             // Get the signature key
-            CBORSigner signer;
+            CBORSigner<?> signer;
             String validationKey;
             
             // Symmetric or asymmetric?

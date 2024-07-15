@@ -29,7 +29,7 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
 /**
  * Class for X.509 decryption.
  */
-public class CBORX509Decrypter extends CBORDecrypter {
+public class CBORX509Decrypter extends CBORDecrypter<CBORX509Decrypter> {
     
     /**
      * Decrypter engine implementation interface.
@@ -123,5 +123,10 @@ public class CBORX509Decrypter extends CBORDecrypter {
                                      optionalEphemeralKey,
                                      keyEncryptionAlgorithm, 
                                      contentEncryptionAlgorithm);
+    }
+
+    @Override
+    CBORX509Decrypter getThis() {
+        return this;
     }
 }

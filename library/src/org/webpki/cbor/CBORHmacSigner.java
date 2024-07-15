@@ -26,7 +26,7 @@ import org.webpki.crypto.SignatureAlgorithms;
  * Also see {@link CBORSigner}.
  * </p>
  */
-public class CBORHmacSigner extends CBORSigner {
+public class CBORHmacSigner extends CBORSigner<CBORHmacSigner> {
 
     HmacSignerInterface signer;
 
@@ -75,5 +75,10 @@ public class CBORHmacSigner extends CBORSigner {
     @Override
     SignatureAlgorithms getAlgorithm() {
         return signer.getAlgorithm();
+    }
+
+    @Override
+    CBORHmacSigner getThis() {
+        return this;
     }
 }

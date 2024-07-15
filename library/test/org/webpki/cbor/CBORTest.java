@@ -1054,8 +1054,8 @@ public class CBORTest {
         assertTrue("PK" + cborPublicKey.toString(), publicKey.equals(keyPair.getPublic()));
     }
     
-    CBORObject signAndVerify(CBORSigner signer, 
-                             CBORValidator validator,
+    CBORObject signAndVerify(CBORSigner<?> signer, 
+                             CBORValidator<?> validator,
                              Long tagNumber,
                              String objectId) 
             throws IOException, GeneralSecurityException {
@@ -1097,7 +1097,7 @@ public class CBORTest {
         return validator.validate(SIGNATURE_LABEL, cborSd);
      }
 
-    CBORObject signAndVerify(CBORSigner signer, CBORValidator validator) 
+    CBORObject signAndVerify(CBORSigner<?> signer, CBORValidator validator) 
             throws IOException, GeneralSecurityException {
         return signAndVerify(signer, validator, null, null);
     }
@@ -1370,8 +1370,8 @@ public class CBORTest {
 
         try {
             new CBORAsymKeySigner(p256.getPrivate())
-                .setPublicKey(p256.getPublic())
                 .setKeyId(keyId)
+                .setPublicKey(p256.getPublic())
                 .sign(SIGNATURE_LABEL, createDataToBeSigned().getMap()); 
             fail("must not execute");
         } catch (Exception e) {
@@ -1436,7 +1436,7 @@ public class CBORTest {
         String objectId = "https://example.com/myobject";
         
         // 2-dimensional tag
-        CBORSigner tagSigner = new CBORAsymKeySigner(p256.getPrivate())
+        CBORSigner<?> tagSigner = new CBORAsymKeySigner(p256.getPrivate())
             .setIntercepter(new CBORCryptoUtils.Intercepter() {
                 
                 @Override
@@ -1684,7 +1684,7 @@ public class CBORTest {
             new CBORX509Encrypter(p256CertPath,
                     KeyEncryptionAlgorithms.ECDH_ES_A128KW,
                     ContentEncryptionAlgorithms.A256GCM)
-                .setKeyId("illigal").encrypt(dataToEncrypt);
+                .setKeyId(new CBORString("illigal")).encrypt(dataToEncrypt);
             fail("must not run");
         } catch (Exception e) {
             checkException(e, CBORCryptoUtils.STDERR_KEY_ID_PUBLIC);
@@ -1710,10 +1710,10 @@ public class CBORTest {
         }
         
         String objectId = "https://example.com/myobject";
-        CBOREncrypter taggedX25519Encrypter = new CBORAsymKeyEncrypter(x25519.getPublic(),
+        CBOREncrypter<?> taggedX25519Encrypter = new CBORAsymKeyEncrypter(x25519.getPublic(),
                                          KeyEncryptionAlgorithms.ECDH_ES_A256KW,
                                          ContentEncryptionAlgorithms.A256GCM)
-            .setKeyId("mykey")
+            .setKeyId(new CBORString("mykey"))
             .setIntercepter(new CBORCryptoUtils.Intercepter() {
                 
                 @Override
@@ -1726,7 +1726,7 @@ public class CBORTest {
         taggedX25519Encrypter = new CBORAsymKeyEncrypter(x25519.getPublic(),
                                          KeyEncryptionAlgorithms.ECDH_ES_A256KW,
                                          ContentEncryptionAlgorithms.A256GCM)
-            .setKeyId("mykey")
+            .setKeyId(new CBORString("mykey"))
             .setIntercepter(new CBORCryptoUtils.Intercepter() {
                 
                 @Override
@@ -1797,7 +1797,7 @@ public class CBORTest {
         taggedX25519Encrypter = new CBORAsymKeyEncrypter(x25519.getPublic(),
                                          KeyEncryptionAlgorithms.ECDH_ES_A256KW,
                                          ContentEncryptionAlgorithms.A256GCM)
-            .setKeyId("mykey")
+            .setKeyId(new CBORString("mykey"))
             .setIntercepter(new CBORCryptoUtils.Intercepter() {
                 
                     @Override

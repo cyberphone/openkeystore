@@ -32,7 +32,7 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
  * thread-safe.
  * </p>
  */
-public abstract class CBORValidator {
+public abstract class CBORValidator <T extends CBORValidator<T>> {
     
     CBORValidator() {}
 
@@ -41,6 +41,8 @@ public abstract class CBORValidator {
                                  CBORObject optionalKeyId,
                                  byte[] signatureValue,
                                  byte[] signedData);
+
+    abstract T getThis();
  
     POLICY customDataPolicy = POLICY.FORBIDDEN;
     Collector customDataCollector;
@@ -57,13 +59,12 @@ public abstract class CBORValidator {
      * </p>
      * @param customDataPolicy Define level of support
      * @param customDataCollector Interface for reading custom data
-     * @return <code>this</code>
+     * @return <code>this</code> of subclass
      */
-    public CBORValidator setCustomDataPolicy(POLICY customDataPolicy, 
-                                             Collector customDataCollector) {
+    public T setCustomDataPolicy(POLICY customDataPolicy, Collector customDataCollector) {
         this.customDataPolicy = customDataPolicy;
         this.customDataCollector = customDataCollector;
-        return this;
+        return getThis();
     }
 
     POLICY tagPolicy = POLICY.FORBIDDEN;
@@ -79,12 +80,12 @@ public abstract class CBORValidator {
      * </p>
      * @param tagPolicy Define level of support
      * @param tagCollector Interface for reading tag
-     * @return <code>this</code>
+     * @return <code>this</code> of subclass
      */
-    public CBORValidator setTagPolicy(POLICY tagPolicy, Collector tagCollector) {
+    public T setTagPolicy(POLICY tagPolicy, Collector tagCollector) {
         this.tagPolicy = tagPolicy;
         this.tagCollector = tagCollector;
-        return this;
+        return getThis();
     }
 
     /**

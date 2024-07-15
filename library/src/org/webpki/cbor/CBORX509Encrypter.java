@@ -26,7 +26,7 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
 /**
  * Class for X.509 encryption.
  */
-public class CBORX509Encrypter extends CBOREncrypter {
+public class CBORX509Encrypter extends CBOREncrypter<CBORX509Encrypter> {
 
     KeyEncryptionAlgorithms keyEncryptionAlgorithm;
 
@@ -62,5 +62,10 @@ public class CBORX509Encrypter extends CBOREncrypter {
                                                    keyEncryption,
                                                    keyEncryptionAlgorithm,
                                                    contentEncryptionAlgorithm);
+    }
+
+    @Override
+    CBORX509Encrypter getThis() {
+        return this;
     }
 }

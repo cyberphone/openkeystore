@@ -28,7 +28,7 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
 /**
  * Class for asymmetric key decryption.
  */
-public class CBORAsymKeyDecrypter extends CBORDecrypter {
+public class CBORAsymKeyDecrypter extends CBORDecrypter<CBORAsymKeyDecrypter> {
     
     /**
      * Decrypter engine implementation interface.
@@ -162,5 +162,10 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter {
                                      optionalEphemeralKey,
                                      keyEncryptionAlgorithm, 
                                      contentEncryptionAlgorithm);
+    }
+
+    @Override
+    CBORAsymKeyDecrypter getThis() {
+        return this;
     }
 }

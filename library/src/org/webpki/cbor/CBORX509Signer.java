@@ -37,7 +37,7 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
  * Note that X.509 signatures do not permit the use of a <code>keyId</code>.
  * </p>
  */
-public class CBORX509Signer extends CBORSigner {
+public class CBORX509Signer extends CBORSigner<CBORX509Signer> {
 
     X509SignerInterface signer;
     
@@ -112,5 +112,10 @@ public class CBORX509Signer extends CBORSigner {
     @Override
     SignatureAlgorithms getAlgorithm() {
         return signer.getAlgorithm();
+    }
+
+    @Override
+    CBORX509Signer getThis() {
+        return this;
     }
 }

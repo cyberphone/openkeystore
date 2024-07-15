@@ -21,7 +21,7 @@ import org.webpki.crypto.ContentEncryptionAlgorithms;
 /**
  * Class for symmetric key encryption.
  */
-public class CBORSymKeyEncrypter extends CBOREncrypter {
+public class CBORSymKeyEncrypter extends CBOREncrypter<CBORSymKeyEncrypter> {
 
     private byte[] contentEncryptionKey;
     
@@ -31,8 +31,7 @@ public class CBORSymKeyEncrypter extends CBOREncrypter {
      * @param secretKey Encryption key
      * @param algorithm Encryption algorithm
      */
-    public CBORSymKeyEncrypter(byte[] secretKey,
-                               ContentEncryptionAlgorithms algorithm) {
+    public CBORSymKeyEncrypter(byte[] secretKey, ContentEncryptionAlgorithms algorithm) {
         super(algorithm);
         contentEncryptionKey = secretKey;
     }
@@ -40,5 +39,10 @@ public class CBORSymKeyEncrypter extends CBOREncrypter {
     @Override
     byte[] getContentEncryptionKey(CBORMap encryptionObject) {
         return contentEncryptionKey;
+    }
+
+    @Override
+    CBORSymKeyEncrypter getThis() {
+        return this;
     }
 }

@@ -35,13 +35,15 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
  * thread-safe.
  * </p>
  */
-public abstract class CBORDecrypter {
+public abstract class CBORDecrypter <T extends CBORDecrypter<?>>{
 
     CBORDecrypter() {}
     
     abstract byte[] getContentEncryptionKey(CBORMap innerObject,
                                             ContentEncryptionAlgorithms contentEncryptionAlgorithm,
                                             CBORObject optionalKeyId);
+ 
+    abstract T getThis();
 
     POLICY customDataPolicy = POLICY.FORBIDDEN;
     Collector customDataCallBack;
@@ -57,13 +59,12 @@ public abstract class CBORDecrypter {
      * </p>
      * @param customDataPolicy Define level of support
      * @param customDataCallBack Interface for reading custom data
-     * @return <code>this</code>
+     * @return <code>this</code> of subclass
      */
-    public CBORDecrypter setCustomDataPolicy(POLICY customDataPolicy, 
-                                             Collector customDataCallBack) {
+    public T setCustomDataPolicy(POLICY customDataPolicy, Collector customDataCallBack) {
         this.customDataPolicy = customDataPolicy;
         this.customDataCallBack = customDataCallBack;
-        return this;
+        return getThis();
     }
 
     POLICY tagPolicy = POLICY.FORBIDDEN;
@@ -79,12 +80,12 @@ public abstract class CBORDecrypter {
      * </p>
      * @param tagPolicy Define level of support
      * @param tagCallBack Interface for reading tag
-     * @return <code>this</code>
+     * @return <code>this</code> of subclass
      */
-    public CBORDecrypter setTagPolicy(POLICY tagPolicy, Collector tagCallBack) {
+    public T setTagPolicy(POLICY tagPolicy, Collector tagCallBack) {
         this.tagPolicy = tagPolicy;
         this.tagCallBack = tagCallBack;
-        return this;
+        return getThis();
     }    
  
     /**
