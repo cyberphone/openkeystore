@@ -1097,7 +1097,7 @@ public class CBORTest {
         return validator.validate(SIGNATURE_LABEL, cborSd);
      }
 
-    CBORObject signAndVerify(CBORSigner<?> signer, CBORValidator validator) 
+    CBORObject signAndVerify(CBORSigner<?> signer, CBORValidator<?> validator) 
             throws IOException, GeneralSecurityException {
         return signAndVerify(signer, validator, null, null);
     }
