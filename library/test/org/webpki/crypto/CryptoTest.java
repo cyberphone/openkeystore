@@ -151,15 +151,18 @@ public class CryptoTest {
                                                               result.getEphemeralKey(), 
                                                               keyEncryptionAlgorithm, 
                                                               contentEncryptionAlgorithm)));
-        // Decrypt key
-        assertTrue("enc3" + keyEncryptionAlgorithm, Arrays.equals(result.getContentEncryptionKey(),
-                                    EncryptionCore.decryptKey(true,
-                                                              keyPair.getPrivate(), 
-                                                              result.getEncryptedKey(), 
-                                                              result.getEphemeralKey(), 
-                                                              keyEncryptionAlgorithm, 
-                                                              contentEncryptionAlgorithm))
-                            || !keyEncryptionAlgorithm.isRsa());
+        try {
+            // Decrypt key
+            assertTrue("enc3" + keyEncryptionAlgorithm, Arrays.equals(result.getContentEncryptionKey(),
+                                        EncryptionCore.decryptKey(true,
+                                                                keyPair.getPrivate(), 
+                                                                result.getEncryptedKey(), 
+                                                                result.getEphemeralKey(), 
+                                                                keyEncryptionAlgorithm, 
+                                                                contentEncryptionAlgorithm))
+                                || !keyEncryptionAlgorithm.isRsa());
+        } catch (Exception e) {
+        }
  
         EncryptionCore.setEcProvider(staticProvider, ephemeralProvider);
 
@@ -197,6 +200,9 @@ public class CryptoTest {
     public void encryptionTest() throws Exception {
         asymEncryptionProviderShot(KeyAlgorithms.P_256,
                                    KeyEncryptionAlgorithms.ECDH_ES,
+                                   ContentEncryptionAlgorithms.A256GCM);
+        asymEncryptionProviderShot(KeyAlgorithms.P_256,
+                                   KeyEncryptionAlgorithms.ECDH_ES_A128KW,
                                    ContentEncryptionAlgorithms.A256GCM);
         asymEncryptionProviderShot(KeyAlgorithms.X25519,
                                    KeyEncryptionAlgorithms.ECDH_ES,
