@@ -137,7 +137,32 @@ public class CryptoTest {
                                                               result.getEphemeralKey(), 
                                                               keyEncryptionAlgorithm, 
                                                               contentEncryptionAlgorithm)));
+        // Encrypt key
+        result = 
+                                    EncryptionCore.encryptKey(false,
+                                                              keyPair.getPublic(),
+                                                              keyEncryptionAlgorithm,
+                                                              contentEncryptionAlgorithm);
+        // Decrypt key
+        assertTrue("enc2", Arrays.equals(result.getContentEncryptionKey(),
+                                    EncryptionCore.decryptKey(false,
+                                                              keyPair.getPrivate(), 
+                                                              result.getEncryptedKey(), 
+                                                              result.getEphemeralKey(), 
+                                                              keyEncryptionAlgorithm, 
+                                                              contentEncryptionAlgorithm)));
+        // Decrypt key
+        assertTrue("enc3" + keyEncryptionAlgorithm, Arrays.equals(result.getContentEncryptionKey(),
+                                    EncryptionCore.decryptKey(true,
+                                                              keyPair.getPrivate(), 
+                                                              result.getEncryptedKey(), 
+                                                              result.getEphemeralKey(), 
+                                                              keyEncryptionAlgorithm, 
+                                                              contentEncryptionAlgorithm))
+                            || !keyEncryptionAlgorithm.isRsa());
+ 
         EncryptionCore.setEcProvider(staticProvider, ephemeralProvider);
+
     }
     
     private void asymEncryptionProviderShot(KeyAlgorithms keyAlgorithm,
