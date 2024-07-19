@@ -16,6 +16,7 @@
  */
 package org.webpki.crypto;
 
+//#if BOUNCYCASTLE
 import java.security.Provider;
 import java.security.Security;
 
@@ -25,10 +26,16 @@ import java.util.logging.Logger;
 /**
  * Bouncycastle loader
  */
+//#else
+// JDK version
+
+//#endif
 public class CustomCryptoProvider {
 
+//#if BOUNCYCASTLE
     private static Logger logger = Logger.getLogger(CustomCryptoProvider.class.getCanonicalName());
 
+//#endif
     private CustomCryptoProvider() {} // No instantiation
 
     private static boolean loadBouncyCastle(boolean insertFirst, boolean require) {

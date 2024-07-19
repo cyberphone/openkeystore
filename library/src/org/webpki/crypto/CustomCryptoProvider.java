@@ -16,18 +16,9 @@
  */
 package org.webpki.crypto;
 
-import java.security.Provider;
-import java.security.Security;
+// JDK version
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-/**
- * Bouncycastle loader
- */
 public class CustomCryptoProvider {
-
-    private static Logger logger = Logger.getLogger(CustomCryptoProvider.class.getCanonicalName());
 
     private CustomCryptoProvider() {} // No instantiation
 
