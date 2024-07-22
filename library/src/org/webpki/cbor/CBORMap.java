@@ -183,11 +183,12 @@ public class CBORMap extends CBORObject {
     /**
      * Returns mapped object.
      * <p>
-     * If <code>key</code> is not present, a {@link CBORException} is thrown.
+     * If <code>key</code> is present, the associated <code>value</code> is returned,
+     * else a {@link CBORException} is thrown.
      * </p>
      * 
      * @param key Key
-     * @return <code>CBORObject</code>
+     * @return <code>value</code>
      */
     public CBORObject get(CBORObject key) {
         return lookup(key, true).value;
@@ -196,13 +197,14 @@ public class CBORMap extends CBORObject {
     /**
      * Returns mapped object conditionally.
      * <p>
-     * If <code>key</code> is not present, <code>defaultValue</code> is returned.
-     * <code>defaultValue</code> may be <code>null</code>.
+     * If <code>key</code> is present, the associated <code>value</code> is returned,
+     * else <code>defaultValue</code> is returned.
+     * Note: <code>defaultValue</code> may be <code>null</code>.
      * </p>
      * 
      * @param key Key
      * @param defaultValue Default value
-     * @return <code>CBORObject</code> or <code>defaultValue</code>
+     * @return <code>value</code> or <code>defaultValue</code>
      */
     public CBORObject getConditionally(CBORObject key, CBORObject defaultValue) {
         Entry entry = lookup(key, false);
@@ -222,11 +224,16 @@ public class CBORMap extends CBORObject {
     /**
      * Removes mapped object.
      * <p>
-     * If <code>key</code> is not present, a {@link CBORException} is thrown.
+     * If <code>key</code> is present, the associated <code>value</code> is returned,
+     * else a {@link CBORException} is thrown.
+     * </p>
+     * <p>
+     * After saving <code>value</code> for return, the <code>key</code> and its
+     * associated <code>value</code> are removed.
      * </p>
      * 
      * @param key Key
-     * @return The <code>CBORObject</code> mapped by <code>key</code>
+     * @return <code>value</code>
      */
     public CBORObject remove(CBORObject key) {
         Entry targetEntry = lookup(key, true);
