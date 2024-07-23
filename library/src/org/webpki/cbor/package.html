@@ -2,12 +2,12 @@
 <h2>CBOR - Encoder, Decoder, Signatures, and Encryption</h2>
 This package contains Java support for CBOR 
 [<a href='https://www.rfc-editor.org/rfc/rfc8949.html'>RFC&nbsp;8949</a>].
-<h3 id='supported-primitives'>Supported Primitives</h3>
+<h3 id='supported-objects'>Supported Objects</h3>
 The following table shows the currently supported CBOR objects (data items)
 and their mapping to Java:
 <div class='webpkifloat'>
 <table class='webpkitable' style='margin-left:2em'>
-<tr><th>CBOR&nbsp;Primitive</th><th>Notes</th><th>Java&nbsp;Mapping</th>
+<tr><th>CBOR&nbsp;Object</th><th>Notes</th><th>Java&nbsp;Mapping</th>
 <th>Implementation</th></tr>
 <tr><td><code>integer</code></td><td>1</td><td><code>long</code></td><td>{@link CBORInt}</td></tr>
 <tr><td><code>bignum</code></td><td>1</td><td><code>BigInteger</code></td><td>{@link CBORBigInt}</td></tr>
@@ -53,14 +53,14 @@ is intended as a <i>standard</i>, not limited to specific platforms.
 </div>
 <div id='adoption-criterion'>
 To facilitate mainstream adoption, the encoding scheme is aligned with
-current best practices for encoding CBOR primitives and should
+current best practices for encoding CBOR object and should
 with moderate efforts work with most existing CBOR encoders and decoders.
 In fact, having a <i>single</i> way of encoding CBOR data
 should simplify both implementations and associated testing.
 The encoding scheme has been verified to also be usable in highly
 constrained systems, albeit requiring detailed knowledge of how
 a specific tool addresses encoding of CBOR objects.
-Note that a compliant implementation does not have to support all CBOR primitives,
+Note that a compliant implementation does not have to support all CBOR objects,
 it is sufficient that the ones that actually are used by the associated applications,
 conform to this specification.
 </div>
@@ -174,12 +174,6 @@ On output ({@link CBORObject#encode()})
 deterministic encoding is always performed
 regardless of if CBOR data was parsed or created programmatically.
 </p>
-<div id='map-key-constraints' class='webpkicomment' style='margin-bottom:0.3em'>
-For maximum interoperability with <i>other</i> CBOR implementations,
-map key types <b>should</b> be limited to <code>integer</code> and
-<code>text&nbsp;string</code>,
-as well as not being mixed in the same map.
-</div>
 <h3 id='input-data-validation'>Input Data Validation</h3>
 A properly designed system validates input data before acting upon it.
 This section describes how this can be achieved using this particular
