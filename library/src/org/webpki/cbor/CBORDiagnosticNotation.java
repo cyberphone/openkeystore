@@ -27,18 +27,6 @@ import org.webpki.util.UTF8;
  * Class for converting diagnostic notation CBOR to CBOR.
  */
 public class CBORDiagnosticNotation {
-
-    /**
-     * Diagnostic Notation Parser Exception.
-     */
-    static class ParserException extends RuntimeException {
-
-        private static final long serialVersionUID = 1L;
-
-        ParserException(String message) {
-            super(message);
-        }
-    }
     
     char[] cborText;
     int index;
@@ -54,6 +42,7 @@ public class CBORDiagnosticNotation {
      * 
      * @param cborText String holding diagnostic (textual) CBOR
      * @return {@link CBORObject}
+     * @throws CBORException
      */
     public static CBORObject decode(String cborText) {
         return new CBORDiagnosticNotation(cborText, false).readSequenceToEOF()[0];
@@ -64,12 +53,13 @@ public class CBORDiagnosticNotation {
      * 
      * @param cborText String holding diagnostic (textual) CBOR
      * @return {@link CBORObject}[] Non-empty array of CBOR objects
+     * @throws CBORException
      */
     public static CBORObject[] decodeSequence(String cborText) {
         return new CBORDiagnosticNotation(cborText, true).readSequenceToEOF();
     }
 
-    private void parserError(String error) {
+    private String buildError(String error) {
         // Unsurprisingly, error handling turned out to be the most complex part...
         int start = index - 100;
         if (start < 0) {
@@ -105,10 +95,14 @@ public class CBORDiagnosticNotation {
                 lineNumber++;
             }
         }
-        throw new ParserException(complete.append("^\n\nError in line ")
-                                          .append(lineNumber)
-                                          .append(". ")
-                                          .append(error).toString());
+        return complete.append("^\n\nError in line ")
+                       .append(lineNumber)
+                       .append(". ")
+                       .append(error).toString();
+    }
+
+    void parserError(String error) {
+        throw new RuntimeException(error);
     }
     
     private CBORObject[] readSequenceToEOF() {
@@ -127,13 +121,10 @@ public class CBORDiagnosticNotation {
                     return sequence.toArray(new CBORObject[0]);
                 }
             }
-        } catch (ParserException pe) {
-            throw pe;
         } catch (Exception e) {
-            // Exception from a deeper layer; convert to ParserError.
-            parserError(e.getMessage());
+            // Build message and convert to CBORException.
+            throw new CBORException(buildError(e.getMessage()));
         }
-        return null;  // for the compiler...
     }
 
     private CBORObject getObject() {
