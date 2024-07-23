@@ -234,6 +234,10 @@
     <concat destfile="${doc_dir}/stylesheet.css" append="true">
       <filelist dir="." files="javadoc-extrastyles.css"/>
     </concat>
+    <replaceregexp file="${doc_dir}/stylesheet.css"
+      match="\nsup \{.*\n.*\n.*\}"
+      replace=""
+      flags="g"/>
     <copy todir="${doc_dir}/resources/fonts">
       <fileset dir="fonts"/>
     </copy>

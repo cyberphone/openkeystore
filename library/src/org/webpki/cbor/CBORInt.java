@@ -29,8 +29,8 @@ import java.math.BigInteger;
  * should for interoperability reasons not exploit CBOR <code>integer</code> numbers 
  * outside of the traditional range for <code>"unsigned"</code> and <code>"signed"</code> integers.
  * Translated to values, the <i>recommended</i> range would then span from
- * <span style='white-space:nowrap'><code>-2<div class='webpkisuper'>(n-1)</div></code></span> to
- * <span style='white-space:nowrap'><code>2<div class='webpkisuper'>n</div>-1</code></span>, 
+ * <span style='white-space:nowrap'><code>-2<sup>(n-1)</sup></code></span> to
+ * <span style='white-space:nowrap'><code>2<sup>n</sup>-1</code></span>, 
  * where <code>n</code> is the size in bits of the anticipated target integer type.
  * That is, if a protocol schema or declaration calls for a signed
  * <span style='white-space:nowrap'>32-bit</span> integer, the valid
@@ -56,9 +56,9 @@ public class CBORInt extends CBORObject {
      * To cope with the entire 65-bit integer span supported by CBOR,
      * this constructor must be used.  Unsigned integers
      * range from <code>0</code> to 
-     * <span style='white-space:nowrap'><code>2<div class='webpkisuper'>64</div>-1</code></span>,
+     * <span style='white-space:nowrap'><code>2<sup>64</sup>-1</code></span>,
      * while negative integers range from <code>-1</code> to
-     * <span style='white-space:nowrap'><code>-2<div class='webpkisuper'>64</div></code></span>.
+     * <span style='white-space:nowrap'><code>-2<sup>64</sup></code></span>.
      *<p>
      * </p> 
      * If the <code>unsigned</code> flag is set to <code>false</code>, 
@@ -70,7 +70,7 @@ public class CBORInt extends CBORObject {
      * actually represent <code>-1</code>, <code>-9223372036854775808</code>,
      * <code>-9223372036854775809</code>, and
      * <code>-18446744073709551616</code>
-     * (<span style='white-space:nowrap'><code>-2<div class='webpkisuper'>64</div></code></span>)
+     * (<span style='white-space:nowrap'><code>-2<sup>64</sup></code></span>)
      * respectively.
      * <p>
      * Also see <a href='#range-constraints'>Range&nbsp;Constraints</a> and 
