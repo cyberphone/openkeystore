@@ -35,8 +35,6 @@ import java.math.BigInteger;
  * That is, if a protocol schema or declaration calls for a signed
  * <span style='white-space:nowrap'>32-bit</span> integer, the valid
  * range would be <code>-0x80000000</code> to <code>0x7fffffff</code>.
- * Note that range constraints do not apply to CBOR <code>integer</code>
- * numbers that are <i>shorter</i> than the actual target integer type.
  * Also see {@link CBORObject#getInt()}.
  * </div>
  */
