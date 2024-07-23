@@ -18,6 +18,7 @@ package org.webpki.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -26,23 +27,12 @@ import java.io.ByteArrayOutputStream;
  * Collection of file I/O functions.
  * <p>
  * Unlike java.io and java.nio classes, the methods declared here,
- * throw the <i>unchecked</i> {@link WrappedIOException}.
+ * throw {@link UncheckedIOException}.
  * The intended use cases include client applications and test programs.
  * Server applications should probably stick to the standard java API.
  * </p>
  */
 public class IO {
-    /**
-     * Exception wrapper.
-     */
-    public static class WrappedIOException extends RuntimeException {
-
-        private static final long serialVersionUID = 1L;
-
-        WrappedIOException(IOException e) {
-            super(e);
-        }
-    }
     
     private IO() {
     }  // No instantiation please
@@ -51,7 +41,7 @@ public class IO {
         try {
             return getByteArrayFromInputStream(new FileInputStream(fileName));
         } catch (IOException e) {
-            throw new WrappedIOException(e);
+            throw new UncheckedIOException(e);
         }
      }
 
@@ -59,7 +49,7 @@ public class IO {
         try (FileOutputStream fos = new FileOutputStream(fileName)) {
             fos.write(bytes);
         } catch (IOException e) {
-            throw new WrappedIOException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -77,7 +67,7 @@ public class IO {
             }
             inputStream.close();
         } catch (IOException e) {
-            throw new WrappedIOException(e);
+            throw new UncheckedIOException(e);
         }
         return baos.toByteArray();
     }

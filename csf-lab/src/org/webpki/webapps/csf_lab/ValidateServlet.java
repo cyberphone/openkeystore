@@ -77,7 +77,7 @@ public class ValidateServlet extends CoreRequestServlet {
             // Validation
             boolean jwkValidationKey = validationKey.startsWith("{");
             
-            CBORValidator validator;
+            CBORValidator<?> validator;
             if (hmacSignature) {
                 validator = new CBORHmacValidator(HexaDecimal.decode(validationKey));
             } else {
