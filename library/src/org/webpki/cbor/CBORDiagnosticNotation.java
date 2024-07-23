@@ -24,14 +24,14 @@ import org.webpki.util.Base64URL;
 import org.webpki.util.UTF8;
 
 /**
- * Class for converting diagnostic CBOR to CBOR.
+ * Class for converting diagnostic notation CBOR to CBOR.
  */
 public class CBORDiagnosticNotation {
 
     /**
      * Diagnostic Notation Parser Exception.
      */
-    public static class ParserException extends RuntimeException {
+    static class ParserException extends RuntimeException {
 
         private static final long serialVersionUID = 1L;
 
