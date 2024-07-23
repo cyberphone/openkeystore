@@ -142,6 +142,10 @@
   	<concat destfile="${android-cbor-apidoc}/stylesheet.css" append="true">
       <filelist dir="." files="javadoc-extrastyles.css"/>
     </concat>
+    <replaceregexp file="${android-cbor-apidoc}/stylesheet.css"
+      match="\nsup \{.*\n.*\n.*\}"
+      replace=""
+      flags="g"/>
     <copy todir="${android-cbor-apidoc}/resources/fonts">
       <fileset dir="fonts"/>
     </copy>
