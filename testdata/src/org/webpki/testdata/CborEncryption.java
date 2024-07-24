@@ -18,6 +18,7 @@ package org.webpki.testdata;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
@@ -274,7 +275,7 @@ public class CborEncryption {
                 throw new GeneralSecurityException("ERROR - Old encryption '" + 
                                                    fileName + "' did not decrypt");
             }
-        } catch (IO.WrappedIOException e) {
+        } catch (UncheckedIOException e) {
             changed = false;  // New file
         }
         if (oldEncryption != null &&

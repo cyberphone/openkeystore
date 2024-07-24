@@ -18,6 +18,7 @@ package org.webpki.testdata;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
@@ -191,7 +192,7 @@ public class CborSignatures {
                 throw new GeneralSecurityException(
                         "ERROR - Old signature '" + fileName + "' did not validate");
             }
-        } catch (IO.WrappedIOException e) {
+        } catch (UncheckedIOException e) {
             changed = false;  // New file
         }
         if (oldSignature != null) {
@@ -484,7 +485,7 @@ public class CborSignatures {
                 throw new GeneralSecurityException(
                         "ERROR - Old signature '" + fileName + "' did not validate");
             }
-        } catch (IO.WrappedIOException e) {
+        } catch (UncheckedIOException e) {
             changed = false;  // New file
         }
         if (oldSignature != null) {
