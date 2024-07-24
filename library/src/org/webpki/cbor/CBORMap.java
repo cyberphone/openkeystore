@@ -140,7 +140,7 @@ public class CBORMap extends CBORObject {
     /**
      * Sets sorting mode for a CBOR <code>map</code>.
      * <p>
-     * This method provides an opportunity using keys that are <i>sorted</i> 
+     * This method provides an opportunity using keys that are <i>presorted</i> 
      * (in lexicographic order), which in maps with many keys can 
      * offer performance improvements.
      * </p>
