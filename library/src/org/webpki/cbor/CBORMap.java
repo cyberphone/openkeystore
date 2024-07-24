@@ -20,6 +20,11 @@ import java.util.ArrayList;
 
 /**
  * Class for holding CBOR <code>map</code> objects.
+ * <p>
+ * Note: to maintain
+ * <a href='package-summary.html#deterministic-encoding'>Deterministic&nbsp;Encoding</a>
+ * <code>map</code> keys are sorted.
+ * </p>
  */
 public class CBORMap extends CBORObject {
 
