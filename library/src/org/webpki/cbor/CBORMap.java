@@ -23,7 +23,7 @@ import java.util.ArrayList;
  * <p>
  * Note: to maintain
  * <a href='package-summary.html#deterministic-encoding'>Deterministic&nbsp;Encoding</a>
- * <code>map</code> keys are sorted.
+ * <code>map</code> keys are <i>automatically sorted during insertion</i>.
  * </p>
  */
 public class CBORMap extends CBORObject {
@@ -253,6 +253,9 @@ public class CBORMap extends CBORObject {
 
     /**
      * Enumerates all keys in a map.
+     * <p>
+     * Note: the keys are returned in proper sort order.
+     * </p>
      * 
      * @return Array of keys
      */
