@@ -2255,6 +2255,8 @@ public class CBORTest {
         assertTrue("diag2", pretty.replace(" ", "")
                                   .replace("\n", "").equals(diag.toDiagnosticNotation(false)));
         assertTrue("diag3", pretty.equals(diag.toDiagnosticNotation(true)));
+        assertTrue("diag4", CBORDiagnosticNotation.decode("\"next\nline\r\\\ncont\r\nk\"")
+            .toString().equals("\"next\\nline\\ncont\\nk\""));
     }
 
     void utf8DecoderTest(String hex, boolean ok) {

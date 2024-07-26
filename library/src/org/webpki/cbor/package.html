@@ -313,12 +313,15 @@ Keys and values are expressed as CBOR objects.</td></tr>
 <ol style='margin:0 0'>
 <li>The letter <i>n</i> in the Syntax column denotes one or more digits.</li>
 <li>The optional {<i>sign</i>} must be a single hyphen (<code>'-'</code>) character.</li>
-<li>Whitespace characters
-(<code>' '</code>, <code>'\t'</code>, <code>'\r'</code>, <code>'\n'</code>) 
+<li><i>Input only</i>: the whitespace characters
+(<code>' '</code>, <code>'\t'</code>, <code>'\r'</code>, <code>'\n'</code>)
 inside of string quotes are <i>ignored</i>.</li> 
-<li>Whitespace characters
-(<code>'\t'</code>, <code>'\r'</code>, <code>'\n'</code>) 
+<li><i>Input only</i>: the control characters
+(<code>'\t'</code> and <code>'\n'</code>)
 inside of string quotes <i>become a part of the text</i>.
+For nomalizing line terminators,
+a single <code>'\r'</code> or the combination <code>'\r\n'</code>
+are rewritten as <code>'\n'</code>.
 To <i>avoid</i> getting newline characters (<code>'\n'</code>)
 included in multi-line text strings,
 a <i>line continuation marker</i> consisting of a backslash&nbsp;(<code>'\'</code>)
@@ -328,8 +331,8 @@ immediately preceding the newline may be used.</li>
 <code>'\b'</code>, <code>'\f'</code>, <code>'\n'</code>, 
 <code>'\r'</code>, <code>'\t'</code>, <code>'\u</code><i>hhhh</i><code>'</code>).</li>
 <li>Zero-length strings (<code>''</code>) return byte strings of length zero.</li>
-<li>Only applicable for <i>input</i>.
-That is, {@link CBORObject#toString()} does not produce this item.</li>
+<li><i>Input only</i>:
+the {@link CBORObject#toString()} method does not produce this item.</li>
 
 </ol>
 </body>

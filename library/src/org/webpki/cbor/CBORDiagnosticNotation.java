@@ -369,9 +369,15 @@ public class CBORDiagnosticNotation {
         while (true) {
             char c;
             switch (c = readChar()) {
-                // Multiline extension
-                case '\n':
+                // Control character handling.
                 case '\r':
+                    if (nextChar() == '\n') {
+                        continue;
+                    }
+                    c = '\n';
+                    break;
+
+                case '\n':
                 case '\t':
                     break;
 
