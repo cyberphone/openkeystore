@@ -369,12 +369,12 @@ public class CBORDiagnosticNotation {
         while (true) {
             char c;
             switch (c = readChar()) {
-                // Control character handling.
+                // Special character handling.
                 case '\r':
                     if (nextChar() == '\n') {
-                        continue;
+                        continue;  // CRLF => LF
                     }
-                    c = '\n';
+                    c = '\n';  // Single CR => LF
                     break;
 
                 case '\n':
@@ -384,8 +384,9 @@ public class CBORDiagnosticNotation {
                 case '\\':
                     switch (c = readChar()) {
                         case '\n':
-                            continue;
+                            continue;  // Line continuation
 
+                        // JSON compatible escape sequences
                         case '\'':
                         case '"':
                         case '\\':
@@ -436,7 +437,8 @@ public class CBORDiagnosticNotation {
                         return new CBORBytes(UTF8.encode(s.toString()));
                     }
                     break;
-                    
+
+                // Normal character handling
                 default:
                     if (c < ' ') {
                         parserError(String.format("Unexpected control character: %s", toChar(c)));
