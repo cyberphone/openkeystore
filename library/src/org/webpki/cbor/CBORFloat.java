@@ -34,7 +34,7 @@ public class CBORFloat extends CBORObject {
      * <p>
      * By default, this implementation supports <code>NaN</code>, <code>Infinity</code>, 
      * and <code>-Infinity</code>. In case these variants are not applicable for the
-     * application in question, they can be "outlawed" (causing an {@link CBORException} 
+     * application in question, they can be "outlawed" (causing a {@link CBORException} 
      * if encountered), by setting this <i>global</i> property to <code>true</code>.
      * Note: this setting affects both encoding and decoding.
      * </p>
