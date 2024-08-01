@@ -37,6 +37,7 @@ import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Locale;
 
+import org.bouncycastle.util.encoders.Hex;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -2308,5 +2309,29 @@ public class CBORTest {
         compareHash("63686944");
         compareHash("6468694466");
         compareHash("60");
+    }
+
+    @Test
+    public void disableInvalidFloats() {
+        CBORFloat.disableInvalidFloats = true;
+        Double[] encoding = {Double.NaN, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY};
+        for (Double value : encoding) {
+            try {
+                new CBORFloat(value);
+                fail("must not");
+            } catch (Exception e) {
+                checkException(e, "\"NaN");
+            }
+        }
+        String[] decoding = {"f97e00", "f97c00", "f9fc00"};
+        for (String hexCbor : decoding) {
+            try {
+                CBORObject.decode(Hex.decode(hexCbor));
+                fail("must not");
+            } catch (Exception e) {
+                checkException(e, "\"NaN");
+            }
+        }
+        CBORFloat.disableInvalidFloats = false;
     }
  }

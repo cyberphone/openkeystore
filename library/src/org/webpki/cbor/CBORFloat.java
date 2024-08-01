@@ -29,6 +29,18 @@ import org.webpki.util.DoubleCoreSerializer;
  */
 public class CBORFloat extends CBORObject {
 
+    /**
+     * Controls acceptance of exceptional floating point values.
+     * <p>
+     * By default, this implementation supports <code>NaN</code>, <code>Infinity</code>, 
+     * and <code>-Infinity</code>. In case these variants are not applicable for the
+     * application in question, they can be "outlawed" (causing an {@link CBORException} 
+     * if encountered), by setting this <i>global</i> property to <code>true</code>.
+     * Note: this setting affects both encoding and decoding.
+     * </p>
+     */
+    public static boolean disableInvalidFloats = false;
+
     // Actual value.
     double value;
     
@@ -69,6 +81,9 @@ public class CBORFloat extends CBORObject {
         } else if ((bitFormat & FLOAT64_POS_INFINITY) == FLOAT64_POS_INFINITY) {
 
             // Special "number".
+            if (disableInvalidFloats) {
+                cborError("\"NaN\" and \"Infinity\" support is disabled");
+            }
             tag = MT_FLOAT16;
             bitFormat = (bitFormat == FLOAT64_POS_INFINITY) ?
                 FLOAT16_POS_INFINITY : (bitFormat == FLOAT64_NEG_INFINITY) ?
