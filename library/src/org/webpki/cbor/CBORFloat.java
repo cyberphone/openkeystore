@@ -22,7 +22,7 @@ import org.webpki.util.DoubleCoreSerializer;
  * Class for holding CBOR <code>floating&nbsp;point</code> objects.
  * <p>
  * Numbers are constrained to the IEEE 754 notation
- * using the length 16, 32, and 64 bit on "wire".  Which
+ * using the length 16, 32, and 64 bit on the "wire".  Which
  * length to use is governed by the size and precision 
  * required to (minimally) correctly represent a number.
  * </p>
