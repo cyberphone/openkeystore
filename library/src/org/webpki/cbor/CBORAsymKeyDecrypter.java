@@ -36,7 +36,7 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter<CBORAsymKeyDecrypter> {
     public interface DecrypterImpl {
 
         /**
-         * Locates private decryption key.
+         * Locate private decryption key.
          * <p>
          * Implementations should preferably throw {@link org.webpki.crypto.CryptoException} for
          * errors related to cryptography and security.
@@ -57,7 +57,7 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter<CBORAsymKeyDecrypter> {
                           ContentEncryptionAlgorithms contentEncryptionAlgorithm);
  
         /**
-         * Decrypts encrypted key.
+         * Decrypt encrypted key.
          * <p>
          * Implementations should preferably throw {@link org.webpki.crypto.CryptoException} for
          * errors related to cryptography and security.
@@ -81,7 +81,7 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter<CBORAsymKeyDecrypter> {
     DecrypterImpl decrypterImpl;
     
     /**
-     * Initializes a decrypter with a private key.
+     * Creates a decrypter object with a private key.
      * <p>
      * This constructor presumes that the decryption key is given by the context.
      * </p>
@@ -117,7 +117,7 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter<CBORAsymKeyDecrypter> {
     }
 
     /**
-     * Initializes a decrypter with a decrypter interface.
+     * Creates a decrypter object with a decrypter interface.
      * 
      * @param decrypterImpl Decrypter implementation
      */
@@ -132,7 +132,7 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter<CBORAsymKeyDecrypter> {
         // Mandatory algorithm
         KeyEncryptionAlgorithms keyEncryptionAlgorithm =
                 KeyEncryptionAlgorithms.getAlgorithmFromId(
-                        innerObject.get(ALGORITHM_LABEL).getInt());
+                        innerObject.get(ALGORITHM_LABEL).getInt32());
  
         // Fetch public key if there is one
         PublicKey optionalPublicKey = null;

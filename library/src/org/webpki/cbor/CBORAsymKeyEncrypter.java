@@ -34,7 +34,7 @@ public class CBORAsymKeyEncrypter extends CBOREncrypter<CBORAsymKeyEncrypter> {
     PublicKey publicKey;
     
     /**
-     * Initializes an encrypter object.
+     * Creates an encrypter object.
      * 
      * @param publicKey Encryption key
      * @param keyEncryptionAlgorithm Key encryption algorithm
@@ -49,7 +49,7 @@ public class CBORAsymKeyEncrypter extends CBOREncrypter<CBORAsymKeyEncrypter> {
     }
 
     /**
-     * Defines if public key should be included.
+     * Define if public key should be included.
      * 
      * @param wantPublicKey Flag.  Default: false.
      * @return <code>this</code>

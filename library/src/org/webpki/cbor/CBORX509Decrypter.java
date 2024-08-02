@@ -37,7 +37,7 @@ public class CBORX509Decrypter extends CBORDecrypter<CBORX509Decrypter> {
     public interface DecrypterImpl {
 
         /**
-         * Locates private decryption key.
+         * Locate private decryption key.
          * <p>
          * Implementations should preferably throw {@link org.webpki.crypto.CryptoException} for
          * errors related to cryptography and security.
@@ -56,7 +56,7 @@ public class CBORX509Decrypter extends CBORDecrypter<CBORX509Decrypter> {
                           ContentEncryptionAlgorithms contentEncryptionAlgorithm);
  
         /**
-         * Decrypts encrypted key.
+         * Decrypt encrypted key.
          * <p>
          * Implementations should preferably throw {@link org.webpki.crypto.CryptoException} for
          * errors related to cryptography and security.
@@ -80,7 +80,7 @@ public class CBORX509Decrypter extends CBORDecrypter<CBORX509Decrypter> {
     DecrypterImpl decrypterImpl;
     
     /**
-     * Initializes a decrypter with a decrypter interface.
+     * Creates a decrypter object with a decrypter interface.
      * 
      * @param decrypterImpl Decrypter implementation
      */
@@ -98,7 +98,7 @@ public class CBORX509Decrypter extends CBORDecrypter<CBORX509Decrypter> {
         // Mandatory algorithm
         KeyEncryptionAlgorithms keyEncryptionAlgorithm =
                 KeyEncryptionAlgorithms.getAlgorithmFromId(
-                        innerObject.get(ALGORITHM_LABEL).getInt());
+                        innerObject.get(ALGORITHM_LABEL).getInt32());
  
         // Fetch certificate path
         X509Certificate[] certificatePath = CBORCryptoUtils.decodeCertificateArray(

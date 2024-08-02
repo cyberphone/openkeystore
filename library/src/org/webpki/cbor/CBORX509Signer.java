@@ -42,7 +42,7 @@ public class CBORX509Signer extends CBORSigner<CBORX509Signer> {
     X509SignerInterface signer;
     
     /**
-     * Initializes a signer with an external interface.
+     * Creates an X.509 signer object with an external interface.
      * 
      * @param signer Custom signer
      */
@@ -51,7 +51,7 @@ public class CBORX509Signer extends CBORSigner<CBORX509Signer> {
     }
     
     /**
-     * Initializes an X.509 signer with a private key.
+     * Creates an X.509 signer object with a private key.
      * <p>
      * The signature algorithm to use is based on the recommendations
      * in RFC 7518.
@@ -66,7 +66,7 @@ public class CBORX509Signer extends CBORSigner<CBORX509Signer> {
     }
 
     /**
-     * Initializes an X.509 signer with a private key.
+     * Creates an X.509 signer object with a private key.
      * 
      * @param privateKey Signature key
      * @param certificatePath A matching non-null certificate path

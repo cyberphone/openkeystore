@@ -33,7 +33,7 @@ public class CBORHmacValidator extends CBORValidator<CBORHmacValidator> {
     HmacVerifierInterface verifier;
 
     /**
-     * Initializes a validator with a secret key.
+     * Creates a validator object with a secret key.
      * <p>
      * This constructor presumes that the validation key is given by the context
      * and that the supplied algorithm meets the policy.  The optional CSF
@@ -48,7 +48,7 @@ public class CBORHmacValidator extends CBORValidator<CBORHmacValidator> {
     }
 
     /**
-     * Initializes a validator with an external implementation.
+     * Creates a validator object with an external implementation.
      * <p>
      * This constructor provides full control for the verifier
      * HMAC algorithms and cryptographic providers.  Note that an optional CSF

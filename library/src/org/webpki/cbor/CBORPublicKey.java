@@ -64,16 +64,16 @@ public class CBORPublicKey {
     
     static {
         for (KeyAlgorithms key : WEBPKI_2_COSE_CRV.keySet()) {
-            COSE_2_WEBPKI_CRV.put(WEBPKI_2_COSE_CRV.get(key).getInt(), key);
+            COSE_2_WEBPKI_CRV.put(WEBPKI_2_COSE_CRV.get(key).getInt32(), key);
         }
     }
     
     static final HashMap<Integer,KeyTypes> keyTypes = new HashMap<>();
     
     static {
-        keyTypes.put(COSE_RSA_KTY.getInt(), KeyTypes.RSA);
-        keyTypes.put(COSE_EC2_KTY.getInt(), KeyTypes.EC);
-        keyTypes.put(COSE_OKP_KTY.getInt(), KeyTypes.EDDSA); // XEC and EDDSA share kty...
+        keyTypes.put(COSE_RSA_KTY.getInt32(), KeyTypes.RSA);
+        keyTypes.put(COSE_EC2_KTY.getInt32(), KeyTypes.EC);
+        keyTypes.put(COSE_OKP_KTY.getInt32(), KeyTypes.EDDSA); // XEC and EDDSA share kty...
     }
 
     static CBORBytes cryptoBinary(BigInteger value) {
@@ -101,7 +101,7 @@ public class CBORPublicKey {
     }
     
      /**
-     * Converts JCE public key to COSE.
+     * Convert JCE public key to COSE.
      * 
      * @param jcePublicKey Public key in Java/JCE format
      * @return Public key in COSE format
@@ -154,15 +154,15 @@ public class CBORPublicKey {
 
     static KeyAlgorithms getKeyAlgorithmFromCurveId(CBORMap keyMap, CBORObject curveLabel) {
         CBORObject curve = keyMap.get(curveLabel);
-        KeyAlgorithms keyAlgorithm = COSE_2_WEBPKI_CRV.get(curve.getInt());
+        KeyAlgorithms keyAlgorithm = COSE_2_WEBPKI_CRV.get(curve.getInt32());
         if (keyAlgorithm == null) {
-            throw new CryptoException("No such key/curve algorithm: " + curve.getInt());
+            throw new CryptoException("No such key/curve algorithm: " + curve.getInt32());
         }
         return keyAlgorithm;
     }
     
     static KeyTypes getKeyType(CBORMap coseKeyMap) {
-        int coseKty = coseKeyMap.get(COSE_KTY_LABEL).getInt();
+        int coseKty = coseKeyMap.get(COSE_KTY_LABEL).getInt32();
         KeyTypes keyType = keyTypes.get(coseKty);
         if (keyType == null) {
             throw new CryptoException("Unrecognized key type: " + coseKty);
@@ -208,7 +208,7 @@ public class CBORPublicKey {
     }
 
     /**
-     * Converts COSE public key to JCE.
+     * Convert COSE public key to JCE.
      * 
      * @param cosePublicKey Public key in COSE format
      * @return Public key as a Java/JCE object 

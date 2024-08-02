@@ -34,7 +34,7 @@ public class CBORArray extends CBORObject {
     }
     
     /**
-     * Returns the size of the array.
+     * Get size of the CBOR <code>array</code>.
      * 
      * @return The number of objects in the array
      */
@@ -43,7 +43,7 @@ public class CBORArray extends CBORObject {
     }
     
     /**
-     * Retrieves object at a specific position.
+     * Get object at a specific position in the CBOR <code>array</code>.
      * 
      * @param index The position (0..size()-1)
      * @return CBOR object
@@ -54,7 +54,7 @@ public class CBORArray extends CBORObject {
     }
     
     /**
-     * Appends object to the array.
+     * Add object to the CBOR <code>array</code>.
      * 
      * @param cborObject Object to be appended to the array.
      * @return <code>this</code>
@@ -66,7 +66,7 @@ public class CBORArray extends CBORObject {
     }
     
     /**
-     * Returns the entire array.
+     * Get a copy of the CBOR <code>array</code>.
      * 
      * @return Array of CBOR objects
      */

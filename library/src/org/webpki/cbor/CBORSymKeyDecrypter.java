@@ -47,7 +47,7 @@ public class CBORSymKeyDecrypter extends CBORDecrypter<CBORSymKeyDecrypter> {
     KeyLocator keyLocator;
     
     /**
-     * Initializes a decrypter with a secret key.
+     * Creates a decrypter object with a secret key.
      * <p>
      * This constructor presumes that the decryption key is given by the context.
      * </p>
@@ -59,7 +59,7 @@ public class CBORSymKeyDecrypter extends CBORDecrypter<CBORSymKeyDecrypter> {
     }
 
     /**
-     * Initializes a decrypter with a key locator.
+     * Creates a decrypter object with a key locator.
      * 
      * @param keyLocator DecrypterImpl implementation
      */

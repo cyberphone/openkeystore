@@ -20,7 +20,7 @@ public class TypedObjectsDemo {
         
         @Override
         protected void decode(CBORObject cborBody) {
-            number = cborBody.getMap().get(INT_KEY).getInt();
+            number = cborBody.getMap().get(INT_KEY).getInt32();
         }
 
         @Override

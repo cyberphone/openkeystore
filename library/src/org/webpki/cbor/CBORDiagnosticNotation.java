@@ -42,7 +42,7 @@ public class CBORDiagnosticNotation {
     }
     
     /**
-     * Decodes diagnostic notation CBOR to CBOR.
+     * Decode diagnostic notation CBOR to CBOR.
      * 
      * @param cborText String holding diagnostic (textual) CBOR
      * @return {@link CBORObject}
@@ -53,7 +53,7 @@ public class CBORDiagnosticNotation {
     }
 
     /**
-     * Decodes diagnostic notation CBOR sequence to CBOR.
+     * Decode diagnostic notation CBOR sequence to CBOR.
      * 
      * @param cborText String holding diagnostic (textual) CBOR
      * @return {@link CBORObject}[] Non-empty array of CBOR objects

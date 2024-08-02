@@ -87,7 +87,7 @@ public class CBORKeyPair {
     static final CBORInt COSE_RSA_QINV_LABEL     = new CBORInt(-8);
 
     /**
-    * Converts JCE key pair to COSE.
+    * Convert JCE key pair to COSE.
     * 
     * @param keyPair in Java/JCE format
     * @return Private key in COSE format
@@ -128,7 +128,7 @@ public class CBORKeyPair {
     }
 
     /**
-     * Converts COSE private key to JCE.
+     * Convert COSE private key to JCE.
      * 
      * @param cosePrivateKey Private key in COSE format
      * @return KeyPair as a Java/JCE object 

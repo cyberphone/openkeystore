@@ -104,7 +104,7 @@ public class CBORTag extends CBORObject {
     }
 
     /**
-     * Returns tagged object.
+     * Get tagged object.
      * @return CBOR object
      */
     public CBORObject getTaggedObject() {
@@ -112,7 +112,7 @@ public class CBORTag extends CBORObject {
     }
 
     /**
-     * Returns tag number.
+     * Get tag number.
      * @return Tag number
      */
     public long getTagNumber() {

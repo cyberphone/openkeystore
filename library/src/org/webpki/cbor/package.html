@@ -187,7 +187,7 @@ well-formedness as well as by default, adhering to the determinism scheme.
 After successful decoding, the CBOR data is provided as a {@link CBORObject}.
 For extracting the data of CBOR primitives in a Java compatible way,
 there are type specific access methods such as 
-{@link CBORObject#getInt()} and {@link CBORObject#getString()}.
+{@link CBORObject#getInt32()} and {@link CBORObject#getString()}.
 For accessing structured CBOR objects, the
 {@link CBORObject#getMap()},
 {@link CBORObject#getArray()},
@@ -197,7 +197,7 @@ access to individual CBOR objects of the structure.
 </p>
 <p>
 If the underlying CBOR data type does not match the access method
-(like performing {@link CBORObject#getInt()} on a {@link CBORBigInt}),
+(like performing {@link CBORObject#getInt32()} on a {@link CBORBigInt}),
 an exception is thrown.
 That is, this implementation performs <i>strict type checking</i>. 
 </p>

@@ -182,9 +182,9 @@ public class CBORTest {
         CBORObject decodedInteger = CBORObject.decode(cbor);
         if (value != -1 || forceUnsigned) {
             long dv = forceUnsigned ? 
-                    decodedInteger.getUnsignedLong()
+                    decodedInteger.getUint64()
                                     :
-                    decodedInteger.getLong();
+                    decodedInteger.getInt64();
             assertTrue("Decoded value dv=" + dv + " v=" + value, dv == value);
         }
         String decString = decodedInteger.toString();
@@ -220,28 +220,28 @@ public class CBORTest {
         try {
             switch (variation) {
                 case BYTE:
-                    v = res.getByte();
+                    v = res.getInt8();
                     break;
                 case UBYTE:
-                    v = ucheck(res.getUnsignedByte(), 0xff);
+                    v = ucheck(res.getUint8(), 0xff);
                     break;
                 case SHORT:
-                    v = res.getShort();
+                    v = res.getInt16();
                     break;
                 case USHORT:
-                    v = ucheck(res.getUnsignedShort(), 0xffff);
+                    v = ucheck(res.getUint16(), 0xffff);
                     break;
                 case INT:
-                    v = res.getInt();
+                    v = res.getInt32();
                     break;
                 case UINT:
-                    v = ucheck(res.getUnsignedInt(), 0xffffffffL);
+                    v = ucheck(res.getUint32(), 0xffffffffL);
                     break;
                 case LONG:
-                    v = res.getLong();
+                    v = res.getInt64();
                     break;
                 case ULONG:
-                    v = res.getUnsignedLong();
+                    v = res.getUint64();
                     break;
             }
             assertFalse("Should not run: " + value, mustFail);
@@ -322,7 +322,7 @@ public class CBORTest {
                 assertTrue("diag"+ asText, asText.equals(cborFloat.toString()));
             }
             assertFalse("Double should fail", mustFail == 1);
-            Double d = cborFloat.getDouble();
+            Double d = cborFloat.getFloat64();
             assertTrue("Equal d=" + d + " v=" + v, (d.compareTo(v)) == 0 ^ (mustFail != 0));
         } catch (Exception e) {
             assertTrue("Ok fail", mustFail != 0);
@@ -334,7 +334,7 @@ public class CBORTest {
         double v = Double.valueOf(asText);
         CBORObject cborObject = parseCborHex(hex);
         try {
-            float f = cborObject.getFloat();
+            float f = cborObject.getFloat32();
             assertFalse("Should fail", mustFail);
             if (Float.isNaN(f) && Double.isNaN(v)) {
                 return;
@@ -753,20 +753,20 @@ public class CBORTest {
 
         try {
             ((CBORArray) cbor).get(1).getMap()
-                    .get(new CBORInt(-91)).getInt();
+                    .get(new CBORInt(-91)).getInt32();
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, "Missing key: -91");
         }
  
         assertTrue("v1", ((CBORArray) cbor).get(1).getMap()
-                .get(new CBORInt(58)).getInt() == 3);
+                .get(new CBORInt(58)).getInt32() == 3);
 
         assertTrue("v1", ((CBORArray) cbor).get(1).getMap()
-                .getConditionally(new CBORInt(58), null).getInt() == 3);
+                .getConditionally(new CBORInt(58), null).getInt32() == 3);
 
         assertTrue("v1", ((CBORArray) cbor).get(1).getMap()
-                .getConditionally(new CBORString("no way"), new CBORInt(10)).getInt() == 10);
+                .getConditionally(new CBORString("no way"), new CBORInt(10)).getInt32() == 10);
 
         assertTrue("tag5", parseCborHex("C5626869").getTag().getTagNumber() == 5);
     }
@@ -776,7 +776,7 @@ public class CBORTest {
         CBORObject unread = null;
         try {
             unread = parseCborHex("8301a40802183a032382f5f43859f6820405");
-            ((CBORArray) unread).get(0).getInt();
+            ((CBORArray) unread).get(0).getInt32();
             unread.checkForUnread();
             fail("must not execute");
         } catch (Exception e) {
@@ -787,8 +787,8 @@ public class CBORTest {
         try {
             unread = parseCborHex("8301a40802183a032382f5f43859f6820405");
             unread = ((CBORArray) unread).get(1).getMap();
-            ((CBORMap)unread).get(new CBORInt(8)).getInt();
-            ((CBORMap)unread).get(new CBORInt(58)).getInt();
+            ((CBORMap)unread).get(new CBORInt(8)).getInt32();
+            ((CBORMap)unread).get(new CBORInt(58)).getInt32();
             ((CBORArray)((CBORMap)unread).get(new CBORInt(-4))).get(0).getBoolean();
             unread.checkForUnread();
             fail("must not execute");
@@ -824,8 +824,8 @@ public class CBORTest {
         try {
             unread = parseCborHex("8301a40802183a032382f5f43859f6820405");
             unread = ((CBORArray) unread).get(1).getMap();
-            ((CBORMap)unread).get(new CBORInt(8)).getInt();
-            ((CBORMap)unread).get(new CBORInt(58)).getInt();
+            ((CBORMap)unread).get(new CBORInt(8)).getInt32();
+            ((CBORMap)unread).get(new CBORInt(58)).getInt32();
             ((CBORArray)((CBORMap)unread).get(new CBORInt(-4))).get(0).scan();
             unread.checkForUnread();
             fail("must not execute");
@@ -838,8 +838,8 @@ public class CBORTest {
         try {
             unread = parseCborHex("8301a40802183a032382f5f43859f6820405");
             unread = ((CBORArray) unread).get(1).getMap();
-            ((CBORMap)unread).get(new CBORInt(8)).getInt();
-            ((CBORMap)unread).get(new CBORInt(58)).getInt();
+            ((CBORMap)unread).get(new CBORInt(8)).getInt32();
+            ((CBORMap)unread).get(new CBORInt(58)).getInt32();
             ((CBORArray)((CBORMap)unread).get(new CBORInt(-4))).get(0);
             unread.checkForUnread();
             fail("must not execute");
@@ -905,7 +905,7 @@ public class CBORTest {
                 "Is type: INTEGER, requested: BYTES");
         }
         try {
-            cborObject.getDouble();  
+            cborObject.getFloat64();  
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
@@ -1776,7 +1776,7 @@ public class CBORTest {
                             @Override
                             public void foundData(CBORObject objectOrNull) {
                                 assertTrue("data",
-                                           objectOrNull.getArray().get(0).getInt() == 500);
+                                           objectOrNull.getArray().get(0).getInt32() == 500);
                             }
                         })
                     .setTagPolicy(CBORCryptoUtils.POLICY.MANDATORY,
@@ -2039,7 +2039,7 @@ public class CBORTest {
         
         @Override
         protected void decode(CBORObject cborBody) {
-            number = cborBody.getMap().get(INT_KEY).getInt();
+            number = cborBody.getMap().get(INT_KEY).getInt32();
         }
 
         @Override
@@ -2057,7 +2057,7 @@ public class CBORTest {
         
         @Override
         protected void decode(CBORObject cborBody) {
-            number = cborBody.getMap().get(INT_KEY).getInt();
+            number = cborBody.getMap().get(INT_KEY).getInt32();
         }
 
         @Override
@@ -2179,17 +2179,17 @@ public class CBORTest {
     @Test
     public void diagnosticNotation() throws Exception {
         assertTrue("#",
-                   CBORDiagnosticNotation.decode("# hi\r\n 1#commnt").getInt() == 1);
+                   CBORDiagnosticNotation.decode("# hi\r\n 1#commnt").getInt32() == 1);
         assertTrue("/",
-                   CBORDiagnosticNotation.decode("/ comment\n /1").getInt() == 1);
+                   CBORDiagnosticNotation.decode("/ comment\n /1").getInt32() == 1);
         String b64u = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
         CBORObject decoded = CBORDiagnosticNotation.decode("b64'" + b64u + "'");
         assertTrue("b64u", b64u.equals(Base64URL.encode(decoded.getBytes())));
         String b64 = b64u.replace('-', '+').replace('_', '/');
         decoded = CBORDiagnosticNotation.decode("b64'" + b64 + "'");
         assertTrue("b64", b64u.equals(Base64URL.encode(decoded.getBytes())));
-        assertTrue("dbl", CBORDiagnosticNotation.decode("3.5").getDouble() == 3.5);
-        assertTrue("int", CBORDiagnosticNotation.decode("1000").getInt() == 1000);
+        assertTrue("dbl", CBORDiagnosticNotation.decode("3.5").getFloat64() == 3.5);
+        assertTrue("int", CBORDiagnosticNotation.decode("1000").getInt32() == 1000);
         assertTrue("big", CBORDiagnosticNotation.decode(DIAG_BIG).getBigInteger().equals(
                 new BigInteger(DIAG_BIG)));
         assertTrue("bigb", CBORDiagnosticNotation.decode(
@@ -2201,7 +2201,7 @@ public class CBORTest {
         assertTrue("bigh-", CBORDiagnosticNotation.decode(
                 "-0x" + DIAG_BIG).getBigInteger().equals(new BigInteger(DIAG_BIG, 16).negate()));
         assertTrue("hex", CBORDiagnosticNotation.decode(
-                "-0x" + DIAG_HEX).getInt() == -30);
+                "-0x" + DIAG_HEX).getInt32() == -30);
         assertTrue("bstr", 
                     Arrays.equals(
                             CBORDiagnosticNotation.decode(
@@ -2217,17 +2217,17 @@ public class CBORTest {
                           CBORDiagnosticNotation.decode(
                                   "<< " + DIAG_CBOR.toString() + ">>").getBytes(),
                           DIAG_CBOR.encode()));
-        Double v = CBORDiagnosticNotation.decode("Infinity").getDouble();
+        Double v = CBORDiagnosticNotation.decode("Infinity").getFloat64();
         assertTrue("inf", v == Double.POSITIVE_INFINITY);
-        v = CBORDiagnosticNotation.decode("-Infinity").getDouble();
+        v = CBORDiagnosticNotation.decode("-Infinity").getFloat64();
         assertTrue("-inf", v == Double.NEGATIVE_INFINITY);
-        v = CBORDiagnosticNotation.decode("NaN").getDouble();
+        v = CBORDiagnosticNotation.decode("NaN").getFloat64();
         assertTrue("nan", v.isNaN());
         assertTrue("0.0", CBORDiagnosticNotation.decode("0.0").toString().equals("0.0"));
         assertTrue("-0.0", CBORDiagnosticNotation.decode("-0.0").toString().equals("-0.0"));
         CBORObject[] seq = CBORDiagnosticNotation.decodeSequence("1,\"" + DIAG_TEXT + "\"");
         assertTrue("seq", seq.length == 2);
-        assertTrue("seqi", seq[0].getInt() == 1);
+        assertTrue("seqi", seq[0].getInt32() == 1);
         assertTrue("seqs", seq[1].getString().equals(DIAG_TEXT));
         
         diagFlag("0x ");
@@ -2240,7 +2240,7 @@ public class CBORTest {
         diagFlag("b64'00'");  // Bad B64
         diagFlag("h'0'");  // Bad Hex
         diagFlag("6_0");  // _ not permitted here
-        assertTrue("_", CBORDiagnosticNotation.decode("0b100_000000001").getInt() == 2049);
+        assertTrue("_", CBORDiagnosticNotation.decode("0b100_000000001").getInt32() == 2049);
         diagFlag("'unterminated");  // Bad string
         diagFlag("\"unterminated");  // Bad string
         

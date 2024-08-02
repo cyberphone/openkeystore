@@ -37,7 +37,7 @@ public class CBORSequenceBuilder {
     }
     
     /**
-     * Appends object to the sequence.
+     * Add object to CBOR sequence.
      * 
      * @param object Object to be appended
      * @return <code>this</code>
@@ -49,7 +49,7 @@ public class CBORSequenceBuilder {
     }
     
     /**
-     * Returns the completed sequence.
+     * Get completed CBOR sequence.
      * 
      * @return CBOR sequence
      */
@@ -61,6 +61,10 @@ public class CBORSequenceBuilder {
         return cborBinary;
     }
 
+    /**
+     * Render CBOR sequence in diagnostic notation.
+     * @return String
+     */
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();

@@ -31,7 +31,7 @@ public class CBORHmacSigner extends CBORSigner<CBORHmacSigner> {
     HmacSignerInterface signer;
 
     /**
-     * Initializes a signer with a secret key.
+     * Creates a signer object with a secret key.
      * 
      * @param secretKey Signature key
      * @param algorithm HMAC algorithm
@@ -54,7 +54,7 @@ public class CBORHmacSigner extends CBORSigner<CBORHmacSigner> {
     }
     
     /**
-     * Initializes signer with an external interface.
+     * Creates a signer object with an external interface.
      * 
      * @param signer The external signer
      */

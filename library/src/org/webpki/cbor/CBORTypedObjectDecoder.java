@@ -74,7 +74,7 @@ public abstract class CBORTypedObjectDecoder {
     }
     
     /**
-     * Returns typed object identifier.
+     * Get typed object identifier.
      *
      * @return Object Id (COTX)
      */
@@ -82,7 +82,7 @@ public abstract class CBORTypedObjectDecoder {
 
 
     /**
-     * Returns root of decoded CBOR.
+     * Get root of decoded CBOR.
      * <p>
      * Note: the root points to the entire object, including the COTX tag.
      * </p>

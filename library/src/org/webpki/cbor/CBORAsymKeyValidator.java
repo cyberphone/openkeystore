@@ -38,7 +38,7 @@ public class CBORAsymKeyValidator extends CBORValidator<CBORAsymKeyValidator> {
     public interface KeyLocator {
 
         /**
-         * Retrieves validation key and verifies meta data.
+         * Get validation key and verify meta data.
          * <p>
          * An implementation is supposed to throw an exception if it
          * does not find a matching key or if the supplied algorithm does
@@ -58,7 +58,7 @@ public class CBORAsymKeyValidator extends CBORValidator<CBORAsymKeyValidator> {
     KeyLocator keyLocator;
 
     /**
-     * Initializes a validator with a public key.
+     * Creates a validator object with a public key.
      * <p>
      * This constructor presumes that the validation key is given by the context
      * and that the supplied algorithm meets the policy.
@@ -71,7 +71,7 @@ public class CBORAsymKeyValidator extends CBORValidator<CBORAsymKeyValidator> {
     }
 
     /**
-     * Initializes a validator with a key locator.
+     * Creates a validator object with a key locator.
      * <p>
      * This constructor provides full control for the verifier
      * regarding in-lined public keys and key identifiers.

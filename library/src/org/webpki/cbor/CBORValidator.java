@@ -121,7 +121,7 @@ public abstract class CBORValidator <T extends CBORValidator<T>> {
         // Call algorithm specific validator. The code below presumes that encode()
         // returns a deterministic representation of the signed CBOR data.
         coreValidation(csfContainer,
-                       csfContainer.get(ALGORITHM_LABEL).getInt(),
+                       csfContainer.get(ALGORITHM_LABEL).getInt32(),
                        optionalKeyId, 
                        signatureValue,
                        signedObject.encode());

@@ -38,7 +38,7 @@ public class CBORCryptoUtils {
     private CBORCryptoUtils() {}
     
     /**
-     * Decodes a certificate path from a CBOR array.
+     * Decode a certificate path from a CBOR array.
      *<p>
      * The CBOR array is assumed to hold one or more X.509 certificates in DER format,
      * each encoded as a CBOR <code>byte&nbsp;string</code>. 
@@ -64,7 +64,7 @@ public class CBORCryptoUtils {
     }
 
     /**
-     * Encodes certificate path into a CBOR array.
+     * Encode certificate path into a CBOR array.
      * <p>
      * Note that the certificates must be featured in <i>ascending order</i>
      * with respect to parenthood.  That is,
@@ -101,7 +101,7 @@ public class CBORCryptoUtils {
     public interface Intercepter {
 
         /**
-         * Optionally wraps a map in a tag.
+         * Optionally wrap a map in a tag.
          * <p>
          * Also see {@link CBORTag} for details on the syntax for wrapped CBOR data.
          * </p>
@@ -114,7 +114,7 @@ public class CBORCryptoUtils {
         }
 
         /**
-         * Optionally adds custom data to the map.
+         * Optionally add custom data to the map.
          * <p>
          * Custom data may be any valid CBOR object.  This data is assigned
          * to the CSF/CEF specific label {@link CBORCryptoConstants#CUSTOM_DATA_LABEL}.
@@ -143,9 +143,9 @@ public class CBORCryptoUtils {
     public interface Collector {
 
         /**
-         * Returns tag or custom data.
+         * Get tag or custom data.
          * 
-         * @param objectOrNull If there is no tag or custom data this element is <code>null</code>
+         * @param objectOrNull If there is no tag or custom data this argument is <code>null</code>
          *
          */
         void foundData(CBORObject objectOrNull);

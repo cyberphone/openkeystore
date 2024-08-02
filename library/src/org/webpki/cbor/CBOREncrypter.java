@@ -58,7 +58,7 @@ public abstract class CBOREncrypter <T extends CBOREncrypter<T>>  {
     abstract T getThis();
     
     /**
-     * Sets optional Intercepter.
+     * Set optional Intercepter.
      * 
      * @param intercepter An instance of Intercepter
      * @return <code>this</code> of subclass
@@ -69,7 +69,7 @@ public abstract class CBOREncrypter <T extends CBOREncrypter<T>>  {
     }
     
     /**
-     * Sets optional key Id.
+     * Set optional key Id.
      * 
      * In the case the public key is not provided in the 
      * object, the encryption key may be tied to an identifier
@@ -96,7 +96,7 @@ public abstract class CBOREncrypter <T extends CBOREncrypter<T>>  {
     }
 
     /**
-     * Encrypts data.
+     * Encrypt data.
      * 
      * @param dataToEncrypt The data to encrypt
      * @return CBOR encryption object

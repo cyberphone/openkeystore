@@ -49,7 +49,7 @@ public abstract class CBORDecrypter <T extends CBORDecrypter<?>>{
     Collector customDataCallBack;
     
     /**
-     * Sets custom extension data policy.
+     * Set custom extension data policy.
      * <p>
      * By default custom data elements ({@link CBORCryptoConstants#CUSTOM_DATA_LABEL}) 
      * are rejected ({@link CBORCryptoUtils.POLICY#FORBIDDEN}).
@@ -71,7 +71,7 @@ public abstract class CBORDecrypter <T extends CBORDecrypter<?>>{
     Collector tagCallBack;
 
     /**
-     * Sets tag wrapping policy.
+     * Set tag wrapping policy.
      * <p>
      * By default wrapped containers are rejected ({@link CBORCryptoUtils.POLICY#FORBIDDEN}).
      * </p>
@@ -89,7 +89,7 @@ public abstract class CBORDecrypter <T extends CBORDecrypter<?>>{
     }    
  
     /**
-     * Decrypts data.
+     * Decrypt data.
      * <p>
      * This method presumes that <code>encryptionObject</code> holds
      * an encryption object according to CEF.
@@ -108,7 +108,7 @@ public abstract class CBORDecrypter <T extends CBORDecrypter<?>>{
         // Get the mandatory content encryption algorithm.
         ContentEncryptionAlgorithms contentEncryptionAlgorithm =
                 ContentEncryptionAlgorithms.getAlgorithmFromId(
-                        cefContainer.get(ALGORITHM_LABEL).getInt());
+                        cefContainer.get(ALGORITHM_LABEL).getInt32());
 
         // Possible key encryption kicks in here.  That is, there is a sub map.
         CBORMap innerObject = this instanceof CBORSymKeyDecrypter ? 

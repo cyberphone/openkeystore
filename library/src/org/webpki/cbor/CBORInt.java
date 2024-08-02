@@ -35,7 +35,7 @@ import java.math.BigInteger;
  * That is, if a protocol schema or declaration calls for a signed
  * <span style='white-space:nowrap'>32-bit</span> integer, the valid
  * range would be <code>-0x80000000</code> to <code>0x7fffffff</code>.
- * Also see {@link CBORObject#getInt()}.
+ * Also see {@link CBORObject#getInt32()}.
  * </div>
  */
 public class CBORInt extends CBORObject {

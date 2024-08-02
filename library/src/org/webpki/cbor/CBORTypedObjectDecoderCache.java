@@ -52,7 +52,7 @@ public class CBORTypedObjectDecoderCache {
     }
 
     /**
-     * Decodes and instantiates typed object decoder.
+     * Decode and instantiate typed object decoder.
      * 
      * @param typedObject Typed object to be decoded
      * @return Instantiated {@link CBORTypedObjectDecoder}
@@ -79,7 +79,7 @@ public class CBORTypedObjectDecoderCache {
     }
 
     /**
-     * Adds typed object decoder class to cache.
+     * Add typed object decoder class to cache.
      * 
      * @param decoderClass Typed decoder class
      * @return {@link CBORTypedObjectDecoderCache}

@@ -25,7 +25,7 @@ public class CBORFloat16Test {
                     System.out.println("**********=" + org.webpki.util.HexaDecimal.encode(encoded));
                     return;
                 }
-                double value = cbor.getDouble();
+                double value = cbor.getFloat64();
                 if (!cbor.equals(new CBORFloat(value))) {
                     throw new RuntimeException("Diff for: " + value);
                 }

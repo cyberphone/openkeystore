@@ -40,7 +40,7 @@ public class CBORX509Validator extends CBORValidator<CBORX509Validator> {
     public interface Parameters {
 
         /**
-         * Verifies signature meta data.
+         * Verify signature meta data.
          * <p>
          * A relying party is supposed to verify that the
          * certificate(path) is trusted and that the supplied
@@ -57,7 +57,7 @@ public class CBORX509Validator extends CBORValidator<CBORX509Validator> {
     Parameters parameters;
 
     /**
-     * Initializes X.509 validator with a parameter verifier.
+     * Creates X.509 validator object with a parameter verifier.
      * 
      * @param parameters Parameters implementation
      */

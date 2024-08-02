@@ -26,7 +26,7 @@ public class CBORSymKeyEncrypter extends CBOREncrypter<CBORSymKeyEncrypter> {
     private byte[] contentEncryptionKey;
     
     /**
-     * Initializes an encrypter object.
+     * Creates an encrypter object with a secret key.
      * 
      * @param secretKey Encryption key
      * @param algorithm Encryption algorithm

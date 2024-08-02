@@ -61,7 +61,7 @@ public abstract class CBORSigner <T extends CBORSigner<?>> {
     abstract T getThis();
     
     /**
-     * Sets optional Intercepter.
+     * Set optional Intercepter.
      * 
      * @param intercepter An instance of Intercepter
      * @return <code>this</code> of subclass
@@ -72,7 +72,7 @@ public abstract class CBORSigner <T extends CBORSigner<?>> {
     }
     
     /**
-     * Sets signature <code>keyId</code>.
+     * Set signature <code>keyId</code>.
      * 
      * In the case the public key is not provided in the signature
      * object, the signature key may be tied to an identifier
@@ -100,7 +100,7 @@ public abstract class CBORSigner <T extends CBORSigner<?>> {
     }
 
     /**
-     * Sets cryptographic provider.
+     * Set cryptographic provider.
      * 
      * @param provider Name of provider like "BC"
      * @return <code>this</code> of subclass
@@ -111,7 +111,7 @@ public abstract class CBORSigner <T extends CBORSigner<?>> {
     }
 
     /**
-     * Sets clone mode.
+     * Set clone mode.
      * <p>
      * By default the {@link #sign(CBORObject, CBORMap)} method
      * <i>overwrites</i> the input <code>map</code> object.
@@ -126,7 +126,7 @@ public abstract class CBORSigner <T extends CBORSigner<?>> {
     }
   
     /**
-     * Signs CBOR object.
+     * Sign CBOR object.
      * 
      * <p>
      * Adds an enveloped CSF object (signature) to a CBOR map.

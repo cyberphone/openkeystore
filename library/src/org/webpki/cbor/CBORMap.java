@@ -80,7 +80,7 @@ public class CBORMap extends CBORObject {
     }
     
     /**
-     * Returns the size of the map.
+     * Get size of the CBOR <code>map</code>.
      * 
      * @return The number of entries (keys) in the map
      */
@@ -89,7 +89,7 @@ public class CBORMap extends CBORObject {
     }
 
     /**
-     * Sets mapped object.
+     * Set mapped CBOR object.
      * <p>
      * If <code>key</code> is already present, a {@link CBORException} is thrown.
      * </p>
@@ -138,7 +138,7 @@ public class CBORMap extends CBORObject {
     }
 
     /**
-     * Sets sorting mode for a CBOR <code>map</code>.
+     * Set sorting mode for the CBOR <code>map</code>.
      * <p>
      * This method provides an opportunity using keys that are <i>presorted</i> 
      * (in lexicographic order), which in maps with many keys can 
@@ -186,7 +186,7 @@ public class CBORMap extends CBORObject {
     }
 
     /**
-     * Returns mapped object.
+     * Get mapped CBOR object.
      * <p>
      * If <code>key</code> is present, the associated <code>value</code> is returned,
      * else a {@link CBORException} is thrown.
@@ -200,7 +200,7 @@ public class CBORMap extends CBORObject {
     }
 
     /**
-     * Returns mapped object conditionally.
+     * Get mapped CBOR object conditionally.
      * <p>
      * If <code>key</code> is present, the associated <code>value</code> is returned,
      * else <code>defaultValue</code> is returned.
@@ -217,7 +217,7 @@ public class CBORMap extends CBORObject {
     }
 
     /**
-     * Checks map for key presence.
+     * Check CBOR <code>map</code> for key presence.
      * 
      * @param key Key
      * @return <code>true</code> if the key is present
@@ -227,7 +227,7 @@ public class CBORMap extends CBORObject {
     }
 
     /**
-     * Removes mapped object.
+     * Remove mapped CBOR object.
      * <p>
      * If <code>key</code> is present, the associated <code>value</code> is returned,
      * else a {@link CBORException} is thrown.
@@ -252,7 +252,7 @@ public class CBORMap extends CBORObject {
     }
 
     /**
-     * Enumerates all keys in a map.
+     * Enumerate all keys in the CBOR <code>map</code>.
      * <p>
      * Note: the keys are returned in proper sort order.
      * </p>

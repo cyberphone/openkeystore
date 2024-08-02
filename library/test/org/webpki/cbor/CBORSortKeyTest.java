@@ -41,7 +41,7 @@ public class CBORSortKeyTest {
         printTime("SET", TOTAL_SET_OPERATIONS, startTime, sortFlag);
         startTime = System.currentTimeMillis();
         for (int n = 0; n < TOTAL_SET_OPERATIONS ; n++) {
-            if (cborMap.get(SORTED_KEYS[n]).getInt() != n) {
+            if (cborMap.get(SORTED_KEYS[n]).getInt32() != n) {
                 CBORObject.cborError("Big access");
             }
         }
@@ -56,7 +56,7 @@ public class CBORSortKeyTest {
         printTime("Reverse SET", TOTAL_SET_OPERATIONS, startTime, sortFlag);
         startTime = System.currentTimeMillis();
         for (int n = 0; n < TOTAL_SET_OPERATIONS ; n++) {
-            if (cborMap.get(REVERSE_KEYS[n]).getInt() != n) {
+            if (cborMap.get(REVERSE_KEYS[n]).getInt32() != n) {
                 CBORObject.cborError("Big access");
             }
         }
@@ -78,7 +78,7 @@ public class CBORSortKeyTest {
         startTime = System.currentTimeMillis();
         for (int q = 0; q < maps; q++) {
             for (int n = 0; n < mapSize; n++) {
-                if (cborMap.get(SORTED_KEYS[n]).getInt() != n) {
+                if (cborMap.get(SORTED_KEYS[n]).getInt32() != n) {
                     CBORObject.cborError("Medium access");
                 }
             }            
@@ -97,7 +97,7 @@ public class CBORSortKeyTest {
         startTime = System.currentTimeMillis();
         for (int q = 0; q < maps; q++) {
             for (int n = 0; n < mapSize; n++) {
-                if (cborMap.get(REVERSE_KEYS[n]).getInt() != n) {
+                if (cborMap.get(REVERSE_KEYS[n]).getInt32() != n) {
                     CBORObject.cborError("Medium access");
                 }
             }            

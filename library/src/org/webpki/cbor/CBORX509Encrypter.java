@@ -33,7 +33,7 @@ public class CBORX509Encrypter extends CBOREncrypter<CBORX509Encrypter> {
     X509Certificate[] certificatePath;
     
     /**
-     * Initializes an encrypter object.
+     * Creates an encrypter object.
      * 
      * @param certificatePath Encryption certificate path
      * @param keyEncryptionAlgorithm Key encryption algorithm

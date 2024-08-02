@@ -70,7 +70,7 @@ public class ValidateServlet extends CoreRequestServlet {
             CBORMap csfContainer = unwrapOptionalTag(signedCborObject)
                         .get(signatureLabel).getMap();
             boolean hmacSignature = 
-                    csfContainer.get(CBORCryptoConstants.ALGORITHM_LABEL).getInt() > 0;
+                    csfContainer.get(CBORCryptoConstants.ALGORITHM_LABEL).getInt32() > 0;
             boolean x509flag = csfContainer.containsKey(CBORCryptoConstants.CERT_PATH_LABEL);
             final StringBuilder certificateData = x509flag ? new StringBuilder() : null;
 
