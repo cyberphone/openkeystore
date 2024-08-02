@@ -75,7 +75,7 @@ public class Base64URL {
     }
 
     /**
-     * Encode a byte array.
+     * Encode byte array.
      * <p>
      * This method adds no padding or line wraps.
      * </p>
