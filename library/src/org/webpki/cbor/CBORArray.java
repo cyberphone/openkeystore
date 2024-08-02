@@ -66,7 +66,7 @@ public class CBORArray extends CBORObject {
     }
     
     /**
-     * Get a copy of the CBOR <code>array</code>.
+     * Create shallow copy of the CBOR <code>array</code>.
      * 
      * @return Array of CBOR objects
      */
