@@ -151,7 +151,7 @@ public abstract class CertificateViewer extends HttpServlet {
         add(s, "SHA1&nbsp;fingerprint", ArrayUtil.toHexString(ci.getCertificateHash(), 0, -1, true, ' '));
         add(s, "Public&nbsp;key", ci.getPublicKeyAlgorithm() + " (" + ci.getPublicKeySize() + " bits)" +
                 "<pre style=\"margin-top:5px;margin-bottom:0px\">" +
-                HexaDecimal.getHexDebugData(ci.getPublicKeyData(), -16) + "</pre>");
+                HexaDecimal.encodeDebugData(ci.getPublicKeyData(), -16) + "</pre>");
         if (trustModeWanted()) {
             add(s,
                     "Trust", ci.isTrusted() ?

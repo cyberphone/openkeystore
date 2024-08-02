@@ -39,12 +39,12 @@ public class Base64URL {
     private Base64URL() {}  // No instantiation please
 
     /**
-     * Decodes base64url String to a byte array.
+     * Decode base64url string.
      * <p>
      * This method <b>does not</b> accept padding or line wraps.
      * </p>
      *
-     * @param base64Url Encoded data
+     * @param base64Url Encoded data in base64url format
      * @return Decoded data as a byte array
      * @throws IllegalArgumentException
      */
@@ -57,7 +57,7 @@ public class Base64URL {
      }
 
     /**
-     * Decodes a base64url String to a byte array.
+     * Decode base64url string.
      * <p>
      * This method accepts <i>optional</i> padding.
      * </p>
@@ -65,7 +65,7 @@ public class Base64URL {
      * Note that line wraps are <b>not</b> permitted.
      * </p>
      * 
-     * @param base64Url Encoded data
+     * @param base64Url Encoded data in base64url format
      * @return Decoded data as a byte array
      * @throws IllegalArgumentException
      */
@@ -85,13 +85,13 @@ public class Base64URL {
     }
 
     /**
-     * Encodes a byte array to a base64url String.
+     * Encode a byte array.
      * <p>
      * This method adds no padding or line wraps.
      * </p>
      *
      * @param byteArray Binary data
-     * @return Encoded data as a String
+     * @return Encoded data as a base64url string
      */
     public static String encode(byte[] byteArray) {
 //#if ANDROID

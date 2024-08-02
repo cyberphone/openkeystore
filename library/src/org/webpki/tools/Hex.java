@@ -53,7 +53,7 @@ public class Hex {
                 if (args.length == 2) show();
                 byte[] data = IO.getByteArrayFromInputStream(System.in);
                 System.out.print(args[0].equals("dump") ? 
-                      HexaDecimal.getHexDebugData(data, 16) : HexaDecimal.encode(data));
+                      HexaDecimal.encodeDebugData(data, 16) : HexaDecimal.encode(data));
                 break;
 
             case "tobin":

@@ -112,7 +112,7 @@ public class HexaDecimal {
     }
 
     /**
-     * Formats byte array data into readable lines.
+     * Encode byte array into readable lines.
      * <p>
      * After each line (<code>nn:&nbsp;hh&nbsp;hh...</code>) the ASCII counterpart is listed as well.
      * </p>
@@ -120,12 +120,12 @@ public class HexaDecimal {
      * @param bytesPerLine Bytes per line
      * @return Human-readable String
      */
-    public static String getHexDebugData(byte[] byteArray, int bytesPerLine) {
+    public static String encodeDebugData(byte[] byteArray, int bytesPerLine) {
         return new HexaDecimal().toHexDebugData(byteArray, bytesPerLine);
     }
 
     /**
-     * Encodes byte array data.
+     * Encode byte array.
      *
      * @param byteArray Data to be encoded
      * @return String with zero or more hexadecimal pairs (<code>hh</code>)
@@ -148,7 +148,7 @@ public class HexaDecimal {
     }
 
     /**
-     * Decodes a hexadecimal String.
+     * Decode hexadecimal string.
      * 
      * @param hexString String with zero or more hexadecimal pairs (<code>hh</code>)
      * @return Decoded data as a byte array

@@ -35,12 +35,12 @@ public class Base64 {
     private Base64() {}  // No instantiation please
 
     /**
-     * Decodes a base64 String to a byte array.
+     * Decode base64 string.
      * <p>
      * Note that line wraps are <i>ignored</i>.
      * </p>
      *
-     * @param base64 Encoded data
+     * @param base64 Encoded data in base64 format
      * @return Decoded data as a byte array
      * @throws IllegalArgumentException
      */
@@ -49,26 +49,26 @@ public class Base64 {
     }
 
     /**
-     * Encodes a byte array to a base64 String.
+     * Encode byte array.
      * <p>
      * This method adds no padding or line wraps.
      * </p>
      *
      * @param byteArray Binary data
-     * @return Encoded data as a String
+     * @return Encoded data as a base64 string
      */
     public static String encode(byte[] byteArray) {
         return ENCODER.encodeToString(byteArray);
     }
 
     /**
-     * Encodes a byte array to a base64 String.
+     * Encode byte array.
      * <p>
      * This method wraps lines and adds padding.
      * </p>
      *
      * @param byteArray Binary data
-     * @return Encoded data as a String
+     * @return Encoded data as a base64 string
      */
     public static String mimeEncode(byte[] byteArray) {
         return MIME_ENCODER.encodeToString(byteArray);
