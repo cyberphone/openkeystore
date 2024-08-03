@@ -91,6 +91,8 @@ public abstract class CBORObject implements Cloneable {
     static final long UINT8_MASK              = 0xffffffffffffff00L;
     
     static final int  MAX_ERROR_MESSAGE       = 100;
+
+    static final BigInteger MAX_INTEGER       = new BigInteger("ffffffffffffffff", 16);
     
     /**
      * Get core CBOR type.
@@ -679,19 +681,24 @@ public abstract class CBORObject implements Cloneable {
                 case MT_BIG_NEGATIVE:
                 case MT_BIG_UNSIGNED:
                     byte[] byteArray = getObject().getBytes();
-                    if ((byteArray.length <= 8 || byteArray[0] == 0) && deterministicMode) {
-                        cborError(STDERR_NON_DETERMINISTIC_BIGNUM);
+                    BigInteger bigInteger = new BigInteger(1, byteArray);
+                    if (deterministicMode) {
+                        if (byteArray.length <= 8 || byteArray[0] == 0) {
+                            cborError(STDERR_NON_DETERMINISTIC_BIGNUM);
+                        }
+                    } else {
+                        // Potentially sloppy serialization.
+                        if (bigInteger.compareTo(MAX_INTEGER) < 1) {
+                            return new CBORInt(bigInteger.longValue(), tag == MT_BIG_UNSIGNED);
+                        }
                     }
-                    return new CBORBigInt((tag == MT_BIG_NEGATIVE) ?
-                        new BigInteger(-1, byteArray).subtract(BigInteger.ONE)
-                                           :
-                        new BigInteger(1, byteArray));
+                    return new CBORBigInt(tag == MT_BIG_UNSIGNED ? bigInteger : bigInteger.not());
  
                 case MT_FLOAT16:
                     double float64;
                     long f16Binary = getLongFromBytes(2);
 
-                    // Get the significand
+                    // Get the significand.
                     long significand = f16Binary & ((1l << FLOAT16_SIGNIFICAND_SIZE) - 1);
                     // Get the exponent.
                     long exponent = f16Binary & FLOAT16_POS_INFINITY;
