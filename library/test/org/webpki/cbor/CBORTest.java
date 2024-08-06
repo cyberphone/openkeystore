@@ -108,14 +108,14 @@ public class CBORTest {
     static CBORObject keyId;
     
     enum IntegerVariations {
-        LONG   (false), 
-        ULONG  (true),
-        INT    (false), 
-        UINT   (true),
-        SHORT  (false), 
-        USHORT (true),
-        BYTE   (false), 
-        UBYTE  (true);
+        INT64  (false), 
+        UINT64 (true),
+        INT32  (false), 
+        UINT32 (true),
+        INT16  (false), 
+        UINT16 (true),
+        INT8   (false), 
+        UINT8  (true);
         
         boolean unsigned;
         
@@ -219,28 +219,28 @@ public class CBORTest {
         long v = 0;
         try {
             switch (variation) {
-                case BYTE:
+                case INT8:
                     v = res.getInt8();
                     break;
-                case UBYTE:
+                case UINT8:
                     v = ucheck(res.getUint8(), 0xff);
                     break;
-                case SHORT:
+                case INT16:
                     v = res.getInt16();
                     break;
-                case USHORT:
+                case UINT16:
                     v = ucheck(res.getUint16(), 0xffff);
                     break;
-                case INT:
+                case INT32:
                     v = res.getInt32();
                     break;
-                case UINT:
+                case UINT32:
                     v = ucheck(res.getUint32(), 0xffffffffL);
                     break;
-                case LONG:
+                case INT64:
                     v = res.getInt64();
                     break;
-                case ULONG:
+                case UINT64:
                     v = res.getUint64();
                     break;
             }
@@ -250,15 +250,10 @@ public class CBORTest {
             if (res.getType() == CBORTypes.BIGNUM) {
                 checkException(e, "Is type: BIGNUM");
             } else {
-                if (bigInteger.compareTo(BigInteger.TWO) < 0 && variation.unsigned) {
-                    checkException(e, CBORObject.STDERR_NOT_UNSIGNED);
-                } else {
-                    String dataType = variation.toString().toLowerCase();
-                    if (variation.unsigned) {
-                        dataType = dataType.substring(1);
-                    }
-                    checkException(e, CBORObject.STDERR_INT_RANGE + dataType);
-                }
+                String dataType = variation.toString().toLowerCase();
+                dataType = dataType.substring(0,1).toUpperCase() +
+                    dataType.substring(1);
+                checkException(e, CBORObject.STDERR_INT_RANGE + dataType);
             }
             assertTrue("Shouldn't throw: " + value + e.getMessage(), mustFail);
         }
@@ -417,46 +412,46 @@ public class CBORTest {
         integerTest(0xfffffffffffffffeL, true, true,      "1bfffffffffffffffe");
         integerTest(-1,                  false, true,     "3bffffffffffffffff");
         
-        integerTest("-9223372036854775808",  IntegerVariations.LONG, false);
-        integerTest("-9223372036854775809",  IntegerVariations.LONG, true);
-        integerTest("9223372036854775807",   IntegerVariations.LONG, false);
-        integerTest("9223372036854775808",   IntegerVariations.LONG, true);
-        integerTest("-18446744073709551616", IntegerVariations.LONG, true);
-        integerTest("-18446744073709551617", IntegerVariations.LONG, true);
-        integerTest("18446744073709551616",  IntegerVariations.LONG, true);
+        integerTest("-9223372036854775808",  IntegerVariations.INT64, false);
+        integerTest("-9223372036854775809",  IntegerVariations.INT64, true);
+        integerTest("9223372036854775807",   IntegerVariations.INT64, false);
+        integerTest("9223372036854775808",   IntegerVariations.INT64, true);
+        integerTest("-18446744073709551616", IntegerVariations.INT64, true);
+        integerTest("-18446744073709551617", IntegerVariations.INT64, true);
+        integerTest("18446744073709551616",  IntegerVariations.INT64, true);
 
-        integerTest("18446744073709551615",  IntegerVariations.ULONG, false);
-        integerTest("0",                     IntegerVariations.ULONG, false);
-        integerTest("18446744073709551615",  IntegerVariations.ULONG, false);
-        integerTest("18446744073709551616",  IntegerVariations.ULONG, true);
-        integerTest("-1",                    IntegerVariations.ULONG, true);
+        integerTest("18446744073709551615",  IntegerVariations.UINT64, false);
+        integerTest("0",                     IntegerVariations.UINT64, false);
+        integerTest("18446744073709551615",  IntegerVariations.UINT64, false);
+        integerTest("18446744073709551616",  IntegerVariations.UINT64, true);
+        integerTest("-1",                    IntegerVariations.UINT64, true);
 
-        integerTest("-2147483648", IntegerVariations.INT, false);
-        integerTest("-2147483649", IntegerVariations.INT, true);
-        integerTest("2147483647",  IntegerVariations.INT, false);
-        integerTest("2147483648",  IntegerVariations.INT, true);
+        integerTest("-2147483648", IntegerVariations.INT32, false);
+        integerTest("-2147483649", IntegerVariations.INT32, true);
+        integerTest("2147483647",  IntegerVariations.INT32, false);
+        integerTest("2147483648",  IntegerVariations.INT32, true);
 
-        integerTest("-2147483649", IntegerVariations.UINT, true);
-        integerTest("4294967295",  IntegerVariations.UINT, false);
-        integerTest("4294967296",  IntegerVariations.UINT, true);
+        integerTest("-2147483649", IntegerVariations.UINT32, true);
+        integerTest("4294967295",  IntegerVariations.UINT32, false);
+        integerTest("4294967296",  IntegerVariations.UINT32, true);
 
-        integerTest("-32768", IntegerVariations.SHORT, false);
-        integerTest("-32769", IntegerVariations.SHORT, true);
-        integerTest("32767",  IntegerVariations.SHORT, false);
-        integerTest("32768",  IntegerVariations.SHORT, true);
+        integerTest("-32768", IntegerVariations.INT16, false);
+        integerTest("-32769", IntegerVariations.INT16, true);
+        integerTest("32767",  IntegerVariations.INT16, false);
+        integerTest("32768",  IntegerVariations.INT16, true);
 
-        integerTest("-2",    IntegerVariations.USHORT, true);
-        integerTest("65535", IntegerVariations.USHORT, false);
-        integerTest("65536", IntegerVariations.USHORT, true);
+        integerTest("-2",    IntegerVariations.UINT16, true);
+        integerTest("65535", IntegerVariations.UINT16, false);
+        integerTest("65536", IntegerVariations.UINT16, true);
         
-        integerTest("-128",  IntegerVariations.BYTE, false);
-        integerTest("-129",  IntegerVariations.BYTE, true);
-        integerTest("127",   IntegerVariations.BYTE, false);
-        integerTest("128",   IntegerVariations.BYTE, true);
+        integerTest("-128",  IntegerVariations.INT8, false);
+        integerTest("-129",  IntegerVariations.INT8, true);
+        integerTest("127",   IntegerVariations.INT8, false);
+        integerTest("128",   IntegerVariations.INT8, true);
 
-        integerTest("-2",  IntegerVariations.UBYTE, true);
-        integerTest("255", IntegerVariations.UBYTE, false);
-        integerTest("256", IntegerVariations.UBYTE, true);
+        integerTest("-2",  IntegerVariations.UINT8, true);
+        integerTest("255", IntegerVariations.UINT8, false);
+        integerTest("256", IntegerVariations.UINT8, true);
         
         bigIntegerTest("18446744073709551615", "1bffffffffffffffff");
         bigIntegerTest("18446744073709551614", "1bfffffffffffffffe");
@@ -2320,7 +2315,7 @@ public class CBORTest {
                 new CBORFloat(value);
                 fail("must not");
             } catch (Exception e) {
-                checkException(e, "\"NaN");
+                checkException(e, CBORFloat.STDERR_INVALID_FLOAT_DISABLED);
             }
         }
         String[] decoding = {"f97e00", "f97c00", "f9fc00"};
@@ -2329,7 +2324,7 @@ public class CBORTest {
                 CBORObject.decode(Hex.decode(hexCbor));
                 fail("must not");
             } catch (Exception e) {
-                checkException(e, "\"NaN");
+                checkException(e, CBORFloat.STDERR_INVALID_FLOAT_DISABLED);
             }
         }
         CBORFloat.disableInvalidFloats = false;

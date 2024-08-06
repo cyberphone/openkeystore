@@ -82,7 +82,7 @@ public class CBORFloat extends CBORObject {
 
             // Special "number".
             if (disableInvalidFloats) {
-                cborError("\"NaN\" and \"Infinity\" support is disabled");
+                cborError(STDERR_INVALID_FLOAT_DISABLED);
             }
             tag = MT_FLOAT16;
             bitFormat = (bitFormat == FLOAT64_POS_INFINITY) ?
@@ -195,4 +195,7 @@ public class CBORFloat extends CBORObject {
     void internalToString(CborPrinter cborPrinter) {
          cborPrinter.append(formatDouble(value));
     }
+
+    static final String STDERR_INVALID_FLOAT_DISABLED = 
+            "\"NaN\" and \"Infinity\" support is disabled";
 }

@@ -229,7 +229,7 @@ public abstract class CBORObject implements Cloneable {
         CBORInt CBORInt = getCBORInt();
         long value = CBORInt.unsigned ? CBORInt.value : ~CBORInt.value;
         if (CBORInt.unsigned == (value < 0)) {
-            integerRangeError("long");
+            integerRangeError("Int64");
         }
         return value;
     }
@@ -249,7 +249,7 @@ public abstract class CBORObject implements Cloneable {
     public long getUint64() {
         CBORInt CBORInt = getCBORInt();
         if (!CBORInt.unsigned) {
-            cborError(STDERR_NOT_UNSIGNED);
+            integerRangeError("Uint64");
         }
         return CBORInt.value;
     }
@@ -269,7 +269,7 @@ public abstract class CBORObject implements Cloneable {
     public int getInt32() {
         long value = getInt64();
         if (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE) {
-            integerRangeError("int");
+            integerRangeError("Int32");
         }
         return (int)value;
     }
@@ -287,9 +287,9 @@ public abstract class CBORObject implements Cloneable {
      * @throws CBORException
      */
     public long getUint32() {
-        long value = getUint64();
+        long value = getInt64();
         if ((value & UINT32_MASK) != 0) {
-            integerRangeError("int");
+            integerRangeError("Uint32");
         }
         return value;
     }    
@@ -309,7 +309,7 @@ public abstract class CBORObject implements Cloneable {
     public int getInt16() {
         long value = getInt64();
         if (value > Short.MAX_VALUE || value < Short.MIN_VALUE) {
-            integerRangeError("short");
+            integerRangeError("Int16");
         }
         return (int)value;
     }
@@ -327,9 +327,9 @@ public abstract class CBORObject implements Cloneable {
      * @throws CBORException
      */
     public int getUint16() {
-        long value = getUint64();
+        long value = getInt64();
         if ((value & UINT16_MASK) != 0) {
-            integerRangeError("short");
+            integerRangeError("Uint16");
         }
         return (int)value;
     }    
@@ -349,7 +349,7 @@ public abstract class CBORObject implements Cloneable {
     public int getInt8() {
         long value = getInt64();
         if (value > Byte.MAX_VALUE || value < Byte.MIN_VALUE) {
-            integerRangeError("byte");
+            integerRangeError("Int8");
         }
         return (int)value;
     }
@@ -367,9 +367,9 @@ public abstract class CBORObject implements Cloneable {
      * @throws CBORException
      */
     public int getUint8() {
-        long value = getUint64();
+        long value = getInt64();
         if ((value & UINT8_MASK) != 0) {
-            integerRangeError("byte");
+            integerRangeError("Uint8");
         }
         return (int)value;
     }    
@@ -1003,9 +1003,6 @@ public abstract class CBORObject implements Cloneable {
     public CBORObject clone() {
         return CBORObject.decode(encode());
     }
-    
-    static final String STDERR_NOT_UNSIGNED =
-            "CBOR negative integer does not match \"unsigned\"";
 
     static final String STDERR_UNSUPPORTED_TAG =
             "Unsupported tag: ";
