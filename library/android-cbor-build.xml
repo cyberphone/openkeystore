@@ -94,6 +94,36 @@
         match="&quot;RSASSA-PSS&quot;,\n.*512,"
         replace="&quot;SHA512withRSA/PSS&quot;,&#10;                   null/* Android != JDK */,"
         flags="g"/>
+    <replaceregexp file="${android-cbor-src}/org/webpki/cbor/CBORMap.java"
+        match="            return Arrays\.compareUnsigned\(encodedKey\, testKey\)\;\n"
+        replace="            // API 33 eliminates this...&#10;
+           int minIndex = Math.min(encodedKey.length, testKey.length);&#10;
+           for (int i = 0; i &lt; minIndex; i++) {&#10;
+               int diff = (encodedKey[i] &amp; 0xff) - (testKey[i] &amp; 0xff);&#10;
+               if (diff != 0) {&#10;
+                   return diff;&#10;
+               }&#10;
+           }&#10;
+           return encodedKey.length - testKey.length;&#10;"
+        flags="g"/>
+    <replaceregexp file="${android-cbor-src}/org/webpki/cbor/CBORMap.java"
+        match="import java\.util\.Arrays\;\n"
+        replace=""
+        flags="g"/>
+    <replaceregexp file="${android-cbor-src}/org/webpki/cbor/CBORObject.java"
+        match="        return Arrays\.compareUnsigned\(encode\(\)\, object\.encode\(\)\)\;\n"
+        replace="        // API 33 eliminates this...&#10;
+       byte[] a = encode();&#10;
+       byte[] b = object.encode();&#10;
+       int minIndex = Math.min(a.length, b.length);&#10;
+       for (int i = 0; i &lt; minIndex; i++) {&#10;
+           int diff = (a[i] &amp; 0xff) - (b[i] &amp; 0xff);&#10;
+           if (diff != 0) {&#10;
+               return diff;&#10;
+           }&#10;
+       }&#10;
+       return a.length - b.length;&#10;"
+        flags="g"/>
 
     <javac debug="${debug}" srcdir="${android-cbor-src}:androidrefsrc" 
         destdir="${bin_dir}" 

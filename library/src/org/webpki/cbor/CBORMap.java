@@ -17,6 +17,7 @@
 package org.webpki.cbor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Class for holding CBOR <code>map</code> objects.
@@ -43,14 +44,7 @@ public class CBORMap extends CBORObject {
         }
         
         int compare(byte[] testKey) {
-            int minIndex = Math.min(encodedKey.length, testKey.length);
-            for (int i = 0; i < minIndex; i++) {
-                int diff = (encodedKey[i] & 0xff) - (testKey[i] & 0xff);
-                if (diff != 0) {
-                    return diff;
-                }
-            }
-            return encodedKey.length - testKey.length;
+            return Arrays.compareUnsigned(encodedKey, testKey);
         }
         
         boolean compareAndTest(Entry entry) {

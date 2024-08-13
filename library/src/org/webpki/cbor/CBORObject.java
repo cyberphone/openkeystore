@@ -32,7 +32,7 @@ import org.webpki.util.UTF8;
  * In this implementation "object" should be regarded as equivalent to the RFC 8949 "data item".
  * </p>
  */
-public abstract class CBORObject implements Cloneable {
+public abstract class CBORObject implements Cloneable, Comparable<CBORObject>{
     
     CBORTypes cborType;
     
@@ -948,6 +948,14 @@ public abstract class CBORObject implements Cloneable {
             return false;
         }
         return Arrays.equals(((CBORObject) object).encode(), encode());
+    }
+
+    /**
+     * Compare CBOR objects for magnitude.
+     */
+    @Override
+    public int compareTo(CBORObject object) {
+        return Arrays.compareUnsigned(encode(), object.encode());
     }
 
     /**

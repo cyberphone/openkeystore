@@ -341,6 +341,13 @@ public class CBORTest {
         }
     }
 
+    void compareToTest(int expected, CBORObject a, CBORObject b) {
+        int result = a.compareTo(b);
+        assertTrue("-", (expected < 0) == (result < 0));
+        assertTrue("+", (expected > 0) == (result > 0));
+        assertTrue("=", (expected == 0) == (result == 0));
+    }
+
     @Test
     public void assortedTests() {
         CBORArray cborArray = new CBORArray()
@@ -558,7 +565,12 @@ public class CBORTest {
         assertFalse("comp", parseCborHex("C5626869").equals(null));
         assertFalse("comp", parseCborHex("C5626869").equals("jj"));
         assertTrue("comp", parseCborHex("C5626869").equals(parseCborHex("C5626869")));
-        
+
+        CBORInt compA = new CBORInt(1);
+        CBORInt compB = new CBORInt(255);
+        compareToTest(0, compA, compA);
+        compareToTest(-1, compA, compB);
+        compareToTest(1, compB, compA);
     }
  
     public static boolean compareKeyId(CBORObject keyId, CBORObject optionalKeyId) {
