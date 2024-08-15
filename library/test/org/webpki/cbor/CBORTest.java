@@ -152,7 +152,7 @@ public class CBORTest {
         String actual = HexaDecimal.encode(cbor);
         hex = hex.toLowerCase();
         assertTrue("binary h=" + hex + " c=" + actual, hex.equals(actual));
-        CBORObject cborO = CBORObject.decode(cbor);
+        CBORObject cborO = CBORDecoder.decode(cbor);
         String decS = cborO.toString();
         String origS = cborObject.toString();
         assertTrue("bc d=" + decS + " o=" + origS, decS.equals(origS));
@@ -165,7 +165,7 @@ public class CBORTest {
 
     CBORObject parseCborHex(String hex) {
         byte[] cbor = HexaDecimal.decode(hex);
-        CBORObject cborObject = CBORObject.decode(cbor);
+        CBORObject cborObject = CBORDecoder.decode(cbor);
         assertTrue("phex: " + hex, Arrays.equals(cbor, cborObject.encode()));
         return cborObject;
     }
@@ -179,7 +179,7 @@ public class CBORTest {
         byte[] cbor = cborObject.encode();
         String calc = HexaDecimal.encode(cbor);
         assertTrue("int=" + value + " c=" + calc + " h=" + hex, hex.equals(calc));
-        CBORObject decodedInteger = CBORObject.decode(cbor);
+        CBORObject decodedInteger = CBORDecoder.decode(cbor);
         if (value != -1 || forceUnsigned) {
             long dv = forceUnsigned ? 
                     decodedInteger.getUint64()
@@ -214,7 +214,7 @@ public class CBORTest {
         BigInteger bigInteger = new BigInteger(value);
         CBORObject CBORBigInt = new CBORBigInt(bigInteger);
         byte[] cbor = CBORBigInt.encode();
-        CBORObject res = CBORObject.decode(cbor);
+        CBORObject res = CBORDecoder.decode(cbor);
         assertTrue("int", res.equals(CBORBigInt));
         long v = 0;
         try {
@@ -264,7 +264,7 @@ public class CBORTest {
         String calc = HexaDecimal.encode(cbor);
         assertTrue("big int=" + value + " c=" + calc + " h=" + hex,
                 hex.equals(HexaDecimal.encode(cbor)));
-        CBORObject decodedBig = CBORObject.decode(cbor);
+        CBORObject decodedBig = CBORDecoder.decode(cbor);
         String decS = decodedBig.getBigInteger().toString();
         assertTrue("Big2 d=" + decS + " v=" + value, value.equals(decS));
     }
@@ -273,14 +273,14 @@ public class CBORTest {
         byte[] cbor = new CBORString(string).encode();
         String calc = HexaDecimal.encode(cbor);
         assertTrue("string=" + string + " c=" + calc + " h=" + hex, hex.equals(calc));
-        assertTrue("string 2", CBORObject.decode(cbor).toString().equals("\"" + string + "\""));
+        assertTrue("string 2", CBORDecoder.decode(cbor).toString().equals("\"" + string + "\""));
     }
 
     void arrayTest(CBORArray cborArray, String hex) {
         byte[] cbor = cborArray.encode();
         String calc = HexaDecimal.encode(cbor);
         assertTrue(" c=" + calc + " h=" + hex, hex.equals(calc));
-        assertTrue("arr", CBORObject.decode(cbor).toString().equals(cborArray.toString()));
+        assertTrue("arr", CBORDecoder.decode(cbor).toString().equals(cborArray.toString()));
     }
 
     void unsupportedTag(String hex) {
@@ -289,7 +289,7 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                           CBORObject.STDERR_UNSUPPORTED_TAG + hex.substring(0, 2).toLowerCase());
+                           CBORDecoder.STDERR_UNSUPPORTED_TAG + hex.substring(0, 2).toLowerCase());
         }
     }
     
@@ -321,7 +321,7 @@ public class CBORTest {
             assertTrue("Equal d=" + d + " v=" + v, (d.compareTo(v)) == 0 ^ (mustFail != 0));
         } catch (Exception e) {
             assertTrue("Ok fail", mustFail != 0);
-            checkException(e, CBORObject.STDERR_NON_DETERMINISTIC_FLOAT);
+            checkException(e, CBORDecoder.STDERR_NON_DETERMINISTIC_FLOAT);
         }
     }
     
@@ -630,7 +630,7 @@ public class CBORTest {
                 assertFalse("no", cborMap.containsKey(new CBORInt(values[j] + 1)));
             }
         }
-        CBORObject.decode(cborMap.encode());
+        CBORDecoder.decode(cborMap.encode());
     }
     
     void sortingTest(String[] expectedOrder) throws Exception{
@@ -711,40 +711,40 @@ public class CBORTest {
    "782c74686520717569636b2062726f776e20666f78206a756d7073206f76657220746865206c617a792062656172");
         assertTrue("bt", 
                 Arrays.equals(cbor,
-                          CBORObject.decode(
-                                  new StrangeReader(cbor), false, false, null).encode()));
+                    new CBORDecoder(new StrangeReader(cbor), false, false, null)
+                        .decodeWithOptions().encode()));
 
         assertTrue("bt", 
                 Arrays.equals(cbor,
-                          CBORObject.decode(new StrangeReader(cbor), 
-                                            false, false, cbor.length).encode()));
+                    new CBORDecoder(new StrangeReader(cbor), false, false, cbor.length)
+                        .decodeWithOptions().encode()));
         try {
-            CBORObject.decode(new ByteArrayInputStream(HexaDecimal.decode("7BFFFFFFFFFFFFFFFF00")), 
-                              false, false, null);
+            new CBORDecoder(new ByteArrayInputStream(HexaDecimal.decode("7BFFFFFFFFFFFFFFFF00")), 
+                              false, false, null).decodeWithOptions();
             fail("Not valid");
         } catch (Exception e) {
-            checkException(e, CBORObject.STDERR_N_RANGE_ERROR + "-1");
+            checkException(e, CBORDecoder.STDERR_N_RANGE_ERROR + "-1");
         }
         try {
-            CBORObject.decode(new ByteArrayInputStream(HexaDecimal.decode("7AFFFFFFFF00")), 
-                              false, false, null);
+            new CBORDecoder(new ByteArrayInputStream(HexaDecimal.decode("7AFFFFFFFF00")), 
+                              false, false, null).decodeWithOptions();
             fail("Not valid");
         } catch (Exception e) {
-            checkException(e, CBORObject.STDERR_N_RANGE_ERROR + "4294967295");
+            checkException(e, CBORDecoder.STDERR_N_RANGE_ERROR + "4294967295");
         }
         try {
-            CBORObject.decode(new ByteArrayInputStream(HexaDecimal.decode("797FFF00")), 
-                              false, false, 100);
+            new CBORDecoder(new ByteArrayInputStream(HexaDecimal.decode("797FFF00")), 
+                              false, false, 100).decodeWithOptions();
             fail("Not valid");
         } catch (Exception e) {
-            checkException(e, CBORObject.STDERR_READING_LIMIT);
+            checkException(e, CBORDecoder.STDERR_READING_LIMIT);
         }
         try {
-            CBORObject.decode(new ByteArrayInputStream(HexaDecimal.decode("7A7FFFFFFF00")), 
-                              false, false, null);
+            new CBORDecoder(new ByteArrayInputStream(HexaDecimal.decode("7A7FFFFFFF00")), 
+                              false, false, null).decodeWithOptions();
             fail("Not valid");
         } catch (Exception e) {
-            checkException(e, CBORObject.STDERR_READING_LIMIT);
+            checkException(e, CBORDecoder.STDERR_READING_LIMIT);
         }
     }
  
@@ -944,7 +944,7 @@ public class CBORTest {
             parseCborHex("83");
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, CBORObject.STDERR_CBOR_EOF);
+            checkException(e, CBORDecoder.STDERR_CBOR_EOF);
         }
         try {
             parseCborHex("a363666d74646e6f6e656761747453746d74a0686175746844617461590" +
@@ -952,7 +952,7 @@ public class CBORTest {
                          "337be5bd410000000000000000000000000000000000000202d4db1c");
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, CBORObject.STDERR_READING_LIMIT);
+            checkException(e, CBORDecoder.STDERR_READING_LIMIT);
         }
     }
 
@@ -963,21 +963,21 @@ public class CBORTest {
             parseCborHex("3800");
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, CBORObject.STDERR_NON_DETERMINISTIC_N);
+            checkException(e, CBORDecoder.STDERR_NON_DETERMINISTIC_N);
         }
 
         try {
             parseCborHex("c24900ffffffffffffffff");
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, CBORObject.STDERR_NON_DETERMINISTIC_BIGNUM);
+            checkException(e, CBORDecoder.STDERR_NON_DETERMINISTIC_BIGNUM);
         }
 
         try {
             parseCborHex("c24101");
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, CBORObject.STDERR_NON_DETERMINISTIC_BIGNUM);
+            checkException(e, CBORDecoder.STDERR_NON_DETERMINISTIC_BIGNUM);
         }
         
         try {
@@ -1036,9 +1036,9 @@ public class CBORTest {
             } catch (Exception e) {
                 checkException(e, 
                         e.getMessage().contains("float") ?
-                    CBORObject.STDERR_NON_DETERMINISTIC_FLOAT
-                                                         :
-                    CBORObject.STDERR_NON_DETERMINISTIC_N);
+                    CBORDecoder.STDERR_NON_DETERMINISTIC_FLOAT
+                                                           :
+                    CBORDecoder.STDERR_NON_DETERMINISTIC_N);
             }
         }
     }
@@ -1101,7 +1101,7 @@ public class CBORTest {
 
         CBORObject signedData = signer.sign(SIGNATURE_LABEL, tbs);
         byte[] sd = signedData.encode();
-        CBORObject cborSd = CBORObject.decode(sd);
+        CBORObject cborSd = CBORDecoder.decode(sd);
         return validator.validate(SIGNATURE_LABEL, cborSd);
      }
 
@@ -1116,7 +1116,7 @@ public class CBORTest {
         CBORObject res = new CBORHmacSigner(symmetricKeys.getValue(size),
                            algorithm).sign(SIGNATURE_LABEL, tbs);
         byte[] sd = res.encode();
-        CBORObject cborSd = CBORObject.decode(sd);
+        CBORObject cborSd = CBORDecoder.decode(sd);
         new CBORHmacValidator(symmetricKeys.getValue(size)).validate(SIGNATURE_LABEL, cborSd);
         
         tbs = createDataToBeSigned();
@@ -1134,7 +1134,7 @@ public class CBORTest {
             
         }).sign(SIGNATURE_LABEL, tbs);
         sd = res.encode();
-        cborSd = CBORObject.decode(sd);
+        cborSd = CBORDecoder.decode(sd);
         new CBORHmacValidator(symmetricKeys.getValue(size)).validate(SIGNATURE_LABEL, cborSd);
 
         tbs = createDataToBeSigned();
@@ -1142,7 +1142,7 @@ public class CBORTest {
         res = new CBORHmacSigner(symmetricKeys.getValue(size), algorithm).setKeyId(keyId)
             .sign(SIGNATURE_LABEL, tbs); 
         sd = res.encode();
-        cborSd = CBORObject.decode(sd);
+        cborSd = CBORDecoder.decode(sd);
         new CBORHmacValidator(new HmacVerifierInterface() {
 
             @Override
@@ -1834,10 +1834,10 @@ public class CBORTest {
                              boolean sequenceFlag, 
                              boolean acceptNonDeterministic) throws IOException {
         String result = HexaDecimal.encode(
-                CBORObject.decode(new ByteArrayInputStream(HexaDecimal.decode(hexInput)),
-                                  sequenceFlag,
-                                  acceptNonDeterministic,
-                                  null).encode()).toUpperCase();
+                new CBORDecoder(new ByteArrayInputStream(HexaDecimal.decode(hexInput)),
+                                sequenceFlag,
+                                acceptNonDeterministic,
+                      null).decodeWithOptions().encode()).toUpperCase();
         assertTrue("Strange=" + result, hexExpectedResult.equals(result));
     }
     
@@ -1901,7 +1901,8 @@ public class CBORTest {
         InputStream inputStream = new ByteArrayInputStream(sequence);
         int position = 0;
         CBORObject cborObject;
-        while ((cborObject = CBORObject.decode(inputStream, true, false, null)) != null) {
+        CBORDecoder decoder = new CBORDecoder(inputStream, true, false, null);
+        while ((cborObject = decoder.decodeWithOptions()) != null) {
             byte[] rawCbor = cborObject.encode();
             assertTrue("Seq", Arrays.equals(rawCbor, 0, rawCbor.length, 
                                             sequence, position, position + rawCbor.length));
@@ -1910,10 +1911,10 @@ public class CBORTest {
         assertTrue("SeqEnd", sequence.length == position);
 
         assertTrue("SeqNull", 
-                   CBORObject.decode(new ByteArrayInputStream(new byte[0]),
+                   new CBORDecoder(new ByteArrayInputStream(new byte[0]),
                                                 true, 
                                                 false,
-                                                null) == null);
+                                                null).decodeWithOptions() == null);
         CBORSequenceBuilder sequenceBuilder = new CBORSequenceBuilder()
             .add(new CBORString("Hello CBOR Sequence World!"))
             .add(new CBORArray()
@@ -1925,7 +1926,8 @@ public class CBORTest {
         sequence = sequenceBuilder.encode();
         inputStream = new ByteArrayInputStream(sequence);
         position = 0;
-        while ((cborObject = CBORObject.decode(inputStream, true, false, null)) != null) {
+        decoder = new CBORDecoder(inputStream, true, false, null);
+        while ((cborObject = decoder.decodeWithOptions()) != null) {
             byte[] rawCbor = cborObject.encode();
             assertTrue("Seq", Arrays.equals(rawCbor, 0, rawCbor.length,
                                             sequence, position, position + rawCbor.length));
@@ -2270,7 +2272,7 @@ public class CBORTest {
     void utf8DecoderTest(String hex, boolean ok) {
         byte[] cbor = HexaDecimal.decode(hex);
         try {
-            byte[] roundTrip = CBORObject.decode(cbor).encode();
+            byte[] roundTrip = CBORDecoder.decode(cbor).encode();
             assertTrue("OK", ok);
             assertTrue("Conv", Arrays.equals(cbor, roundTrip));
         } catch (Exception e) {
@@ -2333,7 +2335,7 @@ public class CBORTest {
         String[] decoding = {"f97e00", "f97c00", "f9fc00"};
         for (String hexCbor : decoding) {
             try {
-                CBORObject.decode(Hex.decode(hexCbor));
+                CBORDecoder.decode(Hex.decode(hexCbor));
                 fail("must not");
             } catch (Exception e) {
                 checkException(e, CBORFloat.STDERR_INVALID_FLOAT_DISABLED);

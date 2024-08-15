@@ -1,6 +1,7 @@
 package cbor_api_demo;
 
 import org.webpki.cbor.CBORArray;
+import org.webpki.cbor.CBORDecoder;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORTypes;
@@ -74,8 +75,8 @@ public class CborDocumentLog {
     }
 
     byte[] checkForChanges(byte[] newData, byte[] refData) {
-        CBORObject newCbor = CBORObject.decode(newData);
-        CBORObject refCbor = CBORObject.decode(refData);
+        CBORObject newCbor = CBORDecoder.decode(newData);
+        CBORObject refCbor = CBORDecoder.decode(refData);
         try {
             traverse(refCbor, newCbor);
             newCbor.checkForUnread();

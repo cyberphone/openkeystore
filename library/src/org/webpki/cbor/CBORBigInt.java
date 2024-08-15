@@ -18,6 +18,8 @@ package org.webpki.cbor;
 
 import java.math.BigInteger;
 
+import static org.webpki.cbor.CBORInternal.*;
+
 /**
  * Class for holding CBOR <code>bignum</code> and <code>integer</code> objects.
  * <p>

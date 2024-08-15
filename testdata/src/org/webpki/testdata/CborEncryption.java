@@ -48,6 +48,7 @@ import org.webpki.cbor.CBORAsymKeyEncrypter;
 import org.webpki.cbor.CBORDecrypter;
 import org.webpki.cbor.CBORCryptoConstants;
 import org.webpki.cbor.CBORCryptoUtils;
+import org.webpki.cbor.CBORDecoder;
 import org.webpki.cbor.CBORMap;
 
 import org.webpki.crypto.CustomCryptoProvider;
@@ -243,7 +244,7 @@ public class CborEncryption {
     }
     
     static String cleanEncryption(byte[] cefData) throws IOException {
-        CBORObject cborObject = CBORObject.decode(cefData);
+        CBORObject cborObject = CBORDecoder.decode(cefData);
         CBORMap decoded = unwrapOptionalTag(cborObject);
         decoded.remove(CBORCryptoConstants.IV_LABEL);
         decoded.remove(CBORCryptoConstants.TAG_LABEL);
@@ -291,7 +292,7 @@ public class CborEncryption {
 
     static void compareResults(CBORDecrypter<?> decrypter, 
                                byte[] encryptedData) throws Exception {
-        if (!Arrays.equals(decrypter.decrypt(CBORObject.decode(encryptedData)), 
+        if (!Arrays.equals(decrypter.decrypt(CBORDecoder.decode(encryptedData)), 
                                dataToBeEncrypted)) {
             throw new GeneralSecurityException("Failed to decrypt");
         }
@@ -461,7 +462,7 @@ public class CborEncryption {
         byte[] encryption = IO.readFile(baseEncryption + "x25519#ecdh-es+a256kw@a256gcm@kid.cbor"); 
         IO.writeFile(fileName + ".hex", 
                             UTF8.encode(HexaDecimal.encode(encryption)));
-        StringBuilder text = new StringBuilder(CBORObject.decode(encryption).toString());
+        StringBuilder text = new StringBuilder(CBORDecoder.decode(encryption).toString());
         int i = text.indexOf("\n  1:");
         for (String comment : new String[]{"Content encryption algorithm = A256GCM",
                                            "Key encryption object",

@@ -27,6 +27,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.webpki.cbor.CBORDecoder;
 import org.webpki.cbor.CBORDiagnosticNotation;
 import org.webpki.cbor.CBORObject;
 
@@ -80,10 +81,11 @@ public class ConvertServlet extends CoreRequestServlet {
             ArrayList<CBORObject> sequence = new ArrayList<>();
             ByteArrayInputStream bais = new ByteArrayInputStream(cborBytes);
             CBORObject cborObject;
-            while ((cborObject = CBORObject.decode(bais, 
-                                                   sequenceFlag,
-                                                   !deterministicFlag,
-                                                   cborBytes.length)) != null) {
+            CBORDecoder cborDecoder = new CBORDecoder(bais, 
+                                                      sequenceFlag,
+                                                      !deterministicFlag,
+                                                      cborBytes.length);
+            while ((cborObject = cborDecoder.decodeWithOptions()) != null) {
                 sequence.add(cborObject);
                 if (!sequenceFlag) {
                     break;

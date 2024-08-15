@@ -14,13 +14,13 @@ public class CBORFloat64Test {
             double d = float32Flag ? Float.intBitsToFloat((int) l) : Double.longBitsToDouble(l);
             CBORFloat cbor = new CBORFloat(d);
             switch (cbor.tag) {
-                case CBORObject.MT_FLOAT16:
+                case CBORInternal.MT_FLOAT16:
                     float16++;
                     break;
-                case CBORObject.MT_FLOAT32:
+                case CBORInternal.MT_FLOAT32:
                     float32++;
                     break;
-                case CBORObject.MT_FLOAT64:
+                case CBORInternal.MT_FLOAT64:
                     float64++;
                     if (float32Flag) {
                         throw new RuntimeException("BUG");
@@ -29,7 +29,7 @@ public class CBORFloat64Test {
                 default:
                     throw new RuntimeException("BUG");
             }
-            Double v = CBORObject.decode(cbor.encode()).getFloat64();
+            Double v = CBORDecoder.decode(cbor.encode()).getFloat64();
             if (v.compareTo(d) != 0) {
                 throw new RuntimeException ("Fail");
             }

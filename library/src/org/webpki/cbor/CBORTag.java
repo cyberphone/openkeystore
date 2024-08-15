@@ -18,6 +18,8 @@ package org.webpki.cbor;
 
 import org.webpki.util.ISODateTime;
 
+import static org.webpki.cbor.CBORInternal.*;
+
 /**
  * Class for holding CBOR <code>tag</code> objects.
  * <p>
@@ -99,7 +101,7 @@ public class CBORTag extends CBORObject {
                     return;
                 } catch (Exception e) {}
             }
-            CBORObject.cborError(STDERR_ISO_DATE_ERROR + object.toDiagnosticNotation(false));
+            cborError(STDERR_ISO_DATE_ERROR + object.toDiagnosticNotation(false));
         }
     }
 

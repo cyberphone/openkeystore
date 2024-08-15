@@ -18,6 +18,8 @@ package org.webpki.cbor;
 
 import org.webpki.util.HexaDecimal;
 
+import static org.webpki.cbor.CBORInternal.*;
+
 /**
  * Class for holding CBOR <code>byte&nbsp;string</code> objects.
  */

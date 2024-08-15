@@ -18,6 +18,8 @@ package org.webpki.cbor;
 
 import java.util.ArrayList;
 
+import static org.webpki.cbor.CBORInternal.*;
+
 /**
  * Class for holding CBOR <code>array</code> objects.
  */

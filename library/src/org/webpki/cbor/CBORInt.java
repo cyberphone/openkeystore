@@ -18,6 +18,8 @@ package org.webpki.cbor;
 
 import java.math.BigInteger;
 
+import static org.webpki.cbor.CBORInternal.*;
+
 /**
  * Class for holding CBOR <code>integer</code> objects.
  * <p id='range-constraints'>

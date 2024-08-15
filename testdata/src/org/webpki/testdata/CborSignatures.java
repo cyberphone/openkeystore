@@ -47,6 +47,7 @@ import org.webpki.cbor.CBORInt;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORCryptoConstants;
 import org.webpki.cbor.CBORCryptoUtils;
+import org.webpki.cbor.CBORDecoder;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.CryptoException;
@@ -153,7 +154,7 @@ public class CborSignatures {
     }
     
     static String cleanSignature(byte[] csfData) throws IOException {
-        CBORObject signedObject = CBORObject.decode(csfData); 
+        CBORObject signedObject = CBORDecoder.decode(csfData); 
         CBORMap decoded = CborEncryption.unwrapOptionalTag(signedObject);
         CBORObject[] keys = decoded.getMap().getKeys();
         for (CBORObject key : keys) {
@@ -187,7 +188,7 @@ public class CborSignatures {
         try {
             oldSignature = IO.readFile(fileName);
             try {
-                validator.validate(SIGNATURE_LABEL, CBORObject.decode(oldSignature));
+                validator.validate(SIGNATURE_LABEL, CBORDecoder.decode(oldSignature));
             } catch (Exception e) {
                 throw new GeneralSecurityException(
                         "ERROR - Old signature '" + fileName + "' did not validate");
@@ -224,7 +225,7 @@ public class CborSignatures {
         }
         byte[] signedData = createSignature(signer);
         CBORHmacValidator validator = new CBORHmacValidator(key);
-        CBORMap decoded = CBORObject.decode(signedData).getMap();
+        CBORMap decoded = CBORDecoder.decode(signedData).getMap();
         validator.validate(SIGNATURE_LABEL, decoded);
         new CBORHmacValidator(new HmacVerifierInterface() {
 
@@ -262,7 +263,7 @@ public class CborSignatures {
     }
     
     static CBORMap parseDataToSign() throws Exception {
-        return CBORObject.decode(getDataToSign()).getMap();
+        return CBORDecoder.decode(getDataToSign()).getMap();
     }
 
     static byte[] createSignature(CBORSigner<?> signer) throws Exception {
@@ -312,7 +313,7 @@ public class CborSignatures {
                 }
                 
             });
-        CBORObject decoded = CBORObject.decode(signedData);
+        CBORObject decoded = CBORDecoder.decode(signedData);
         validator.validate(SIGNATURE_LABEL, decoded);
         String fileName = baseSignatures + prefix(keyType)
                 + getAlgorithm(saveAlgorithm.algorithm) + "@cer.cbor";
@@ -398,7 +399,7 @@ public class CborSignatures {
                         }
                     });
         }
-        CBORObject decoded = CBORObject.decode(signedData);
+        CBORObject decoded = CBORDecoder.decode(signedData);
         validator.validate(SIGNATURE_LABEL, decoded);
         String fileName = baseSignatures + prefix(keyType) +
                 getAlgorithm(algorithm) + '@' +  
@@ -480,7 +481,7 @@ public class CborSignatures {
         try {
             oldSignature = IO.readFile(fileName);
             try {
-                validator.validate(new CBORInt(-1), CBORObject.decode(oldSignature).getMap());
+                validator.validate(new CBORInt(-1), CBORDecoder.decode(oldSignature).getMap());
             } catch (Exception e) {
                 throw new GeneralSecurityException(
                         "ERROR - Old signature '" + fileName + "' did not validate");
@@ -505,7 +506,7 @@ public class CborSignatures {
     private static void additionalFiles(String fileName, byte[] signature) throws IOException {
         IO.writeFile(fileName.replace(".cbor", ".hex"), 
                             UTF8.encode(HexaDecimal.encode(signature)));
-        StringBuilder text = new StringBuilder(CBORObject.decode(signature).toString());
+        StringBuilder text = new StringBuilder(CBORDecoder.decode(signature).toString());
         int i = text.indexOf("\n  -1:");
         for (String comment : new String[]{"Enveloped signature object",
                                            "Signature algorithm = ES256",

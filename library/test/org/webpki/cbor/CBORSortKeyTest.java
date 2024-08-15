@@ -42,7 +42,7 @@ public class CBORSortKeyTest {
         startTime = System.currentTimeMillis();
         for (int n = 0; n < TOTAL_SET_OPERATIONS ; n++) {
             if (cborMap.get(SORTED_KEYS[n]).getInt32() != n) {
-                CBORObject.cborError("Big access");
+                CBORInternal.cborError("Big access");
             }
         }
         printTime("GET", TOTAL_SET_OPERATIONS, startTime, sortFlag);
@@ -57,7 +57,7 @@ public class CBORSortKeyTest {
         startTime = System.currentTimeMillis();
         for (int n = 0; n < TOTAL_SET_OPERATIONS ; n++) {
             if (cborMap.get(REVERSE_KEYS[n]).getInt32() != n) {
-                CBORObject.cborError("Big access");
+                CBORInternal.cborError("Big access");
             }
         }
         printTime("Reverse GET", TOTAL_SET_OPERATIONS, startTime, sortFlag);
@@ -79,7 +79,7 @@ public class CBORSortKeyTest {
         for (int q = 0; q < maps; q++) {
             for (int n = 0; n < mapSize; n++) {
                 if (cborMap.get(SORTED_KEYS[n]).getInt32() != n) {
-                    CBORObject.cborError("Medium access");
+                    CBORInternal.cborError("Medium access");
                 }
             }            
         }
@@ -98,7 +98,7 @@ public class CBORSortKeyTest {
         for (int q = 0; q < maps; q++) {
             for (int n = 0; n < mapSize; n++) {
                 if (cborMap.get(REVERSE_KEYS[n]).getInt32() != n) {
-                    CBORObject.cborError("Medium access");
+                    CBORInternal.cborError("Medium access");
                 }
             }            
         }

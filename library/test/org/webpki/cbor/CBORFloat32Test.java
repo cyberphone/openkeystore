@@ -11,16 +11,16 @@ public class CBORFloat32Test {
             double d = Float.intBitsToFloat(i);
             CBORFloat cbor = new CBORFloat(d);
             switch (cbor.tag) {
-                case CBORObject.MT_FLOAT16:
+                case CBORInternal.MT_FLOAT16:
                     float16++;
                     break;
-                case CBORObject.MT_FLOAT32:
+                case CBORInternal.MT_FLOAT32:
                     float32++;
                     break;
                 default:
                     throw new RuntimeException("BUG");
             }
-            Double v = CBORObject.decode(cbor.encode()).getFloat64();
+            Double v = CBORDecoder.decode(cbor.encode()).getFloat64();
             if (v.compareTo(d) != 0) {
                 throw new RuntimeException ("Fail");
             }
@@ -35,10 +35,10 @@ public class CBORFloat32Test {
     
     public static void main(String[] argv)  {
         int f = 0;
-        while (f < (1 << CBORObject.FLOAT32_SIGNIFICAND_SIZE)) {
+        while (f < (1 << CBORInternal.FLOAT32_SIGNIFICAND_SIZE)) {
             int e = 0;
-            while (e < (1 << CBORObject.FLOAT32_EXPONENT_SIZE)) {
-                convert((e << CBORObject.FLOAT32_SIGNIFICAND_SIZE) + f);
+            while (e < (1 << CBORInternal.FLOAT32_EXPONENT_SIZE)) {
+                convert((e << CBORInternal.FLOAT32_SIGNIFICAND_SIZE) + f);
                 e++;
             }
             f++;

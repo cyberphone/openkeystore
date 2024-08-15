@@ -28,6 +28,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.webpki.cbor.CBORAsymKeyValidator;
+import org.webpki.cbor.CBORDecoder;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;
 
@@ -165,7 +166,7 @@ public class CSFService extends InitPropertyReader implements ServletContextList
             // Sample signature for verification
             /////////////////////////////////////////////////////////////////////////////////////////////
             CBORMap demoSignature = 
-                    CBORObject.decode(getEmbeddedResource("demo-doc-signature.cbor")).getMap();
+                    CBORDecoder.decode(getEmbeddedResource("demo-doc-signature.cbor")).getMap();
             CBORObject[] keys = demoSignature.getKeys();
             CBORObject signatureLabel = keys[keys.length - 1];
             sampleLabel = signatureLabel.toString();

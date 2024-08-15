@@ -16,15 +16,11 @@
  */
 package org.webpki.cbor;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
 import java.math.BigInteger;
 
 import java.util.Arrays;
 
-import org.webpki.util.UTF8;
+import static org.webpki.cbor.CBORInternal.*;
 
 /**
  * Base class for all CBOR objects.
@@ -32,7 +28,7 @@ import org.webpki.util.UTF8;
  * In this implementation "object" should be regarded as equivalent to the RFC 8949 "data item".
  * </p>
  */
-public abstract class CBORObject implements Cloneable, Comparable<CBORObject>{
+public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     
     CBORTypes cborType;
     
@@ -42,57 +38,6 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject>{
     
     // True if object has been read
     private boolean readFlag;
-
-    // Supported CBOR types
-    static final int MT_UNSIGNED      = 0x00;
-    static final int MT_NEGATIVE      = 0x20;
-    static final int MT_BYTES         = 0x40;
-    static final int MT_STRING        = 0x60;
-    static final int MT_ARRAY         = 0x80;
-    static final int MT_MAP           = 0xa0;
-    static final int MT_TAG           = 0xc0;
-    static final int MT_BIG_UNSIGNED  = 0xc2;
-    static final int MT_BIG_NEGATIVE  = 0xc3;
-    static final int MT_FALSE         = 0xf4;
-    static final int MT_TRUE          = 0xf5;
-    static final int MT_NULL          = 0xf6;
-    static final int MT_FLOAT16       = 0xf9;
-    static final int MT_FLOAT32       = 0xfa;
-    static final int MT_FLOAT64       = 0xfb;
-
-    static final int FLOAT16_SIGNIFICAND_SIZE = 10;
-    static final int FLOAT32_SIGNIFICAND_SIZE = 23;
-    static final int FLOAT64_SIGNIFICAND_SIZE = 52;
-
-    static final int FLOAT16_EXPONENT_SIZE    = 5;
-    static final int FLOAT32_EXPONENT_SIZE    = 8;
-    static final int FLOAT64_EXPONENT_SIZE    = 11;
-
-    static final int FLOAT16_EXPONENT_BIAS    = 15;
-    static final int FLOAT32_EXPONENT_BIAS    = 127;
-    static final int FLOAT64_EXPONENT_BIAS    = 1023;
-
-    static final long FLOAT16_NOT_A_NUMBER    = 0x0000000000007e00L;
-    static final long FLOAT16_POS_INFINITY    = 0x0000000000007c00L;
-    static final long FLOAT16_NEG_INFINITY    = 0x000000000000fc00L;
-    static final long FLOAT16_POS_ZERO        = 0x0000000000000000L;
-    static final long FLOAT16_NEG_ZERO        = 0x0000000000008000L;
-     
-    static final long FLOAT64_NOT_A_NUMBER    = 0x7ff8000000000000L;
-    static final long FLOAT64_POS_INFINITY    = 0x7ff0000000000000L;
-    static final long FLOAT64_NEG_INFINITY    = 0xfff0000000000000L;
-    static final long FLOAT64_POS_ZERO        = 0x0000000000000000L;
-    static final long FLOAT64_NEG_ZERO        = 0x8000000000000000L;
-
-    static final long MASK_LOWER_32           = 0x00000000ffffffffL;
-    
-    static final long UINT32_MASK             = 0xffffffff00000000L;
-    static final long UINT16_MASK             = 0xffffffffffff0000L;
-    static final long UINT8_MASK              = 0xffffffffffffff00L;
-    
-    static final int  MAX_ERROR_MESSAGE       = 100;
-
-    static final BigInteger MAX_INTEGER       = new BigInteger("ffffffffffffffff", 16);
     
     /**
      * Get core CBOR type.
@@ -121,13 +66,6 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject>{
     
     abstract void internalToString(CborPrinter outputBuffer);
 
-    static void cborError(String error) {
-        if (error.length() > MAX_ERROR_MESSAGE) {
-            error = error.substring(0, MAX_ERROR_MESSAGE - 3) + " ...";
-        }
-        throw new CBORException(error);
-    }
-
     static CBORArray checkCOTX(CBORObject taggedObject) {
         CBORArray holder = taggedObject.cborType == CBORTypes.ARRAY ? 
                                             taggedObject.getArray() : null;
@@ -135,10 +73,6 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject>{
             cborError("Invalid COTX object: " + taggedObject.toDiagnosticNotation(false));
         }
         return holder;
-    }
-
-    static void unsupportedTag(int tag) {
-        cborError(String.format(STDERR_UNSUPPORTED_TAG + "%02x", tag));
     }
     
     static void nullCheck(Object object) {
@@ -588,300 +522,6 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject>{
             readFlag = true;
         }
     }
-
-    static class CBORDecoder {
-
-        private InputStream inputStream;
-        private boolean sequenceFlag;
-        private boolean deterministicMode;
-        private boolean atFirstByte = true;
-        private int maxLength;
-        private int byteCount;
-         
-        private CBORDecoder(InputStream inputStream,
-                            boolean sequenceFlag,
-                            boolean acceptNonDeterministic,
-                            int maxLength) {
-            this.inputStream = inputStream;
-            this.sequenceFlag = sequenceFlag;
-            this.deterministicMode = !acceptNonDeterministic;
-            this.maxLength = maxLength;
-            if (maxLength < 1) {
-                cborError("Invalid \"maxLength\"");
-            }
-        }
-        
-        private void eofError() {
-            cborError(STDERR_CBOR_EOF);
-        }
-        
-        private void outOfLimitTest(int increment) {
-            if ((byteCount += increment) > maxLength || byteCount < 0) {
-                cborError(STDERR_READING_LIMIT);
-            }
-        }
-        
-        private int readByte() throws IOException {
-            int i = inputStream.read();
-            if (i < 0) {
-                if (sequenceFlag && atFirstByte) {
-                    return 0;
-                }
-                eofError();
-            }
-            outOfLimitTest(1);
-            atFirstByte = false;
-            return i;
-        }
-        
-        private byte[] readBytes(int length) throws IOException {
-            outOfLimitTest(length);
-            byte[] result = new byte[length];
-            int position = 0;
-            while (length != 0) {
-                int n = inputStream.read(result, position, length);
-                if (n == -1) {
-                    eofError();
-                }
-                length -= n;
-                position += n;
-            }
-            return result;
-        }
-
-        private long getLongFromBytes(int length) throws IOException {
-            long value = 0;
-            while (--length >= 0) {
-                value <<= 8;
-                value += readByte();
-            }
-            return value;
-        }
-
-        private int checkLength(long n) {
-            if (n < 0 || n > Integer.MAX_VALUE) {
-                cborError(STDERR_N_RANGE_ERROR + n);
-            }
-            return (int)n;
-        }
-
-        private CBORFloat checkDoubleConversion(int tag, long bitFormat, double value) {
-            CBORFloat cborFloat = new CBORFloat(value);
-            if ((cborFloat.tag != tag || cborFloat.bitFormat != bitFormat) && deterministicMode) {
-                cborError(String.format(STDERR_NON_DETERMINISTIC_FLOAT + "%2x", tag));
-            }
-            return cborFloat;
-        }
-
-        private CBORObject getObject() throws IOException {
-            int tag = readByte();
-
-            // Begin with CBOR types that are uniquely defined by the tag byte.
-            switch (tag) {
-                case MT_BIG_NEGATIVE:
-                case MT_BIG_UNSIGNED:
-                    byte[] byteArray = getObject().getBytes();
-                    BigInteger bigInteger = new BigInteger(1, byteArray);
-                    if (deterministicMode) {
-                        if (byteArray.length <= 8 || byteArray[0] == 0) {
-                            cborError(STDERR_NON_DETERMINISTIC_BIGNUM);
-                        }
-                    } else {
-                        // Potentially sloppy serialization.
-                        if (bigInteger.compareTo(MAX_INTEGER) < 1) {
-                            return new CBORInt(bigInteger.longValue(), tag == MT_BIG_UNSIGNED);
-                        }
-                    }
-                    return new CBORBigInt(tag == MT_BIG_UNSIGNED ? bigInteger : bigInteger.not());
- 
-                case MT_FLOAT16:
-                    double float64;
-                    long f16Binary = getLongFromBytes(2);
-
-                    // Get the significand.
-                    long significand = f16Binary & ((1l << FLOAT16_SIGNIFICAND_SIZE) - 1);
-                    // Get the exponent.
-                    long exponent = f16Binary & FLOAT16_POS_INFINITY;
-
-                    // Begin with the edge cases.
-          
-                    if (exponent == FLOAT16_POS_INFINITY) {
-
-                        // Special "number"
-                        
-                        // Non-deterministic representations of NaN will be flagged later.
-                        // NaN "signaling" is not supported, "quiet" NaN is all there is.
-                        float64 = significand == 0 ? Double.POSITIVE_INFINITY : Double.NaN;
-                            
-                    } else {
-
-                        // It is a "regular" number.
-                     
-                        if (exponent > 0) {
-                            // Normal representation, add the implicit "1.".
-                            significand += (1l << FLOAT16_SIGNIFICAND_SIZE);
-                            // -1: Keep fractional point in line with subnormal numbers.
-                            significand <<= ((exponent >> FLOAT16_SIGNIFICAND_SIZE) - 1);
-                        }
-                        // Multiply with: 1 / (2 ^ (Exponent offset + Size of significand - 1)).
-                        float64 = (double)significand * 
-                            (1.0 / (1l << (FLOAT16_EXPONENT_BIAS + FLOAT16_SIGNIFICAND_SIZE - 1)));
-                    }
-                    return checkDoubleConversion(tag,
-                                                 f16Binary,
-                                                 f16Binary >= FLOAT16_NEG_ZERO ? 
-                                                                      -float64 : float64);
-
-                case MT_FLOAT32:
-                    long f32Bin = getLongFromBytes(4);
-                    return checkDoubleConversion(tag, f32Bin, Float.intBitsToFloat((int)f32Bin));
- 
-                case MT_FLOAT64:
-                    long f64Bin = getLongFromBytes(8);
-                    return checkDoubleConversion(tag, f64Bin, Double.longBitsToDouble(f64Bin));
-
-                case MT_NULL:
-                    return new CBORNull();
-                    
-                case MT_TRUE:
-                case MT_FALSE:
-                    return new CBORBoolean(tag == MT_TRUE);
-            }
-
-            // Then decode CBOR types that blend length of data in the tag byte.
-            long n = tag & 0x1fl;
-            if (n > 27) {
-                unsupportedTag(tag);
-            }
-            if (n > 23) {
-                // For 1, 2, 4, and 8 byte N.
-                int q = 1 << (n - 24);
-                // 1: 00000000ffffffff
-                // 2: 000000ffffffff00
-                // 4: 0000ffffffff0000
-                // 8: ffffffff00000000
-                long mask = MASK_LOWER_32 << (q / 2) * 8;
-                n = 0;
-                while (--q >= 0) {
-                    n <<= 8;
-                    n |= readByte();
-                }
-                // If the upper half (for 2, 4, 8 byte N) of N or a single byte
-                // N is zero, a shorter variant should have been used.
-                // In addition, a single byte N must be > 23. 
-                if (((n & mask) == 0 || (n > 0 && n < 24)) && deterministicMode) {
-                    cborError(STDERR_NON_DETERMINISTIC_N);
-                }
-            }
-            // N successfully decoded, now switch on major type (upper three bits).
-            switch (tag & 0xe0) {
-                case MT_TAG:
-                    return new CBORTag(n, getObject());
-
-                case MT_UNSIGNED:
-                    return new CBORInt(n, true);
-    
-                case MT_NEGATIVE:
-                    return new CBORInt(n, false);
-    
-                case MT_BYTES:
-                    return new CBORBytes(readBytes(checkLength(n)));
-    
-                case MT_STRING:
-                    return new CBORString(UTF8.decode(readBytes(checkLength(n))));
-    
-                case MT_ARRAY:
-                    CBORArray cborArray = new CBORArray();
-                    for (int q = checkLength(n); --q >= 0; ) {
-                        cborArray.add(getObject());
-                    }
-                    return cborArray;
-    
-                case MT_MAP:
-                    CBORMap cborMap = new CBORMap().setSortingMode(deterministicMode);
-                    for (int q = checkLength(n); --q >= 0; ) {
-                        cborMap.set(getObject(), getObject());
-                    }
-                    // Programmatically added elements will be sorted (by default). 
-                    return cborMap.setSortingMode(false);
-    
-                default:
-                    unsupportedTag(tag);
-            }
-            return null;  // For the compiler only...
-        }
-    }
-
-    /**
-     * Decode CBOR data with options.
-     * <p>
-     * Also see {@link CBORSequenceBuilder}.
-     * </p>
-     * <p>
-     * Decoding errors throw {@link CBORException}.
-     * </p>
-     * 
-     * @param inputStream Stream holding CBOR data
-     * @param sequenceFlag If <code>true</code> stop reading after decoding a CBOR object
-     * (no object returns <code>null</code>).
-     * @param nonDeterministic If <code>true</code> disable 
-     * <a href='package-summary.html#deterministic-encoding'>Deterministic&nbsp;Encoding</a>
-     * checks for number serialization and map <i>sorting</i>.
-     * See also {@link CBORMap#setSortingMode(boolean)}.
-     * @param maxLength Holds maximum input size in 
-     * bytes or <code>null</code> ({@link Integer#MAX_VALUE} is assumed).
-     * Since malformed CBOR objects can request arbitrary amounts of memory,
-     * it is <i>highly recommended</i> setting <code>maxLength</code> to
-     * a value that is adapted to the actual application. 
-     * @return <code>CBORObject</code>
-     */
-    public static CBORObject decode(InputStream inputStream,
-                                    boolean sequenceFlag,
-                                    boolean nonDeterministic,
-                                    Integer maxLength) {
-        CBORDecoder cborDecoder = new CBORDecoder(inputStream, 
-                                                  sequenceFlag, 
-                                                  nonDeterministic,
-                                                  maxLength == null ? Integer.MAX_VALUE : maxLength);
-        
-        try {
-            CBORObject cborObject = cborDecoder.getObject();
-            if (sequenceFlag) {
-                if (cborDecoder.atFirstByte) {
-                    return null;
-                }
-            } else if (inputStream.read() != -1) {
-                cborError(STDERR_UNEXPECTED_DATA);
-            }
-            return cborObject;
-        } catch (IOException e) {
-            throw new CBORException(e);
-        }
-    }
-
-    /**
-     * Decode CBOR data.
-     * <p>
-     * This method is identical to:
-     * <pre>  decode(new ByteArrayInputStream(cborData),
-     *         false, 
-     *         false,
-     *         cborData.length);
-     *</pre>
-     * </p>
-     * <p>
-     * Decoding errors throw {@link CBORException}.
-     * </p>
-     * 
-     * @param cborData CBOR in its binary form
-     * @return <code>CBORObject</code>
-     */
-    public static CBORObject decode(byte[] cborData) {
-        return decode(new ByteArrayInputStream(cborData),
-                      false, 
-                      false,
-                      cborData.length);
-    }
     
     class CborPrinter {
  
@@ -1007,40 +647,16 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject>{
      */
     @Override
     public CBORObject clone() {
-        return CBORObject.decode(encode());
+        return CBORDecoder.decode(encode());
     }
-
-    static final String STDERR_UNSUPPORTED_TAG =
-            "Unsupported tag: ";
-
-    static final String STDERR_N_RANGE_ERROR =
-            "N out of range: ";
 
     static final String STDERR_INT_RANGE =
             "CBOR integer does not fit a Java \"";
-
-    static final String STDERR_NON_DETERMINISTIC_BIGNUM =
-            "Non-deterministic encoding of bignum";
-
-    static final String STDERR_NON_DETERMINISTIC_FLOAT =
-            "Non-deterministic encoding of floating point value, tag: ";
-
-    static final String STDERR_NON_DETERMINISTIC_N =
-            "Non-deterministic encoding of N";
-
-    static final String STDERR_CBOR_EOF =
-            "Malformed CBOR, trying to read past EOF";
-    
-    static final String STDERR_UNEXPECTED_DATA =
-            "Unexpected data found after CBOR object";
-    
-    static final String STDERR_READING_LIMIT =
-            "Reading past input limit";
     
     static final String STDERR_ARGUMENT_IS_NULL =
             "Argument \"null\" is not permitted";
 
     static final String STDERR_FLOAT_RANGE =
-            "Value out of range for\"float\"";
+            "Value out of range for \"float\"";
 
 }

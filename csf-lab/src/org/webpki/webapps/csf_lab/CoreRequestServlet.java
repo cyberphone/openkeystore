@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.webpki.cbor.CBORDecoder;
 import org.webpki.cbor.CBORDiagnosticNotation;
 import org.webpki.cbor.CBORException;
 import org.webpki.cbor.CBORMap;
@@ -212,7 +213,7 @@ public class CoreRequestServlet extends HttpServlet {
     }
 
     CBORObject getCborFromHex(String hexAndOptionalComments) throws IOException {
-        return CBORObject.decode(getBytesFromCborHex(hexAndOptionalComments));
+        return CBORDecoder.decode(getBytesFromCborHex(hexAndOptionalComments));
     }
 
     CBORObject getCborAttribute(String attribute, String errorHelpText) throws IOException {

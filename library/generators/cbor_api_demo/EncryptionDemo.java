@@ -7,7 +7,7 @@ import java.security.PublicKey;
 import org.webpki.cbor.CBORAsymKeyDecrypter;
 import org.webpki.cbor.CBORAsymKeyEncrypter;
 import org.webpki.cbor.CBORKeyPair;
-import org.webpki.cbor.CBORObject;
+import org.webpki.cbor.CBORDecoder;
 
 import org.webpki.crypto.ContentEncryptionAlgorithms;
 import org.webpki.crypto.KeyEncryptionAlgorithms;
@@ -28,7 +28,7 @@ public class EncryptionDemo {
     
     public static void main(String[] args) {
         // Get keys in Java format.
-        KeyPair keyPair = CBORKeyPair.convert(CBORObject.decode(X25519_PRIVATE_KEY));
+        KeyPair keyPair = CBORKeyPair.convert(CBORDecoder.decode(X25519_PRIVATE_KEY));
         PrivateKey receiverKey = keyPair.getPrivate();
         PublicKey senderKey = keyPair.getPublic();
         
@@ -40,20 +40,20 @@ public class EncryptionDemo {
         
         // Decrypt data using CEF.
         byte[] decryptedData = new CBORAsymKeyDecrypter(receiverKey)
-                .decrypt(CBORObject.decode(encryptionObject));
+                .decrypt(CBORDecoder.decode(encryptionObject));
         
         // Assume that the data is a string encoded in UTF-8.
         String secretMessage = UTF8.decode(decryptedData);
         System.out.println(secretMessage);
 //@begin@
-new CborDocumentLog(args[0], "#sample.program.key#", CBORObject.decode(X25519_PRIVATE_KEY));
+new CborDocumentLog(args[0], "#sample.program.key#", CBORDecoder.decode(X25519_PRIVATE_KEY));
 new CborDocumentLog(args[0], "#sample.program.hex#", encryptionObject = 
 new CborDocumentLog().checkForChanges(encryptionObject, HexaDecimal.decode(
         "a5010302a201381807a3010120042158203e9c03b4e2ccb023272fe0f1a5a41" +
         "4645a7e5a0952a3da8199ba46812603ee1a08504ac80be51285309b93b8f4cc" +
         "38f6b8ba094c9fbd6e151bad2af177dd33820a55115b48dcffcf88dce70b217" +
         "3d6c368b2cfe802521c")));
-new CborDocumentLog(args[0], "#sample.program.diagnostic#", CBORObject.decode(encryptionObject));
+new CborDocumentLog(args[0], "#sample.program.diagnostic#", CBORDecoder.decode(encryptionObject));
 new CborDocumentLog(args[0], args[1], "#sample.program#");
 //@end@
     }

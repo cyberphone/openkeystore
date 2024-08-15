@@ -18,6 +18,8 @@ package org.webpki.cbor;
 
 import org.webpki.util.DoubleCoreSerializer;
 
+import static org.webpki.cbor.CBORInternal.*;
+
 /**
  * Class for holding CBOR <code>floating&nbsp;point</code> objects.
  * <p>

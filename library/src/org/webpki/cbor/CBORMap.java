@@ -19,6 +19,8 @@ package org.webpki.cbor;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import static org.webpki.cbor.CBORInternal.*;
+
 /**
  * Class for holding CBOR <code>map</code> objects.
  * <p>
@@ -143,7 +145,7 @@ public class CBORMap extends CBORObject {
      * The <code>setSortingMode</code> method may be called multiple times,
      * permitting certain keys to be automatically sorted and others
      * to be provided in a presorted fashion.
-     * See also {@link CBORObject#decode(java.io.InputStream, boolean, boolean, Integer)}.
+     * See also {@link CBORDecoder#CBORDecoder(java.io.InputStream, boolean, boolean, Integer)}.
      * </p>
      *  
      * @param preSortedKeys If <code>true</code>, keys <b>must</b> be

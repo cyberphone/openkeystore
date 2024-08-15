@@ -20,7 +20,7 @@ public class CBORFloat16Test {
             }
             byte[] encoded = new byte[] {(byte)0xf9, (byte) (i >> 8), (byte) i};
             try {
-                CBORObject cbor = CBORObject.decode(encoded);
+                CBORObject cbor = CBORDecoder.decode(encoded);
                 if (mustFlag) {
                     System.out.println("**********=" + org.webpki.util.HexaDecimal.encode(encoded));
                     return;

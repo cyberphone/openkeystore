@@ -16,6 +16,8 @@
  */
 package org.webpki.cbor;
 
+import static org.webpki.cbor.CBORInternal.*;
+
 /**
  * Class for holding CBOR <code>boolean</code> objects.
  */

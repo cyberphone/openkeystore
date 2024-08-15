@@ -18,6 +18,8 @@ package org.webpki.cbor;
 
 import org.webpki.util.UTF8;
 
+import static org.webpki.cbor.CBORInternal.*;
+
 /**
  * Class for holding CBOR <code>text&nbsp;string</code> objects.
  */

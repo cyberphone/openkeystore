@@ -166,9 +166,9 @@ may also be provided in
 </li>
 </ul>
 Any deviation from the rules above will throw exceptions using the standard decoder
-({@link CBORObject#decode(byte[])}).
+({@link CBORDecoder#decode(byte[])}).
 For more control of the decoding process including dealing with CBOR sequences, see:
-{@link CBORObject#decode(inputStream, boolean, boolean, Integer)
+{@link CBORDecoder#CBORDecoder(inputStream, boolean, boolean, Integer)
 CBOR&nbsp;decoding&nbsp;options}.
 <p>
 On output ({@link CBORObject#encode()})
@@ -180,7 +180,7 @@ A properly designed system validates input data before acting upon it.
 This section describes how this can be achieved using this particular
 CBOR implementation.
 <p>
-During {@link CBORObject#decode(byte[])}, CBOR data is checked for
+During {@link CBORDecoder#decode(byte[])}, CBOR data is checked for
 well-formedness as well as by default, adhering to the determinism scheme.
 </p>
 <p>

@@ -2,12 +2,12 @@ package cbor_api_demo;
 
 import org.webpki.cbor.CBORArray;
 import org.webpki.cbor.CBORBoolean;
+import org.webpki.cbor.CBORDecoder;
 import org.webpki.cbor.CBORFloat;
 import org.webpki.cbor.CBORHmacSigner;
 import org.webpki.cbor.CBORHmacValidator;
 import org.webpki.cbor.CBORInt;
 import org.webpki.cbor.CBORMap;
-import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORString;
 
 import org.webpki.crypto.HmacAlgorithms;
@@ -37,7 +37,7 @@ public class SignatureDemo {
         
         // Validate CSF object.
         CBORMap decodedCbor = new CBORHmacValidator(HMAC_KEY)
-            .validate(SIGNATURE_LABEL, CBORObject.decode(signatureObject)).getMap();
+            .validate(SIGNATURE_LABEL, CBORDecoder.decode(signatureObject)).getMap();
 //@begin@
 new CborDocumentLog(args[0], "#sample.program.hex#", signatureObject);
 new CborDocumentLog(args[0], "#sample.program.diagnostic#", decodedCbor);

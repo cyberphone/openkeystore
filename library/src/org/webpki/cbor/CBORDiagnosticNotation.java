@@ -119,7 +119,7 @@ public class CBORDiagnosticNotation {
                         scanFor(",");
                     } else {
                         readChar();
-                        parserError(CBORObject.STDERR_UNEXPECTED_DATA);
+                        parserError(CBORDecoder.STDERR_UNEXPECTED_DATA);
                     }
                 } else {
                     return sequence.toArray(new CBORObject[0]);

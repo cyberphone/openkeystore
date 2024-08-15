@@ -1,5 +1,6 @@
 package cbor_api_demo;
 
+import org.webpki.cbor.CBORDecoder;
 import org.webpki.cbor.CBORInt;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;
@@ -65,7 +66,7 @@ public class TypedObjectsDemo {
         
         // Decode and instantiate.
         CBORTypedObjectDecoder decodedObject = decoderCache.decode(
-                CBORObject.decode(objectOne));
+                CBORDecoder.decode(objectOne));
         
         // Dispatch to the proper handler for the associated decoder.
         switch (decodedObject.getObjectId()) {
@@ -77,7 +78,7 @@ public class TypedObjectsDemo {
                 throw new RuntimeException("Unexpected");
         }
 //@begin@
-new CborDocumentLog(args[0], "#sample.program.diagnostic#", CBORObject.decode(objectOne));
+new CborDocumentLog(args[0], "#sample.program.diagnostic#", CBORDecoder.decode(objectOne));
 new CborDocumentLog(args[0], args[1], "#sample.program#");
 //@end@
     }

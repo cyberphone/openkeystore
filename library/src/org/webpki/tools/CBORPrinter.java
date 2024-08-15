@@ -16,6 +16,7 @@
  */
 package org.webpki.tools;
 
+import org.webpki.cbor.CBORDecoder;
 import org.webpki.cbor.CBORObject;
 
 import org.webpki.util.IO;
@@ -67,7 +68,7 @@ public class CBORPrinter {
                 show();
             }
         }
-        CBORObject decodedCborObject = CBORObject.decode(readCbor);
+        CBORObject decodedCborObject = CBORDecoder.decode(readCbor);
         byte[] decodedCbor = decodedCborObject.encode();
         System.out.println(decodedCborObject.toString());
         String readCborHex = HexaDecimal.encode(readCbor);

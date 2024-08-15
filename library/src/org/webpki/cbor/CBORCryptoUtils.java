@@ -30,6 +30,8 @@ import org.webpki.crypto.KeyEncryptionAlgorithms;
 
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
+import static org.webpki.cbor.CBORInternal.*;
+
 /**
  * Class holding CBOR crypto support.
  */
@@ -157,7 +159,7 @@ public class CBORCryptoUtils {
     public enum POLICY {FORBIDDEN, OPTIONAL, MANDATORY}
     
     private static void inputError(String text, POLICY policy) {
-        CBORObject.cborError(String.format("%s. Policy: %s", text, policy.toString()));
+        cborError(String.format("%s. Policy: %s", text, policy.toString()));
     }
  
     static CBORMap unwrapContainerMap(CBORObject container, 
