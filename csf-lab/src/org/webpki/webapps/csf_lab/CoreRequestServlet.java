@@ -101,17 +101,18 @@ public class CoreRequestServlet extends HttpServlet {
             "</table>";
 
     // Key and CBOR conversion
-    static final String CBOR_OUT           = "cborout";
-    static final String ERROR              = "error";
+    static final String CBOR_OUT                = "cborout";
+    static final String ERROR                   = "error";
     
-    static final String SEL_OUT            = "selout";
+    static final String SEL_OUT                 = "selout";
     
-    static final String DIAG               = "diag";
-    static final String HEXA               = "hexa";
-    static final String CSTYLE             = "cstyle";
-    static final String B64U               = "b64u";
-    static final String SEQUENCE           = "seq";
-    static final String DETERMINISTIC      = "det";
+    static final String DIAG                    = "diag";
+    static final String HEXA                    = "hexa";
+    static final String CSTYLE                  = "cstyle";
+    static final String B64U                    = "b64u";
+    static final String SEQUENCE                = "seq";
+    static final String DETERMINISTIC           = "det";
+    static final String DISABLE_INVALID_FLOATS  = "dif";
     
     // HTTP
     static final String HTTP_PRAGMA              = "Pragma";
@@ -139,7 +140,9 @@ public class CoreRequestServlet extends HttpServlet {
             (input ? "<tr><td><input type='checkbox' id='" + SEQUENCE + "'>" +
                     "</td><td>Sequence using <code>','</code> as separator</td></tr>" +
                     "<tr><td><input type='checkbox' checked id='" + DETERMINISTIC + "'>" +
-                    "</td><td>Require " + DETERMINISTIC_LINK + " for hex/b64u data</td></tr>"
+                    "</td><td>Require " + DETERMINISTIC_LINK + " for hex/b64u data</td></tr>" +
+                    "<tr><td><input type='checkbox' id='" + DISABLE_INVALID_FLOATS + "'>" +
+                    "</td><td>Disable <code>NaN</code> and <code>Infinity</code> support</td></tr>" 
                     : "") + 
             "</table>";
     }

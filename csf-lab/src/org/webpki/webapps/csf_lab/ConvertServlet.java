@@ -58,6 +58,7 @@ public class ConvertServlet extends CoreRequestServlet {
             JSONObjectReader parsedJson = JSONParser.parse(ServletUtil.getData(request));
             boolean sequenceFlag = parsedJson.getBoolean(SEQUENCE);
             boolean deterministicFlag = parsedJson.getBoolean(DETERMINISTIC);
+            boolean disablInvalidFloats = parsedJson.getBoolean(DISABLE_INVALID_FLOATS);
             String inData = parsedJson.getString(CBOR_IN);
             byte[] cborBytes;
             switch (parsedJson.getString(SEL_IN)) {
@@ -84,6 +85,7 @@ public class ConvertServlet extends CoreRequestServlet {
             CBORDecoder cborDecoder = new CBORDecoder(bais, 
                                                       sequenceFlag,
                                                       !deterministicFlag,
+                                                      disablInvalidFloats,
                                                       cborBytes.length);
             while ((cborObject = cborDecoder.decodeWithOptions()) != null) {
                 sequence.add(cborObject);
@@ -126,6 +128,8 @@ public class ConvertServlet extends CoreRequestServlet {
                    SEL_OUT + ": getRadioValue('" + SEL_OUT + "')," +
                    SEQUENCE + ": document.getElementById('" + SEQUENCE + "').checked," +
                    DETERMINISTIC + ": document.getElementById('" + DETERMINISTIC + "').checked," +
+                   DISABLE_INVALID_FLOATS + ": document.getElementById('" + 
+                       DISABLE_INVALID_FLOATS + "').checked" +
                    "};\n" +
                 "  let html = 'unknown error';\n" +
                 "  try {\n" +
