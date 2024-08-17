@@ -198,14 +198,14 @@ public class CBORDecoder {
                         // -1: Keep fractional point in line with subnormal numbers.
                         significand <<= ((exponent >> FLOAT16_SIGNIFICAND_SIZE) - 1);
                     }
-                    // Multiply with: 1 / (2 ^ (Exponent offset + Size of significand - 1)).
-                    float64 = (double)significand * 
-                        (1.0 / (1l << (FLOAT16_EXPONENT_BIAS + FLOAT16_SIGNIFICAND_SIZE - 1)));
+                    // Divide with: (2 ^ (Exponent offset + Size of significand - 1)).
+                    float64 = (double)significand / 
+                            (1l << (FLOAT16_EXPONENT_BIAS + FLOAT16_SIGNIFICAND_SIZE - 1));
                 }
                 return checkDoubleConversion(tag,
-                                                f16Binary,
-                                                f16Binary >= FLOAT16_NEG_ZERO ? 
-                                                                    -float64 : float64);
+                                             f16Binary,
+                                             f16Binary >= FLOAT16_NEG_ZERO ? 
+                                                                  -float64 : float64);
 
             case MT_FLOAT32:
                 long f32Bin = getLongFromBytes(4);
