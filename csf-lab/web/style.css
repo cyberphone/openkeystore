@@ -1,6 +1,6 @@
 body {
   margin:10pt;
-  font-size:8pt;
+  font-size:10pt;
   font-family:Verdana,'Bitstream Vera Sans','DejaVu Sans',Arial,'Liberation Sans';
 }
 
@@ -20,6 +20,8 @@ code {
 
 .staticbox, .textbox {
   box-sizing:border-box;
+  font-family: monospace;
+  font-size:1.0em;
   width:100%;word-break:break-all;
   border-width:1px;
   border-style:solid;
@@ -29,7 +31,6 @@ code {
 
 .staticbox {
   background:#f8f8f8;
-  font-family: "Noto Mono",monospace;
 }
 
 .textbox {
