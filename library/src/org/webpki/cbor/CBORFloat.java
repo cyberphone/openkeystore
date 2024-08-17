@@ -119,7 +119,7 @@ public class CBORFloat extends CBORObject {
                     return;
                 }
                 // The implicit "1" becomes explicit using subnormal representation.
-                significand += 1l << FLOAT16_SIGNIFICAND_SIZE;
+                significand += (1l << FLOAT16_SIGNIFICAND_SIZE);
                 // Put significand in position.
                 significand >>= (1 - exponent);
                 // Denormalized exponents are always zero.
