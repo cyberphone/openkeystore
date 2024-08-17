@@ -141,7 +141,7 @@ public class CBORDecoder {
             (cborFloat.tag != tag || cborFloat.bitFormat != bitFormat)) {
             cborError(String.format(STDERR_NON_DETERMINISTIC_FLOAT + "%2x", tag));
         }
-        if (rejectNaNFlag && 
+        if (rejectNaNFlag && cborFloat.tag == MT_FLOAT16 &&
             (cborFloat.bitFormat & FLOAT16_POS_INFINITY) == FLOAT16_POS_INFINITY) {
             cborError(STDERR_INVALID_FLOAT_DISABLED);
         }
