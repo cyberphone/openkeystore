@@ -110,9 +110,9 @@ public class CoreRequestServlet extends HttpServlet {
     static final String HEXA                    = "hexa";
     static final String CSTYLE                  = "cstyle";
     static final String B64U                    = "b64u";
-    static final String SEQUENCE                = "seq";
-    static final String DETERMINISTIC           = "det";
-    static final String DISABLE_INVALID_FLOATS  = "dif";
+    static final String SEQUENCE_FLAG           = "seqfl";
+    static final String STRICT_FLAG             = "strict";
+    static final String REJECT_NAN_FLAG         = "nonan";
     
     // HTTP
     static final String HTTP_PRAGMA              = "Pragma";
@@ -137,12 +137,12 @@ public class CoreRequestServlet extends HttpServlet {
             "value='" + CSTYLE + "'></td><td><code>0xhh, 0xhh...</code> notation</td></tr>" +
             "<tr><td><input type='radio' name='" + name + "' " +
             "value='" + B64U + "'></td><td>Base64Url notation</td></tr>" +
-            (input ? "<tr><td><input type='checkbox' id='" + SEQUENCE + "'>" +
-                    "</td><td>Sequence using <code>','</code> as separator</td></tr>" +
-                    "<tr><td><input type='checkbox' checked id='" + DETERMINISTIC + "'>" +
+            (input ? "<tr><td><input type='checkbox' id='" + SEQUENCE_FLAG + "'>" +
+                    "</td><td>Sequence using comma (,) as separator</td></tr>" +
+                    "<tr><td><input type='checkbox' checked id='" + STRICT_FLAG + "'>" +
                     "</td><td>Require " + DETERMINISTIC_LINK + " for hex/b64u data</td></tr>" +
-                    "<tr><td><input type='checkbox' id='" + DISABLE_INVALID_FLOATS + "'>" +
-                    "</td><td>Disable <code>NaN</code> and <code>Infinity</code> support</td></tr>" 
+                    "<tr><td><input type='checkbox' id='" + REJECT_NAN_FLAG + "'>" +
+                    "</td><td>Reject <code>NaN</code> and <code>Infinity</code> floating point objects</td></tr>" 
                     : "") + 
             "</table>";
     }

@@ -56,9 +56,9 @@ public class ConvertServlet extends CoreRequestServlet {
                 throw new IOException("Unexpected MIME type:" + request.getContentType());
             }
             JSONObjectReader parsedJson = JSONParser.parse(ServletUtil.getData(request));
-            boolean sequenceFlag = parsedJson.getBoolean(SEQUENCE);
-            boolean deterministicFlag = parsedJson.getBoolean(DETERMINISTIC);
-            boolean disablInvalidFloats = parsedJson.getBoolean(DISABLE_INVALID_FLOATS);
+            boolean sequenceFlag = parsedJson.getBoolean(SEQUENCE_FLAG);
+            boolean strictFlag = parsedJson.getBoolean(STRICT_FLAG);
+            boolean rejectNaNFlag = parsedJson.getBoolean(REJECT_NAN_FLAG);
             String inData = parsedJson.getString(CBOR_IN);
             byte[] cborBytes;
             switch (parsedJson.getString(SEL_IN)) {
@@ -84,8 +84,8 @@ public class ConvertServlet extends CoreRequestServlet {
             CBORObject cborObject;
             CBORDecoder cborDecoder = new CBORDecoder(bais, 
                                                       sequenceFlag,
-                                                      !deterministicFlag,
-                                                      disablInvalidFloats,
+                                                      !strictFlag,
+                                                      rejectNaNFlag,
                                                       cborBytes.length);
             while ((cborObject = cborDecoder.decodeWithOptions()) != null) {
                 sequence.add(cborObject);
@@ -126,10 +126,10 @@ public class ConvertServlet extends CoreRequestServlet {
                    CBOR_IN + ": document.getElementById('" + CBOR_IN + "').children[1].value," +
                    SEL_IN + ": getRadioValue('" + SEL_IN + "')," +
                    SEL_OUT + ": getRadioValue('" + SEL_OUT + "')," +
-                   SEQUENCE + ": document.getElementById('" + SEQUENCE + "').checked," +
-                   DETERMINISTIC + ": document.getElementById('" + DETERMINISTIC + "').checked," +
-                   DISABLE_INVALID_FLOATS + ": document.getElementById('" + 
-                       DISABLE_INVALID_FLOATS + "').checked" +
+                   SEQUENCE_FLAG + ": document.getElementById('" + SEQUENCE_FLAG + "').checked," +
+                   STRICT_FLAG + ": document.getElementById('" + STRICT_FLAG + "').checked," +
+                   REJECT_NAN_FLAG + ": document.getElementById('" + 
+                       REJECT_NAN_FLAG + "').checked" +
                    "};\n" +
                 "  let html = 'unknown error';\n" +
                 "  try {\n" +

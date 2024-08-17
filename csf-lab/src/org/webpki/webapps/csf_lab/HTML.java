@@ -33,7 +33,7 @@ public class HTML {
 
     static final String HTML_INIT = "<!DOCTYPE html>" +
         "<html lang='en'><head><link rel='icon' href='webpkiorg.png' sizes='192x192'>" + 
-        "<meta name='viewport' content='initial-scale=1.0'/>" + 
+        "<meta name='viewport' content='initial-scale=1.0'>" + 
         "<title>CBOR Signature Format (CSF)</title>" + 
         "<link rel='stylesheet' type='text/css' href='style.css'>";
 
@@ -81,12 +81,12 @@ public class HTML {
             "<div style='display:flex;flex-wrap:wrap-reverse;justify-content:space-between'>" +
             "<div><img src='thelab.svg' " +
             "style='cursor:pointer;height:25pt;padding-bottom:10pt;margin-right:30pt'" +
-            " onclick=\"document.location.href='home'\" title='Home of the lab...'/></div>" +
+            " onclick=\"document.location.href='home'\" title='Home of the lab...'></div>" +
             "<div style='display:flex;padding-bottom:10pt'>" +
             "<a href='https://cyberphone.github.io/javaapi/org/webpki/cbor/doc-files/signatures." +
             "html' target='_blank'><img src='csf.svg' " +
             "style='height:22pt' " +
-            "title='CSF Specification'/></a>" +
+            "title='CSF Specification'></a>" +
             "</div>" +
             "</div>")
          .append(box).append("</body></html>");

@@ -36,7 +36,7 @@ public class CBORDecoder {
     private InputStream inputStream;
     private boolean sequenceFlag;
     private boolean deterministicMode;
-    private boolean disableInvalidFloats;
+    private boolean rejectNaNFlag;
     private boolean atFirstByte;
     private int maxLength;
     private int byteCount;
@@ -50,11 +50,11 @@ public class CBORDecoder {
     * <code>inputStream</code> must hold exactly one CBOR object.
     * @param sequenceFlag If <code>true</code> stop reading after decoding a CBOR object
     * (no object returns <code>null</code>).
-    * @param nonDeterministic If <code>true</code> disable 
+    * @param lenientFlag If <code>true</code> disable 
     * <a href='package-summary.html#deterministic-encoding'>Deterministic&nbsp;Encoding</a>
     * checks for number serialization and map <i>sorting</i>.
     * See also {@link CBORMap#setSortingMode(boolean)}.
-    * @param disableInvalidFloats By default, this implementation supports 
+    * @param rejectNaNFlag By default, this implementation supports 
     * <code>NaN</code>, <code>Infinity</code>, 
     * and <code>-Infinity</code>. In case these variants are not applicable for the
     * application in question, they can be "outlawed" (causing a {@link CBORException} 
@@ -67,13 +67,13 @@ public class CBORDecoder {
     */
     public CBORDecoder(InputStream inputStream,
                        boolean sequenceFlag,
-                       boolean nonDeterministic,
-                       boolean disableInvalidFloats,
+                       boolean lenientFlag,
+                       boolean rejectNaNFlag,
                        Integer maxLength) {
         this.inputStream = inputStream;
         this.sequenceFlag = sequenceFlag;
-        this.deterministicMode = !nonDeterministic;
-        this.disableInvalidFloats = disableInvalidFloats;
+        this.deterministicMode = !lenientFlag;
+        this.rejectNaNFlag = rejectNaNFlag;
         this.maxLength = maxLength == null ? Integer.MAX_VALUE : maxLength;
     }
     
@@ -141,7 +141,7 @@ public class CBORDecoder {
             (cborFloat.tag != tag || cborFloat.bitFormat != bitFormat)) {
             cborError(String.format(STDERR_NON_DETERMINISTIC_FLOAT + "%2x", tag));
         }
-        if (disableInvalidFloats && 
+        if (rejectNaNFlag && 
             (cborFloat.bitFormat & FLOAT16_POS_INFINITY) == FLOAT16_POS_INFINITY) {
             cborError(STDERR_INVALID_FLOAT_DISABLED);
         }
