@@ -41,9 +41,6 @@ import static org.webpki.cbor.CBORInternal.*;
  * </div>
  */
 public class CBORInt extends CBORObject {
-
-    static final byte[] UNSIGNED_INTEGER_TAG = {(byte)MT_UNSIGNED};
-    static final byte[] NEGATIVE_INTEGER_TAG = {(byte)MT_NEGATIVE};
     
     static final BigInteger LONG_SIGN_BIT = new BigInteger("9223372036854775808");
     static final long LONG_UNSIGNED_PART  = 0x7fffffffffffffffL;
