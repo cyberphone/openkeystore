@@ -174,7 +174,7 @@ public class CBORDecoder {
                 long f16Binary = getLongFromBytes(2);
 
                 // Get the significand.
-                long significand = f16Binary & ((1l << FLOAT16_SIGNIFICAND_SIZE) - 1);
+                long significand = f16Binary & ((1L << FLOAT16_SIGNIFICAND_SIZE) - 1);
                 // Get the exponent.
                 long exponent = f16Binary & FLOAT16_POS_INFINITY;
 
@@ -194,13 +194,13 @@ public class CBORDecoder {
                     
                     if (exponent > 0) {
                         // Normal representation, add the implicit "1.".
-                        significand += (1l << FLOAT16_SIGNIFICAND_SIZE);
+                        significand += (1L << FLOAT16_SIGNIFICAND_SIZE);
                         // -1: Keep fractional point in line with subnormal numbers.
                         significand <<= ((exponent >> FLOAT16_SIGNIFICAND_SIZE) - 1);
                     }
                     // Divide with: (2 ^ (Exponent offset + Size of significand - 1)).
                     float64 = (double)significand / 
-                            (1l << (FLOAT16_EXPONENT_BIAS + FLOAT16_SIGNIFICAND_SIZE - 1));
+                            (1L << (FLOAT16_EXPONENT_BIAS + FLOAT16_SIGNIFICAND_SIZE - 1));
                 }
                 return checkDoubleConversion(tag,
                                              f16Binary,
@@ -224,7 +224,7 @@ public class CBORDecoder {
         }
 
         // Then decode CBOR types that blend length of data in the tag byte.
-        long n = tag & 0x1fl;
+        long n = tag & 0x1fL;
         if (n > 27) {
             unsupportedTag(tag);
         }
@@ -244,7 +244,7 @@ public class CBORDecoder {
             // If the upper half (for 2, 4, 8 byte N) of N or a single byte
             // N is zero, a shorter variant should have been used.
             // In addition, a single byte N must be > 23. 
-            if (((n & mask) == 0 || (n > 0 && n < 24)) && deterministicMode) {
+            if (deterministicMode && ((n & mask) == 0 || (n > 0 && n < 24))) {
                 cborError(STDERR_NON_DETERMINISTIC_N);
             }
         }

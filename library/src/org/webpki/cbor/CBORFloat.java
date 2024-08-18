@@ -96,16 +96,16 @@ public class CBORFloat extends CBORObject {
             // However, we must still check if the number could fit in a 16-bit float.
 
             long exponent = ((bitFormat >>> FLOAT32_SIGNIFICAND_SIZE) & 
-                ((1l << FLOAT32_EXPONENT_SIZE) - 1)) -
+                ((1L << FLOAT32_EXPONENT_SIZE) - 1)) -
                     (FLOAT32_EXPONENT_BIAS - FLOAT16_EXPONENT_BIAS);
             if (exponent <= -FLOAT16_SIGNIFICAND_SIZE || exponent > (FLOAT16_EXPONENT_BIAS << 1)) {
                 // Too small or too big for float16, or running into float16 NaN/Infinity space.
                 return;
             }
 
-            long significand = bitFormat & ((1l << FLOAT32_SIGNIFICAND_SIZE) - 1);
+            long significand = bitFormat & ((1L << FLOAT32_SIGNIFICAND_SIZE) - 1);
             if ((significand & 
-                (1l << (FLOAT32_SIGNIFICAND_SIZE - FLOAT16_SIGNIFICAND_SIZE)) -1) != 0) {
+                (1L << (FLOAT32_SIGNIFICAND_SIZE - FLOAT16_SIGNIFICAND_SIZE)) -1) != 0) {
                 // Losing significand bits is not an option.
                 return;
             }
@@ -113,13 +113,16 @@ public class CBORFloat extends CBORObject {
 
             // Check if we need to denormalize data.
 
+            // Note: exponent == (1 - FLOAT16_SIGNIFICAND_SIZE) only denormalizes
+            // properly if significand is zero => smallest denormalized number.
+
             if (exponent <= 0) {
-                if ((significand & ((1l << (1 - exponent)) - 1)) != 0) {
-                    // Too off scale for denormalized float16.
+                if ((significand & ((1L << (1 - exponent)) - 1)) != 0) {
+                    // Losing significand bits is not an option.
                     return;
                 }
                 // The implicit "1" becomes explicit using subnormal representation.
-                significand += (1l << FLOAT16_SIGNIFICAND_SIZE);
+                significand += (1L << FLOAT16_SIGNIFICAND_SIZE);
                 // Put significand in position.
                 significand >>= (1 - exponent);
                 // Denormalized exponents are always zero.
