@@ -18,6 +18,17 @@ code {
   font-family:'DejaVu Sans Mono', monospace;
 }
 
+input {
+  font-family:'DejaVu Sans Mono', monospace;
+  font-size:0.9em;
+}
+
+select {
+  -webkit-appearance: none;
+  padding:0 0.65em !important;
+  background-color: rgb(210, 255, 210);
+}
+
 .staticbox, .textbox {
   box-sizing:border-box;
   font-family: monospace;
