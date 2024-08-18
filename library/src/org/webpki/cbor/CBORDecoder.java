@@ -202,8 +202,7 @@ public class CBORDecoder {
                 }
                 return checkDoubleConversion(tag,
                                              f16Binary,
-                                             f16Binary >= FLOAT16_NEG_ZERO ? 
-                                                                  -float64 : float64);
+                                             f16Binary >= FLOAT16_NEG_ZERO ? -float64 : float64);
 
             case MT_FLOAT32:
                 long f32Bin = getLongFromBytes(4);
@@ -330,9 +329,9 @@ public class CBORDecoder {
      */
     public static CBORObject decode(byte[] cborData) {
         return new CBORDecoder(new ByteArrayInputStream(cborData),
-                  false, 
-              false,
-          false,
+                               false, 
+                               false,
+                               false,
                                cborData.length).decodeWithOptions();
     }
     
