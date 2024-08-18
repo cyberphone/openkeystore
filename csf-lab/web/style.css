@@ -18,14 +18,17 @@ code {
   font-family:'DejaVu Sans Mono', monospace;
 }
 
-input {
+.text {
+  -webkit-appearance: none;
   font-family:'DejaVu Sans Mono', monospace;
   font-size:0.9em;
+  padding:0.2em 3pt;
+  width:7em;
 }
 
 select {
   -webkit-appearance: none;
-  padding:0 0.65em !important;
+  padding:0.2em 0.65em !important;
   background-color: rgb(210, 255, 210);
 }
 

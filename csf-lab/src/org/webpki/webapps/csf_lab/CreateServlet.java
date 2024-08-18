@@ -90,7 +90,8 @@ public class CreateServlet extends CoreRequestServlet {
     
     StringBuilder checkBox(String idName, String text, boolean checked, String onchange) {
         StringBuilder html = new StringBuilder(
-                "<div style='display:flex;align-items:center'><input type='checkbox' id='")
+                "<div style='display:flex;align-items:center;padding-bottom:0.5em'>" +
+                  "<input type='checkbox' id='")
             .append(idName)
             .append("' name='")
             .append(idName)
@@ -125,7 +126,7 @@ public class CreateServlet extends CoreRequestServlet {
              "<div class='sigparmbox'>" +
              "<div style='display:flex;justify-content:center'>" +
                "<div class='sigparmhead'>Signature Parameters</div>" +
-             "</div><div style='display:flex;align-items:center'>")
+             "</div><div style='display:flex;align-items:center;padding-bottom:0.5em'>")
         .append(new SelectAlg(DEFAULT_ALG)
                  .add(HmacAlgorithms.HMAC_SHA256)
                  .add(HmacAlgorithms.HMAC_SHA384)
@@ -151,13 +152,11 @@ public class CreateServlet extends CoreRequestServlet {
             "<div style='display:flex;align-items:center'>" +
             "<input type='text' name='" + CSF_SIGN_LABEL + 
               "' id='" + CSF_SIGN_LABEL + "' " +
-            "style='padding:0 3pt;width:7em;font-family:monospace' " +
-            "maxlength='100' value='" + CSFService.sampleLabel + "'>" +
+           "class='text' maxlength='100' value='" + CSFService.sampleLabel + "'>" +
             "<div style='display:inline-block'>&nbsp;Signature label in " + DIAG_NOT_LINK + "</div></div>" +
             "<div style='margin-top:0.3em;display:flex;align-items:center'>" +
             "<input type='text' name='" + PRM_KEY_ID + "' id='" + PRM_KEY_ID + "' " +
-            "style='padding:0 3pt;width:7em;font-family:monospace' " +
-            "maxlength='100' value=''>" +
+            "class='text' maxlength='100' value=''>" +
             "<div style='display:inline-block'>&nbsp;Optional key Id in " + DIAG_NOT_LINK + "</div></div>" +
             "</div>" +
             "</div>" +
