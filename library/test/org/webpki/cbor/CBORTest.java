@@ -1923,6 +1923,7 @@ public class CBORTest {
             position += rawCbor.length;
         }
         assertTrue("SeqEnd", sequence.length == position);
+        assertTrue("SeqEnd2", decoder.getByteCount() == position);
 
         assertTrue("SeqNull", 
                    new CBORDecoder(new ByteArrayInputStream(new byte[0]),
@@ -1949,6 +1950,7 @@ public class CBORTest {
             position += rawCbor.length;
         }
         assertTrue("SeqEnd", sequence.length == position);
+        assertTrue("SeqEnd2", decoder.getByteCount() == position);
     }
 
     @Test
