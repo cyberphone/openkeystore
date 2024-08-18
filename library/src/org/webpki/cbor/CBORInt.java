@@ -42,9 +42,6 @@ import static org.webpki.cbor.CBORInternal.*;
  */
 public class CBORInt extends CBORObject {
     
-    static final BigInteger LONG_SIGN_BIT = new BigInteger("9223372036854775808");
-    static final long LONG_UNSIGNED_PART  = 0x7fffffffffffffffL;
-    
     long value;
     boolean unsigned;
     
@@ -105,10 +102,7 @@ public class CBORInt extends CBORObject {
 
     BigInteger toBigInteger() {
         // "int65", really?!
-        BigInteger bigInteger = BigInteger.valueOf(value & LONG_UNSIGNED_PART);
-        if (value < 0) {
-            bigInteger = bigInteger.add(LONG_SIGN_BIT);
-        }
+        BigInteger bigInteger = BigInteger.valueOf(value).and(MAX_CBOR_INTEGER_MAGNITUDE);
         return unsigned ? bigInteger : bigInteger.not();
     }
 

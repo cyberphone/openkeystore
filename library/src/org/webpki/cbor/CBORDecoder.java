@@ -30,9 +30,7 @@ import static org.webpki.cbor.CBORInternal.*;
  * CBOR decoder class.
  */
 public class CBORDecoder {
-
-    static final BigInteger MAX_INTEGER = new BigInteger("ffffffffffffffff", 16);
-    
+   
     private InputStream inputStream;
     private boolean sequenceFlag;
     private boolean deterministicMode;
@@ -163,7 +161,7 @@ public class CBORDecoder {
                     }
                 } else {
                     // Potentially sloppy serialization.
-                    if (bigInteger.compareTo(MAX_INTEGER) < 1) {
+                    if (bigInteger.compareTo(MAX_CBOR_INTEGER_MAGNITUDE) < 1) {
                         return new CBORInt(bigInteger.longValue(), tag == MT_BIG_UNSIGNED);
                     }
                 }

@@ -571,8 +571,21 @@ public class CBORTest {
         compareToTest(0, compA, compA);
         compareToTest(-1, compA, compB);
         compareToTest(1, compB, compA);
+
+        getBigIntegerTest("-18446744073709551616", -1, false);
+        getBigIntegerTest("-1", 0, false);
+        getBigIntegerTest("-9223372036854775808", 9223372036854775807L, false);
+        getBigIntegerTest("18446744073709551615", -1, true);
+
     }
  
+    void getBigIntegerTest(String numeberString, long value, boolean unsigned) {
+        BigInteger bValue = new BigInteger(numeberString);
+        CBORInt cborInt = new CBORInt(value, unsigned);
+        assertTrue("bi", bValue.equals(cborInt.getBigInteger()));
+        assertTrue("bi", bValue.equals(CBORDecoder.decode(cborInt.encode()).getBigInteger()));
+    }
+
     public static boolean compareKeyId(CBORObject keyId, CBORObject optionalKeyId) {
         if (optionalKeyId == null) {
             return false;
@@ -2329,8 +2342,8 @@ public class CBORTest {
             try {
                 new CBORDecoder(new ByteArrayInputStream(Hex.decode(hexCbor)),
                    false,
-               false,
-           true,
+                    false,
+                  true,
                       null).decodeWithOptions();
                 fail("must not");
             } catch (Exception e) {
