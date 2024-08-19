@@ -50,8 +50,7 @@ public class CBORDecoder {
     * <ul>
     * <li>Returns after decoding a CBOR object, while preparing the decoder for the next item.</li>
     * <li>If no data is found (EOF), <code>null</code> is returned (<i>empty</i> sequences are permitted).</li>
-    * <li>Data <i>succeeding</i> a just decoded CBOR object is not verified for correctness.
-    * This can be used for FIDO attestations which mixes CBOR objects with proprietary data formats.
+    * <li>Note that data <i>succeeding</i> a just decoded CBOR object is not verified for correctness.
     * Also see {@link #getByteCount()}.</li>  
     * </ul>
     * @param lenientFlag If <code>true</code> disable 
