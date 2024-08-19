@@ -45,23 +45,26 @@ public class CBORDecoder {
     * To be used with {@link CBORDecoder#decodeWithOptions()}.
     * </p>
     * @param inputStream Stream holding CBOR data.  If <code>sequenceFlag</code> is <code>false</code>,
-    * <code>inputStream</code> must hold exactly one CBOR object.
-    * @param sequenceFlag If <code>true</code> the following apply:
+    * <code>inputStream</code> must <i>hold exactly one CBOR object</i>.
+    * @param sequenceFlag If <code>sequenceFlag</code> is <code>true</code> the following apply:
     * <ul>
     * <li>Immediately return after decoding a CBOR object, while preparing the decoder for the next item.</li>
     * <li>If no data is found (EOF), <code>null</code> is returned (<i>empty</i> sequences are permitted).</li>
     * <li>Note that data <i>succeeding</i> a just decoded CBOR object is not verified for correctness.
     * Also see {@link #getByteCount()}.</li>  
     * </ul>
-    * @param lenientFlag If <code>true</code> disable 
-    * <a href='package-summary.html#deterministic-encoding'>Deterministic&nbsp;Encoding</a>
-    * checks for number serialization and map <i>sorting</i>.
+    * @param lenientFlag If <code>lenientFlag</code> is <code>true</code> the decoder will accept CBOR 
+    * code that does not conform to the
+    * <a href='package-summary.html#deterministic-encoding'>Deterministic&nbsp;Encoding</a> rules.
+    * This option may be needed for dealing with &quot;legacy&quot; CBOR implementations.
+    * The flag disables the map sorting and preferred number serialization requirements.
     * See also {@link CBORMap#setSortingMode(boolean)}.
     * @param rejectNaNFlag By default, this implementation supports 
     * <code>NaN</code>, <code>Infinity</code>, 
-    * and <code>-Infinity</code>. In case these variants are not applicable for the
+    * and <code style='white-space:nowrap'>-Infinity</code>. In case these variants 
+    * are not applicable for the
     * application in question, they can be "outlawed" (causing a {@link CBORException} 
-    * if encountered), by setting this flag to <code>true</code>.
+    * if encountered), by setting <code>rejectNaNFlag</code> to <code>true</code>.
     * @param maxLength Holds maximum input size in 
     * bytes or <code>null</code> ({@link Integer#MAX_VALUE} is assumed).
     * Since malformed CBOR objects can request arbitrary amounts of memory,
@@ -330,7 +333,7 @@ public class CBORDecoder {
      * Decode CBOR data.
      * <p>
      * This method is identical to:
-     * <pre>  new CBORDecoder(new ByteArrayInputStream(cborData),
+     * <pre>  new CBORDecoder(new ByteArrayInputStream(cbor),
                   false, 
                   false,
                   false,
@@ -340,15 +343,15 @@ public class CBORDecoder {
      * <p>
      * Decoding errors throw {@link CBORException}.
      * </p>
-     * @param cborData CBOR binary data <i>holding exactly one CBOR object</i>.
+     * @param cbor CBOR binary data <i>holding exactly one CBOR object</i>.
      * @return {@link CBORObject}
      */
-    public static CBORObject decode(byte[] cborData) {
-        return new CBORDecoder(new ByteArrayInputStream(cborData),
+    public static CBORObject decode(byte[] cbor) {
+        return new CBORDecoder(new ByteArrayInputStream(cbor),
                                false, 
                                false,
                                false,
-                               cborData.length).decodeWithOptions();
+                               cbor.length).decodeWithOptions();
     }
     
     static final String STDERR_UNSUPPORTED_TAG =
