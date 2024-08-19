@@ -48,10 +48,10 @@ public class CBORDecoder {
     * <code>inputStream</code> must <i>hold exactly one CBOR object</i>.
     * @param sequenceFlag If <code>sequenceFlag</code> is <code>true</code> the following apply:
     * <ul>
-    * <li>Immediately return after decoding a CBOR object, while preparing the decoder for the next item.</li>
+    * <li>Immediately return after decoding a CBOR object, while preparing the decoder for the next item.
+    * See also {@link #getByteCount()}.</li>
     * <li>If no data is found (EOF), <code>null</code> is returned (<i>empty</i> sequences are permitted).</li>
-    * <li>Note that data <i>succeeding</i> a just decoded CBOR object is not verified for correctness.
-    * Also see {@link #getByteCount()}.</li>  
+    * <li>Note that data <i>succeeding</i> a just decoded CBOR object is not verified for correctness.</li>  
     * </ul>
     * @param lenientFlag If <code>lenientFlag</code> is <code>true</code> the decoder will accept CBOR 
     * code that does not conform to the
