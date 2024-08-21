@@ -26,7 +26,7 @@ and their mapping to Java:
  dealt with automatically.</li>
 <li>Floating point data covers the 16, 32, and 64-bit IEEE&nbsp;754 variants.
 The encoded representation is determined by the size and precision of a value.
-Also see the decoder {@link CBORDecoder#CBORDecoder(inputStream, boolean, boolean, boolean, Integer) rejectNaNFlag}.</li>
+Also see the decoder {@link CBORDecoder#setNaNSupport(boolean)}.</li>
 </ol>
 <p>
 This implementation does not support CBOR &quot;simple&quot; values beyond
@@ -168,7 +168,7 @@ may also be provided in
 Any deviation from the rules above will throw exceptions using the standard decoder
 ({@link CBORDecoder#decode(byte[])}).
 For more control of the decoding process including dealing with CBOR sequences, see:
-{@link CBORDecoder#CBORDecoder(inputStream, boolean, boolean, boolean, Integer)
+{@link CBORDecoder#CBORDecoder(inputStream)
 CBOR&nbsp;decoding&nbsp;options}.
 <p>
 On output ({@link CBORObject#encode()})
