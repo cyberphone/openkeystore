@@ -40,7 +40,7 @@ public class CBORDecoder {
     private int byteCount;
 
     /**
-    * Create a parameterized CBOR decoder.
+    * Create a CBOR decoder supporting options.
     * <p>
     * See {@link CBORDecoder#setDeterminismMode(boolean)},
     * {@link CBORDecoder#setInputLength(int)},
