@@ -1851,7 +1851,7 @@ public class CBORTest {
         String result = HexaDecimal.encode(
                 new CBORDecoder(new ByteArrayInputStream(HexaDecimal.decode(hexInput)))
                     .setSequenceMode(sequenceFlag)
-                    .setDeterminismMode(!acceptNonDeterministic)
+                    .setDeterministicMode(!acceptNonDeterministic)
                     .decodeWithOptions().encode()).toUpperCase();
         assertTrue("Strange=" + result, hexExpectedResult.equals(result));
     }
@@ -2337,12 +2337,12 @@ public class CBORTest {
     }
 
     @Test
-    public void disableInvalidFloats() {
+    public void disableNaNAndInfinity() {
         String[] decoding = {"f97e00", "f97c00", "f9fc00"};
         for (String hexCbor : decoding) {
             try {
                 new CBORDecoder(new ByteArrayInputStream(Hex.decode(hexCbor)))
-                    .setNaNSupport(true)
+                    .setNaNSupport(false)
                     .decodeWithOptions();
                 fail("must not");
             } catch (Exception e) {

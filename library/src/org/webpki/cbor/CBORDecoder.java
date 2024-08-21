@@ -42,7 +42,7 @@ public class CBORDecoder {
     /**
     * Create a CBOR decoder supporting options.
     * <p>
-    * See {@link CBORDecoder#setDeterminismMode(boolean)},
+    * See {@link CBORDecoder#setDeterministicMode(boolean)},
     * {@link CBORDecoder#setInputLength(int)},
     * {@link CBORDecoder#setNaNSupport(boolean)}, and
     * {@link CBORDecoder#setSequenceMode(boolean)}
@@ -325,18 +325,18 @@ public class CBORDecoder {
      * In case these variants are not applicable for the application in question,
      * this method enables overriding the default.
      * </p>
-     * @param reject If the <code>reject</code> flag is set to <code>true</code>,
+     * @param accept If the <code>accept</code> flag is set to <code>false</code>,
      * the mentioned exceptional floating point values will (if encountered),
      * cause a {@link CBORException} to be thrown.
      * @return <code>this</code> (updated {@link CBORDecoder} object)
      */
-    public CBORDecoder setNaNSupport(boolean reject) {
-        this.rejectNaNFlag = reject;
+    public CBORDecoder setNaNSupport(boolean accept) {
+        this.rejectNaNFlag = !accept;
         return this;
     }
 
     /**
-     * Set CBOR decoder determinism mode.
+     * Set CBOR decoder deterministic mode.
      * <p>
      * By default the decoder assumes that CBOR data conforms to the
      * <a href='package-summary.html#deterministic-encoding'>Deterministic&nbsp;Encoding</a> rules.
@@ -350,7 +350,7 @@ public class CBORDecoder {
      * will still cause a {@link CBORException} to be thrown.
      * @return <code>this</code> (updated {@link CBORDecoder} object)
      */
-    public CBORDecoder setDeterminismMode(boolean enforce) {
+    public CBORDecoder setDeterministicMode(boolean enforce) {
         this.deterministicMode = enforce;
         return this;
     }
