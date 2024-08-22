@@ -24,7 +24,9 @@ and their mapping to Java:
 <ol style='margin:0 0'>
 <li>The distinction between unsigned and negative values is
  dealt with automatically.</li>
-<li>Floating point data covers the 16, 32, and 64-bit IEEE&nbsp;754 variants.
+<li style='padding-top:0.5em'>Floating point data covers the 16, 32, and 64-bit IEEE&nbsp;754 variants,
+including support for <code style='white-space:nowrap'>-0.0</code>, <code>NaN</code>,
+ and <code style='white-space:nowrap'>&pm;Infinity</code>.
 The encoded representation is determined by the size and precision of a value.
 Also see the decoder {@link CBORDecoder#setNaNSupport(boolean)}.</li>
 </ol>
