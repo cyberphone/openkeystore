@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.webpki.cbor.CBORBytes;
+import org.webpki.cbor.CBORCryptoConstants;
 import org.webpki.cbor.CBORInt;
 import org.webpki.cbor.CBORKeyPair;
 import org.webpki.cbor.CBORMap;
@@ -34,7 +35,7 @@ import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORPublicKey;
 
 import org.webpki.crypto.AlgorithmPreferences;
-
+import org.webpki.jose.JOSEKeyWords;
 import org.webpki.json.JSONCryptoHelper;
 import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONObjectWriter;
@@ -68,9 +69,14 @@ public class CoseKeyServlet extends CoreRequestServlet {
             String inData = parsedJson.getString(KEY_IN).trim();
             KeyPair keyPair = null;
             PublicKey publicKey = null;
+            String optionalKeyId = null;
              // is it a JWK?
             if (inData.startsWith("{")) {
                 JSONObjectReader jwk = JSONParser.parse(inData);
+                if (jwk.hasProperty(JOSEKeyWords.KID_JSON)) {
+                    optionalKeyId = jwk.getString(JOSEKeyWords.KID_JSON);
+                    jwk.removeProperty(JOSEKeyWords.KID_JSON);
+                }
                 try {
                     publicKey = JSONCryptoHelper.decodePublicKey(jwk, AlgorithmPreferences.JOSE);
                     if (jwk.hasProperty("d")) {
@@ -97,6 +103,9 @@ public class CoseKeyServlet extends CoreRequestServlet {
             // Now we have either just a public key or a key pair
             CBORMap cbor = keyPair == null ? 
                     CBORPublicKey.convert(publicKey) : CBORKeyPair.convert(keyPair);
+            if (optionalKeyId != null) {
+                cbor.set(CBORCryptoConstants.COSE_KID_LABEL, new CBORBytes(UTF8.encode(optionalKeyId)));
+            }
             jsonResponse.setString(CBOR_OUT, 
                                    getFormattedCbor(parsedJson, new CBORObject[] {cbor}));
         } catch (Exception e) {

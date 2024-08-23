@@ -31,6 +31,11 @@ public interface CBORCryptoConstants {
     CBORInt COSE_KTY_LABEL          = new CBORInt(1);
 
     /**
+     * COSE "kid" label (2).
+     */
+    CBORInt COSE_KID_LABEL          = new CBORInt(2);
+
+    /**
      * COSE OKP "kty" identifier (1).
      */
     CBORInt COSE_OKP_KTY            = new CBORInt(1);
