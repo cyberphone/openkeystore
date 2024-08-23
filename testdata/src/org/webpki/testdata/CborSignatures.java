@@ -256,7 +256,7 @@ public class CborSignatures {
 
     static byte[] getDataToSign() throws Exception {
         return new CBORMap()
-            .set(new CBORString("instant"), new CBORString("2021-06-10T11:23:06Z"))
+            .set(new CBORString("instant"), new CBORString("2024-08-22T11:23:06Z"))
             .set(new CBORString("name"), new CBORString("John Doe"))
             .set(new CBORString("id"), new CBORInt(123456))
             .encode();
@@ -291,7 +291,8 @@ public class CborSignatures {
     }
     
     static String getAlgorithm(SignatureAlgorithms algorithm) throws IOException {
-        return algorithm.getJoseAlgorithmId().toLowerCase();
+        String algId = algorithm.getJoseAlgorithmId().toLowerCase();
+        return algId.startsWith("es") ? algId.replace("es", "esp") : algId;
     }
     
     static class SaveAlgorithm {
@@ -469,7 +470,7 @@ public class CborSignatures {
                              .set(new CBORInt(3), new CBORString("FR7630002111110020050014382"))
                              .set(new CBORInt(4), new CBORString("https://banknet2.org"))
                              .set(new CBORInt(5), new CBORString("05768401"))
-                             .set(new CBORInt(6), new CBORString("2022-09-29T09:34:08-05:00"))
+                             .set(new CBORInt(6), new CBORString("2024-08-22T09:34:08-05:00"))
                              .set(new CBORInt(7),
                                         new CBORMap()
                                             .set(new CBORInt(1), new CBORFloat(38.8882))
@@ -509,7 +510,7 @@ public class CborSignatures {
         StringBuilder text = new StringBuilder(CBORDecoder.decode(signature).toString());
         int i = text.indexOf("\n  -1:");
         for (String comment : new String[]{"Enveloped signature object",
-                                           "Signature algorithm = ES256",
+                                           "Signature algorithm = ESP256",
                                            "Public key descriptor in COSE format",
                                            "kty = EC",
                                            "crv = P-256",

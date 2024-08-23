@@ -1425,7 +1425,7 @@ public class CBORTest {
                     new CBORHmacValidator(new byte[] {9}));
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, "Unknown COSE HMAC algorithm: -7");
+            checkException(e, "Unknown COSE HMAC algorithm: -9");
         }
         
         try {

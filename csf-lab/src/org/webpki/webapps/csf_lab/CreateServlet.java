@@ -73,11 +73,15 @@ public class CreateServlet extends CoreRequestServlet {
 
         SelectAlg add(SignatureAlgorithms algorithmString) throws IOException {
             String algId = algorithmString.getAlgorithmId(AlgorithmPreferences.JOSE);
+            String nonPolymorphic = algId;
+            if (nonPolymorphic.startsWith("ES")) {
+                nonPolymorphic = nonPolymorphic.replace("ES", "ESP");
+            }
             html.append("<option value='")
                 .append(algId)
                 .append("'")
                 .append(algId.equals(preSelected) ? " selected>" : ">")
-                .append(algId)
+                .append(nonPolymorphic)
                 .append("</option>");
             return this;
         }

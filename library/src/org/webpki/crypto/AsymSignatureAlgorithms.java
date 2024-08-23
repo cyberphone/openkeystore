@@ -55,29 +55,32 @@ public enum AsymSignatureAlgorithms implements SignatureAlgorithms {
                    -39,  "1.2.840.113549.1.1.10", "RSASSA-PSS",
                    HashAlgorithms.SHA512, false, KeyTypes.RSA,   MGF1ParameterSpec.SHA512),
 
+                  // https://www.ietf.org/archive/id/draft-ietf-jose-fully-specified-algorithms-05.html
+                  // Kept JOSE, Updated COSE
     ECDSA_SHA256  ("http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256",    "ES256",  
-                   -7,   "1.2.840.10045.4.3.2",   "SHA256withECDSA",
+                   -9,   "1.2.840.10045.4.3.2",   "SHA256withECDSA",
                    HashAlgorithms.SHA256, true,  KeyTypes.EC,    null),
-      
+
+                  // https://www.ietf.org/archive/id/draft-ietf-jose-fully-specified-algorithms-05.html
+                  // Kept JOSE, Updated COSE
     ECDSA_SHA384  ("http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha384",    "ES384",   
-                   -35,  "1.2.840.10045.4.3.3",   "SHA384withECDSA",
+                   -48,  "1.2.840.10045.4.3.3",   "SHA384withECDSA",
                    HashAlgorithms.SHA384, true,  KeyTypes.EC,    null),
-      
+ 
+                  // https://www.ietf.org/archive/id/draft-ietf-jose-fully-specified-algorithms-05.html
+                  // Kept JOSE, Updated COSE  
     ECDSA_SHA512  ("http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha512",    "ES512",   
-                   -36,  "1.2.840.10045.4.3.4",   "SHA512withECDSA",
+                   -49,  "1.2.840.10045.4.3.4",   "SHA512withECDSA",
                    HashAlgorithms.SHA512, true,  KeyTypes.EC,    null),
 
-    // In COSE this is just "EdDSA", but here we say it is Ed25519 which is also
-    // how FIDO treated this.
+                  // https://www.ietf.org/archive/id/draft-ietf-jose-fully-specified-algorithms-05.html
     ED25519       ("https://webpki.github.io/sks/algorithm#ed25519",         "Ed25519",   
-                   -8,   "1.3.101.112",           "Ed25519",
+                   -50,  "1.3.101.112",           "Ed25519",
                    null /*"pure" */,      false, KeyTypes.EDDSA, null),
 
-    // Incompatible with COSE, but compatible with most cryptographic
-    // APIs as well as PKIX's way of dealing with with different EdDSA
-    // variants.  That is, each being treated as a specific algorithm.
+                  // https://www.ietf.org/archive/id/draft-ietf-jose-fully-specified-algorithms-05.html
     ED448         ("https://webpki.github.io/sks/algorithm#ed448",           "Ed448",   
-                   -9,   "1.3.101.113",           "Ed448",
+                   -51,  "1.3.101.113",           "Ed448",
                    null /*"pure" */,      false, KeyTypes.EDDSA, null);
 
     private final String sksId;             // As expressed in SKS

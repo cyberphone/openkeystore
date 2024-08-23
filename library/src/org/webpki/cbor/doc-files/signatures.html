@@ -22,15 +22,15 @@ enabling constructs like the following:
 &nbsp;&nbsp;3: "FR7630002111110020050014382",<br>
 &nbsp;&nbsp;4: "https://banknet2.org",<br>
 &nbsp;&nbsp;5: "05768401",<br>
-&nbsp;&nbsp;6: "2022-09-29T09:34:08-05:00",<br>
+&nbsp;&nbsp;6: "2024-08-22T09:34:08-05:00",<br>
 &nbsp;&nbsp;7: {<br>
 &nbsp;&nbsp;&nbsp;&nbsp;1: 38.8882,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;2: 77.0199<br>
 &nbsp;&nbsp;},<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Enveloped signature object /</span><br>
 &nbsp;&nbsp;-1: {<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Signature algorithm = ES256 /</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;1: -7,<br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Signature algorithm = ESP256 /</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;1: -9,<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Public key descriptor in COSE format /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;4: {<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ kty = EC /</span><br>
@@ -43,7 +43,7 @@ enabling constructs like the following:
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-3: h'9826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d8'<br>
 &nbsp;&nbsp;&nbsp;&nbsp;},<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Signature value /</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class='webpkihighlite'>6: h'5f21112b9f5c1a93743409596421e673f88e59cf34610d53a7cd00f4017327c8f603ea7344a9286db26c52c2a661dff6e4fabc0f2384fe7d1de6c0a23a3f5c21'</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class='webpkihighlite'>6: h'fdfe515197a79f1ebf149ee8a107c7578a7ec90bb7452df972f11f6105479b05963f2fe1f5a79fa9515af9bd5eece61a90b346527fe34b59b18732361be55746'</span><br>
 &nbsp;&nbsp;}<br>
 }
 </div>
@@ -52,7 +52,7 @@ enabling constructs like the following:
 The same object expressed as hex-encoded CBOR:
 </p>
 <div class='webpkihexbox'>
-a801a3016a53706163652053686f7002663433352e30300363555344026d737061636573686f702e636f6d03781b465237363330303032313131313130303230303530303134333832047468747470733a2f2f62616e6b6e6574322e6f726705683035373638343031067819323032322d30392d32395430393a33343a30382d30353a303007a201fb404371b089a0275202fb405341460aa64c3020a3012604a401022001215820e812b1a6dcbc708f9ec43cc2921fa0a14e9d5eadcc6dc63471dd4b680c6236b52258209826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d80658405f21112b9f5c1a93743409596421e673f88e59cf34610d53a7cd00f4017327c8f603ea7344a9286db26c52c2a661dff6e4fabc0f2384fe7d1de6c0a23a3f5c21
+a801a3016a53706163652053686f7002663433352e30300363555344026d737061636573686f702e636f6d03781b465237363330303032313131313130303230303530303134333832047468747470733a2f2f62616e6b6e6574322e6f726705683035373638343031067819323032342d30382d32325430393a33343a30382d30353a303007a201fb404371b089a0275202fb405341460aa64c3020a3012804a401022001215820e812b1a6dcbc708f9ec43cc2921fa0a14e9d5eadcc6dc63471dd4b680c6236b52258209826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d8065840fdfe515197a79f1ebf149ee8a107c7578a7ec90bb7452df972f11f6105479b05963f2fe1f5a79fa9515af9bd5eece61a90b346527fe34b59b18732361be55746
 </div>
 <i>Explanation: </i>
 Labels <code>1</code>-<code>7</code> represent application data
@@ -135,28 +135,27 @@ Currently supported signature algorithms:
 <div class='webpkifloat'>
 <table class='webpkitable'>
 <tr><th>Name</th><th>Identifier</th><th>Compatibility</th></tr>
-<tr style='text-align:center'><td><code>HS256</code></td><td>5</td><td>COSE, JOSE</td></tr>
-<tr style='text-align:center'><td><code>HS384</code></td><td>6</td><td>COSE, JOSE</td></tr>
-<tr style='text-align:center'><td><code>HS512</code></td><td>7</td><td>COSE, JOSE</td></tr>
-<tr style='text-align:center'><td><code>Ed25519</code></td><td>-8</td><td>FIDO, PKIX [1]</td></tr>
-<tr style='text-align:center'><td><code>Ed448</code></td><td>-9</td><td>PKIX [2]</td></tr>
-<tr style='text-align:center'><td><code>ES256</code></td><td>-7</td><td>COSE, JOSE</td></tr>
-<tr style='text-align:center'><td><code>ES384</code></td><td>-35</td><td>COSE, JOSE</td></tr>
-<tr style='text-align:center'><td><code>ES512</code></td><td>-36</td><td>COSE, JOSE</td></tr>
-<tr style='text-align:center'><td><code>PS256</code></td><td>-37</td><td>COSE, JOSE</td></tr>
-<tr style='text-align:center'><td><code>PS384</code></td><td>-38</td><td>COSE, JOSE</td></tr>
-<tr style='text-align:center'><td><code>PS512</code></td><td>-39</td><td>COSE, JOSE</td></tr>
-<tr style='text-align:center'><td><code>RS256</code></td><td>-257</td><td>COSE, JOSE</td></tr>
-<tr style='text-align:center'><td><code>RS384</code></td><td>-258</td><td>COSE, JOSE</td></tr>
-<tr style='text-align:center'><td><code>RS512</code></td><td>-259</td><td>COSE, JOSE</td></tr>
+<tr style='text-align:center'><td><code>HS256</code></td><td>5</td><td></td></tr>
+<tr style='text-align:center'><td><code>HS384</code></td><td>6</td><td></td></tr>
+<tr style='text-align:center'><td><code>HS512</code></td><td>7</td><td></td></tr>
+<tr style='text-align:center'><td><code>Ed25519</code></td><td>-50</td><td>1</td></tr>
+<tr style='text-align:center'><td><code>Ed448</code></td><td>-51</td><td>1</td></tr>
+<tr style='text-align:center'><td><code>ESP256</code></td><td>-9</td><td>1</td></tr>
+<tr style='text-align:center'><td><code>ESP384</code></td><td>-48</td><td>1</td></tr>
+<tr style='text-align:center'><td><code>ESP512</code></td><td>-49</td><td>1</td></tr>
+<tr style='text-align:center'><td><code>PS256</code></td><td>-37</td><td></td></tr>
+<tr style='text-align:center'><td><code>PS384</code></td><td>-38</td><td></td></tr>
+<tr style='text-align:center'><td><code>PS512</code></td><td>-39</td><td></td></tr>
+<tr style='text-align:center'><td><code>RS256</code></td><td>-257</td><td></td></tr>
+<tr style='text-align:center'><td><code>RS384</code></td><td>-258</td><td></td></tr>
+<tr style='text-align:center'><td><code>RS512</code></td><td>-259</td><td></td></tr>
 </table>
 </div>
-[1] Unfortunately, different standards groups did not in due time realize that
-existing cryptographic APIs only rarely accept &quot;EdDSA&quot; as a valid signature algorithm.
-In current FIDO alliance specifications the COSE <code>EdDSA</code> algorithm identifier has
-therefore been redefined to rather mean EdDSA with an Ed25519 key which is also what CSF follows.
-PKIX' RFC&nbsp;8410 makes the same distinction.
-<p>[2] CSF extends the scheme used for <code>Ed25519</code> to <code>Ed448</code> as well.</p>
+<p>
+[1] Updated for compliance with 
+<a href='https://datatracker.ietf.org/doc/draft-ietf-jose-fully-specified-algorithms/'>
+https://datatracker.ietf.org/doc/draft-ietf-jose-fully-specified-algorithms/</a>.
+</p>
 <h3>Test Vectors</h3>
 An extensive set of test vectors is currently available at: 
 <a href='https://github.com/cyberphone/openkeystore/tree/master/testdata/cbor-encryption'>
