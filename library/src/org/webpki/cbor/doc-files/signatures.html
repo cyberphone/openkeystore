@@ -89,6 +89,8 @@ A compliant <code>keyId</code> <b>must</b> uniquely identify a specific signatur
 <td><i>Optional</i> public key in COSE format.  
 Note that ECDSA public keys <b>must</b> be supplied with a <i>value parameter</i>
 for the y-coordinate as well.
+The public key object <b>must not</b> contain any additional information like
+key identifiers or algorithms.
 </td></tr>
 
 <tr><td style='text-align:center'><code>5</code></td><td><code>certificatePath</code></td>
