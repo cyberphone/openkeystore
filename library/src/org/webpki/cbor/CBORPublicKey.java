@@ -100,12 +100,13 @@ public class CBORPublicKey {
         return new CBORBytes(curvePoint);        
     }
     
-     /**
+    /**
      * Convert JCE public key to COSE.
      * 
      * @param jcePublicKey Public key in Java/JCE format
      * @return Public key in COSE format
-      */
+     * @throws CryptoException
+     */
     public static CBORMap convert(PublicKey jcePublicKey) {
         CBORMap cosePublicKey = new CBORMap();
         KeyAlgorithms keyAlg = KeyAlgorithms.getKeyAlgorithm(jcePublicKey);
@@ -211,7 +212,13 @@ public class CBORPublicKey {
      * Convert COSE public key to JCE.
      * 
      * @param cosePublicKey Public key in COSE format
-     * @return Public key as a Java/JCE object 
+     * <p>
+     * Note: there <b>must not</b> be any additional items like key identifiers
+     * or mandated signature algorithms.
+     * </p>
+     * @return Public key as a Java/JCE object
+     * @throws CryptoException
+     * @throws CBORException
      */
     public static PublicKey convert(CBORObject cosePublicKey) {
         CBORMap publicKeyMap = cosePublicKey.getMap();
