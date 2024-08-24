@@ -221,7 +221,7 @@ public class CoreRequestServlet extends HttpServlet {
 
     CBORObject getCborAttribute(String attribute, String errorHelpText) throws IOException {
         try {
-            return CBORDiagnosticNotation.decode(attribute);
+            return CBORDiagnosticNotation.convert(attribute);
         } catch (CBORException e) {
             throw new IOException(e.getMessage() + "\n\n" + errorHelpText);
         }   

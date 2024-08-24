@@ -290,7 +290,7 @@ public class CreateServlet extends CoreRequestServlet {
          try {
             request.setCharacterEncoding("utf-8");
             final CBORObject rawCbor = (Boolean.valueOf(getParameter(request, PRM_INPUT_TYPE)) ? 
-                CBORDiagnosticNotation.decode(getParameterTextarea(request, PRM_CBOR_DATA))
+                CBORDiagnosticNotation.convert(getParameterTextarea(request, PRM_CBOR_DATA))
                                     :
                 getCborFromHex(getParameter(request, PRM_CBOR_DATA)));
             

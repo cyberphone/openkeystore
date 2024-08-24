@@ -42,24 +42,24 @@ public class CBORDiagnosticNotation {
     }
     
     /**
-     * Decode diagnostic notation CBOR to CBOR.
+     * Convert diagnostic notation CBOR to CBOR.
      * 
      * @param cborText String holding diagnostic (textual) CBOR
      * @return {@link CBORObject}
      * @throws CBORException
      */
-    public static CBORObject decode(String cborText) {
+    public static CBORObject convert(String cborText) {
         return new CBORDiagnosticNotation(cborText, false).readSequenceToEOF()[0];
     }
 
     /**
-     * Decode diagnostic notation CBOR sequence to CBOR.
+     * Convert diagnostic notation CBOR sequence to CBOR.
      * 
      * @param cborText String holding diagnostic (textual) CBOR
      * @return {@link CBORObject}[] Non-empty array of CBOR objects
      * @throws CBORException
      */
-    public static CBORObject[] decodeSequence(String cborText) {
+    public static CBORObject[] convertSequence(String cborText) {
         return new CBORDiagnosticNotation(cborText, true).readSequenceToEOF();
     }
 
@@ -325,11 +325,7 @@ public class CBORDiagnosticNotation {
             }
             readChar();
             long tagNumber = Long.parseUnsignedLong(number);
-            CBORObject taggedObject = getObject();
-            if (tagNumber == CBORTag.RESERVED_TAG_COTX) {
-                CBORObject.checkCOTX(taggedObject);
-            }
-            CBORTag cborTag = new CBORTag(tagNumber, taggedObject);
+            CBORTag cborTag = new CBORTag(tagNumber, getObject());
             scanFor(")");
             return cborTag;
         }

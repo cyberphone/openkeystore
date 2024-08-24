@@ -65,15 +65,6 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }
     
     abstract void internalToString(CborPrinter outputBuffer);
-
-    static CBORArray checkCOTX(CBORObject taggedObject) {
-        CBORArray holder = taggedObject.cborType == CBORTypes.ARRAY ? 
-                                            taggedObject.getArray() : null;
-        if (holder == null || holder.size() != 2 || holder.get(0).cborType != CBORTypes.STRING) {
-            cborError("Invalid COTX object: " + taggedObject.toDiagnosticNotation(false));
-        }
-        return holder;
-    }
     
     static void nullCheck(Object object) {
         if (object == null) {

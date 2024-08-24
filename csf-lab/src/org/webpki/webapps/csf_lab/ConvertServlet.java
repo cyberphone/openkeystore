@@ -64,9 +64,9 @@ public class ConvertServlet extends CoreRequestServlet {
             switch (parsedJson.getString(SEL_IN)) {
                 case DIAG:
                     cborBytes = sequenceFlag ?
-                        getBytesFromCborSequence(CBORDiagnosticNotation.decodeSequence(inData))
+                        getBytesFromCborSequence(CBORDiagnosticNotation.convertSequence(inData))
                                              :
-                        CBORDiagnosticNotation.decode(inData).encode();
+                        CBORDiagnosticNotation.convert(inData).encode();
                     break;
     
                 case CSTYLE:

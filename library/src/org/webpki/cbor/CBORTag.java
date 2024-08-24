@@ -93,7 +93,13 @@ public class CBORTag extends CBORObject {
         this.object = object;
         nullCheck(object);
         if (tagNumber == RESERVED_TAG_COTX) {
-            checkCOTX(object);
+            if (object.cborType == CBORTypes.ARRAY) {
+                CBORArray holder = object.getArray();
+                if (holder.size() == 2 && holder.get(0).cborType == CBORTypes.STRING) {
+                    return;
+                }
+            }
+            cborError(STDERR_INVALID_COTX_OBJECT + object.toDiagnosticNotation(false));
         } else if (tagNumber == RESERVED_TAG_DATE) {
             if (object.cborType == CBORTypes.STRING) {
                 try {
@@ -133,7 +139,10 @@ public class CBORTag extends CBORObject {
          object.internalToString(cborPrinter);
          cborPrinter.append(')');
     }
-    
+
+    static final String STDERR_INVALID_COTX_OBJECT =
+            "Invalid COTX object: ";
+
     static final String STDERR_ISO_DATE_ERROR =
             "Invalid ISO date string: ";
 }

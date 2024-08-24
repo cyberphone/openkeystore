@@ -1088,10 +1088,10 @@ public class CBORTest {
                 
                 @Override
                 public CBORObject wrap(CBORMap cborMap) {
-                    return new CBORTag(tagNumber,
-                            objectId == null ? cborMap : new CBORArray()
-                                    .add(new CBORString(objectId))
-                                    .add(cborMap));
+                    if (tagNumber == CBORTag.RESERVED_TAG_COTX) {
+                        return new CBORTag(objectId, cborMap);
+                    }
+                    return new CBORTag(tagNumber, cborMap);
                 }
                 
             });
@@ -2194,7 +2194,7 @@ public class CBORTest {
     
     void diagFlag(String wrongs) {
         try {
-            CBORDiagnosticNotation.decode(wrongs);
+            CBORDiagnosticNotation.convert(wrongs);
             fail("Should not");
         } catch (Exception e) {
             
@@ -2204,53 +2204,53 @@ public class CBORTest {
     @Test
     public void diagnosticNotation() throws Exception {
         assertTrue("#",
-                   CBORDiagnosticNotation.decode("# hi\r\n 1#commnt").getInt32() == 1);
+                   CBORDiagnosticNotation.convert("# hi\r\n 1#commnt").getInt32() == 1);
         assertTrue("/",
-                   CBORDiagnosticNotation.decode("/ comment\n /1").getInt32() == 1);
+                   CBORDiagnosticNotation.convert("/ comment\n /1").getInt32() == 1);
         String b64u = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
-        CBORObject decoded = CBORDiagnosticNotation.decode("b64'" + b64u + "'");
+        CBORObject decoded = CBORDiagnosticNotation.convert("b64'" + b64u + "'");
         assertTrue("b64u", b64u.equals(Base64URL.encode(decoded.getBytes())));
         String b64 = b64u.replace('-', '+').replace('_', '/');
-        decoded = CBORDiagnosticNotation.decode("b64'" + b64 + "'");
+        decoded = CBORDiagnosticNotation.convert("b64'" + b64 + "'");
         assertTrue("b64", b64u.equals(Base64URL.encode(decoded.getBytes())));
-        assertTrue("dbl", CBORDiagnosticNotation.decode("3.5").getFloat64() == 3.5);
-        assertTrue("int", CBORDiagnosticNotation.decode("1000").getInt32() == 1000);
-        assertTrue("big", CBORDiagnosticNotation.decode(DIAG_BIG).getBigInteger().equals(
+        assertTrue("dbl", CBORDiagnosticNotation.convert("3.5").getFloat64() == 3.5);
+        assertTrue("int", CBORDiagnosticNotation.convert("1000").getInt32() == 1000);
+        assertTrue("big", CBORDiagnosticNotation.convert(DIAG_BIG).getBigInteger().equals(
                 new BigInteger(DIAG_BIG)));
-        assertTrue("bigb", CBORDiagnosticNotation.decode(
+        assertTrue("bigb", CBORDiagnosticNotation.convert(
                 "0b" + DIAG_BIG).getBigInteger().equals(new BigInteger(DIAG_BIG, 2)));
-        assertTrue("bigo", CBORDiagnosticNotation.decode(
+        assertTrue("bigo", CBORDiagnosticNotation.convert(
                 "0o" + DIAG_BIG).getBigInteger().equals(new BigInteger(DIAG_BIG, 8)));
-        assertTrue("bigh", CBORDiagnosticNotation.decode(
+        assertTrue("bigh", CBORDiagnosticNotation.convert(
                 "0x" + DIAG_BIG).getBigInteger().equals(new BigInteger(DIAG_BIG, 16)));
-        assertTrue("bigh-", CBORDiagnosticNotation.decode(
+        assertTrue("bigh-", CBORDiagnosticNotation.convert(
                 "-0x" + DIAG_BIG).getBigInteger().equals(new BigInteger(DIAG_BIG, 16).negate()));
-        assertTrue("hex", CBORDiagnosticNotation.decode(
+        assertTrue("hex", CBORDiagnosticNotation.convert(
                 "-0x" + DIAG_HEX).getInt32() == -30);
         assertTrue("bstr", 
                     Arrays.equals(
-                            CBORDiagnosticNotation.decode(
+                            CBORDiagnosticNotation.convert(
                                     "'" + DIAG_TEXT + "'").getBytes(),
                             DIAG_TEXT.getBytes("utf-8")));
         assertTrue("tstr", 
-                   DIAG_TEXT.equals(CBORDiagnosticNotation.decode(
+                   DIAG_TEXT.equals(CBORDiagnosticNotation.convert(
                            "\"" + DIAG_TEXT + "\"").getString()));
         assertTrue("tstr", 
-                   DIAG_TEXT.equals(CBORDiagnosticNotation.decode(
+                   DIAG_TEXT.equals(CBORDiagnosticNotation.convert(
                         "\"" + DIAG_TEXT.replace("te", "te\\\n") + "\"").getString()));
         assertTrue("emb", Arrays.equals(
-                          CBORDiagnosticNotation.decode(
+                          CBORDiagnosticNotation.convert(
                                   "<< " + DIAG_CBOR.toString() + ">>").getBytes(),
                           DIAG_CBOR.encode()));
-        Double v = CBORDiagnosticNotation.decode("Infinity").getFloat64();
+        Double v = CBORDiagnosticNotation.convert("Infinity").getFloat64();
         assertTrue("inf", v == Double.POSITIVE_INFINITY);
-        v = CBORDiagnosticNotation.decode("-Infinity").getFloat64();
+        v = CBORDiagnosticNotation.convert("-Infinity").getFloat64();
         assertTrue("-inf", v == Double.NEGATIVE_INFINITY);
-        v = CBORDiagnosticNotation.decode("NaN").getFloat64();
+        v = CBORDiagnosticNotation.convert("NaN").getFloat64();
         assertTrue("nan", v.isNaN());
-        assertTrue("0.0", CBORDiagnosticNotation.decode("0.0").toString().equals("0.0"));
-        assertTrue("-0.0", CBORDiagnosticNotation.decode("-0.0").toString().equals("-0.0"));
-        CBORObject[] seq = CBORDiagnosticNotation.decodeSequence("1,\"" + DIAG_TEXT + "\"");
+        assertTrue("0.0", CBORDiagnosticNotation.convert("0.0").toString().equals("0.0"));
+        assertTrue("-0.0", CBORDiagnosticNotation.convert("-0.0").toString().equals("-0.0"));
+        CBORObject[] seq = CBORDiagnosticNotation.convertSequence("1,\"" + DIAG_TEXT + "\"");
         assertTrue("seq", seq.length == 2);
         assertTrue("seqi", seq[0].getInt32() == 1);
         assertTrue("seqs", seq[1].getString().equals(DIAG_TEXT));
@@ -2258,14 +2258,14 @@ public class CBORTest {
         diagFlag("0x ");
         diagFlag("056(8)");  // leading zero
         diagFlag("-56(8)");  // Neg
-        CBORDiagnosticNotation.decode("18446744073709551615(8)");
+        CBORDiagnosticNotation.convert("18446744073709551615(8)");
         diagFlag("18446744073709551616(8)");  // Too large
-        CBORDiagnosticNotation.decode("1.0e+300");
+        CBORDiagnosticNotation.convert("1.0e+300");
         diagFlag("1.0e+500");  // Too large
         diagFlag("b64'00'");  // Bad B64
         diagFlag("h'0'");  // Bad Hex
         diagFlag("6_0");  // _ not permitted here
-        assertTrue("_", CBORDiagnosticNotation.decode("0b100_000000001").getInt32() == 2049);
+        assertTrue("_", CBORDiagnosticNotation.convert("0b100_000000001").getInt32() == 2049);
         diagFlag("'unterminated");  // Bad string
         diagFlag("\"unterminated");  // Bad string
         
@@ -2276,12 +2276,12 @@ public class CBORTest {
                 "true, 0(\"2023-06-02T07:53:19Z\")]\n" +
                 "}";
         
-        CBORObject diag = CBORDiagnosticNotation.decode(pretty);
+        CBORObject diag = CBORDiagnosticNotation.convert(pretty);
         assertTrue("diag1", pretty.equals(diag.toString()));
         assertTrue("diag2", pretty.replace(" ", "")
                                   .replace("\n", "").equals(diag.toDiagnosticNotation(false)));
         assertTrue("diag3", pretty.equals(diag.toDiagnosticNotation(true)));
-        assertTrue("diag4", CBORDiagnosticNotation.decode("\"next\nline\r\\\ncont\r\nk\"")
+        assertTrue("diag4", CBORDiagnosticNotation.convert("\"next\nline\r\\\ncont\r\nk\"")
             .toString().equals("\"next\\nline\\ncont\\nk\""));
     }
 
@@ -2298,11 +2298,11 @@ public class CBORTest {
 
     void utf8EncoderTest(String string, boolean ok) {
          try {
-            String encodedString = CBORDiagnosticNotation.decode(
+            String encodedString = CBORDiagnosticNotation.convert(
                     "\"" + string + "\"").getString();
             assertTrue("OK", ok);
             assertTrue("Conv", string.equals(encodedString));
-            byte[] encodedBytes = CBORDiagnosticNotation.decode(
+            byte[] encodedBytes = CBORDiagnosticNotation.convert(
                     "'" + string + "'").getBytes();
             assertTrue("OK", ok);
             assertTrue("Conv2", Arrays.equals(encodedBytes, string.getBytes("utf-8")));
