@@ -20,7 +20,8 @@ import java.io.IOException;
 
 import java.net.URLEncoder;
 
-import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
 import javax.servlet.ServletException;
 
@@ -33,6 +34,7 @@ import org.webpki.cbor.CBORDiagnosticNotation;
 import org.webpki.cbor.CBORHmacSigner;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;
+import org.webpki.cbor.CBORPublicKey;
 import org.webpki.cbor.CBORSigner;
 import org.webpki.cbor.CBORX509Signer;
 
@@ -42,7 +44,6 @@ import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.SignatureAlgorithms;
 
 import org.webpki.json.JSONObjectWriter;
-import org.webpki.json.JSONParser;
 
 import org.webpki.util.Base64;
 import org.webpki.util.HexaDecimal;
@@ -52,7 +53,7 @@ public class CreateServlet extends CoreRequestServlet {
     
     private static final long serialVersionUID = 1L;
 
-    static final String DEFAULT_ALG      = "ES256";
+    static final String DEFAULT_ALG      = "Ed25519";
     static final String DEFAULT_CBOR     = "{\\n" +
                                            "  / just a string /\\n" +
                                            "  1: \"Hello signed world!\",\\n" +
@@ -180,7 +181,7 @@ public class CreateServlet extends CoreRequestServlet {
                     PRM_PRIVATE_KEY,
                     4,
                     "",
-                    "Private key in PEM/PKCS #8 or &quot;plain&quot; JWK format"))
+                    "Private key in PEM/PKCS #8, JWK, or COSE format"))
         .append(HTML.fancyText(false,
                     PRM_CERT_PATH,
                     4,
@@ -323,21 +324,22 @@ public class CreateServlet extends CoreRequestServlet {
                                                           AlgorithmPreferences.JOSE));
             } else {
                 // To simplify UI we require PKCS #8 with the public key embedded
-                // but we also support JWK which also has the public key
-                byte[] privateKeyBlob = getBinaryParameter(request, PRM_PRIVATE_KEY);
-                KeyPair keyPair;
-                if (privateKeyBlob[0] == '{') {
-                    keyPair = JSONParser.parse(privateKeyBlob).getKeyPair();
-                    validationKey = 
-                            JSONObjectWriter.createCorePublicKey(keyPair.getPublic(),
-                                                                 AlgorithmPreferences.JOSE).toString();
-                 } else {
-                    keyPair = PEMDecoder.getKeyPair(privateKeyBlob);
+                // but we also support JWK and COSE which also has the public key
+                ReadKeyData keyData = extractKeyData(getParameter(request,
+                                                                  PRM_PRIVATE_KEY),
+                                                                  RequestedKeyType.KEYPAIR);
+                PublicKey publicKey = keyData.keyPair.getPublic();
+                PrivateKey privateKey = keyData.keyPair.getPrivate();
+                if (keyData.jwkKey) {
+                    validationKey = JSONObjectWriter.createCorePublicKey(publicKey,
+                        AlgorithmPreferences.JOSE).toString();
+                } else if (keyData.coseKey) {
+                    validationKey = CBORPublicKey.convert(publicKey).toString();
+                } else {
                     validationKey = "-----BEGIN PUBLIC KEY-----\n" +
-                            Base64.mimeEncode(keyPair.getPublic().getEncoded()) +
-                            "\n-----END PUBLIC KEY-----";
+                                    Base64.mimeEncode(publicKey.getEncoded()) +
+                                    "\n-----END PUBLIC KEY-----";
                 }
-                privateKeyBlob = null;  // Nullify it after use
 
                 // Create asymmetric key signer 
                 AsymSignatureAlgorithms asymSignatureAlgorithm =
@@ -345,12 +347,12 @@ public class CreateServlet extends CoreRequestServlet {
                                                                    AlgorithmPreferences.JOSE);
                 if (certOption) {
                     signer = new CBORX509Signer(
-                            keyPair.getPrivate(),
+                            privateKey,
                             PEMDecoder.getCertificatePath(getBinaryParameter(request, PRM_CERT_PATH)),
                             asymSignatureAlgorithm);
                 } else {
-                    signer = new CBORAsymKeySigner(keyPair.getPrivate(), asymSignatureAlgorithm)
-                                .setPublicKey(keyInlining ? keyPair.getPublic() : null);
+                    signer = new CBORAsymKeySigner(privateKey, asymSignatureAlgorithm)
+                                .setPublicKey(keyInlining ? publicKey : null);
                 }
             }
 

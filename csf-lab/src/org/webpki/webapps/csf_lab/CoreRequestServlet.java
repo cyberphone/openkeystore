@@ -18,7 +18,8 @@ package org.webpki.webapps.csf_lab;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
+import java.security.KeyPair;
+import java.security.PublicKey;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletOutputStream;
@@ -27,19 +28,24 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.webpki.cbor.CBORCryptoConstants;
 import org.webpki.cbor.CBORDecoder;
 import org.webpki.cbor.CBORDiagnosticNotation;
 import org.webpki.cbor.CBORException;
+import org.webpki.cbor.CBORKeyPair;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;
+import org.webpki.cbor.CBORPublicKey;
 import org.webpki.cbor.CBORTypes;
-
+import org.webpki.crypto.AlgorithmPreferences;
+import org.webpki.jose.JOSEKeyWords;
 import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONObjectWriter;
 import org.webpki.json.JSONOutputFormats;
-
+import org.webpki.json.JSONParser;
 import org.webpki.util.Base64URL;
 import org.webpki.util.HexaDecimal;
+import org.webpki.util.PEMDecoder;
 import org.webpki.util.UTF8;
 
 
@@ -243,7 +249,66 @@ public class CoreRequestServlet extends HttpServlet {
         }
         return rawContainer.getMap();
     }
+
+    static class ReadKeyData {
+        String optionalKeyId;
+        KeyPair keyPair;
+        PublicKey publicKey;
+        String rewrittenKey;
+        boolean jwkKey;
+        boolean coseKey;
+    }
+
+    enum RequestedKeyType {PUBLIC, KEYPAIR, ANY};
     
+    ReadKeyData extractKeyData(String keyDataText, RequestedKeyType requestedKeyType)
+                throws IOException {
+        ReadKeyData keyData = new ReadKeyData();
+        if (keyDataText.startsWith("{")) {
+            if (keyDataText.contains("\"kty\"")) {
+                keyData.jwkKey = true;
+                JSONObjectReader jwk = JSONParser.parse(keyDataText);
+                if (jwk.hasProperty(JOSEKeyWords.KID_JSON)) {
+                    keyData.optionalKeyId = jwk.getString(JOSEKeyWords.KID_JSON);
+                    jwk.removeProperty(JOSEKeyWords.KID_JSON);
+                }
+                keyData.rewrittenKey = jwk.toString();
+                try {
+                    keyData.keyPair = jwk.getKeyPair(AlgorithmPreferences.JOSE);
+                } catch (Exception e) {
+                    keyData.publicKey = jwk.getCorePublicKey(AlgorithmPreferences.JOSE);
+                }
+            } else {
+                keyData.coseKey = true;
+                CBORMap cbor = CBORDiagnosticNotation.convert(keyDataText).getMap();
+                if (cbor.containsKey(CBORCryptoConstants.COSE_KID_LABEL)) {
+                    cbor.remove(CBORCryptoConstants.COSE_KID_LABEL);
+                }
+                keyData.rewrittenKey = cbor.toString();
+                try {
+                    keyData.keyPair = CBORKeyPair.convert(cbor);
+                } catch (Exception e) {
+                    keyData.publicKey = CBORPublicKey.convert(cbor);
+                }
+            }
+        } else {
+            keyData.rewrittenKey = keyDataText;
+            byte[] keyInBinary = UTF8.encode(keyDataText);
+            try {
+                keyData.keyPair = PEMDecoder.getKeyPair(keyInBinary);
+            } catch (Exception e) {
+                keyData.publicKey = PEMDecoder.getPublicKey(keyInBinary);
+            }
+        }
+        if (keyData.publicKey != null && requestedKeyType == RequestedKeyType.KEYPAIR) {
+            throw new IOException("Unexpected public key:\n" + keyData.rewrittenKey);
+        } 
+        if (keyData.keyPair != null && requestedKeyType == RequestedKeyType.PUBLIC) {
+            throw new IOException("Unexpected private key:\n" + keyData.rewrittenKey);
+        } 
+        return keyData;
+    }
+
     void returnJSON(HttpServletResponse response, JSONObjectWriter json) throws IOException {
         byte[] rawData = json.serializeToBytes(JSONOutputFormats.NORMALIZED);
         response.setContentType(JSON_CONTENT_TYPE);

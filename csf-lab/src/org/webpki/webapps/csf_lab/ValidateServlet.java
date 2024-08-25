@@ -18,8 +18,6 @@ package org.webpki.webapps.csf_lab;
 
 import java.io.IOException;
 
-import java.security.PublicKey;
-
 import java.security.cert.X509Certificate;
 
 import javax.servlet.ServletException;
@@ -37,15 +35,11 @@ import org.webpki.cbor.CBORCryptoConstants;
 import org.webpki.cbor.CBORCryptoUtils;
 import org.webpki.cbor.CBORDiagnosticNotation;
 
-import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.CertificateInfo;
 import org.webpki.crypto.CryptoException;
-import org.webpki.json.JSONParser;
 
 import org.webpki.util.HexaDecimal;
-import org.webpki.util.PEMDecoder;
-import org.webpki.util.UTF8;
 
 public class ValidateServlet extends CoreRequestServlet {
 
@@ -71,27 +65,23 @@ public class ValidateServlet extends CoreRequestServlet {
                         .get(signatureLabel).getMap();
             boolean hmacSignature = 
                     csfContainer.get(CBORCryptoConstants.ALGORITHM_LABEL).getInt32() > 0;
+
+            ReadKeyData keyData = hmacSignature ? null 
+                            : extractKeyData(validationKey, RequestedKeyType.PUBLIC);
             boolean x509flag = csfContainer.containsKey(CBORCryptoConstants.CERT_PATH_LABEL);
             final StringBuilder certificateData = x509flag ? new StringBuilder() : null;
-
-            // Validation
-            boolean jwkValidationKey = validationKey.startsWith("{");
             
             CBORValidator<?> validator;
             if (hmacSignature) {
                 validator = new CBORHmacValidator(HexaDecimal.decode(validationKey));
             } else {
-                PublicKey externalPublicKey =  jwkValidationKey ? 
-                    JSONParser.parse(validationKey).getCorePublicKey(AlgorithmPreferences.JOSE)
-                                                                :
-                    PEMDecoder.getPublicKey(UTF8.encode(validationKey));
                 if (x509flag) {
                     validator = new CBORX509Validator(new CBORX509Validator.Parameters() {
 
                         @Override
                         public void verify(X509Certificate[] certificatePath,
                                            AsymSignatureAlgorithms asymSignatureAlgorithm) {
-                            if (!certificatePath[0].getPublicKey().equals(externalPublicKey)) {
+                            if (!certificatePath[0].getPublicKey().equals(keyData.publicKey)) {
                                 throw new CryptoException("Externally supplied public key does " +
                                                           "not match signature certificate");
                             }
@@ -106,7 +96,7 @@ public class ValidateServlet extends CoreRequestServlet {
     
                     });
                 } else {
-                    validator = new CBORAsymKeyValidator(externalPublicKey);
+                    validator = new CBORAsymKeyValidator(keyData.publicKey);
                 }
             }
 
@@ -137,15 +127,12 @@ public class ValidateServlet extends CoreRequestServlet {
                             "Signed CBOR object in hexadecimal notation"))           
                 .append(HTML.fancyBox(
                             CSF_VALIDATION_KEY,
-                            jwkValidationKey ? 
-                                JSONParser.parse(validationKey).toString()
-                                             :
-                                validationKey,
+                            hmacSignature ? validationKey : keyData.rewrittenKey,
                             "Signature validation " + 
                             (hmacSignature ? 
                                    "secret key in hexadecimal" :
                                    "public key in " + 
-                                   (jwkValidationKey ? "JWK" : "PEM") +
+                                   (keyData.jwkKey ? "JWK" : keyData.coseKey ? "COSE" : "PEM") +
                                    " format")));
             if (certificateData != null) {
                 html.append(HTML.fancyBox(
@@ -193,7 +180,8 @@ public class ValidateServlet extends CoreRequestServlet {
                         CSF_VALIDATION_KEY,
                         4, 
                         CSFService.samplePublicKey,
-"Validation key (secret key in hexadecimal or public key in PEM or &quot;plain&quot; JWK format)"))
+                        "Validation key (secret key in hexadecimal or public key in PEM, JWK, " +
+                            "or COSE format)"))
             .append(HTML.fancyText(
                         true,
                         CSF_SIGN_LABEL,

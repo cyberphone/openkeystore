@@ -18,9 +18,6 @@ package org.webpki.webapps.csf_lab;
 
 import java.io.IOException;
 
-import java.security.KeyPair;
-import java.security.PublicKey;
-
 import javax.servlet.ServletException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,14 +31,10 @@ import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORPublicKey;
 
-import org.webpki.crypto.AlgorithmPreferences;
-import org.webpki.jose.JOSEKeyWords;
-import org.webpki.json.JSONCryptoHelper;
 import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONObjectWriter;
 import org.webpki.json.JSONParser;
 
-import org.webpki.util.PEMDecoder;
 import org.webpki.util.UTF8;
 
 import org.webpki.webutil.ServletUtil;
@@ -66,45 +59,17 @@ public class CoseKeyServlet extends CoreRequestServlet {
                 throw new IOException("Unexpected MIME type:" + request.getContentType());
             }
             JSONObjectReader parsedJson = JSONParser.parse(ServletUtil.getData(request));
-            String inData = parsedJson.getString(KEY_IN).trim();
-            KeyPair keyPair = null;
-            PublicKey publicKey = null;
-            String optionalKeyId = null;
-             // is it a JWK?
-            if (inData.startsWith("{")) {
-                JSONObjectReader jwk = JSONParser.parse(inData);
-                if (jwk.hasProperty(JOSEKeyWords.KID_JSON)) {
-                    optionalKeyId = jwk.getString(JOSEKeyWords.KID_JSON);
-                    jwk.removeProperty(JOSEKeyWords.KID_JSON);
-                }
-                try {
-                    publicKey = JSONCryptoHelper.decodePublicKey(jwk, AlgorithmPreferences.JOSE);
-                    if (jwk.hasProperty("d")) {
-                        // Success! However this is actually a private key.
-                        keyPair = new KeyPair(publicKey, 
-                                              JSONCryptoHelper.decodePrivateKey(jwk, publicKey));
-                    }
-                    jwk.checkForUnread();
-                } catch (Exception e) {
-                    throw new IOException("Undecodable JWK: " + e.getMessage());
-                }
-            } else {
-                byte[] keyInBinary = UTF8.encode(inData);
-                try {
-                    keyPair = PEMDecoder.getKeyPair(keyInBinary);
-                } catch (Exception e) {
-                    if (inData.contains("PRIVATE")) {
-                        throw e;
-                    }
-                    publicKey = PEMDecoder.getPublicKey(keyInBinary);
-                }
-            }
+            String keyDataText = parsedJson.getString(KEY_IN).trim();
+            ReadKeyData keyData = extractKeyData(keyDataText, RequestedKeyType.ANY);
             
             // Now we have either just a public key or a key pair
-            CBORMap cbor = keyPair == null ? 
-                    CBORPublicKey.convert(publicKey) : CBORKeyPair.convert(keyPair);
-            if (optionalKeyId != null) {
-                cbor.set(CBORCryptoConstants.COSE_KID_LABEL, new CBORBytes(UTF8.encode(optionalKeyId)));
+            CBORMap cbor = keyData.keyPair == null ? 
+                        CBORPublicKey.convert(keyData.publicKey)
+                                                   : 
+                        CBORKeyPair.convert(keyData.keyPair);
+            if (keyData.optionalKeyId != null) {
+                cbor.set(CBORCryptoConstants.COSE_KID_LABEL,
+                         new CBORBytes(UTF8.encode(keyData.optionalKeyId)));
             }
             jsonResponse.setString(CBOR_OUT, 
                                    getFormattedCbor(parsedJson, new CBORObject[] {cbor}));
