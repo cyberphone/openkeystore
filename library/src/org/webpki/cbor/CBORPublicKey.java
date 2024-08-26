@@ -172,9 +172,9 @@ public class CBORPublicKey {
     }
     
     static PublicKey getPublicKey(CBORMap publicKeyMap) {
-        KeyAlgorithms keyAlg;
-        PublicKey publicKey;
         try {
+            KeyAlgorithms keyAlg;
+            PublicKey publicKey;
             switch (getKeyType(publicKeyMap)) {
                 case RSA:
                     publicKey = KeyFactory.getInstance("RSA").generatePublic(new RSAPublicKeySpec(
