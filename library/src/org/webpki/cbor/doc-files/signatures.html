@@ -6,7 +6,7 @@ signatures using a specific scheme called
 &quot;CBOR Signature Format&quot; (CSF). 
 <p>
 Note that unlike COSE 
-[<a href='https://datatracker.ietf.org/doc/html/rfc8152'>RFC&nbsp;8152</a>], CSF
+[<a href='https://www.rfc-editor.org/rfc/rfc9052.html'>RFC&nbsp;9052</a>], CSF
 leverages <a href='../package-summary.html#deterministic-encoding'>Deterministic&nbsp;Encoding</a>,
 enabling constructs like the following:
 </p>
@@ -54,9 +54,23 @@ The same object expressed as hex-encoded CBOR:
 <div class='webpkihexbox'>
 a801a3016a53706163652053686f7002663433352e30300363555344026d737061636573686f702e636f6d03781b465237363330303032313131313130303230303530303134333832047468747470733a2f2f62616e6b6e6574322e6f726705683035373638343031067819323032342d30382d32325430393a33343a30382d30353a303007a201fb404371b089a0275202fb405341460aa64c3020a3012804a401022001215820e812b1a6dcbc708f9ec43cc2921fa0a14e9d5eadcc6dc63471dd4b680c6236b52258209826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d8065840fdfe515197a79f1ebf149ee8a107c7578a7ec90bb7452df972f11f6105479b05963f2fe1f5a79fa9515af9bd5eece61a90b346527fe34b59b18732361be55746
 </div>
+<p>
+    The sample was signed using the following COSE private key (here in diagnostic notation):
+</p>
+<div class='webpkifloat'>
+<div class='webpkibox'>
+{<br>
+&nbsp;&nbsp;1:&nbsp;2,<br>
+&nbsp;&nbsp;-1:&nbsp;1,<br>
+&nbsp;&nbsp;-2:&nbsp;h'e812b1a6dcbc708f9ec43cc2921fa0a14e9d5eadcc6dc63471dd4b680c6236b5',<br>
+&nbsp;&nbsp;-3:&nbsp;h'9826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d8',<br>
+&nbsp;&nbsp;-4:&nbsp;h'e97c4c15785c613e5037dc394c88366922ac6dc8fea63e019d990aed93ade01f'<br>
+}
+</div>
+</div>
 <i>Explanation: </i>
 Labels <code>1</code>-<code>7</code> represent application data
-(which <b>must</b> be supplied in a CBOR <code>map</code>),
+(which for compatibility with CSF must be supplied in a CBOR <code>map</code>),
 while the <i>application-specific</i> label <code>-1</code>
 holds an associated <i>enveloped</i> signature.
 <p>
@@ -78,7 +92,7 @@ according to the following table:
 </td></tr>
 
 <tr><td style='text-align:center'><code>3</code></td><td><code>keyId</code></td>
-<td>&quot;Any&quot;</td><td><i>Optional</i> key identifier using any valid CBOR object. 
+<td>&quot;<i>Any</i>&quot;</td><td><i>Optional</i> key identifier using any valid CBOR object. 
 Note that <code>keyId</code> <b>must not</b> be used together with 
 <code>publicKey</code> or <code>certificatePath</code>.
 A compliant <code>keyId</code> <b>must</b> uniquely identify a specific signature key.
@@ -90,7 +104,7 @@ A compliant <code>keyId</code> <b>must</b> uniquely identify a specific signatur
 Note that ECDSA public keys <b>must</b> be supplied with a <i>value parameter</i>
 for the y-coordinate as well.
 The public key object <b>must not</b> contain any additional information like
-key identifiers or algorithms.
+key identifiers or preferred signature algorithms.
 </td></tr>
 
 <tr><td style='text-align:center'><code>5</code></td><td><code>certificatePath</code></td>
@@ -105,34 +119,45 @@ Signature objects <b>must not</b> contain both <code>certificatePath</code> and 
 </td></tr>
 </table>
 </div>
+<h3 id='csf-validation'>Signature Validation</h3>
 CSF signatures are validated by running the signature validation 
-algorithm over the CBOR binary representation of
-the <code>map</code> holding the application data <i>including the enveloped signature object</i>,
-with the <span class='webpkihighlite'>highlighted</span> <code>signatureValue</code> (label <code>6</code>) and
-its associated argument as the sole exception. Note that the length
-of the signature object <code>map</code> <b>must</b>
-be updated (to reflect the removal of an element) during validation.
+<code>algorithm</code> (gathered from label <code>1</code>),
+over the CBOR binary representation of
+the <code>map</code> object holding the application data
+<i>including the enveloped signature object</i>,
+with the <code>signatureValue</code> (label <code>6</code>) and
+its associated argument as the sole exception
+(<span class='webpkihighlite'>highlighted</span> in the example).
+Note that the length of the signature object <code>map</code> <b>must</b>
+be updated to reflect the removal of the
+<code>signatureValue</code> attribute during validation.
 <p>
-The sample was signed using the following COSE private key (here in diagnostic notation):
+Signature validation keys are either <i>implicit</i> or provided via
+<code>keyId</code> (label <code>3</code>) attributes.
 </p>
-<div class='webpkifloat'>
-<div class='webpkibox'>
-{<br>
-&nbsp;&nbsp;1:&nbsp;2,<br>
-&nbsp;&nbsp;-1:&nbsp;1,<br>
-&nbsp;&nbsp;-2:&nbsp;h'e812b1a6dcbc708f9ec43cc2921fa0a14e9d5eadcc6dc63471dd4b680c6236b5',<br>
-&nbsp;&nbsp;-3:&nbsp;h'9826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d8',<br>
-&nbsp;&nbsp;-4:&nbsp;h'e97c4c15785c613e5037dc394c88366922ac6dc8fea63e019d990aed93ade01f'<br>
-}
-</div>
-</div>
+<p>
+If <code>publicKey</code> (label <code>4</code>) or
+<code>certificatePath</code> (label <code>5</code>) attributes are supplied,
+they <b>must</b> be used as signature validation keys.
+Note though that such keys <b>must</b> also be verified to be known and
+trusted by the validator.
+</p>
+<p>
+Signature validation keys <b>must</b> be checked for compatibility with
+the <code>algorithm</code> (label <code>1</code>) attribute.
+</p>
+<p>
+Validators may also impose specific policies on accepted signature
+algorithms and keys.
+The {@link CBORValidator} super classes provide support for enforcing such policies.
+</p>
 <h3>Tagged and Custom Signature Data</h3>
-The CSF container can be enhanced through a couple of options
+CSF containers can be further enhanced through a couple of options
 described in <a href='crypto-options.html'>Crypto Options</a>.
 Such options are included in the data to be signed.
-<h3>Signature Algorithms</h3>
-<div id='csf-algorithms'>
-Currently supported signature algorithms:
+<h3 id='csf-algorithms'>Signature Algorithms</h3>
+<div>
+Currently supported COSE signature algorithms:
 </div>
 <div class='webpkifloat'>
 <table class='webpkitable'>
