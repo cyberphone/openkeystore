@@ -397,7 +397,7 @@ public class CborEncryption {
         }
         byte[] encryptedData = encrypter.encrypt(dataToBeEncrypted).encode();
         CBORAsymKeyDecrypter decrypter = 
-            new CBORAsymKeyDecrypter(new CBORAsymKeyDecrypter.DecrypterImpl() {
+            new CBORAsymKeyDecrypter(new CBORAsymKeyDecrypter.KeyLocator() {
 
             @Override
             public PrivateKey locate(PublicKey optionalPublicKey, 
@@ -414,20 +414,6 @@ public class CborEncryption {
                     throw new CryptoException("cea mismatch");
                 }
                 return keyPair.getPrivate();
-            }
-            
-            @Override
-            public byte[] decrypt(PrivateKey privateKey, 
-                                  byte[] optionalEncryptedKey,
-                                  PublicKey optionalEphemeralKey,
-                                  KeyEncryptionAlgorithms keyEncryptionAlgorithm,
-                                  ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
-                return EncryptionCore.decryptKey(true,
-                                                 privateKey, 
-                                                 optionalEncryptedKey, 
-                                                 optionalEphemeralKey, 
-                                                 keyEncryptionAlgorithm, 
-                                                 contentEncryptionAlgorithm);
             }
 
         });

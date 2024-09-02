@@ -31,22 +31,25 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
 public class CBORAsymKeyDecrypter extends CBORDecrypter<CBORAsymKeyDecrypter> {
     
     /**
-     * Decrypter engine implementation interface.
+     * Decryptor private key locator.
      */
-    public interface DecrypterImpl {
+    public interface KeyLocator {
 
         /**
          * Locate private decryption key.
          * <p>
-         * Implementations should preferably throw {@link org.webpki.crypto.CryptoException} for
+         * Uses the Java crypto provider system.
+         * </p>
+         * <p>
+         * Implementations <b>must</b> throw {@link org.webpki.crypto.CryptoException} for
          * errors related to cryptography and security.
          * </p>
          *<p>
          * This interface also enables encryption parameter verification.
          * </p>
-         *          * 
-         * @param optionalPublicKey Optional public key found in the encryption object
-         * @param optionalKeyId Optional key Id found in the encryption object
+         * 
+         * @param optionalPublicKey Defined it provided in the CEF object
+         * @param optionalKeyId Defined it provided in the CEF object
          * @param keyEncryptionAlgorithm The requested key encryption algorithm
          * @param contentEncryptionAlgorithm The requested content encryption algorithm
          * @return Private decryption key.
@@ -55,22 +58,37 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter<CBORAsymKeyDecrypter> {
                           CBORObject optionalKeyId,
                           KeyEncryptionAlgorithms keyEncryptionAlgorithm,
                           ContentEncryptionAlgorithms contentEncryptionAlgorithm);
+
+    }
+
+    /**
+     * Decrypter engine implementation interface.
+     */
+    public interface DecrypterImpl {
  
         /**
          * Decrypt encrypted key.
          * <p>
-         * Implementations should preferably throw {@link org.webpki.crypto.CryptoException} for
+         * This interface assumes that the private key resides in an external
+         * hardware or software solution.  The private key is either implicit
+         * or located by the <code>optionalPublicKey</code> or
+         * <code>optionalKeyId</code> parameters. 
+         * </p>
+         * <p>
+         * Implementations <b>must</b> throw {@link org.webpki.crypto.CryptoException} for
          * errors related to cryptography and security.
          * </p>
-         *          * 
-         * @param privateKey The private decryption key
-         * @param optionalEncryptedKey Optional encrypted key
-         * @param optionalEphemeralKey Optional ephemeral key
+         * 
+         * @param optionalPublicKey Defined it provided in the CEF object
+         * @param optionalKeyId Defined if provided in the CEF object
+         * @param optionalEncryptedKey Optional encrypted key (algorithm dependent)
+         * @param optionalEphemeralKey Optional ephemeral key (algorithm dependent)
          * @param keyEncryptionAlgorithm The requested key encryption algorithm
          * @param contentEncryptionAlgorithm The requested content encryption algorithm
          * @return Decrypted key.
          */
-        byte[] decrypt(PrivateKey privateKey, 
+        byte[] decrypt(PublicKey optionalPublicKey,
+                       CBORObject optionalKeyId,
                        byte[] optionalEncryptedKey,
                        PublicKey optionalEphemeralKey,
                        KeyEncryptionAlgorithms keyEncryptionAlgorithm,
@@ -78,31 +96,22 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter<CBORAsymKeyDecrypter> {
 
     }
     
+    KeyLocator keyLocator;
+
     DecrypterImpl decrypterImpl;
     
     /**
      * Creates a decrypter object with a private key.
+     * <p>
+     * Uses the Java crypto provider system.
+     * </p>
      * <p>
      * This constructor presumes that the decryption key is given by the context.
      * </p>
      * @param privateKey Decryption key
      */
     public CBORAsymKeyDecrypter(PrivateKey privateKey) {
-        this(new DecrypterImpl() {
-
-            @Override
-            public byte[] decrypt(PrivateKey privateKey,
-                                  byte[] optionalEncryptedKey,
-                                  PublicKey optionalEphemeralKey,
-                                  KeyEncryptionAlgorithms keyEncryptionAlgorithm,
-                                  ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
-                return EncryptionCore.decryptKey(true,
-                                                 privateKey,
-                                                 optionalEncryptedKey,
-                                                 optionalEphemeralKey,
-                                                 keyEncryptionAlgorithm,
-                                                 contentEncryptionAlgorithm);
-            }
+        this(new KeyLocator() {
 
             @Override
             public PrivateKey locate(PublicKey optionalPublicKey,
@@ -114,6 +123,18 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter<CBORAsymKeyDecrypter> {
             }
              
         });
+    }
+
+    /**
+     * Creates a decrypter object with a key locator interface.
+     * <p>
+     * Uses the Java crypto provider system.
+     * </p>
+     * 
+     * @param keyLocator Key locator implementation
+     */
+    public CBORAsymKeyDecrypter(KeyLocator keyLocator) {
+        this.keyLocator = keyLocator;
     }
 
     /**
@@ -141,12 +162,6 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter<CBORAsymKeyDecrypter> {
             // Please select ONE method for identifying the decryption key.
             CBORCryptoUtils.rejectPossibleKeyId(optionalKeyId);
         }
-        
-        // Now we have what it takes for finding the proper private key
-        PrivateKey privateKey = decrypterImpl.locate(optionalPublicKey,
-                                                     optionalKeyId,
-                                                     keyEncryptionAlgorithm,
-                                                     contentEncryptionAlgorithm);
 
         // All algorithms but ECDH-EC depends on an encrypted key.
         byte[] optionalEncryptedKey = 
@@ -157,7 +172,24 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter<CBORAsymKeyDecrypter> {
                 CBORCryptoUtils.getEphemeralKey(innerObject, keyEncryptionAlgorithm);
 
         // Finally, get the decrypted key.
-        return decrypterImpl.decrypt(privateKey,
+         
+        // Using internal crypto?
+        if (decrypterImpl == null) {
+            return EncryptionCore.decryptKey(
+                true,
+                keyLocator.locate(optionalPublicKey,
+                                  optionalKeyId,
+                                  keyEncryptionAlgorithm,
+                                  contentEncryptionAlgorithm), 
+                optionalEncryptedKey, 
+                optionalEphemeralKey, 
+                keyEncryptionAlgorithm, 
+                contentEncryptionAlgorithm);
+        }
+
+        // External crypto.
+        return decrypterImpl.decrypt(optionalPublicKey,
+                                     optionalKeyId,
                                      optionalEncryptedKey,
                                      optionalEphemeralKey,
                                      keyEncryptionAlgorithm, 

@@ -1604,7 +1604,7 @@ public class CBORTest {
                         dataToEncrypt));
         assertTrue("enc/dec", 
             Arrays.equals(new CBORAsymKeyDecrypter(
-                new CBORAsymKeyDecrypter.DecrypterImpl() {
+                new CBORAsymKeyDecrypter.KeyLocator() {
  
                     @Override
                     public PrivateKey locate(PublicKey optionalPublicKey, 
@@ -1613,23 +1613,33 @@ public class CBORTest {
                                              ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
                         return compareKeyId(keyId, optionalKeyId) ? p256.getPrivate() : null;
                     }
-                    
+
+                }).decrypt(p256EncryptedKeyId),
+                dataToEncrypt));
+
+        assertTrue("enc/dec", 
+            Arrays.equals(new CBORAsymKeyDecrypter(
+                new CBORAsymKeyDecrypter.DecrypterImpl() {
+
                     @Override
-                    public byte[] decrypt(PrivateKey privateKey,
-                                          byte[] optionalEncryptedKey,
-                                          PublicKey optionalEphemeralKey,
-                                          KeyEncryptionAlgorithms keyEncryptionAlgorithm,
-                                          ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
-                        return EncryptionCore.receiverKeyAgreement(true, 
-                                                                   privateKey, 
-                                                                   keyEncryptionAlgorithm,
-                                                                   contentEncryptionAlgorithm, 
-                                                                   optionalEphemeralKey, 
-                                                                   optionalEncryptedKey);
+                    public byte[] decrypt(PublicKey optionalPublicKey, 
+                                        CBORObject optionalKeyId,
+                                        byte[] optionalEncryptedKey,
+                                        PublicKey optionalEphemeralKey,
+                                        KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+                                        ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
+                        return EncryptionCore.receiverKeyAgreement(
+                            true, 
+                            compareKeyId(keyId, optionalKeyId) ? p256.getPrivate() : null, 
+                            keyEncryptionAlgorithm,
+                            contentEncryptionAlgorithm, 
+                            optionalEphemeralKey, 
+                            optionalEncryptedKey);
                     }
 
                 }).decrypt(p256EncryptedKeyId),
                 dataToEncrypt));
+
         try {
             new CBORAsymKeyEncrypter(p256.getPublic(),
                                      KeyEncryptionAlgorithms.ECDH_ES,
