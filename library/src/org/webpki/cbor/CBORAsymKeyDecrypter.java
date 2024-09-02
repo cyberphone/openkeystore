@@ -31,7 +31,7 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
 public class CBORAsymKeyDecrypter extends CBORDecrypter<CBORAsymKeyDecrypter> {
     
     /**
-     * Decryptor private key locator.
+     * Decrypter private key locator.
      */
     public interface KeyLocator {
 
@@ -172,28 +172,25 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter<CBORAsymKeyDecrypter> {
                 CBORCryptoUtils.getEphemeralKey(innerObject, keyEncryptionAlgorithm);
 
         // Finally, get the decrypted key.
-         
-        // Using internal crypto?
-        if (decrypterImpl == null) {
-            return EncryptionCore.decryptKey(
-                true,
-                keyLocator.locate(optionalPublicKey,
+        return decrypterImpl == null ?
+            // Using internal crypto.
+            EncryptionCore.decryptKey(true,
+                                      keyLocator.locate(optionalPublicKey,
+                                                        optionalKeyId,
+                                                        keyEncryptionAlgorithm,
+                                                        contentEncryptionAlgorithm), 
+                                      optionalEncryptedKey, 
+                                      optionalEphemeralKey, 
+                                      keyEncryptionAlgorithm, 
+                                      contentEncryptionAlgorithm)
+                                     :
+            // Using external crypto.
+            decrypterImpl.decrypt(optionalPublicKey,
                                   optionalKeyId,
-                                  keyEncryptionAlgorithm,
-                                  contentEncryptionAlgorithm), 
-                optionalEncryptedKey, 
-                optionalEphemeralKey, 
-                keyEncryptionAlgorithm, 
-                contentEncryptionAlgorithm);
-        }
-
-        // External crypto.
-        return decrypterImpl.decrypt(optionalPublicKey,
-                                     optionalKeyId,
-                                     optionalEncryptedKey,
-                                     optionalEphemeralKey,
-                                     keyEncryptionAlgorithm, 
-                                     contentEncryptionAlgorithm);
+                                  optionalEncryptedKey,
+                                  optionalEphemeralKey,
+                                  keyEncryptionAlgorithm, 
+                                  contentEncryptionAlgorithm);
     }
 
     @Override

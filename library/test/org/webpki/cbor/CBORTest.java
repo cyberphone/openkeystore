@@ -1682,36 +1682,46 @@ public class CBORTest {
                 .encrypt(dataToEncrypt);
  
         assertTrue("enc/dec", 
-                Arrays.equals(new CBORX509Decrypter(new CBORX509Decrypter.DecrypterImpl() {
+            Arrays.equals(new CBORX509Decrypter(new CBORX509Decrypter.KeyLocator() {
 
-                    @Override
-                    public PrivateKey locate(X509Certificate[] certificatePath,
-                                             KeyEncryptionAlgorithms keyEncryptionAlgorithm,
-                                             ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
-                        assertTrue("cert", 
-                                CBORCryptoUtils.encodeCertificateArray(certificatePath)
-                                  .equals(CBORCryptoUtils.encodeCertificateArray(p256CertPath)));
-                        assertTrue("kea", keyEncryptionAlgorithm == 
-                                          KeyEncryptionAlgorithms.ECDH_ES_A128KW);
-                        assertTrue("cea", contentEncryptionAlgorithm == 
-                                          ContentEncryptionAlgorithms.A256GCM);
-                        return p256.getPrivate();                    }
+                @Override
+                public PrivateKey locate(X509Certificate[] certificatePath,
+                                         KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+                                         ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
+                    assertTrue("cert", 
+                               CBORCryptoUtils.encodeCertificateArray(certificatePath)
+                                .equals(CBORCryptoUtils.encodeCertificateArray(p256CertPath)));
+                    assertTrue("kea", keyEncryptionAlgorithm == 
+                                        KeyEncryptionAlgorithms.ECDH_ES_A128KW);
+                    assertTrue("cea", contentEncryptionAlgorithm == 
+                                        ContentEncryptionAlgorithms.A256GCM);
+                    return p256.getPrivate();                    }
+            }).decrypt(p256CertEncrypted), dataToEncrypt));
+ 
+        assertTrue("enc/dec", 
+            Arrays.equals(new CBORX509Decrypter(new CBORX509Decrypter.DecrypterImpl() {
 
-                    @Override
-                    public byte[] decrypt(PrivateKey privateKey,
-                                          byte[] optionalEncryptedKey,
-                                          PublicKey optionalEphemeralKey,
-                                          KeyEncryptionAlgorithms keyEncryptionAlgorithm,
-                                          ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
-                        return EncryptionCore.receiverKeyAgreement(true, 
-                                                                   privateKey, 
-                                                                   keyEncryptionAlgorithm,
-                                                                   contentEncryptionAlgorithm, 
-                                                                   optionalEphemeralKey, 
-                                                                   optionalEncryptedKey);
-                    }
-
-                }).decrypt(p256CertEncrypted), dataToEncrypt));
+                @Override
+                public byte[] decrypt(X509Certificate[] certificatePath,
+                                      byte[] optionalEncryptedKey,
+                                      PublicKey optionalEphemeralKey,
+                                      KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+                                      ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
+                    assertTrue("cert", 
+                               CBORCryptoUtils.encodeCertificateArray(certificatePath)
+                                .equals(CBORCryptoUtils.encodeCertificateArray(p256CertPath)));
+                    assertTrue("kea", keyEncryptionAlgorithm == 
+                                        KeyEncryptionAlgorithms.ECDH_ES_A128KW);
+                    assertTrue("cea", contentEncryptionAlgorithm == 
+                                        ContentEncryptionAlgorithms.A256GCM);
+                    return EncryptionCore.receiverKeyAgreement(true, 
+                                                               p256.getPrivate(), 
+                                                               keyEncryptionAlgorithm,
+                                                               contentEncryptionAlgorithm, 
+                                                               optionalEphemeralKey, 
+                                                               optionalEncryptedKey);
+                }
+            }).decrypt(p256CertEncrypted), dataToEncrypt));
         
         try {
             new CBORX509Encrypter(p256CertPath,

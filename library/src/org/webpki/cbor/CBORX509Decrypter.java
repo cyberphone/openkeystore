@@ -22,6 +22,7 @@ import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 
 import org.webpki.crypto.ContentEncryptionAlgorithms;
+import org.webpki.crypto.EncryptionCore;
 import org.webpki.crypto.KeyEncryptionAlgorithms;
 
 import static org.webpki.cbor.CBORCryptoConstants.*;
@@ -32,21 +33,25 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
 public class CBORX509Decrypter extends CBORDecrypter<CBORX509Decrypter> {
     
     /**
-     * Decrypter engine implementation interface.
+     * Decrypter private key locator.
      */
-    public interface DecrypterImpl {
+    public interface KeyLocator {
 
         /**
          * Locate private decryption key.
          * <p>
-         * Implementations should preferably throw {@link org.webpki.crypto.CryptoException} for
-         * errors related to cryptography and security.
+         * Uses the Java crypto provider system.
          * </p>
          * <p>
+         * Implementations <b>must</b> throw {@link org.webpki.crypto.CryptoException} for
+         * errors related to cryptography and security.
+         * </p>
+         *<p>
          * This interface also enables encryption parameter verification.
          * </p>
+         * 
          *
-         * @param certificatePath Certificate path in the encryption objectt
+         * @param certificatePath Certificate path in the encryption object
          * @param keyEncryptionAlgorithm The requested key encryption algorithm
          * @param contentEncryptionAlgorithm The requested content encryption algorithm
          * @return Private decryption key.
@@ -54,31 +59,57 @@ public class CBORX509Decrypter extends CBORDecrypter<CBORX509Decrypter> {
         PrivateKey locate(X509Certificate[] certificatePath,
                           KeyEncryptionAlgorithms keyEncryptionAlgorithm,
                           ContentEncryptionAlgorithms contentEncryptionAlgorithm);
+    }
+ 
+    /**
+     * Decrypter engine implementation interface.
+     */
+    public interface DecrypterImpl {
  
         /**
          * Decrypt encrypted key.
          * <p>
-         * Implementations should preferably throw {@link org.webpki.crypto.CryptoException} for
+         * This interface assumes that the private key resides in an external
+         * hardware or software solution.  The private key is either implicit
+         * or located by the <code>optionalPublicKey</code> or
+         * <code>optionalKeyId</code> parameters. 
+         * </p>
+         * <p>
+         * Implementations <b>must</b> throw {@link org.webpki.crypto.CryptoException} for
          * errors related to cryptography and security.
          * </p>
          *
-         * @param privateKey The private decryption key
+         * @param certificatePath Certificate path in the encryption object
          * @param optionalEncryptedKey Optional encrypted key
          * @param optionalEphemeralKey Optional ephemeral key
          * @param keyEncryptionAlgorithm The requested key encryption algorithm
          * @param contentEncryptionAlgorithm The requested content encryption algorithm
          * @return Decrypted key.
          */
-        byte[] decrypt(PrivateKey privateKey, 
+        byte[] decrypt(X509Certificate[] certificatePath, 
                        byte[] optionalEncryptedKey,
                        PublicKey optionalEphemeralKey,
                        KeyEncryptionAlgorithms keyEncryptionAlgorithm,
                        ContentEncryptionAlgorithms contentEncryptionAlgorithm);
 
     }
+
+    KeyLocator keyLocator;
     
     DecrypterImpl decrypterImpl;
     
+    /**
+     * Creates a decrypter object with a key locator interface.
+     * <p>
+     * Uses the Java crypto provider system.
+     * </p>
+     * 
+     * @param decrypterImpl Decrypter implementation
+     */
+    public CBORX509Decrypter(KeyLocator keyLocator) {
+        this.keyLocator = keyLocator;
+    }
+
     /**
      * Creates a decrypter object with a decrypter interface.
      * 
@@ -104,11 +135,6 @@ public class CBORX509Decrypter extends CBORDecrypter<CBORX509Decrypter> {
         X509Certificate[] certificatePath = CBORCryptoUtils.decodeCertificateArray(
                 innerObject.get(CERT_PATH_LABEL).getArray());
 
-        // Now we have what it takes for finding the proper private key
-        PrivateKey privateKey = decrypterImpl.locate(certificatePath,
-                                                     keyEncryptionAlgorithm,
-                                                     contentEncryptionAlgorithm);
-
         // All algorithms but ECDH-EC depends on an encrypted key.
         byte[] optionalEncryptedKey = 
                 CBORCryptoUtils.getEncryptedKey(innerObject, keyEncryptionAlgorithm);
@@ -118,11 +144,24 @@ public class CBORX509Decrypter extends CBORDecrypter<CBORX509Decrypter> {
                 CBORCryptoUtils.getEphemeralKey(innerObject, keyEncryptionAlgorithm);
 
         // Finally, get the decrypted key.
-        return decrypterImpl.decrypt(privateKey, 
-                                     optionalEncryptedKey,
-                                     optionalEphemeralKey,
-                                     keyEncryptionAlgorithm, 
-                                     contentEncryptionAlgorithm);
+        return decrypterImpl == null ?
+ 
+            // Internal crypto mode.
+            EncryptionCore.decryptKey(true, 
+                                      keyLocator.locate(certificatePath,
+                                                        keyEncryptionAlgorithm,
+                                                        contentEncryptionAlgorithm), 
+                                                        optionalEncryptedKey, 
+                                                        optionalEphemeralKey, 
+                                                        keyEncryptionAlgorithm, 
+                                                        contentEncryptionAlgorithm)
+                                     :
+            // External crypto mode.
+            decrypterImpl.decrypt(certificatePath, 
+                                  optionalEncryptedKey,
+                                  optionalEphemeralKey,
+                                  keyEncryptionAlgorithm, 
+                                  contentEncryptionAlgorithm);
     }
 
     @Override

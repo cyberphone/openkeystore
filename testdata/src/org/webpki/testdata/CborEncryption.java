@@ -52,7 +52,6 @@ import org.webpki.cbor.CBORDecoder;
 import org.webpki.cbor.CBORMap;
 
 import org.webpki.crypto.CustomCryptoProvider;
-import org.webpki.crypto.EncryptionCore;
 import org.webpki.crypto.ContentEncryptionAlgorithms;
 import org.webpki.crypto.CryptoException;
 import org.webpki.crypto.KeyEncryptionAlgorithms;
@@ -178,7 +177,7 @@ public class CborEncryption {
         CBORX509Encrypter encrypter = 
                 new CBORX509Encrypter(certificatePath, keyEncryptionAlgorithm, contentEncryptionAlgorithm);
         byte[] encryptedData = encrypter.encrypt(dataToBeEncrypted).encode();
-        CBORX509Decrypter decrypter = new CBORX509Decrypter(new CBORX509Decrypter.DecrypterImpl() {
+        CBORX509Decrypter decrypter = new CBORX509Decrypter(new CBORX509Decrypter.KeyLocator() {
 
             @Override
             public PrivateKey locate(X509Certificate[] cp,
@@ -199,20 +198,6 @@ public class CborEncryption {
                     throw new CryptoException("cea mismatch");
                 }
                 return keyPair.getPrivate();
-            }
-
-            @Override
-            public byte[] decrypt(PrivateKey privateKey,
-                                  byte[] optionalEncryptedKey,
-                                  PublicKey optionalEphemeralKey,
-                                  KeyEncryptionAlgorithms kea,
-                                  ContentEncryptionAlgorithms cea) {
-                return EncryptionCore.decryptKey(true,
-                                                 privateKey, 
-                                                 optionalEncryptedKey, 
-                                                 optionalEphemeralKey, 
-                                                 keyEncryptionAlgorithm, 
-                                                 contentEncryptionAlgorithm);
             }
 
         });
