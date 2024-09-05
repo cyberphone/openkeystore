@@ -104,7 +104,7 @@ public class CBORX509Decrypter extends CBORDecrypter<CBORX509Decrypter> {
      * Uses the Java crypto provider system.
      * </p>
      * 
-     * @param decrypterImpl Decrypter implementation
+     * @param keyLocator Key locator implementation
      */
     public CBORX509Decrypter(KeyLocator keyLocator) {
         this.keyLocator = keyLocator;
