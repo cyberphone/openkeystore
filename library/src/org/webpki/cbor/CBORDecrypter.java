@@ -136,12 +136,10 @@ public abstract class CBORDecrypter <T extends CBORDecrypter<?>> {
         cefContainer.checkForUnread();
         
         // Now we should have everything for decrypting the actual data.
-        // Use the remaining CBOR data as "authData".
+        // Use the remaining CBOR data as "authData" (AAD).
         
-        // Note that the following operation depends on that the actual
-        // CBOR implementation supports fully canonical (deterministic)
-        // parsing and code generation! This implementation shows that
-        // this is quite simple.
+        // Note that the following operation depends on that the CBOR
+        // implementation supports deterministic encoding and decoding.
         byte[] authData = encryptionObject.encode();
         
         // Be nice and restore the object as well.
