@@ -85,66 +85,69 @@ according to the following table:
 </div>
 <div class='webpkifloat'>
 <table class='webpkitable'>
-<tr><th>Label</th><th>Name</th><th>Argument</th><th style='min-width:30em'>Description</th></tr>
+<tr><th>Name</th><th>Label</th><th>Argument</th><th style='min-width:30em'>Description</th></tr>
 
-<tr><td style='text-align:center'><code>1</code></td><td><code>algorithm</code></td>
-<td><code>integer</code></td><td>Signature algorithm using COSE identifiers.
+<tr><td><code class='webpkicode'>customData</code></td><td style='text-align:center'><code>0</code></td>
+<td>&quot;<i>Any</i>&quot;</td><td><i>Optional</i>: data included in the CSF container.
+Also see <a href='crypto-options.html'>Crypto Options</a>.</td></tr>
+
+<tr><td><code class='webpkicode'>algorithm</code></td><td style='text-align:center'><code>1</code></td>
+<td><code>integer</code></td><td>Signature algorithm using COSE identifiers.</td></tr>
+
+<tr><td><code class='webpkicode'>keyId</code></td><td style='text-align:center'><code>3</code></td>
+<td>&quot;<i>Any</i>&quot;</td><td><i>Optional</i>: key identifier using any valid CBOR object. 
+Note that <code class='webpkicode'>keyId</code> <b>must not</b> be used together with 
+<code class='webpkicode'>publicKey</code> or <code class='webpkicode'>certificatePath</code>.
+A compliant <code class='webpkicode'>keyId</code> <b>must</b> uniquely identify a specific signature key.
 </td></tr>
 
-<tr><td style='text-align:center'><code>3</code></td><td><code>keyId</code></td>
-<td>&quot;<i>Any</i>&quot;</td><td><i>Optional</i> key identifier using any valid CBOR object. 
-Note that <code>keyId</code> <b>must not</b> be used together with 
-<code>publicKey</code> or <code>certificatePath</code>.
-A compliant <code>keyId</code> <b>must</b> uniquely identify a specific signature key.
-</td></tr>
-
-<tr><td style='text-align:center'><code>4</code></td><td><code>publicKey</code></td>
+<tr><td><code class='webpkicode'>publicKey</code></td><td style='text-align:center'><code>4</code></td>
 <td><code>map</code></td>
-<td><i>Optional</i> public key in COSE format.  
+<td><i>Optional</i>: public key in COSE format.  
 Note that ECDSA public keys <b>must</b> be supplied with a <i>value parameter</i>
 for the y-coordinate as well.
 The public key object <b>must not</b> contain any additional information like
 key identifiers or preferred signature algorithms.
 </td></tr>
 
-<tr><td style='text-align:center'><code>5</code></td><td><code>certificatePath</code></td>
-<td><code>array</code></td><td><i>Optional</i> certificate path supplied 
+<tr><td><code class='webpkicode'>certificatePath</code></td><td style='text-align:center'><code>5</code></td>
+<td><code>array</code></td><td><i>Optional</i>: certificate path supplied 
 as an array of <code>byte&nbsp;string</code> objects holding X.509 certificates in DER format, 
 where the first object <b>must</b> be the signature certificate.
-Signature objects <b>must not</b> contain both <code>certificatePath</code> and <code>publicKey</code> elements.
+Signature objects <b>must not</b> contain both <code class='webpkicode'>certificatePath</code> and <code class='webpkicode'>publicKey</code> elements.
 </td></tr>
 
-<tr><td style='text-align:center'><code>6</code></td><td><code>signatureValue</code></td>
+<tr><td><code class='webpkicode'>signatureValue</code></td><td style='text-align:center'><code>6</code></td>
 <td><code>byte&nbsp;string</code></td><td>Signature value.
 </td></tr>
 </table>
 </div>
 <h3 id='csf-validation'>Signature Validation</h3>
 CSF signatures are validated by running the signature validation 
-<code>algorithm</code> (gathered from label <code>1</code>),
+<code class='webpkicode'>algorithm</code> (gathered from label <code>1</code>),
 over the CBOR binary representation of
 the <code>map</code> object holding the application data
 <i>including the enveloped signature object</i>,
-with the <code>signatureValue</code> (label <code>6</code>) and
+with the <code class='webpkicode'>signatureValue</code> (label <code>6</code>) and
 its associated argument as the sole exception
 (<span class='webpkihighlite'>highlighted</span> in the example).
 Note that the length of the signature object <code>map</code> <b>must</b>
 be updated to reflect the removal of the
-<code>signatureValue</code> attribute during validation.
+<code class='webpkicode'>signatureValue</code> attribute during validation.
 <p>
 Signature validation keys are either <i>implicit</i> or provided via
-<code>keyId</code> (label <code>3</code>) attributes.
+<code class='webpkicode'>keyId</code> (label <code>3</code>) attributes.
 </p>
 <p>
-If <code>publicKey</code> (label <code>4</code>) or
-<code>certificatePath</code> (label <code>5</code>) attributes are supplied,
+If <code class='webpkicode'>publicKey</code> (label <code>4</code>) or
+<code class='webpkicode'>certificatePath</code> (label <code>5</code>) attributes are supplied,
 they <b>must</b> be used as signature validation keys.
 Note though that such keys <b>must</b> also be verified to be known and
 trusted by the validator.
 </p>
 <p>
 Signature validation keys <b>must</b> be checked for compatibility with
-the <code>algorithm</code> (label <code>1</code>) attribute.
+the <code class='webpkicode'>algorithm</code> (label <code>1</code>) attribute.
 </p>
 <p>
 Validators may also impose specific policies on accepted signature

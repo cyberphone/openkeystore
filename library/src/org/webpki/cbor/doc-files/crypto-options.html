@@ -2,11 +2,17 @@
 <h2>Tagged and Custom Container Data</h2>
 The CBOR library contains support for wrapping CSF and
 CEF containers in a {@link CBORTag} as well as
-including a custom data element.
+including a <code class='webpkicode'>customData</code> element.
 <p>
 In both cases the added information becomes a part of the
 authenticated (signed) data.
-</p> 
+</p>
+<p>
+Note that these options represent <i>extensions</i> that in order to be
+accepted during validation respectively decryption, <b>must</b>
+be preceded by setting a for the application suitable policy
+({@link CBORCryptoUtils.POLICY}). 
+</p>
 <h3 style='padding:1em 0 0 0'>Creating Tagged Containers</h3>
 Creating a tagged CSF or CEF container is performed by calling
 {@link CBORSigner#setIntercepter(CBORCryptoUtils.Intercepter)} and

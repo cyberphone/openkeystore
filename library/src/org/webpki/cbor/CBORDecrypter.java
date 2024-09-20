@@ -35,7 +35,7 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
  * thread-safe.
  * </p>
  */
-public abstract class CBORDecrypter <T extends CBORDecrypter<?>>{
+public abstract class CBORDecrypter <T extends CBORDecrypter<?>> {
 
     CBORDecrypter() {}
     
