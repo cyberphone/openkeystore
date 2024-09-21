@@ -70,7 +70,7 @@ a801a3016a53706163652053686f7002663433352e30300363555344026d737061636573686f702e
 </div>
 <i>Explanation: </i>
 Labels <code>1</code>-<code>7</code> represent application data
-(which for compatibility with CSF must be supplied in a CBOR <code>map</code>),
+(which for compatibility with CSF <b>must</b> be supplied in a CBOR <code>map</code>),
 while the <i>application-specific</i> label <code>-1</code>
 holds an associated <i>enveloped</i> signature.
 <p>
@@ -123,7 +123,11 @@ Signature objects <b>must not</b> contain both <code class='webpkicode'>certific
 </table>
 </div>
 <h3 id='csf-validation'>Signature Validation</h3>
-CSF signatures are validated by running the signature validation 
+The {@link CBORValidator} super classes perform core CSF validation
+according to the following set of rules.
+while leaving policy enforcements to the signature-using application.
+<ul>
+<li>CSF signatures are validated by running the signature validation 
 <code class='webpkicode'>algorithm</code> (gathered from label <code>1</code>),
 over the CBOR binary representation of
 the <code>map</code> object holding the application data
@@ -133,27 +137,17 @@ its associated argument as the sole exception
 (<span class='webpkihighlite'>highlighted</span> in the example).
 Note that the length of the signature object <code>map</code> <b>must</b>
 be updated to reflect the removal of the
-<code class='webpkicode'>signatureValue</code> attribute during validation.
-<p>
-Signature validation keys are either <i>implicit</i> or provided via
-<code class='webpkicode'>keyId</code> (label <code>3</code>) attributes.
-</p>
-<p>
-If <code class='webpkicode'>publicKey</code> (label <code>4</code>) or
+<code class='webpkicode'>signatureValue</code> attribute during validation.</li>
+<li style='margin-top:0.5em'>Signature validation keys are either <i>implicit</i> or provided via
+<code class='webpkicode'>keyId</code> (label <code>3</code>) attributes.</li>
+<li style='margin-top:0.5em'>If <code class='webpkicode'>publicKey</code> (label <code>4</code>) or
 <code class='webpkicode'>certificatePath</code> (label <code>5</code>) attributes are supplied,
 they <b>must</b> be used as signature validation keys.
 Note though that such keys <b>must</b> also be verified to be known and
-trusted by the validator.
-</p>
-<p>
-Signature validation keys <b>must</b> be checked for compatibility with
-the <code class='webpkicode'>algorithm</code> (label <code>1</code>) attribute.
-</p>
-<p>
-Validators may also impose specific policies on accepted signature
-algorithms and keys.
-The {@link CBORValidator} super classes provide support for enforcing such policies.
-</p>
+trusted by the signature-using application.</li>
+<li style='margin-top:0.5em'>Signature validation keys <b>must</b> be checked for compatibility with
+the <code class='webpkicode'>algorithm</code> (label <code>1</code>) attribute.</li>
+</ul>
 <h3>Tagged and Custom Signature Data</h3>
 CSF containers can be further enhanced through a couple of options
 described in <a href='crypto-options.html'>Crypto Options</a>.
