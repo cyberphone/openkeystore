@@ -1,7 +1,7 @@
 package cbor_api_demo;
 
 import org.webpki.cbor.CBORArray;
-import org.webpki.cbor.CBORBoolean;
+import org.webpki.cbor.CBORBool;
 import org.webpki.cbor.CBORDecoder;
 import org.webpki.cbor.CBORFloat;
 import org.webpki.cbor.CBORHmacSigner;
@@ -29,7 +29,7 @@ public class SignatureDemo {
             .set(GREETINGS_LABEL, new CBORString("Hello Signed CBOR World!"))
             .set(OTHER_DATA_LABEL, new CBORArray()
                 .add(new CBORFloat(-4.5))
-                .add(new CBORBoolean(true)));
+                .add(new CBORBool(true)));
         
         // Sign data using CSF.
         byte[] signatureObject = new CBORHmacSigner(HMAC_KEY, HmacAlgorithms.HMAC_SHA256)

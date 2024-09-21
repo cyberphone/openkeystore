@@ -152,11 +152,11 @@ public class CBORFromJSON {
                 
             case 't':
                 scanFor("rue");
-                return new CBORBoolean(true);
+                return new CBORBool(true);
        
             case 'f':
                 scanFor("alse");
-                return new CBORBoolean(false);
+                return new CBORBool(false);
        
             case 'n':
                 scanFor("ull");
