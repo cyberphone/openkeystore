@@ -200,11 +200,11 @@ public class CBORDiagnosticNotation {
                 
             case 't':
                 scanFor("rue");
-                return new CBORBool(true);
+                return new CBORBoolean(true);
        
             case 'f':
                 scanFor("alse");
-                return new CBORBool(false);
+                return new CBORBoolean(false);
        
             case 'n':
                 scanFor("ull");

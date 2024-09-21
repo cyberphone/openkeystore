@@ -21,7 +21,7 @@ import static org.webpki.cbor.CBORInternal.*;
 /**
  * Class for holding CBOR <code>boolean</code> objects.
  */
-public class CBORBool extends CBORObject {
+public class CBORBoolean extends CBORObject {
 
     static final byte[] TRUE  = {(byte)MT_TRUE};
     static final byte[] FALSE = {(byte)MT_FALSE};
@@ -33,7 +33,7 @@ public class CBORBool extends CBORObject {
      * 
      * @param value <code>true</code> or <code>false</code>
      */
-    public CBORBool(boolean value) {
+    public CBORBoolean(boolean value) {
         super(CBORTypes.BOOLEAN);
         this.value = value;
     }

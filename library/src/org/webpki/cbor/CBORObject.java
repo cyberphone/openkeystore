@@ -338,7 +338,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * Get CBOR <code>boolean</code>.
      * <p>
      * This method requires that the object is a
-     * {@link CBORBool}, otherwise a {@link CBORException} is thrown.
+     * {@link CBORBoolean}, otherwise a {@link CBORException} is thrown.
      * </p>
      * 
      * @return <code>boolean</code>
@@ -346,7 +346,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      */
     public boolean getBoolean() {
         checkTypeAndMarkAsRead(CBORTypes.BOOLEAN);
-        return ((CBORBool) this).value;
+        return ((CBORBoolean) this).value;
     }
 
     /**

@@ -198,7 +198,7 @@ public class CBORDecoder {
                 
             case MT_TRUE:
             case MT_FALSE:
-                return new CBORBool(tag == MT_TRUE);
+                return new CBORBoolean(tag == MT_TRUE);
         }
 
         // Then decode CBOR types that blend length of data in the tag byte.

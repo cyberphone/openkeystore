@@ -383,8 +383,8 @@ public class CBORTest {
                 .set(new CBORInt(58), new CBORInt(3))
                 .set(new CBORInt(-90), new CBORNull())
                 .set(new CBORInt(-4), new CBORArray()
-                    .add(new CBORBool(true))
-                    .add(new CBORBool(false))))
+                    .add(new CBORBoolean(true))
+                    .add(new CBORBoolean(false))))
             .add(new CBORArray()
                 .add(new CBORInt(4))
                 .add(new CBORInt(5)));
@@ -651,7 +651,7 @@ public class CBORTest {
         m.insert(new CBORInt(10))
          .insert(new CBORArray().add(new CBORInt(100)))
          .insert(new CBORInt(-1))
-         .insert(new CBORBool(false))
+         .insert(new CBORBoolean(false))
          .insert(new CBORArray().add(new CBORInt(-1)))
          .insert(new CBORInt(100))
          .insert(new CBORString("aaa"))
@@ -1954,7 +1954,7 @@ public class CBORTest {
             .add(new CBORString("Hello CBOR Sequence World!"))
             .add(new CBORArray()
                 .add(new CBORFloat(4.5))
-                .add(new CBORBool(true)));
+                .add(new CBORBoolean(true)));
         assertTrue("seqs",
                    sequenceBuilder.toString().equals("\"Hello CBOR Sequence World!\",\n" +
                                                      "[4.5, true]"));
@@ -1978,7 +1978,7 @@ public class CBORTest {
                 "{", "\"lab\"", ":", "true", "}"
         };
         CBORMap cborMap = new CBORMap()
-            .set(new CBORString("lab"), new CBORBool(true));
+            .set(new CBORString("lab"), new CBORBoolean(true));
         assertTrue("json", cborMap.equals(serializeJson(jsonTokens)));
         
         assertTrue("json", new CBORMap().equals(serializeJson(new String[] {"{","}"})));
@@ -1987,7 +1987,7 @@ public class CBORTest {
                 "{", "\"lab\"", ":", "true", "," ,"\"j\"",":", "2000", "}"
         };
         cborMap = new CBORMap()
-            .set(new CBORString("lab"), new CBORBool(true))
+            .set(new CBORString("lab"), new CBORBoolean(true))
             .set(new CBORString("j"), new CBORInt(2000));
         assertTrue("json", cborMap.equals(serializeJson(jsonTokens)));
         
@@ -1999,8 +1999,8 @@ public class CBORTest {
                                               "\"\\u20ac$\\u000a\\b\\r\\t\\\"\\\\ \"")));
         assertTrue("json", new CBORString("\u0123\u4567\u89ab\ucdef\uABCD\uEF00").equals(serializeJson(
                                               "\"\\u0123\\u4567\\u89ab\\ucdef\\uABCD\\uEF00\"")));
-        assertTrue("json", new CBORBool(true).equals(serializeJson("true")));
-        assertTrue("json", new CBORBool(false).equals(serializeJson("false")));
+        assertTrue("json", new CBORBoolean(true).equals(serializeJson("true")));
+        assertTrue("json", new CBORBoolean(false).equals(serializeJson("false")));
         assertTrue("json", new CBORNull().equals(serializeJson("null")));
         assertTrue("json", new CBORInt(-234).equals(serializeJson("-234")));
         assertTrue("json", new CBORInt(234).equals(serializeJson("234")));
