@@ -325,11 +325,27 @@ public class CBORTest {
         }
     }
     
-    void floatTest(String asText, String hex, boolean mustFail) {
+    void float32Test(String asText, String hex, boolean mustFail) {
         double v = Double.valueOf(asText);
         CBORObject cborObject = parseCborHex(hex);
         try {
             float f = cborObject.getFloat32();
+            assertFalse("Should fail", mustFail);
+            if (Float.isNaN(f) && Double.isNaN(v)) {
+                return;
+            }
+            assertTrue("Comp", v == f);
+        } catch (Exception e) {
+            assertTrue("Ok fail", mustFail);
+            checkException(e, CBORObject.STDERR_FLOAT_RANGE);
+        }
+    }
+
+    void float16Test(String asText, String hex, boolean mustFail) {
+        double v = Double.valueOf(asText);
+        CBORObject cborObject = parseCborHex(hex);
+        try {
+            float f = cborObject.getFloat16();
             assertFalse("Should fail", mustFail);
             if (Float.isNaN(f) && Double.isNaN(v)) {
                 return;
@@ -554,11 +570,17 @@ public class CBORTest {
         doubleTest("NaN",                        "FB8000000000000000",   1);
         doubleTest("65504.00390625",             "F97BFF",               2);
         
-        floatTest("NaN",                    "F97E00",             false);
-        floatTest("0.0",                    "F90000",             false);
-        floatTest("3.4028234663852886e+38", "FA7F7FFFFF",         false);
-        floatTest("3.4028234663852889e+38", "FB47EFFFFFE0000001", true);
-        
+        float32Test("NaN",                    "F97E00",             false);
+        float32Test("0.0",                    "F90000",             false);
+        float32Test("3.4028234663852886e+38", "FA7F7FFFFF",         false);
+        float32Test("3.4028234663852889e+38", "FB47EFFFFFE0000001", true);
+
+        float16Test("NaN",                    "F97E00",             false);
+        float16Test("0.0",                    "F90000",             false);
+        float16Test("65504.0",                "F97BFF",             false);
+        float16Test("3.4028234663852886e+38", "FA7F7FFFFF",         true);
+        float16Test("3.4028234663852889e+38", "FB47EFFFFFE0000001", true);
+
         assertTrue("Tag", new CBORTag(5, new CBORString("hi"))
                         .equals(parseCborHex("C5626869")));
         

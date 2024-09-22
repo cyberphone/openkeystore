@@ -335,6 +335,26 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }
 
     /**
+     * Get CBOR <code>floating point</code> value.
+     * <p>
+     * This method requires that the object is a
+     * {@link CBORFloat} holding a 16-bit IEEE 754 value, 
+     * otherwise a {@link CBORException} is thrown.
+     * </p>
+     * 
+     * @return <code>float</code>
+     * @throws CBORException
+     */
+    public float getFloat16() {
+        checkTypeAndMarkAsRead(CBORTypes.FLOATING_POINT);
+        CBORFloat floatingPoint = (CBORFloat) this;
+        if (floatingPoint.tag != MT_FLOAT16) {
+            cborError(STDERR_FLOAT_RANGE);
+        }
+        return (float)floatingPoint.value;
+    }
+
+    /**
      * Get CBOR <code>boolean</code>.
      * <p>
      * This method requires that the object is a
