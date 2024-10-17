@@ -46,7 +46,6 @@ public class CBORBigInt extends CBORObject {
      * @param value Integer in BigInteger format
      */
     public CBORBigInt(BigInteger value) {
-        super(CBORTypes.BIGNUM);
         this.value = value;
         nullCheck(value);
     }

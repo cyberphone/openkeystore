@@ -1,10 +1,10 @@
 package cbor_api_demo;
 
 import org.webpki.cbor.CBORArray;
+import org.webpki.cbor.CBORBytes;
 import org.webpki.cbor.CBORDecoder;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;
-import org.webpki.cbor.CBORTypes;
 
 import org.webpki.util.HexaDecimal;
 
@@ -38,14 +38,13 @@ public class CborDocumentLog {
     }
     
     void traverse(CBORObject refData, CBORObject newData) {
-        switch (refData.getType()) {
-            case MAP:
-                CBORMap refMap = refData.getMap();
+        switch (refData) {
+            case CBORMap refMap:
                 CBORMap newMap = newData.getMap();
                 for (CBORObject key : refMap.getKeys()) {
                     CBORObject refValue = refMap.get(key);
                     CBORObject newValue = newMap.get(key);
-                    if (refValue.getType() == CBORTypes.BYTES) {
+                    if (refValue instanceof CBORBytes) {
                         byte[] refBlob = refValue.getBytes();
                         byte[] newBlob = newValue.getBytes();
                         if (refBlob.length != newBlob.length) {
@@ -57,8 +56,7 @@ public class CborDocumentLog {
                 }
                 break;
                 
-            case ARRAY:
-                CBORArray refArray = refData.getArray();
+            case CBORArray refArray:
                 CBORArray newArray = newData.getArray();
                 for (int q = refArray.size(); --q >= 0;) {
                     traverse(refArray.get(q), newArray.get(q));

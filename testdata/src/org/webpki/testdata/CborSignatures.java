@@ -34,12 +34,12 @@ import org.webpki.cbor.CBORSigner;
 import org.webpki.cbor.CBORTag;
 import org.webpki.cbor.CBORTest;
 import org.webpki.cbor.CBORString;
-import org.webpki.cbor.CBORTypes;
 import org.webpki.cbor.CBORValidator;
 import org.webpki.cbor.CBORX509Signer;
 import org.webpki.cbor.CBORX509Validator;
 import org.webpki.cbor.CBORAsymKeySigner;
 import org.webpki.cbor.CBORAsymKeyValidator;
+import org.webpki.cbor.CBORBytes;
 import org.webpki.cbor.CBORFloat;
 import org.webpki.cbor.CBORHmacSigner;
 import org.webpki.cbor.CBORHmacValidator;
@@ -159,17 +159,17 @@ public class CborSignatures {
         CBORObject[] keys = decoded.getMap().getKeys();
         for (CBORObject key : keys) {
             CBORObject value = decoded.getMap().get(key);
-            if (value.getType() == CBORTypes.MAP) {
+            if (value instanceof CBORMap) {
                 CBORMap possibleSignature = value.getMap();
                 if (possibleSignature.containsKey(CBORCryptoConstants.ALGORITHM_LABEL)) {
                     CBORObject alg =
                             possibleSignature.get(CBORCryptoConstants.ALGORITHM_LABEL);
-                    if (alg.getType() != CBORTypes.INTEGER) continue;
+                    if (!(alg instanceof CBORInt)) continue;
                 }
                 if (possibleSignature.containsKey(CBORCryptoConstants.SIGNATURE_LABEL)) {
                     CBORObject sig =
                             possibleSignature.get(CBORCryptoConstants.SIGNATURE_LABEL);
-                    if (sig.getType() != CBORTypes.BYTES) continue;
+                    if (!(sig instanceof CBORBytes)) continue;
                 }
                 // This is with 99% certainty a CSF signature.  Bump the signature value.
                 possibleSignature.remove(CBORCryptoConstants.SIGNATURE_LABEL);

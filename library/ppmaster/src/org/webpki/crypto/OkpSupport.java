@@ -63,6 +63,12 @@ import org.webpki.util.HexaDecimal;
 public class OkpSupport {
     
     private OkpSupport() {}
+
+    static byte[] addByteArrays(byte[]a, byte[] b) {
+        byte[] result = Arrays.copyOf(a, a.length + b.length);
+        System.arraycopy(b, 0, result, a.length, b.length);
+        return result;
+    }
     
     static final HashMap<KeyAlgorithms,Integer> okpKeyLength = new HashMap<>();
 
@@ -115,9 +121,6 @@ public class OkpSupport {
         if (okpKeyLength.get(keyAlgorithm) != x.length) {
             throw new CryptoException("Wrong public key length for: " + keyAlgorithm.toString());
         }
-        byte[] prefix = pubKeyPrefix.get(keyAlgorithm);
-        byte[] spki = Arrays.copyOf(prefix, prefix.length + x.length);
-        System.arraycopy(x, 0, spki, prefix.length, x.length);
         try {
 //#if BOUNCYCASTLE
             return KeyFactory.getInstance(keyAlgorithm.getJceName(), "BC")
@@ -128,7 +131,8 @@ public class OkpSupport {
             return KeyFactory.getInstance(keyAlgorithm.getJceName())
 //#endif
 //#endif
-                    .generatePublic(new X509EncodedKeySpec(spki));
+                    .generatePublic(new X509EncodedKeySpec(
+                        addByteArrays(pubKeyPrefix.get(keyAlgorithm), x)));
         } catch (GeneralSecurityException e) {
             throw new CryptoException(e);
         }
@@ -148,9 +152,6 @@ public class OkpSupport {
         if (okpKeyLength.get(keyAlgorithm) != d.length) {
             throw new CryptoException("Wrong private key length for: " + keyAlgorithm.toString());
         }
-        byte[] prefix = privKeyPrefix.get(keyAlgorithm);
-        byte[] pkcs8 = Arrays.copyOf(prefix, prefix.length + d.length);
-        System.arraycopy(d, 0, pkcs8, prefix.length, d.length);
         try {
 //#if BOUNCYCASTLE
             return KeyFactory.getInstance(keyAlgorithm.getJceName(), "BC")
@@ -161,7 +162,8 @@ public class OkpSupport {
             return KeyFactory.getInstance(keyAlgorithm.getJceName())
 //#endif
 //#endif
-                    .generatePrivate(new PKCS8EncodedKeySpec(pkcs8));
+                    .generatePrivate(new PKCS8EncodedKeySpec(
+                        addByteArrays(privKeyPrefix.get(keyAlgorithm), d)));
         } catch (GeneralSecurityException e) {
             throw new CryptoException(e);
         }
@@ -172,24 +174,23 @@ public class OkpSupport {
 //#endif
     public static KeyAlgorithms getKeyAlgorithm(Key key) {
 //#if BOUNCYCASTLE
-        if (key instanceof EdDSAKey) {
-            return KeyAlgorithms.getKeyAlgorithmFromId(((EdDSAKey)key).getAlgorithm(),
+        if (key instanceof EdDSAKey edDSAKey) {
+            return KeyAlgorithms.getKeyAlgorithmFromId(edDSAKey.getAlgorithm(),
                                                        AlgorithmPreferences.JOSE);
         }
-        if (key instanceof XDHKey) {
-            return KeyAlgorithms.getKeyAlgorithmFromId(((XDHKey)key).getAlgorithm(),
+        if (key instanceof XDHKey xdhKey) {
+            return KeyAlgorithms.getKeyAlgorithmFromId(xdhKey.getAlgorithm(), 
                                                        AlgorithmPreferences.JOSE);
         }
 //#else
-        if (key instanceof XECKey) {
+        if (key instanceof XECKey xecKey) {
             return KeyAlgorithms.getKeyAlgorithmFromId(
-                    ((NamedParameterSpec)((XECKey)key).getParams()).getName(),
-                    AlgorithmPreferences.JOSE);
+                       ((NamedParameterSpec)xecKey.getParams()).getName(),
+                       AlgorithmPreferences.JOSE);
         }
-        if (key instanceof EdECKey) {
-            return KeyAlgorithms.getKeyAlgorithmFromId(
-                    ((EdECKey)key).getParams().getName(),
-                    AlgorithmPreferences.JOSE);
+        if (key instanceof EdECKey edECKey) {
+            return KeyAlgorithms.getKeyAlgorithmFromId(edECKey.getParams().getName(),
+                                                       AlgorithmPreferences.JOSE);
         }
 //#endif
 //#if ANDROID

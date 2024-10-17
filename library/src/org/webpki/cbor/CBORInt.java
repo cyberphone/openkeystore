@@ -77,7 +77,6 @@ public class CBORInt extends CBORObject {
      * @param unsigned <code>true</code> if value should be considered as unsigned
      */
     public CBORInt(long value, boolean unsigned) {
-        super(CBORTypes.INTEGER);
         this.value = value;
         this.unsigned = unsigned;
     }

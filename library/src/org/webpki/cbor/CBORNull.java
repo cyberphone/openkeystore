@@ -28,9 +28,7 @@ public class CBORNull extends CBORObject {
     /**
      * Creates a CBOR <code>null</code>.
      */
-    public CBORNull() {
-        super(CBORTypes.NULL);
-    }
+    public CBORNull() {}
 
     @Override
     byte[] internalEncode() {

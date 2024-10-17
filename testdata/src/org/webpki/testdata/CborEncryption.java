@@ -40,9 +40,9 @@ import org.webpki.cbor.CBORSymKeyEncrypter;
 import org.webpki.cbor.CBORTag;
 import org.webpki.cbor.CBORTest;
 import org.webpki.cbor.CBORString;
-import org.webpki.cbor.CBORTypes;
 import org.webpki.cbor.CBORX509Decrypter;
 import org.webpki.cbor.CBORX509Encrypter;
+import org.webpki.cbor.CBORArray;
 import org.webpki.cbor.CBORAsymKeyDecrypter;
 import org.webpki.cbor.CBORAsymKeyEncrypter;
 import org.webpki.cbor.CBORDecrypter;
@@ -218,9 +218,9 @@ public class CborEncryption {
 
     static CBORMap unwrapOptionalTag(CBORObject rawContainer) throws IOException {
         // It might be tagged
-        if (rawContainer.getType() == CBORTypes.TAG) {
+        if (rawContainer instanceof CBORTag) {
             CBORObject container = rawContainer.getTag().getTaggedObject();
-            if (container.getType() == CBORTypes.ARRAY) {
+            if (container instanceof CBORArray) {
                 container = container.getArray().get(1);
             }
             return container.getMap();

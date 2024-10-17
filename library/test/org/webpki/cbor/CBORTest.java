@@ -247,8 +247,8 @@ public class CBORTest {
             assertFalse("Should not run: " + value, mustFail);
             assertTrue("=" + value, v == bigInteger.longValue());
         } catch (Exception e) {
-            if (res.getType() == CBORTypes.BIGNUM) {
-                checkException(e, "Is type: BIGNUM");
+            if (res instanceof CBORBigInt) {
+                checkException(e, "Is type: CBORBigInt");
             } else {
                 String dataType = variation.toString().toLowerCase();
                 dataType = dataType.substring(0,1).toUpperCase() +
@@ -792,7 +792,7 @@ public class CBORTest {
             ((CBORArray) cbor).get(0).getMap();
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, "Is type: INTEGER, requested: MAP");
+            checkException(e, "Is type: CBORInt, requested: CBORMap");
         }
 
         try {
@@ -825,7 +825,7 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Map key 8 with argument of type=INTEGER with value=2 was never read");
+                "Map key 8 with argument of type=CBORInt with value=2 was never read");
         }
 
         try {
@@ -838,7 +838,7 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Array element of type=BOOLEAN with value=false was never read");
+                "Array element of type=CBORBoolean with value=false was never read");
         }
         
         try {
@@ -848,7 +848,7 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Data of type=STRING with value=\"hi\" was never read");
+                "Data of type=CBORString with value=\"hi\" was never read");
         }
         unread.getString();
         unread.checkForUnread();
@@ -875,7 +875,7 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Array element of type=BOOLEAN with value=false was never read");
+                "Array element of type=CBORBoolean with value=false was never read");
         }
 
         // Getting an object without reading the value is considered as "unread".
@@ -889,7 +889,7 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Array element of type=BOOLEAN with value=true was never read");
+                "Array element of type=CBORBoolean with value=true was never read");
         }
         
         try {
@@ -898,7 +898,7 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Data of type=INTEGER with value=23 was never read");
+                "Data of type=CBORInt with value=23 was never read");
         }
 
         try {
@@ -907,7 +907,7 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Map key 7 with argument of type=STRING with value=\"mydata\" was never read");
+                "Map key 7 with argument of type=CBORString with value=\"mydata\" was never read");
         }
 
         try {
@@ -916,7 +916,7 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Data of type=MAP with value={} was never read");
+                "Data of type=CBORMap with value={} was never read");
         }
         unread.getMap().checkForUnread();
 
@@ -926,7 +926,7 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Data of type=ARRAY with value=[] was never read");
+                "Data of type=CBORArray with value=[] was never read");
         }
         unread.getArray().checkForUnread();
     }
@@ -939,21 +939,21 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Is type: INTEGER, requested: BOOLEAN");
+                "Is type: CBORInt, requested: CBORBoolean");
         }
         try {
             cborObject.getBytes();  
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Is type: INTEGER, requested: BYTES");
+                "Is type: CBORInt, requested: CBORBytes");
         }
         try {
             cborObject.getFloat64();  
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Is type: INTEGER, requested: FLOATING_POINT");
+                "Is type: CBORInt, requested: CBORFloat");
         }
         try {
             new CBORMap().set(null, new CBORInt(1));
@@ -1686,7 +1686,7 @@ public class CBORTest {
                                         .set(new CBORInt(-2), new CBORInt(5)));
             fail("must not run");
         } catch (Exception e) {
-            checkException(e, "Map key -2 with argument of type=INTEGER with value=5 was never read");
+            checkException(e, "Map key -2 with argument of type=CBORInt with value=5 was never read");
         }
         try {
             CBORObject modified =  p256Encrypted;
@@ -1771,7 +1771,7 @@ public class CBORTest {
                                 new CBORInt(600))));
             fail("must not run");
         } catch (Exception e) {
-            checkException(e, "Map key 1 with argument of type=INTEGER with value=600 was never read");
+            checkException(e, "Map key 1 with argument of type=CBORInt with value=600 was never read");
         }
         
         String objectId = "https://example.com/myobject";
@@ -2084,7 +2084,7 @@ public class CBORTest {
                 fail("must not execute");
             } catch (Exception e) {
                 checkException(e, 
-                    "Map key \"key\" with argument of type=STRING with value=\"value\" was never read");
+                    "Map key \"key\" with argument of type=CBORString with value=\"value\" was never read");
             }
             try {
                 cborPublicKey.set(new CBORString("key"), new CBORString("value"));
@@ -2092,7 +2092,7 @@ public class CBORTest {
                 fail("must not execute");
             } catch (Exception e) {
                 checkException(e, 
-                    "Map key \"key\" with argument of type=STRING with value=\"value\" was never read");
+                    "Map key \"key\" with argument of type=CBORString with value=\"value\" was never read");
             }
         }
     }

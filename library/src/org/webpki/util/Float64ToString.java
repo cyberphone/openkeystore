@@ -24,7 +24,7 @@ import java.math.BigInteger;
  * An implementation of Ryu for serializing IEEE-754 double precision values
  * as specified by ECMAScript
  */
-public final class DoubleCoreSerializer {
+public final class Float64ToString {
     private static boolean DEBUG = false;
 
     private static final int DOUBLE_MANTISSA_BITS = 52;

@@ -31,9 +31,7 @@ public class CBORArray extends CBORObject {
      * Creates an empty CBOR array <code>[]</code>.
      * 
      */
-    public CBORArray() {
-        super(CBORTypes.ARRAY);
-    }
+    public CBORArray() {}
     
     /**
      * Get size of the CBOR <code>array</code>.

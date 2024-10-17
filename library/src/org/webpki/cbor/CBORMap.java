@@ -66,9 +66,7 @@ public class CBORMap extends CBORObject {
      * Equivalent to <code>CBORMap().setSortingMode(false)</code>.
      * </p>
      */
-    public CBORMap() {
-        super(CBORTypes.MAP);
-    }
+    public CBORMap() {}
 
     private CBORObject getKey(CBORObject key) {
         nullCheck(key);

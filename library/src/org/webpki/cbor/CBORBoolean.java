@@ -34,7 +34,6 @@ public class CBORBoolean extends CBORObject {
      * @param value <code>true</code> or <code>false</code>
      */
     public CBORBoolean(boolean value) {
-        super(CBORTypes.BOOLEAN);
         this.value = value;
     }
 

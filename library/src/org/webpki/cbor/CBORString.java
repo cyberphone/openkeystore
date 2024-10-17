@@ -37,7 +37,6 @@ public class CBORString extends CBORObject {
      * </p>
      */
     public CBORString(String textString) {
-        super(CBORTypes.STRING);
         this.textString = textString;
         nullCheck(textString);
     }

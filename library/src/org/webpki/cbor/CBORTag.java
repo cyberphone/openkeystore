@@ -88,20 +88,19 @@ public class CBORTag extends CBORObject {
      * @param object Object
      */
     public CBORTag(long tagNumber, CBORObject object) {
-        super(CBORTypes.TAG);
         this.tagNumber = tagNumber;
         this.object = object;
         nullCheck(object);
         if (tagNumber == RESERVED_TAG_COTX) {
-            if (object.cborType == CBORTypes.ARRAY) {
+            if (object instanceof CBORArray) {
                 CBORArray holder = object.getArray();
-                if (holder.size() == 2 && holder.get(0).cborType == CBORTypes.STRING) {
+                if (holder.size() == 2 && holder.get(0) instanceof CBORString) {
                     return;
                 }
             }
             cborError(STDERR_INVALID_COTX_OBJECT + object.toDiagnosticNotation(false));
         } else if (tagNumber == RESERVED_TAG_DATE) {
-            if (object.cborType == CBORTypes.STRING) {
+            if (object instanceof CBORString) {
                 try {
                     ISODateTime.decode(object.getString(), ISODateTime.COMPLETE);
                     return;

@@ -165,7 +165,7 @@ public class CBORCryptoUtils {
     static CBORMap unwrapContainerMap(CBORObject container, 
                                       POLICY tagPolicy,
                                       Collector callBackOrNull) {
-        if (container.getType() == CBORTypes.TAG) {
+        if (container instanceof CBORTag) {
             if (tagPolicy == POLICY.FORBIDDEN) {
                 inputError("Tag encountered", tagPolicy);
             }

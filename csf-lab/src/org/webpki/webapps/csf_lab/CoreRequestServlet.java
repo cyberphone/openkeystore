@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.webpki.cbor.CBORArray;
 import org.webpki.cbor.CBORCryptoConstants;
 import org.webpki.cbor.CBORDecoder;
 import org.webpki.cbor.CBORDiagnosticNotation;
@@ -36,8 +37,10 @@ import org.webpki.cbor.CBORKeyPair;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORPublicKey;
-import org.webpki.cbor.CBORTypes;
+import org.webpki.cbor.CBORTag;
+
 import org.webpki.crypto.AlgorithmPreferences;
+
 import org.webpki.jose.JOSEKeyWords;
 import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONObjectWriter;
@@ -240,9 +243,9 @@ public class CoreRequestServlet extends HttpServlet {
     
     CBORMap unwrapOptionalTag(CBORObject rawContainer) throws IOException {
         // It might be tagged
-        if (rawContainer.getType() == CBORTypes.TAG) {
+        if (rawContainer instanceof CBORTag) {
             CBORObject container = rawContainer.getTag().getTaggedObject();
-            if (container.getType() == CBORTypes.ARRAY) {
+            if (container instanceof CBORArray) {
                 container = container.getArray().get(1);
             }
             return container.getMap();

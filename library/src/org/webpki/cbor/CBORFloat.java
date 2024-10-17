@@ -16,7 +16,7 @@
  */
 package org.webpki.cbor;
 
-import org.webpki.util.DoubleCoreSerializer;
+import org.webpki.util.Float64ToString;
 
 import static org.webpki.cbor.CBORInternal.*;
 
@@ -52,7 +52,6 @@ public class CBORFloat extends CBORObject {
      * @param value Java double
      */
     public CBORFloat(double value) {
-        super(CBORTypes.FLOATING_POINT);
         this.value = value;
 
         // Initial assumption: the number is a plain vanilla 64-bit double.
@@ -162,7 +161,7 @@ public class CBORFloat extends CBORObject {
         if (value == 0 || value.isInfinite() || value.isNaN()) {
             return value.toString();
         }
-        return DoubleCoreSerializer.serialize(value, false);
+        return Float64ToString.serialize(value, false);
     }
 
     /**
