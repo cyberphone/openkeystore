@@ -114,7 +114,7 @@ public class CBORMap extends CBORObject {
                 insertIndex = 0;
                 int startIndex = 0;
                 while (startIndex <= endIndex) {
-                    int midIndex = startIndex + (endIndex - startIndex) / 2;
+                    int midIndex = (endIndex + startIndex) / 2;
                     if (newEntry.compareAndTest(entries.get(midIndex))) {
                         // New key is bigger than the looked up entry.
                         // Preliminary assumption: this is the one, but continue.
@@ -162,7 +162,7 @@ public class CBORMap extends CBORObject {
         int startIndex = 0;
         int endIndex = entries.size() - 1;
         while (startIndex <= endIndex) {
-            int midIndex = startIndex + (endIndex - startIndex) / 2;
+            int midIndex = (endIndex + startIndex) / 2;
             Entry entry = entries.get(midIndex);
             int diff = entry.compare(encodedKey);
             if (diff == 0) {
