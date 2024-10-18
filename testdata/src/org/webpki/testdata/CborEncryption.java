@@ -231,17 +231,17 @@ public class CborEncryption {
     static String cleanEncryption(byte[] cefData) throws IOException {
         CBORObject cborObject = CBORDecoder.decode(cefData);
         CBORMap decoded = unwrapOptionalTag(cborObject);
-        decoded.remove(CBORCryptoConstants.IV_LABEL);
-        decoded.remove(CBORCryptoConstants.TAG_LABEL);
-        decoded.remove(CBORCryptoConstants.CIPHER_TEXT_LABEL);
-        if (decoded.containsKey(CBORCryptoConstants.KEY_ENCRYPTION_LABEL)) {
+        decoded.remove(CBORCryptoConstants.CEF_IV_LBL);
+        decoded.remove(CBORCryptoConstants.CEF_TAG_LBL);
+        decoded.remove(CBORCryptoConstants.CEF_CIPHER_TEXT_LBL);
+        if (decoded.containsKey(CBORCryptoConstants.CEF_KEY_ENCRYPTION_LBL)) {
             CBORMap keyEncryption =
-                    decoded.get(CBORCryptoConstants.KEY_ENCRYPTION_LABEL).getMap();
-            if (keyEncryption.containsKey(CBORCryptoConstants.CIPHER_TEXT_LABEL)) {
-                keyEncryption.remove(CBORCryptoConstants.CIPHER_TEXT_LABEL);
+                    decoded.get(CBORCryptoConstants.CEF_KEY_ENCRYPTION_LBL).getMap();
+            if (keyEncryption.containsKey(CBORCryptoConstants.CEF_CIPHER_TEXT_LBL)) {
+                keyEncryption.remove(CBORCryptoConstants.CEF_CIPHER_TEXT_LBL);
             }
-            if (keyEncryption.containsKey(CBORCryptoConstants.EPHEMERAL_KEY_LABEL)) {
-                keyEncryption.remove(CBORCryptoConstants.EPHEMERAL_KEY_LABEL);
+            if (keyEncryption.containsKey(CBORCryptoConstants.CEF_EPHEMERAL_KEY_LBL)) {
+                keyEncryption.remove(CBORCryptoConstants.CEF_EPHEMERAL_KEY_LBL);
             }
         }
         return cborObject.toString();

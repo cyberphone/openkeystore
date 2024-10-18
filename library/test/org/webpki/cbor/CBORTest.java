@@ -1690,7 +1690,7 @@ public class CBORTest {
         }
         try {
             CBORObject modified =  p256Encrypted;
-            modified.getMap().get(KEY_ENCRYPTION_LABEL).getMap().remove(ALGORITHM_LABEL);
+            modified.getMap().get(CEF_KEY_ENCRYPTION_LBL).getMap().remove(CXF_ALGORITHM_LBL);
             new CBORAsymKeyDecrypter(
                         p256.getPrivate()).decrypt(modified);
             fail("must not run");
@@ -1766,8 +1766,8 @@ public class CBORTest {
         
         try {
             a256Decrypter.decrypt(
-                a256Encrypted.getMap().set(KEY_ENCRYPTION_LABEL, 
-                        new CBORMap().set(ALGORITHM_LABEL,
+                a256Encrypted.getMap().set(CEF_KEY_ENCRYPTION_LBL, 
+                        new CBORMap().set(CXF_ALGORITHM_LBL,
                                 new CBORInt(600))));
             fail("must not run");
         } catch (Exception e) {

@@ -161,18 +161,18 @@ public class CborSignatures {
             CBORObject value = decoded.getMap().get(key);
             if (value instanceof CBORMap) {
                 CBORMap possibleSignature = value.getMap();
-                if (possibleSignature.containsKey(CBORCryptoConstants.ALGORITHM_LABEL)) {
+                if (possibleSignature.containsKey(CBORCryptoConstants.CXF_ALGORITHM_LBL)) {
                     CBORObject alg =
-                            possibleSignature.get(CBORCryptoConstants.ALGORITHM_LABEL);
+                            possibleSignature.get(CBORCryptoConstants.CXF_ALGORITHM_LBL);
                     if (!(alg instanceof CBORInt)) continue;
                 }
-                if (possibleSignature.containsKey(CBORCryptoConstants.SIGNATURE_LABEL)) {
+                if (possibleSignature.containsKey(CBORCryptoConstants.CSF_SIGNATURE_LBL)) {
                     CBORObject sig =
-                            possibleSignature.get(CBORCryptoConstants.SIGNATURE_LABEL);
+                            possibleSignature.get(CBORCryptoConstants.CSF_SIGNATURE_LBL);
                     if (!(sig instanceof CBORBytes)) continue;
                 }
                 // This is with 99% certainty a CSF signature.  Bump the signature value.
-                possibleSignature.remove(CBORCryptoConstants.SIGNATURE_LABEL);
+                possibleSignature.remove(CBORCryptoConstants.CSF_SIGNATURE_LBL);
                 return signedObject.toString();
             }
         }

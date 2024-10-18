@@ -51,7 +51,7 @@ public abstract class CBORValidator <T extends CBORValidator<T>> {
     /**
      * Sets custom data policy.
      * <p>
-     * By default custom data elements ({@link CBORCryptoConstants#CUSTOM_DATA_LABEL}) 
+     * By default custom data elements ({@link CBORCryptoConstants#CXF_CUSTOM_DATA_LBL}) 
      * are rejected ({@link CBORCryptoUtils.POLICY#FORBIDDEN}).
      * </p>
      * <p>
@@ -110,7 +110,7 @@ public abstract class CBORValidator <T extends CBORValidator<T>> {
         CBORMap csfContainer = signedMap.get(key).getMap();
 
         // Get the signature value and remove it from the (map) object.
-        byte[] signatureValue = csfContainer.remove(SIGNATURE_LABEL).getBytes();
+        byte[] signatureValue = csfContainer.remove(CSF_SIGNATURE_LBL).getBytes();
 
         // Fetch optional keyId.
         CBORObject optionalKeyId = CBORCryptoUtils.getKeyId(csfContainer);
@@ -121,7 +121,7 @@ public abstract class CBORValidator <T extends CBORValidator<T>> {
         // Call algorithm specific validator. The code below presumes that encode()
         // returns a deterministic representation of the signed CBOR data.
         coreValidation(csfContainer,
-                       csfContainer.get(ALGORITHM_LABEL).getInt32(),
+                       csfContainer.get(CXF_ALGORITHM_LBL).getInt32(),
                        optionalKeyId, 
                        signatureValue,
                        signedObject.encode());
@@ -130,7 +130,7 @@ public abstract class CBORValidator <T extends CBORValidator<T>> {
         csfContainer.checkForUnread();
 
         // Restore object.
-        csfContainer.set(SIGNATURE_LABEL, new CBORBytes(signatureValue));
+        csfContainer.set(CSF_SIGNATURE_LBL, new CBORBytes(signatureValue));
         
         // Return it as well.
         return signedObject;

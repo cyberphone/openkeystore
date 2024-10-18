@@ -64,11 +64,11 @@ public class ValidateServlet extends CoreRequestServlet {
             CBORMap csfContainer = unwrapOptionalTag(signedCborObject)
                         .get(signatureLabel).getMap();
             boolean hmacSignature = 
-                    csfContainer.get(CBORCryptoConstants.ALGORITHM_LABEL).getInt32() > 0;
+                    csfContainer.get(CBORCryptoConstants.CXF_ALGORITHM_LBL).getInt32() > 0;
 
             ReadKeyData keyData = hmacSignature ? null 
                             : extractKeyData(validationKey, RequestedKeyType.PUBLIC);
-            boolean x509flag = csfContainer.containsKey(CBORCryptoConstants.CERT_PATH_LABEL);
+            boolean x509flag = csfContainer.containsKey(CBORCryptoConstants.CXF_CERT_PATH_LBL);
             final StringBuilder certificateData = x509flag ? new StringBuilder() : null;
             
             CBORValidator<?> validator;

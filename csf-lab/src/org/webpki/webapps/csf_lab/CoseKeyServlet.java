@@ -68,7 +68,7 @@ public class CoseKeyServlet extends CoreRequestServlet {
                                                    : 
                         CBORKeyPair.convert(keyData.keyPair);
             if (keyData.optionalKeyId != null) {
-                cbor.set(CBORCryptoConstants.COSE_KID_LABEL,
+                cbor.set(CBORCryptoConstants.COSE_KID_LBL,
                          new CBORBytes(UTF8.encode(keyData.optionalKeyId)));
             }
             jsonResponse.setString(CBOR_OUT, 

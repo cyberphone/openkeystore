@@ -64,7 +64,7 @@ public class CBORAsymKeyEncrypter extends CBOREncrypter<CBORAsymKeyEncrypter> {
         
         // We may want to include the public key as well
         if (wantPublicKey) {
-            keyEncryption.set(PUBLIC_KEY_LABEL, CBORPublicKey.convert(publicKey));
+            keyEncryption.set(CXF_PUBLIC_KEY_LBL, CBORPublicKey.convert(publicKey));
             // Which does not go together with a keyId
             CBORCryptoUtils.rejectPossibleKeyId(optionalKeyId);
         }

@@ -119,7 +119,7 @@ public class CBORCryptoUtils {
          * Optionally add custom data to the map.
          * <p>
          * Custom data may be any valid CBOR object.  This data is assigned
-         * to the CSF/CEF specific label {@link CBORCryptoConstants#CUSTOM_DATA_LABEL}.
+         * to the CSF/CEF specific label {@link CBORCryptoConstants#CXF_CUSTOM_DATA_LBL}.
          * </p>
          * <p>
          * If this method returns <code>null</code>, the assumption is that there is no
@@ -186,20 +186,20 @@ public class CBORCryptoUtils {
     static CBORObject getKeyId(CBORMap holderMap) {
 
         // Get the key Id if there is one and scan() to make sure checkForUnread() won't fail
-        return holderMap.containsKey(KEY_ID_LABEL) ?
-            holderMap.get(KEY_ID_LABEL).scan() : null;
+        return holderMap.containsKey(CXF_KEY_ID_LBL) ?
+            holderMap.get(CXF_KEY_ID_LBL).scan() : null;
     }
     
     static void getCustomData(CBORMap holderMap, 
                               POLICY customDataPolicy,
                               Collector callBackOrNull) {
         // Get optional customData element.
-        if (holderMap.containsKey(CUSTOM_DATA_LABEL)) {
+        if (holderMap.containsKey(CXF_CUSTOM_DATA_LBL)) {
             if (customDataPolicy == POLICY.FORBIDDEN) {
                 inputError("Custom data encountered", customDataPolicy);
             }
             // It is OK to not read customData during validation.
-            CBORObject customData = holderMap.get(CUSTOM_DATA_LABEL).scan();
+            CBORObject customData = holderMap.get(CXF_CUSTOM_DATA_LBL).scan();
             if (callBackOrNull != null) {
                 callBackOrNull.foundData(customData);
             }
@@ -214,7 +214,7 @@ public class CBORCryptoUtils {
                                       ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
 
         // The mandatory key encryption algorithm
-        keyEncryption.set(ALGORITHM_LABEL,
+        keyEncryption.set(CXF_ALGORITHM_LBL,
                           new CBORInt(keyEncryptionAlgorithm.getCoseAlgorithmId()));
         
         // The sole cryptographic operation 
@@ -226,12 +226,12 @@ public class CBORCryptoUtils {
 
         if (!keyEncryptionAlgorithm.isRsa()) {
             // ECDH-ES requires the ephemeral public key
-            keyEncryption.set(EPHEMERAL_KEY_LABEL,
+            keyEncryption.set(CEF_EPHEMERAL_KEY_LBL,
                               CBORPublicKey.convert(result.getEphemeralKey()));
         }
         if (keyEncryptionAlgorithm.isKeyWrap()) {
             // Encrypted key
-            keyEncryption.set(CIPHER_TEXT_LABEL, new CBORBytes(result.getEncryptedKey()));
+            keyEncryption.set(CEF_CIPHER_TEXT_LBL, new CBORBytes(result.getEncryptedKey()));
         }
         return result.getContentEncryptionKey();
     }
@@ -239,13 +239,13 @@ public class CBORCryptoUtils {
     static byte[] getEncryptedKey(CBORMap innerObject,
                                   KeyEncryptionAlgorithms keyEncryptionAlgorithm) {
         return keyEncryptionAlgorithm.isKeyWrap() ?  // All but ECDH-ES
-            innerObject.get(CIPHER_TEXT_LABEL).getBytes() : null;
+            innerObject.get(CEF_CIPHER_TEXT_LBL).getBytes() : null;
     }
     
     static PublicKey getEphemeralKey(CBORMap innerObject,
                                      KeyEncryptionAlgorithms keyEncryptionAlgorithm) {
         return keyEncryptionAlgorithm.isRsa() ? null :
-            CBORPublicKey.convert(innerObject.get(EPHEMERAL_KEY_LABEL));
+            CBORPublicKey.convert(innerObject.get(CEF_EPHEMERAL_KEY_LBL));
         
     }
     

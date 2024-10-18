@@ -51,7 +51,7 @@ public abstract class CBORDecrypter <T extends CBORDecrypter<?>> {
     /**
      * Set custom extension data policy.
      * <p>
-     * By default custom data elements ({@link CBORCryptoConstants#CUSTOM_DATA_LABEL}) 
+     * By default custom data elements ({@link CBORCryptoConstants#CXF_CUSTOM_DATA_LBL}) 
      * are rejected ({@link CBORCryptoUtils.POLICY#FORBIDDEN}).
      * </p>
      * <p>
@@ -108,11 +108,11 @@ public abstract class CBORDecrypter <T extends CBORDecrypter<?>> {
         // Get the mandatory content encryption algorithm.
         ContentEncryptionAlgorithms contentEncryptionAlgorithm =
                 ContentEncryptionAlgorithms.getAlgorithmFromId(
-                        cefContainer.get(ALGORITHM_LABEL).getInt32());
+                        cefContainer.get(CXF_ALGORITHM_LBL).getInt32());
 
         // Possible key encryption kicks in here.  That is, there is a sub map.
         CBORMap innerObject = this instanceof CBORSymKeyDecrypter ? 
-                cefContainer : cefContainer.get(KEY_ENCRYPTION_LABEL).getMap();
+                cefContainer : cefContainer.get(CEF_KEY_ENCRYPTION_LBL).getMap();
               
         // Fetch optional keyId.
         CBORObject optionalKeyId = CBORCryptoUtils.getKeyId(innerObject);
@@ -127,9 +127,9 @@ public abstract class CBORDecrypter <T extends CBORDecrypter<?>> {
         
         // Read and remove the encryption object (map) parameters that
         // do not participate (because they cannot) in "authData".
-        byte[] iv = cefContainer.remove(IV_LABEL).getBytes();
-        byte[] tag = cefContainer.remove(TAG_LABEL).getBytes();
-        byte[] cipherText = cefContainer.remove(CIPHER_TEXT_LABEL).getBytes();
+        byte[] iv = cefContainer.remove(CEF_IV_LBL).getBytes();
+        byte[] tag = cefContainer.remove(CEF_TAG_LBL).getBytes();
+        byte[] cipherText = cefContainer.remove(CEF_CIPHER_TEXT_LBL).getBytes();
         
         // Check that there is no unread (illegal) data like public 
         // keys in symmetric encryption or just plain unknown elements.
@@ -143,9 +143,9 @@ public abstract class CBORDecrypter <T extends CBORDecrypter<?>> {
         byte[] authData = encryptionObject.encode();
         
         // Be nice and restore the object as well.
-        cefContainer.set(IV_LABEL, new CBORBytes(iv));
-        cefContainer.set(TAG_LABEL, new CBORBytes(tag));
-        cefContainer.set(CIPHER_TEXT_LABEL, new CBORBytes(cipherText));
+        cefContainer.set(CEF_IV_LBL, new CBORBytes(iv));
+        cefContainer.set(CEF_TAG_LBL, new CBORBytes(tag));
+        cefContainer.set(CEF_CIPHER_TEXT_LBL, new CBORBytes(cipherText));
          
         // Perform the actual decryption.
         return EncryptionCore.contentDecryption(contentEncryptionAlgorithm,

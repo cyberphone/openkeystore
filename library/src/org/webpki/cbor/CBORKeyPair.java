@@ -49,8 +49,8 @@ public class CBORKeyPair {
     
     private CBORKeyPair() {}
     
-    static final CBORInt COSE_EC2_D_LABEL        = new CBORInt(-4);
-    static final CBORInt COSE_OKP_D_LABEL        = new CBORInt(-4);
+    static final CBORInt COSE_EC2_D_LBL        = new CBORInt(-4);
+    static final CBORInt COSE_OKP_D_LBL        = new CBORInt(-4);
 
     /*
             https://datatracker.ietf.org/doc/html/rfc8230
@@ -79,12 +79,12 @@ public class CBORKeyPair {
         +-------+-------+-------+-------+-----------------------------------+
     */
 
-    static final CBORInt COSE_RSA_D_LABEL        = new CBORInt(-3);
-    static final CBORInt COSE_RSA_P_LABEL        = new CBORInt(-4);
-    static final CBORInt COSE_RSA_Q_LABEL        = new CBORInt(-5);
-    static final CBORInt COSE_RSA_DP_LABEL       = new CBORInt(-6);
-    static final CBORInt COSE_RSA_DQ_LABEL       = new CBORInt(-7);
-    static final CBORInt COSE_RSA_QINV_LABEL     = new CBORInt(-8);
+    static final CBORInt COSE_RSA_D_LBL        = new CBORInt(-3);
+    static final CBORInt COSE_RSA_P_LBL        = new CBORInt(-4);
+    static final CBORInt COSE_RSA_Q_LBL        = new CBORInt(-5);
+    static final CBORInt COSE_RSA_DP_LBL       = new CBORInt(-6);
+    static final CBORInt COSE_RSA_DQ_LBL       = new CBORInt(-7);
+    static final CBORInt COSE_RSA_QINV_LBL     = new CBORInt(-8);
 
     /**
      * Convert JCE key pair to COSE.
@@ -100,28 +100,28 @@ public class CBORKeyPair {
             case RSA:
                 RSAPrivateCrtKey rsaPrivateKey = (RSAPrivateCrtKey)keyPair.getPrivate();
                 cosePrivateKey
-                    .set(COSE_RSA_D_LABEL, 
+                    .set(COSE_RSA_D_LBL, 
                          CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrivateExponent()))
-                    .set(COSE_RSA_P_LABEL, 
+                    .set(COSE_RSA_P_LBL, 
                          CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrimeP()))
-                    .set(COSE_RSA_Q_LABEL, 
+                    .set(COSE_RSA_Q_LBL, 
                          CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrimeQ()))
-                    .set(COSE_RSA_DP_LABEL, 
+                    .set(COSE_RSA_DP_LBL, 
                          CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrimeExponentP()))
-                    .set(COSE_RSA_DQ_LABEL, 
+                    .set(COSE_RSA_DQ_LBL, 
                          CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrimeExponentQ()))
-                    .set(COSE_RSA_QINV_LABEL,
+                    .set(COSE_RSA_QINV_LBL,
                          CBORPublicKey.cryptoBinary(rsaPrivateKey.getCrtCoefficient()));
                 break;
 
             case EC:
-                cosePrivateKey.set(COSE_EC2_D_LABEL,
+                cosePrivateKey.set(COSE_EC2_D_LBL,
                         CBORPublicKey.curvePoint(((ECPrivateKey)keyPair.getPrivate()).getS(), 
                                                  keyAlg));
                 break;
 
             default:
-                cosePrivateKey.set(COSE_OKP_D_LABEL, new CBORBytes(
+                cosePrivateKey.set(COSE_OKP_D_LBL, new CBORBytes(
                         OkpSupport.private2RawKey(keyPair.getPrivate(), keyAlg)));
             
         }
@@ -150,29 +150,29 @@ public class CBORKeyPair {
                         new RSAPrivateCrtKeySpec(
                             ((RSAPublicKey) publicKey).getModulus(),
                             ((RSAPublicKey) publicKey).getPublicExponent(),
-                            CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_D_LABEL),
-                            CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_P_LABEL),
-                            CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_Q_LABEL),
-                            CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_DP_LABEL),
-                            CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_DQ_LABEL),
-                            CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_QINV_LABEL)));
+                            CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_D_LBL),
+                            CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_P_LBL),
+                            CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_Q_LBL),
+                            CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_DP_LBL),
+                            CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_DQ_LBL),
+                            CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_QINV_LBL)));
                     break;
     
                 case EC:
                     privateKey = KeyFactory.getInstance("EC").generatePrivate(new ECPrivateKeySpec(
                             CBORPublicKey.getCurvePoint(privateKeyMap,
-                                                        COSE_EC2_D_LABEL, 
+                                                        COSE_EC2_D_LBL, 
                                                         CBORPublicKey.getKeyAlgorithmFromCurveId(
                                                                         privateKeyMap,
-                                                                        COSE_EC2_CRV_LABEL)),
+                                                                        COSE_EC2_CRV_LBL)),
                             ((ECKey)publicKey).getParams()));
                     break;
     
                 default:
                     privateKey = OkpSupport.raw2PrivateKey(
-                            privateKeyMap.get(COSE_OKP_D_LABEL).getBytes(),
+                            privateKeyMap.get(COSE_OKP_D_LBL).getBytes(),
                             CBORPublicKey.getKeyAlgorithmFromCurveId(privateKeyMap, 
-                                                                     COSE_OKP_CRV_LABEL));
+                                                                     COSE_OKP_CRV_LBL));
             }
         } catch (GeneralSecurityException e) {
             throw new CryptoException(e);

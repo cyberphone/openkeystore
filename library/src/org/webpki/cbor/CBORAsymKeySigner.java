@@ -113,7 +113,7 @@ public class CBORAsymKeySigner extends CBORSigner<CBORAsymKeySigner> {
     @Override
     void additionalItems(CBORMap signatureObject) {
         if (optionalPublicKey != null) {
-            signatureObject.set(PUBLIC_KEY_LABEL, CBORPublicKey.convert(optionalPublicKey));
+            signatureObject.set(CXF_PUBLIC_KEY_LBL, CBORPublicKey.convert(optionalPublicKey));
             CBORCryptoUtils.rejectPossibleKeyId(optionalKeyId);
         }
     }

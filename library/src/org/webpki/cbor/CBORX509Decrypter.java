@@ -129,11 +129,11 @@ public class CBORX509Decrypter extends CBORDecrypter<CBORX509Decrypter> {
         // Mandatory algorithm
         KeyEncryptionAlgorithms keyEncryptionAlgorithm =
                 KeyEncryptionAlgorithms.getAlgorithmFromId(
-                        innerObject.get(ALGORITHM_LABEL).getInt32());
+                        innerObject.get(CXF_ALGORITHM_LBL).getInt32());
  
         // Fetch certificate path
         X509Certificate[] certificatePath = CBORCryptoUtils.decodeCertificateArray(
-                innerObject.get(CERT_PATH_LABEL).getArray());
+                innerObject.get(CXF_CERT_PATH_LBL).getArray());
 
         // All algorithms but ECDH-EC depends on an encrypted key.
         byte[] optionalEncryptedKey = 

@@ -284,8 +284,8 @@ public class CoreRequestServlet extends HttpServlet {
             } else {
                 keyData.coseKey = true;
                 CBORMap cbor = CBORDiagnosticNotation.convert(keyDataText).getMap();
-                if (cbor.containsKey(CBORCryptoConstants.COSE_KID_LABEL)) {
-                    cbor.remove(CBORCryptoConstants.COSE_KID_LABEL);
+                if (cbor.containsKey(CBORCryptoConstants.COSE_KID_LBL)) {
+                    cbor.remove(CBORCryptoConstants.COSE_KID_LBL);
                 }
                 keyData.rewrittenKey = cbor.toString();
                 try {

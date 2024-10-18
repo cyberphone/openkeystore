@@ -112,11 +112,11 @@ public abstract class CBOREncrypter <T extends CBOREncrypter<T>>  {
         // Get optional custom data.
         CBORObject customData = intercepter.getCustomData();
         if (customData != null) {
-            cefContainer.set(CUSTOM_DATA_LABEL, customData);
+            cefContainer.set(CXF_CUSTOM_DATA_LBL, customData);
         }
 
         // Add the mandatory content encryption algorithm.
-        cefContainer.set(ALGORITHM_LABEL, 
+        cefContainer.set(CXF_ALGORITHM_LBL, 
                          new CBORInt(contentEncryptionAlgorithm.getCoseAlgorithmId()));
 
         // Possible key encryption kicks in here.
@@ -125,7 +125,7 @@ public abstract class CBOREncrypter <T extends CBOREncrypter<T>>  {
             innerObject = cefContainer;
         } else {
             innerObject = new CBORMap();
-            cefContainer.set(KEY_ENCRYPTION_LABEL, innerObject);
+            cefContainer.set(CEF_KEY_ENCRYPTION_LBL, innerObject);
         }
 
         // Get the content encryption key which also may be encrypted.
@@ -133,7 +133,7 @@ public abstract class CBOREncrypter <T extends CBOREncrypter<T>>  {
 
         // Add a key Id if there is one.
         if (optionalKeyId != null) {
-            innerObject.set(KEY_ID_LABEL, optionalKeyId);
+            innerObject.set(CXF_KEY_ID_LBL, optionalKeyId);
         }
         
         // Now we should have everything for encrypting the actual data.
@@ -154,13 +154,13 @@ public abstract class CBOREncrypter <T extends CBOREncrypter<T>>  {
         // Complement the encryption object with the result of the content encryption.
         
         // Authentication Data (tag).
-        cefContainer.set(TAG_LABEL, new CBORBytes(result.getTag()));
+        cefContainer.set(CEF_TAG_LBL, new CBORBytes(result.getTag()));
 
         // Initialization Vector.
-        cefContainer.set(IV_LABEL, new CBORBytes(iv));
+        cefContainer.set(CEF_IV_LBL, new CBORBytes(iv));
 
         // The encrypted data.
-        cefContainer.set(CIPHER_TEXT_LABEL, new CBORBytes(result.getCipherText()));
+        cefContainer.set(CEF_CIPHER_TEXT_LBL, new CBORBytes(result.getCipherText()));
 
         // Finally, the thing we all longed(?) for!
         return outerObject;

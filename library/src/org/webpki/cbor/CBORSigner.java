@@ -154,15 +154,15 @@ public abstract class CBORSigner <T extends CBORSigner<?>> {
         // Get optional custom data.
         CBORObject customData = intercepter.getCustomData();
         if (customData != null) {
-            csfContainer.set(CUSTOM_DATA_LABEL, customData);
+            csfContainer.set(CXF_CUSTOM_DATA_LBL, customData);
         }
 
         // Add the mandatory signature algorithm.
-        csfContainer.set(ALGORITHM_LABEL, new CBORInt(getAlgorithm().getCoseAlgorithmId()));
+        csfContainer.set(CXF_ALGORITHM_LBL, new CBORInt(getAlgorithm().getCoseAlgorithmId()));
         
         // Add a keyId if there is one.
         if (optionalKeyId != null) {
-            csfContainer.set(KEY_ID_LABEL, optionalKeyId);
+            csfContainer.set(CXF_KEY_ID_LBL, optionalKeyId);
         }
         
         // Asymmetric key signatures add specific items to the signature container.
@@ -172,7 +172,7 @@ public abstract class CBORSigner <T extends CBORSigner<?>> {
         mapToSign.set(key, csfContainer);
 
         // Finally, sign all but the signature label and associated value.
-        csfContainer.set(SIGNATURE_LABEL, new CBORBytes(coreSigner(objectToSign.encode())));
+        csfContainer.set(CSF_SIGNATURE_LBL, new CBORBytes(coreSigner(objectToSign.encode())));
 
         // Return the now signed object.
         return objectToSign;

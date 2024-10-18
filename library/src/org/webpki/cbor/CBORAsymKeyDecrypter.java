@@ -153,12 +153,12 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter<CBORAsymKeyDecrypter> {
         // Mandatory algorithm
         KeyEncryptionAlgorithms keyEncryptionAlgorithm =
                 KeyEncryptionAlgorithms.getAlgorithmFromId(
-                        innerObject.get(ALGORITHM_LABEL).getInt32());
+                        innerObject.get(CXF_ALGORITHM_LBL).getInt32());
  
         // Fetch public key if there is one
         PublicKey optionalPublicKey = null;
-        if (innerObject.containsKey(PUBLIC_KEY_LABEL)) {
-            optionalPublicKey = CBORPublicKey.convert(innerObject.get(PUBLIC_KEY_LABEL));
+        if (innerObject.containsKey(CXF_PUBLIC_KEY_LBL)) {
+            optionalPublicKey = CBORPublicKey.convert(innerObject.get(CXF_PUBLIC_KEY_LBL));
             // Please select ONE method for identifying the decryption key.
             CBORCryptoUtils.rejectPossibleKeyId(optionalKeyId);
         }
