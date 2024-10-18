@@ -24,7 +24,7 @@ import java.math.BigInteger;
  * An implementation of Ryu for serializing IEEE-754 double precision values
  * as specified by ECMAScript
  */
-public final class Float64ToString {
+public final class Float64Stringifier {
     private static boolean DEBUG = false;
 
     private static final int DOUBLE_MANTISSA_BITS = 52;
@@ -111,7 +111,7 @@ public final class Float64ToString {
      * The latter is compatible with CBOR diagnostic notation
      * @return String representation
      */
-    public static String serialize(double value, boolean ecmaOriginalMode) {
+    public static String encode(double value, boolean ecmaOriginalMode) {
         // Step 1: Decode the floating point number, and unify normalized and subnormal cases.
         long bits = Double.doubleToLongBits(value);
         int ieeeExponent = (int) ((bits >>> DOUBLE_MANTISSA_BITS) & DOUBLE_EXPONENT_MASK);

@@ -18,7 +18,7 @@
  */
 package org.webpki.json;
 
-import org.webpki.util.Float64ToString;
+import org.webpki.util.Float64Stringifier;
 
 /**
  * JSON as specified by ECMAScript
@@ -41,6 +41,6 @@ public final class NumberToJSON {
         if (Double.isNaN(value) || Double.isInfinite(value)) {
             throw new JSONException("NaN/Infinity not allowed in JSON");
         }
-        return Float64ToString.serialize(value, true);
+        return Float64Stringifier.encode(value, true);
     }
 }

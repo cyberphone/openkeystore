@@ -16,7 +16,7 @@
  */
 package org.webpki.cbor;
 
-import org.webpki.util.Float64ToString;
+import org.webpki.util.Float64Stringifier;
 
 import static org.webpki.cbor.CBORInternal.*;
 
@@ -161,7 +161,7 @@ public class CBORFloat extends CBORObject {
         if (value == 0 || value.isInfinite() || value.isNaN()) {
             return value.toString();
         }
-        return Float64ToString.serialize(value, false);
+        return Float64Stringifier.encode(value, false);
     }
 
     /**
