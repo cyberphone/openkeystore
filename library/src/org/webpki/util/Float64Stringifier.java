@@ -21,8 +21,11 @@ package org.webpki.util;
 import java.math.BigInteger;
 
 /**
+ * IEEE-754 double to string encoder.
+ * <p>
  * An implementation of Ryu for serializing IEEE-754 double precision values
- * as specified by ECMAScript
+ * as specified by ECMAScript as well as by CBOR diagnostic notation.
+ * </p>
  */
 public final class Float64Stringifier {
     private static boolean DEBUG = false;
