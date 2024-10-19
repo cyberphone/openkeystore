@@ -24,7 +24,7 @@ package org.webpki.cbor;
  * The system relies on that CBOR data is prepended by a mandatory COTX tag.
  * </p>
  * <p>
- * Also see <a href='doc-files/typed-objects.html'>Typed Objects</a> for an example.
+ * See also <a href='doc-files/typed-objects.html'>Typed Objects</a> for an example.
  * </p>
  */
 public abstract class CBORTypedObjectDecoder {

@@ -46,7 +46,7 @@ public class CBORFloat extends CBORObject {
      * Due to the CBOR normalization algorithm, numbers are still correctly encoded.
      * </p>
      * <p>
-     * Also see {@link CBORObject#getFloat64()} and {@link CBORObject#getFloat32()}
+     * See also {@link CBORObject#getFloat64()} and {@link CBORObject#getFloat32()}
      * </p>
      * 
      * @param value Java double

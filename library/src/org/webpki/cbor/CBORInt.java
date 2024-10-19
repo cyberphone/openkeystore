@@ -37,7 +37,7 @@ import static org.webpki.cbor.CBORInternal.*;
  * That is, if a protocol schema or declaration calls for a signed
  * <span style='white-space:nowrap'>32-bit</span> integer, the valid
  * range would be <code>-0x80000000</code> to <code>0x7fffffff</code>.
- * Also see {@link CBORObject#getInt32()}.
+ * See also {@link CBORObject#getInt32()}.
  * </div>
  */
 public class CBORInt extends CBORObject {
@@ -69,7 +69,7 @@ public class CBORInt extends CBORObject {
      * (<span style='white-space:nowrap'><code>-2<sup>64</sup></code></span>)
      * respectively.
      * <p>
-     * Also see <a href='#range-constraints'>Range&nbsp;Constraints</a> and 
+     * See also <a href='#range-constraints'>Range&nbsp;Constraints</a> and 
      * {@link CBORBigInt#CBORBigInt(BigInteger)}.
      * </p>
      *
@@ -84,7 +84,7 @@ public class CBORInt extends CBORObject {
     /**
      * Creates a CBOR signed <code>integer</code>.
      * <p>
-     * Also see {@link CBORInt(long, boolean)} and 
+     * See also {@link CBORInt(long, boolean)} and 
      * {@link CBORBigInt#CBORBigInt(BigInteger)}.
      * </p>
      * 

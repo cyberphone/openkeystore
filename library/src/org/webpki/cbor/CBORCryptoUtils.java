@@ -50,7 +50,7 @@ public class CBORCryptoUtils {
      * an end-entity certificate.
      * </p>
      * <p>
-     * Also see {@link #encodeCertificateArray(X509Certificate[])}.
+     * See also {@link #encodeCertificateArray(X509Certificate[])}.
      * </p>
      * 
      * @param array CBOR array with X.509 certificates
@@ -77,7 +77,7 @@ public class CBORCryptoUtils {
      * <code>byte&nbsp;string</code>.
      * </p>
      * <p>
-     * Also see {@link #decodeCertificateArray(CBORArray)}.
+     * See also {@link #decodeCertificateArray(CBORArray)}.
      * </p>
      * 
      * @param certificatePath X.509 certificate path to be encoded 
@@ -105,7 +105,7 @@ public class CBORCryptoUtils {
         /**
          * Optionally wrap a map in a tag.
          * <p>
-         * Also see {@link CBORTag} for details on the syntax for wrapped CBOR data.
+         * See also {@link CBORTag} for details on the syntax for wrapped CBOR data.
          * </p>
          * 
          * @param map Unwrapped map

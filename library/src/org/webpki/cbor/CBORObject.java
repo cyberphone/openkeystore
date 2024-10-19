@@ -461,7 +461,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * This method sets the status of this object as well as to possible
      * child objects to &quot;read&quot;.
      * </p>
-     * Also see {@link #checkForUnread()}.
+     * See also {@link #checkForUnread()}.
      * 
      * @return <code>this</code>
      */
@@ -478,7 +478,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * (through calling {@link #getBytes()} etc.),
      * and throws a {@link CBORException} if this is not the case.
      * </p>
-     * Also see {@link #scan()}.
+     * See also {@link #scan()}.
      * @throws CBORException
      */
     public void checkForUnread() {

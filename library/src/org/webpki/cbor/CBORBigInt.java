@@ -26,7 +26,7 @@ import static org.webpki.cbor.CBORInternal.*;
  * Note that <i>the encoder is adaptive</i>, selecting the proper CBOR
  * representation in order to produce a fully deterministic result.
  * </p>
- * Also see {@link CBORInt}.
+ * See also {@link CBORInt}.
  */
 public class CBORBigInt extends CBORObject {
 

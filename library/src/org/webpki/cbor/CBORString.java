@@ -33,7 +33,7 @@ public class CBORString extends CBORObject {
      * Note that <code>textString</code> must be valid <code>UTF-16</code>.
      * </p>
      * <p>
-     * Also see {@link CBORObject#getString()}.
+     * See also {@link CBORObject#getString()}.
      * </p>
      */
     public CBORString(String textString) {
