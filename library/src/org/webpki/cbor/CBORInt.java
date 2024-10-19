@@ -82,7 +82,7 @@ public class CBORInt extends CBORObject {
     }
 
     /**
-     * Creates a CBOR signed <code>integer</code> value.
+     * Creates a CBOR signed <code>integer</code>.
      * <p>
      * Also see {@link CBORInt(long, boolean)} and 
      * {@link CBORBigInt#CBORBigInt(BigInteger)}.
