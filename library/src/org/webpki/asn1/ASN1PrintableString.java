@@ -18,8 +18,6 @@ package org.webpki.asn1;
 
 import java.util.BitSet;
 
-import org.webpki.util.StringUtil;
-
 public class ASN1PrintableString extends ASN1String {
     public ASN1PrintableString(String value) {
         super(PRINTABLESTRING, value);

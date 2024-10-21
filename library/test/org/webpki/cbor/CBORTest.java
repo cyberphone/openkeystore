@@ -28,11 +28,14 @@ import java.io.InputStream;
 import java.math.BigInteger;
 
 import java.security.GeneralSecurityException;
+import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
 import java.security.cert.X509Certificate;
+import java.security.interfaces.EdECPublicKey;
+import java.security.spec.X509EncodedKeySpec;
 
 import java.util.Arrays;
 import java.util.Locale;
@@ -738,6 +741,24 @@ public class CBORTest {
             }
             return actual;
         }
+    }
+
+    @Test
+    public void openSSLPublicKey() throws Exception {
+        assertTrue ("EdEc", KeyFactory.getInstance("Ed25519")
+            .generatePublic(new X509EncodedKeySpec(new byte[] 
+            {(byte)0x30, (byte)0x2a, (byte)0x30, (byte)0x05,
+             (byte)0x06, (byte)0x03, (byte)0x2b, (byte)0x65,
+             (byte)0x70, (byte)0x03, (byte)0x21, (byte)0x00,
+             (byte)0xec, (byte)0x44, (byte)0xfe, (byte)0xf2,
+             (byte)0x44, (byte)0x2a, (byte)0x1a, (byte)0x4c,
+             (byte)0x75, (byte)0xed, (byte)0x1a, (byte)0x07,
+             (byte)0x55, (byte)0x12, (byte)0x27, (byte)0xe0, 
+             (byte)0x5f, (byte)0x0b, (byte)0x5e, (byte)0xfc,
+             (byte)0x1e, (byte)0xfd, (byte)0xe8, (byte)0xb0, 
+             (byte)0x6f, (byte)0xc2, (byte)0xc4, (byte)0xaf,
+             (byte)0x1f, (byte)0x95, (byte)0xf5, (byte)0xe4})
+        ) instanceof EdECPublicKey);
     }
 
     @Test

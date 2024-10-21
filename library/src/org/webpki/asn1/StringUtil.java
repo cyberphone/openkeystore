@@ -14,9 +14,12 @@
  *  limitations under the License.
  *
  */
-package org.webpki.util;
+package org.webpki.asn1;
 
 import java.util.*;
+
+import org.webpki.util.ArrayUtil;
+
 import java.io.*;
 
 public class StringUtil {

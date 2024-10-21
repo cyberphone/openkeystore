@@ -29,10 +29,9 @@ import org.webpki.asn1.ASN1ObjectID;
 import org.webpki.asn1.ASN1Sequence;
 import org.webpki.asn1.BaseASN1Object;
 import org.webpki.asn1.ParseUtil;
+import org.webpki.asn1.StringUtil;
 
 import org.webpki.crypto.CryptoException;
-
-import org.webpki.util.StringUtil;
 
 /**
  * X.509 RelativeDistinguishedName (RDN), i.e.&nbsp;a subpart of an {@link DistinguishedName X.509 DistinguishedName}.

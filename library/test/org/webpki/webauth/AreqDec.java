@@ -16,12 +16,13 @@
  */
 package org.webpki.webauth;
 
-import org.webpki.util.StringUtil;
 import org.webpki.util.IO;
 
 import org.webpki.crypto.DemoKeyStore;
 import org.webpki.crypto.KeyStoreVerifier;
 import org.webpki.crypto.CertificateFilter;
+
+import org.webpki.asn1.StringUtil;
 
 import org.webpki.json.JSONDecoderCache;
 
