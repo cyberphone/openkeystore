@@ -56,15 +56,27 @@ public class CBORArray extends CBORObject {
     /**
      * Add object to the CBOR <code>array</code>.
      * 
-     * @param cborObject Object to be appended to the array.
+     * @param object Object to be appended to the array.
      * @return <code>this</code>
      */
-    public CBORArray add(CBORObject cborObject) {
-        nullCheck(cborObject);
-        objects.add(cborObject);
+    public CBORArray add(CBORObject object) {
+        nullCheck(object);
+        objects.add(object);
         return this;
     }
     
+    /**
+     * Update object at a specific position in the CBOR <code>array</code>.
+     * 
+     * @param index The position (0..size()-1)
+     * @param object Object to set
+     * @return Previous <code>object</code>
+     * @throws IndexOutOfBoundsException If the index is out of range.
+     */
+    public CBORObject update(int index, CBORObject object) {
+        return objects.set(index, object);
+    }
+
     /**
      * Create shallow copy of the CBOR <code>array</code>.
      * 

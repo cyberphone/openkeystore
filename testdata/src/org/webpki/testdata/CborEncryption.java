@@ -85,7 +85,7 @@ public class CborEncryption {
     static void verifyTag(CBORObject wrapperTag) {
         CBORTag tag = wrapperTag.getTag();
         if (tag.getTagNumber() == CBORTag.RESERVED_TAG_COTX) {
-            if (!tag.getTaggedObject().getArray().get(0).getString().equals(OBJECT_ID)) {
+            if (!tag.get().getArray().get(0).getString().equals(OBJECT_ID)) {
                 throw new CryptoException("ID mismatch");
             }
         } else if (tag.getTagNumber() != NON_RESEVED_TAG) {
@@ -219,7 +219,7 @@ public class CborEncryption {
     static CBORMap unwrapOptionalTag(CBORObject rawContainer) throws IOException {
         // It might be tagged
         if (rawContainer instanceof CBORTag) {
-            CBORObject container = rawContainer.getTag().getTaggedObject();
+            CBORObject container = rawContainer.getTag().get();
             if (container instanceof CBORArray) {
                 container = container.getArray().get(1);
             }

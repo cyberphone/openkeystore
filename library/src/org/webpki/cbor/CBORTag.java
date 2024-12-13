@@ -111,15 +111,29 @@ public class CBORTag extends CBORObject {
     }
 
     /**
-     * Get tagged object.
-     * @return CBOR object
+     * Get tagged CBOR object.
+     * 
+     * @return object
      */
-    public CBORObject getTaggedObject() {
+    public CBORObject get() {
         return object;
     }
 
     /**
+     * Update tagged CBOR object.
+     * 
+     * @param object New object
+     * @return Previous object
+     */
+    public CBORObject update(CBORObject object) {
+        CBORObject previous = this.object;
+        this.object = object;
+        return previous;
+    }
+
+    /**
      * Get tag number.
+     * 
      * @return Tag number
      */
     public long getTagNumber() {

@@ -489,7 +489,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
         // Should use a switch but Android didn't accept it :(
         if (this instanceof CBORMap cborMap) {
             for (CBORMap.Entry entry : cborMap.entries) {
-                entry.value.traverse(entry.key, check);
+                entry.object.traverse(entry.key, check);
             }
         } else if (this instanceof CBORArray cborArray) {
             for (CBORObject object : cborArray.objects) {
