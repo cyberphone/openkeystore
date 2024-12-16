@@ -133,6 +133,24 @@ public class CBORMap extends CBORObject {
     }
 
     /**
+     * Merge CBOR map.
+     * <p>
+     * A duplicate key causes a {@link CBORException} to be thrown.
+     * </p>
+     * 
+     * @param key Key
+     * @param object Object (value)
+     * @return <code>this</code>
+     * @throws CBORException For <code>key</code> duplicates
+     */
+    public CBORMap merge(CBORMap map) {
+        for (Entry entry : map.entries.toArray(new Entry[0])) {
+            set(entry.key, entry.object);
+        }
+        return this;
+    }
+
+    /**
      * Set sorting mode for the CBOR <code>map</code>.
      * <p>
      * This method provides an opportunity using keys that are <i>presorted</i> 
