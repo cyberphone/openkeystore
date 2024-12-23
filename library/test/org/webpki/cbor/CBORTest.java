@@ -380,6 +380,11 @@ public class CBORTest {
         textCompare(cborArray,
                 "[1, [2, 3], [4, 5]]");
         binaryCompare(cborArray,"8301820203820405");
+        assertTrue("upd-0", 
+            cborArray.update(1, new CBORString("hi")).getArray().get(1).getInt16() == 3);
+        assertTrue("upd-1", cborArray.get(1).getString().equals("hi"));
+        textCompare(cborArray,
+               "[1, \"hi\", [4, 5]]");
 
         cborArray = new CBORArray()
             .add(new CBORInt(1))
@@ -410,7 +415,30 @@ public class CBORTest {
         textCompare(cborArray,
                 "[1, {\n  8: 2,\n  58: 3,\n  -4: [true, false],\n  -90: null\n}, [4, 5]]");
         binaryCompare(cborArray,"8301a40802183a032382f5f43859f6820405");
-        
+
+        CBORMap cborMap = 
+            new CBORMap()
+                .set(new CBORInt(2), new CBORString("two"))
+                .set(new CBORInt(0), new CBORString("zero"));
+        assertTrue("upd-1", cborMap.update(
+            new CBORInt(2), new CBORFloat(3.0), true).getString().equals("two"));
+        assertTrue("upd-2", cborMap.get(new CBORInt(2)).getFloat64() == 3.0);
+        assertTrue("upd-3", cborMap.update(
+            new CBORInt(2), new CBORFloat(2.0), false).getFloat64() == 3.0);
+        assertTrue("upd-4", cborMap.get(new CBORInt(2)).getFloat64() == 2.0);
+        assertTrue("upd-3", cborMap.update(
+            new CBORInt(1), new CBORString("one"), false) == null);
+        assertTrue("upd-4", cborMap.get(new CBORInt(1)).getString().equals("one"));
+        binaryCompare(cborMap, "a300647a65726f01636f6e6502f94000");
+        binaryCompare(cborMap.merge(new CBORMap()
+                        .set(new CBORInt(-1), new CBORString("m1"))
+                        .set(new CBORInt(-2), new CBORString("m2"))),
+                        "a500647a65726f01636f6e6502f9400020626d3121626d32");
+
+        CBORTag cborTag = new CBORTag(800, new CBORString("tag"));
+        assertTrue("upd-1", cborTag.update(new CBORFloat(34.0)).getString().equals("tag"));
+        assertTrue("upd-2", cborTag.get().getFloat16() == 34.0);
+
         integerTest(0, "00" );
         integerTest(1, "01");
         integerTest(10, "0a");

@@ -265,19 +265,30 @@ public class CBORMap extends CBORObject {
     /**
      * Update mapped CBOR object.
      * <p>
-     * If <code>key</code> is present, the associated <code>object</code> is updated,
+     * If <code>existing</code> is <code>true</code>, <code>key</code> must already be present,
      * else a {@link CBORException} is thrown.
+     * </p>
+     * <p>
+     * If <code>existing</code> is <code>false</code>, a <code>map</code> entry for <code>key</code>
+     * will be created if not already present.
      * </p>
      * 
      * @param key Key
-     * @param object Object (value)
-     * @return Previous <code>object</code>
+     * @param object New object (value)
+     * @param existing Flag
+     * @return Previous <code>object</code>.  May be <code>null</code>.
      * @throws CBORException
      */
-    public CBORObject update(CBORObject key, CBORObject object) {
-        Entry targetEntry = lookup(key, true);
-        CBORObject previous = targetEntry.object;
-        targetEntry.object = object;
+    public CBORObject update(CBORObject key, CBORObject object, boolean existing) {
+        Entry targetEntry = lookup(key, existing);
+        CBORObject previous;
+        if (targetEntry == null) {
+            previous = null;
+            set(key, object);
+        } else {
+            previous = targetEntry.object;
+            targetEntry.object = object;
+        }
         return previous;
     }  
 

@@ -55,8 +55,8 @@ public enum AsymSignatureAlgorithms implements SignatureAlgorithms {
                    -39,  "1.2.840.113549.1.1.10", "RSASSA-PSS",
                    HashAlgorithms.SHA512, false, KeyTypes.RSA,   MGF1ParameterSpec.SHA512),
 
-                  // https://www.ietf.org/archive/id/draft-ietf-jose-fully-specified-algorithms-05.html
-                  // Kept JOSE, Updated COSE
+                   // Kept JOSE, Updated COSE
+                   // https://www.ietf.org/archive/id/draft-ietf-jose-fully-specified-algorithms-05.html
     ECDSA_SHA256  ("http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256",    "ES256",  
                    -9,   "1.2.840.10045.4.3.2",   "SHA256withECDSA",
                    HashAlgorithms.SHA256, true,  KeyTypes.EC,    null),
