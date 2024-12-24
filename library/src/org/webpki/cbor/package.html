@@ -24,7 +24,7 @@ and their mapping to Java:
 <ol style='margin:0 0'>
 <li>The distinction between unsigned and negative values is
  dealt with automatically.</li>
-<li style='padding-top:0.5em'>Floating point data covers the 16, 32, and 64-bit IEEE&nbsp;754 variants,
+<li style='padding-top:0.5em'>Floating-point data covers the 16, 32, and 64-bit IEEE&nbsp;754 variants,
 including support for <code style='white-space:nowrap'>-0.0</code>, <code>NaN</code>,
  and <code style='white-space:nowrap'>&pm;Infinity</code>.
 The encoded representation is determined by the size and precision of a value.
@@ -33,7 +33,7 @@ Also see the decoder {@link CBORDecoder#setNaNSupport(boolean)}.</li>
 <p>
 This implementation does not support CBOR &quot;simple&quot; values beyond
 <code>true</code>, <code>false</code>, <code>null</code>, and
-the three floating point variants.
+the three floating-point variants.
 </p>
 <h3 id='deterministic-encoding'>Deterministic Encoding</h3>
 For certain security related applications, it has been proven
@@ -74,7 +74,7 @@ The encoding rules are as follows:
 </div>
 <ul>
 <li id='number-encoding' class='webpkilistspacing'>
-  RFC+: Floating point and integer objects <b>must</b> be treated as <i>distinct types</i>
+  RFC+: Floating-point and integer objects <b>must</b> be treated as <i>distinct types</i>
 regardless of their numeric value. This is compliant with
 Rule&nbsp;2 in section 4.2.2 of RFC&nbsp;8949.</li>
 <li id='integer-encoding' class='webpkilistspacing'>
@@ -113,9 +113,9 @@ would actually yield two bytes less using the <code>bignum</code> type.
 </div>
 </li>
 <li id='floating-point-encoding' class='webpkilistspacing'>
-  RFC+: Floating point data <b>must</b> use the shortest IEEE&nbsp;754
+  RFC+: Floating-point data <b>must</b> use the shortest IEEE&nbsp;754
   variant and associated CBOR encoding.
-The following table holds floating point values needing special considerations
+The following table holds floating-point values needing special considerations
 as well as a small set of "edge&nbsp;cases":
 <div class='webpkifloat'>
 <table class='webpkitable' style='margin-left:2em'>
@@ -156,7 +156,7 @@ Duplicate keys <b>must</b> be rejected.
   RFC+: Since CBOR encoding according to this specification
 maintains type and data uniqueness, there are no specific restrictions or
 tests needed in order to determine map key equivalence.  
-As an example, the floating point numbers <code>0.0</code> and
+As an example, the floating-point numbers <code>0.0</code> and
 <code>-0.0</code>, and the integer number <code>0</code>
 represent the distinct keys
 <code>f90000</code>, <code>f98000</code>, and <code>00</code> respectively.
@@ -246,7 +246,7 @@ without getting corrupted.  Note though that text-binary-text "roundtrips"
 do not necessarily return identical text: <code>0x10</code> used
 as diagnostic notation input will return <code>16</code> as
 diagnostic notation output.
-Caveat: for reliable conversions, floating point values <b>must</b>
+Caveat: for reliable conversions, floating-point values <b>must</b>
 be aligned with IEEE&nbsp;754 encoding and rounding rules.
 </p>
 The following table shows how CBOR objects should be represented in 
@@ -275,16 +275,16 @@ enable grouping of data like <code>0b100_000000001</code>.
 <tr style='text-align:center'><td><code>bignum</code></tr>
 <tr style='text-align:center' id='float-diag'><td rowspan='3'><code>floating&nbsp;point</code></td>
 <td>{<i>sign</i>}<i>n</i><code>.</code><i>n</i>{<code>e&pm;</code><i>n</i>}</td>
-<td>1, 2</td><td style='text-align:left'>Floating point values
+<td>1, 2</td><td style='text-align:left'>Floating-point values
 must include a decimal point and an <i>optional</i> exponent.
-See <a href='#floating-point-encoding'>CBOR floating point encoding</a>.
+See <a href='#floating-point-encoding'>CBOR floating-point encoding</a>.
 </td></tr>
 <tr style='text-align:center'><td><code>NaN</code></td><td></td><td style='text-align:left'>Not a number.
-See <a href='#floating-point-encoding'>CBOR floating point encoding</a>.
+See <a href='#floating-point-encoding'>CBOR floating-point encoding</a>.
 </td></tr>
 <tr style='text-align:center'><td>{<i>sign</i>}<code>Infinity</code></td><td>2</td>
 <td style='text-align:left'>Infinity.
-See <a href='#floating-point-encoding'>CBOR floating point encoding</a>.
+See <a href='#floating-point-encoding'>CBOR floating-point encoding</a>.
 </td></tr>
 <tr style='text-align:center'><td rowspan='4'><code>byte&nbsp;string</code></td>
 <td><code>h'</code><i>hex&nbsp;data</i><code>'</code></td><td>3, 6</td>

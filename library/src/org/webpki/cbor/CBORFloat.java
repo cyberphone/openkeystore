@@ -21,7 +21,7 @@ import org.webpki.util.Float64Stringifier;
 import static org.webpki.cbor.CBORInternal.*;
 
 /**
- * Class for holding CBOR <code>floating&nbsp;point</code> objects.
+ * Class for holding CBOR floating-point objects.
  * <p>
  * Numbers are constrained to the IEEE 754 notation
  * using the length 16, 32, and 64 bit on the "wire".  Which
