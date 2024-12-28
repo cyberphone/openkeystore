@@ -167,8 +167,7 @@ public class CSFService extends InitPropertyReader implements ServletContextList
             /////////////////////////////////////////////////////////////////////////////////////////////
             CBORMap demoSignature = 
                     CBORDecoder.decode(getEmbeddedResource("demo-doc-signature.cbor")).getMap();
-            CBORObject[] keys = demoSignature.getKeys();
-            CBORObject signatureLabel = keys[keys.length - 1];
+            CBORObject signatureLabel = demoSignature.getKeys().getLast();
             sampleLabel = signatureLabel.toString();
             sampleSignature = demoSignature.toString();
             samplePublicKey = getEmbeddedResourceString("p256publickey.pem").trim();

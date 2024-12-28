@@ -18,8 +18,11 @@ package org.webpki.webapps.csf_lab;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
 import java.security.KeyPair;
 import java.security.PublicKey;
+
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletOutputStream;
@@ -178,7 +181,7 @@ public class CoreRequestServlet extends HttpServlet {
                                       .replaceAll("( |\n|\r)", ""));
     }
     
-    byte[] getBytesFromCborSequence(CBORObject[] cborObjects) throws IOException {
+    byte[] getBytesFromCborSequence(ArrayList<CBORObject> cborObjects) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         for (CBORObject cborObject : cborObjects) {
             baos.write(cborObject.encode());
@@ -186,7 +189,7 @@ public class CoreRequestServlet extends HttpServlet {
         return baos.toByteArray();        
     }
 
-    String getFormattedCbor(JSONObjectReader parsedJson, CBORObject[] cborObjects) 
+    String getFormattedCbor(JSONObjectReader parsedJson, ArrayList<CBORObject> cborObjects) 
             throws IOException {
         String selected = parsedJson.getString(SEL_OUT);
         if (selected.equals(DIAG)) {

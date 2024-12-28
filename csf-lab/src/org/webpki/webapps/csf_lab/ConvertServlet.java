@@ -93,8 +93,7 @@ public class ConvertServlet extends CoreRequestServlet {
                     break;
                 }
             }
-            jsonResponse.setString(CBOR_OUT, 
-                                   getFormattedCbor(parsedJson, sequence.toArray(new CBORObject[0])));
+            jsonResponse.setString(CBOR_OUT, getFormattedCbor(parsedJson, sequence));
         } catch (Exception e) {
             jsonResponse.setString(ERROR, HTML.encode(e.getMessage()).replace("\n", "<br>")
                                                                      .replace(" ","&nbsp;"));
