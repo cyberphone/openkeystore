@@ -88,7 +88,7 @@ public class CBORMap extends CBORObject {
      * If <code>key</code> is already present, a {@link CBORException} is thrown.
      * </p>
      * 
-     * @param key Key
+     * @param key Key (name)
      * @param object Object (value)
      * @return <code>this</code>
      * @throws CBORException
@@ -138,8 +138,7 @@ public class CBORMap extends CBORObject {
      * A duplicate key causes a {@link CBORException} to be thrown.
      * </p>
      * 
-     * @param key Key
-     * @param object Object (value)
+     * @param map Map to be merged
      * @return <code>this</code>
      * @throws CBORException For <code>key</code> duplicates
      */
@@ -205,7 +204,7 @@ public class CBORMap extends CBORObject {
      * else a {@link CBORException} is thrown.
      * </p>
      * 
-     * @param key Key
+     * @param key Key (name)
      * @return <code>object</code>
      * @throws CBORException
      */
@@ -221,8 +220,8 @@ public class CBORMap extends CBORObject {
      * Note: <code>defaultObject</code> may be <code>null</code>.
      * </p>
      * 
-     * @param key Key
-     * @param defaulObject Default object (value)
+     * @param key Key (name)
+     * @param defaultObject Default object (value)
      * @return <code>object</code> or <code>defaultObject</code>
      */
     public CBORObject getConditionally(CBORObject key, CBORObject defaultObject) {
@@ -233,7 +232,7 @@ public class CBORMap extends CBORObject {
     /**
      * Check CBOR <code>map</code> for key presence.
      * 
-     * @param key Key
+     * @param key Key (name)
      * @return <code>true</code> if the key is present
      */
     public boolean containsKey(CBORObject key) {
@@ -243,12 +242,13 @@ public class CBORMap extends CBORObject {
     /**
      * Remove mapped CBOR object.
      * <p>
-     * If <code>key</code> is present, the associated <code>object</code> is removed,
+     * If <code>key</code> is present, the <code>key</code> and
+     * associated <code>object</code> are removed,
      * else a {@link CBORException} is thrown.
      * </p>
      * 
-     * @param key Key
-     * @return Removed <code>object</code>
+     * @param key Key (name)
+     * @return Removed object (value)
      * @throws CBORException
      */
     public CBORObject remove(CBORObject key) {
@@ -273,7 +273,7 @@ public class CBORMap extends CBORObject {
      * will be created if not already present.
      * </p>
      * 
-     * @param key Key
+     * @param key Key (name)
      * @param object New object (value)
      * @param existing Flag
      * @return Previous <code>object</code>.  May be <code>null</code>.
