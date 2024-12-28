@@ -156,8 +156,7 @@ public class CborSignatures {
     static String cleanSignature(byte[] csfData) throws IOException {
         CBORObject signedObject = CBORDecoder.decode(csfData); 
         CBORMap decoded = CborEncryption.unwrapOptionalTag(signedObject);
-        CBORObject[] keys = decoded.getMap().getKeys();
-        for (CBORObject key : keys) {
+        for (CBORObject key : decoded.getMap().getKeys()) {
             CBORObject value = decoded.getMap().get(key);
             if (value instanceof CBORMap) {
                 CBORMap possibleSignature = value.getMap();
