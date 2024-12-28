@@ -37,6 +37,7 @@ import java.security.cert.X509Certificate;
 import java.security.interfaces.EdECPublicKey;
 import java.security.spec.X509EncodedKeySpec;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 
@@ -712,7 +713,7 @@ public class CBORTest {
          .insert(new CBORString("aa"));
         assertTrue("size", m.size() == expectedOrder.length);
         while (m.size() > 0) {
-            CBORObject removed = m.getKeys()[m.size() - 1];
+            CBORObject removed = m.getKeys().get(m.size() - 1);
             int i = 0;
             for (CBORObject key : m.getKeys()) {
                 m.get(key);
@@ -2341,10 +2342,10 @@ public class CBORTest {
         assertTrue("nan", v.isNaN());
         assertTrue("0.0", CBORDiagnosticNotation.convert("0.0").toString().equals("0.0"));
         assertTrue("-0.0", CBORDiagnosticNotation.convert("-0.0").toString().equals("-0.0"));
-        CBORObject[] seq = CBORDiagnosticNotation.convertSequence("1,\"" + DIAG_TEXT + "\"");
-        assertTrue("seq", seq.length == 2);
-        assertTrue("seqi", seq[0].getInt32() == 1);
-        assertTrue("seqs", seq[1].getString().equals(DIAG_TEXT));
+        ArrayList<CBORObject> seq = CBORDiagnosticNotation.convertSequence("1,\"" + DIAG_TEXT + "\"");
+        assertTrue("seq", seq.size() == 2);
+        assertTrue("seqi", seq.get(0).getInt32() == 1);
+        assertTrue("seqs", seq.get(1).getString().equals(DIAG_TEXT));
         
         diagFlag("0x ");
         diagFlag("056(8)");  // leading zero

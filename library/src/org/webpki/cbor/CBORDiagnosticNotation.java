@@ -45,21 +45,21 @@ public class CBORDiagnosticNotation {
      * Convert diagnostic notation CBOR to CBOR.
      * 
      * @param cborText String holding diagnostic (textual) CBOR
-     * @return {@link CBORObject}
+     * @return CBOR object
      * @throws CBORException
      */
     public static CBORObject convert(String cborText) {
-        return new CBORDiagnosticNotation(cborText, false).readSequenceToEOF()[0];
+        return new CBORDiagnosticNotation(cborText, false).readSequenceToEOF().get(0);
     }
 
     /**
      * Convert diagnostic notation CBOR sequence to CBOR.
      * 
      * @param cborText String holding diagnostic (textual) CBOR
-     * @return {@link CBORObject}[] Non-empty array of CBOR objects
+     * @return Non-empty array of CBOR objects
      * @throws CBORException
      */
-    public static CBORObject[] convertSequence(String cborText) {
+    public static ArrayList<CBORObject> convertSequence(String cborText) {
         return new CBORDiagnosticNotation(cborText, true).readSequenceToEOF();
     }
 
@@ -109,7 +109,7 @@ public class CBORDiagnosticNotation {
         throw new RuntimeException(error);
     }
     
-    private CBORObject[] readSequenceToEOF() {
+    private ArrayList<CBORObject> readSequenceToEOF() {
         try {
             ArrayList<CBORObject> sequence = new ArrayList<>();
             while (true) {
@@ -122,7 +122,7 @@ public class CBORDiagnosticNotation {
                         parserError(CBORDecoder.STDERR_UNEXPECTED_DATA);
                     }
                 } else {
-                    return sequence.toArray(new CBORObject[0]);
+                    return sequence;
                 }
             }
         } catch (Exception e) {

@@ -300,12 +300,12 @@ public class CBORMap extends CBORObject {
      * 
      * @return Array of keys
      */
-    public CBORObject[] getKeys() {
+    public ArrayList<CBORObject> getKeys() {
         ArrayList<CBORObject> keys = new ArrayList<>(entries.size());
         for (Entry entry : entries) {
             keys.add(entry.key);
         }
-        return keys.toArray(new CBORObject[0]);
+        return keys;
     }
 
     @Override

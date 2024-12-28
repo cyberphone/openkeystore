@@ -82,8 +82,9 @@ public class CBORArray extends CBORObject {
      * 
      * @return Array of CBOR objects
      */
-    public CBORObject[] toArray() {
-        return objects.toArray(new CBORObject[0]);
+    @SuppressWarnings("unchecked")
+    public ArrayList<CBORObject> toArray() {
+        return (ArrayList<CBORObject>) objects.clone();
     }
 
     @Override
