@@ -88,21 +88,21 @@ according to the following table:
 <tr><th>Name</th><th>Label</th><th>Argument</th><th style='min-width:30em'>Description</th></tr>
 
 <tr><td><code class='webpkicode'>customData</code></td><td style='text-align:center'><code>0</code></td>
-<td>&quot;<i>Any</i>&quot;</td><td><i>Optional</i>: data included in the CSF container.
+<td style='text-align:center'>&quot;<i>Any</i>&quot;</td><td><i>Optional</i>: data included in the CSF container.
 Also see <a href='crypto-options.html'>Crypto Options</a>.</td></tr>
 
 <tr><td><code class='webpkicode'>algorithm</code></td><td style='text-align:center'><code>1</code></td>
-<td><code>integer</code></td><td>Signature algorithm using COSE identifiers.</td></tr>
+<td style='text-align:center'><code>int</code></td><td>Signature algorithm using COSE identifiers.</td></tr>
 
 <tr><td><code class='webpkicode'>keyId</code></td><td style='text-align:center'><code>3</code></td>
-<td>&quot;<i>Any</i>&quot;</td><td><i>Optional</i>: key identifier using any valid CBOR object. 
+<td style='text-align:center'>&quot;<i>Any</i>&quot;</td><td><i>Optional</i>: key identifier using any valid CBOR object. 
 Note that <code class='webpkicode'>keyId</code> <b>must not</b> be used together with 
 <code class='webpkicode'>publicKey</code> or <code class='webpkicode'>certificatePath</code>.
 A compliant <code class='webpkicode'>keyId</code> <b>must</b> uniquely identify a specific signature key.
 </td></tr>
 
 <tr><td><code class='webpkicode'>publicKey</code></td><td style='text-align:center'><code>4</code></td>
-<td><code>map</code></td>
+<td style='text-align:center'><code>map</code></td>
 <td><i>Optional</i>: public key in COSE format.  
 Note that ECDSA public keys <b>must</b> be supplied with a <i>value parameter</i>
 for the y-coordinate as well.
@@ -111,14 +111,14 @@ key identifiers or preferred signature algorithms.
 </td></tr>
 
 <tr><td><code class='webpkicode'>certificatePath</code></td><td style='text-align:center'><code>5</code></td>
-<td><code>array</code></td><td><i>Optional</i>: certificate path supplied 
+<td style='text-align:center'><code>array</code></td><td><i>Optional</i>: certificate path supplied 
 as an array of <code>byte&nbsp;string</code> objects holding X.509 certificates in DER format, 
 where the first object <b>must</b> be the signature certificate.
 Signature objects <b>must not</b> contain both <code class='webpkicode'>certificatePath</code> and <code class='webpkicode'>publicKey</code> elements.
 </td></tr>
 
 <tr><td><code class='webpkicode'>signatureValue</code></td><td style='text-align:center'><code>6</code></td>
-<td><code>byte&nbsp;string</code></td><td>Signature value.
+<td style='text-align:center'><code>bstr</code></td><td>Signature value.
 </td></tr>
 </table>
 </div>
