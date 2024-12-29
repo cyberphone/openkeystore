@@ -135,12 +135,12 @@ public class CBORMap extends CBORObject {
     /**
      * Merge CBOR map.
      * <p>
-     * A duplicate key causes a {@link CBORException} to be thrown.
+     * Note that a duplicate key causes a {@link CBORException} to be thrown.
      * </p>
      * 
-     * @param map Map to be merged
+     * @param map Map to be merged into the current mao
      * @return <code>this</code>
-     * @throws CBORException For <code>key</code> duplicates
+     * @throws CBORException
      */
     public CBORMap merge(CBORMap map) {
         for (Entry entry : map.entries.toArray(new Entry[0])) {
