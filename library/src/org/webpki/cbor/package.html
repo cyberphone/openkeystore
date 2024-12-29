@@ -25,12 +25,13 @@ notation:
 </div>
 <ol style='margin:0 0'>
 <li>The distinction between unsigned and negative values is
- dealt with automatically.</li>
+ dealt with automatically.
+ The encoded representation is determined by the size of a value.</li>
 <li style='padding-top:0.5em'>Floating-point data covers the 16, 32, and 64-bit IEEE&nbsp;754 variants,
 including support for <code style='white-space:nowrap'>-0.0</code>, <code>NaN</code>,
  and <code style='white-space:nowrap'>&pm;Infinity</code>.
 The encoded representation is determined by the size and precision of a value.
-Also see the decoder {@link CBORDecoder#setNaNSupport(boolean)}.</li>
+Also see {@link CBORDecoder#setNaNSupport(boolean)}.</li>
 </ol>
 <p>
 This implementation does not support CBOR &quot;simple&quot; values beyond
@@ -80,12 +81,12 @@ The encoding rules are as follows:
 regardless of their numeric value. This is compliant with
 Rule&nbsp;2 in section 4.2.2 of RFC&nbsp;8949.</li>
 <li id='integer-encoding' class='webpkilistspacing'>
-  RFC: Integers, represented by the <code>integer</code> and 
-<code>bignum</code> types, <b>must</b> use the <code>integer</code>
+  RFC: Integers, represented by the <code>int</code> and 
+<code>bigint</code> types, <b>must</b> use the <code>int</code>
 type if the value is between 
 <span style='white-space:nowrap'><code>-2<sup>64</sup></code></span> 
 and <span style='white-space:nowrap'><code>2<sup>64</sup>-1</code></span>,
-otherwise the <code>bignum</code> type <b>must</b> be used.
+otherwise the <code>bigint</code> type <b>must</b> be used.
 The following table holds a few sample values and their proper CBOR encoding:
 <div class='webpkifloat'>
 <table class='webpkitable' style='margin-left:2em'>
@@ -111,7 +112,7 @@ Note that the integer encoding scheme above does not always return the
 most compact representation; the value 
 <code>1099511627775</code> 
 (<code>0xffffffffff</code>)
-would actually yield two bytes less using the <code>bignum</code> type. 
+would actually yield two bytes less using the <code>bigint</code> type. 
 </div>
 </li>
 <li id='floating-point-encoding' class='webpkilistspacing'>
@@ -318,7 +319,7 @@ Keys and objects are expressed as CBOR objects.</td></tr>
 <ol style='margin:0 0'>
 <li>The letter <i>n</i> in the Syntax column denotes one or more digits.</li>
 <li>The optional {<i>sign</i>} must be a single hyphen (<code>'-'</code>) character.</li>
-<li><i>Input only</i>: the whitespace characters
+<li><i>Input only</i>: between the quotes, the whitespace characters
 (<code>' '</code>, <code>'\t'</code>, <code>'\r'</code>, <code>'\n'</code>)
 are <i>ignored</i>.</li> 
 <li><i>Input only</i>: the control characters
