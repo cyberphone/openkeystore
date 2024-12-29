@@ -4,21 +4,23 @@ This package contains Java support for CBOR
 [<a href='https://www.rfc-editor.org/rfc/rfc8949.html'>RFC&nbsp;8949</a>].
 <h3 id='supported-objects'>Supported Objects</h3>
 The following table shows the currently supported CBOR objects (data items)
-and their mapping to Java:
+and their mapping to Java, here expressed in
+CDDL&nbsp;[<a href='https://www.rfc-editor.org/rfc/rfc8610.html'>RFC&nbsp;8610</a>]
+notation:
 <div class='webpkifloat'>
 <table class='webpkitable' style='margin-left:2em'>
-<tr><th>CBOR&nbsp;Object</th><th>Notes</th><th>Java&nbsp;Mapping</th>
+<tr><th>CBOR</th><th>Notes</th><th>Java&nbsp;Mapping</th>
 <th>Implementation</th></tr>
-<tr><td><code>integer</code></td><td>1</td><td><code>long</code></td><td>{@link CBORInt}</td></tr>
-<tr><td><code>bignum</code></td><td>1</td><td><code>BigInteger</code></td><td>{@link CBORBigInt}</td></tr>
-<tr><td><code>floating&nbsp;point</code></td><td>2</td><td><code>double</code></td><td>{@link CBORFloat}</td></tr>
-<tr><td><code>byte&nbsp;string</code></td><td></td><td><code>byte[]</code></td><td>{@link CBORBytes}</td></tr>
-<tr><td><code>text&nbsp;string</code></td><td></td><td><code>String</code></td><td>{@link CBORString}</td></tr>
-<tr><td><code>true</code>/<code>false</code></td><td></td><td><code>boolean</code></td><td>{@link CBORBoolean}</td></tr>
-<tr><td><code>null</code></td><td></td><td></td><td>{@link CBORNull}</td></tr>
-<tr><td><code>array</code></td><td></td><td></td><td>{@link CBORArray}</td></tr>
-<tr><td><code>map</code></td><td></td><td></td><td>{@link CBORMap}</td></tr>
-<tr><td><code>tag</code></td><td></td><td></td><td>{@link CBORTag}</td></tr>
+<tr style='text-align:center'><td><code>int</code></td><td>1</td><td><code>long</code></td><td>{@link CBORInt}</td></tr>
+<tr style='text-align:center'><td><code>bigint</code></td><td>1</td><td><code>BigInteger</code></td><td>{@link CBORBigInt}</td></tr>
+<tr style='text-align:center'><td><code>float</code></td><td>2</td><td><code>double</code></td><td>{@link CBORFloat}</td></tr>
+<tr style='text-align:center'><td><code>bstr</code></td><td></td><td><code>byte[]</code></td><td>{@link CBORBytes}</td></tr>
+<tr style='text-align:center'><td><code>tstr</code></td><td></td><td><code>String</code></td><td>{@link CBORString}</td></tr>
+<tr style='text-align:center'><td><code>bool</code></td><td></td><td><code>boolean</code></td><td>{@link CBORBoolean}</td></tr>
+<tr style='text-align:center'><td><code>null</code></td><td></td><td></td><td>{@link CBORNull}</td></tr>
+<tr style='text-align:center'><td><code>array</code></td><td></td><td></td><td>{@link CBORArray}</td></tr>
+<tr style='text-align:center'><td><code>map</code></td><td></td><td></td><td>{@link CBORMap}</td></tr>
+<tr style='text-align:center'><td><code>tag</code></td><td></td><td></td><td>{@link CBORTag}</td></tr>
 </table>
 </div>
 <ol style='margin:0 0'>
@@ -253,7 +255,7 @@ The following table shows how CBOR objects should be represented in
 diagnostic notation:
  <div class='webpkifloat'>
 <table class='webpkitable' style='margin-left:2em'>
-<tr style='text-align:center'><th>CBOR&nbsp;Object</th><th>Syntax</th><th>Notes</th><th style='min-width:30em'>Description</th></tr>
+<tr style='text-align:center'><th>CBOR</th><th>Syntax</th><th>Notes</th><th style='min-width:30em'>Description</th></tr>
 <tr style='text-align:center'><td rowspan='2'></td><td><code>/</code>&nbsp;<i>comment&nbsp;text</i>&nbsp;<code>/</code></td>
 <td>7</td><td style='text-align:left'>Multi-line comment.
 Multi-line comments are treated as whitespace and may thus also be used 
@@ -262,7 +264,7 @@ Multi-line comments are treated as whitespace and may thus also be used
 <td>7</td><td style='text-align:left'>Single-line comment.
 Single-line comments are terminated by a newline character (<code>'\n'</code>) or <code>EOF</code>.
 Single-line comments may also terminate lines holding regular CBOR items.</td></tr>
-<tr style='text-align:center' id='integer-diag'><td><code>integer</code></td>
+<tr style='text-align:center' id='integer-diag'><td><code>int</code></td>
 <td rowspan='2'><span style='white-space:nowrap'>{<i>sign</i>}{<code>0b</code>|<code>0o</code>|<code>0x</code>}<i>n</i></span></td>
 <td rowspan='2'>1, 2</td><td style='text-align:left' rowspan='2'>
 Arbitrary sized integers without fractional components or exponents.
@@ -272,8 +274,8 @@ with <code>0b</code>, <code>0o</code>, and <code>0x</code> respectively.
 The latter also permit arbitrary insertions of <code>'_'</code> characters between digits to
 enable grouping of data like <code>0b100_000000001</code>.
 </td></tr>
-<tr style='text-align:center'><td><code>bignum</code></tr>
-<tr style='text-align:center' id='float-diag'><td rowspan='3'><code>floating&nbsp;point</code></td>
+<tr style='text-align:center'><td><code>bigint</code></tr>
+<tr style='text-align:center' id='float-diag'><td rowspan='3'><code>float</code></td>
 <td>{<i>sign</i>}<i>n</i><code>.</code><i>n</i>{<code>e&pm;</code><i>n</i>}</td>
 <td>1, 2</td><td style='text-align:left'>Floating-point values
 must include a decimal point and an <i>optional</i> exponent.
@@ -286,7 +288,7 @@ See <a href='#floating-point-encoding'>CBOR floating-point encoding</a>.
 <td style='text-align:left'>Infinity.
 See <a href='#floating-point-encoding'>CBOR floating-point encoding</a>.
 </td></tr>
-<tr style='text-align:center'><td rowspan='4'><code>byte&nbsp;string</code></td>
+<tr style='text-align:center'><td rowspan='4'><code>bstr</code></td>
 <td><code>h'</code><i>hex&nbsp;data</i><code>'</code></td><td>3, 6</td>
 <td style='text-align:left'>Byte data provided in hexadecimal notation.
 Each byte must be represented by two hexadecimal digits.</td></tr>
@@ -296,17 +298,17 @@ Padding with <code>'='</code> characters is <i>optional</i>.</td></tr>
 <tr style='text-align:center'><td><code>'</code><i>text</i><code>'</code></td><td>4, 5, 7</td>
 <td style='text-align:left'>Byte data provided as UTF-8 encoded text.</td></tr>
 <tr style='text-align:center'><td><code>&lt;&lt;</code>&nbsp;<i>object</i>&nbsp;<code>&gt;&gt;</code></td><td>7</td>
-<td style='text-align:left'>Construct holding a CBOR object which is subsequently embedded in a byte string.</td></tr>
-<tr style='text-align:center'><td><code>text&nbsp;string</code></td>
-<td><code>&quot;</code><i>text</i><code>&quot;</code><td>4, 5</td><td style='text-align:left'>UTF-8 encoded text string.</td></tr>
-<tr style='text-align:center'><td><code>true</code></td><td><code>true</code></td><td rowspan='2'></td>
+<td style='text-align:left'>Construct holding a CBOR object which is subsequently embedded in a byte-string.</td></tr>
+<tr style='text-align:center'><td><code>tstr</code></td>
+<td><code>&quot;</code><i>text</i><code>&quot;</code><td>4, 5</td><td style='text-align:left'>UTF-8 encoded text-string.</td></tr>
+<tr style='text-align:center'><td rowspan='2'><code>bool</code></td><td><code>true</code></td><td rowspan='2'></td>
 <td style='text-align:left' rowspan='2'>Boolean value.</td></tr>
-<tr style='text-align:center'><td><code>false</code></td><td><code>false</code></td></tr>
+<tr style='text-align:center'><td><code>false</code></td></tr>
 <tr style='text-align:center'><td><code>null</code></td><td><code>null</code></td><td></td><td style='text-align:left'>Null value.</td></tr>
 <tr style='text-align:center'><td><code>array</code></td><td><code>[</code>&nbsp;<i>object</i>&nbsp;<code>]</code></td>
-<td></td><td style='text-align:left'>Array with zero or more comma separated CBOR objects.</td></tr>
+<td></td><td style='text-align:left'>Array with zero or more comma-separated CBOR objects.</td></tr>
 <tr style='text-align:center'><td><code>map</code></td><td><code>{</code>&nbsp;<i>key</i><code>:</code><i>object</i>&nbsp;<code>}</code></td>
-<td></td><td style='text-align:left'>Map with zero or more comma separated key/object pairs.
+<td></td><td style='text-align:left'>Map with zero or more comma-separated key/object pairs.
 Keys and objects are expressed as CBOR objects.</td></tr>
 <tr style='text-align:center'><td><code>tag</code></td><td><i>n</i><code>(</code>&nbsp;<i>object</i>&nbsp;<code>)</code></td>
 <td>1</td><td style='text-align:left'>Tag holding a CBOR object.</td></tr>
@@ -316,7 +318,7 @@ Keys and objects are expressed as CBOR objects.</td></tr>
 <ol style='margin:0 0'>
 <li>The letter <i>n</i> in the Syntax column denotes one or more digits.</li>
 <li>The optional {<i>sign</i>} must be a single hyphen (<code>'-'</code>) character.</li>
-<li><i>Input only</i>: between CBOR objects, the whitespace characters
+<li><i>Input only</i>: the whitespace characters
 (<code>' '</code>, <code>'\t'</code>, <code>'\r'</code>, <code>'\n'</code>)
 are <i>ignored</i>.</li> 
 <li><i>Input only</i>: the control characters
