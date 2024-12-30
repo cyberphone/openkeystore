@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='utf-8'?>
-<svg viewBox='0 0 1133 750' xmlns='http://www.w3.org/2000/svg'>
+<svg viewBox='0 0 1133 850' xmlns='http://www.w3.org/2000/svg'>
 <title>CBOR Encryption Format</title>
 <!-- Anders Rundgren 2021 -->
 <g stroke='#4366bf' stroke-width='3' fill='none'>
-<rect x='20' y='150' width='460' height='80' rx='8'/>
-<rect x='20' y='250' width='460' height='80' stroke-dasharray='8' rx='8'/>
+<rect x='20' y='150' width='460' height='80' stroke-dasharray='8' rx='8'/>
+<rect x='20' y='250' width='460' height='80' rx='8'/>
 <rect x='20' y='350' width='460' height='80' stroke-dasharray='8' rx='8'/>
-<rect x='20' y='450' width='460' height='80' rx='8'/>
+<rect x='20' y='450' width='460' height='80' stroke-dasharray='8' rx='8'/>
 <rect x='20' y='550' width='460' height='80' rx='8'/>
 <rect x='20' y='650' width='460' height='80' rx='8'/>
+<rect x='20' y='750' width='460' height='80' rx='8'/>
 <rect x='603' y='150' width='510' height='80' rx='8'/>
 <rect x='603' y='250' width='510' height='80' stroke-dasharray='8' rx='8'/>
 <rect x='603' y='350' width='510' height='80' stroke-dasharray='8' rx='8'/>
@@ -23,12 +24,13 @@
 <text x='858' y='110' text-anchor='middle'>(Key Encryption)</text>
 </g>
 <g font-size='40' font-family='Noto Mono,monospace' fill='maroon'>
-<text x='44' y='204'>algorithm<tspan fill='black'> (1)</tspan></text>
-<text x='44' y='304'>keyEncryption<tspan fill='black'> (2)</tspan></text>
-<text x='44' y='404'>keyId<tspan fill='black'> (3)</tspan></text>
-<text x='44' y='504'>tag<tspan fill='black'> (8)</tspan></text>
-<text x='44' y='604'>iv<tspan fill='black'> (9)</tspan></text>
-<text x='44' y='704'>cipherText<tspan fill='black'> (10)</tspan></text>
+<text x='44' y='204'>customData<tspan fill='black'> (0)</tspan></text>
+<text x='44' y='304'>algorithm<tspan fill='black'> (1)</tspan></text>
+<text x='44' y='404'>keyEncryption<tspan fill='black'> (2)</tspan></text>
+<text x='44' y='504'>keyId<tspan fill='black'> (3)</tspan></text>
+<text x='44' y='604'>tag<tspan fill='black'> (8)</tspan></text>
+<text x='44' y='704'>iv<tspan fill='black'> (9)</tspan></text>
+<text x='44' y='804'>cipherText<tspan fill='black'> (10)</tspan></text>
 <text x='627' y='204'>algorithm<tspan fill='black'> (1)</tspan></text>
 <text x='627' y='304'>keyId<tspan fill='black'> (3)</tspan></text>
 <text x='627' y='404'>publicKey<tspan fill='black'> (4)</tspan></text>
@@ -36,5 +38,5 @@
 <text x='627' y='604'>ephemeralKey<tspan fill='black'> (7)</tspan></text>
 <text x='627' y='704'>cipherText<tspan fill='black'> (10)</tspan></text>
 </g>
-<path fill='none' stroke='#4366bf' stroke-width='3' stroke-linecap='round' d='m 583,150 c -35,0 -35,80 -35,80 v 0 c 0,0 0,49 -48,60 c 48,11 48,60 48,60 v 300 c 0,0 0,80 35,80'/>
+<path fill='none' stroke='#4366bf' stroke-width='3' stroke-linecap='round' d='m 583,150 c -35,0 -35,80 -35,80 v 100 c 0,0 0,49 -48,60 c 48,11 48,60 48,60 v 200 c 0,0 0,80 35,80'/>
 </svg>

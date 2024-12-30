@@ -201,10 +201,11 @@ methods, return container objects which in turn facilitate
 access to individual CBOR objects of the structure.
 </p>
 <p>
-If the underlying CBOR data type does not match the access method
-(like performing {@link CBORObject#getInt32()} on a CBOR text-string),
-an exception is thrown.
-That is, this implementation performs <i>strict type checking</i>. 
+This implementation performs <i>strict type checking</i>.
+That is, if an application expects a CBOR integer and calls
+{@link CBORObject#getInt32()}, an exception will be thrown
+if the referenced object is not an instance of {@link CBORInt}, or 
+if the CBOR integer cannot be represented as a 32-bit two-complement value. 
 </p>
 <p>
 However, you typically also want to verify
@@ -313,7 +314,7 @@ Padding with <code>'='</code> characters is <i>optional</i>.</td></tr>
 Keys and objects are expressed as CBOR objects.</td></tr>
 <tr style='text-align:center'><td><code>tag</code></td><td><i>n</i><code>(</code>&nbsp;<i>object</i>&nbsp;<code>)</code></td>
 <td>1</td><td style='text-align:left'>Tag holding a CBOR object.</td></tr>
-<tr style='text-align:center'><td></td><td><code>,</code></td><td>7</td><td style='text-align:left'>Separator character for CBOR sequences.</td></tr>
+<tr style='text-align:center'><td></td><td><code>,</code></td><td></td><td style='text-align:left'>Separator character for CBOR sequences.</td></tr>
 </table>
 </div>
 <ol style='margin:0 0'>
