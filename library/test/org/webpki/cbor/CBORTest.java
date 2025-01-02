@@ -2434,7 +2434,7 @@ public class CBORTest {
         for (String hexCbor : decoding) {
             try {
                 new CBORDecoder(new ByteArrayInputStream(Hex.decode(hexCbor)))
-                    .setNaNSupport(false)
+                    .setFloatSupport(false)
                     .decodeWithOptions();
                 fail("must not");
             } catch (Exception e) {

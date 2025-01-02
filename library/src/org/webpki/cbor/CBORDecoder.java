@@ -44,7 +44,7 @@ public class CBORDecoder {
     * <p>
     * See {@link CBORDecoder#setDeterministicMode(boolean)},
     * {@link CBORDecoder#setInputLength(int)},
-    * {@link CBORDecoder#setNaNSupport(boolean)}, and
+    * {@link CBORDecoder#setFloatSupport(boolean)}, and
     * {@link CBORDecoder#setSequenceMode(boolean)}
     * </p>
     * <p>
@@ -309,7 +309,7 @@ public class CBORDecoder {
      * </p>
      * @param maxLength Maximum length of CBOR input in bytes.
      * Exceeding this limit will cause a {@link CBORException} to be thrown.
-     * @return <code>this</code> (updated {@link CBORDecoder} object)
+     * @return <code>this</code>
      */
     public CBORDecoder setInputLength(int maxLength) {
         this.maxLength = maxLength;
@@ -325,13 +325,13 @@ public class CBORDecoder {
      * In case these variants are not applicable for the application in question,
      * this method enables overriding the default.
      * </p>
-     * @param accept If the <code>accept</code> flag is set to <code>false</code>,
-     * the mentioned exceptional floating point values will (if encountered),
+     * @param acceptExceptional If the <code>acceptExceptional</code> flag is set to <code>false</code>,
+     * the mentioned exceptional floating point values
      * cause a {@link CBORException} to be thrown.
-     * @return <code>this</code> (updated {@link CBORDecoder} object)
+     * @return <code>this</code>
      */
-    public CBORDecoder setNaNSupport(boolean accept) {
-        this.rejectNaNFlag = !accept;
+    public CBORDecoder setFloatSupport(boolean acceptExceptional) {
+        this.rejectNaNFlag = !acceptExceptional;
         return this;
     }
 
@@ -348,7 +348,7 @@ public class CBORDecoder {
      * This option may be needed for dealing with &quot;legacy&quot; CBOR implementations.
      * Note: duplicate keys and other invalid (or not supported) CBOR constructs
      * will still cause a {@link CBORException} to be thrown.
-     * @return <code>this</code> (updated {@link CBORDecoder} object)
+     * @return <code>this</code>
      */
     public CBORDecoder setDeterministicMode(boolean enforce) {
         this.deterministicMode = enforce;
@@ -376,7 +376,7 @@ public class CBORDecoder {
      * <li>Note that data <i>succeeding</i> a just decoded CBOR object 
      * is not verified for correctness.</li>  
      * </ul>
-     * @return <code>this</code> (updated {@link CBORDecoder} object)
+     * @return <code>this</code>
      */
     public CBORDecoder setSequenceMode(boolean sequence) {
         this.sequenceFlag = sequence;

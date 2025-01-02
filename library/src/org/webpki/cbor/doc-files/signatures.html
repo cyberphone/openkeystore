@@ -1,5 +1,5 @@
 <body>
-<h2>Signature Support</h2>
+<h2>1. Signature Support</h2>
 The CBOR library contains support for {@link CBORSigner Creating} 
 and {@link CBORValidator Validating}
 signatures using a specific scheme called
@@ -92,7 +92,8 @@ according to the following table:
 Also see <a href='crypto-options.html'>Crypto Options</a>.</td></tr>
 
 <tr><td><code class='webpkicode'>algorithm</code></td><td style='text-align:center'><code>1</code></td>
-<td style='text-align:center'><code>int</code></td><td>Signature algorithm using COSE identifiers.</td></tr>
+<td style='text-align:center'><code>int</code></td><td>Signature algorithm using 
+<a href='#csf-algorithms'>COSE&nbsp;identifiers</a>.</td></tr>
 
 <tr><td><code class='webpkicode'>keyId</code></td><td style='text-align:center'><code>3</code></td>
 <td style='text-align:center'>&quot;<i>Any</i>&quot;</td><td><i>Optional</i>: key identifier using any valid CBOR object. 
@@ -104,9 +105,7 @@ A compliant <code class='webpkicode'>keyId</code> <b>must</b> uniquely identify 
 <tr><td><code class='webpkicode'>publicKey</code></td><td style='text-align:center'><code>4</code></td>
 <td style='text-align:center'><code>map</code></td>
 <td><i>Optional</i>: public key in COSE format.  
-Note that ECDSA public keys <b>must</b> be supplied with a <i>value parameter</i>
-for the y-coordinate as well.
-The public key object <b>must not</b> contain any additional information like
+Note that public key objects <b>must not</b> contain additional information like
 key identifiers or preferred signature algorithms.
 </td></tr>
 
@@ -122,7 +121,7 @@ Signature objects <b>must not</b> contain both <code class='webpkicode'>certific
 </td></tr>
 </table>
 </div>
-<h3 id='csf-validation'>Signature Validation</h3>
+<h2 id='csf-validation'>2. Signature Validation</h2>
 The {@link CBORValidator} super classes perform core CSF validation
 according to the following set of rules.
 while leaving policy enforcements to the signature-using application.
@@ -138,7 +137,7 @@ its associated argument as the sole exception
 Note that the length of the signature object <code>map</code> <b>must</b>
 be updated to reflect the removal of the
 <code class='webpkicode'>signatureValue</code> attribute during validation.</li>
-<li style='margin-top:0.5em'>Signature validation keys are either <i>implicit</i> or provided via
+<li style='margin-top:0.5em'>Signature validation keys are either <i>implicit</i> or located via
 <code class='webpkicode'>keyId</code> (label <code>3</code>) attributes.</li>
 <li style='margin-top:0.5em'>If <code class='webpkicode'>publicKey</code> (label <code>4</code>) or
 <code class='webpkicode'>certificatePath</code> (label <code>5</code>) attributes are supplied,
@@ -148,10 +147,10 @@ trusted by the signature-using application.</li>
 <li style='margin-top:0.5em'>Signature validation keys <b>must</b> be checked for compatibility with
 the <code class='webpkicode'>algorithm</code> (label <code>1</code>) attribute.</li>
 </ul>
-<h3>Tagged and Custom Signature Data</h3>
+<h2>3. Tagged and Custom Signature Data</h2>
 CSF containers can be further enhanced through a couple of options
 described in <a href='crypto-options.html'>Crypto Options</a>.
-<h3 id='csf-algorithms'>Signature Algorithms</h3>
+<h2 id='csf-algorithms'>4. Signature Algorithms</h2>
 <div>
 Currently supported COSE signature algorithms:
 </div>
@@ -179,7 +178,7 @@ Currently supported COSE signature algorithms:
 <a href='https://datatracker.ietf.org/doc/draft-ietf-jose-fully-specified-algorithms/'>
 https://datatracker.ietf.org/doc/draft-ietf-jose-fully-specified-algorithms/</a>.
 </p>
-<h3>Test Vectors</h3>
+<h2>5. Test Vectors</h2>
 An extensive set of test vectors is currently available at: 
 <a href='https://github.com/cyberphone/openkeystore/tree/master/testdata/cbor-signatures'>
 https://github.com/cyberphone/openkeystore/tree/master/testdata/cbor-signatures
@@ -187,7 +186,7 @@ https://github.com/cyberphone/openkeystore/tree/master/testdata/cbor-signatures
 <p>
 Use {@link org.webpki.tools.CBORPrinter} to list contents in a human-friendly way.
 </p>
-<h3 id='api-example'>Using the Signature API</h3>
+<h2 id='api-example'>6. Using the Signature API</h2>
 The following section outlines how the signature API is supposed to be used.
 <p>
 Sample program:

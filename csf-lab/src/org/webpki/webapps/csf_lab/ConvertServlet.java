@@ -85,7 +85,7 @@ public class ConvertServlet extends CoreRequestServlet {
             CBORDecoder cborDecoder = new CBORDecoder(bais)
                 .setSequenceMode(sequenceFlag)
                 .setDeterministicMode(strictFlag)
-                .setNaNSupport(!rejectNaNFlag)
+                .setFloatSupport(!rejectNaNFlag)
                 .setInputLength(cborBytes.length);
             while ((cborObject = cborDecoder.decodeWithOptions()) != null) {
                 sequence.add(cborObject);

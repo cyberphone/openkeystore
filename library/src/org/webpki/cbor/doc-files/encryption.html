@@ -1,5 +1,5 @@
 <body>
-<h2>Encryption Support</h2>
+<h2>1. Encryption Support</h2>
 The CBOR library contains support for {@link CBOREncrypter Encrypting} 
 and {@link CBORDecrypter Decrypting}
 arbitrary binary data using a specific scheme called
@@ -66,31 +66,8 @@ Decryption of this object using the private key (here in JWK format)
 </div>
 </div>
 should return the UTF-8 encoded string <code>&quot;Hello encrypted world!&quot;</code>.
+<h2 id='parameters'>2. Encryption Container</h2>
 <p>
-The CEF decryption process is as follows:
-</p>
-<ul>
-<li class='webpkilistspacing'>Read and save the content encryption parameters <code class='webpkicode'>tag</code>,
-<code class='webpkicode'>iv</code>, and <code class='webpkicode'>ciphertext</code>.</li>
-<li class='webpkilistspacing'>Remove the <code class='webpkicode'>tag</code>,
-<code class='webpkicode'>iv</code>, and <code class='webpkicode'>ciphertext</code> elements from the
-encryption object.
-Note that the top level <code>map</code> object <b>must</b> be updated
-as well to reflect the changed number of elements.
-<li class='webpkilistspacing'>Serialize the remaining CBOR encryption object and set the result to 
-Additional Authentication Data (<code>AAD</code>).</li>
-<li class='webpkilistspacing'>Recover the content encryption key using the elements in the
-key encryption object (argument of label <code>2</code>).</li>
-<li>Apply the content encryption algorithm (argument of label <code>1</code> 
-in the main map)
-to the recovered content encryption key,
-the input parameters read in the first step, and <code>AAD</code>.
-The result is the decrypted content.</li>
-</ul>
-Symmetric key encryption CEF objects are processed as above, but
-since they do not have a key encryption component, content encryption 
-keys must be known by recipients.
-<p id='parameters'>
 The following figure shows the layout of CEF objects:
 </p>
 <div class='webpkifloat'>
@@ -99,25 +76,155 @@ The following figure shows the layout of CEF objects:
 </div>
 </div>
 The numbers in paranthesis denote the actual label (map key) value.
-Properly designed CEF objects <b>must</b> adhere to the following rules:
-<ul>
-<li class='webpkilistspacing'><code class='webpkicode'>publicKey</code> and <code class='webpkicode'>ephemeralKey</code> elements
-<b>must</b> be compliant with COSE, but <b>must not</b> contain
-any other information than the public key itself
-and associated parameters.</li>
-<li class='webpkilistspacing'>ECDSA public keys <b>must</b> be supplied with a <i>value parameter</i> for the y-coordinate as well.</li>
-<li class='webpkilistspacing'><code class='webpkicode'>keyId</code>, <code class='webpkicode'>publicKey</code> 
-and <code class='webpkicode'>certificatePath</code>
-<b>must not</b> be combined.</li>
-<li class='webpkilistspacing'>If a <code class='webpkicode'>keyId</code> is used it <b>must</b> be supplied in the main map for
-symmetric encryption schemes, and in the sub map for schemes using key encryption.
-A compliant <code>keyId</code> <b>must</b> uniquely identify a specific encryption key.</li>
-<li class='webpkilistspacing'>The currently supported key encryption algorithms except for <code>ECDH-ES</code>
-<b>require</b> that the encrypted key is provided in the <code class='webpkicode'>chipherText</code>
-element in the sub map.</li>
-<li>All ECDH-ES variants <b>must</b> include an <code class='webpkicode'>ephemeralKey</code>
-element.</li>
-</ul>
+<h3 id='cef-content-encyption-map'>2.1. Content Encryption Map</h3>
+The following table shows the function and type of each element of content encryption maps:
+<div class='webpkifloat'>
+<table class='webpkitable'>
+<tr><th>Name</th><th>Label</th><th>Argument</th><th style='min-width:30em'>Description</th></tr>
+
+<tr><td><code class='webpkicode'>customData</code></td><td style='text-align:center'><code>0</code></td>
+<td style='text-align:center'>&quot;<i>Any</i>&quot;</td><td><i>Optional</i>: data included (in clear) in the CEF container.
+Also see <a href='crypto-options.html'>Crypto Options</a>.</td></tr>
+
+<tr><td><code class='webpkicode'>algorithm</code></td><td style='text-align:center'><code>1</code></td>
+<td style='text-align:center'><code>int</code></td><td>Content encryption algorithm using 
+<a href='#cef-content-encryption-algorithms'>COSE&nbsp;identifiers</a>.</td></tr>
+
+<tr><td><code class='webpkicode'>keyEncryption</code></td><td style='text-align:center'><code>2</code></td>
+<td style='text-align:center'><code>map</code></td>
+<td><i>Optional</i>: Key encryption parameters.</td></tr>
+
+<tr><td><code class='webpkicode'>keyId</code></td><td style='text-align:center'><code>3</code></td>
+<td style='text-align:center'>&quot;<i>Any</i>&quot;</td>
+<td><i>Optional</i>: key identifier using any valid CBOR object. 
+Note that <code class='webpkicode'>keyId</code> <b>must not</b> be used together with the
+<code class='webpkicode'>keyEncryption</code> option.
+A compliant <code class='webpkicode'>keyId</code>
+<b>must</b> uniquely identify a specific signature key.</td></tr>
+
+<tr><td><code class='webpkicode'>tag</code></td><td style='text-align:center'><code>8</code></td>
+<td style='text-align:center'><code>bstr</code></td>
+<td>Authentication Tag.</td></tr>
+
+<tr><td><code class='webpkicode'>iv</code></td><td style='text-align:center'><code>9</code></td>
+<td style='text-align:center'><code>bstr</code></td><td>Initialization Vector (IV).</td></tr>
+
+<tr><td><code class='webpkicode'>chipherText</code></td><td style='text-align:center'><code>10</code></td>
+<td style='text-align:center'><code>bstr</code></td><td>Encrypted content.
+</td></tr>
+</table>
+</div>
+<h3 id='cef-key-encyption-map'>2.2. Key Encryption Map</h3>
+The following table shows the function and type of each element of key encryption maps:
+<div class='webpkifloat'>
+<table class='webpkitable'>
+<tr><th>Name</th><th>Label</th><th>Argument</th><th style='min-width:30em'>Description</th></tr>
+
+<tr><td><code class='webpkicode'>algorithm</code></td><td style='text-align:center'><code>1</code></td>
+<td style='text-align:center'><code>int</code></td><td>Key encryption algorithm using 
+<a href='#cef-key-encryption-algorithms'>COSE&nbsp;identifiers</a>.</td></tr>
+
+<tr><td><code class='webpkicode'>keyId</code></td><td style='text-align:center'><code>3</code></td>
+<td style='text-align:center'>&quot;<i>Any</i>&quot;</td><td><i>Optional</i>: key identifier using 
+any valid CBOR object. 
+Note that <code class='webpkicode'>keyId</code> <b>must not</b> be used together with 
+<code class='webpkicode'>publicKey</code> or <code class='webpkicode'>certificatePath</code>.
+A compliant <code class='webpkicode'>keyId</code> <b>must</b> uniquely identify a specific key encryption key.
+</td></tr>
+
+<tr><td><code class='webpkicode'>publicKey</code></td><td style='text-align:center'><code>4</code></td>
+<td style='text-align:center'><code>map</code></td>
+<td><i>Optional</i>: public key in COSE format.  
+Note that public key objects <b>must not</b> contain additional information like
+key identifiers or preferred algorithms.
+</td></tr>
+
+<tr><td><code class='webpkicode'>certificatePath</code></td><td style='text-align:center'><code>5</code></td>
+<td style='text-align:center'><code>array</code></td><td><i>Optional</i>: certificate path supplied 
+as an array of <code>byte&nbsp;string</code> objects holding X.509 certificates in DER format, 
+where the first object <b>must</b> be the encryption certificate.
+Key encryption objects <b>must not</b> contain both <code class='webpkicode'>certificatePath</code>
+and <code class='webpkicode'>publicKey</code> elements.
+</td></tr>
+
+<tr><td><code class='webpkicode'>ephemeralKey</code></td><td style='text-align:center'><code>7</code></td>
+<td style='text-align:center'><code>map</code></td>
+<td><i>Optional</i>: public key in COSE format used by ECDH-ES algorithms.
+</td></tr>
+
+<tr><td><code class='webpkicode'>chipherText</code></td><td style='text-align:center'><code>10</code></td>
+<td style='text-align:center'><code>bstr</code></td>
+<td><i>Optional</i>: Encrypted key used by key-wrapping algorithms.</td></tr>
+</table>
+</div>
+<h2 id='cef-decryption-process'>3. Decryption Process</h2>
+This section describes the steps needed to decrypt a CEF object.
+To encrypt is simply reversing the process by generating and writing data.
+<p>
+Begin by defining the variables 
+<code class='webpkivar'>ContentEncryptionAlgorithm</code>,
+<code class='webpkivar'>ContentEncryptionKey</code>, and
+<code class='webpkivar'>AdditionalAuthenticationData</code>.
+</p>
+<h3 id='cef-get-content-encryption-algorithm'>3.1 Get Content Encryption Algorithm</h3>
+Perform the following steps:
+<ol>
+    <li class='webpkilistspacing'>Decode 
+        the <a href='#cef-content-encyption-map'>Content&nbsp;Encryption&nbsp;Map</a>.</li>
+    <li class='webpkilistspacing'>Set 
+        <code class='webpkivar'>ContentEncryptionAlgorithm = </code><code class='webpkicode'>algorithm</code>.</li>
+</ol>
+<h3 id='cef-recover-content-encryption-key'>3.2 Recover Content Encryption Key</h3>
+For key encryption schemes (= having a
+<code class='webpkicode'>keyEncryption</code> attribute), perform the following steps:
+<ol>
+    <li class='webpkilistspacing'>Decode the <a href='#cef-key-encyption-map'>Key&nbsp;Encryption&nbsp;Map</a>.</li>
+    <li class='webpkilistspacing'>Determine the <code>PrivateKey</code> to use either based on being <i>implicit</i>,
+        or being identified through a
+        <code class='webpkicode'>keyId</code>, 
+        <code class='webpkicode'>publicKey</code>, or
+        <code class='webpkicode'>certificatePath</code>.
+        <div style='padding-top:0.3em'>Note that the WebPKI implementation provides extensive policy support,
+        eliminating most of the guesswork.</div>
+    </li>
+    <li class='webpkilistspacing'>Recover the <code class='webpkivar'>ContentEncryptionKey</code> by applying
+    the <code class='webpkicode'>algorithm</code>,
+    <code class='webpkicode'>ephemeralKey</code>,
+    <code class='webpkicode'>chipherText</code>, and
+    the previously located <code>PrivateKey</code> to an associated key decryption method, 
+    while using the <code class='webpkivar'>ContentEncryptionAlgorithm</code>
+    to get the expected length of the key.</li>
+</ol>
+<p>
+For symmetric-key schemes only, the <code class='webpkivar'>ContentEncryptionKey</code> is
+either <i>implicit</i> or is recovered through the <code class='webpkicode'>keyId</code> attribute.
+</p>
+<h3 id='cef-decrypt-content'>3.3. Decrypt Content</h3>
+<p>
+The CEF decryption process consists of two step
+</p>
+<ol>
+<li class='webpkilistspacing'>Read and save the <code class='webpkicode'>tag</code>,
+<code class='webpkicode'>iv</code>, and <code class='webpkicode'>ciphertext</code>
+attributes from the <a href='#cef-content-encyption-map'>Content&nbsp;Encryption&nbsp;Map</a>.</li>
+<li class='webpkilistspacing'>Remove the <code class='webpkicode'>tag</code>,
+<code class='webpkicode'>iv</code>, and <code class='webpkicode'>ciphertext</code> attributes from the
+<a href='#cef-content-encyption-map'>Content&nbsp;Encryption&nbsp;Map</a>.
+Note that the top level <code>map</code> object <b>must</b> be updated
+as well to reflect the changed number of elements.
+<li class='webpkilistspacing'>Serialize the remaining CBOR object
+(including the optional <a href='#cef-key-encyption-map'>Key&nbsp;Encryption&nbsp;Map</a>),
+and assign the result to the
+<code class='webpkivar'>AdditionalAuthenticationData</code> (<code>AAD</code>) variable.</li>
+<li>Apply the <code class='webpkivar'>ContentEncryptionAlgorithm</code>
+(in decrypt mode) to the recovered <code class='webpkivar'>ContentEncryptionKey</code>,
+the attributes read in the step #1,
+and the <code class='webpkivar'>AdditionalAuthenticationData</code>.
+<div style='padding-top:0.3em'>The result is the decrypted content.</div></li>
+</ol>
+hi there
+<h2>4. Algorithms</h2>
+<h3 id='cef-kdf'>4.1. Key Derivation Function (KDF)</h3>
 ECDH based key encryption schemes <b>must</b> use a Key Derivation Function (KDF)
 according to HKDF (RFC&nbsp;5869), profiled as follows:
 <ul>
@@ -127,12 +234,8 @@ according to HKDF (RFC&nbsp;5869), profiled as follows:
 COSE key encryption algorithm,
 expressed as a 32-bit (4 byte) signed big-endian integer.</li>
 </ul>
-<h3>Tagged and Custom Encryption Data</h3>
-The CEF container can be enhanced through a couple of options
-described in <a href='crypto-options.html'>Crypto Options</a>.
-Such options are included in the data to be authenticated. 
-<h3>Content Encryption Algorithms</h3>
-<div id='cef-content-encryption-algorithms'>
+<h3 id='cef-content-encryption-algorithms'>4.2. Content Encryption Algorithms</h3>
+<div>
 Currently supported content encryption algorithms:
 </div>
 <div class='webpkifloat'>
@@ -146,8 +249,8 @@ Currently supported content encryption algorithms:
 <tr style='text-align:center'><td><code>A256CBC-HS512</code></td><td>202</td><td>JOSE</td></tr>
 </table>
 </div>
-<h3 style='margin-top:0.5em'>Key Encryption Algorithms</h3>
-<div id='cef-key-encryption-algorithms'>
+<h3 id='cef-key-encryption-algorithms' style='margin-top:0.5em'>4.3. Key Encryption Algorithms</h3>
+<div>
 Currently supported key encryption algorithms:
 </div>
 <div class='webpkifloat'>
@@ -162,7 +265,11 @@ Currently supported key encryption algorithms:
 </table>
 </div>
 [1] Note that COSE and JOSE do no use the same Key Derivation Function (KDF).
-<h3>Test Vectors</h3>
+<h2>5. Tagged and Custom Encryption Data</h2>
+The CEF container can be enhanced through a couple of options
+described in <a href='crypto-options.html'>Crypto Options</a>.
+Such options are included in the data to be authenticated. 
+<h2>6. Test Vectors</h2>
 An extensive set of test vectors is currently available at: 
 <a href='https://github.com/cyberphone/openkeystore/tree/master/testdata/cbor-encryption'>
 https://github.com/cyberphone/openkeystore/tree/master/testdata/cbor-encryption
@@ -170,7 +277,7 @@ https://github.com/cyberphone/openkeystore/tree/master/testdata/cbor-encryption
 <p>
 Use {@link org.webpki.tools.CBORPrinter} to list contents in a human-friendly way.
 </p>
-<h3 id='api-example'>Using the Encryption API</h3>
+<h2 id='api-example'>7. Using the Encryption API</h2>
 The following section outlines how the encryption API is supposed to be used.
 <p>
 Sample program:
