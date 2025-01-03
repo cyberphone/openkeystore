@@ -78,11 +78,10 @@ Note that the application-specific labels (including the one holding the
 signature object), may be of any CBOR type.  The only requirement is that
 they are unique.
 </p>
-<div id='parameters'>
+<h2 id='csf-validation'>2. Signature Validation</h2>
 Signatures <b>must</b> for compatibility with CSF,
 be provided as a CBOR <code>map</code> having a fixed set of labels 
 according to the following table:
-</div>
 <div class='webpkifloat'>
 <table class='webpkitable'>
 <tr><th>Name</th><th>Label</th><th>Argument</th><th style='min-width:30em'>Description</th></tr>
@@ -121,33 +120,32 @@ Signature objects <b>must not</b> contain both <code class='webpkicode'>certific
 </td></tr>
 </table>
 </div>
-<h2 id='csf-validation'>2. Signature Validation</h2>
-The {@link CBORValidator} super classes perform core CSF validation
-according to the following set of rules.
-while leaving policy enforcements to the signature-using application.
+To validate a CSF-based signature, apply the following set of rules:
 <ul>
-<li>CSF signatures are validated by running the signature validation 
-<code class='webpkicode'>algorithm</code> (gathered from label <code>1</code>),
+<li>Signatures are validated by running the signature validation 
+<code class='webpkicode'>algorithm</code>,
 over the CBOR binary representation of
 the <code>map</code> object holding the application data
 <i>including the enveloped signature object</i>,
-with the <code class='webpkicode'>signatureValue</code> (label <code>6</code>) and
+with the <code class='webpkicode'>signatureValue</code> and
 its associated argument as the sole exception
 (<span class='webpkihighlite'>highlighted</span> in the example).
 Note that the length of the signature object <code>map</code> <b>must</b>
 be updated to reflect the removal of the
 <code class='webpkicode'>signatureValue</code> attribute during validation.</li>
-<li style='margin-top:0.5em'>Signature validation keys are either <i>implicit</i> or located via
-<code class='webpkicode'>keyId</code> (label <code>3</code>) attributes.</li>
-<li style='margin-top:0.5em'>If <code class='webpkicode'>publicKey</code> (label <code>4</code>) or
-<code class='webpkicode'>certificatePath</code> (label <code>5</code>) attributes are supplied,
+<li style='margin-top:0.5em'>Signature validation keys are either <i>implicit</i>, located via
+<code class='webpkicode'>keyId</code> attributes,
+or supplied in <code class='webpkicode'>publicKey</code> or
+<code class='webpkicode'>certificatePath</code> attributes.</li>
+<li style='margin-top:0.5em'>If <code class='webpkicode'>publicKey</code> or
+<code class='webpkicode'>certificatePath</code> attributes are present,
 they <b>must</b> be used as signature validation keys.
 Note though that such keys <b>must</b> also be verified to be known and
 trusted by the signature-using application.</li>
 <li style='margin-top:0.5em'>Signature validation keys <b>must</b> be checked for compatibility with
-the <code class='webpkicode'>algorithm</code> (label <code>1</code>) attribute.</li>
+the <code class='webpkicode'>algorithm</code> attribute.</li>
 </ul>
-<h2>3. Tagged and Custom Signature Data</h2>
+<h2 id='csf-tagged-or-custom-data'>3. Tagged and Custom Signature Data</h2>
 CSF containers can be further enhanced through a couple of options
 described in <a href='crypto-options.html'>Crypto Options</a>.
 <h2 id='csf-algorithms'>4. Signature Algorithms</h2>
@@ -174,11 +172,11 @@ Currently supported COSE signature algorithms:
 </table>
 </div>
 <p>
-[1] Updated for compliance with 
+1] Updated for compliance with 
 <a href='https://datatracker.ietf.org/doc/draft-ietf-jose-fully-specified-algorithms/'>
 https://datatracker.ietf.org/doc/draft-ietf-jose-fully-specified-algorithms/</a>.
 </p>
-<h2>5. Test Vectors</h2>
+<h2 id='csf-test-vectors'>5. Test Vectors</h2>
 An extensive set of test vectors is currently available at: 
 <a href='https://github.com/cyberphone/openkeystore/tree/master/testdata/cbor-signatures'>
 https://github.com/cyberphone/openkeystore/tree/master/testdata/cbor-signatures
@@ -186,7 +184,7 @@ https://github.com/cyberphone/openkeystore/tree/master/testdata/cbor-signatures
 <p>
 Use {@link org.webpki.tools.CBORPrinter} to list contents in a human-friendly way.
 </p>
-<h2 id='api-example'>6. Using the Signature API</h2>
+<h2 id='csf-api-usage'>6. Using the Signature API</h2>
 The following section outlines how the signature API is supposed to be used.
 <p>
 Sample program:
