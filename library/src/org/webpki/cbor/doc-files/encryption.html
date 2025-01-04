@@ -109,7 +109,7 @@ A compliant <code class='webpkicode'>keyId</code>
 <tr><td><code class='webpkicode'>iv</code></td><td style='text-align:center'><code>9</code></td>
 <td style='text-align:center'><code>bstr</code></td><td>Initialization Vector (IV).</td></tr>
 
-<tr><td><code class='webpkicode'>chipherText</code></td><td style='text-align:center'><code>10</code></td>
+<tr><td><code class='webpkicode'>cipherText</code></td><td style='text-align:center'><code>10</code></td>
 <td style='text-align:center'><code>bstr</code></td><td>Encrypted content.
 </td></tr>
 </table>
@@ -152,7 +152,7 @@ and <code class='webpkicode'>publicKey</code> elements.
 <td><i>Optional</i>: public key in COSE format.  Used by ECDH algorithms.
 </td></tr>
 
-<tr><td><code class='webpkicode'>chipherText</code></td><td style='text-align:center'><code>10</code></td>
+<tr><td><code class='webpkicode'>cipherText</code></td><td style='text-align:center'><code>10</code></td>
 <td style='text-align:center'><code>bstr</code></td>
 <td><i>Optional</i>: Encrypted key. Used by key-wrapping algorithms.</td></tr>
 </table>
@@ -181,21 +181,21 @@ For key encryption schemes (= having a
     <li class='webpkilistspacing'>Decode the <a href='#cef-key-encyption-map'>Key&nbsp;Encryption&nbsp;Map</a>.</li>
     <li class='webpkilistspacing'>Determine the <code class='webpkivar'>privateKey</code> to use.
         Private keys are either <i>implicit</i>,
-        or are identified through
+        or are identified through a
         <code class='webpkicode'>keyId</code>, 
         <code class='webpkicode'>publicKey</code>, or
-        <code class='webpkicode'>certificatePath</code> attributes.
+        <code class='webpkicode'>certificatePath</code> attribute.
     </li>
     <li>Recover the <code class='webpkivar'>contentEncryptionKey</code> by applying
     the <code class='webpkicode'>algorithm</code>,
     <code class='webpkicode'>ephemeralKey</code>,
-    <code class='webpkicode'>chipherText</code>, and
+    <code class='webpkicode'>cipherText</code>, and
     the previously located <code class='webpkivar'>privateKey</code> to an associated key decryption method, 
     while using the <code class='webpkivar'>contentEncryptionAlgorithm</code>
     to get the expected length of the key.</li>
 </ol>
 For symmetric-key schemes only, the <code class='webpkivar'>contentEncryptionKey</code> is
-either <i>implicit</i> or is located through the <code class='webpkicode'>keyId</code> attribute.
+either <i>implicit</i> or is located through a <code class='webpkicode'>keyId</code> attribute.
 <h3 id='cef-decrypt-content'>3.3. Decrypt Content</h3>
 <p>
 Finalize the decryption process by performing the following steps:
@@ -221,8 +221,8 @@ and the <code class='webpkivar'>additionalAuthenticationData</code>.</li>
 The result from step #4 is the decrypted content.
 <h2>4. Algorithms</h2>
 <h3 id='cef-kdf'>4.1. Key Derivation Function (KDF)</h3>
-ECDH based key encryption schemes <b>must</b> use a Key Derivation Function (KDF)
-according to HKDF (RFC&nbsp;5869), profiled as follows:
+ECDH based key encryption schemes <b>must</b> use a Key Derivation Function (KDF) according to
+HKDF [<a href='https://www.rfc-editor.org/rfc/rfc5869.html'>RFC&nbsp;5869</a>], profiled as follows:
 <ul>
 <li class='webpkilistspacing'><code>hmac</code>: The HKDF implementation <b>must</b> use HMAC with SHA-256</li>
 <li class='webpkilistspacing'><code>salt</code>: N/A. The default extract mode handling <b>must</b> be implemented.</li>
@@ -252,15 +252,22 @@ Currently supported key encryption algorithms:
 <div class='webpkifloat'>
 <table class='webpkitable'>
 <tr><th>Name</th><th>Identifier</th><th>Compatibility</th><th>Notes</th></tr>
-<tr style='text-align:center'><td><code>ECDH-ES</code></td><td>-25</td><td>COSE, JOSE</td><td>1</td></tr>
-<tr style='text-align:center'><td><code>ECDH-ES+A128KW</code></td><td>-29</td><td>COSE, JOSE</td><td>1</td></tr>
-<tr style='text-align:center'><td><code>ECDH-ES+A192KW</code></td><td>-30</td><td>COSE, JOSE</td><td>1</td></tr>
-<tr style='text-align:center'><td><code>ECDH-ES+A256KW</code></td><td>-31</td><td>COSE, JOSE</td><td>1</td></tr>
-<tr style='text-align:center'><td><code>RSA-OAEP</code></td><td>-40</td><td>COSE, JOSE</td><td></td></tr>
-<tr style='text-align:center'><td><code>RSA-OAEP-256</code></td><td>-41</td><td>COSE, JOSE</td><td></td></tr>
+<tr style='text-align:center'><td><code>ECDH-ES</code></td><td>-25</td><td>COSE, JOSE</td><td>1, 2</td></tr>
+<tr style='text-align:center'><td><code>ECDH-ES+A128KW</code></td><td>-29</td><td>COSE, JOSE</td><td>1, 2</td></tr>
+<tr style='text-align:center'><td><code>ECDH-ES+A192KW</code></td><td>-30</td><td>COSE, JOSE</td><td>1, 2</td></tr>
+<tr style='text-align:center'><td><code>ECDH-ES+A256KW</code></td><td>-31</td><td>COSE, JOSE</td><td>1, 2</td></tr>
+<tr style='text-align:center'><td><code>RSA-OAEP</code></td><td>-40</td><td>COSE, JOSE</td><td>3</td></tr>
+<tr style='text-align:center'><td><code>RSA-OAEP-256</code></td><td>-41</td><td>COSE, JOSE</td><td>3</td></tr>
 </table>
 </div>
-1] Note that COSE and JOSE do no use the same <a href='#cef-kdf'>Key&nbsp;Derivation&nbsp;Function&nbsp;(KDF)</a>.
+Notes:
+<ol>
+    <li class='webpkilistspacing'>CEF and COSE use different profiles for 
+     the <a href='#cef-kdf'>Key&nbsp;Derivation&nbsp;Function&nbsp;(KDF)</a>.</li>
+    <li class='webpkilistspacing'>Supported key types: <code>P-256</code>, <code>P-384</code>, <code>P-521</code>,
+        <code>X25519</code>, and <code>X448</code>.</li>
+    <li>Supported key lengths: <code>2048</code>, <code>3072</code>, and <code>4096</code></li>
+</ol>
 <h2>5. Tagged and Custom Encryption Data</h2>
 The CEF container can be enhanced through a couple of options
 described in <a href='crypto-options.html'>Crypto Options</a>.
