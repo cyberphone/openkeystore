@@ -150,12 +150,12 @@ public class CBORDecoder {
 
             case MT_FLOAT16:
                 double float64;
-                long f16Binary = getLongFromBytes(2);
+                long f16Bin = getLongFromBytes(2);
 
                 // Get the significand.
-                long significand = f16Binary & ((1L << FLOAT16_SIGNIFICAND_SIZE) - 1);
+                long significand = f16Bin & ((1L << FLOAT16_SIGNIFICAND_SIZE) - 1);
                 // Get the exponent.
-                long exponent = f16Binary & FLOAT16_POS_INFINITY;
+                long exponent = f16Bin & FLOAT16_POS_INFINITY;
 
                 // Begin with the edge cases.
         
@@ -182,8 +182,8 @@ public class CBORDecoder {
                             (1L << (FLOAT16_EXPONENT_BIAS + FLOAT16_SIGNIFICAND_SIZE - 1));
                 }
                 return checkDoubleConversion(tag,
-                                             f16Binary,
-                                             f16Binary >= FLOAT16_NEG_ZERO ? -float64 : float64);
+                                             f16Bin,
+                                             f16Bin >= FLOAT16_NEG_ZERO ? -float64 : float64);
 
             case MT_FLOAT32:
                 long f32Bin = getLongFromBytes(4);
