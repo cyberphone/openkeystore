@@ -20,9 +20,9 @@ The CBOR library also supports signatures and encryption:<br>
 https://cyberphone.github.io/javaapi/org/webpki/cbor/package-summary.html
 
 ## Requirements
-* Java SDK Version 17 or later
+* Java SDK Version 21 or later
 * Ant 1.10.8 or later
-* The projects are being developed using Eclipse but there's no dependence on Eclipse.
+* The projects are being developed using VS Code but there's no dependence on VS Code.
 
 Currently only the "library" project is suitable for public use.
 To create the openkeystore library, perform the following steps:
