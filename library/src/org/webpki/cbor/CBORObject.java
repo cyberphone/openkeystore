@@ -458,7 +458,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
         return (CBORTag) this;
     }
 
-    protected void makeImmutable(CBORObject object) {
+    void makeImmutable(CBORObject object) {
         object.immutableFlag = true;
         if (object instanceof CBORMap cborMap) {
             for (CBORMap.Entry entry : cborMap.entries) {
@@ -471,7 +471,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
         }
     }
 
-    protected void immutableTest() {
+    void immutableTest() {
         if (immutableFlag) {
             cborError(STDERR_MAP_KEY_IMMUTABLE);
         }
