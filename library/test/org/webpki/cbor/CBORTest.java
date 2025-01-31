@@ -2441,6 +2441,9 @@ public class CBORTest {
         } catch (Exception e) {
             checkException(e, CBORObject.STDERR_MAP_KEY_IMMUTABLE);
         }
+        CBORArray k = new CBORArray();
+        new CBORMap().set(k, new CBORInt(4));
+        new CBORMap().set(k, new CBORInt(4));
     }
     
     @Test
