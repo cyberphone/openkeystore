@@ -126,6 +126,7 @@ public class CBORTag extends CBORObject {
      * @return Previous object
      */
     public CBORObject update(CBORObject object) {
+        immutableTest();
         CBORObject previous = this.object;
         this.object = object;
         return previous;

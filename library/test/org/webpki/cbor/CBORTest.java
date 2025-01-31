@@ -2419,6 +2419,29 @@ public class CBORTest {
         }
         assertTrue("hash" + reverse, parseCborHex(hex).hashCode() == Integer.parseInt(reverse, 16));
     }
+
+    @Test
+    public void immutableKeys() {
+        CBORArray immutableKey1 = new CBORArray();
+        CBORArray immutableKey2 = new CBORArray();
+        new CBORMap().set(immutableKey1, new CBORInt(4));
+        try {
+            immutableKey1.add(new CBORInt(6));
+            fail("Must not!");
+        } catch (Exception e) {
+            checkException(e, CBORObject.STDERR_MAP_KEY_IMMUTABLE);
+        }
+        CBORArray mutableValue = new CBORArray();
+        new CBORMap().set(new CBORInt(5), mutableValue);
+        mutableValue.add(new CBORMap());
+        new CBORMap().set(new CBORArray().add(immutableKey2), new CBORInt(5));
+        try {
+            immutableKey2.add(new CBORInt(6));
+            fail("Must not!");
+        } catch (Exception e) {
+            checkException(e, CBORObject.STDERR_MAP_KEY_IMMUTABLE);
+        }
+    }
     
     @Test
     public void hashTest() {

@@ -87,6 +87,13 @@ public class CBORMap extends CBORObject {
      * <p>
      * If <code>key</code> is already present, a {@link CBORException} is thrown.
      * </p>
+     * <p>
+     * Note that this implementation does not support <i>mutable</i>
+     * <code>key</code> objects.  To create <code>key</code> objects
+     * of arbitrary complexity,  <code>key</code> objects <b>must</b>
+     * either be created <i>inline</i> (using chaining), or be supplied as
+     * separate variables.
+     * </p>
      * 
      * @param key Key (name)
      * @param object Object (value)
@@ -94,9 +101,14 @@ public class CBORMap extends CBORObject {
      * @throws CBORException
      */
     public CBORMap set(CBORObject key, CBORObject object) {
+        immutableTest();
         key = getKey(key);
         nullCheck(object);
+        // Keys are immutable.
+        makeImmutable(key);
+        // Create a map entry object.
         Entry newEntry = new Entry(key, object);
+        // Insert the entry object in the proper position in the map.
         int insertIndex = entries.size();
         // Keys are always sorted, making the verification process simple.
         // First element? Just insert.
@@ -143,6 +155,7 @@ public class CBORMap extends CBORObject {
      * @throws CBORException
      */
     public CBORMap merge(CBORMap map) {
+        immutableTest();
         for (Entry entry : map.entries.toArray(new Entry[0])) {
             set(entry.key, entry.object);
         }
@@ -252,6 +265,7 @@ public class CBORMap extends CBORObject {
      * @throws CBORException
      */
     public CBORObject remove(CBORObject key) {
+        immutableTest();
         Entry targetEntry = lookup(key, true);
         for (int i = 0; i < entries.size(); i++) {
             if (entries.get(i) == targetEntry) {
@@ -280,6 +294,7 @@ public class CBORMap extends CBORObject {
      * @throws CBORException
      */
     public CBORObject update(CBORObject key, CBORObject object, boolean existing) {
+        immutableTest();
         Entry targetEntry = lookup(key, existing);
         CBORObject previous;
         if (targetEntry == null) {

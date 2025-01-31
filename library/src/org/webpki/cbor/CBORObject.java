@@ -36,6 +36,9 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     // True if object has been read
     private boolean readFlag;
 
+    // True if map key object
+    private boolean immutableFlag;
+
     // This solution is simply to get a JavaDoc that is more logical...
     abstract byte[] internalEncode();
 
@@ -455,6 +458,25 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
         return (CBORTag) this;
     }
 
+    protected void makeImmutable(CBORObject object) {
+        object.immutableFlag = true;
+        if (object instanceof CBORMap cborMap) {
+            for (CBORMap.Entry entry : cborMap.entries) {
+                makeImmutable(entry.object);
+            }
+        } else if (object instanceof CBORArray cborArray) {
+            for (CBORObject value : cborArray.objects) {
+                makeImmutable(value);
+            }
+        }
+    }
+
+    protected void immutableTest() {
+        if (immutableFlag) {
+            cborError(STDERR_MAP_KEY_IMMUTABLE);
+        }
+    }
+
     /**
      * Scan CBOR object and mark it as read.
      * <p>
@@ -649,5 +671,8 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
 
     static final String STDERR_FLOAT_RANGE =
             "Value out of range for \"float\"";
+
+    static final String STDERR_MAP_KEY_IMMUTABLE =
+            "Map keys are immutable";
 
 }

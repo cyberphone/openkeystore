@@ -60,6 +60,7 @@ public class CBORArray extends CBORObject {
      * @return <code>this</code>
      */
     public CBORArray add(CBORObject object) {
+        immutableTest();
         nullCheck(object);
         objects.add(object);
         return this;
@@ -74,6 +75,7 @@ public class CBORArray extends CBORObject {
      * @throws IndexOutOfBoundsException If the index is out of range.
      */
     public CBORObject update(int index, CBORObject object) {
+        immutableTest();
         return objects.set(index, object);
     }
 
