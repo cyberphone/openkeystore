@@ -92,7 +92,7 @@ public class CBORMap extends CBORObject {
      * <code>key</code> objects.  To create <code>key</code> objects
      * of arbitrary complexity,  <code>key</code> objects <b>must</b>
      * either be created <i>inline</i> (using chaining), or be supplied as
-     * separate variables.
+     * <i>preset variables</i>.
      * </p>
      * 
      * @param key Key (name)
