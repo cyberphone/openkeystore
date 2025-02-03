@@ -30,7 +30,7 @@ import static org.webpki.cbor.CBORInternal.*;
  */
 public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
 
-    
+    // Package level constructor
     CBORObject() {}
     
     // True if object has been read
