@@ -88,8 +88,8 @@ public class CBORMap extends CBORObject {
      * If <code>key</code> is already present, a {@link CBORException} is thrown.
      * </p>
      * <p>
-     * Note that this implementation does not support <i>mutable</i>
-     * <code>key</code> objects.  To create <code>key</code> objects
+     * Note that this implementation presumes that <code>key</code> objects
+     * are <i>immutable</i>.  To create <code>key</code> objects
      * of arbitrary complexity,  <code>key</code> objects <b>must</b>
      * either be created <i>inline</i> (using chaining), or be supplied as
      * <i>preset variables</i>.
