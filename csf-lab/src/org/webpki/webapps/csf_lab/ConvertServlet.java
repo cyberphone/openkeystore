@@ -82,10 +82,11 @@ public class ConvertServlet extends CoreRequestServlet {
             ArrayList<CBORObject> sequence = new ArrayList<>();
             ByteArrayInputStream bais = new ByteArrayInputStream(cborBytes);
             CBORObject cborObject;
-            CBORDecoder cborDecoder = new CBORDecoder(bais)
-                .setSequenceMode(sequenceFlag)
-                .setDeterministicMode(strictFlag)
-                .setFloatSupport(!rejectNaNFlag)
+            CBORDecoder cborDecoder = new CBORDecoder(bais, 
+                (sequenceFlag ? CBORDecoder.SEQUENCE_MODE : 0) |
+                (strictFlag ? 0 :
+                     CBORDecoder.LENIENT_MAP_DECODING | CBORDecoder.LENIENT_NUMBER_DECODING) |
+                (rejectNaNFlag ? CBORDecoder.REJECT_INVALID_FLOATS : 0))
                 .setInputLength(cborBytes.length);
             while ((cborObject = cborDecoder.decodeWithOptions()) != null) {
                 sequence.add(cborObject);

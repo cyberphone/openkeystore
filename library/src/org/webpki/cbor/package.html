@@ -31,7 +31,7 @@ notation:
 including support for <code style='white-space:nowrap'>-0.0</code>, <code>NaN</code>,
  and <code style='white-space:nowrap'>&pm;Infinity</code>.
 The encoded representation is determined by the size and precision of the value.
-Also see {@link CBORDecoder#setFloatSupport(boolean)}.</li>
+Also see {@link CBORDecoder#CBORDecoder(InputStream, int)}.</li>
 </ol>
 <p>
 This implementation does not support CBOR &quot;simple&quot; values beyond
@@ -173,7 +173,7 @@ may also be provided in
 Any deviation from the rules above will throw exceptions using the standard decoder
 ({@link CBORDecoder#decode(byte[])}).
 For more control of the decoding process including dealing with CBOR sequences, see:
-{@link CBORDecoder#CBORDecoder(inputStream)
+{@link CBORDecoder#CBORDecoder(inputStream, int)
 CBOR&nbsp;decoding&nbsp;options}.
 <p>
 On output ({@link CBORObject#encode()})
