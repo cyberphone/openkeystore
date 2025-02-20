@@ -161,7 +161,12 @@ numbers like <code>f98001</code>.
   RFC: Map keys <b>must</b> be sorted in the bytewise lexicographic 
 order of their deterministic encoding.
 Duplicate keys <b>must</b> be rejected.
-</li>
+Somewhat surprisingly the following represents a properly sorted map:
+<div style='margin:0.5em 0 0 2em'><code>{<br>
+&nbsp;&nbsp;&quot;a&quot;: ... ,<br>
+&nbsp;&nbsp;&quot;b&quot;: ... ,<br>
+&nbsp;&nbsp;&quot;aa&quot;: ...<br>
+}</code></div></li>
 <li id='map-key-equivalence' class='webpkilistspacing'>
   RFC+: Since CBOR encoding according to this specification
 maintains type and data uniqueness, there are no specific restrictions or
