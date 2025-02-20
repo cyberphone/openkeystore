@@ -76,6 +76,13 @@ a few constraints (denoted by RFC+), where the RFC offers choices.
 The encoding rules are as follows:
 </div>
 <ul>
+<li id='immutable-objects' class='webpkilistspacing'>
+  RFC+: In order to support cryptographic operations like hashing,
+  deterministic CBOR according to this specification
+  <b>must</b> support <i>immutable</i> CBOR objects.  As an example,
+  ISO date-strings must be preserved in their original form, regardless of
+  their representation as a platform-native data type.
+</li>
 <li id='number-encoding' class='webpkilistspacing'>
   RFC+: Floating-point and integer objects <b>must</b> be treated as <i>distinct types</i>
 regardless of their numeric value. This is compliant with
