@@ -28,7 +28,7 @@ public class CBORSequenceBuilder {
     /**
      * Creates a CBOR sequence builder.
      * <p>
-     * See also {@link CBORDecoder#CBORDecoder(InputStream, int)}.
+     * See also {@link CBORDecoder#CBORDecoder(InputStream, int, int)}.
      * </p>
      * 
      */

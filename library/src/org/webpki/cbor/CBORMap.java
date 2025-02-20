@@ -174,7 +174,7 @@ public class CBORMap extends CBORObject {
      * The <code>setSortingMode</code> method may be called multiple times,
      * permitting certain keys to be automatically sorted and others
      * to be provided in a presorted fashion.
-     * See also {@link CBORDecoder#CBORDecoder(InputStream, int)}.
+     * See also {@link CBORDecoder#CBORDecoder(InputStream, int, int)}.
      * </p>
      *  
      * @param preSortedKeys If <code>true</code>, keys <b>must</b> be

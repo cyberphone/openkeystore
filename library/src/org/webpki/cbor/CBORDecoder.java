@@ -46,7 +46,7 @@ public class CBORDecoder {
     private boolean strictNumbers;
     private boolean rejectNanInfinity;
     private boolean atFirstByte;
-    private int maxLength = Integer.MAX_VALUE;
+    private int maxInputLength;
     private int byteCount;
 
     /**
@@ -90,17 +90,23 @@ public class CBORDecoder {
     * the {@link CBORDecoder#REJECT_INVALID_FLOATS} option
     * causes such numbers to throw a {@link CBORException}.</div>
     * </p>
+    * <p>
+    * Exceeding <code>maxInputLength</code> throws a {@link CBORException}.  It is
+    * <i>recommendable</i> setting this as low as possible, since malformed
+    * CBOR objects may request any amount of memory.
+    * </p>
     * @param inputStream Stream holding CBOR data. 
     * @param options The decoder options.
+    * @param maxInputLength Upper limit in bytes.
     * @see #getByteCount()
-    * @see #setInputLength(int)
     */
-    public CBORDecoder(InputStream inputStream, int options) {
+    public CBORDecoder(InputStream inputStream, int options, int maxInputLength) {
         this.inputStream = inputStream;
         this.sequenceMode = (options & SEQUENCE_MODE) == SEQUENCE_MODE;
         this.strictMaps = (options & LENIENT_MAP_DECODING) != LENIENT_MAP_DECODING;
         this.strictNumbers = (options & LENIENT_NUMBER_DECODING) != LENIENT_NUMBER_DECODING;
         this.rejectNanInfinity = (options & REJECT_INVALID_FLOATS) == REJECT_INVALID_FLOATS;
+        this.maxInputLength = maxInputLength;
     }
     
     private void eofError() {
@@ -112,7 +118,7 @@ public class CBORDecoder {
     }
     
     private void outOfLimitTest(int increment) {
-        if ((byteCount += increment) > maxLength || byteCount < 0) {
+        if ((byteCount += increment) > maxInputLength || byteCount < 0) {
             cborError(STDERR_READING_LIMIT);
         }
     }
@@ -343,32 +349,12 @@ public class CBORDecoder {
     public int getByteCount() {
         return byteCount;
     }
-
-    /**
-     * Set CBOR decoder input max length.
-     * <p>
-     * By default the CBOR decoder accepts up to ({@link Integer#MAX_VALUE}
-     * bytes of input data.
-     * Since malformed CBOR objects can request arbitrary amounts of memory,
-     * it is <i>highly recommended</i> to select a value that is adapted to
-     * the actual application.
-     * This method enables overriding the default.
-     * </p>
-     * @param maxLength Maximum length of CBOR input in bytes.
-     * Exceeding this limit will cause a {@link CBORException} to be thrown.
-     * @return <code>this</code>
-     */
-    public CBORDecoder setInputLength(int maxLength) {
-        this.maxLength = maxLength;
-        return this;
-    }
  
     /**
      * Decode CBOR data.
      * <p>
      * This conveniance method is identical to:
-     * <pre>  new CBORDecoder(new ByteArrayInputStream(cbor), 0)
-     *      .setInputLength(cbor.length)
+     * <pre>  new CBORDecoder(new ByteArrayInputStream(cbor), 0, cbor.length)
      *      .decodeWithOptions();
      * </pre>
      * </p>
@@ -377,8 +363,7 @@ public class CBORDecoder {
      * @throws CBORException For decoding errors.
      */
     public static CBORObject decode(byte[] cbor) {
-        return new CBORDecoder(new ByteArrayInputStream(cbor), 0)
-                                   .setInputLength(cbor.length)
+        return new CBORDecoder(new ByteArrayInputStream(cbor), 0, cbor.length)
                                    .decodeWithOptions();
     }
     
