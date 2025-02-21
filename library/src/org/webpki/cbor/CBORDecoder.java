@@ -52,11 +52,15 @@ public class CBORDecoder {
     /**
     * Create a customized CBOR decoder.
     * <p>
-    * This constructor enables decoder customization through an <code>options</code> parameter.
+    * This constructor presumes that the actual decoding is performed
+    * by one or more (for sequences only) calls to {@link #decodeWithOptions()}.
+    * </p>
+    * <p>
+    * Customization is provided through an <code>options</code> parameter.
     * Multiple options can be combined using the binary OR-operator ("<code>|</code>").
     * A zero (0) sets the decoder default mode.
     * The options are defined by the following constants:
-    * <div style='margin-top:0.5em'>{@link CBORDecoder#SEQUENCE_MODE}:</div>
+    * <div style='margin-top:0.3em'>{@link CBORDecoder#SEQUENCE_MODE}:</div>
     * <div style='padding:0.2em 0 0 1.2em'>If the {@link CBORDecoder#SEQUENCE_MODE}
     * option is defined, the following apply:
     * <ul style='padding:0;margin:0 0 0.5em 1.2em'>
