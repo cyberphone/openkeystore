@@ -50,10 +50,10 @@ public class CBORDecoder {
     private int byteCount;
 
     /**
-    * Create a CBOR decoder supporting options.
+    * Create a customized CBOR decoder.
     * <p>
-    * Multiple options can be combined using the binary OR-operator
-    * ("<code>|</code>").
+    * This constructor enables decoder customization through an <code>options</code> parameter.
+    * Multiple options can be combined using the binary OR-operator ("<code>|</code>").
     * A zero (0) sets the decoder default mode.
     * The options are defined by the following constants:
     * <div style='margin-top:0.5em'>{@link CBORDecoder#SEQUENCE_MODE}:</div>
