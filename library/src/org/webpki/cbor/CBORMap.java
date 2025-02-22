@@ -267,12 +267,7 @@ public class CBORMap extends CBORObject {
     public CBORObject remove(CBORObject key) {
         immutableTest();
         Entry targetEntry = lookup(key, true);
-        for (int i = 0; i < entries.size(); i++) {
-            if (entries.get(i) == targetEntry) {
-                entries.remove(i);
-                break;
-            }
-        }
+        entries.remove(targetEntry);
         return targetEntry.object;
     }
 
