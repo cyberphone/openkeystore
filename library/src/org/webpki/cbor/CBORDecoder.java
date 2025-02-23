@@ -52,6 +52,11 @@ public class CBORDecoder {
     /**
     * Create a customized CBOR decoder.
     * <p>
+    * Note that irrespective of options, the decoder maintains parsed data
+    * in the form required for  
+    * <a href='package-summary.html#deterministic-encoding'>Deterministic&nbsp;Encoding</a>.
+    * </p>
+    * <p>
     * This constructor presumes that the actual decoding is performed
     * by one or more (for sequences only) calls to {@link #decodeWithOptions()}.
     * </p>
@@ -322,8 +327,11 @@ public class CBORDecoder {
 
     /**
      * Decode CBOR data with options.
+     * <p>
+     * Unsupported or malformed CBOR data cause a {@link CBORException} to be thrown.
+     * </p>
      * @return {@link CBORObject} or <code>null</code> (for EOF sequences only).
-     * @throws CBORException For decoding errors.
+     * @throws CBORException
      */
     public CBORObject decodeWithOptions() {        
         try {
@@ -356,6 +364,9 @@ public class CBORDecoder {
     /**
      * Decode CBOR data.
      * <p>
+     * Unsupported or malformed CBOR data cause a {@link CBORException} to be thrown.
+     * </p>
+     * <p>
      * This conveniance method is identical to:
      * <pre>  new CBORDecoder(new ByteArrayInputStream(cbor), 0, cbor.length)
      *      .decodeWithOptions();
@@ -363,7 +374,7 @@ public class CBORDecoder {
      * </p>
      * @param cbor CBOR binary data <i>holding exactly one CBOR object</i>.
      * @return {@link CBORObject}
-     * @throws CBORException For decoding errors.
+     * @throws CBORException
      */
     public static CBORObject decode(byte[] cbor) {
         return new CBORDecoder(new ByteArrayInputStream(cbor), 0, cbor.length)
