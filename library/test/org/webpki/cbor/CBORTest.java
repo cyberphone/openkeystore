@@ -2482,4 +2482,33 @@ public class CBORTest {
             }
         }
     }
+
+    void oneDateTime(long epoch, String isoString) {
+        assertTrue("date1", new CBORString(isoString).getDateTime().getTimeInMillis() == epoch);
+        CBORObject cbor = CBORDecoder.decode(new CBORString(isoString).encode());
+        assertTrue("date2", cbor.getDateTime().getTimeInMillis() == epoch);
+        assertTrue("date3", new CBORTag(0l, new CBORString(isoString))
+            .get().getDateTime().getTimeInMillis() == epoch);
+    }
+
+    void badDate(String hexBor, String err) {
+        try {
+            CBORDecoder.decode(Hex.decode(hexBor));
+            fail("must not");
+        } catch (Exception e) {
+            checkException(e, err);
+        }
+    }
+
+    @Test
+    public void isoDates() {
+        oneDateTime(1740060548000l, "2025-02-20T14:09:08+00:00");
+        oneDateTime(1740060548000l, "2025-02-20T14:09:08Z");
+        oneDateTime(1740060548000l, "2025-02-20T15:09:08+01:00");
+        oneDateTime(1740060548000l, "2025-02-20T15:39:08+01:30");
+        oneDateTime(1740060548000l, "2025-02-20T12:09:08-02:00");
+        oneDateTime(1740060548000l, "2025-02-20T11:39:08-02:30");
+        badDate("c001", "Invalid ISO date object: 0(1)");
+        badDate("c06135", "\"dateTime\" syntax error: 5");
+    }
  }

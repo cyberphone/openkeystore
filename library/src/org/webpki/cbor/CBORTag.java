@@ -87,6 +87,7 @@ public class CBORTag extends CBORObject {
      * @param tagNumber Tag number
      * @param object Object
      */
+    @SuppressWarnings("this-escape")
     public CBORTag(long tagNumber, CBORObject object) {
         this.tagNumber = tagNumber;
         this.object = object;
@@ -98,15 +99,14 @@ public class CBORTag extends CBORObject {
                     return;
                 }
             }
-            cborError(STDERR_INVALID_COTX_OBJECT + object.toDiagnosticNotation(false));
+            cborError(STDERR_INVALID_COTX_OBJECT + toDiagnosticNotation(false));
         } else if (tagNumber == RESERVED_TAG_DATE) {
             if (object instanceof CBORString) {
-                try {
-                    ISODateTime.decode(object.getString(), ISODateTime.COMPLETE);
-                    return;
-                } catch (Exception e) {}
+                // Notr: clone() because we have mot read it really.
+                object.clone().getDateTime();
+                return;
             }
-            cborError(STDERR_ISO_DATE_ERROR + object.toDiagnosticNotation(false));
+            cborError(STDERR_ISO_DATE_ERROR + toDiagnosticNotation(false));
         }
     }
 
@@ -158,5 +158,5 @@ public class CBORTag extends CBORObject {
             "Invalid COTX object: ";
 
     static final String STDERR_ISO_DATE_ERROR =
-            "Invalid ISO date string: ";
+            "Invalid ISO date object: ";
 }
