@@ -405,17 +405,42 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }
 
     /**
+     * Get UNIX <code>Epoch</code> time object.
+     * <p>
+     * This method requires that the underlying object is a 
+     * {@link CBORInt} or {@link CBORFloat}, 
+     * otherwise a {@link CBORException} is thrown.
+     * </p>
+      * 
+     * @return <code>GregorianCalendar</code>
+     * @see CBORTag#getEpochTime()
+     * @throws CBORException
+     */
+    public GregorianCalendar getEpochTime() {
+        long timeInMillis;
+        if (this instanceof CBORInt) {
+            timeInMillis = getInt64() * 1000;
+        } else {
+            timeInMillis = Math.round(getFloat64() * 1000);
+        }
+        GregorianCalendar gregorianCalendar = new GregorianCalendar();
+        gregorianCalendar.setTimeInMillis(timeInMillis);
+        return gregorianCalendar;
+    }
+
+    /**
      * Get ISO <code>date/time</code> object.
      * <p>
      * This method requires that the underlying object is a 
-     * {@link CBORString} that is compatible with
-     * <a href='https://www.rfc-editor.org/rfc/rfc3339.html'>RFC&nbsp;3339</a>], 
+     * {@link CBORString} that is compatible with ISO date/time
+     * [<a href='https://www.rfc-editor.org/rfc/rfc3339.html'>RFC&nbsp;3339</a>], 
      * otherwise a {@link CBORException} is thrown.
      * </p>
       * 
      * @return <code>GregorianCalendar</code>
      * @throws CBORException
      * @throws IllegalArgumentException
+     * @see CBORTag#getEpochTime()
      */
     public GregorianCalendar getDateTime() {
         return ISODateTime.decode(getString(), ISODateTime.COMPLETE);

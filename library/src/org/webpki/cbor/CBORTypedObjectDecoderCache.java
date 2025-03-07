@@ -58,19 +58,14 @@ public class CBORTypedObjectDecoderCache {
      * @return Instantiated {@link CBORTypedObjectDecoder}
      */
     public CBORTypedObjectDecoder decode(CBORObject typedObject) {
-        CBORTag tag = typedObject.getTag();
-        if (tag.tagNumber != CBORTag.RESERVED_TAG_COTX) {
-            throw new CBORException("COTX expcted, got: " + tag.tagNumber);
-        }
-        CBORArray cborArray = tag.object.getArray();
-        String objectId = cborArray.get(0).getString();
-        Class<? extends CBORTypedObjectDecoder> schemaClass = classMap.get(objectId);
+        CBORTag.COTXObject cotxObject = typedObject.getTag().getCOTXObject();
+        Class<? extends CBORTypedObjectDecoder> schemaClass = classMap.get(cotxObject.objectId);
         if (schemaClass == null) {
-            throw new CBORException("Unknown ObjectId: " + objectId);
+            throw new CBORException("Unknown ObjectId: " + cotxObject.objectId);
         }
         CBORTypedObjectDecoder decoder = getInstance(schemaClass);
         decoder.root = typedObject;
-        decoder.decode(cborArray.get(1));
+        decoder.decode(cotxObject.object);
         if (decoder.enableCheckForUnread()) {
             typedObject.checkForUnread();
         }

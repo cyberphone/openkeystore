@@ -2488,7 +2488,17 @@ public class CBORTest {
         CBORObject cbor = CBORDecoder.decode(new CBORString(isoString).encode());
         assertTrue("date2", cbor.getDateTime().getTimeInMillis() == epoch);
         assertTrue("date3", new CBORTag(0l, new CBORString(isoString))
-            .get().getDateTime().getTimeInMillis() == epoch);
+            .getDateTime().getTimeInMillis() == epoch);
+        assertTrue("date3", new CBORTag(1l, new CBORInt(epoch / 1000))
+            .getEpochTime().getTimeInMillis() == epoch);
+        assertTrue("date31", new CBORInt(epoch / 1000)
+            .getEpochTime().getTimeInMillis() == epoch);
+        assertTrue("date4", new CBORTag(1l, new CBORFloat(((double)epoch) / 1000))
+            .getEpochTime().getTimeInMillis() == epoch);
+        assertTrue("date5", new CBORTag(1l, new CBORFloat(((double)epoch + 3.0) / 1000))
+            .getEpochTime().getTimeInMillis() == epoch + 3);
+        assertTrue("date5", new CBORFloat(((double)epoch - 3.0) / 1000)
+            .getEpochTime().getTimeInMillis() == epoch - 3);
     }
 
     void badDate(String hexBor, String err) {
@@ -2500,15 +2510,24 @@ public class CBORTest {
         }
     }
 
+    void oneEpoch(String hexBor, double epoch) {
+        assertTrue("epoch1", CBORDecoder.decode(Hex.decode(hexBor))
+            .getEpochTime().getTimeInMillis() == epoch * 1000);
+    }
+
     @Test
-    public void isoDates() {
+    public void dateSystems() {
         oneDateTime(1740060548000l, "2025-02-20T14:09:08+00:00");
         oneDateTime(1740060548000l, "2025-02-20T14:09:08Z");
         oneDateTime(1740060548000l, "2025-02-20T15:09:08+01:00");
         oneDateTime(1740060548000l, "2025-02-20T15:39:08+01:30");
         oneDateTime(1740060548000l, "2025-02-20T12:09:08-02:00");
         oneDateTime(1740060548000l, "2025-02-20T11:39:08-02:30");
-        badDate("c001", "Invalid ISO date object: 0(1)");
+        badDate("c001", "Invalid ISO date/time object: 0(1)");
         badDate("c06135", "\"dateTime\" syntax error: 5");
+        badDate("c16135", "Is type: CBORString, requested: CBORFloat");
+        oneEpoch("FB41D9EDCDE113645A", 1740060548.303);
+        oneEpoch("c1FB41D9EDCDE113645A", 1740060548.303);
+        oneEpoch("00", 0);
     }
  }
