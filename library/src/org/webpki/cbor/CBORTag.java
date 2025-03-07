@@ -170,7 +170,7 @@ public class CBORTag extends CBORObject {
             tagSyntaxError(STDERR_ISO_DATE_TIME);
         }
         // We have read it.
-        object.scan();
+        scan();
         return dateTime;
     }
 
@@ -190,7 +190,7 @@ public class CBORTag extends CBORObject {
             tagSyntaxError(STDERR_EPOCH_TIME);
         }
         // We have read it.
-        object.scan();
+        scan();
         return epochTime;
     }
 

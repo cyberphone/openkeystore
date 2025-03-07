@@ -417,12 +417,8 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * @throws CBORException
      */
     public GregorianCalendar getEpochTime() {
-        long timeInMillis;
-        if (this instanceof CBORInt) {
-            timeInMillis = getInt64() * 1000;
-        } else {
-            timeInMillis = Math.round(getFloat64() * 1000);
-        }
+        long timeInMillis = this instanceof CBORInt ? 
+                                  getInt64() * 1000 :  Math.round(getFloat64() * 1000);
         GregorianCalendar gregorianCalendar = new GregorianCalendar();
         gregorianCalendar.setTimeInMillis(timeInMillis);
         return gregorianCalendar;

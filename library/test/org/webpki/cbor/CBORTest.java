@@ -2510,9 +2510,18 @@ public class CBORTest {
         }
     }
 
-    void oneEpoch(String hexBor, double epoch) {
+    void oneEpoch(String hexBor, double epoch, String err) {
         assertTrue("epoch1", CBORDecoder.decode(Hex.decode(hexBor))
             .getEpochTime().getTimeInMillis() == epoch * 1000);
+        CBORObject date = CBORDecoder.decode(Hex.decode(hexBor));
+        try {
+            date.checkForUnread();
+            fail("must not");
+        } catch (Exception e) {
+            checkException(e, err);
+        }
+        date.getEpochTime();
+        date.checkForUnread();
     }
 
     @Test
@@ -2526,8 +2535,8 @@ public class CBORTest {
         badDate("c001", "Invalid ISO date/time object: 0(1)");
         badDate("c06135", "\"dateTime\" syntax error: 5");
         badDate("c16135", "Is type: CBORString, requested: CBORFloat");
-        oneEpoch("FB41D9EDCDE113645A", 1740060548.303);
-        oneEpoch("c1FB41D9EDCDE113645A", 1740060548.303);
-        oneEpoch("00", 0);
+        oneEpoch("FB41D9EDCDE113645A", 1740060548.303, "Data of type=CBORFloat");
+        oneEpoch("c1FB41D9EDCDE113645A", 1740060548.303, "Tagged object 1 of type=CBORFloat");
+        oneEpoch("00", 0, "Data of type=CBORInt");
     }
  }
