@@ -119,19 +119,12 @@ public class CBORTag extends CBORObject {
         this.object = object;
         nullCheck(object);
         if (tagNumber == RESERVED_TAG_DATE_TIME) {
-            if (object instanceof CBORString) {
-                // Note: clone() because we have mot read it really.
-                dateTime = object.clone().getDateTime();
-                return;
-            }
-            tagSyntaxError(STDERR_ISO_DATE_TIME);
-        }
-        if (tagNumber == RESERVED_TAG_EPOCH_TIME) {
+            // Note: clone() because we have mot read it really.
+            dateTime = object.clone().getDateTime();
+        } else if (tagNumber == RESERVED_TAG_EPOCH_TIME) {
             // Note: clone() because we have mot read it really.
             epochTime = object.clone().getEpochTime();
-            return;
-        }
-        if (tagNumber == RESERVED_TAG_COTX) {
+        } else if (tagNumber == RESERVED_TAG_COTX) {
             if (object instanceof CBORArray) {
                 CBORArray holder = object.getArray();
                 if (holder.size() == 2 && holder.get(0) instanceof CBORString) {

@@ -2532,7 +2532,7 @@ public class CBORTest {
         oneDateTime(1740060548000l, "2025-02-20T15:39:08+01:30");
         oneDateTime(1740060548000l, "2025-02-20T12:09:08-02:00");
         oneDateTime(1740060548000l, "2025-02-20T11:39:08-02:30");
-        badDate("c001", "Invalid ISO date/time object: 0(1)");
+        badDate("c001", "Is type: CBORInt, requested: CBORString");
         badDate("c06135", "\"dateTime\" syntax error: 5");
         badDate("c16135", "Is type: CBORString, requested: CBORFloat");
         oneEpoch("FB41D9EDCDE113645A", 1740060548.303, "Data of type=CBORFloat");
