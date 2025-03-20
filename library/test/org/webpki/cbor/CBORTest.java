@@ -295,6 +295,7 @@ public class CBORTest {
                 checkException(e, CBORInt.STDERR_INT_VALUE_OUT_OF_RANGE);
             }
         }
+        assertTrue("eq", ib.getBigInteger().compareTo(bigVal) == 0);
     }
 
     void stringTest(String string, String hex) {
