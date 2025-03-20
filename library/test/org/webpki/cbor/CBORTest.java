@@ -273,6 +273,30 @@ public class CBORTest {
         assertTrue("Big2 d=" + decS + " v=" + value, value.equals(decS));
     }
 
+    void intBigintTest(String value, String hex, boolean big) {
+        BigInteger bigVal = new BigInteger(value);
+        byte[] cbor = new CBORBigInt(bigVal).encode();
+        String calc = HexaDecimal.encode(cbor);
+        assertTrue("big1 int=" + value + " c=" + calc + " h=" + hex,
+                hex.equals(HexaDecimal.encode(cbor)));
+        CBORObject ib = CBORDecoder.decode(cbor);
+        assertTrue("ib1", big ^ ib instanceof CBORInt);
+        calc = HexaDecimal.encode(ib.encode());
+        assertTrue("big2 int=" + value + " c=" + calc + " h=" + hex,
+                hex.equals(HexaDecimal.encode(cbor)));
+        assertTrue("dn=" + ib.toString(), value.equals(ib.toString()));
+        assertTrue("dn2", value.equals(new CBORBigInt(bigVal).toString()));
+        if (value.startsWith("-")) {
+            try {
+                new CBORInt(bigVal.longValue(), false);
+                assertTrue("should not", big);
+            } catch (Exception e) {
+                assertFalse("should", big);
+                checkException(e, CBORInt.STDERR_INT_VALUE_OUT_OF_RANGE);
+            }
+        }
+    }
+
     void stringTest(String string, String hex) {
         byte[] cbor = new CBORString(string).encode();
         String calc = HexaDecimal.encode(cbor);
@@ -465,7 +489,7 @@ public class CBORTest {
         integerTest(0x8000000000000000L, true, true,      "1b8000000000000000");
         integerTest(0xffffffffffffffffL, true, true,      "1bffffffffffffffff");
         integerTest(0xfffffffffffffffeL, true, true,      "1bfffffffffffffffe");
-        integerTest(-1,                  false, true,     "3bffffffffffffffff");
+       // integerTest(-1,                  false, true,     "3bffffffffffffffff");
         
         integerTest("-9223372036854775808",  IntegerVariations.INT64, false);
         integerTest("-9223372036854775809",  IntegerVariations.INT64, true);
@@ -522,6 +546,13 @@ public class CBORTest {
         bigIntegerTest("-18446744073709551617", "c349010000000000000000");
         bigIntegerTest("65535", "19ffff");
         bigIntegerTest("-1", "20");
+
+        intBigintTest("0", "00", false);
+        intBigintTest("-1", "20", false);
+        intBigintTest("-9223372036854775808", "3b7fffffffffffffff", false);
+        intBigintTest("-9223372036854775809", "3b8000000000000000", true);
+        intBigintTest("-18446744073709551616", "3bffffffffffffffff", true);
+        intBigintTest("18446744073709551615", "1bffffffffffffffff", false);
  
         integerTest(-1, "20");
         integerTest(-10, "29");
@@ -626,7 +657,7 @@ public class CBORTest {
         compareToTest(-1, compA, compB);
         compareToTest(1, compB, compA);
 
-        getBigIntegerTest("-18446744073709551616", -1, false);
+ //       getBigIntegerTest("-18446744073709551616", -1, false);
         getBigIntegerTest("-1", 0, false);
         getBigIntegerTest("-9223372036854775808", 9223372036854775807L, false);
         getBigIntegerTest("18446744073709551615", -1, true);

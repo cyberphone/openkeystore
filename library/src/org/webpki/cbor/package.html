@@ -76,13 +76,21 @@ a few constraints (denoted by RFC+), where the RFC offers choices.
 The encoding rules are as follows:
 </div>
 <ul>
-<li id='immutable-objects' class='webpkilistspacing'>
-  RFC+: In order to support cryptographic operations like hashing,
-  deterministic CBOR according to this specification
-  <b>must</b> support <i>immutable</i> CBOR objects.  As an example,
-  ISO date-strings must be preserved in their original form, regardless of
-  their representation as a platform-native data type.
+<li id='immutable-primitives' class='webpkilistspacing'>
+  RFC+: To enable cryptographic methods like hashing
+  to also be applicable to &quot;raw&quot; (unwrapped) CBOR data,
+  compliant encoders and decoders <b>must</b> treat CBOR primitives as <i>immutable</i>. 
+  For example, RFC&nbsp;3339 date/time strings <b>must</b> be preserved
+  in their original form, irrespective of platform native representations
+  of time data.
 </li>
+<li id='cbor-transformations' class='webpkilistspacing'>
+  RFC+: To facilitate transformations of structured CBOR data, compliant encoders
+  and decoders <b>must</b> for CBOR <code>array</code> and <code>map</code> objects,
+  support the <i>removal</i>, <i>update</i>, and <i>addition</i> of CBOR objects.
+  After such an operation, the (deterministic) encoding of
+  the targeted object <b>must</b> correctly reflect the update.
+</li>  
 <li id='number-encoding' class='webpkilistspacing'>
   RFC+: Floating-point and integer objects <b>must</b> be treated as <i>distinct types</i>
 regardless of their numeric value. This is compliant with
@@ -184,7 +192,7 @@ may also be provided in
 </ul>
 Any deviation from the rules above will throw exceptions using the standard decoder
 ({@link CBORDecoder#decode(byte[])}).
-<p>
+<p id='decoder-options'>
 For more control of the decoding process, including dealing with "legacy" CBOR
 data as well as with CBOR sequences, see
 {@link CBORDecoder#CBORDecoder(inputStream, int, int)}.

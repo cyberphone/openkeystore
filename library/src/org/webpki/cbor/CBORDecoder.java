@@ -39,6 +39,8 @@ public class CBORDecoder {
     public final static int LENIENT_NUMBER_DECODING = 0x4;
 
     public final static int REJECT_INVALID_FLOATS   = 0x8;
+
+    static final BigInteger NEGATIVE_HIGH_RANGE = new BigInteger("-10000000000000000", 16);
    
     private InputStream inputStream;
     private boolean sequenceMode;
@@ -197,15 +199,8 @@ public class CBORDecoder {
             case MT_BIG_UNSIGNED:
                 byte[] byteArray = getObject().getBytes();
                 BigInteger bigInteger = new BigInteger(1, byteArray);
-                if (strictNumbers) {
-                    if (byteArray.length <= 8 || byteArray[0] == 0) {
-                        cborError(STDERR_NON_DETERMINISTIC_BIGNUM);
-                    }
-                } else {
-                    // Potentially sloppy serialization.
-                    if (bigInteger.compareTo(MAX_CBOR_INTEGER_MAGNITUDE) < 1) {
-                        return new CBORInt(bigInteger.longValue(), tag == MT_BIG_UNSIGNED);
-                    }
+                if (strictNumbers && (byteArray.length <= 8 || byteArray[0] == 0)) {
+                    cborError(STDERR_NON_DETERMINISTIC_BIGNUM);
                 }
                 return new CBORBigInt(tag == MT_BIG_UNSIGNED ? bigInteger : bigInteger.not());
 
@@ -296,7 +291,11 @@ public class CBORDecoder {
                 return new CBORInt(n, true);
 
             case MT_NEGATIVE:
-                return new CBORInt(n, false);
+                // Only let two-complement integers use long.
+                return n < 0 ?
+                    new CBORBigInt(NEGATIVE_HIGH_RANGE.add(BigInteger.valueOf(~n))) 
+                             :
+                    new CBORInt(n, false);
 
             case MT_BYTES:
                 return new CBORBytes(readBytes(checkLength(n)));

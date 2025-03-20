@@ -49,24 +49,20 @@ public class CBORInt extends CBORObject {
      * Creates a CBOR unsigned or negative <code>integer</code>.
      * <p>
      * </p>
-     * To cope with the entire 65-bit integer span supported by CBOR,
-     * this constructor must be used.  Unsigned integers
+     * This constructor must be used for all integers. Unsigned integers
      * range from <code>0</code> to 
      * <span style='white-space:nowrap'><code>2<sup>64</sup>-1</code></span>,
      * while negative integers range from <code>-1</code> to
-     * <span style='white-space:nowrap'><code>-2<sup>64</sup></code></span>.
+     * <span style='white-space:nowrap'><code>-2<sup>63</sup></code></span>.
      *<p>
      * </p> 
      * If the <code>unsigned</code> flag is set to <code>false</code>, 
      * this constructor assumes CBOR native encoding mode for negative integers.
      * That is, <code>value</code> is treated as
      * an unsigned magnitude which is subsequently negated and subtracted by <code>1</code>.
-     * This means that the input values <code>0</code>, <code>9223372036854775807L</code>, 
-     * <code>-9223372036854775808L</code>, and <code>-1</code>,
-     * actually represent <code>-1</code>, <code>-9223372036854775808</code>,
-     * <code>-9223372036854775809</code>, and
-     * <code>-18446744073709551616</code>
-     * (<span style='white-space:nowrap'><code>-2<sup>64</sup></code></span>)
+     * This means that the input values <code>0</code>, and <code>9223372036854775807L</code>, 
+     * actually represent <code>-1</code>, and <code>-9223372036854775808</code>
+     * (<span style='white-space:nowrap'><code>-2<sup>63</sup></code></span>)
      * respectively.
      * <p>
      * See also <a href='#range-constraints'>Range&nbsp;Constraints</a> and 
@@ -75,10 +71,14 @@ public class CBORInt extends CBORObject {
      *
      * @param value long value
      * @param unsigned <code>true</code> if value should be considered as unsigned
+     * @throws CBORException
      */
     public CBORInt(long value, boolean unsigned) {
         this.value = value;
         this.unsigned = unsigned;
+        if (!unsigned && value < 0) {
+            cborError(STDERR_INT_VALUE_OUT_OF_RANGE + value);
+        }
     }
 
     /**
@@ -107,6 +107,9 @@ public class CBORInt extends CBORObject {
 
     @Override
     void internalToString(CborPrinter cborPrinter) {
-        cborPrinter.append(toBigInteger().toString());
+        cborPrinter.append(unsigned ? Long.toUnsignedString(value) : Long.toString(~value));
     }
+
+    static final String STDERR_INT_VALUE_OUT_OF_RANGE = "Integer out of range: ";
+
 }

@@ -62,10 +62,10 @@ public class CBORBigInt extends CBORObject {
             encoded = temp;
         }
         if (encoded.length <= 8) {
-            // Fits in "int65" decoding.
-            return new CBORInt(cborAdjusted.longValue(), unsigned).encode();
+            // Fits in "65bit" decoding.
+            return encodeTagAndN(unsigned ? MT_UNSIGNED : MT_NEGATIVE, cborAdjusted.longValue());
         }
-        // Does not fit "int65" so we must use bignum encoding.
+        // Does not fit "65bit" so we must use bignum encoding.
         return addByteArrays(unsigned ? UNSIGNED_BIGNUM_TAG : NEGATIVE_BIGNUM_TAG, 
                              new CBORBytes(encoded).encode());
     }
