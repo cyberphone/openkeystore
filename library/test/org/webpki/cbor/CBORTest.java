@@ -286,14 +286,12 @@ public class CBORTest {
                 hex.equals(HexaDecimal.encode(cbor)));
         assertTrue("dn=" + ib.toString(), value.equals(ib.toString()));
         assertTrue("dn2", value.equals(new CBORBigInt(bigVal).toString()));
-        if (value.startsWith("-")) {
-            try {
-                new CBORInt(bigVal.longValue(), false);
-                assertTrue("should not", big);
-            } catch (Exception e) {
-                assertFalse("should", big);
-                checkException(e, CBORInt.STDERR_INT_VALUE_OUT_OF_RANGE);
-            }
+        try {
+            new CBORInt(bigVal.longValue(), !value.startsWith("-"));
+            assertFalse("should not", big);
+        } catch (Exception e) {
+            assertTrue("should", big);
+            checkException(e, CBORInt.STDERR_INT_VALUE_OUT_OF_RANGE);
         }
         assertTrue("eq", ib.getBigInteger().compareTo(bigVal) == 0);
     }
@@ -658,9 +656,8 @@ public class CBORTest {
         compareToTest(-1, compA, compB);
         compareToTest(1, compB, compA);
 
- //       getBigIntegerTest("-18446744073709551616", -1, false);
-        getBigIntegerTest("-1", 0, false);
-        getBigIntegerTest("-9223372036854775808", 9223372036854775807L, false);
+        getBigIntegerTest("-1", -1, false);
+        getBigIntegerTest("-9223372036854775808", -9223372036854775808L, false);
         getBigIntegerTest("18446744073709551615", -1, true);
 
     }

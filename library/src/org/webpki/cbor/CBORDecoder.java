@@ -295,7 +295,7 @@ public class CBORDecoder {
                 return n < 0 ?
                     new CBORBigInt(NEGATIVE_HIGH_RANGE.add(BigInteger.valueOf(~n))) 
                              :
-                    new CBORInt(n, false);
+                    new CBORInt(~n, false);
 
             case MT_BYTES:
                 return new CBORBytes(readBytes(checkLength(n)));

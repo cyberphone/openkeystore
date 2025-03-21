@@ -48,22 +48,12 @@ public class CBORInt extends CBORObject {
     /**
      * Creates a CBOR unsigned or negative <code>integer</code>.
      * <p>
-     * </p>
      * This constructor must be used for all integers. Unsigned integers
      * range from <code>0</code> to 
      * <span style='white-space:nowrap'><code>2<sup>64</sup>-1</code></span>,
-     * while negative integers range from <code>-1</code> to
+     * while valid negative integers range from <code>-1</code> to
      * <span style='white-space:nowrap'><code>-2<sup>63</sup></code></span>.
-     *<p>
-     * </p> 
-     * If the <code>unsigned</code> flag is set to <code>false</code>, 
-     * this constructor assumes CBOR native encoding mode for negative integers.
-     * That is, <code>value</code> is treated as
-     * an unsigned magnitude which is subsequently negated and subtracted by <code>1</code>.
-     * This means that the input values <code>0</code>, and <code>9223372036854775807L</code>, 
-     * actually represent <code>-1</code>, and <code>-9223372036854775808</code>
-     * (<span style='white-space:nowrap'><code>-2<sup>63</sup></code></span>)
-     * respectively.
+     * </p>
      * <p>
      * See also <a href='#range-constraints'>Range&nbsp;Constraints</a> and 
      * {@link CBORBigInt#CBORBigInt(BigInteger)}.
@@ -76,7 +66,7 @@ public class CBORInt extends CBORObject {
     public CBORInt(long value, boolean unsigned) {
         this.value = value;
         this.unsigned = unsigned;
-        if (!unsigned && value < 0) {
+        if (!unsigned && value >= 0) {
             cborError(STDERR_INT_VALUE_OUT_OF_RANGE + value);
         }
     }
@@ -91,23 +81,22 @@ public class CBORInt extends CBORObject {
      * @param value Java (signed) long type
      */
     public CBORInt(long value) {
-        this(value >= 0 ? value : ~value, value >= 0);
+        this(value, value >= 0);
     }
 
     @Override
     byte[] internalEncode() {
-        return encodeTagAndN(unsigned ? MT_UNSIGNED : MT_NEGATIVE, value);
+        return encodeTagAndN(unsigned ? MT_UNSIGNED : MT_NEGATIVE, unsigned ? value : ~value);
     }
 
     BigInteger toBigInteger() {
-        // "int65", really?!
-        BigInteger bigInteger = BigInteger.valueOf(value).and(MAX_CBOR_INTEGER_MAGNITUDE);
-        return unsigned ? bigInteger : bigInteger.not();
+        BigInteger bigInteger = BigInteger.valueOf(value);
+        return unsigned ? bigInteger.and(MAX_CBOR_INTEGER_MAGNITUDE) : bigInteger;
     }
 
     @Override
     void internalToString(CborPrinter cborPrinter) {
-        cborPrinter.append(unsigned ? Long.toUnsignedString(value) : Long.toString(~value));
+        cborPrinter.append(unsigned ? Long.toUnsignedString(value) : Long.toString(value));
     }
 
     static final String STDERR_INT_VALUE_OUT_OF_RANGE = "Integer out of range: ";
