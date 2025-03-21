@@ -286,6 +286,7 @@ public class CBORTest {
                 hex.equals(HexaDecimal.encode(cbor)));
         assertTrue("dn=" + ib.toString(), value.equals(ib.toString()));
         assertTrue("dn2", value.equals(new CBORBigInt(bigVal).toString()));
+        assertTrue("dn3", value.equals(ib.getBigInteger().toString()));
         try {
             new CBORInt(bigVal.longValue(), !value.startsWith("-"));
             assertFalse("should not", big);
