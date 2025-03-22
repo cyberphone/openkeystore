@@ -18,6 +18,8 @@ package org.webpki.cbor;
 
 import java.math.BigInteger;
 
+import java.util.Arrays;
+
 import static org.webpki.cbor.CBORInternal.*;
 
 /**
@@ -57,9 +59,7 @@ public class CBORBigInt extends CBORObject {
         byte[] encoded = cborAdjusted.toByteArray();
         if (encoded[0] == 0) {
             // Remove leading zero which may be present due to two-complement encoding.
-            byte[] temp = new byte[encoded.length - 1];
-            System.arraycopy(encoded, 1, temp, 0, temp.length);
-            encoded = temp;
+            encoded = Arrays.copyOfRange(encoded, 1, encoded.length);
         }
         if (encoded.length <= 8) {
             // Fits in "65bit" decoding.
