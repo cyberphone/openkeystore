@@ -16,8 +16,6 @@
  */
 package org.webpki.cbor;
 
-import java.math.BigInteger;
-
 /**
  * CBOR internals.
  */
@@ -71,8 +69,6 @@ class CBORInternal {
     static final long UINT8_MASK              = 0xffffffffffffff00L;
     
     static final int  MAX_ERROR_MESSAGE       = 100;
-
-    static final BigInteger MAX_CBOR_INTEGER_MAGNITUDE = new BigInteger("ffffffffffffffff", 16);
 
     static void cborError(String error) {
         if (error.length() > MAX_ERROR_MESSAGE) {

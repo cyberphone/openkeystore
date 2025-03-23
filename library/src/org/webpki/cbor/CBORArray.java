@@ -21,20 +21,20 @@ import java.util.ArrayList;
 import static org.webpki.cbor.CBORInternal.*;
 
 /**
- * Class for holding CBOR <code>array</code> objects.
+ * Class for holding CBOR <code>[]</code> (array) objects.
  */
 public class CBORArray extends CBORObject {
 
     ArrayList<CBORObject> objects = new ArrayList<>();
 
     /**
-     * Creates an empty CBOR array <code>[]</code>.
+     * Creates an empty CBOR <code>[]</code> (array).
      * 
      */
     public CBORArray() {}
     
     /**
-     * Get size of the CBOR <code>array</code>.
+     * Get size of the CBOR array.
      * 
      * @return The number of objects in the array
      */
@@ -43,7 +43,7 @@ public class CBORArray extends CBORObject {
     }
     
     /**
-     * Get object at a specific position in the CBOR <code>array</code>.
+     * Get object at a specific position in the CBOR array.
      * 
      * @param index The position (0..size()-1)
      * @return CBOR object
@@ -54,7 +54,7 @@ public class CBORArray extends CBORObject {
     }
     
     /**
-     * Add object to the CBOR <code>array</code>.
+     * Add object to the CBOR array.
      * 
      * @param object Object to be appended to the array.
      * @return <code>this</code>
@@ -67,7 +67,7 @@ public class CBORArray extends CBORObject {
     }
     
     /**
-     * Update object at a specific position in the CBOR <code>array</code>.
+     * Update object at a specific position in the CBOR array.
      * 
      * @param index The position (0..size()-1)
      * @param object Object to set
@@ -80,7 +80,7 @@ public class CBORArray extends CBORObject {
     }
 
     /**
-     * Create shallow copy of the CBOR <code>array</code>.
+     * Create shallow copy of the CBOR array.
      * 
      * @return Array of CBOR objects
      */

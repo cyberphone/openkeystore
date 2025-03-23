@@ -21,14 +21,14 @@ import org.webpki.util.UTF8;
 import static org.webpki.cbor.CBORInternal.*;
 
 /**
- * Class for holding CBOR <code>text&nbsp;string</code> objects.
+ * Class for holding CBOR <code>tstr</code> objects.
  */
 public class CBORString extends CBORObject {
 
     String textString;
 
     /**
-     * Creates a CBOR <code>text string</code>.
+     * Creates a CBOR <code>tstr</code> object.
      * </p>
      * Note that <code>textString</code> must be valid <code>UTF-16</code>.
      * </p>

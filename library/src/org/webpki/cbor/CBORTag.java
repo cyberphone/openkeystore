@@ -21,7 +21,7 @@ import static org.webpki.cbor.CBORInternal.*;
 import java.util.GregorianCalendar;
 
 /**
- * Class for holding CBOR <code>tag</code> objects.
+ * Class for holding CBOR <code>#6.n</code> (tag) objects.
  * <p>
  * Tagged objects are based on CBOR major type 6.
  * This implementation accepts multiple variants of tags:

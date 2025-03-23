@@ -21,35 +21,19 @@ import java.math.BigInteger;
 import static org.webpki.cbor.CBORInternal.*;
 
 /**
- * Class for holding CBOR <code>integer</code> objects.
- * <p id='range-constraints'>
- * Note that the encoder is adaptive, selecting the shortest possible
- * representation in order to produce a fully deterministic result.
- * </p>
- * <div class='webpkicomment'>
- * Applications that are intended to work with multiple platforms
- * should for interoperability reasons not exploit CBOR <code>integer</code> numbers 
- * outside of the traditional range for <code>"unsigned"</code> and <code>"signed"</code> integers.
- * Translated to values, the <i>recommended</i> range would then span from
- * <span style='white-space:nowrap'><code>-2<sup>(n-1)</sup></code></span> to
- * <span style='white-space:nowrap'><code>2<sup>n</sup>-1</code></span>, 
- * where <code>n</code> is the size in bits of the anticipated target integer type.
- * That is, if a protocol schema or declaration calls for a signed
- * <span style='white-space:nowrap'>32-bit</span> integer, the valid
- * range would be <code>-0x80000000</code> to <code>0x7fffffff</code>.
- * See also {@link CBORObject#getInt32()}.
- * </div>
+ * Class for holding CBOR <code>int</code> objects.
  */
 public class CBORInt extends CBORObject {
+
+    static final BigInteger MAX_CBOR_INTEGER_MAGNITUDE = new BigInteger("ffffffffffffffff", 16);
     
     long value;
     boolean unsigned;
     
     /**
-     * Creates a CBOR unsigned or negative <code>integer</code>.
+     * Creates a CBOR unsigned or negative <code>int</code> object.
      * <p>
-     * This constructor must be used for all integers. Unsigned integers
-     * range from <code>0</code> to 
+     * Unsigned integers range from <code>0</code> to 
      * <span style='white-space:nowrap'><code>2<sup>64</sup>-1</code></span>,
      * while valid negative integers range from <code>-1</code> to
      * <span style='white-space:nowrap'><code>-2<sup>63</sup></code></span>.
@@ -72,7 +56,7 @@ public class CBORInt extends CBORObject {
     }
 
     /**
-     * Creates a CBOR signed <code>integer</code>.
+     * Creates a CBOR signed <code>int</code> object.
      * <p>
      * See also {@link CBORInt(long, boolean)} and 
      * {@link CBORBigInt#CBORBigInt(BigInteger)}.

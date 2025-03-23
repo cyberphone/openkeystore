@@ -28,7 +28,7 @@ public class CBORBytes extends CBORObject {
     byte[] byteString;
 
     /**
-     * Creates a CBOR <code>byte string</code>.
+     * Creates a CBOR <code>bstr</code> object.
      * 
      * @param byteString The bytes constituting the string
      */

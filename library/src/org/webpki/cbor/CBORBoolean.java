@@ -19,7 +19,7 @@ package org.webpki.cbor;
 import static org.webpki.cbor.CBORInternal.*;
 
 /**
- * Class for holding CBOR <code>boolean</code> objects.
+ * Class for holding CBOR <code>bool</code> objects.
  */
 public class CBORBoolean extends CBORObject {
 
@@ -29,7 +29,7 @@ public class CBORBoolean extends CBORObject {
     boolean value;
 
     /**
-     * Creates a CBOR <code>boolean</code>.
+     * Creates a CBOR <code>bool/code>.
      * 
      * @param value <code>true</code> or <code>false</code>
      */

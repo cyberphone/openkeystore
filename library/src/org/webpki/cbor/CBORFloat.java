@@ -21,7 +21,7 @@ import org.webpki.util.Float64Stringifier;
 import static org.webpki.cbor.CBORInternal.*;
 
 /**
- * Class for holding CBOR floating-point objects.
+ * Class for holding CBOR <code>float</code> objects.
  * <p>
  * Numbers are constrained to the IEEE 754 notation
  * using the length 16, 32, and 64 bit on the "wire".  Which
@@ -39,7 +39,7 @@ public class CBORFloat extends CBORObject {
     long bitFormat;
     
     /**
-     * Creates a CBOR <code>floating point</code>.
+     * Creates a CBOR <code>float</code> object.
      * <p>
      * Note that this implementation does not provide a specific constructor
      * for Java <code>float</code> values.
