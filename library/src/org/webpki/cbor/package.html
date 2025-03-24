@@ -9,7 +9,7 @@ CDDL&nbsp;[<a href='https://www.rfc-editor.org/rfc/rfc8610.html'>RFC&nbsp;8610</
 notation:
 <div class='webpkifloat'>
 <table class='webpkitable' style='margin-left:2em'>
-<tr><th>CBOR</th><th>Implementation</th>
+<tr><th>CDDL</th><th>Implementation</th>
 <th>Java&nbsp;Mapping</th><th>Notes</th></tr>
 <tr style='text-align:center'><td><code>int</code></td><td>{@link CBORInt}</td><td><code>long</code></td><td>1</td></tr>
 <tr style='text-align:center'><td><code>bigint</code></td><td>{@link CBORBigInt}</td><td><code>BigInteger</code></td><td>1</td></tr>
@@ -18,9 +18,9 @@ notation:
 <tr style='text-align:center'><td><code>tstr</code></td><td>{@link CBORString}</td><td><code>String</code></td><td></td></tr>
 <tr style='text-align:center'><td><code>bool</code></td><td>{@link CBORBoolean}</td><td><code>boolean</code></td><td></td></tr>
 <tr style='text-align:center'><td><code>null</code></td><td>{@link CBORNull}</td><td></td><td></td></tr>
-<tr style='text-align:center'><td><code>array</code></td><td>{@link CBORArray}</td><td></td><td></td></tr>
-<tr style='text-align:center'><td><code>map</code></td><td>{@link CBORMap}</td><td></td><td></td></tr>
-<tr style='text-align:center'><td><code>tag</code></td><td>{@link CBORTag}</td><td></td><td></td></tr>
+<tr style='text-align:center'><td><code>[]</code></td><td>{@link CBORArray}</td><td></td><td></td></tr>
+<tr style='text-align:center'><td><code>{}</code></td><td>{@link CBORMap}</td><td></td><td></td></tr>
+<tr style='text-align:center'><td><code>#6.n</code></td><td>{@link CBORTag}</td><td></td><td></td></tr>
 </table>
 </div>
 <ol style='margin:0 0'>
@@ -38,160 +38,23 @@ This implementation does not support CBOR &quot;simple&quot; values beyond
 <code>true</code>, <code>false</code>, <code>null</code>, and
 the three floating-point variants.
 </p>
+<h3 id='time-data'>Time Data</h3>
+Since CBOR does not support a native time primitive, RFC&nbsp;8949 introduces
+such a feature through tag 0 and 1.  This implementation supports these tags
+as well as making the same methods available without the tag constructs.
+For details turn to {@link CBORTag#getDateTime()},
+{@link CBORTag#getEpochTime()}, {@link CBORObject#getDateTime()},
+{@link CBORObject#getEpochTime()}.
 <h3 id='deterministic-encoding'>Deterministic Encoding</h3>
 For certain security related applications, it has been proven
 useful performing cryptographic operations like
 hashing and signatures, over "raw" CBOR data.
-To make this possible without additional processing,
-data must be in a stable form "on&nbsp;the&nbsp;wire".
-This can either be achieved by using the binary "as&nbsp;is", or through
-deterministic encoding.
-This section describes a variant of latter, making compliant CBOR systems
-less dependent on specific encoder and decoder designs.
-<div style='margin-top:0.7em'>
-It is in this context worth noting that XML and JSON do not support
-deterministic encoding.
-</div>
-<div id='standards-proposal' class='webpkicomment' style='margin:1.5em 0'>
-Although APIs may be quite different compared to the API of this package,
-the deterministic encoding scheme described here
-is intended as a <i>standard</i>, not limited to specific platforms.
-</div>
-<div id='adoption-criterion'>
-To facilitate mainstream adoption, the encoding scheme is aligned with
-current best practices for encoding CBOR object and should
-with moderate efforts work with most existing CBOR encoders and decoders.
-In fact, having a <i>single</i> way of encoding CBOR data
-should simplify both implementations and associated testing.
-The encoding scheme has been verified to also be usable in highly
-constrained systems, albeit requiring detailed knowledge of how
-a specific tool addresses encoding of CBOR objects.
-Note that a compliant implementation does not have to support all CBOR objects,
-it is sufficient that the ones that actually are used by the associated applications,
-conform to this specification.
-</div>
-<div style='margin-top:0.8em'>
-The encoding scheme adheres to section 4.2 of RFC&nbsp;8949, but adds
-a few constraints (denoted by RFC+), where the RFC offers choices.
-The encoding rules are as follows:
-</div>
-<ul>
-<li id='immutable-primitives' class='webpkilistspacing'>
-  RFC+: To enable cryptographic methods like hashing
-  to also be applicable to &quot;raw&quot; (unwrapped) CBOR data,
-  compliant encoders and decoders <b>must</b> treat CBOR primitives as <i>immutable</i>. 
-  For example, RFC&nbsp;3339 date/time strings <b>must</b> be preserved
-  in their original form, irrespective of platform native representations
-  of time data.
-</li>
-<li id='cbor-transformations' class='webpkilistspacing'>
-  RFC+: To facilitate transformations of structured CBOR data, compliant encoders
-  and decoders <b>must</b> for CBOR <code>array</code> and <code>map</code> objects,
-  support the <i>removal</i>, <i>update</i>, and <i>addition</i> of CBOR objects.
-  After such an operation, the (deterministic) encoding of
-  the targeted object <b>must</b> correctly reflect the update.
-</li>  
-<li id='number-encoding' class='webpkilistspacing'>
-  RFC+: Floating-point and integer objects <b>must</b> be treated as <i>distinct types</i>
-regardless of their numeric value. This is compliant with
-Rule&nbsp;2 in section 4.2.2 of RFC&nbsp;8949.</li>
-<li id='integer-encoding' class='webpkilistspacing'>
-  RFC: Integers, represented by the <code>int</code> and 
-<code>bigint</code> types, <b>must</b> use the <code>int</code>
-type if the value is between 
-<span style='white-space:nowrap'><code>-2<sup>64</sup></code></span> 
-and <span style='white-space:nowrap'><code>2<sup>64</sup>-1</code></span>,
-otherwise the <code>bigint</code> type <b>must</b> be used.
-The following table holds a few sample values and their proper CBOR encoding:
-<div class='webpkifloat'>
-<table class='webpkitable' style='margin-left:2em'>
-<tr><th>Value</th><th>Encoding</th></tr>
-<tr style='text-align:right'><td><code>0</code></td><td><code>00</code></td></tr>
-<tr style='text-align:right'><td><code>-1</code></td><td><code>20</code></td></tr>
-<tr style='text-align:right'><td><code>255</code></td><td><code>18ff</code></td></tr>
-<tr style='text-align:right'><td><code>256</code></td><td><code>190100</code></td></tr>
-<tr style='text-align:right'><td><code>-256</code></td><td><code>38ff</code></td></tr>
-<tr style='text-align:right'><td><code>-257</code></td><td><code>390100</code></td></tr>
-<tr style='text-align:right'><td><code>1099511627775</code></td><td><code>1b000000ffffffffff</code></td></tr>
-<tr style='text-align:right'><td><code>18446744073709551615</code></td><td><code>1bffffffffffffffff</code></td></tr>
-<tr style='text-align:right'><td><code>18446744073709551616</code></td><td><code>c249010000000000000000</code></td></tr>
-<tr style='text-align:right'><td><code>-18446744073709551616</code></td><td><code>3bffffffffffffffff</code></td></tr>
-<tr style='text-align:right'><td><code>-18446744073709551617</code></td><td><code>c349010000000000000000</code></td></tr>
-</table>
-</div>
-Note that integers <b>must not</b> be supplied with 
-<i>leading zero bytes</i> (like <code>1900ff</code>) unless the
-CBOR representation offers no alternative (like <code>1b000000ffffffffff</code>).
-<div style='margin:0.7em 0 0.3em 0'>
-Note that the integer encoding scheme above does not always return the
-most compact representation; the value 
-<code>1099511627775</code> 
-(<code>0xffffffffff</code>)
-would actually yield two bytes less using the <code>bigint</code> type. 
-</div>
-</li>
-<li id='floating-point-encoding' class='webpkilistspacing'>
-  RFC+: Floating-point data <b>must</b> use the shortest IEEE&nbsp;754
-  variant and associated CBOR encoding.
-The following table holds floating-point values needing special considerations
-as well as a small set of "edge&nbsp;cases":
-<div class='webpkifloat'>
-<table class='webpkitable' style='margin-left:2em'>
-<tr><th>Value</th><th>Encoding</th></tr>
-<tr style='text-align:right'><td><code>0.0</code></td><td><code>f90000</code></td></tr>
-<tr style='text-align:right'><td><code>-0.0</code></td><td><code>f98000</code></td></tr>
-<tr style='text-align:right'><td><code>Infinity</code></td><td><code>f97c00</code></td></tr>
-<tr style='text-align:right'><td><code>-Infinity</code></td><td><code>f9fc00</code></td></tr>
-<tr style='text-align:right'><td><code>NaN</code></td><td><code>f97e00</code></td></tr>
-<tr><th colspan='2'>Assorted Edge Cases</th></tr>
-<tr style='text-align:right'><td><code>-5.960464477539063e-8</code></td><td><code>f98001</code></td></tr>
-<tr style='text-align:right'><td><code>-5.960465188081798e-8</code></td><td><code>fab3800001</code></td></tr>
-<tr style='text-align:right'><td><code>65504.0</code></td><td><code>f97bff</code></td></tr>
-<tr style='text-align:right'><td><code>65504.00390625</code></td><td><code>fa477fe001</code></td></tr>
-<tr style='text-align:right'><td><code>65536.0</code></td><td><code>fa47800000</code></td></tr>
-<tr style='text-align:right'><td><code>10.559998512268066</code></td><td><code>fa4128f5c1</code></td></tr>
-<tr style='text-align:right'><td><code>10.559998512268068</code></td><td><code>fb40251eb820000001</code></td></tr>
-<tr style='text-align:right'><td><code>3.4028234663852886e+38</code></td><td><code>fa7f7fffff</code></td></tr>
-<tr style='text-align:right'><td><code>3.402823466385289e+38</code></td><td><code>fb47efffffe0000001</code></td></tr>
-<tr style='text-align:right'><td><code>1.401298464324817e-45</code></td><td><code>fa00000001</code></td></tr>
-<tr style='text-align:right'><td><code>5.0e-324</code></td><td><code>fb0000000000000001</code></td></tr>
-<tr style='text-align:right'><td><code>-1.7976931348623157e+308</code></td><td><code>fbffefffffffffffff</code></td></tr>
-</table>
-</div>
-Note that <code>NaN</code> "signaling" (like <code>f97e01</code>),
-<b>must</b> be flagged as an <i>error</i>.
-<div style='margin:0.7em 0 0.3em 0'>
-Note that the shortest encoding may result in <i>subnormal</i>
-numbers like <code>f98001</code>.
-</div>
-</li>
-<li class='webpkilistspacing'>
-  RFC: Map keys <b>must</b> be sorted in the bytewise lexicographic 
-order of their deterministic encoding.
-Duplicate keys <b>must</b> be rejected.
-Somewhat surprisingly the following represents a properly sorted map:
-<div style='margin:0.5em 0 0 2em'><code>{<br>
-&nbsp;&nbsp;&quot;a&quot;: ... ,<br>
-&nbsp;&nbsp;&quot;b&quot;: ... ,<br>
-&nbsp;&nbsp;&quot;aa&quot;: ...<br>
-}</code></div></li>
-<li id='map-key-equivalence' class='webpkilistspacing'>
-  RFC+: Since CBOR encoding according to this specification
-maintains type and data uniqueness, there are no specific restrictions or
-tests needed in order to determine map key equivalence.  
-As an example, the floating-point numbers <code>0.0</code> and
-<code>-0.0</code>, and the integer number <code>0</code>
-represent the distinct keys
-<code>f90000</code>, <code>f98000</code>, and <code>00</code> respectively.
-</li>
-<li>
-  RFC+: Deterministic CBOR according to this specification
-may also be provided in 
-<a href='#diagnostic-notation'>Diagnostic Notation</a>.
-</li>
-</ul>
-Any deviation from the rules above will throw exceptions using the standard decoder
-({@link CBORDecoder#decode(byte[])}).
+This API supports such operations through deterministic encoding
+which also is the default mode.
+The used deterministic encoding scheme is described in
+[<a href='https://www.ietf.org/archive/id/draft-rundgren-universal-cbor-06.html'>Universal&nbsp;CBOR</a>].
+If input data does not conform to the deterministic encoding scheme,
+a {@link CBORException} is thrown.
 <p id='decoder-options'>
 For more control of the decoding process, including dealing with "legacy" CBOR
 data as well as with CBOR sequences, see
@@ -281,18 +144,17 @@ diagnostic notation:
 <table class='webpkitable' style='margin-left:2em'>
 <tr style='text-align:center'><th>CBOR</th><th>Syntax</th><th>Notes</th><th style='min-width:30em'>Description</th></tr>
 <tr style='text-align:center'><td rowspan='2'></td><td><code>/</code>&nbsp;<i>comment&nbsp;text</i>&nbsp;<code>/</code></td>
-<td>7</td><td style='text-align:left'>Multi-line comment.
+<td>6</td><td style='text-align:left'>Multi-line comment.
 Multi-line comments are treated as whitespace and may thus also be used 
 <i>between</i> CBOR objects.</td></tr>
 <tr style='text-align:center'><td><code>#</code>&nbsp;<i>comment&nbsp;text</i></td>
-<td>7</td><td style='text-align:left'>Single-line comment.
+<td>6</td><td style='text-align:left'>Single-line comment.
 Single-line comments are terminated by a newline character (<code>'\n'</code>) or <code>EOF</code>.
 Single-line comments may also terminate lines holding regular CBOR items.</td></tr>
 <tr style='text-align:center' id='integer-diag'><td><code>int</code></td>
 <td rowspan='2'><span style='white-space:nowrap'>{<i>sign</i>}{<code>0b</code>|<code>0o</code>|<code>0x</code>}<i>n</i></span></td>
 <td rowspan='2'>1, 2</td><td style='text-align:left' rowspan='2'>
 Arbitrary sized integers without fractional components or exponents.
-See <a href='#integer-encoding'>CBOR integer encoding</a>.
 Binary, octal, and hexadecimal notation is supported by prepending numbers
 with <code>0b</code>, <code>0o</code>, and <code>0x</code> respectively.
 The latter also permit arbitrary insertions of <code>'_'</code> characters between digits to
@@ -303,32 +165,31 @@ enable grouping of data like <code>0b100_000000001</code>.
 <td>{<i>sign</i>}<i>n</i><code>.</code><i>n</i>{<code>e&pm;</code><i>n</i>}</td>
 <td>1, 2</td><td style='text-align:left'>Floating-point values
 must include a decimal point and an <i>optional</i> exponent.
-See <a href='#floating-point-encoding'>CBOR floating-point encoding</a>.
 </td></tr>
 <tr style='text-align:center'><td><code>NaN</code></td><td></td><td style='text-align:left'>Not a number.
-See <a href='#floating-point-encoding'>CBOR floating-point encoding</a>.
 </td></tr>
 <tr style='text-align:center'><td>{<i>sign</i>}<code>Infinity</code></td><td>2</td>
 <td style='text-align:left'>Infinity.
-See <a href='#floating-point-encoding'>CBOR floating-point encoding</a>.
 </td></tr>
 <tr style='text-align:center'><td rowspan='4'><code>bstr</code></td>
-<td><code>h'</code><i>hex&nbsp;data</i><code>'</code></td><td>3, 6</td>
+<td><code>h'</code><i>hex&nbsp;data</i><code>'</code></td><td>3</td>
 <td style='text-align:left'>Byte data provided in hexadecimal notation.
 Each byte must be represented by two hexadecimal digits.</td></tr>
-<tr style='text-align:center'><td><code>b64'</code><i>base64&nbsp;data</i><code>'</code></td><td>3,&nbsp;6,&nbsp;7</td>
+<tr style='text-align:center'><td><code>b64'</code><i>base64&nbsp;data</i><code>'</code></td><td>3,&nbsp;6</td>
 <td style='text-align:left'>Byte data provided in base64 or base64URL notation.
 Padding with <code>'='</code> characters is <i>optional</i>.</td></tr>
-<tr style='text-align:center'><td><code>'</code><i>text</i><code>'</code></td><td>4, 5, 7</td>
+<tr style='text-align:center'><td><code>'</code><i>text</i><code>'</code></td><td>4,&nbsp;5,&nbsp;6</td>
 <td style='text-align:left'>Byte data provided as UTF-8 encoded text.</td></tr>
-<tr style='text-align:center'><td><code>&lt;&lt;</code>&nbsp;<i>object</i>&nbsp;<code>&gt;&gt;</code></td><td>7</td>
+<tr style='text-align:center'><td><code>&lt;&lt;</code>&nbsp;<i>object</i>&nbsp;<code>&gt;&gt;</code></td><td>6</td>
 <td style='text-align:left'>Construct holding a CBOR object which is subsequently embedded in a byte-string.</td></tr>
 <tr style='text-align:center'><td><code>tstr</code></td>
-<td><code>&quot;</code><i>text</i><code>&quot;</code><td>4, 5</td><td style='text-align:left'>UTF-8 encoded text-string.</td></tr>
+<td><code>&quot;</code><i>text</i><code>&quot;</code><td>4, 5</td>
+<td style='text-align:left'>UTF-8 encoded text-string.</td></tr>
 <tr style='text-align:center'><td rowspan='2'><code>bool</code></td><td><code>true</code></td><td rowspan='2'></td>
 <td style='text-align:left' rowspan='2'>Boolean value.</td></tr>
 <tr style='text-align:center'><td><code>false</code></td></tr>
-<tr style='text-align:center'><td><code>null</code></td><td><code>null</code></td><td></td><td style='text-align:left'>Null value.</td></tr>
+<tr style='text-align:center'><td><code>null</code></td>
+  <td><code>null</code></td><td></td><td style='text-align:left'>Null value.</td></tr>
 <tr style='text-align:center'><td><code>array</code></td><td><code>[</code>&nbsp;<i>object</i>&nbsp;<code>]</code></td>
 <td></td><td style='text-align:left'>Array with zero or more comma-separated CBOR objects.</td></tr>
 <tr style='text-align:center'><td><code>map</code></td><td><code>{</code>&nbsp;<i>key</i><code>:</code><i>object</i>&nbsp;<code>}</code></td>
@@ -336,7 +197,8 @@ Padding with <code>'='</code> characters is <i>optional</i>.</td></tr>
 Keys and objects are expressed as CBOR objects.</td></tr>
 <tr style='text-align:center'><td><code>tag</code></td><td><i>n</i><code>(</code>&nbsp;<i>object</i>&nbsp;<code>)</code></td>
 <td>1</td><td style='text-align:left'>Tag holding a CBOR object.</td></tr>
-<tr style='text-align:center'><td></td><td><code>,</code></td><td></td><td style='text-align:left'>Separator character for CBOR sequences.</td></tr>
+<tr style='text-align:center'><td></td><td><code>,</code></td><td></td>
+<td style='text-align:left'>Separator character for CBOR sequences.</td></tr>
 </table>
 </div>
 <ol style='margin:0 0'>
@@ -359,9 +221,7 @@ immediately preceding the newline may be used.</li>
 (<code>'\''</code>, <code>'\"'</code>, <code>'\\'</code>, 
 <code>'\b'</code>, <code>'\f'</code>, <code>'\n'</code>, 
 <code>'\r'</code>, <code>'\t'</code>, <code>'\u</code><i>hhhh</i><code>'</code>).</li>
-<li>Zero-length strings (<code>''</code>) return byte strings of length zero.</li>
-<li><i>Input only</i>:
-the {@link CBORObject#toString()} method does not produce this item.</li>
+<li><i>Input only</i>.</li>
 
 </ol>
 </body>

@@ -39,8 +39,7 @@ public class CBORInt extends CBORObject {
      * <span style='white-space:nowrap'><code>-2<sup>63</sup></code></span>.
      * </p>
      * <p>
-     * See also <a href='#range-constraints'>Range&nbsp;Constraints</a> and 
-     * {@link CBORBigInt#CBORBigInt(BigInteger)}.
+     * See also {@link CBORBigInt#CBORBigInt(BigInteger)}.
      * </p>
      *
      * @param value long value
