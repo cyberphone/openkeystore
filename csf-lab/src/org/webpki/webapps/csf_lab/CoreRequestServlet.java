@@ -16,7 +16,6 @@
  */
 package org.webpki.webapps.csf_lab;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import java.security.KeyPair;
