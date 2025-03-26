@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.security.KeyPair;
 import java.security.PublicKey;
 
-import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletOutputStream;
@@ -40,6 +39,7 @@ import org.webpki.cbor.CBORKeyPair;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORPublicKey;
+import org.webpki.cbor.CBORSequenceBuilder;
 import org.webpki.cbor.CBORTag;
 
 import org.webpki.crypto.AlgorithmPreferences;
@@ -150,7 +150,7 @@ public class CoreRequestServlet extends HttpServlet {
             "<tr><td><input type='radio' name='" + name + "' " +
             "value='" + B64U + "'></td><td>Base64Url notation</td></tr>" +
             (input ? "<tr><td><input type='checkbox' id='" + SEQUENCE_FLAG + "'>" +
-                    "</td><td>Sequence using comma (,) as separator</td></tr>" +
+                    "</td><td>Sequence. For " + DIAG_NOT_LINK +  " use comma (,) as separator</td></tr>" +
                     "<tr><td><input type='checkbox' checked id='" + STRICT_FLAG + "'>" +
                     "</td><td>Require " + DETERMINISTIC_LINK + " for hex/b64u data</td></tr>" +
                     "<tr><td><input type='checkbox' id='" + REJECT_NAN_FLAG + "'>" +
@@ -180,32 +180,15 @@ public class CoreRequestServlet extends HttpServlet {
                 hexAndOptionalComments.replaceAll("#.*(\r|\n|$)", "")
                                       .replaceAll("( |\n|\r)", ""));
     }
-    
-    byte[] getBytesFromCborSequence(ArrayList<CBORObject> cborObjects) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        for (CBORObject cborObject : cborObjects) {
-            baos.write(cborObject.encode());
-        }
-        return baos.toByteArray();        
-    }
 
-    String getFormattedCbor(JSONObjectReader parsedJson, ArrayList<CBORObject> cborObjects) 
+    String getFormattedCbor(JSONObjectReader parsedJson, CBORSequenceBuilder sequence) 
             throws IOException {
         String selected = parsedJson.getString(SEL_OUT);
         if (selected.equals(DIAG)) {
-            boolean next = false;
-            StringBuilder diagnosticNotation = new StringBuilder();
-            for (CBORObject cborObject : cborObjects) {
-                if (next) {
-                    diagnosticNotation.append(",\n");
-                }
-                next = true;
-                diagnosticNotation.append(cborObject.toString());
-            }
-            return HTML.encode(diagnosticNotation.toString()).replace("\n", "<br>")
-                                                             .replace(" ","&nbsp;");
+            return HTML.encode(sequence.toString()).replace("\n", "<br>")
+                                                   .replace(" ","&nbsp;");
         } else {
-            byte[] cborBytes = getBytesFromCborSequence(cborObjects);
+            byte[] cborBytes = sequence.encode();
             switch (selected) {
                 case HEXA:
                     return HexaDecimal.encode(cborBytes);

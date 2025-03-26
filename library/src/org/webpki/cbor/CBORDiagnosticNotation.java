@@ -56,7 +56,7 @@ public class CBORDiagnosticNotation {
      * Convert diagnostic notation CBOR sequence to CBOR.
      * 
      * @param cborText String holding diagnostic (textual) CBOR
-     * @return Non-empty array of CBOR objects
+     * @return Array holding zero or more CBOR objects
      * @throws CBORException
      */
     public static ArrayList<CBORObject> convertSequence(String cborText) {
@@ -112,19 +112,22 @@ public class CBORDiagnosticNotation {
     private ArrayList<CBORObject> readSequenceToEOF() {
         try {
             ArrayList<CBORObject> sequence = new ArrayList<>();
-            while (true) {
-                sequence.add(getObject());
-                if (index < cborText.length) {
+            scanNonSignficantData();
+            while (index < cborText.length) {
+                if (!sequence.isEmpty()) {
                     if (sequenceFlag) {
                         scanFor(",");
                     } else {
                         readChar();
                         parserError(CBORDecoder.STDERR_UNEXPECTED_DATA);
                     }
-                } else {
-                    return sequence;
                 }
+                sequence.add(getObject());
             }
+            if (sequence.isEmpty() && !sequenceFlag) {
+                readChar();
+            }
+            return sequence;
         } catch (Exception e) {
             // Build message and convert to CBORException.
             throw new CBORException(buildError(e.getMessage()));

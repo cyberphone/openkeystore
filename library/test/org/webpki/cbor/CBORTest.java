@@ -2389,6 +2389,8 @@ public class CBORTest {
         assertTrue("seq", seq.size() == 2);
         assertTrue("seqi", seq.get(0).getInt32() == 1);
         assertTrue("seqs", seq.get(1).getString().equals(DIAG_TEXT));
+        seq = CBORDiagnosticNotation.convertSequence("  ");
+        assertTrue("seq", seq.size() == 0);
         
         diagFlag("0x ");
         diagFlag("056(8)");  // leading zero

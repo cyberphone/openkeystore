@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.webpki.cbor.CBORDecoder;
 import org.webpki.cbor.CBORDiagnosticNotation;
 import org.webpki.cbor.CBORObject;
+import org.webpki.cbor.CBORSequenceBuilder;
 
 import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONObjectWriter;
@@ -46,6 +47,15 @@ public class ConvertServlet extends CoreRequestServlet {
     
     static final String CBOR_IN     = "cborin";
     static final String SEL_IN      = "selin";
+
+        
+    byte[] getBytesFromCborSequence(ArrayList<CBORObject> cborObjects) throws IOException {
+        CBORSequenceBuilder sequence = new CBORSequenceBuilder();
+        for (CBORObject cborObject : cborObjects) {
+            sequence.add(cborObject);
+        }
+        return sequence.encode();        
+    }
         
     public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
@@ -79,7 +89,7 @@ public class ConvertServlet extends CoreRequestServlet {
                     cborBytes = Base64URL.decode(inData);
                     break;
             }
-            ArrayList<CBORObject> sequence = new ArrayList<>();
+            CBORSequenceBuilder sequence = new CBORSequenceBuilder();
             ByteArrayInputStream bais = new ByteArrayInputStream(cborBytes);
             CBORObject cborObject;
             CBORDecoder cborDecoder = new CBORDecoder(bais, 

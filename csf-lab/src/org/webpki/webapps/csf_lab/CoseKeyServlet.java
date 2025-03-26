@@ -17,7 +17,6 @@
 package org.webpki.webapps.csf_lab;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 
@@ -29,8 +28,8 @@ import org.webpki.cbor.CBORCryptoConstants;
 import org.webpki.cbor.CBORInt;
 import org.webpki.cbor.CBORKeyPair;
 import org.webpki.cbor.CBORMap;
-import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORPublicKey;
+import org.webpki.cbor.CBORSequenceBuilder;
 
 import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONObjectWriter;
@@ -72,9 +71,8 @@ public class CoseKeyServlet extends CoreRequestServlet {
                 cbor.set(CBORCryptoConstants.COSE_KID_LBL,
                          new CBORBytes(UTF8.encode(keyData.optionalKeyId)));
             }
-            ArrayList<CBORObject> oneCbor = new ArrayList<>();
-            oneCbor.add(cbor);
-            jsonResponse.setString(CBOR_OUT, getFormattedCbor(parsedJson, oneCbor));
+            jsonResponse.setString(CBOR_OUT, getFormattedCbor(parsedJson, 
+                                                              new CBORSequenceBuilder().add(cbor)));
         } catch (Exception e) {
             jsonResponse.setString(ERROR, HTML.encode(e.getMessage()).replace("\n", "<br>")
                                                                      .replace(" ","&nbsp;"));
