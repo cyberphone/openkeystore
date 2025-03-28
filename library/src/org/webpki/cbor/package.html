@@ -9,7 +9,7 @@ CDDL&nbsp;[<a href='https://www.rfc-editor.org/rfc/rfc8610.html'>RFC&nbsp;8610</
 notation:
 <div class='webpkifloat'>
 <table class='webpkitable' style='margin-left:2em'>
-<tr><th>CDDL</th><th>Implementation</th>
+<tr><th>CBOR</th><th>Implementation</th>
 <th>Java&nbsp;Mapping</th><th>Notes</th></tr>
 <tr style='text-align:center'><td><code>int</code></td><td>{@link CBORInt}</td><td><code>long</code></td><td>1</td></tr>
 <tr style='text-align:center'><td><code>bigint</code></td><td>{@link CBORBigInt}</td><td><code>BigInteger</code></td><td>1</td></tr>
@@ -180,22 +180,22 @@ Each byte must be represented by two hexadecimal digits.</td></tr>
 Padding with <code>'='</code> characters is <i>optional</i>.</td></tr>
 <tr style='text-align:center'><td><code>'</code><i>text</i><code>'</code></td><td>4,&nbsp;5,&nbsp;6</td>
 <td style='text-align:left'>Byte data provided as UTF-8 encoded text.</td></tr>
-<tr style='text-align:center'><td><code>&lt;&lt;</code>&nbsp;<i>object</i>&nbsp;<code>&gt;&gt;</code></td><td>6</td>
-<td style='text-align:left'>Construct holding a CBOR object which is subsequently embedded in a byte-string.</td></tr>
+<tr style='text-align:center'><td><code>&lt;&lt;</code>&nbsp;<i>object...</i>&nbsp;<code>&gt;&gt;</code></td><td>6</td>
+<td style='text-align:left'>Construct holding zero or more comma-separated CBOR objects
+which are subsequently wrapped in a byte-string.</td></tr>
 <tr style='text-align:center'><td><code>tstr</code></td>
 <td><code>&quot;</code><i>text</i><code>&quot;</code><td>4, 5</td>
 <td style='text-align:left'>UTF-8 encoded text-string.</td></tr>
-<tr style='text-align:center'><td rowspan='2'><code>bool</code></td><td><code>true</code></td><td rowspan='2'></td>
-<td style='text-align:left' rowspan='2'>Boolean value.</td></tr>
-<tr style='text-align:center'><td><code>false</code></td></tr>
+<tr style='text-align:center'><td><code>bool</code></td><td><code>true</code> | <code>false</code></td><td></td>
+<td style='text-align:left'>Boolean value.</td></tr>
 <tr style='text-align:center'><td><code>null</code></td>
   <td><code>null</code></td><td></td><td style='text-align:left'>Null value.</td></tr>
-<tr style='text-align:center'><td><code>array</code></td><td><code>[</code>&nbsp;<i>object</i>&nbsp;<code>]</code></td>
+<tr style='text-align:center'><td><code>[]</code></td><td><code>[</code>&nbsp;<i>object...</i>&nbsp;<code>]</code></td>
 <td></td><td style='text-align:left'>Array with zero or more comma-separated CBOR objects.</td></tr>
-<tr style='text-align:center'><td><code>map</code></td><td><code>{</code>&nbsp;<i>key</i><code>:</code><i>object</i>&nbsp;<code>}</code></td>
+<tr style='text-align:center'><td><code>()</code></td><td><code>{</code>&nbsp;<i>key</i><code>:</code><i>object...</i>&nbsp;<code>}</code></td>
 <td></td><td style='text-align:left'>Map with zero or more comma-separated key/object pairs.
 Keys and objects are expressed as CBOR objects.</td></tr>
-<tr style='text-align:center'><td><code>tag</code></td><td><i>n</i><code>(</code>&nbsp;<i>object</i>&nbsp;<code>)</code></td>
+<tr style='text-align:center'><td><code>#6.n</code></td><td><i>n</i><code>(</code>&nbsp;<i>object</i>&nbsp;<code>)</code></td>
 <td>1</td><td style='text-align:left'>Tag holding a CBOR object.</td></tr>
 <tr style='text-align:center'><td></td><td><code>,</code></td><td></td>
 <td style='text-align:left'>Separator character for CBOR sequences.</td></tr>

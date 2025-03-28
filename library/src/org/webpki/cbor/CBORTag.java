@@ -86,6 +86,9 @@ public class CBORTag extends CBORObject {
      */
     public static final int RESERVED_TAG_COTX  = 1010;
 
+    private static final int RESERVED_BIG_INT_UNSIGNED = 2;
+    private static final int RESERVED_BIG_INT_NEGATIVE = 3;
+
 
     
     /**
@@ -118,6 +121,9 @@ public class CBORTag extends CBORObject {
         this.tagNumber = tagNumber;
         this.object = object;
         nullCheck(object);
+        if (tagNumber == RESERVED_BIG_INT_UNSIGNED || tagNumber == RESERVED_BIG_INT_NEGATIVE) {
+            cborError(STDERR_RESERVED_BIG_INT);
+        }
         if (tagNumber == RESERVED_TAG_DATE_TIME) {
             // Note: clone() because we have mot read it really.
             dateTime = object.clone().getDateTime();
@@ -245,6 +251,9 @@ public class CBORTag extends CBORObject {
     static final String STDERR_ISO_DATE_TIME =
             "Invalid ISO date/time object: ";
 
-     static final String STDERR_EPOCH_TIME =
+    static final String STDERR_EPOCH_TIME =
             "Invalid Epoch time object: ";
+
+    static final String STDERR_RESERVED_BIG_INT =
+            "Reserved for 'bigint'";
 }
