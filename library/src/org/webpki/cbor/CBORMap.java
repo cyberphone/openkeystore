@@ -296,6 +296,7 @@ public class CBORMap extends CBORObject {
             previous = null;
             set(key, object);
         } else {
+            nullCheck(object);
             previous = targetEntry.object;
             targetEntry.object = object;
         }
