@@ -16,6 +16,8 @@
  */
 package org.webpki.cbor;
 
+import static org.webpki.cbor.CBORInternal.cborError;
+
 import java.math.BigInteger;
 
 import java.util.ArrayList;
@@ -258,12 +260,19 @@ public class CBORDiagnosticNotation {
         }
     }
 
+    @SuppressWarnings("fallthrough")
     private CBORSimple simpleType() {
         StringBuilder token = new StringBuilder();
         while (true)  {
             switch (nextChar()) {
                 case ')':
                     break;
+
+                case '+':
+                case '-':
+                case 'e':
+                case '.':
+                    cborError("Syntax error");
 
                 default:
                     token.append(readChar());
