@@ -104,8 +104,7 @@ public class CBORArray extends CBORObject {
         boolean notFirst = false;
         for (CBORObject cborObject : toArray()) {
             if (notFirst) {
-                cborPrinter.append(',');
-                cborPrinter.space();
+                cborPrinter.append(',').space();
             }
             notFirst = true;
             cborObject.internalToString(cborPrinter);

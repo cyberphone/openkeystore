@@ -119,7 +119,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }
 
     /**
-     * Get CBOR <code>bigint</code> object.
+     * Get CBOR <code>bigint</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORBigInt} or {@link CBORInt},
@@ -138,7 +138,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }
 
     /**
-     * Get CBOR <code>int</code> object.
+     * Get CBOR <code>int</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInt} and has a value ranging from
@@ -159,7 +159,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }
 
     /**
-     * Get CBOR <code>uint</code> object.
+     * Get CBOR <code>uint</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInt} and has a value ranging from
@@ -179,7 +179,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }
 
     /**
-     * Get CBOR <code>int</code> object.
+     * Get CBOR <code>int</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInt} and has a value ranging from
@@ -199,7 +199,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }
 
     /**
-     * Get CBOR <code>uint</code> object.
+     * Get CBOR <code>uint</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInt} and has a value ranging from
@@ -219,7 +219,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }    
 
     /**
-     * Get CBOR <code>int</code> object.
+     * Get CBOR <code>int</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInt} and has a value ranging from
@@ -239,7 +239,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }
 
     /**
-     * Get CBOR <code>uint</code> object.
+     * Get CBOR <code>uint</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInt} and has a value ranging from
@@ -259,7 +259,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }    
 
     /**
-     * Get CBOR <code>int</code> object.
+     * Get CBOR <code>int</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInt} and has a value ranging from
@@ -279,7 +279,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }
 
     /**
-     * Get CBOR <code>uint</code> object.
+     * Get CBOR <code>uint</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInt} and has a value ranging from
@@ -299,7 +299,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }    
 
     /**
-     * Get CBOR <code>float64</code> object.
+     * Get CBOR <code>float64</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORFloat}, otherwise a {@link CBORException} is thrown.
@@ -314,7 +314,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }
  
     /**
-     * Get CBOR <code>float32</code> object.
+     * Get CBOR <code>float32</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORFloat} holding a 16 or 32-bit IEEE 754 value, 
@@ -334,7 +334,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }
 
     /**
-     * Get CBOR <code>float16</code> object.
+     * Get CBOR <code>float16</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORFloat} holding a 16-bit IEEE 754 value, 
@@ -352,9 +352,23 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
         }
         return (float)floatingPoint.value;
     }
+    /**
+     * Get CBOR <code>#7.n</code> (simple) value.
+     * <p>
+     * This method requires that the object is a
+     * {@link CBORSimple}, 
+     * otherwise a {@link CBORException} is thrown.
+     * </p>
+     * @return <code>int</code>
+     * @throws CBORException
+     */
+    public int getSimple() {
+        checkTypeAndMarkAsRead(CBORSimple.class);
+        return ((CBORSimple) this).value;
+    }
 
     /**
-     * Get CBOR <code>bool</code> object.
+     * Get CBOR <code>bool</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORBoolean}, otherwise a {@link CBORException} is thrown.

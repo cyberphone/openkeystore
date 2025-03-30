@@ -31,6 +31,7 @@ class CBORInternal {
     static final int MT_TAG           = 0xc0;
     static final int MT_BIG_UNSIGNED  = 0xc2;
     static final int MT_BIG_NEGATIVE  = 0xc3;
+    static final int MT_SIMPLE        = 0xe0;
     static final int MT_FALSE         = 0xf4;
     static final int MT_TRUE          = 0xf5;
     static final int MT_NULL          = 0xf6;

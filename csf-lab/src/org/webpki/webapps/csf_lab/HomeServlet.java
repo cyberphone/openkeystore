@@ -33,7 +33,8 @@ public class HomeServlet extends CoreRequestServlet {
             "<code>int</code>, <code>bigint</code>, " +
             "<code>float</code> (16/32/64 bit), " +
             "<code>bool</code>, <code>null</code>, " +
-            "and <code><i>tagged data</i></code> (CBOR major type 6).";
+            "<code><i>tagged&nbsp;data</i></code> (CBOR major type 6), and " +
+            "<code><i>simple&nbsp;values</i></code> (CBOR major type 7)";
 
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {

@@ -220,6 +220,10 @@ public class CBORDiagnosticNotation {
                 scanFor("ull");
                 return new CBORNull();
 
+            case 's':
+                scanFor("imple(");
+                return simpleType();
+                
             case '-':
                 if (readChar() == 'I') {
                     scanFor("nfinity");
@@ -252,6 +256,23 @@ public class CBORDiagnosticNotation {
                 parserError(String.format("Unexpected character: %s", toChar(readChar())));
                 return null;  // For the compiler...
         }
+    }
+
+    private CBORSimple simpleType() {
+        StringBuilder token = new StringBuilder();
+        while (true)  {
+            switch (nextChar()) {
+                case ')':
+                    break;
+
+                default:
+                    token.append(readChar());
+                    continue;
+            }
+            break;
+        }
+        readChar();
+        return new CBORSimple(Integer.valueOf(token.toString().trim()));
     }
 
     @SuppressWarnings("fallthrough")

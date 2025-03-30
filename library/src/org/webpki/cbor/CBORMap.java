@@ -340,8 +340,7 @@ public class CBORMap extends CBORObject {
             notFirst = true;
             cborPrinter.newlineAndIndent();
             entry.key.internalToString(cborPrinter);
-            cborPrinter.append(':');
-            cborPrinter.space();
+            cborPrinter.append(':').space();
             entry.object.internalToString(cborPrinter);
         }
         cborPrinter.endMap(notFirst);
