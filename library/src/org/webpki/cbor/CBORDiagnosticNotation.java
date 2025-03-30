@@ -16,8 +16,6 @@
  */
 package org.webpki.cbor;
 
-import static org.webpki.cbor.CBORInternal.cborError;
-
 import java.math.BigInteger;
 
 import java.util.ArrayList;
@@ -272,7 +270,7 @@ public class CBORDiagnosticNotation {
                 case '-':
                 case 'e':
                 case '.':
-                    cborError("Syntax error");
+                    parserError("Syntax error");
 
                 default:
                     token.append(readChar());
