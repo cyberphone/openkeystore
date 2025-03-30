@@ -48,8 +48,7 @@ public class CBORSimple extends CBORObject {
 
     @Override
     void internalToString(CborPrinter cborPrinter) {
-        cborPrinter.append("simple")
-                   .append('(')
+        cborPrinter.append("simple(")
                    .append(String.valueOf(value))
                    .append(')');
     }
