@@ -261,7 +261,7 @@ public class CBORDiagnosticNotation {
     }
 
     @SuppressWarnings("fallthrough")
-    private CBORSimple simpleType() {
+    private CBORObject simpleType() {
         StringBuilder token = new StringBuilder();
         while (true)  {
             switch (nextChar()) {
@@ -281,7 +281,8 @@ public class CBORDiagnosticNotation {
             break;
         }
         readChar();
-        return new CBORSimple(Integer.valueOf(token.toString().trim()));
+        // Clone gives bool and null precendence over simple.
+        return new CBORSimple(Integer.valueOf(token.toString().trim())).clone();
     }
 
     @SuppressWarnings("fallthrough")
