@@ -199,10 +199,17 @@ public class CBORDecoder {
             case MT_BIG_UNSIGNED:
                 byte[] byteArray = getObject().getBytes();
                 BigInteger bigInteger = new BigInteger(1, byteArray);
-                if (strictNumbers && (byteArray.length <= 8 || byteArray[0] == 0)) {
-                    cborError(STDERR_NON_DETERMINISTIC_BIGNUM);
+                CBORBigInt cborBigInt = new CBORBigInt(tag == MT_BIG_UNSIGNED ? 
+                                                                   bigInteger : bigInteger.not());
+                if (strictNumbers) {
+                    if (byteArray.length <= 8 || byteArray[0] == 0) {
+                        cborError(STDERR_NON_DETERMINISTIC_BIGNUM);
+                    } 
+                } else {
+                    // Normalization...
+                    return cborBigInt.clone();
                 }
-                return new CBORBigInt(tag == MT_BIG_UNSIGNED ? bigInteger : bigInteger.not());
+                return cborBigInt;
 
             case MT_FLOAT16:
                 double float64;
