@@ -42,9 +42,9 @@ public class CBORDiagnosticNotation {
     }
     
     /**
-     * Convert diagnostic notation CBOR to CBOR.
+     * Convert CBOR object in diagnostic notation, to CBOR.
      * 
-     * @param cborText String holding diagnostic (textual) CBOR
+     * @param cborText String holding a CBOR object in diagnostic (textual) format.
      * @return CBOR object
      * @throws CBORException
      */
@@ -53,9 +53,9 @@ public class CBORDiagnosticNotation {
     }
 
     /**
-     * Convert diagnostic notation CBOR sequence to CBOR.
+     * Convert CBOR sequence in diagnostic notation to CBOR.
      * 
-     * @param cborText String holding diagnostic (textual) CBOR
+     * @param cborText String holding zero or more comma-separated CBOR objects in diagnostic (textual) format.
      * @return Array holding zero or more CBOR objects
      * @throws CBORException
      */
