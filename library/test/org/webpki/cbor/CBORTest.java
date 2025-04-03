@@ -330,7 +330,7 @@ public class CBORTest {
             CBORFloat cborFloat = (CBORFloat)parseCborHex(hex);
             int l;
             if (mustFail == 0) {
-                switch (cborFloat.size()) {
+                switch (cborFloat.length()) {
                     case 2:
                         l = 3;
                         break;

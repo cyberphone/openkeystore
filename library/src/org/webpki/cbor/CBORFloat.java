@@ -165,20 +165,20 @@ public class CBORFloat extends CBORObject {
     }
 
     /**
-     * Get size of the optimized IEEE 754 type.
+     * Get length of the optimized IEEE 754 type.
      * <p>
      * Note that you must cast a {@link CBORObject} to {@link CBORFloat}
-     * in order to access {@link CBORFloat#size()}.
+     * in order to access {@link CBORFloat#length()}.
      * </p>
-     * @return Size in bytes: 2, 4, or 8.
+     * @return Length in bytes: 2, 4, or 8.
      */
-    public int size() {
+    public int length() {
         return 2 << (tag - MT_FLOAT16);
     }
 
     @Override
     byte[] internalEncode() {
-        return encodeTagAndValue(tag, size(), bitFormat);
+        return encodeTagAndValue(tag, length(), bitFormat);
     }
     
     @Override

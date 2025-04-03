@@ -28,6 +28,7 @@
   <property name="debug"  value="on"/>
   <property name="javadoccss" location="stylesheet.css"/>
   <property name="bcprovider" value=""/>
+  <property file="../../CBOR.js/build/dn-table.xml"/>
   <property environment="env"/>
 
   <property name="javaversion" value="${ant.java.version}"/>
@@ -194,6 +195,9 @@
       <fileset dir="${src_dir}"/>
     </copy>
 
+    <!-- Diagnostic Notation - common profile -->
+    <replace file="${temp_dir}/org/webpki/cbor/package.html" token="@dn-table@" value="${dn-table}"/>
+
     <!-- Make documentation but first remove the previous version -->
     <delete includeEmptyDirs="true">
       <fileset dir="${doc_dir}">
@@ -234,6 +238,7 @@
     <concat destfile="${doc_dir}/stylesheet.css" append="true">
       <filelist dir="." files="javadoc-extrastyles.css"/>
     </concat>
+
     <replaceregexp file="${doc_dir}/stylesheet.css"
       match="\nsup \{.*\n.*\n.*\}"
       replace=""

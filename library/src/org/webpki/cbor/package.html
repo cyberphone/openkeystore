@@ -34,11 +34,6 @@ including support for <code style='white-space:nowrap'>-0.0</code>, <code>NaN</c
 The encoded representation is determined by the size and precision of the value.
 See also {@link CBORDecoder#CBORDecoder(InputStream, int, int) CBOR&nbsp;decoding&nbsp;options}.</li>
 </ol>
-<p>
-This implementation does not support CBOR &quot;simple&quot; values beyond
-<code>true</code>, <code>false</code>, <code>null</code>, and
-the three floating-point variants.
-</p>
 <h3 id='time-data'>Time Data</h3>
 Since CBOR does not support a native time primitive, RFC&nbsp;8949 introduces
 such a feature through tag 0 and 1.  This implementation supports these tags
@@ -53,7 +48,7 @@ hashing and signatures, over "raw" CBOR data.
 This API supports such operations through deterministic encoding
 which also is the default mode.
 The used deterministic encoding scheme is described in
-[<a href='https://www.ietf.org/archive/id/draft-rundgren-universal-cbor-06.html'>Universal&nbsp;CBOR</a>].
+[<a href='https://www.ietf.org/archive/id/draft-rundgren-cbor-core-01.html'>CBOR&nbsp;Core</a>].
 If input data does not conform to the deterministic encoding scheme,
 a {@link CBORException} is thrown.
 <p id='decoder-options'>
@@ -141,88 +136,5 @@ be aligned with IEEE&nbsp;754 encoding and rounding rules.
 </p>
 The following table shows how CBOR objects should be represented in 
 diagnostic notation:
- <div class='webpkifloat'>
-<table class='webpkitable' style='margin-left:2em'>
-<tr style='text-align:center'><th>CBOR</th><th>Syntax</th><th>Notes</th><th style='min-width:30em'>Description</th></tr>
-<tr style='text-align:center'><td rowspan='2'></td><td><code>/</code>&nbsp;<i>comment&nbsp;text</i>&nbsp;<code>/</code></td>
-<td>6</td><td style='text-align:left'>Multi-line comment.
-Multi-line comments are treated as whitespace and may thus also be used 
-<i>between</i> CBOR objects.</td></tr>
-<tr style='text-align:center'><td><code>#</code>&nbsp;<i>comment&nbsp;text</i></td>
-<td>6</td><td style='text-align:left'>Single-line comment.
-Single-line comments are terminated by a newline character (<code>'\n'</code>) or <code>EOF</code>.
-Single-line comments may also terminate lines holding regular CBOR items.</td></tr>
-<tr style='text-align:center' id='integer-diag'><td><code>int</code></td>
-<td rowspan='2'><span style='white-space:nowrap'>{<i>sign</i>}{<code>0b</code>|<code>0o</code>|<code>0x</code>}<i>n</i></span></td>
-<td rowspan='2'>1, 2</td><td style='text-align:left' rowspan='2'>
-Arbitrary sized integers without fractional components or exponents.
-Binary, octal, and hexadecimal notation is supported by prepending numbers
-with <code>0b</code>, <code>0o</code>, and <code>0x</code> respectively.
-The latter also permit arbitrary insertions of <code>'_'</code> characters between digits to
-enable grouping of data like <code>0b100_000000001</code>.
-</td></tr>
-<tr style='text-align:center'><td><code>bigint</code></tr>
-<tr style='text-align:center' id='float-diag'><td rowspan='3'><code>float</code></td>
-<td>{<i>sign</i>}<i>n</i><code>.</code><i>n</i>{<code>e&pm;</code><i>n</i>}</td>
-<td>1, 2</td><td style='text-align:left'>Floating-point values
-must include a decimal point and an <i>optional</i> exponent.
-</td></tr>
-<tr style='text-align:center'><td><code>NaN</code></td><td></td><td style='text-align:left'>Not a number.
-</td></tr>
-<tr style='text-align:center'><td>{<i>sign</i>}<code>Infinity</code></td><td>2</td>
-<td style='text-align:left'>Infinity.
-</td></tr>
-<tr style='text-align:center'><td rowspan='4'><code>bstr</code></td>
-<td><code>h'</code><i>hex&nbsp;data</i><code>'</code></td><td>3</td>
-<td style='text-align:left'>Byte data provided in hexadecimal notation.
-Each byte must be represented by two hexadecimal digits.</td></tr>
-<tr style='text-align:center'><td><code>b64'</code><i>base64&nbsp;data</i><code>'</code></td><td>3,&nbsp;6</td>
-<td style='text-align:left'>Byte data provided in base64 or base64URL notation.
-Padding with <code>'='</code> characters is <i>optional</i>.</td></tr>
-<tr style='text-align:center'><td><code>'</code><i>text</i><code>'</code></td><td>4,&nbsp;5,&nbsp;6</td>
-<td style='text-align:left'>Byte data provided as UTF-8 encoded text.</td></tr>
-<tr style='text-align:center'><td><code>&lt;&lt;</code>&nbsp;<i>object...</i>&nbsp;<code>&gt;&gt;</code></td><td>6</td>
-<td style='text-align:left'>Construct holding zero or more comma-separated CBOR objects
-which are subsequently wrapped in a byte-string.</td></tr>
-<tr style='text-align:center'><td><code>tstr</code></td>
-<td><code>&quot;</code><i>text</i><code>&quot;</code><td>4, 5</td>
-<td style='text-align:left'>UTF-8 encoded text-string.</td></tr>
-<tr style='text-align:center'><td><code>bool</code></td><td><code>true</code> | <code>false</code></td><td></td>
-<td style='text-align:left'>Boolean value.</td></tr>
-<tr style='text-align:center'><td><code>null</code></td>
-  <td><code>null</code></td><td></td><td style='text-align:left'>Null value.</td></tr>
-<tr style='text-align:center'><td><code>[]</code></td><td><code>[</code>&nbsp;<i>object...</i>&nbsp;<code>]</code></td>
-<td></td><td style='text-align:left'>Array with zero or more comma-separated CBOR objects.</td></tr>
-<tr style='text-align:center'><td><code>()</code></td><td><code>{</code>&nbsp;<i>key</i><code>:</code><i>object...</i>&nbsp;<code>}</code></td>
-<td></td><td style='text-align:left'>Map with zero or more comma-separated key/object pairs.
-Keys and objects are expressed as CBOR objects.</td></tr>
-<tr style='text-align:center'><td><code>#6.n</code></td><td><i>n</i><code>(</code>&nbsp;<i>object</i>&nbsp;<code>)</code></td>
-<td>1</td><td style='text-align:left'>Tag holding a CBOR object.</td></tr>
-<tr style='text-align:center'><td></td><td><code>,</code></td><td></td>
-<td style='text-align:left'>Separator character for CBOR sequences.</td></tr>
-</table>
-</div>
-<ol style='margin:0 0'>
-<li>The letter <i>n</i> in the Syntax column denotes one or more digits.</li>
-<li>The optional {<i>sign</i>} must be a single hyphen (<code>'-'</code>) character.</li>
-<li><i>Input only</i>: between the quotes, the whitespace characters
-(<code>' '</code>, <code>'\t'</code>, <code>'\r'</code>, <code>'\n'</code>)
-are <i>ignored</i>.</li> 
-<li><i>Input only</i>: the control characters
-(<code>'\t'</code> and <code>'\n'</code>)
-inside of string quotes <i>become a part of the text</i>.
-For nomalizing line terminators,
-a single <code>'\r'</code> or the combination <code>'\r\n'</code>
-are rewritten as <code>'\n'</code>.
-To <i>avoid</i> getting newline characters (<code>'\n'</code>)
-included in multi-line text strings,
-a <i>line continuation marker</i> consisting of a backslash&nbsp;(<code>'\'</code>)
-immediately preceding the newline may be used.</li>
-<li>Text strings may also include JavaScript compatible escape sequences
-(<code>'\''</code>, <code>'\"'</code>, <code>'\\'</code>, 
-<code>'\b'</code>, <code>'\f'</code>, <code>'\n'</code>, 
-<code>'\r'</code>, <code>'\t'</code>, <code>'\u</code><i>hhhh</i><code>'</code>).</li>
-<li><i>Input only</i>.</li>
-
-</ol>
+@dn-table@
 </body>

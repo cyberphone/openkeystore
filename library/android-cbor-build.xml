@@ -148,6 +148,8 @@
         match="Source.*\n"
         replace="&lt;b&gt;Library Version: ${jlib.ver}&lt;/b&gt;"
         flags="s"/>
+ 
+    <replace file="${android-cbor-src}/org/webpki/cbor/package.html" token="@dn-table@" value="${dn-table}"/>
 
   	<javadoc destdir="${android-cbor-apidoc}"
              overview="${android-cbor-src}/overview.html"
