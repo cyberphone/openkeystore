@@ -92,7 +92,7 @@ public class CBORArray extends CBORObject {
     @Override
     byte[] internalEncode() {
         byte[] encoded = encodeTagAndN(MT_ARRAY, objects.size());
-        for (CBORObject cborObject : toArray()) {
+        for (CBORObject cborObject : objects) {
             encoded = addByteArrays(encoded, cborObject.encode());
         }
         return encoded;
@@ -102,7 +102,7 @@ public class CBORArray extends CBORObject {
     void internalToString(CborPrinter cborPrinter) {
         cborPrinter.append('[');
         boolean notFirst = false;
-        for (CBORObject cborObject : toArray()) {
+        for (CBORObject cborObject : objects) {
             if (notFirst) {
                 cborPrinter.append(',').space();
             }
