@@ -21,7 +21,7 @@ import org.webpki.util.HexaDecimal;
 import static org.webpki.cbor.CBORInternal.*;
 
 /**
- * Class for holding CBOR <code>byte&nbsp;string</code> objects.
+ * Class for holding CBOR <code>bstr</code> objects.
  */
 public class CBORBytes extends CBORObject {
 

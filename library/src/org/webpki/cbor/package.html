@@ -1,9 +1,9 @@
 <body>
 <h2>CBOR - Encoder, Decoder, Signatures, and Encryption</h2>
-This package contains Java support for CBOR 
-[<a href='https://www.rfc-editor.org/rfc/rfc8949.html'>RFC&nbsp;8949</a>].
+This package contains Java support for CBOR using the 
+[<a href='https://www.ietf.org/archive/id/draft-rundgren-cbor-core-04.html'>CBOR&nbsp;Core</a>] profile.
 <h3 id='supported-objects'>Supported Objects</h3>
-The following table shows the currently supported CBOR objects (data items)
+The following table shows the supported CBOR objects (data items)
 and their mapping to Java, here expressed in
 CDDL&nbsp;[<a href='https://www.rfc-editor.org/rfc/rfc8610.html'>RFC&nbsp;8610</a>]
 notation:
@@ -35,7 +35,7 @@ The encoded representation is determined by the size and precision of the value.
 See also {@link CBORDecoder#CBORDecoder(InputStream, int, int) CBOR&nbsp;decoding&nbsp;options}.</li>
 </ol>
 <h3 id='time-data'>Time Data</h3>
-Since CBOR does not support a native time primitive, RFC&nbsp;8949 introduces
+Since CBOR lacks a native time primitive, RFC&nbsp;8949 introduces
 such a feature through tag 0 and 1.  This implementation supports these tags
 as well as making the same methods available without the tag constructs.
 For details turn to {@link CBORTag#getDateTime()},
@@ -48,7 +48,7 @@ hashing and signatures, over "raw" CBOR data.
 This API supports such operations through deterministic encoding
 which also is the default mode.
 The used deterministic encoding scheme is described in
-[<a href='https://www.ietf.org/archive/id/draft-rundgren-cbor-core-01.html'>CBOR&nbsp;Core</a>].
+[<a href='https://www.ietf.org/archive/id/draft-rundgren-cbor-core-04.html'>CBOR&nbsp;Core</a>].
 If input data does not conform to the deterministic encoding scheme,
 a {@link CBORException} is thrown.
 <p id='decoder-options'>
@@ -116,7 +116,7 @@ To aid the use of cryptography, support for
 <a href='doc-files/signatures.html'>Signatures</a> and 
 <a href='doc-files/encryption.html'>Encryption</a> is integrated in the package.
 <h3 id='diagnostic-notation'>Diagnostic Notation</h3>
-Creating CBOR data in diagnostic notation (as described in section 8 of RFC&nbsp;8949),
+Creating CBOR data in diagnostic notation
 is provided by the {@link CBORObject#toString()} method.
 <p>
 However, through the {@link CBORDiagnosticNotation} class, CBOR data may also be provided
