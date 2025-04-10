@@ -661,6 +661,11 @@ public class CBORTest {
         getBigIntegerTest("-9223372036854775808", -9223372036854775808L, false);
         getBigIntegerTest("18446744073709551615", -1, true);
 
+        assertTrue("dyn", new CBORMap().setDynamic((wr) -> {
+            wr.set(new CBORInt(1), new CBORBoolean(true));
+            return wr;
+        }).get(new CBORInt(1)).getBoolean());
+
     }
  
     void getBigIntegerTest(String numeberString, long value, boolean unsigned) {

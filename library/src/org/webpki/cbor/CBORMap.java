@@ -16,6 +16,7 @@
  */
 package org.webpki.cbor;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -30,6 +31,16 @@ import static org.webpki.cbor.CBORInternal.*;
  * </p>
  */
 public class CBORMap extends CBORObject {
+
+    /**
+     * Support interface for dynamic CBOR generation.
+    * @see #setDynamic(Dynamic)
+     */
+    public interface Dynamic {
+
+        public CBORMap set(CBORMap wr);
+
+    }
 
     boolean preSortedKeys;
 
@@ -142,6 +153,22 @@ public class CBORMap extends CBORObject {
         // If insertIndex == 0, the key will be first in the list.
         entries.add(insertIndex, newEntry);
         return this;
+    }
+
+    /**
+     * Set CBOR data using an external (dynamic) interface.
+     * <p>
+     * Sample using a construct suitable for chained writing:
+     * <pre>
+     *    setDynamic((wr) -&gt; optionalString == null ? wr : wr.set(KEY, new CBORString(optionalString))); 
+     * </pre>
+     * </p>
+     * @param dynamic Interface (usually Lambda)
+     * @return <code>this</code>
+     * @throws CBORException
+     */
+    public CBORMap setDynamic(Dynamic dynamic) {
+        return dynamic.set(this);
     }
 
     /**
