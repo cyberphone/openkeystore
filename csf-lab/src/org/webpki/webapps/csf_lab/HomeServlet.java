@@ -28,13 +28,15 @@ public class HomeServlet extends CoreRequestServlet {
     private static final long serialVersionUID = 1L;
     
     static final String SUPPORTED_CBOR = "This implementation supports the " +
-            "following subset of CBOR primitives: " +
+            "&quot;CBOR&nbsp;Core&quot;&nbsp;" + 
+            "[<a href='https://www.ietf.org/archive/id/draft-rundgren-cbor-core-04.html' " +
+            "target='_blank' title='cbor'>CBOR/c</a>] primitives (" +
             "<code>tstr</code>, <code>bstr</code>, " +
             "<code>int</code>, <code>bigint</code>, " +
-            "<code>float</code> (16/32/64 bit), " +
+            "<code>float</code>, " +
             "<code>bool</code>, <code>null</code>, " +
-            "<code><i>tagged&nbsp;data</i></code> (CBOR major type 6), and " +
-            "<code><i>simple&nbsp;values</i></code> (CBOR major type 7)";
+            "<code><i>tagged&nbsp;data</i></code>, and " +
+            "<code><i>simple&nbsp;values</i></code>).";
 
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {

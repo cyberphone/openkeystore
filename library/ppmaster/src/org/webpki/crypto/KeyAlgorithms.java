@@ -47,17 +47,6 @@ import java.security.spec.X509EncodedKeySpec;
  * Asymmetric key algorithms.
  */
 public enum KeyAlgorithms implements CryptoAlgorithms {
-
-    RSA1024    ("https://webpki.github.io/sks/algorithm#rsa1024", 
-                null,
-                "RSA",
-                1024,
-                AsymSignatureAlgorithms.RSA_SHA256,
-                false,
-                false,
-                true,
-                null,
-                KeyTypes.RSA),
     
     RSA2048    ("https://webpki.github.io/sks/algorithm#rsa2048", 
                 null,
