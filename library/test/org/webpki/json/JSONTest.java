@@ -3462,25 +3462,6 @@ public class JSONTest {
             assertFalse("verify", bcLoaded);
         }
     }
-
-    void rfc8037Signature(AsymSignatureAlgorithms signatureAlgorithm,
-                          String jwk,
-                          String messageString,
-                          String expectedJwsString) {
-        try {
-            byte[] payload = messageString.getBytes("utf-8");
-            KeyPair keyPair = JSONParser.parse(jwk).getKeyPair();
-            String jwsString = new JWSAsymKeySigner(keyPair.getPrivate(), 
-                                                    signatureAlgorithm)
-                    .sign(payload, false);
-            assertTrue("Sign", jwsString.contentEquals(expectedJwsString));
-
-            new JWSAsymSignatureValidator(keyPair.getPublic())
-                    .validate(new JWSDecoder(jwsString));
-        } catch (Exception e) {
-            assertFalse("8037", bcLoaded);
-        }
-    }
     
     void jwsSpecial(KeyPair keyPair, 
                     AsymSignatureAlgorithms signatureAlgorithm, 
@@ -3491,11 +3472,11 @@ public class JSONTest {
         JSONObjectWriter header = new JSONObjectWriter().setString("alg", signatureAlgorithm2.getJoseAlgorithmId());
         String headerB64U = Base64URL.encode(header.serializeToBytes(JSONOutputFormats.NORMALIZED));
         byte[] dataToBeSigned = (headerB64U + "." + dataB64U).getBytes("utf-8");
-        String jws = headerB64U + "." + dataB64U + "." + Base64URL.encode(
-                new SignatureWrapper(signatureAlgorithm, keyPair.getPrivate())
-                    .update(dataToBeSigned)
-                    .sign());
         try {
+            String jws = headerB64U + "." + dataB64U + "." + Base64URL.encode(
+                    new SignatureWrapper(signatureAlgorithm, keyPair.getPrivate())
+                        .update(dataToBeSigned)
+                        .sign());
             new JWSAsymSignatureValidator(keyPair.getPublic())
                 .validate(new JWSDecoder(jws));
             assertTrue("Should fail", optionalError == null);
@@ -3505,23 +3486,19 @@ public class JSONTest {
     }
     
     void jwsSpecials() throws Exception {
-        KeyPair keyPair = readJwk("p256");
-    /* 
+        KeyPair keyPair = readJwk("p256"); 
         jwsSpecial(keyPair, 
                    AsymSignatureAlgorithms.ECDSA_SHA512,
                    AsymSignatureAlgorithms.ECDSA_SHA512,
                    "Supplied key (P_256) is incompatible with specified algorithm (ECDSA_SHA512)");
-    */
         jwsSpecial(keyPair, 
                    AsymSignatureAlgorithms.ECDSA_SHA256,
                    AsymSignatureAlgorithms.ECDSA_SHA256,
-                   null);
-    /* 
+                   null); 
         jwsSpecial(keyPair, 
                    AsymSignatureAlgorithms.ECDSA_SHA256,
                    AsymSignatureAlgorithms.RSA_SHA256,
                    "Supplied key (P_256) is incompatible with specified algorithm (RSA_SHA256)");
-    */
         try {
             new JWSDecoder(new JSONObjectReader(new JSONObjectWriter().setString("hi","there")), "jws");
             fail("no prop");
@@ -3598,6 +3575,7 @@ public class JSONTest {
         KeyPair r2048 = readJwk("r2048");
         keyPairSignature(p256);
         keyPairSignature(readJwk("p384"));
+        keyPairSignature(readJwk("ed25519"));
         keyPairSignature(p521);
         keyPairSignature(r2048);
         
@@ -3639,15 +3617,6 @@ public class JSONTest {
                 + "bb47b51fd3f213fb8698f064774250a5"
                 + "028961c9bf8ffd973fe5d5c206492b14"
                 + "0e00");
-        
-        rfc8037Signature(AsymSignatureAlgorithms.ED25519,
-                         "{\"kty\":\"OKP\",\"crv\":\"Ed25519\"," 
-                         + "\"d\":\"nWGxne_9WmC6hEr0kuwsxERJxWl7MmkZcDusAxyuf2A\"," 
-                         + "\"x\":\"11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo\"}",
-                         "Example of Ed25519 signing",
-                         "eyJhbGciOiJFZERTQSJ9.RXhhbXBsZSBvZiBFZDI1NTE5IHNpZ25pbmc.hgyY0il_MGCj"
-                         + "P0JzlnLWG1PPOt7-09PGcvMg3AIbQR6dWbhijcNR4ki4iylGjg5BhVsPt9g7sVvpAr_Mu"
-                         + "M0KAg");
         
 
         JSONObjectWriter writer = new JSONObjectWriter()

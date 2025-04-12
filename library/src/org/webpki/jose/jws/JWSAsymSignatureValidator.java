@@ -50,6 +50,5 @@ public class JWSAsymSignatureValidator extends JWSValidator {
         }
         AsymSignatureAlgorithms algorithm = (AsymSignatureAlgorithms) jwsDecoder.signatureAlgorithm;
         SignatureWrapper.validate(publicKey, algorithm, signedData, jwsDecoder.signature, provider);
-        JWSSigner.checkEcJwsCompliance(publicKey, algorithm);
     }
 }

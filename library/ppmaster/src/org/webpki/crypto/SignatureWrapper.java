@@ -149,8 +149,9 @@ public class SignatureWrapper {
     private SignatureWrapper(AsymSignatureAlgorithms algorithm, String provider, Key key) 
             throws GeneralSecurityException {
         KeyAlgorithms keyAlgorithm = KeyAlgorithms.getKeyAlgorithm(key);
-        if (algorithm.getKeyType() != KeyTypes.RSA &&
-            keyAlgorithm.getRecommendedSignatureAlgorithm() != algorithm) {
+        if (algorithm.getKeyType() != keyAlgorithm.getKeyType() ||
+            (algorithm.getKeyType() != KeyTypes.RSA &&
+             keyAlgorithm.getRecommendedSignatureAlgorithm() != algorithm)) {
             throw new CryptoException(
                     "Supplied key (" +
                     keyAlgorithm.toString() +

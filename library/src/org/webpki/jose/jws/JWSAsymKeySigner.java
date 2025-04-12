@@ -57,9 +57,6 @@ public class JWSAsymKeySigner extends JWSSigner {
         super(signatureAlgorithm);
         this.privateKey = privateKey;
         this.signatureAlgorithm = signatureAlgorithm;
-        if (signatureAlgorithm.getKeyType() == KeyTypes.EC) {
-            checkEcJwsCompliance(privateKey, signatureAlgorithm);
-        }
     }
     
     /**

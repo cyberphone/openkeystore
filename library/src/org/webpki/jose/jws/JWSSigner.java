@@ -52,10 +52,7 @@ public abstract class JWSSigner {
      */
     JWSSigner(SignatureAlgorithms signatureAlgorithm) {
         jwsProtectedHeader = new JSONObjectWriter()
-            .setString(ALG_JSON, signatureAlgorithm.getKeyType() == KeyTypes.EDDSA ? 
-                           EdDSA 
-                                                           : 
-                           signatureAlgorithm.getAlgorithmId(AlgorithmPreferences.JOSE));
+            .setString(ALG_JSON, signatureAlgorithm.getAlgorithmId(AlgorithmPreferences.JOSE));
     }
 
     /**
@@ -130,16 +127,4 @@ public abstract class JWSSigner {
     }
 
     abstract byte[] signObject(byte[] dataToBeSigned);
-
-    /*
-     * Verify that EC algorithms follow key types as specified by RFC 7515
-     */
-    static void checkEcJwsCompliance(Key key, AsymSignatureAlgorithms signatureAlgorithm) {
-        if (key instanceof ECKey &&
-            KeyAlgorithms.getKeyAlgorithm(key)
-                    .getRecommendedSignatureAlgorithm() != signatureAlgorithm) {
-            throw new CryptoException(
-                    "EC key and algorithm does not match the JWS spec");
-        } 
-    }
 }
