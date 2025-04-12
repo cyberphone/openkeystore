@@ -43,6 +43,9 @@ public class CBORX509Signer extends CBORSigner<CBORX509Signer> {
     
     /**
      * Creates an X.509 signer object with an external interface.
+     * <p>
+     * Note that <i>external</i> signers <b>must</b> verify algorithm/key compatibility.
+     * </p>
      * 
      * @param signer Custom signer
      */

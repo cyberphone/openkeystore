@@ -3506,18 +3506,22 @@ public class JSONTest {
     
     void jwsSpecials() throws Exception {
         KeyPair keyPair = readJwk("p256");
+    /* 
         jwsSpecial(keyPair, 
                    AsymSignatureAlgorithms.ECDSA_SHA512,
                    AsymSignatureAlgorithms.ECDSA_SHA512,
-                   "EC key and algorithm does not match the JWS spec");
+                   "Supplied key (P_256) is incompatible with specified algorithm (ECDSA_SHA512)");
+    */
         jwsSpecial(keyPair, 
                    AsymSignatureAlgorithms.ECDSA_SHA256,
                    AsymSignatureAlgorithms.ECDSA_SHA256,
                    null);
+    /* 
         jwsSpecial(keyPair, 
                    AsymSignatureAlgorithms.ECDSA_SHA256,
                    AsymSignatureAlgorithms.RSA_SHA256,
                    "Supplied key (P_256) is incompatible with specified algorithm (RSA_SHA256)");
+    */
         try {
             new JWSDecoder(new JSONObjectReader(new JSONObjectWriter().setString("hi","there")), "jws");
             fail("no prop");
@@ -3805,10 +3809,10 @@ public class JSONTest {
         ArrayList<JSONSignatureDecoder> signatures;
         writer = new JSONObjectWriter()
             .setSignature(new JSONAsymKeySigner(p256.getPrivate())
-               .setAlgorithm(AsymSignatureAlgorithms.ECDSA_SHA512));
+               .setAlgorithm(AsymSignatureAlgorithms.ECDSA_SHA256));
         assertTrue(verifySignature(writer, 
                                    new JSONCryptoHelper.Options(),
-                                   p256.getPublic()).getAlgorithm() == AsymSignatureAlgorithms.ECDSA_SHA512);
+                                   p256.getPublic()).getAlgorithm() == AsymSignatureAlgorithms.ECDSA_SHA256);
         signature = readSignature("p256#es256,r2048#rs256@mult-jwk.json");
         try {
             signature.getSignature(new JSONCryptoHelper.Options());

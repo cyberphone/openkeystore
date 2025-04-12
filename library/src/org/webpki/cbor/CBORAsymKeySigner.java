@@ -46,6 +46,9 @@ public class CBORAsymKeySigner extends CBORSigner<CBORAsymKeySigner> {
 
     /**
      * Creates a signer object with an external interface.
+     * <p>
+     * Note that <i>external</i> signers <b>must</b> verify algorithm/key compatibility.
+     * </p>
      * 
      * @param signer Custom signer
      */

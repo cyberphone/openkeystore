@@ -63,6 +63,7 @@ import org.webpki.crypto.KeyAlgorithms;
 import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.AsymSignatureAlgorithms;
+import org.webpki.crypto.CryptoException;
 import org.webpki.crypto.SymEncryptionAlgorithms;
 import org.webpki.crypto.SignatureWrapper;
 
@@ -3138,6 +3139,30 @@ public class SKSTest {
         }
     }
 
+    void oneSignTurn(GenKey tk, AsymSignatureAlgorithms alg) throws Exception {
+        KeyAlgorithms ka = KeyAlgorithms.getKeyAlgorithm(tk.getPublicKey());
+        boolean bad = ka.getKeyType() != alg.getKeyType() ||
+            (ka.getRecommendedSignatureAlgorithm() != alg && alg.getKeyType() != KeyTypes.RSA);
+        try {
+            byte[] result = tk.signData(alg, 
+                                        new KeyAuthorization(),
+                                        TEST_STRING);
+            SignatureWrapper verify = new SignatureWrapper(alg, tk.getPublicKey());
+            verify.update(TEST_STRING);
+            assertTrue("Bad signature " + alg.getAlgorithmId(AlgorithmPreferences.SKS), verify.verify(result));
+            assertFalse("no", bad);
+        } catch (CryptoException e) {
+            assertTrue("yes", bad);
+        } catch (SKSException e) {
+            if (bad) return;
+            assertTrue("SKS missing: " + alg.getAlgorithmId(AlgorithmPreferences.SKS), 
+                       !alg.isMandatorySksAlgorithm());
+            checkException(e, "Unsupported algorithm: " + alg.getAlgorithmId(AlgorithmPreferences.SKS));
+        } catch (GeneralSecurityException e) {
+            fail("alg=" + alg.getJceName() + " error=" + e.getMessage());
+        }
+    }
+
     @Test
     public void test82() throws Exception {
         ProvSess sess = new ProvSess(device);
@@ -3160,22 +3185,10 @@ public class SKSTest {
         
         sess.closeSession();
         for (AsymSignatureAlgorithms alg : AsymSignatureAlgorithms.values()) {
-            GenKey tk = alg.getKeyType() == KeyTypes.RSA ? rsa : 
-                alg.getKeyType() == KeyTypes.EC ? ec : eddsa;
-            if (tk == null) continue;
-            try {
-                byte[] result = tk.signData(alg, 
-                                            new KeyAuthorization(),
-                                            TEST_STRING);
-                SignatureWrapper verify = new SignatureWrapper(alg, tk.getPublicKey());
-                verify.update(TEST_STRING);
-                assertTrue("Bad signature " + alg.getAlgorithmId(AlgorithmPreferences.SKS), verify.verify(result));
-            } catch (SKSException e) {
-                assertTrue("SKS missing: " + alg.getAlgorithmId(AlgorithmPreferences.SKS), 
-                           !alg.isMandatorySksAlgorithm());
-                checkException(e, "Unsupported algorithm: " + alg.getAlgorithmId(AlgorithmPreferences.SKS));
-            } catch (GeneralSecurityException e) {
-                fail("alg=" + alg.getJceName() + " error=" + e.getMessage());
+            oneSignTurn(rsa, alg);
+            oneSignTurn(ec, alg);
+            if (eddsa != null) {
+                oneSignTurn(eddsa, alg);
             }
         }
     }
