@@ -135,11 +135,11 @@ public abstract class CBORSigner <T extends CBORSigner<?>> {
      * Also see {@link #setCloneMode(boolean)}.
      * </p>
      * 
-     * @param key Key holding the signature in the CBOR map to sign
+     * @param csfContainerLabel Label (key) holding the signature in the CBOR map to sign
      * @param mapToSign CBOR map to be signed
      * @return Signed object
      */
-    public CBORObject sign(CBORObject key, CBORMap mapToSign) {
+    public CBORObject sign(CBORObject csfContainerLabel, CBORMap mapToSign) {
         // Signatures update input by default.
         if (cloneFlag) {
             mapToSign = (CBORMap)mapToSign.clone();
@@ -169,7 +169,7 @@ public abstract class CBORSigner <T extends CBORSigner<?>> {
         additionalItems(csfContainer);
         
         // Add the prepared signature object to the map object we want to sign. 
-        mapToSign.set(key, csfContainer);
+        mapToSign.set(csfContainerLabel, csfContainer);
 
         // Finally, sign all but the signature label and associated value.
         csfContainer.set(CSF_SIGNATURE_LBL, new CBORBytes(coreSigner(objectToSign.encode())));

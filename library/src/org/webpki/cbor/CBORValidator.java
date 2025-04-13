@@ -95,11 +95,11 @@ public abstract class CBORValidator <T extends CBORValidator<T>> {
      * an enveloped signature according to CSF.
      * </p>
      * 
-     * @param key Key in map holding signature
+     * @param csfContainerLabel Label (key) in the map holding the signature
      * @param signedObject Signed CBOR object
      * @return The original <code>signedObject</code>
      */
-    public CBORObject validate(CBORObject key, CBORObject signedObject) {
+    public CBORObject validate(CBORObject csfContainerLabel, CBORObject signedObject) {
 
         // There may be a tag holding the signed map.
         CBORMap signedMap = CBORCryptoUtils.unwrapContainerMap(signedObject,
@@ -107,7 +107,7 @@ public abstract class CBORValidator <T extends CBORValidator<T>> {
                                                                tagCollector);
 
         // Fetch signature container object
-        CBORMap csfContainer = signedMap.get(key).getMap();
+        CBORMap csfContainer = signedMap.get(csfContainerLabel).getMap();
 
         // Get the signature value and remove it from the (map) object.
         byte[] signatureValue = csfContainer.remove(CSF_SIGNATURE_LBL).getBytes();
