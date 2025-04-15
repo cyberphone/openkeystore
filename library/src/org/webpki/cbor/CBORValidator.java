@@ -92,7 +92,7 @@ public abstract class CBORValidator <T extends CBORValidator<T>> {
      * Validates signed CBOR object.
      * <p>
      * This method presumes that <code>signedObject</code> holds
-     * an enveloped signature according to CSF.
+     * an embedded signature according to CSF.
      * </p>
      * 
      * @param csfContainerLabel Label (key) in the map holding the signature

@@ -129,7 +129,7 @@ public abstract class CBORSigner <T extends CBORSigner<?>> {
      * Sign CBOR object.
      * 
      * <p>
-     * Adds an enveloped CSF object (signature) to a CBOR map.
+     * Adds an embedded CSF object (signature) to a CBOR map.
      * </p>
      * <p>
      * Also see {@link #setCloneMode(boolean)}.

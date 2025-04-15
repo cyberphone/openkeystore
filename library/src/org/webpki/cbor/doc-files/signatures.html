@@ -27,7 +27,7 @@ enabling constructs like the following:
 &nbsp;&nbsp;&nbsp;&nbsp;1: 38.8882,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;2: 77.0199<br>
 &nbsp;&nbsp;},<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Enveloped signature object /</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Embedded signature object /</span><br>
 &nbsp;&nbsp;-1: {<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Signature algorithm = ESP256 /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;1: -9,<br>
@@ -72,7 +72,7 @@ a801a3016a53706163652053686f7002663433352e30300363555344026d737061636573686f702e
 Labels <code>1</code>-<code>7</code> represent application data
 (which for compatibility with CSF <b>must</b> be supplied in a CBOR <code>map</code>),
 while the <i>application-specific</i> label <code>-1</code>
-holds an associated <i>enveloped</i> signature.
+holds an associated <i>embedded</i> signature.
 <p>
 Note that the application-specific labels (including the one holding the
 signature object), may be of any CBOR type.  The only requirement is that
@@ -126,7 +126,7 @@ To validate a CSF-based signature, apply the following set of rules:
 <code class='webpkicode'>algorithm</code>,
 over the CBOR binary representation of
 the <code>map</code> object holding the application data
-<i>including the enveloped signature object</i>,
+<i>including the embedded signature object</i>,
 with the <code class='webpkicode'>signatureValue</code> and
 its associated argument as the sole exception
 (<span class='webpkihighlite'>highlighted</span> in the example).
