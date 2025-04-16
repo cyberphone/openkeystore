@@ -29,7 +29,7 @@ public class HomeServlet extends CoreRequestServlet {
     
     static final String SUPPORTED_CBOR = "This implementation supports the " +
             "&quot;CBOR&nbsp;Core&quot;&nbsp;" + 
-            "[<a href='https://www.ietf.org/archive/id/draft-rundgren-cbor-core-04.html' " +
+            "[<a href='https://www.ietf.org/archive/id/draft-rundgren-cbor-core-06.html' " +
             "target='_blank' title='cbor'>CBOR/c</a>] primitives (" +
             "<code>tstr</code>, <code>bstr</code>, " +
             "<code>int</code>, <code>bigint</code>, " +
