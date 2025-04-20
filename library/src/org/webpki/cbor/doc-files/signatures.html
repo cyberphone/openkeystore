@@ -3,7 +3,9 @@
 The CBOR library contains support for {@link CBORSigner Creating} 
 and {@link CBORValidator Validating}
 signatures using a specific scheme called
-&quot;CBOR Signature Format&quot; (CSF). 
+&quot;CBOR Signature Format&quot; (CSF).
+Unless otherwise noted, CBOR data is shown in
+<a href='../package-summary.html#diagnostic-notation'>Diagnostic&nbsp;Notation</a>.
 <p>
 Note that unlike COSE 
 [<a href='https://www.rfc-editor.org/rfc/rfc9052.html'>RFC&nbsp;9052</a>], CSF
@@ -55,7 +57,7 @@ The same object expressed as hex-encoded CBOR:
 a801a3016a53706163652053686f7002663433352e30300363555344026d737061636573686f702e636f6d03781b465237363330303032313131313130303230303530303134333832047468747470733a2f2f62616e6b6e6574322e6f726705683035373638343031067819323032342d30382d32325430393a33343a30382d30353a303007a201fb404371b089a0275202fb405341460aa64c3020a3012804a401022001215820e812b1a6dcbc708f9ec43cc2921fa0a14e9d5eadcc6dc63471dd4b680c6236b52258209826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d8065840fdfe515197a79f1ebf149ee8a107c7578a7ec90bb7452df972f11f6105479b05963f2fe1f5a79fa9515af9bd5eece61a90b346527fe34b59b18732361be55746
 </div>
 <p>
-    The sample was signed using the following COSE private key (here in diagnostic notation):
+    The sample was signed using the following COSE private key:
 </p>
 <div class='webpkifloat'>
 <div class='webpkibox'>
@@ -78,16 +80,22 @@ Note that the application-specific labels (including the one holding the
 signature object), may be of any CBOR type.  The only requirement is that
 they are unique.
 </p>
+<div class="webpkicomment">Pending update: the application-specific label holding
+the CSF container will be replaced by a reserved, unique label, presumably
+following: <a href='https://datatracker.ietf.org/doc/draft-rundgren-cbor-simple-4-csf/'>I-D.draft-rundgren-cbor-simple-4-csf</a>.
+</div>
 <h2 id='csf-validation'>2. Signature Validation</h2>
 Signatures <b>must</b> for compatibility with CSF,
-be provided as a CBOR <code>map</code> having a fixed set of labels 
-according to the following table:
+be provided as a CBOR map having a fixed set of labels, 
+according to the following table (with map values provided in CDDL
+[<a href='https://www.rfc-editor.org/rfc/rfc8610.html'>RFC&nbsp;8610</a>]
+notation):
 <div class='webpkifloat'>
 <table class='webpkitable'>
-<tr><th>Name</th><th>Label</th><th>Argument</th><th style='min-width:30em'>Description</th></tr>
+<tr><th>Name</th><th>Label</th><th>Value</th><th style='min-width:30em'>Description</th></tr>
 
 <tr><td><code class='webpkicode'>customData</code></td><td style='text-align:center'><code>0</code></td>
-<td style='text-align:center'>&quot;<i>Any</i>&quot;</td><td><i>Optional</i>: data included in the CSF container.
+<td style='text-align:center'><code>any</code></td><td><i>Optional</i>: data included in the CSF container.
 Also see <a href='crypto-options.html'>Crypto Options</a>.</td></tr>
 
 <tr><td><code class='webpkicode'>algorithm</code></td><td style='text-align:center'><code>1</code></td>
@@ -95,21 +103,21 @@ Also see <a href='crypto-options.html'>Crypto Options</a>.</td></tr>
 <a href='#csf-algorithms'>COSE&nbsp;identifiers</a>.</td></tr>
 
 <tr><td><code class='webpkicode'>keyId</code></td><td style='text-align:center'><code>3</code></td>
-<td style='text-align:center'>&quot;<i>Any</i>&quot;</td><td><i>Optional</i>: key identifier using any valid CBOR object. 
+<td style='text-align:center'><code>any</code><td><i>Optional</i>: key identifier using any valid CBOR object. 
 Note that <code class='webpkicode'>keyId</code> <b>must not</b> be used together with 
 <code class='webpkicode'>publicKey</code> or <code class='webpkicode'>certificatePath</code>.
 A compliant <code class='webpkicode'>keyId</code> <b>must</b> uniquely identify a specific signature key.
 </td></tr>
 
 <tr><td><code class='webpkicode'>publicKey</code></td><td style='text-align:center'><code>4</code></td>
-<td style='text-align:center'><code>map</code></td>
+<td style='text-align:center'><code>{}</code></td>
 <td><i>Optional</i>: public key in COSE format.  
 Note that public key objects <b>must not</b> contain additional information like
 key identifiers or preferred signature algorithms.
 </td></tr>
 
 <tr><td><code class='webpkicode'>certificatePath</code></td><td style='text-align:center'><code>5</code></td>
-<td style='text-align:center'><code>array</code></td><td><i>Optional</i>: certificate path supplied 
+<td style='text-align:center'><code>[]</code></td><td><i>Optional</i>: certificate path supplied 
 as an array of <code>byte&nbsp;string</code> objects holding X.509 certificates in DER format, 
 where the first object <b>must</b> be the signature certificate.
 Signature objects <b>must not</b> contain both <code class='webpkicode'>certificatePath</code> and <code class='webpkicode'>publicKey</code> elements.
@@ -120,6 +128,13 @@ Signature objects <b>must not</b> contain both <code class='webpkicode'>certific
 </td></tr>
 </table>
 </div>
+<p>
+<div class="webpkicomment">Pending update: in order to support multiple
+signatures, CSF will also support a CBOR array holding objects according to the 
+table above.  Each array element will be treated <i>individually</i>, only adding
+the array construct (having a single element) to the data to be signed.
+</div>
+</p>
 To validate a CSF-based signature, apply the following set of rules:
 <ul>
 <li>Signatures are validated by running the signature validation 
@@ -127,12 +142,12 @@ To validate a CSF-based signature, apply the following set of rules:
 over the CBOR binary representation of
 the <code>map</code> object holding the application data
 <i>including the embedded signature object</i>,
-with the <code class='webpkicode'>signatureValue</code> and
-its associated argument as the sole exception
+with the <code class='webpkicode'>signatureValue</code> label and
+its associated value as the sole exception
 (<span class='webpkihighlite'>highlighted</span> in the example).
 Note that the length of the signature object <code>map</code> <b>must</b>
 be updated to reflect the removal of the
-<code class='webpkicode'>signatureValue</code> attribute during validation.</li>
+<code class='webpkicode'>signatureValue</code> during validation.</li>
 <li style='margin-top:0.5em'>Signature validation keys are either <i>implicit</i>, located via
 <code class='webpkicode'>keyId</code> attributes,
 or supplied in <code class='webpkicode'>publicKey</code> or
@@ -174,7 +189,7 @@ Currently supported COSE signature algorithms:
 <p>
 1] Updated for compliance with 
 <a href='https://datatracker.ietf.org/doc/draft-ietf-jose-fully-specified-algorithms/'>
-https://datatracker.ietf.org/doc/draft-ietf-jose-fully-specified-algorithms/</a>.
+ID.draft-ietf-jose-fully-specified-algorithms</a>.
 </p>
 <h2 id='csf-test-vectors'>5. Test Vectors</h2>
 An extensive set of test vectors is currently available at: 
@@ -195,7 +210,7 @@ Sample program:
 </div>
 </div>
 <p>
-The resulting signed object in diagnostic notation:
+The resulting signed object:
 </p>
 <div class='webpkifloat'>
 <div class='webpkibox'>

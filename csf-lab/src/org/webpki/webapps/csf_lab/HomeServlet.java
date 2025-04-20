@@ -28,9 +28,8 @@ public class HomeServlet extends CoreRequestServlet {
     private static final long serialVersionUID = 1L;
     
     static final String SUPPORTED_CBOR = "This implementation supports the " +
-            "&quot;CBOR&nbsp;Core&quot;&nbsp;" + 
-            "[<a href='https://www.ietf.org/archive/id/draft-rundgren-cbor-core-06.html' " +
-            "target='_blank' title='cbor'>CBOR/c</a>] primitives (" +
+            "[<a href='https://www.ietf.org/archive/id/draft-rundgren-cbor-core-08.html' " +
+            "target='_blank' title='cbor'>CBOR::Core</a>] primitives (" +
             "<code>tstr</code>, <code>bstr</code>, " +
             "<code>int</code>, <code>bigint</code>, " +
             "<code>float</code>, " +
