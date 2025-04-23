@@ -62,6 +62,7 @@ public class CBORX509Validator extends CBORValidator<CBORX509Validator> {
      * @param parameters Parameters implementation
      */
     public CBORX509Validator(Parameters parameters) {
+        super(true);
         this.parameters = parameters;
     }
  

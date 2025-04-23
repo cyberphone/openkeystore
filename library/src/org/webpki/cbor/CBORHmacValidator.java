@@ -32,6 +32,11 @@ public class CBORHmacValidator extends CBORValidator<CBORHmacValidator> {
     
     HmacVerifierInterface verifier;
 
+    CBORHmacValidator(HmacVerifierInterface verifier, boolean externalInterface) {
+        super(externalInterface);
+        this.verifier = verifier;
+    }
+
     /**
      * Creates a validator object with a secret key.
      * <p>
@@ -44,7 +49,7 @@ public class CBORHmacValidator extends CBORValidator<CBORHmacValidator> {
      */
     public CBORHmacValidator(byte[] secretKey) {
         this((data, digest, algorithm, keyId) -> 
-            Arrays.equals(algorithm.digest(secretKey, data), digest));
+            Arrays.equals(algorithm.digest(secretKey, data), digest), false);
     }
 
     /**
@@ -58,7 +63,7 @@ public class CBORHmacValidator extends CBORValidator<CBORHmacValidator> {
      * @param verifier Verifier implementation
      */
     public CBORHmacValidator(HmacVerifierInterface verifier) {
-        this.verifier = verifier;
+        this(verifier, true);
     }
 
     @Override

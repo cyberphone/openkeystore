@@ -22,6 +22,7 @@ import org.webpki.crypto.EncryptionCore;
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
 import org.webpki.cbor.CBORCryptoUtils.Intercepter;
+import org.webpki.cbor.CBORCryptoUtils.POLICY;
 
 /**
  * Base class for encrypting data.
@@ -40,7 +41,7 @@ import org.webpki.cbor.CBORCryptoUtils.Intercepter;
  */
 public abstract class CBOREncrypter <T extends CBOREncrypter<T>>  {
 
-    // The default is to use a map without tagging and custom data.
+    // The default is to use a map without custom data.
     Intercepter intercepter = new Intercepter() { };
     
     // The algorithm to use with the contentEncryptionKey
@@ -96,18 +97,29 @@ public abstract class CBOREncrypter <T extends CBOREncrypter<T>>  {
     }
 
     /**
-     * Encrypt data.
+     * Encrypt data, return tagged CEF object.
      * 
      * @param dataToEncrypt The data to encrypt
+     * @param wrappedMap Empty map wrapped in a tag or <code>null</code>
      * @return CBOR encryption object
      */
-    public CBORObject encrypt(byte[] dataToEncrypt) {
+    public CBORObject encrypt(byte[] dataToEncrypt, CBORTag wrappedMap) {
 
-        // Create an empty encryption container object.
-        CBORMap cefContainer = new CBORMap();
+        // Empty encryption container object.
+        CBORMap cefContainer;
 
         // The encryption object may optionally be wrapped in a tag.
-        CBORObject outerObject = intercepter.wrap(cefContainer);
+        CBORObject outerObject;
+
+        // There may be a tag holding an empty CEF map.
+        if (wrappedMap == null) {
+            outerObject = cefContainer = new CBORMap();
+        } else {
+            cefContainer = CBORCryptoUtils.unwrapContainerMap(wrappedMap, 
+                                                              POLICY.OPTIONAL, 
+                                                              null);
+            outerObject = wrappedMap;
+        }
 
         // Get optional custom data.
         CBORObject customData = intercepter.getCustomData();
@@ -164,5 +176,15 @@ public abstract class CBOREncrypter <T extends CBOREncrypter<T>>  {
 
         // Finally, the thing we all longed(?) for!
         return outerObject;
+    }
+
+    /**
+     * Encrypt data, return CEF object.
+     * 
+     * @param dataToEncrypt The data to encrypt
+     * @return CBOR encryption object
+     */
+    public CBORObject encrypt(byte[] dataToEncrypt) {
+        return encrypt(dataToEncrypt, null);
     }
 }

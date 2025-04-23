@@ -355,16 +355,6 @@ public class CborEncryption {
             encrypter.setIntercepter(new CBORCryptoUtils.Intercepter() {
                 
                 @Override
-                public CBORObject wrap(CBORMap encryptionObject) {
-                    
-                    // 1-dimensional or 2-dimensional tag
-                    return tagged == 1 ? 
-                            new CBORTag(NON_RESEVED_TAG, encryptionObject) 
-                                       : 
-                            new CBORTag(OBJECT_ID, encryptionObject);
-                }
-                
-                @Override
                 public CBORObject getCustomData() {
                     return customData ? CUSTOM_DATA : null;
                 }
@@ -380,7 +370,12 @@ public class CborEncryption {
 
             });
         }
-        byte[] encryptedData = encrypter.encrypt(dataToBeEncrypted).encode();
+
+        byte[] encryptedData = encrypter.encrypt(dataToBeEncrypted,
+            tagged == 0 ? null : tagged == 1 ? 
+                            new CBORTag(NON_RESEVED_TAG, new CBORMap()) 
+                                             : 
+                            new CBORTag(OBJECT_ID, new CBORMap())).encode();
         CBORAsymKeyDecrypter decrypter = 
             new CBORAsymKeyDecrypter(new CBORAsymKeyDecrypter.KeyLocator() {
 

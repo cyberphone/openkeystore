@@ -50,8 +50,6 @@ public class CSFService extends InitPropertyReader implements ServletContextList
 
     static String sampleSignature;
     
-    static String sampleLabel;
-    
     static String samplePublicKey;
     
     static String keyDeclarations;
@@ -167,8 +165,6 @@ public class CSFService extends InitPropertyReader implements ServletContextList
             /////////////////////////////////////////////////////////////////////////////////////////////
             CBORMap demoSignature = 
                     CBORDecoder.decode(getEmbeddedResource("demo-doc-signature.cbor")).getMap();
-            CBORObject signatureLabel = demoSignature.getKeys().getLast();
-            sampleLabel = signatureLabel.toString();
             sampleSignature = demoSignature.toString();
             samplePublicKey = getEmbeddedResourceString("p256publickey.pem").trim();
             new CBORAsymKeyValidator(new CBORAsymKeyValidator.KeyLocator() {
@@ -183,7 +179,7 @@ public class CSFService extends InitPropertyReader implements ServletContextList
                     return publicKey;
                 }
                 
-            }).validate(signatureLabel, demoSignature);
+            }).validate(demoSignature);
 
             /////////////////////////////////////////////////////////////////////////////////////////////
             // Logging?

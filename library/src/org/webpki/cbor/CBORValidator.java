@@ -21,6 +21,8 @@ import org.webpki.cbor.CBORCryptoUtils.Collector;
 
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
+import static org.webpki.cbor.CBORInternal.*;
+
 /**
  * Base class for validating signatures.
  * <p>
@@ -33,8 +35,14 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
  * </p>
  */
 public abstract class CBORValidator <T extends CBORValidator<T>> {
+
+    private boolean externalInterface;
+
+    private boolean multiSignFlag;
     
-    CBORValidator() {}
+    CBORValidator(boolean externalInterface) {
+        this.externalInterface = externalInterface;
+    }
 
     abstract void coreValidation(CBORMap csfContainer, 
                                  int coseAlgorithmId,
@@ -47,6 +55,24 @@ public abstract class CBORValidator <T extends CBORValidator<T>> {
     POLICY customDataPolicy = POLICY.FORBIDDEN;
     Collector customDataCollector;
     
+
+
+    /**
+     * Set multi signature mode.
+     * <p>
+     * By default the {@link #validate(CBORObject)} method
+     * assumes single signature mode.
+     * </p>
+     * 
+     * @param flag If <code>true</code> nulti signature mode is assumed
+     * @return <code>this</code> of subclass
+     */
+    public T setMultiSignatureMode(boolean flag) {
+        if ((multiSignFlag = flag) && !externalInterface) {
+            cborError("multi signature validation requires the external interface of the validation class");
+        }
+        return getThis();
+    }
 
     /**
      * Sets custom data policy.
@@ -88,26 +114,7 @@ public abstract class CBORValidator <T extends CBORValidator<T>> {
         return getThis();
     }
 
-    /**
-     * Validates signed CBOR object.
-     * <p>
-     * This method presumes that <code>signedObject</code> holds
-     * an embedded signature according to CSF.
-     * </p>
-     * 
-     * @param csfContainerLabel Label (key) in the map holding the signature
-     * @param signedObject Signed CBOR object
-     * @return The original <code>signedObject</code>
-     */
-    public CBORObject validate(CBORObject csfContainerLabel, CBORObject signedObject) {
-
-        // There may be a tag holding the signed map.
-        CBORMap signedMap = CBORCryptoUtils.unwrapContainerMap(signedObject,
-                                                               tagPolicy,
-                                                               tagCollector);
-
-        // Fetch signature container object
-        CBORMap csfContainer = signedMap.get(csfContainerLabel).getMap();
+    void validateOneSignature(CBORMap csfContainer, CBORObject signedObject) {
 
         // Get the signature value and remove it from the (map) object.
         byte[] signatureValue = csfContainer.remove(CSF_SIGNATURE_LBL).getBytes();
@@ -131,6 +138,38 @@ public abstract class CBORValidator <T extends CBORValidator<T>> {
 
         // Restore object.
         csfContainer.set(CSF_SIGNATURE_LBL, new CBORBytes(signatureValue));
+    }
+
+    /**
+     * Validates signed CBOR object.
+     * <p>
+     * This method presumes that <code>signedObject</code> holds
+     * an embedded signature according to CSF.
+     * </p>
+     * 
+     * @param signedObject Signed CBOR object
+     * @return The original <code>signedObject</code>
+     */
+    public CBORObject validate(CBORObject signedObject) {
+
+        // There may be a tag holding the signed map.
+        CBORMap signedMap = CBORCryptoUtils.unwrapContainerMap(signedObject,
+                                                               tagPolicy,
+                                                               tagCollector);
+
+        // Fetch signature container object.
+        // Need to separate single and multiple signatures.
+        if (multiSignFlag) {
+            CBORArray arrayOfSignatures = signedMap.get(CSF_CONTAINER_LBL).getArray();
+            for (int i = 0; i < arrayOfSignatures.size(); i++) {
+                CBORMap csfContainer = arrayOfSignatures.get(i).getMap();
+                signedMap.update(CSF_CONTAINER_LBL, new CBORArray().add(csfContainer), true);
+                validateOneSignature(csfContainer, signedObject);
+            }
+            signedMap.update(CSF_CONTAINER_LBL, arrayOfSignatures, true);
+        } else {
+            validateOneSignature(signedMap.get(CSF_CONTAINER_LBL).getMap(), signedObject);
+        }
         
         // Return it as well.
         return signedObject;

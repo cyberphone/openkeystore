@@ -58,11 +58,10 @@ public class ValidateServlet extends CoreRequestServlet {
                                             :
                 CBORDiagnosticNotation.convert(getParameterTextarea(request, CSF_OBJECT)));
             String validationKey = getParameter(request, CSF_VALIDATION_KEY);
-            CBORObject signatureLabel = getSignatureLabel(request);
             
             // This is certainly not what you would do in an application...
             CBORMap csfContainer = unwrapOptionalTag(signedCborObject)
-                        .get(signatureLabel).getMap();
+                        .get(CBORCryptoConstants.CSF_CONTAINER_LBL).getMap();
             boolean hmacSignature = 
                     csfContainer.get(CBORCryptoConstants.CXF_ALGORITHM_LBL).getInt32() > 0;
 
@@ -112,7 +111,7 @@ public class ValidateServlet extends CoreRequestServlet {
                     }
                 })
                 .setTagPolicy(CBORCryptoUtils.POLICY.OPTIONAL, null)
-                .validate(signatureLabel, signedCborObject);
+                .validate(signedCborObject);
             
             StringBuilder html = new StringBuilder(
                     "<div class='header'> Signature Successfully Validated</div>")
@@ -182,12 +181,6 @@ public class ValidateServlet extends CoreRequestServlet {
                         CSFService.samplePublicKey,
                         "Validation key (secret key in hexadecimal or public key in PEM, JWK, " +
                             "or COSE format)"))
-            .append(HTML.fancyText(
-                        true,
-                        CSF_SIGN_LABEL,
-                        1, 
-                        CSFService.sampleLabel,
-                        "Anticipated signature label in " + DIAG_NOT_LINK))
             .append(
                 "<div style='display:flex;justify-content:center'>" +
                 "<div class='stdbtn' onclick=\"doVerify()\">" +
