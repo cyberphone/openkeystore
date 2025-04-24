@@ -128,8 +128,6 @@ public class CBORTest {
         }
     };
     
-    static CBORInt SIGNATURE_LABEL = new CBORInt(-1);
-    
     static KeyPair readJwk(String keyType) throws Exception {
         JSONObjectReader jwkPlus = JSONParser.parse(
                 IO.readFile(baseKey + keyType + "privatekey.jwk"));
@@ -1195,19 +1193,11 @@ public class CBORTest {
                              Long tagNumber,
                              String objectId) 
             throws IOException, GeneralSecurityException {
-        CBORMap tbs = createDataToBeSigned();
+        CBORObject tbs = createDataToBeSigned();
         if (tagNumber != null) {
-            signer.setIntercepter(new CBORCryptoUtils.Intercepter() {
-                
-                @Override
-                public CBORObject wrap(CBORMap cborMap) {
-                    if (tagNumber == CBORTag.RESERVED_TAG_COTX) {
-                        return new CBORTag(objectId, cborMap);
-                    }
-                    return new CBORTag(tagNumber, cborMap);
-                }
-                
-            });
+            tbs = tagNumber == CBORTag.RESERVED_TAG_COTX ?
+                              new CBORTag(objectId, tbs) : new CBORTag(tagNumber, tbs);
+
             validator.setTagPolicy(CBORCryptoUtils.POLICY.MANDATORY, new CBORCryptoUtils.Collector() {
                 
                 @Override
@@ -1227,10 +1217,10 @@ public class CBORTest {
             });
         }
 
-        CBORObject signedData = signer.sign(SIGNATURE_LABEL, tbs);
+        CBORObject signedData = signer.sign(tbs);
         byte[] sd = signedData.encode();
         CBORObject cborSd = CBORDecoder.decode(sd);
-        return validator.validate(SIGNATURE_LABEL, cborSd);
+        return validator.validate(cborSd);
      }
 
     CBORObject signAndVerify(CBORSigner<?> signer, CBORValidator<?> validator) 
@@ -1242,10 +1232,10 @@ public class CBORTest {
                                                                          GeneralSecurityException {
         CBORMap tbs = createDataToBeSigned();
         CBORObject res = new CBORHmacSigner(symmetricKeys.getValue(size),
-                           algorithm).sign(SIGNATURE_LABEL, tbs);
+                           algorithm).sign(tbs);
         byte[] sd = res.encode();
         CBORObject cborSd = CBORDecoder.decode(sd);
-        new CBORHmacValidator(symmetricKeys.getValue(size)).validate(SIGNATURE_LABEL, cborSd);
+        new CBORHmacValidator(symmetricKeys.getValue(size)).validate(cborSd);
         
         tbs = createDataToBeSigned();
          res = new CBORHmacSigner(new HmacSignerInterface() {
@@ -1260,24 +1250,24 @@ public class CBORTest {
                 return algorithm;
             }
             
-        }).sign(SIGNATURE_LABEL, tbs);
+        }).sign(tbs);
         sd = res.encode();
         cborSd = CBORDecoder.decode(sd);
-        new CBORHmacValidator(symmetricKeys.getValue(size)).validate(SIGNATURE_LABEL, cborSd);
+        new CBORHmacValidator(symmetricKeys.getValue(size)).validate(cborSd);
 
         tbs = createDataToBeSigned();
         CBORObject keyId = new CBORString(symmetricKeys.getName(size));
         res = new CBORHmacSigner(symmetricKeys.getValue(size), algorithm).setKeyId(keyId)
-            .sign(SIGNATURE_LABEL, tbs); 
+            .sign(tbs); 
         sd = res.encode();
         cborSd = CBORDecoder.decode(sd);
         new CBORHmacValidator(new HmacVerifierInterface() {
 
             @Override
-            public boolean verifySignature(byte[] data, 
-                                           byte[] digest, 
-                                           HmacAlgorithms hmacAlgorithm, 
-                                           String optionalKeyId) {
+            public boolean verify(byte[] data, 
+                                  byte[] digest, 
+                                  HmacAlgorithms hmacAlgorithm, 
+                                  String optionalKeyId) {
                 if (!algorithm.equals(hmacAlgorithm)) {
                     throw new CryptoException("Algorithm error");
                 }
@@ -1287,7 +1277,7 @@ public class CBORTest {
                 return Arrays.equals(algorithm.digest(symmetricKeys.getValue(size), data), digest);
             }
                 
-        }).validate(SIGNATURE_LABEL, cborSd.getMap());
+        }).validate(cborSd);
     }
 
     @Test
@@ -1508,7 +1498,7 @@ public class CBORTest {
             new CBORAsymKeySigner(p256.getPrivate())
                 .setKeyId(keyId)
                 .setPublicKey(p256.getPublic())
-                .sign(SIGNATURE_LABEL, createDataToBeSigned().getMap()); 
+                .sign(createDataToBeSigned().getMap()); 
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, CBORCryptoUtils.STDERR_KEY_ID_PUBLIC);
@@ -1519,14 +1509,14 @@ public class CBORTest {
         CBORObject cloneSign = new CBORAsymKeySigner(p256.getPrivate())
             .setPublicKey(p256.getPublic())
             .setCloneMode(true)
-            .sign(SIGNATURE_LABEL, clone);
-        assertFalse("c1", clone.containsKey(SIGNATURE_LABEL));
-        new CBORAsymKeyValidator(p256.getPublic()).validate(SIGNATURE_LABEL, cloneSign);
+            .sign(clone);
+        assertFalse("c1", clone.containsKey(CSF_CONTAINER_LBL));
+        new CBORAsymKeyValidator(p256.getPublic()).validate(cloneSign);
         cloneSign = new CBORAsymKeySigner(p256.getPrivate())
             .setPublicKey(p256.getPublic())
-            .sign(SIGNATURE_LABEL, clone);
-            assertTrue("c2", clone.containsKey(SIGNATURE_LABEL));
-        new CBORAsymKeyValidator(p256.getPublic()).validate(SIGNATURE_LABEL, cloneSign);
+            .sign(clone);
+            assertTrue("c2", clone.containsKey(CSF_CONTAINER_LBL));
+        new CBORAsymKeyValidator(p256.getPublic()).validate(cloneSign);
         
         // HMAC signatures
         hmacTest(256, HmacAlgorithms.HMAC_SHA256);
@@ -1572,20 +1562,11 @@ public class CBORTest {
         String objectId = "https://example.com/myobject";
         
         // 2-dimensional tag
-        CBORSigner<?> tagSigner = new CBORAsymKeySigner(p256.getPrivate())
-            .setIntercepter(new CBORCryptoUtils.Intercepter() {
-                
-                @Override
-                public CBORObject wrap(CBORMap mapToSign) {
-                    return new CBORTag(objectId, mapToSign);
-                }
-            
-        });
+        CBORSigner<?> tagSigner = new CBORAsymKeySigner(p256.getPrivate());
         
-        CBORObject taggedSignature = tagSigner.sign(SIGNATURE_LABEL,
-                                                    createDataToBeSigned());
+        CBORObject taggedSignature = tagSigner.sign(new CBORTag(objectId, createDataToBeSigned()));
         try {
-            new CBORAsymKeyValidator(p256.getPublic()).validate(SIGNATURE_LABEL, taggedSignature);
+            new CBORAsymKeyValidator(p256.getPublic()).validate(taggedSignature);
             fail("must fail");
         } catch (Exception e) {
             checkException(e, "Tag encountered. Policy: FORBIDDEN");
@@ -1602,7 +1583,7 @@ public class CBORTest {
                                            .get(0)
                                                .getString().equals(objectId));
                 }
-            }).validate(SIGNATURE_LABEL, taggedSignature);
+            }).validate(taggedSignature);
         new CBORAsymKeyValidator(p256.getPublic())
             .setTagPolicy(CBORCryptoUtils.POLICY.MANDATORY, new CBORCryptoUtils.Collector() {
                 
@@ -1615,21 +1596,13 @@ public class CBORTest {
                                            .get(0)
                                                .getString().equals(objectId));
                 }
-            }).validate(SIGNATURE_LABEL, taggedSignature);
+            }).validate(taggedSignature);
 
         long tag = 18;
         // 1-dimensional tag
-        tagSigner = new CBORAsymKeySigner(p256.getPrivate())
-            .setIntercepter(new CBORCryptoUtils.Intercepter() {
-                
-                @Override
-                public CBORObject wrap(CBORMap mapToSign) {
-                    return new CBORTag(tag, mapToSign);
-                }
-                
-        });
+        tagSigner = new CBORAsymKeySigner(p256.getPrivate());
         
-        taggedSignature = tagSigner.sign(SIGNATURE_LABEL, createDataToBeSigned());
+        taggedSignature = tagSigner.sign(new CBORTag(tag, createDataToBeSigned()));
         new CBORAsymKeyValidator(p256.getPublic())
             .setTagPolicy(CBORCryptoUtils.POLICY.MANDATORY, new CBORCryptoUtils.Collector() {
                 
@@ -1637,7 +1610,7 @@ public class CBORTest {
                 public void foundData(CBORObject objectOrNull) {
                     assertTrue("tagn", tag == objectOrNull.getTag().getTagNumber());
                 }
-            }).validate(SIGNATURE_LABEL, taggedSignature);
+            }).validate(taggedSignature);
     }
 
     void enumerateEncryptions(KeyEncryptionAlgorithms[] keas,
@@ -1866,30 +1839,12 @@ public class CBORTest {
         }
         
         String objectId = "https://example.com/myobject";
+
         CBOREncrypter<?> taggedX25519Encrypter = new CBORAsymKeyEncrypter(x25519.getPublic(),
                                          KeyEncryptionAlgorithms.ECDH_ES_A256KW,
                                          ContentEncryptionAlgorithms.A256GCM)
             .setKeyId(new CBORString("mykey"))
             .setIntercepter(new CBORCryptoUtils.Intercepter() {
-                
-                @Override
-                public CBORObject wrap(CBORMap encryptionObject) {
-                    return new CBORTag(objectId, encryptionObject);
-                }
-                
-            });
-
-        taggedX25519Encrypter = new CBORAsymKeyEncrypter(x25519.getPublic(),
-                                         KeyEncryptionAlgorithms.ECDH_ES_A256KW,
-                                         ContentEncryptionAlgorithms.A256GCM)
-            .setKeyId(new CBORString("mykey"))
-            .setIntercepter(new CBORCryptoUtils.Intercepter() {
-                
-                @Override
-                public CBORObject wrap(CBORMap encryptionObject) {
-                    // 2-dimensional
-                    return new CBORTag(objectId, encryptionObject);
-                }
                 
                 @Override
                 public CBORObject getCustomData() {
@@ -1898,7 +1853,8 @@ public class CBORTest {
                 }
                 
             });
-        CBORObject taggedX25519Encrypted = taggedX25519Encrypter.encrypt(dataToEncrypt);
+        CBORObject taggedX25519Encrypted = 
+            taggedX25519Encrypter.encrypt(dataToEncrypt, new CBORTag(objectId, new CBORMap()));
         try {
             assertTrue("enc/dec", 
                     Arrays.equals(new CBORAsymKeyDecrypter(x25519.getPrivate())
@@ -1953,17 +1909,10 @@ public class CBORTest {
         taggedX25519Encrypter = new CBORAsymKeyEncrypter(x25519.getPublic(),
                                          KeyEncryptionAlgorithms.ECDH_ES_A256KW,
                                          ContentEncryptionAlgorithms.A256GCM)
-            .setKeyId(new CBORString("mykey"))
-            .setIntercepter(new CBORCryptoUtils.Intercepter() {
-                
-                    @Override
-                    public CBORObject wrap(CBORMap encryptionObject) {
-                        // 1-dimensional
-                        return new CBORTag(9999999, encryptionObject);
-                    }
-                });
+            .setKeyId(new CBORString("mykey"));
 
-        taggedX25519Encrypted = taggedX25519Encrypter.encrypt(dataToEncrypt);
+        taggedX25519Encrypted = taggedX25519Encrypter.encrypt(dataToEncrypt,
+                                                              new CBORTag(9999999, new CBORMap()));
         assertTrue("enc/dec", 
                 Arrays.equals(new CBORAsymKeyDecrypter(x25519.getPrivate())
                     .setTagPolicy(CBORCryptoUtils.POLICY.MANDATORY,
@@ -2575,5 +2524,32 @@ public class CBORTest {
         oneEpoch("FB41D9EDCDE113645A", 1740060548.303, "Data of type=CBORFloat");
         oneEpoch("c1FB41D9EDCDE113645A", 1740060548.303, "Tagged object 1 of type=CBORFloat");
         oneEpoch("00", 0, "Data of type=CBORInt");
+    }
+
+    @Test
+    public void multiSignature() throws Exception {
+        CBORObject o = new CBORAsymKeySigner(p256.getPrivate())
+            .setMultiSignatureMode(true)
+            .setPublicKey(p256.getPublic())
+            .sign(createDataToBeSigned());
+  //      System.out.println(o.toString());
+        o = new CBORAsymKeySigner(ed25519.getPrivate())
+            .setMultiSignatureMode(true)
+            .setPublicKey(ed25519.getPublic())
+            .sign(o);
+   //     System.out.println(o.toString());
+        new CBORAsymKeyValidator(new CBORAsymKeyValidator.KeyLocator() {
+            @Override
+            public PublicKey locate(PublicKey optionalPublicKey, CBORObject optionalKeyId,
+                    AsymSignatureAlgorithms algorithm) {
+                return algorithm == AsymSignatureAlgorithms.ED25519 ? 
+                                                ed25519.getPublic() : p256.getPublic();
+            }
+        }).setMultiSignatureMode(true)
+          .validate(o);
+
+        o = new CBORAsymKeySigner(p256.getPrivate())
+            .setPublicKey(p256.getPublic())
+            .sign(createDataToBeSigned());
     }
  }

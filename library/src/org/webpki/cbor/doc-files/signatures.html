@@ -24,18 +24,18 @@ enabling constructs like the following:
 &nbsp;&nbsp;3: "FR7630002111110020050014382",<br>
 &nbsp;&nbsp;4: "https://banknet2.org",<br>
 &nbsp;&nbsp;5: "05768401",<br>
-&nbsp;&nbsp;6: "2024-08-22T09:34:08-05:00",<br>
+&nbsp;&nbsp;6: "2025-04-23T09:34:08-05:00",<br>
 &nbsp;&nbsp;7: {<br>
 &nbsp;&nbsp;&nbsp;&nbsp;1: 38.8882,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;2: 77.0199<br>
 &nbsp;&nbsp;},<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;<span style='color:grey'>/ Embedded signature object /</span><br>
-&nbsp;&nbsp;-1: {<br>
+&nbsp;&nbsp;simple(99): {<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Signature algorithm = ESP256 /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;1: -9,<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Public key descriptor in COSE format /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;4: {<br>
-<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ kty = EC /</span><br>
+<div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ kty = EC2 /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: 2,<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ crv = P-256 /</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-1: 1,<br>
@@ -45,7 +45,7 @@ enabling constructs like the following:
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-3: h'9826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d8'<br>
 &nbsp;&nbsp;&nbsp;&nbsp;},<br>
 <div style='height:0.5em'></div>&nbsp;&nbsp;&nbsp;&nbsp;<span style='color:grey'>/ Signature value /</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class='webpkihighlite'>6: h'fdfe515197a79f1ebf149ee8a107c7578a7ec90bb7452df972f11f6105479b05963f2fe1f5a79fa9515af9bd5eece61a90b346527fe34b59b18732361be55746'</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class='webpkihighlite'>6: h'05257a10ebea8ec582eef0dc9b0bffb2dfd0a1a0eda6bf0916672a9e53820b8412a465849bb086fbe3da94ae00dc5bf8b271fa0206fdd7c9ec909c4171b0d6b4'</span><br>
 &nbsp;&nbsp;}<br>
 }
 </div>
@@ -54,7 +54,7 @@ enabling constructs like the following:
 The same object expressed as hex-encoded CBOR:
 </p>
 <div class='webpkihexbox'>
-a801a3016a53706163652053686f7002663433352e30300363555344026d737061636573686f702e636f6d03781b465237363330303032313131313130303230303530303134333832047468747470733a2f2f62616e6b6e6574322e6f726705683035373638343031067819323032342d30382d32325430393a33343a30382d30353a303007a201fb404371b089a0275202fb405341460aa64c3020a3012804a401022001215820e812b1a6dcbc708f9ec43cc2921fa0a14e9d5eadcc6dc63471dd4b680c6236b52258209826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d8065840fdfe515197a79f1ebf149ee8a107c7578a7ec90bb7452df972f11f6105479b05963f2fe1f5a79fa9515af9bd5eece61a90b346527fe34b59b18732361be55746
+a801a3016a53706163652053686f7002663433352e30300363555344026d737061636573686f702e636f6d03781b465237363330303032313131313130303230303530303134333832047468747470733a2f2f62616e6b6e6574322e6f726705683035373638343031067819323032352d30342d32335430393a33343a30382d30353a303007a201fb404371b089a0275202fb405341460aa64c30f863a3012804a401022001215820e812b1a6dcbc708f9ec43cc2921fa0a14e9d5eadcc6dc63471dd4b680c6236b52258209826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d806584005257a10ebea8ec582eef0dc9b0bffb2dfd0a1a0eda6bf0916672a9e53820b8412a465849bb086fbe3da94ae00dc5bf8b271fa0206fdd7c9ec909c4171b0d6b4
 </div>
 <p>
     The sample was signed using the following COSE private key:

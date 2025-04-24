@@ -29,10 +29,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.webpki.cbor.CBORAsymKeySigner;
-import org.webpki.cbor.CBORCryptoUtils;
 import org.webpki.cbor.CBORDiagnosticNotation;
 import org.webpki.cbor.CBORHmacSigner;
-import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORPublicKey;
 import org.webpki.cbor.CBORSigner;
@@ -54,12 +52,12 @@ public class CreateServlet extends CoreRequestServlet {
     private static final long serialVersionUID = 1L;
 
     static final String DEFAULT_ALG      = "Ed25519";
-    static final String DEFAULT_CBOR     = "{\\n" +
-                                           "  / just a string /\\n" +
-                                           "  1: \"Hello signed world!\",\\n" +
-                                           "  / some other data /\\n" +
-                                           "  2: [2.0, true]\\n" +
-                                           "}";
+    static final String DEFAULT_CBOR     = 
+            "# Signed objects may be tagged: nnn({...})\\n" +
+            "{\\n" +
+            "  1: \"Hello signed world!\",  # Just a string\\n" +
+            "  2: [4.7, true, h\\'012345\\']  # Some other data\\n" +
+            "}";
     
     class SelectAlg {
 
@@ -153,13 +151,9 @@ public class CreateServlet extends CoreRequestServlet {
             "<div style='margin-left:auto' class='defbtn' onclick=\"restoreDefaults()\">Restore&nbsp;defaults</div></div>")
         .append(checkBox(FLG_PUB_INLINE, "Include public key", false, "pubFlagChange(this.checked)"))
         .append(checkBox(FLG_CERT_PATH, "Include provided certificate path", false, "certFlagChange(this.checked)"))
+        .append(checkBox(FLG_MULTI_SIGN, "Perform a multi signature", false, null))
         .append(
             "<div style='display:flex;align-items:center'>" +
-            "<input type='text' name='" + CSF_SIGN_LABEL + 
-              "' id='" + CSF_SIGN_LABEL + "' " +
-           "class='text' maxlength='100' value='" + CSFService.sampleLabel + "'>" +
-            "<div style='display:inline-block'>&nbsp;Signature label in " + DIAG_NOT_LINK + "</div></div>" +
-            "<div style='margin-top:0.3em;display:flex;align-items:center'>" +
             "<input type='text' name='" + PRM_KEY_ID + "' id='" + PRM_KEY_ID + "' " +
             "class='text' maxlength='100' value=''>" +
             "<div style='display:inline-block'>&nbsp;Optional key Id in " + DIAG_NOT_LINK + "</div></div>" +
@@ -259,8 +253,6 @@ public class CreateServlet extends CoreRequestServlet {
             "  document.getElementById('" + FLG_DIAGNOSTIC + "').checked = true;\n" +
             "  document.getElementById('" + FLG_CERT_PATH + "').checked = false;\n" +
             "  document.getElementById('" + FLG_PUB_INLINE + "').checked = false;\n" +
-            "  document.getElementById('" + CSF_SIGN_LABEL + "').value = '" +
-                                                        CSFService.sampleLabel + "';\n" +
             "  document.getElementById('" + PRM_KEY_ID + "').value = '';\n" +
             "  showCert(false);\n" +
             "  setUserData(true);\n" +
@@ -297,10 +289,9 @@ public class CreateServlet extends CoreRequestServlet {
             
             // This is certainly not something you would do in a normal case...
             
-            CBORMap mapToSign = unwrapOptionalTag(rawCbor);
-            CBORObject signatureLabel = getSignatureLabel(request);
             boolean keyInlining = request.getParameter(FLG_PUB_INLINE) != null;
             boolean certOption = request.getParameter(FLG_CERT_PATH) != null;
+            boolean multiOption = request.getParameter(FLG_MULTI_SIGN) != null;
             
             // Mandatory algorithm
             String algorithmString = getParameter(request, PRM_ALGORITHM);
@@ -356,14 +347,12 @@ public class CreateServlet extends CoreRequestServlet {
                 }
             }
 
-            signer.setKeyId(optionalKeyId).setIntercepter(new CBORCryptoUtils.Intercepter() {
-                public CBORObject wrap(CBORMap mapToSign) {
-                    return rawCbor;
-                }
-            });
+            signer.setKeyId(optionalKeyId);
+
+            signer.setMultiSignatureMode(multiOption);
 
             // Finally, sign!
-            CBORObject signedCborObject = signer.sign(signatureLabel, mapToSign);
+            CBORObject signedCborObject = signer.sign(rawCbor);
 
             // We terminate by validating the signature as well
             request.getRequestDispatcher("validate?" +

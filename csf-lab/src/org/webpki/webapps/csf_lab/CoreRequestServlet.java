@@ -65,8 +65,6 @@ public class CoreRequestServlet extends HttpServlet {
     static final String CSF_OBJECT         = "csf";
 
     static final String CSF_VALIDATION_KEY = "vkey";
-    
-    static final String CSF_SIGN_LABEL     = "siglbl";
 
     static final String CSF_OBJECT_IN_HEX  = "inhex";
 
@@ -88,6 +86,7 @@ public class CoreRequestServlet extends HttpServlet {
 
     static final String FLG_CERT_PATH      = "cerflg";
     static final String FLG_PUB_INLINE     = "pubflg";
+    static final String FLG_MULTI_SIGN     = "multi";
     
     static final String DIAG_NOT_LINK      = "<a href='" +
                                              "https://cyberphone.github.io/javaapi/org/webpki/" +
@@ -220,11 +219,6 @@ public class CoreRequestServlet extends HttpServlet {
         } catch (CBORException e) {
             throw new IOException(e.getMessage() + "\n\n" + errorHelpText);
         }   
-    }
-
-    CBORObject getSignatureLabel(HttpServletRequest request) throws IOException {
-        return getCborAttribute(getParameter(request, CSF_SIGN_LABEL),
-                "Signature labels must be in CBOR diagnostic notation like \"sig\" or 8");
     }
     
     CBORMap unwrapOptionalTag(CBORObject rawContainer) throws IOException {

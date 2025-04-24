@@ -21,6 +21,7 @@ import org.webpki.crypto.SignatureAlgorithms;
 import static org.webpki.cbor.CBORCryptoConstants.*;
 
 import org.webpki.cbor.CBORCryptoUtils.Intercepter;
+import org.webpki.cbor.CBORCryptoUtils.POLICY;
 
 /**
  * Base class for signing data.
@@ -49,6 +50,8 @@ public abstract class CBORSigner <T extends CBORSigner<?>> {
     CBORObject optionalKeyId;
     
     private boolean cloneFlag;
+
+    private boolean multiSignFlag;
 
     CBORSigner() {}
     
@@ -113,7 +116,7 @@ public abstract class CBORSigner <T extends CBORSigner<?>> {
     /**
      * Set clone mode.
      * <p>
-     * By default the {@link #sign(CBORObject, CBORMap)} method
+     * By default the {@link #sign(CBORObject)} method
      * <i>overwrites</i> the input <code>map</code> object.
      * </p>
      * 
@@ -121,35 +124,54 @@ public abstract class CBORSigner <T extends CBORSigner<?>> {
      * @return <code>this</code> of subclass
      */
     public T setCloneMode(boolean flag) {
-        this.cloneFlag = flag;
+        cloneFlag = flag;
         return getThis();
     }
-  
+
+    /**
+     * Set multi signature mode.
+     * <p>
+     * By default the {@link #sign(CBORObject)} method
+     * assumes single signature mode.
+     * </p>
+     * 
+     * @param flag If <code>true</code> nulti signature mode is assumed
+     * @return <code>this</code> of subclass
+     */
+    public T setMultiSignatureMode(boolean flag) {
+        multiSignFlag = flag;
+        return getThis();
+    }
+
     /**
      * Sign CBOR object.
      * 
      * <p>
      * Adds an embedded CSF object (signature) to a CBOR map.
      * </p>
+     * Note that the map to be signed may be wrapped in a tag.
+     * <p>
+     * </p>
      * <p>
      * Also see {@link #setCloneMode(boolean)}.
      * </p>
      * 
-     * @param csfContainerLabel Label (key) holding the signature in the CBOR map to sign
-     * @param mapToSign CBOR map to be signed
+     * @param objectToSign CBOR map or tag(map) to be signed
      * @return Signed object
      */
-    public CBORObject sign(CBORObject csfContainerLabel, CBORMap mapToSign) {
+    public CBORObject sign(CBORObject objectToSign) {
+
         // Signatures update input by default.
         if (cloneFlag) {
-            mapToSign = (CBORMap)mapToSign.clone();
+            objectToSign = objectToSign.clone();
         }
+        // There may be a tag holding the signed map.
+        CBORMap mapToSign = CBORCryptoUtils.unwrapContainerMap(objectToSign, 
+                                                               POLICY.OPTIONAL, 
+                                                               null);
 
         // Create an empty signature container object.
         CBORMap csfContainer = new CBORMap();
-
-        // The map to sign may optionally be wrapped in a tag.
-        CBORObject objectToSign = intercepter.wrap(mapToSign);
 
         // Get optional custom data.
         CBORObject customData = intercepter.getCustomData();
@@ -168,11 +190,25 @@ public abstract class CBORSigner <T extends CBORSigner<?>> {
         // Asymmetric key signatures add specific items to the signature container.
         additionalItems(csfContainer);
         
-        // Add the prepared signature object to the map object we want to sign. 
-        mapToSign.set(csfContainerLabel, csfContainer);
+        // Add the prepared signature object to the map object we want to sign.
+        CBORObject previousSignatures = null;
+        CBORArray currentSignature = new CBORArray().add(csfContainer);
+        if (multiSignFlag) {
+            previousSignatures = mapToSign.update(CSF_CONTAINER_LBL, currentSignature, false);
+        } else {
+            mapToSign.set(CSF_CONTAINER_LBL, csfContainer);
+        }
 
         // Finally, sign all but the signature label and associated value.
         csfContainer.set(CSF_SIGNATURE_LBL, new CBORBytes(coreSigner(objectToSign.encode())));
+
+        // Multi signatures needs restoring possible previous signatures.
+        if (previousSignatures != null) {
+            CBORArray multiSignature;
+            multiSignature = previousSignatures.getArray();
+            multiSignature.add(currentSignature.get(0));
+            mapToSign.update(CSF_CONTAINER_LBL, multiSignature, true);
+        }
 
         // Return the now signed object.
         return objectToSign;

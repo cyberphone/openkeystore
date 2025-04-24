@@ -21,7 +21,6 @@ public class SignatureDemo {
     
     static final CBORInt GREETINGS_LABEL  = new CBORInt(1);
     static final CBORInt OTHER_DATA_LABEL = new CBORInt(2);
-    static final CBORInt SIGNATURE_LABEL  = new CBORInt(-1);
     
     public static void main(String[] args) {
         // Create CBOR data to be signed.
@@ -33,11 +32,11 @@ public class SignatureDemo {
         
         // Sign data using CSF.
         byte[] signatureObject = new CBORHmacSigner(HMAC_KEY, HmacAlgorithms.HMAC_SHA256)
-            .sign(SIGNATURE_LABEL, dataToBeSigned).encode();
+            .sign(dataToBeSigned).encode();
         
         // Validate CSF object.
         CBORMap decodedCbor = new CBORHmacValidator(HMAC_KEY)
-            .validate(SIGNATURE_LABEL, CBORDecoder.decode(signatureObject)).getMap();
+            .validate(CBORDecoder.decode(signatureObject)).getMap();
 //@begin@
 new CborDocumentLog(args[0], "#sample.program.hex#", signatureObject);
 new CborDocumentLog(args[0], "#sample.program.diagnostic#", decodedCbor);

@@ -16,15 +16,7 @@
  */
 package org.webpki.jose.jws;
 
-import java.security.Key;
-
-import java.security.interfaces.ECKey;
-
 import org.webpki.crypto.AlgorithmPreferences;
-import org.webpki.crypto.AsymSignatureAlgorithms;
-import org.webpki.crypto.CryptoException;
-import org.webpki.crypto.KeyAlgorithms;
-import org.webpki.crypto.KeyTypes;
 import org.webpki.crypto.SignatureAlgorithms;
 
 import static org.webpki.jose.JOSEKeyWords.*;

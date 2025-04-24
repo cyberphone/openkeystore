@@ -31,7 +31,7 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
  *</p> 
  */
 public class CBORAsymKeyValidator extends CBORValidator<CBORAsymKeyValidator> {
-    
+
     /**
      * Interface for dynamic key retrieval.
      */
@@ -57,6 +57,11 @@ public class CBORAsymKeyValidator extends CBORValidator<CBORAsymKeyValidator> {
     
     KeyLocator keyLocator;
 
+    CBORAsymKeyValidator(KeyLocator keyLocator, boolean externalInterface) {
+        super(externalInterface);
+        this.keyLocator = keyLocator;
+    }
+
     /**
      * Creates a validator object with a public key.
      * <p>
@@ -67,7 +72,7 @@ public class CBORAsymKeyValidator extends CBORValidator<CBORAsymKeyValidator> {
      * @param publicKey The anticipated public key
      */
     public CBORAsymKeyValidator(PublicKey publicKey) {
-        this((optionalPublicKey, optionalKeyId, algorithm) -> publicKey);
+        this((optionalPublicKey, optionalKeyId, algorithm) -> publicKey, false);
     }
 
     /**
@@ -96,7 +101,7 @@ public class CBORAsymKeyValidator extends CBORValidator<CBORAsymKeyValidator> {
      * @param keyLocator KeyLocator implementation
      */
     public CBORAsymKeyValidator(KeyLocator keyLocator) {
-        this.keyLocator = keyLocator;
+        this(keyLocator, true);
     }
 
     @Override

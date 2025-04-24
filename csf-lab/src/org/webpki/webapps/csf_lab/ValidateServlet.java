@@ -18,13 +18,18 @@ package org.webpki.webapps.csf_lab;
 
 import java.io.IOException;
 
+import java.security.PublicKey;
+
 import java.security.cert.X509Certificate;
+
+import java.util.Arrays;
 
 import javax.servlet.ServletException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.webpki.cbor.CBORArray;
 import org.webpki.cbor.CBORAsymKeyValidator;
 import org.webpki.cbor.CBORHmacValidator;
 import org.webpki.cbor.CBORMap;
@@ -38,7 +43,8 @@ import org.webpki.cbor.CBORDiagnosticNotation;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.CertificateInfo;
 import org.webpki.crypto.CryptoException;
-
+import org.webpki.crypto.HmacAlgorithms;
+import org.webpki.crypto.HmacVerifierInterface;
 import org.webpki.util.HexaDecimal;
 
 public class ValidateServlet extends CoreRequestServlet {
@@ -58,11 +64,20 @@ public class ValidateServlet extends CoreRequestServlet {
                                             :
                 CBORDiagnosticNotation.convert(getParameterTextarea(request, CSF_OBJECT)));
             String validationKey = getParameter(request, CSF_VALIDATION_KEY);
-            CBORObject signatureLabel = getSignatureLabel(request);
             
             // This is certainly not what you would do in an application...
-            CBORMap csfContainer = unwrapOptionalTag(signedCborObject)
-                        .get(signatureLabel).getMap();
+            CBORObject destroyedCopy = signedCborObject.clone();
+            CBORMap unwrapped = unwrapOptionalTag(destroyedCopy);
+            CBORObject rawSignatures = unwrapped.get(CBORCryptoConstants.CSF_CONTAINER_LBL);
+            CBORMap csfContainer;
+            if (rawSignatures instanceof CBORArray) {
+                CBORArray csfList = rawSignatures.getArray();
+                rawSignatures = rawSignatures.clone();
+                csfContainer = csfList.get(csfList.size() - 1).getMap();
+                unwrapped.update(CBORCryptoConstants.CSF_CONTAINER_LBL, new CBORArray().add(csfContainer), true);
+            } else {
+                csfContainer = rawSignatures.getMap();
+            }
             boolean hmacSignature = 
                     csfContainer.get(CBORCryptoConstants.CXF_ALGORITHM_LBL).getInt32() > 0;
 
@@ -73,7 +88,19 @@ public class ValidateServlet extends CoreRequestServlet {
             
             CBORValidator<?> validator;
             if (hmacSignature) {
-                validator = new CBORHmacValidator(HexaDecimal.decode(validationKey));
+                final byte[] secretKey = HexaDecimal.decode(validationKey);
+                validator = new CBORHmacValidator(new HmacVerifierInterface() {
+
+                    @Override
+                    public boolean verify(byte[] data, 
+                                          byte[] digest, 
+                                          HmacAlgorithms hmacAlgorithm, 
+                                          String optionalKeyId) {
+                        return Arrays.equals(hmacAlgorithm.digest(secretKey, data), digest);
+                    }
+
+                });
+                   
             } else {
                 if (x509flag) {
                     validator = new CBORX509Validator(new CBORX509Validator.Parameters() {
@@ -96,7 +123,14 @@ public class ValidateServlet extends CoreRequestServlet {
     
                     });
                 } else {
-                    validator = new CBORAsymKeyValidator(keyData.publicKey);
+                    validator = new CBORAsymKeyValidator(new CBORAsymKeyValidator.KeyLocator() {
+
+                        @Override
+                        public PublicKey locate(PublicKey arg0, CBORObject arg1, AsymSignatureAlgorithms arg2) {
+                            return keyData.publicKey;
+                        }
+                        
+                    });
                 }
             }
 
@@ -112,7 +146,8 @@ public class ValidateServlet extends CoreRequestServlet {
                     }
                 })
                 .setTagPolicy(CBORCryptoUtils.POLICY.OPTIONAL, null)
-                .validate(signatureLabel, signedCborObject);
+                .setMultiSignatureMode(rawSignatures instanceof CBORArray)
+                .validate(destroyedCopy);
             
             StringBuilder html = new StringBuilder(
                     "<div class='header'> Signature Successfully Validated</div>")
@@ -182,12 +217,6 @@ public class ValidateServlet extends CoreRequestServlet {
                         CSFService.samplePublicKey,
                         "Validation key (secret key in hexadecimal or public key in PEM, JWK, " +
                             "or COSE format)"))
-            .append(HTML.fancyText(
-                        true,
-                        CSF_SIGN_LABEL,
-                        1, 
-                        CSFService.sampleLabel,
-                        "Anticipated signature label in " + DIAG_NOT_LINK))
             .append(
                 "<div style='display:flex;justify-content:center'>" +
                 "<div class='stdbtn' onclick=\"doVerify()\">" +

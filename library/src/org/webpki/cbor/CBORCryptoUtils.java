@@ -103,19 +103,6 @@ public class CBORCryptoUtils {
     public interface Intercepter {
 
         /**
-         * Optionally wrap a map in a tag.
-         * <p>
-         * See also {@link CBORTag} for details on the syntax for wrapped CBOR data.
-         * </p>
-         * 
-         * @param map Unwrapped map
-         * @return Original (default implementation) or wrapped map
-         */
-        default CBORObject wrap(CBORMap map) {
-            return map;
-        }
-
-        /**
          * Optionally add custom data to the map.
          * <p>
          * Custom data may be any valid CBOR object.  This data is assigned

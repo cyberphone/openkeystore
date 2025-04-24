@@ -50,10 +50,10 @@ public class JSONHmacVerifier extends JSONVerifier {
         this(new HmacVerifierInterface() {
 
             @Override
-            public boolean verifySignature(byte[] data,
-                                           byte[] digest,
-                                           HmacAlgorithms algorithm,
-                                           String keyId) {
+            public boolean verify(byte[] data,
+                                  byte[] digest,
+                                  HmacAlgorithms algorithm,
+                                  String keyId) {
                 return Arrays.equals(digest, algorithm.digest(rawKey, data));
             }
             
@@ -62,10 +62,10 @@ public class JSONHmacVerifier extends JSONVerifier {
 
     @Override
     void verify(JSONSignatureDecoder signatureDecoder) {
-        if (!verifier.verifySignature(signatureDecoder.normalizedData,
-                                      signatureDecoder.signatureValue,
-                                      (HmacAlgorithms) signatureDecoder.signatureAlgorithm,
-                                      signatureDecoder.keyId)) {
+        if (!verifier.verify(signatureDecoder.normalizedData,
+                             signatureDecoder.signatureValue,
+                             (HmacAlgorithms) signatureDecoder.signatureAlgorithm,
+                             signatureDecoder.keyId)) {
             throw new CryptoException("Bad signature for key: " + signatureDecoder.keyId);
         }
     }
