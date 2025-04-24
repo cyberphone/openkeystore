@@ -227,10 +227,10 @@ public class CborSignatures {
         new CBORHmacValidator(new HmacVerifierInterface() {
 
             @Override
-            public boolean verifySignature(byte[] data, 
-                                           byte[] digest, 
-                                           HmacAlgorithms hmacAlgorithm, 
-                                           String keyId) {
+            public boolean verify(byte[] data, 
+                                  byte[] digest, 
+                                  HmacAlgorithms hmacAlgorithm, 
+                                  String keyId) {
                 if (wantKeyId && !symmetricKeys.getName(keyBits).equals(keyId)) {
                     throw new CryptoException("No id");
                 }
