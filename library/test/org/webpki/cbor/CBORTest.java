@@ -1264,10 +1264,10 @@ public class CBORTest {
         new CBORHmacValidator(new HmacVerifierInterface() {
 
             @Override
-            public boolean verifySignature(byte[] data, 
-                                           byte[] digest, 
-                                           HmacAlgorithms hmacAlgorithm, 
-                                           String optionalKeyId) {
+            public boolean verify(byte[] data, 
+                                  byte[] digest, 
+                                  HmacAlgorithms hmacAlgorithm, 
+                                  String optionalKeyId) {
                 if (!algorithm.equals(hmacAlgorithm)) {
                     throw new CryptoException("Algorithm error");
                 }

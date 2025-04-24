@@ -21,6 +21,6 @@ package org.webpki.crypto;
  */
 public interface HmacVerifierInterface {
 
-    boolean verifySignature(byte[] data, byte[] digest, HmacAlgorithms algorithm, String keyId);
+    boolean verify(byte[] data, byte[] digest, HmacAlgorithms algorithm, String keyId);
 
 }

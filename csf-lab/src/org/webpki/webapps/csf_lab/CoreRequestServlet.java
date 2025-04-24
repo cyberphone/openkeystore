@@ -86,6 +86,7 @@ public class CoreRequestServlet extends HttpServlet {
 
     static final String FLG_CERT_PATH      = "cerflg";
     static final String FLG_PUB_INLINE     = "pubflg";
+    static final String FLG_MULTI_SIGN     = "multi";
     
     static final String DIAG_NOT_LINK      = "<a href='" +
                                              "https://cyberphone.github.io/javaapi/org/webpki/" +

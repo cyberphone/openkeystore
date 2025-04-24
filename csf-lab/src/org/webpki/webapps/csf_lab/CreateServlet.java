@@ -52,12 +52,12 @@ public class CreateServlet extends CoreRequestServlet {
     private static final long serialVersionUID = 1L;
 
     static final String DEFAULT_ALG      = "Ed25519";
-    static final String DEFAULT_CBOR     = "{\\n" +
-                                           "  / just a string /\\n" +
-                                           "  1: \"Hello signed world!\",\\n" +
-                                           "  / some other data /\\n" +
-                                           "  2: [2.0, true]\\n" +
-                                           "}";
+    static final String DEFAULT_CBOR     = 
+            "# Signed objects may be tagged: nnn({...})\\n" +
+            "{\\n" +
+            "  1: \"Hello signed world!\",  # Just a string\\n" +
+            "  2: [4.7, true, h\\'012345\\']  # Some other data\\n" +
+            "}";
     
     class SelectAlg {
 
@@ -151,6 +151,7 @@ public class CreateServlet extends CoreRequestServlet {
             "<div style='margin-left:auto' class='defbtn' onclick=\"restoreDefaults()\">Restore&nbsp;defaults</div></div>")
         .append(checkBox(FLG_PUB_INLINE, "Include public key", false, "pubFlagChange(this.checked)"))
         .append(checkBox(FLG_CERT_PATH, "Include provided certificate path", false, "certFlagChange(this.checked)"))
+        .append(checkBox(FLG_MULTI_SIGN, "Perform a multi signature", false, null))
         .append(
             "<div style='display:flex;align-items:center'>" +
             "<input type='text' name='" + PRM_KEY_ID + "' id='" + PRM_KEY_ID + "' " +
@@ -290,6 +291,7 @@ public class CreateServlet extends CoreRequestServlet {
             
             boolean keyInlining = request.getParameter(FLG_PUB_INLINE) != null;
             boolean certOption = request.getParameter(FLG_CERT_PATH) != null;
+            boolean multiOption = request.getParameter(FLG_MULTI_SIGN) != null;
             
             // Mandatory algorithm
             String algorithmString = getParameter(request, PRM_ALGORITHM);
@@ -346,6 +348,8 @@ public class CreateServlet extends CoreRequestServlet {
             }
 
             signer.setKeyId(optionalKeyId);
+
+            signer.setMultiSignatureMode(multiOption);
 
             // Finally, sign!
             CBORObject signedCborObject = signer.sign(rawCbor);

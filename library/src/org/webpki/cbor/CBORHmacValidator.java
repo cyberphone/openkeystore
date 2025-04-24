@@ -72,10 +72,10 @@ public class CBORHmacValidator extends CBORValidator<CBORHmacValidator> {
                         CBORObject optionalKeyId,
                         byte[] signatureValue,
                         byte[] signedData) {
-        if (!verifier.verifySignature(signedData, 
-                                      signatureValue, 
-                                      HmacAlgorithms.getAlgorithmFromId(coseAlgorithmId),
-                                      optionalKeyId == null ? null : optionalKeyId.getString())) {
+        if (!verifier.verify(signedData, 
+                             signatureValue, 
+                             HmacAlgorithms.getAlgorithmFromId(coseAlgorithmId),
+                             optionalKeyId == null ? null : optionalKeyId.getString())) {
             throw new CryptoException("HMAC signature validation error");
         }
     }
