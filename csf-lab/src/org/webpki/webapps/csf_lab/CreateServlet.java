@@ -148,10 +148,13 @@ public class CreateServlet extends CoreRequestServlet {
                  .toString())
         .append(
             "<div style='display:inline-block;padding:0 10pt 0 5pt'>Algorithm</div>" +
-            "<div style='margin-left:auto' class='defbtn' onclick=\"restoreDefaults()\">Restore&nbsp;defaults</div></div>")
+            "<div style='margin-left:auto' class='defbtn' onclick='restoreDefaults()'>Restore&nbsp;defaults</div></div>")
         .append(checkBox(FLG_PUB_INLINE, "Include public key", false, "pubFlagChange(this.checked)"))
         .append(checkBox(FLG_CERT_PATH, "Include provided certificate path", false, "certFlagChange(this.checked)"))
-        .append(checkBox(FLG_MULTI_SIGN, "Perform a multi signature", false, null))
+        .append(checkBox(FLG_MULTI_SIGN, "Perform a " +
+                         "<a href='javascript:;' onclick=\"document.getElementById('multiDialog').showModal()\"> " +
+                         "Multiple Signature</a> operation", 
+                         false, null))
         .append(
             "<div style='display:flex;align-items:center'>" +
             "<input type='text' name='" + PRM_KEY_ID + "' id='" + PRM_KEY_ID + "' " +
@@ -183,7 +186,20 @@ public class CreateServlet extends CoreRequestServlet {
                     "Certificate path in PEM format"))
         .append(
             "</form>" +
-            "<div>&nbsp;</div>");
+            "<div>&nbsp;</div>" +
+            "<dialog id='multiDialog' class='sigparmbox' " +
+            "style='z-index:20;width:40em;max-width:90%;padding:0.5em 1em;'>" +
+            "<div title='Close' class='defbtn' " +
+            "onclick=\"document.getElementById('multiDialog').close()\">X</div>" +
+            "<div style='display:inline'>&nbsp;Multiple Signatures</div>" +
+            "<div style='padding-top:1em'>Multiple signatures depend on an array holding " +
+            "individual and independent signatures.  Using the online tool, you " +
+            "can paste the result of a multiple signature into the input field of " +
+            "the <code>create</code> application.  Each signature operation adds " +
+            "a signature to the array.  Note that the Multiple Signature option <b>must</b> be " +
+            "<i>checked</i> for each multiple signature operation.  The online tool " +
+            "only verifies the <i>last</i> signature." +
+            "</div></dialog>");
 
         StringBuilder js = new StringBuilder("'use strict';\n")
         .append(CSFService.keyDeclarations)
