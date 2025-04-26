@@ -2538,18 +2538,25 @@ public class CBORTest {
             .setPublicKey(ed25519.getPublic())
             .sign(o);
    //     System.out.println(o.toString());
+        int[] counter = new int[]{0};
         new CBORAsymKeyValidator(new CBORAsymKeyValidator.KeyLocator() {
             @Override
             public PublicKey locate(PublicKey optionalPublicKey, CBORObject optionalKeyId,
                     AsymSignatureAlgorithms algorithm) {
+                counter[0]++;
                 return algorithm == AsymSignatureAlgorithms.ED25519 ? 
                                                 ed25519.getPublic() : p256.getPublic();
             }
         }).setMultiSignatureMode(true)
           .validate(o);
-
-        o = new CBORAsymKeySigner(p256.getPrivate())
-            .setPublicKey(p256.getPublic())
-            .sign(createDataToBeSigned());
+        assertTrue("nr", counter[0] == 2);
+        try {
+            new CBORAsymKeySigner(p256.getPrivate())
+                .setPublicKey(p256.getPublic())
+                .sign(o);
+            fail("should not");
+        } catch (Exception e) {
+            checkException(e, "Duplicate key: simple(99)");
+        }
     }
  }
