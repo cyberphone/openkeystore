@@ -2,7 +2,7 @@
 <h2>1. Signature Support</h2>
 The CBOR library contains support for {@link CBORSigner Creating} 
 and {@link CBORValidator Validating}
-signatures using a specific scheme called
+<i>embedded signatures</i> using a scheme called
 &quot;CBOR Signature Format&quot; (CSF).
 Unless otherwise noted, CBOR data is shown in
 <a href='../package-summary.html#diagnostic-notation'>Diagnostic&nbsp;Notation</a>.
@@ -73,17 +73,10 @@ a801a3016a53706163652053686f7002663433352e30300363555344026d737061636573686f702e
 <i>Explanation: </i>
 Labels <code>1</code>-<code>7</code> represent application data
 (which for compatibility with CSF <b>must</b> be supplied in a CBOR <code>map</code>),
-while the <i>application-specific</i> label <code>-1</code>
-holds an associated <i>embedded</i> signature.
-<p>
-Note that the application-specific labels (including the one holding the
-signature object), may be of any CBOR type.  The only requirement is that
-they are unique.
-</p>
-<div class="webpkicomment">Pending update: the application-specific label holding
-the CSF container will be replaced by a reserved, unique label, presumably
-following: <a href='https://datatracker.ietf.org/doc/draft-rundgren-cbor-simple-4-csf/'>I-D.draft-rundgren-cbor-simple-4-csf</a>.
-</div>
+while the <i>reserved</i> label <code>simple(99)</code>
+[<a href='https://datatracker.ietf.org/doc/draft-rundgren-cbor-simple-4-csf/'>I-D.draft-rundgren-cbor-simple-4-csf</a>]
+holds the <i>embedded</i> signature container.
+Note that application labels may be of any type.
 <h2 id='csf-validation'>2. Signature Validation</h2>
 Signatures <b>must</b> for compatibility with CSF,
 be provided as a CBOR map having a fixed set of labels, 
@@ -92,7 +85,7 @@ according to the following table (with map values provided in CDDL
 notation):
 <div class='webpkifloat'>
 <table class='webpkitable'>
-<tr><th>Name</th><th>Label</th><th>Value</th><th style='min-width:30em'>Description</th></tr>
+<tr><th>Name</th><th>Label</th><th>Value</th><th style='min-width:30em'>Comment</th></tr>
 
 <tr><td><code class='webpkicode'>customData</code></td><td style='text-align:center'><code>0</code></td>
 <td style='text-align:center'><code>any</code></td><td><i>Optional</i>: data included in the CSF container.
@@ -128,13 +121,6 @@ Signature objects <b>must not</b> contain both <code class='webpkicode'>certific
 </td></tr>
 </table>
 </div>
-<p>
-<div class="webpkicomment">Pending update: in order to support multiple
-signatures, CSF will also support a CBOR array holding objects according to the 
-table above.  Each array element will be treated <i>individually</i>, only adding
-the array construct (having a single element) to the data to be signed.
-</div>
-</p>
 To validate a CSF-based signature, apply the following set of rules:
 <ul>
 <li>Signatures are validated by running the signature validation 
@@ -160,10 +146,72 @@ trusted by the signature-using application.</li>
 <li style='margin-top:0.5em'>Signature validation keys <b>must</b> be checked for compatibility with
 the <code class='webpkicode'>algorithm</code> attribute.</li>
 </ul>
-<h2 id='csf-tagged-or-custom-data'>3. Tagged and Custom Signature Data</h2>
-CSF containers can be further enhanced through a couple of options
-described in <a href='crypto-options.html'>Crypto Options</a>.
-<h2 id='csf-algorithms'>4. Signature Algorithms</h2>
+<h2 id='csf-multiple-signatures'>3. Multiple Signatures</h2>
+<p>
+Multiple signatures use the same validation method as single signatures,
+but have an enhanced syntax:
+the reserved label <code>simple(99)</code> points to an <i>array</i> of signature
+containers:
+</p>
+<div class='webpkifloat'>
+<div class='webpkibox'>
+{<br>
+&nbsp;&nbsp;1: "Hello signed world!",<br>
+&nbsp;&nbsp;2: [4.7, true, h'012345'],<br>
+&nbsp;&nbsp;simple(99): [{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;1: -50,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;4: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: 1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-1: 6,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-2: h'fe49acf5b92b6e923594f2e83368f680ac924be93cf533aecaf802e37757f8c9'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;6: h'5c2699faa73abc448b1b936e550b4afa9929c4a266a3a394a666577fd90aa9d6cf39a8f0cb771d5ac00b43958a59dc6802a145922ecd6b980839356598d1f70d'<br>
+&nbsp;&nbsp;}, {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;1: -9,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;4: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: 2,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-1: 1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-2: h'e812b1a6dcbc708f9ec43cc2921fa0a14e9d5eadcc6dc63471dd4b680c6236b5',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-3: h'9826dcbd4ce6e388f72edd9be413f2425a10f75b5fd83d95fa0cde53159a51d8'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;6: h'240861757ecede55cdbc2f0d33785f1e4b1b4e25c9cb5a6411e557ca6898cd083f39431d8e6c22661ff7aa2ee866f95acfc9b6be8510437c183a3c16b0d8cfd3'<br>
+&nbsp;&nbsp;}]<br>
+}
+</div>
+</div>
+Validation is performed by validating each signature individually.
+This is accomplished by removing other signatures (CSF containers),
+leaving an array holding a single CSF container to the validation process.
+<p>
+Also se {@link CBORSigner#setMultiSignatureMode(boolean)} and {@link CBORValidator#setMultiSignatureMode(boolean)}.
+</p>
+<h2 id='csf-tagged-or-custom-data'>4. Tagged and Custom Signature Data</h2>
+<p>
+Through <a href='crypto-options.html'>Crypto Options</a>,
+embedded signatures can be further enhanced, like the ability to
+include a top-level object identifier in the signed data:
+</p>
+<div class='webpkifloat'>
+<div class='webpkibox'>
+1010(["https://example.com/myobject", {<br>
+&nbsp;&nbsp;1: "Hello signed world!",<br>
+&nbsp;&nbsp;2: [4.7, true, h'012345'],<br>
+&nbsp;&nbsp;simple(99): {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;1: -50,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;4: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: 1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-1: 6,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-2: h'fe49acf5b92b6e923594f2e83368f680ac924be93cf533aecaf802e37757f8c9'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;6: h'5de56d88d5ef3f7052b1e79f323fa585c6a6e5b5bfedb697cd61fe9515bf2578f2af03b149cbf43b5ab7176fa784cf4fbb66ba25943d1879a21ad57bc3c81d0f'<br>
+&nbsp;&nbsp;}<br>
+}])
+</div>
+</div>
+Note: the sample object features a 
+<a href='https://www.ietf.org/archive/id/draft-rundgren-cotx-05.html'>COTX</a>
+tag holding an URL based object identifier.
+<h2 id='csf-algorithms'>5. Signature Algorithms</h2>
 <div>
 Currently supported COSE signature algorithms:
 </div>
@@ -191,7 +239,7 @@ Currently supported COSE signature algorithms:
 <a href='https://datatracker.ietf.org/doc/draft-ietf-jose-fully-specified-algorithms/'>
 ID.draft-ietf-jose-fully-specified-algorithms</a>.
 </p>
-<h2 id='csf-test-vectors'>5. Test Vectors</h2>
+<h2 id='csf-test-vectors'>6. Test Vectors</h2>
 An extensive set of test vectors is currently available at: 
 <a href='https://github.com/cyberphone/openkeystore/tree/master/testdata/cbor-signatures'>
 https://github.com/cyberphone/openkeystore/tree/master/testdata/cbor-signatures
@@ -199,7 +247,7 @@ https://github.com/cyberphone/openkeystore/tree/master/testdata/cbor-signatures
 <p>
 Use {@link org.webpki.tools.CBORPrinter} to list contents in a human-friendly way.
 </p>
-<h2 id='csf-api-usage'>6. Using the Signature API</h2>
+<h2 id='csf-api-usage'>7. Using the Signature API</h2>
 The following section outlines how the signature API is supposed to be used.
 <p>
 Sample program:

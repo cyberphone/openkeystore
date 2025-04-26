@@ -129,13 +129,13 @@ public abstract class CBORSigner <T extends CBORSigner<?>> {
     }
 
     /**
-     * Set multi signature mode.
+     * Set multiple signature mode.
      * <p>
      * By default the {@link #sign(CBORObject)} method
      * assumes single signature mode.
      * </p>
      * 
-     * @param flag If <code>true</code> nulti signature mode is assumed
+     * @param flag If <code>true</code> multiple signature mode is assumed
      * @return <code>this</code> of subclass
      */
     public T setMultiSignatureMode(boolean flag) {

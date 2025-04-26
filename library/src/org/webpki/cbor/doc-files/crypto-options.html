@@ -14,11 +14,12 @@ be preceded by setting a for the application suitable policy
 ({@link CBORCryptoUtils.POLICY}). 
 </p>
 <h3 style='padding:1em 0 0 0'>Creating Tagged Containers</h3>
-Creating a tagged CSF or CEF container is performed by calling
-{@link CBORSigner#setIntercepter(CBORCryptoUtils.Intercepter)} and
-{@link CBOREncrypter#setIntercepter(CBORCryptoUtils.Intercepter)} respectively,
-where {@link CBORCryptoUtils.Intercepter#wrap(CBORMap)} is supposed
-to do the actual wrapping.
+Creating a tagged CSF only requires wrapping the map to be signed in a
+suitable {@link CBORTag} object.
+<p>
+CEF containers can be tagged by wrapping an <i>empty</i> {@link CBORMap} in
+a suitable {@link CBORTag} object, and use that as an additional
+argument during encryption: {@link CBOREncrypter#encrypt(byte[], CBORTag)}.</p>
 
 <h3 style='padding:1em 0 0 0'>Decoding Tagged Containers</h3>
 Decoding the tag of a tagged CSF or CEF container is performed by calling

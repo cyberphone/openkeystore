@@ -72,7 +72,7 @@ The following figure shows the layout of CEF objects:
 </p>
 <div class='webpkifloat'>
 <div class='webpkisvg'>
-<img src='cbor-crypto.svg' alt='CEF object layout' style='height:20em;padding:0.2em 0.6em'/>
+<img src='cbor-crypto.svg' alt='CEF object layout' style='height:20em;padding:0.2em 0.6em'>
 </div>
 </div>
 The numbers in paranthesis denote the actual label (map key) value.
@@ -80,10 +80,10 @@ The numbers in paranthesis denote the actual label (map key) value.
 The following table shows the function and type of each element of content encryption maps:
 <div class='webpkifloat'>
 <table class='webpkitable'>
-<tr><th>Name</th><th>Label</th><th>Argument</th><th style='min-width:30em'>Description</th></tr>
+<tr><th>Name</th><th>Label</th><th>Value</th><th style='min-width:30em'>Comment</th></tr>
 
 <tr><td><code class='webpkicode'>customData</code></td><td style='text-align:center'><code>0</code></td>
-<td style='text-align:center'>&quot;<i>Any</i>&quot;</td><td><i>Optional</i>: data included (in clear) in the CEF container.
+<td style='text-align:center'><code>any</code></td><td><i>Optional</i>: data included (in clear) in the CEF container.
 Also see <a href='crypto-options.html'>Crypto Options</a>.</td></tr>
 
 <tr><td><code class='webpkicode'>algorithm</code></td><td style='text-align:center'><code>1</code></td>
@@ -91,11 +91,11 @@ Also see <a href='crypto-options.html'>Crypto Options</a>.</td></tr>
 <a href='#cef-content-encryption-algorithms'>COSE&nbsp;identifiers</a>.</td></tr>
 
 <tr><td><code class='webpkicode'>keyEncryption</code></td><td style='text-align:center'><code>2</code></td>
-<td style='text-align:center'><code>map</code></td>
+<td style='text-align:center'><code>{}</code></td>
 <td><i>Optional</i>: Key encryption parameters.</td></tr>
 
 <tr><td><code class='webpkicode'>keyId</code></td><td style='text-align:center'><code>3</code></td>
-<td style='text-align:center'>&quot;<i>Any</i>&quot;</td>
+<td style='text-align:center'><code>any</code></td>
 <td><i>Optional</i>: key identifier using any valid CBOR object. 
 Note that <code class='webpkicode'>keyId</code> <b>must not</b> be used together with the
 <code class='webpkicode'>keyEncryption</code> option.
@@ -118,14 +118,14 @@ A compliant <code class='webpkicode'>keyId</code>
 The following table shows the function and type of each element of key encryption maps:
 <div class='webpkifloat'>
 <table class='webpkitable'>
-<tr><th>Name</th><th>Label</th><th>Argument</th><th style='min-width:30em'>Description</th></tr>
+<tr><th>Name</th><th>Label</th><th>Argument</th><th style='min-width:30em'>Comment</th></tr>
 
 <tr><td><code class='webpkicode'>algorithm</code></td><td style='text-align:center'><code>1</code></td>
 <td style='text-align:center'><code>int</code></td><td>Key encryption algorithm using 
 <a href='#cef-key-encryption-algorithms'>COSE&nbsp;identifiers</a>.</td></tr>
 
 <tr><td><code class='webpkicode'>keyId</code></td><td style='text-align:center'><code>3</code></td>
-<td style='text-align:center'>&quot;<i>Any</i>&quot;</td><td><i>Optional</i>: key identifier using 
+<td style='text-align:center'><code>any</code></td><td><i>Optional</i>: key identifier using 
 any valid CBOR object. 
 Note that <code class='webpkicode'>keyId</code> <b>must not</b> be used together with 
 <code class='webpkicode'>publicKey</code> or <code class='webpkicode'>certificatePath</code>.
@@ -133,14 +133,14 @@ A compliant <code class='webpkicode'>keyId</code> <b>must</b> uniquely identify 
 </td></tr>
 
 <tr><td><code class='webpkicode'>publicKey</code></td><td style='text-align:center'><code>4</code></td>
-<td style='text-align:center'><code>map</code></td>
+<td style='text-align:center'><code>{}</code></td>
 <td><i>Optional</i>: public key in COSE format.  
 Note that public key objects <b>must not</b> contain additional information like
 key identifiers or preferred algorithms.
 </td></tr>
 
 <tr><td><code class='webpkicode'>certificatePath</code></td><td style='text-align:center'><code>5</code></td>
-<td style='text-align:center'><code>array</code></td><td><i>Optional</i>: certificate path supplied 
+<td style='text-align:center'><code>[]</code></td><td><i>Optional</i>: certificate path supplied 
 as an array of <code>byte&nbsp;string</code> objects holding X.509 certificates in DER format, 
 where the first object <b>must</b> be the encryption certificate.
 Key encryption objects <b>must not</b> contain both <code class='webpkicode'>certificatePath</code>
@@ -148,7 +148,7 @@ and <code class='webpkicode'>publicKey</code> elements.
 </td></tr>
 
 <tr><td><code class='webpkicode'>ephemeralKey</code></td><td style='text-align:center'><code>7</code></td>
-<td style='text-align:center'><code>map</code></td>
+<td style='text-align:center'><code>{}</code></td>
 <td><i>Optional</i>: public key in COSE format.  Used by ECDH algorithms.
 </td></tr>
 
