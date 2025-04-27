@@ -163,7 +163,7 @@ public abstract class CBORValidator <T extends CBORValidator<T>> {
             CBORArray arrayOfSignatures = signedMap.get(CSF_CONTAINER_LBL).getArray();
             int signatureCount = arrayOfSignatures.size();
             if (signatureCount == 0) {
-                cborError("No signature found");
+                cborError("No signature found!");
             }
             while (--signatureCount >= 0) {
                 CBORMap csfContainer = arrayOfSignatures.get(signatureCount).getMap();

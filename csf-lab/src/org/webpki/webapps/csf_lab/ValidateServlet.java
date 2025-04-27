@@ -76,7 +76,7 @@ public class ValidateServlet extends CoreRequestServlet {
                 CBORArray csfList = rawSignatures.getArray();
                 rawSignatures = rawSignatures.clone();
                 if (csfList.size() == 0) {
-                    throw new CBORException("No signature found");
+                    throw new CBORException("No signature found!");
                 }
                 csfContainer = csfList.get(csfList.size() - 1).getMap();
                 unwrapped.update(CBORCryptoConstants.CSF_CONTAINER_LBL, new CBORArray().add(csfContainer), true);
