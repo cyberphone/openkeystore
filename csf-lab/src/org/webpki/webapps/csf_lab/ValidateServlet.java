@@ -215,8 +215,8 @@ public class ValidateServlet extends CoreRequestServlet {
                         CSF_VALIDATION_KEY,
                         4, 
                         CSFService.samplePublicKey,
-                        "Validation key (secret key in hexadecimal or public key in PEM, JWK, " +
-                            "or COSE format)"))
+                        "<a href='javascript:;' onclick=\"document.getElementById('vkeyDialog').showModal()\">" +
+                            "Validation Key</a> (secret key in hexadecimal or public key in PEM, JWK, or COSE format)"))
             .append(
                 "<div style='display:flex;justify-content:center'>" +
                 "<div class='stdbtn' onclick=\"doVerify()\">" +
@@ -224,7 +224,17 @@ public class ValidateServlet extends CoreRequestServlet {
                 "</div>" +
                 "</div>" +
                 "</form>" +
-                "<div>&nbsp;</div>");
+                "<div>&nbsp;</div>" +
+                "<dialog id='vkeyDialog' class='sigparmbox' " +
+                "style='z-index:20;width:40em;max-width:90%;padding:0.5em 1em;'>" +
+                "<div title='Close' class='defbtn' " +
+                "onclick=\"document.getElementById('vkeyDialog').close()\">X</div>" +
+                "<div style='display:inline'>&nbsp;Validation Key</div>" +
+                "<div style='padding-top:1em'>You <b>must</b> supply a matching " +
+                "validation key, regardless if the signature comes with a public key " +
+                "or not.<p>Note that using the online tool, only the <i>last</i> signature " +
+                "in a multiple signature construct is actually verified.</p>" +
+                "</div></dialog>");
         HTML.standardPage(response, js.toString(), html);
     }
 }
