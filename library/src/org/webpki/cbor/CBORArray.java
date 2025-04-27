@@ -55,6 +55,9 @@ public class CBORArray extends CBORObject {
     
     /**
      * Add object to the CBOR array.
+     * <p>
+     * Also see {@link CBORArray#update(int, CBORObject)}
+     * </p>
      * 
      * @param object Object to be appended to the array.
      * @return <code>this</code>
@@ -69,7 +72,7 @@ public class CBORArray extends CBORObject {
     /**
      * Update object at a specific position in the CBOR array.
      * 
-     * @param index The position (0..size()-1)
+     * @param index The position (<code>0..size()-1</code>)
      * @param object Object to set
      * @return Previous <code>object</code>
      * @throws IndexOutOfBoundsException If the index is out of range.

@@ -105,6 +105,9 @@ public class CBORMap extends CBORObject {
      * either be created <i>inline</i> (using chaining), or be supplied as
      * <i>preset variables</i>.
      * </p>
+     * Also see {@link CBORMap#update(CBORObject, CBORObject, boolean)}.
+     * <p>
+     * </p>
      * 
      * @param key Key (name)
      * @param object Object (value)
