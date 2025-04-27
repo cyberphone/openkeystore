@@ -161,8 +161,12 @@ public abstract class CBORValidator <T extends CBORValidator<T>> {
         // Need to separate single and multiple signatures.
         if (multiSignFlag) {
             CBORArray arrayOfSignatures = signedMap.get(CSF_CONTAINER_LBL).getArray();
-            for (int i = 0; i < arrayOfSignatures.size(); i++) {
-                CBORMap csfContainer = arrayOfSignatures.get(i).getMap();
+            int signatureCount = arrayOfSignatures.size();
+            if (signatureCount == 0) {
+                cborError("No signature found");
+            }
+            while (--signatureCount >= 0) {
+                CBORMap csfContainer = arrayOfSignatures.get(signatureCount).getMap();
                 signedMap.update(CSF_CONTAINER_LBL, new CBORArray().add(csfContainer), true);
                 validateOneSignature(csfContainer, signedObject);
             }

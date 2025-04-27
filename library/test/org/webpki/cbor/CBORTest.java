@@ -2558,5 +2558,19 @@ public class CBORTest {
         } catch (Exception e) {
             checkException(e, "Duplicate key: simple(99)");
         }
+        try {
+        new CBORAsymKeyValidator(new CBORAsymKeyValidator.KeyLocator() {
+            @Override
+            public PublicKey locate(PublicKey optionalPublicKey, CBORObject optionalKeyId,
+                    AsymSignatureAlgorithms algorithm) {
+                counter[0]++;
+                return algorithm == AsymSignatureAlgorithms.ED25519 ? 
+                                                ed25519.getPublic() : p256.getPublic();
+            }
+        }).setMultiSignatureMode(true)
+          .validate(parseCborHex("a2017348656c6c6f207369676e656420776f726c6421f86380"));
+        } catch (Exception e) {
+            checkException(e, "No signature found");
+        }
     }
  }

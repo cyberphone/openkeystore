@@ -39,12 +39,14 @@ import org.webpki.cbor.CBORX509Validator;
 import org.webpki.cbor.CBORCryptoConstants;
 import org.webpki.cbor.CBORCryptoUtils;
 import org.webpki.cbor.CBORDiagnosticNotation;
+import org.webpki.cbor.CBORException;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.CertificateInfo;
 import org.webpki.crypto.CryptoException;
 import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.HmacVerifierInterface;
+
 import org.webpki.util.HexaDecimal;
 
 public class ValidateServlet extends CoreRequestServlet {
@@ -73,6 +75,9 @@ public class ValidateServlet extends CoreRequestServlet {
             if (rawSignatures instanceof CBORArray) {
                 CBORArray csfList = rawSignatures.getArray();
                 rawSignatures = rawSignatures.clone();
+                if (csfList.size() == 0) {
+                    throw new CBORException("No signature found");
+                }
                 csfContainer = csfList.get(csfList.size() - 1).getMap();
                 unwrapped.update(CBORCryptoConstants.CSF_CONTAINER_LBL, new CBORArray().add(csfContainer), true);
             } else {
