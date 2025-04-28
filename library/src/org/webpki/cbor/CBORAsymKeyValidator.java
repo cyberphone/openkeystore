@@ -89,7 +89,7 @@ public class CBORAsymKeyValidator extends CBORValidator<CBORAsymKeyValidator> {
      * This is usually done by requiring a key identifier.
      * </p>
      * <p>
-     * If on the other a public is found in the signature object,
+     * If on the other hand a public key is found in the signature object,
      * it will be used for signature validation.  AFTER successful
      * signature validation, the {@link KeyLocator} will be called
      * with the public key argument holding the public key of
