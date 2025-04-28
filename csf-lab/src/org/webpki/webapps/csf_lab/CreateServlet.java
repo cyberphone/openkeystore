@@ -318,7 +318,8 @@ public class CreateServlet extends CoreRequestServlet {
             if (existingSignatures != null) {
                 if (multiOption ^ (existingSignatures instanceof CBORArray)) {
                     requestError("Single/multiple signature confusion?");
-                } else if (!multiOption) {
+                }
+                if (!multiOption) {
                     requestError("Already signed!");
                 }
             }
