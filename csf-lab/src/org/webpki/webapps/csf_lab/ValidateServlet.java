@@ -39,7 +39,6 @@ import org.webpki.cbor.CBORX509Validator;
 import org.webpki.cbor.CBORCryptoConstants;
 import org.webpki.cbor.CBORCryptoUtils;
 import org.webpki.cbor.CBORDiagnosticNotation;
-import org.webpki.cbor.CBORException;
 
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.CertificateInfo;
@@ -58,7 +57,7 @@ public class ValidateServlet extends CoreRequestServlet {
         try {
             request.setCharacterEncoding("utf-8");
             if (!request.getContentType().startsWith("application/x-www-form-urlencoded")) {
-                throw new IOException("Unexpected MIME type:" + request.getContentType());
+                requestError("Unexpected MIME type:" + request.getContentType());
             }
             // Get the input data items
             CBORObject signedCborObject = (Boolean.valueOf(getParameter(request, CSF_OBJECT_IN_HEX)) ?
@@ -70,13 +69,16 @@ public class ValidateServlet extends CoreRequestServlet {
             // This is certainly not what you would do in an application...
             CBORObject destroyedCopy = signedCborObject.clone();
             CBORMap unwrapped = unwrapOptionalTag(destroyedCopy);
-            CBORObject rawSignatures = unwrapped.get(CBORCryptoConstants.CSF_CONTAINER_LBL);
+            CBORObject rawSignatures = unwrapped.getConditionally(CBORCryptoConstants.CSF_CONTAINER_LBL, null);
+            if (rawSignatures == null) {
+                requestError("No signature found!");
+            }
             CBORMap csfContainer;
             if (rawSignatures instanceof CBORArray) {
                 CBORArray csfList = rawSignatures.getArray();
                 rawSignatures = rawSignatures.clone();
                 if (csfList.size() == 0) {
-                    throw new CBORException("No signature found!");
+                    requestError("No signature found!");
                 }
                 csfContainer = csfList.get(csfList.size() - 1).getMap();
                 unwrapped.update(CBORCryptoConstants.CSF_CONTAINER_LBL, new CBORArray().add(csfContainer), true);

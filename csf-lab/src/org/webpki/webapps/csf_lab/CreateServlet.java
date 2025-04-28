@@ -16,6 +16,8 @@
  */
 package org.webpki.webapps.csf_lab;
 
+import static org.webpki.cbor.CBORCryptoConstants.CSF_CONTAINER_LBL;
+
 import java.io.IOException;
 
 import java.net.URLEncoder;
@@ -28,9 +30,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.webpki.cbor.CBORArray;
 import org.webpki.cbor.CBORAsymKeySigner;
 import org.webpki.cbor.CBORDiagnosticNotation;
 import org.webpki.cbor.CBORHmacSigner;
+import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORPublicKey;
 import org.webpki.cbor.CBORSigner;
@@ -298,7 +302,7 @@ public class CreateServlet extends CoreRequestServlet {
             throws IOException, ServletException {
          try {
             request.setCharacterEncoding("utf-8");
-            final CBORObject rawCbor = (Boolean.valueOf(getParameter(request, PRM_INPUT_TYPE)) ? 
+            final CBORObject objectToSign = (Boolean.valueOf(getParameter(request, PRM_INPUT_TYPE)) ? 
                 CBORDiagnosticNotation.convert(getParameterTextarea(request, PRM_CBOR_DATA))
                                     :
                 getCborFromHex(getParameter(request, PRM_CBOR_DATA)));
@@ -308,6 +312,16 @@ public class CreateServlet extends CoreRequestServlet {
             boolean keyInlining = request.getParameter(FLG_PUB_INLINE) != null;
             boolean certOption = request.getParameter(FLG_CERT_PATH) != null;
             boolean multiOption = request.getParameter(FLG_MULTI_SIGN) != null;
+
+            CBORMap mapToSign = unwrapOptionalTag(objectToSign);
+            CBORObject existingSignatures = mapToSign.getConditionally(CSF_CONTAINER_LBL, null);
+            if (existingSignatures != null) {
+                if (multiOption ^ (existingSignatures instanceof CBORArray)) {
+                    requestError("Single/multiple signature confusion?");
+                } else if (!multiOption) {
+                    requestError("Already signed!");
+                }
+            }
             
             // Mandatory algorithm
             String algorithmString = getParameter(request, PRM_ALGORITHM);
@@ -368,7 +382,7 @@ public class CreateServlet extends CoreRequestServlet {
             signer.setMultiSignatureMode(multiOption);
 
             // Finally, sign!
-            CBORObject signedCborObject = signer.sign(rawCbor);
+            CBORObject signedCborObject = signer.sign(objectToSign);
 
             // We terminate by validating the signature as well
             request.getRequestDispatcher("validate?" +

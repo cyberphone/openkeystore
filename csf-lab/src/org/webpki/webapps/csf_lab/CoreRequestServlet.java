@@ -158,10 +158,14 @@ public class CoreRequestServlet extends HttpServlet {
             "</table>";
     }
 
+    void requestError(String message) throws IOException {
+        throw new IOException(message);
+    }
+
     String getParameterTextarea(HttpServletRequest request, String parameter) throws IOException {
         String string = request.getParameter(parameter);
         if (string == null) {
-            throw new IOException("Missing data for: "+ parameter);
+            requestError("Missing data for: "+ parameter);
         }
         return string.replace("\r\n", "\n");
     }
@@ -217,7 +221,8 @@ public class CoreRequestServlet extends HttpServlet {
         try {
             return CBORDiagnosticNotation.convert(attribute);
         } catch (CBORException e) {
-            throw new IOException(e.getMessage() + "\n\n" + errorHelpText);
+            requestError(e.getMessage() + "\n\n" + errorHelpText);
+            return null;
         }   
     }
     
@@ -284,10 +289,10 @@ public class CoreRequestServlet extends HttpServlet {
             }
         }
         if (keyData.publicKey != null && requestedKeyType == RequestedKeyType.KEYPAIR) {
-            throw new IOException("Unexpected public key:\n" + keyData.rewrittenKey);
+            requestError("Unexpected public key:\n" + keyData.rewrittenKey);
         } 
         if (keyData.keyPair != null && requestedKeyType == RequestedKeyType.PUBLIC) {
-            throw new IOException("Unexpected private key:\n" + keyData.rewrittenKey);
+            requestError("Unexpected private key:\n" + keyData.rewrittenKey);
         } 
         return keyData;
     }
