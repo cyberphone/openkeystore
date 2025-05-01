@@ -158,8 +158,8 @@ public class CBORCryptoUtils {
             }
             CBORTag tag = container.getTag();
             container = tag.object;
-            if (tag.tagNumber == CBORTag.RESERVED_TAG_COTX) {
-                container = container.getArray().get(1);
+            if (tag.cotxObject != null) {
+                container = tag.cotxObject.object;
             }
             if (callBackOrNull != null) {
                 callBackOrNull.foundData(tag);
