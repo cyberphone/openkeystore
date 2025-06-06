@@ -2573,4 +2573,15 @@ public class CBORTest {
             checkException(e, "No signature found");
         }
     }
+
+    @Test
+    public void circularTest() throws Exception {
+        CBORMap m = new CBORMap();
+        m.set(new CBORInt(1), m);
+        try {
+            m.encode();
+            fail("Must not");
+        } catch (StackOverflowError e) {
+        }
+    }
  }
