@@ -96,7 +96,7 @@ public class CBORArray extends CBORObject {
     byte[] internalEncode() {
         byte[] encoded = encodeTagAndN(MT_ARRAY, objects.size());
         for (CBORObject cborObject : objects) {
-            encoded = addByteArrays(encoded, cborObject.encode());
+            encoded = addByteArrays(encoded, cborObject.internalEncode());
         }
         return encoded;
     }

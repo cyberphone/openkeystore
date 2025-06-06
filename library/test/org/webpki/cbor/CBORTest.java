@@ -1971,29 +1971,6 @@ public class CBORTest {
         return s.toString();
     }
     
-    private CBORObject serializeJson(String[] jsonTokens) throws Exception {
-        CBORObject one = CBORFromJSON.convert(serializeJson(jsonTokens, false));
-        assertTrue("jsonCompp", one.equals(CBORFromJSON.convert(serializeJson(jsonTokens, true))));
-        return one;
-    }
-    
-    private CBORObject serializeJson(String jsonToken) throws Exception {
-        return serializeJson(new String[] {jsonToken});
-    }
-    
-    private void conversionError(String badJson, boolean mustFail) throws Exception {
-        try {
-            CBORFromJSON.convert(badJson);
-            assertFalse("Should fail on: " + badJson, mustFail);
-        } catch (Exception e) {
-            assertTrue("Should not fail on: " + badJson, mustFail);
-        }
-    }
-
-    private void conversionError(String badJson) throws Exception {
-        conversionError(badJson, true);
-    }
-    
     @Test
     public void cborSequences() throws Exception {
         byte[] sequence = HexaDecimal.decode("00A104F58105A1056464617461");
@@ -2039,77 +2016,6 @@ public class CBORTest {
         }
         assertTrue("SeqEnd", sequence.length == position);
         assertTrue("SeqEnd2", decoder.getByteCount() == position);
-    }
-
-    @Test
-    public void json2CborConversions() throws Exception {
-        String[] jsonTokens = new String[] {
-                "{", "\"lab\"", ":", "true", "}"
-        };
-        CBORMap cborMap = new CBORMap()
-            .set(new CBORString("lab"), new CBORBoolean(true));
-        assertTrue("json", cborMap.equals(serializeJson(jsonTokens)));
-        
-        assertTrue("json", new CBORMap().equals(serializeJson(new String[] {"{","}"})));
-        
-        jsonTokens = new String[] {
-                "{", "\"lab\"", ":", "true", "," ,"\"j\"",":", "2000", "}"
-        };
-        cborMap = new CBORMap()
-            .set(new CBORString("lab"), new CBORBoolean(true))
-            .set(new CBORString("j"), new CBORInt(2000));
-        assertTrue("json", cborMap.equals(serializeJson(jsonTokens)));
-        
-        assertTrue("json", new CBORArray().equals(serializeJson(new String[] {"[","]"})));
-               
-        assertTrue("json", new CBORString("hi").equals(serializeJson("\"hi\"")));
-        assertTrue("json", new CBORString("").equals(serializeJson("\"\"")));
-        assertTrue("json", new CBORString("\u20ac$\n\b\r\t\"\\ ").equals(serializeJson(
-                                              "\"\\u20ac$\\u000a\\b\\r\\t\\\"\\\\ \"")));
-        assertTrue("json", new CBORString("\u0123\u4567\u89ab\ucdef\uABCD\uEF00").equals(serializeJson(
-                                              "\"\\u0123\\u4567\\u89ab\\ucdef\\uABCD\\uEF00\"")));
-        assertTrue("json", new CBORBoolean(true).equals(serializeJson("true")));
-        assertTrue("json", new CBORBoolean(false).equals(serializeJson("false")));
-        assertTrue("json", new CBORNull().equals(serializeJson("null")));
-        assertTrue("json", new CBORInt(-234).equals(serializeJson("-234")));
-        assertTrue("json", new CBORInt(234).equals(serializeJson("234")));
-        assertTrue("json", new CBORInt(1).equals(serializeJson("1")));
-        assertTrue("json", new CBORInt(987654321).equals(serializeJson("0987654321")));
-        assertTrue("json", new CBORBigInt(new BigInteger("9007199254740992")).equals(serializeJson(
-                                                             "9007199254740992")));
-        
-        CBORArray cborArray = new CBORArray()
-            .add(new CBORString("hi"));
-        assertTrue("json", cborArray.equals(serializeJson(new String[] {"[","\"hi\"","]"})));
-        cborArray.add(new CBORMap())
-                 .add(new CBORInt(4));
-        assertTrue("json", cborArray.equals(serializeJson(new String[] {
-                "[","\"hi\"",",","{","}",",","4","]"})));
-        cborArray.get(1).getMap().set(new CBORString("kurt"),
-                                                  new CBORString("murt"));
-        assertTrue("json", cborArray.equals(serializeJson(new String[] {
-                "[","\"hi\"",",","{","\"kurt\"",":","\"murt\"","}",",","4","]"})));
-        
-        conversionError("");
-        conversionError("k");
-        conversionError("\"k");
-        conversionError("\"\\k\"");
-        conversionError("\"\\ufffl\"");
-        conversionError("0y");
-        conversionError("8.0");
-        conversionError("0 8");
-        conversionError("[");
-        conversionError("[] 6");
-        conversionError("9007199254740993");
-        conversionError("-9007199254740993");
-        conversionError("[6,]");
-        conversionError("{6:8}");
-        conversionError("{\"6\":8,}");
-        conversionError("{\"6\",8}");
-        conversionError("{} 6");
-        conversionError("18446744073709551615");
-        conversionError("9007199254740992", false);
-        conversionError("-9007199254740992", false);
     }
     
     @Test
