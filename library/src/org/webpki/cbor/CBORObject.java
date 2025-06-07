@@ -690,10 +690,13 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * Render CBOR object in
      * <a href='package-summary.html#diagnostic-notation'>Diagnostic Notation</a>.
      * <p>
+     * If the object (as well as possible
+     * child objects), conforms to the subset of data types supported by JSON,
+     * this method can also be used to generate JSON data.
+     * </p>
      * @param prettyPrint If <code>true</code> white space is added to make the 
      * result easier to read.  If <code>false</code> elements are output
      * without additional white space (=single line).
-     * </p>
      */
     public String toDiagnosticNotation(boolean prettyPrint) {
         CborPrinter outputBuffer = new CborPrinter(prettyPrint);

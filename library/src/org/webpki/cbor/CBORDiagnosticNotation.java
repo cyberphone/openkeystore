@@ -43,6 +43,9 @@ public class CBORDiagnosticNotation {
     
     /**
      * Convert CBOR object in diagnostic notation, to CBOR.
+     * <p>
+     * This method can also be used for decoding JSON data.
+     * </p>
      * 
      * @param cborText String holding a CBOR object in diagnostic (textual) format.
      * @return CBOR object
