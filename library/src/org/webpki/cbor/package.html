@@ -137,4 +137,20 @@ be aligned with IEEE&nbsp;754 encoding and rounding rules.
 The following table shows how CBOR objects should be represented in 
 diagnostic notation:
 @dn-table@
+<h3 id='main.examples'>Using the CBOR API</h3>
+  This section provides a few examples on how to use the CBOR API.
+  <h5 id='examples.encoding' style='margin:1em 0 0.5em 0'>Encode CBOR Data</h5>
+The following code shows how you can create CBOR-encoded data:
+<div class='webpkifloat'><div class='webpkibox' style='margin:0.5em 0 0.5em 2em;width:50em'>byte[]&nbsp;cbor&nbsp;=&nbsp;new&nbsp;CBORMap()<br>&nbsp;&nbsp;&nbsp;&nbsp;.set(new&nbsp;CBORInt(1),&nbsp;new&nbsp;CBORFloat(45.7))<br>&nbsp;&nbsp;&nbsp;&nbsp;.set(new&nbsp;CBORInt(2),&nbsp;new&nbsp;CBORString(&quot;Hi&nbsp;there!&quot;)).encode();<br><br>System.out.println(HexaDecimal.encode(cbor));<br><span style='color:#007fdd'>a201fb4046d9999999999a0269486920746865726521</span><br></div></div>
+  <h5 id='examples.decoding' style='margin:1em 0 0.5em 0'>Decode CBOR Data</h5>
+The following code shows how you can decode CBOR-encoded data,
+here using the result of the previous encoding example:
+<div class='webpkifloat'><div class='webpkibox' style='margin:0.5em 0 0.5em 2em;width:50em'>CBORMap&nbsp;map&nbsp;=&nbsp;CBORDecoder.decode(cbor).getMap();<br><br>System.out.println(map.toString());&nbsp;&nbsp;//&nbsp;Diagnostic&nbsp;notation<br><span style='color:#007fdd'>{<br>&nbsp;&nbsp;1:&nbsp;45.7,<br>&nbsp;&nbsp;2:&nbsp;&quot;Hi&nbsp;there!&quot;<br>}</span><br><br>System.out.println("Value="&nbsp;+&nbsp;map.get(new&nbsp;CBORInt(1)).getFloat64());<br><span style='color:#007fdd'>Value=45.7</span><br></div></div>
+  <h5 id='examples.variant-decoding' style='margin:1em 0 0.5em 0'>Decode Variant CBOR Data</h5>
+The following code shows how you can decode variant CBOR-encoded data:
+<div class='webpkifloat'><div class='webpkibox' style='margin:0.5em 0 0.5em 2em;width:50em'>CBORObject&nbsp;intOrString&nbsp;=&nbsp;CBORDecoder.decode(cbor);<br>if&nbsp;(intOrString&nbsp;instanceof&nbsp;CBORInt)&nbsp;{<br>&nbsp;&nbsp;int&nbsp;i&nbsp;=&nbsp;intOrString.getInt32();<br>&nbsp;&nbsp;//&nbsp;Do&nbsp;something&nbsp;with&nbsp;i...<br>}&nbsp;else&nbsp;{<br>&nbsp;&nbsp;//&nbsp;This&nbsp;line&nbsp;will&nbsp;throw&nbsp;an&nbsp;exception&nbsp;if&nbsp;the&nbsp;object&nbsp;is&nbsp;not&nbsp;a&nbsp;CBORString<br>&nbsp;&nbsp;String&nbsp;s&nbsp;=&nbsp;intOrString.getString();<br>&nbsp;&nbsp;//&nbsp;Do&nbsp;something&nbsp;with&nbsp;s...<br>}<br></div></div>
+  <h5 id='examples.dn-decoding' style='margin:1em 0 0.5em 0'>Decode CBOR Diagnostic Notation</h5>
+The following code shows how you can decode CBOR provided in
+<a href='#diagnostic-notation'>Diagnostic&nbsp;Notation</a>:
+<div class='webpkifloat'><div class='webpkibox' style='margin:0.5em 0 0.5em 2em;width:50em'>byte[]&nbsp;cbor&nbsp;=&nbsp;CBORDiagnosticNotation.convert("""<br>{<br>#&nbsp;Comments&nbsp;are&nbsp;also&nbsp;permitted<br>&nbsp;&nbsp;1:&nbsp;45.7,<br>&nbsp;&nbsp;2:&nbsp;&quot;Hi&nbsp;there!&quot;<br>}""").encode();<br><br>System.out.println(HexaDecimal.encode(cbor));<br><span style='color:#007fdd'>a201fb4046d9999999999a0269486920746865726521</span><br></div></div>
 </body>
