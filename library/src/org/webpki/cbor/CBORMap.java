@@ -42,8 +42,7 @@ public class CBORMap extends CBORObject {
 
     }
 
-    int lastLookup;
-    boolean preSortedKeys;
+    private boolean preSortedKeys;
 
     // Similar to the Java Map.Entry but optimized for CBOR. 
     static class Entry {
@@ -217,7 +216,9 @@ public class CBORMap extends CBORObject {
         this.preSortedKeys = preSortedKeys;
         return this;
     }
-    
+
+    private int lastLookup;
+
     private Entry lookup(CBORObject key, boolean mustExist) {
         byte[] encodedKey = getKey(key).encode();
         int startIndex = 0;

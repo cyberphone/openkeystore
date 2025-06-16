@@ -62,7 +62,7 @@ public class CBORSortKeyTest {
         }
         printTime("Reverse GET", TOTAL_SET_OPERATIONS, startTime, sortFlag);
         startTime = System.currentTimeMillis();
-        if (cborMap.remove(REVERSE_KEYS[TOTAL_SET_OPERATIONS/2]).getInt32() != TOTAL_SET_OPERATIONS/2) {
+        if (cborMap.remove(REVERSE_KEYS[TOTAL_SET_OPERATIONS/4]).getInt32() != TOTAL_SET_OPERATIONS/4) {
             CBORInternal.cborError("Big access");
         }
         printTime("Remove", TOTAL_SET_OPERATIONS, startTime, sortFlag);
