@@ -42,6 +42,7 @@ public class CBORMap extends CBORObject {
 
     }
 
+    int lastLookup;
     boolean preSortedKeys;
 
     // Similar to the Java Map.Entry but optimized for CBOR. 
@@ -226,6 +227,7 @@ public class CBORMap extends CBORObject {
             Entry entry = entries.get(midIndex);
             int diff = entry.compare(encodedKey);
             if (diff == 0) {
+                lastLookup = midIndex;
                 return entry;
             }
             if (diff < 0) {
@@ -297,7 +299,7 @@ public class CBORMap extends CBORObject {
     public CBORObject remove(CBORObject key) {
         immutableTest();
         Entry targetEntry = lookup(key, true);
-        entries.remove(targetEntry);
+        entries.remove(lastLookup);
         return targetEntry.object;
     }
 
