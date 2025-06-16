@@ -1954,21 +1954,6 @@ public class CBORTest {
 
         // Note: read one object but don't care of the next which in this case is invalid as well
         parseStrangeCborHex("A202616604616BFF", "A202616604616B", true, false);
-        
-    }
-
-    private String serializeJson(String[] jsonTokens, boolean addWhiteSpace) {
-        StringBuilder s = new StringBuilder();
-        for (String jsonToken : jsonTokens) {
-            if (addWhiteSpace) {
-                s.append(' ');
-            }
-            s.append(jsonToken);
-        }
-        if (addWhiteSpace) {
-            s.append(' ');
-        }
-        return s.toString();
     }
     
     @Test
