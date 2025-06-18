@@ -27,13 +27,16 @@ notation:
 <ol style='margin:0 0'>
 <li>The distinction between unsigned and negative values is
  dealt with automatically.
- The encoded representation is determined by the size of the value.</li>
+ The encoded representation is determined by the size of the value.
+Also see {@link CBORObject#getBigInteger()}.</li>
 <li style='padding-top:0.5em'>Floating-point data covers the 16, 32, and 64-bit IEEE&nbsp;754 variants,
 including support for <code style='white-space:nowrap'>-0.0</code>, <code>NaN</code>,
  and <code style='white-space:nowrap'>&pm;Infinity</code>.
-The encoded representation is determined by the size and precision of the value.
-See also {@link CBORDecoder#CBORDecoder(InputStream, int, int) CBOR&nbsp;decoding&nbsp;options}.</li>
+The encoded representation is determined by the size and precision of the value.</li>
 </ol>
+<p>
+Also see {@link CBORDecoder#CBORDecoder(InputStream, int, int) CBOR&nbsp;decoding&nbsp;options}.
+</p>
 <h3 id='time-data'>Time Data</h3>
 Since CBOR lacks a native time primitive, RFC&nbsp;8949 introduces
 such a feature through tag 0 and 1.  This implementation supports these tags

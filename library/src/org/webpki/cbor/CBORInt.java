@@ -39,7 +39,8 @@ public class CBORInt extends CBORObject {
      * <span style='white-space:nowrap'><code>-2<sup>63</sup></code></span>.
      * </p>
      * <p>
-     * See also {@link CBORBigInt#CBORBigInt(BigInteger)}.
+     * See also {@link CBORBigInt#CBORBigInt(BigInteger)} and
+     * {@link CBORObject#getBigInteger()}.
      * </p>
      *
      * @param value long value
@@ -57,8 +58,8 @@ public class CBORInt extends CBORObject {
     /**
      * Creates a CBOR signed <code>int</code> object.
      * <p>
-     * See also {@link CBORInt(long, boolean)} and 
-     * {@link CBORBigInt#CBORBigInt(BigInteger)}.
+     * This constructor is equivalent to 
+     * {@link CBORInt(long,boolean) <code>CBORInt(value, value >= 0)</code>}.
      * </p>
      * 
      * @param value Java (signed) long type

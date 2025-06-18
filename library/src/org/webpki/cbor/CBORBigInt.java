@@ -40,6 +40,10 @@ public class CBORBigInt extends CBORObject {
     /**
      * Creates a CBOR integer value of any size.
      * <p>
+     * Also see {@link CBORInt#CBORInt(long)} and
+     * {@link CBORObject#getBigInteger()}.
+     * </p>
+     * <p>
      * Note: if <code>value</code> is within the CBOR <code>int</code> range,
      * <code>int</code> encoding will be used, otherwise <code>value</code>
      * will be encoded as a CBOR <code>bigint</code>.
