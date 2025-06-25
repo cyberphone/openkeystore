@@ -31,14 +31,25 @@ import static org.webpki.cbor.CBORInternal.*;
  */
 public class CBORDecoder {
 
+    /**
+     * {@link CBORDecoder#CBORDecoder(InputStream, int, int)} flag.
+     */
+    public final static int SEQUENCE_MODE            = 0x1;
 
-    public final static int SEQUENCE_MODE           = 0x1;
+    /**
+     * {@link CBORDecoder#CBORDecoder(InputStream, int, int)} flag.
+     */
+    public final static int LENIENT_MAP_DECODING     = 0x2;
 
-    public final static int LENIENT_MAP_DECODING    = 0x2;
+    /**
+     * {@link CBORDecoder#CBORDecoder(InputStream, int, int)} flag.
+     */
+    public final static int LENIENT_NUMBER_DECODING  = 0x4;
 
-    public final static int LENIENT_NUMBER_DECODING = 0x4;
-
-    public final static int REJECT_INVALID_FLOATS   = 0x8;
+    /**
+     * {@link CBORDecoder#CBORDecoder(InputStream, int, int)} flag.
+     */
+    public final static int REJECT_NON_FINITE_FLOATS = 0x8;
 
     static final BigInteger NEGATIVE_HIGH_RANGE = new BigInteger("-10000000000000000", 16);
    
@@ -46,7 +57,7 @@ public class CBORDecoder {
     private boolean sequenceMode;
     private boolean strictMaps;
     private boolean strictNumbers;
-    private boolean rejectNanInfinity;
+    private boolean rejectNanFiniteFloats;
     private boolean atFirstByte;
     private int maxInputLength;
     private int byteCount;
@@ -93,11 +104,11 @@ public class CBORDecoder {
     * The&nbsp;{@link CBORDecoder#LENIENT_NUMBER_DECODING} option forces the decoder to
     * accept different representations of CBOR <code>int</code>, <code>bigint</code>,
     * and <code>float</code> items, only limited by RFC&nbsp;8949.</div>
-    * <div style='margin-top:0.8em'>{@link CBORDecoder#REJECT_INVALID_FLOATS}:</div>
+    * <div style='margin-top:0.8em'>{@link CBORDecoder#REJECT_NON_FINITE_FLOATS}:</div>
     * <div style='padding:0.2em 0 0 1.2em'>By default, the decoder supports 
     * <code>NaN</code> and <code>Infinity</code> values. 
     * In case these variants are not applicable for the application in question,
-    * the {@link CBORDecoder#REJECT_INVALID_FLOATS} option
+    * the {@link CBORDecoder#REJECT_NON_FINITE_FLOATS} option
     * causes such numbers to throw a {@link CBORException}.</div>
     * </p>
     * <p>
@@ -115,7 +126,7 @@ public class CBORDecoder {
         this.sequenceMode = (options & SEQUENCE_MODE) == SEQUENCE_MODE;
         this.strictMaps = (options & LENIENT_MAP_DECODING) != LENIENT_MAP_DECODING;
         this.strictNumbers = (options & LENIENT_NUMBER_DECODING) != LENIENT_NUMBER_DECODING;
-        this.rejectNanInfinity = (options & REJECT_INVALID_FLOATS) == REJECT_INVALID_FLOATS;
+        this.rejectNanFiniteFloats = (options & REJECT_NON_FINITE_FLOATS) == REJECT_NON_FINITE_FLOATS;
         this.maxInputLength = maxInputLength;
     }
     
@@ -183,9 +194,9 @@ public class CBORDecoder {
             (cborFloat.tag != tag || cborFloat.bitFormat != bitFormat)) {
             cborError(String.format(STDERR_NON_DETERMINISTIC_FLOAT + "%2x", tag));
         }
-        if (rejectNanInfinity && cborFloat.tag == MT_FLOAT16 &&
+        if (rejectNanFiniteFloats && cborFloat.tag == MT_FLOAT16 &&
             (cborFloat.bitFormat & FLOAT16_POS_INFINITY) == FLOAT16_POS_INFINITY) {
-            cborError(STDERR_INVALID_FLOAT_DISABLED);
+            cborError(STDERR_NON_FINITE_FLOATS_DISABLED);
         }
         return cborFloat;
     }
@@ -414,6 +425,6 @@ public class CBORDecoder {
     static final String STDERR_READING_LIMIT =
             "Reading past input limit";
 
-    static final String STDERR_INVALID_FLOAT_DISABLED = 
+    static final String STDERR_NON_FINITE_FLOATS_DISABLED = 
             "\"NaN\" and \"Infinity\" support is disabled";
 }

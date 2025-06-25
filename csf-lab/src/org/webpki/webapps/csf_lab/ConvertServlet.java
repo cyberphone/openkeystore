@@ -96,7 +96,7 @@ public class ConvertServlet extends CoreRequestServlet {
                 (sequenceFlag ? CBORDecoder.SEQUENCE_MODE : 0) |
                 (strictFlag ? 0 :
                      CBORDecoder.LENIENT_MAP_DECODING | CBORDecoder.LENIENT_NUMBER_DECODING) |
-                (rejectNaNFlag ? CBORDecoder.REJECT_INVALID_FLOATS : 0),
+                (rejectNaNFlag ? CBORDecoder.REJECT_NON_FINITE_FLOATS : 0),
                                                       cborBytes.length);
             while ((cborObject = cborDecoder.decodeWithOptions()) != null) {
                 sequence.add(cborObject);

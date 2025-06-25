@@ -2350,12 +2350,12 @@ public class CBORTest {
         for (String hexCbor : decoding) {
             try {
                 new CBORDecoder(new ByteArrayInputStream(Hex.decode(hexCbor)),
-                                CBORDecoder.REJECT_INVALID_FLOATS,
+                                CBORDecoder.REJECT_NON_FINITE_FLOATS,
                                 Integer.MAX_VALUE)
                     .decodeWithOptions();
                 fail("must not");
             } catch (Exception e) {
-                checkException(e, CBORDecoder.STDERR_INVALID_FLOAT_DISABLED);
+                checkException(e, CBORDecoder.STDERR_NON_FINITE_FLOATS_DISABLED);
             }
         }
     }
