@@ -68,7 +68,7 @@ public class ConvertServlet extends CoreRequestServlet {
             JSONObjectReader parsedJson = JSONParser.parse(ServletUtil.getData(request));
             boolean sequenceFlag = parsedJson.getBoolean(SEQUENCE_FLAG);
             boolean strictFlag = parsedJson.getBoolean(STRICT_FLAG);
-            boolean rejectNaNFlag = parsedJson.getBoolean(REJECT_NAN_FLAG);
+            boolean rejectNonInfinityFlag = parsedJson.getBoolean(REJECT_NAN_FLAG);
             String inData = parsedJson.getString(CBOR_IN);
             byte[] cborBytes;
             switch (parsedJson.getString(SEL_IN)) {
@@ -96,7 +96,7 @@ public class ConvertServlet extends CoreRequestServlet {
                 (sequenceFlag ? CBORDecoder.SEQUENCE_MODE : 0) |
                 (strictFlag ? 0 :
                      CBORDecoder.LENIENT_MAP_DECODING | CBORDecoder.LENIENT_NUMBER_DECODING) |
-                (rejectNaNFlag ? CBORDecoder.REJECT_NON_FINITE_FLOATS : 0),
+                (rejectNonInfinityFlag ? CBORDecoder.REJECT_NON_FINITE_FLOATS : 0),
                                                       cborBytes.length);
             while ((cborObject = cborDecoder.decodeWithOptions()) != null) {
                 sequence.add(cborObject);
