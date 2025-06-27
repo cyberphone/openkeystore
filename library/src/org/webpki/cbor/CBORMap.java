@@ -79,9 +79,9 @@ public class CBORMap extends CBORObject {
      */
     public CBORMap() {}
 
-    private CBORObject getKey(CBORObject key) {
-        nullCheck(key);
-        return key;
+    private CBORObject checkObject(CBORObject object) {
+        nullCheck(object);
+        return object;
     }
     
     /**
@@ -116,12 +116,10 @@ public class CBORMap extends CBORObject {
      */
     public CBORMap set(CBORObject key, CBORObject object) {
         immutableTest();
-        key = getKey(key);
-        nullCheck(object);
         // Keys are immutable.
-        makeImmutable(key);
+        makeImmutable(checkObject(key));
         // Create a map entry object.
-        Entry newEntry = new Entry(key, object);
+        Entry newEntry = new Entry(key, checkObject(object));
         // Insert the entry object in the proper position in the map.
         int insertIndex = entries.size();
         // Keys are always sorted, making the verification process simple.
@@ -220,7 +218,7 @@ public class CBORMap extends CBORObject {
     private int lastLookup;
 
     private Entry lookup(CBORObject key, boolean mustExist) {
-        byte[] encodedKey = getKey(key).encode();
+        byte[] encodedKey = checkObject(key).encode();
         int startIndex = 0;
         int endIndex = entries.size() - 1;
         while (startIndex <= endIndex) {
@@ -329,9 +327,8 @@ public class CBORMap extends CBORObject {
             previous = null;
             set(key, object);
         } else {
-            nullCheck(object);
             previous = targetEntry.object;
-            targetEntry.object = object;
+            targetEntry.object = checkObject(object);
         }
         return previous;
     }  
