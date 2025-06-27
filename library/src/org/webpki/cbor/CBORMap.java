@@ -78,11 +78,6 @@ public class CBORMap extends CBORObject {
      * </p>
      */
     public CBORMap() {}
-
-    private CBORObject checkObject(CBORObject object) {
-        nullCheck(object);
-        return object;
-    }
     
     /**
      * Get size of the CBOR map.

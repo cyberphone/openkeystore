@@ -64,8 +64,7 @@ public class CBORArray extends CBORObject {
      */
     public CBORArray add(CBORObject object) {
         immutableTest();
-        nullCheck(object);
-        objects.add(object);
+        objects.add(checkObject(object));
         return this;
     }
     
@@ -79,7 +78,7 @@ public class CBORArray extends CBORObject {
      */
     public CBORObject update(int index, CBORObject object) {
         immutableTest();
-        return objects.set(index, object);
+        return objects.set(index, checkObject(object));
     }
 
     /**
