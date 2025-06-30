@@ -1,7 +1,7 @@
 <body>
 <h2>CBOR - Encoder, Decoder, Signatures, and Encryption</h2>
 This package contains Java support for CBOR using the 
-[<a href='https://www.ietf.org/archive/id/draft-rundgren-cbor-core-10.html'>CBOR::Core</a>] profile.
+[<a href='https://www.ietf.org/archive/id/draft-rundgren-cbor-core-11.html'>CBOR::Core</a>] profile.
 <h3 id='supported-objects'>Supported Objects</h3>
 The following table shows the supported CBOR objects (data items)
 and their mapping to Java, here expressed in
@@ -47,12 +47,12 @@ hashing and signatures, over "raw" CBOR data.
 This API supports such operations through deterministic encoding
 which also is the default mode.
 The deterministic encoding scheme is described in
-[<a href='https://www.ietf.org/archive/id/draft-rundgren-cbor-core-10.html'>CBOR::Core</a>].
+[<a href='https://www.ietf.org/archive/id/draft-rundgren-cbor-core-11.html'>CBOR::Core</a>].
 If input data does not conform to the deterministic encoding scheme,
 a {@link CBORException} is thrown.
 <p id='decoder-options'>
 For more control of the decoding process, including dealing with "legacy" CBOR
-data as well as with CBOR sequences, see
+data as well as with <a href='#examples.seq-encoding'>CBOR&nbsp;sequences</a>, see
 {@link CBORDecoder#CBORDecoder(inputStream, int, int)}.
 </p>
 <p>
@@ -152,4 +152,12 @@ The following code shows how you can decode variant CBOR-encoded data:
 The following code shows how you can decode CBOR provided in
 <a href='#diagnostic-notation'>Diagnostic&nbsp;Notation</a>:
 <div class='webpkifloat'><div class='webpkibox' style='margin:0.5em 0 0.5em 2em;width:50em'>byte[]&nbsp;cbor&nbsp;=&nbsp;CBORDiagnosticNotation.convert("""<br>{<br>#&nbsp;Comments&nbsp;are&nbsp;also&nbsp;permitted<br>&nbsp;&nbsp;1:&nbsp;45.7,<br>&nbsp;&nbsp;2:&nbsp;&quot;Hi&nbsp;there!&quot;<br>}""").encode();<br><br>System.out.println(HexaDecimal.encode(cbor));<br><span style='color:#007fdd'>a201fb4046d9999999999a0269486920746865726521</span><br></div></div>
+  <h5 id='examples.seq-encoding' style='margin:1em 0 0.5em 0'>Encode CBOR Sequence</h5>
+The following code shows how you can create CBOR sequences:
+<div class='webpkifloat'><div class='webpkibox' style='margin:0.5em 0 0.5em 2em;width:50em'>byte[]&nbsp;cbor&nbsp;=&nbsp;new CBORArray()<br>&nbsp;&nbsp;.add(new CBORMap().set(new CBORInt(7),&nbsp;new CBORString(&quot;Hi!&quot;)))<br>&nbsp;&nbsp;.add(new CBORFloat(4.5))<br>&nbsp;&nbsp;.encodeAsSequence();<br><br>System.out.println(HexaDecimal.encode(cbor));<br><span style='color:#007fdd'>a10763486921f94480</span><br></div></div>
+  <h5 id='examples.seq-decoding' style='margin:1em 0 0.5em 0'>Decode CBOR Sequence</h5>
+The following code shows how you can decode CBOR sequences,
+here using the result of the previous encoding example:
+<div class='webpkifloat'><div class='webpkibox' style='margin:0.5em 0 0.5em 2em;width:50em'>CBORDecoder&nbsp;decoder&nbsp;=&nbsp;new&nbsp;CBORDecoder(new ByteArrayInputStream(cbor),<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CBORDecoder.SEQUENCE_MODE,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cbor.length);<br>CBORObject&nbsp;object;<br>while&nbsp;((object&nbsp;=&nbsp;decoder.decodeWithOptions())&nbsp;!=&nbsp;null)&nbsp;{<br>&nbsp;&nbsp;System.out.println(&quot;\n&quot;&nbsp;+&nbsp;object.toString());<br>}<br><br><span style='color:#007fdd'>{<br>&nbsp;&nbsp;7:&nbsp;&quot;Hi!&quot;<br>}</span><br><br><span style='color:#007fdd'>4.5</span><br></div></div>
+ 
 </body>

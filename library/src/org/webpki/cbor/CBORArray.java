@@ -81,6 +81,26 @@ public class CBORArray extends CBORObject {
         return objects.set(index, checkObject(object));
     }
 
+    byte[] encodeBody(byte[] header) {
+        for (CBORObject cborObject : objects) {
+            header = addByteArrays(header, cborObject.internalEncode());
+        }
+        return header;
+    }
+
+    /**
+     * Encode CBOR sequence.
+     * <p>
+     * Return the objects in the array as a CBOR sequence using
+     * <a href='../cbor/package-summary.html#deterministic-encoding'>Deterministic&nbsp;Encoding</a>.
+     * </p>
+     * 
+     * @return Sequence
+     */
+    public byte[] encodeAsSequence() {
+        return encodeBody(new byte[0]);
+    }
+
     /**
      * Create shallow copy of the CBOR array.
      * 
@@ -93,11 +113,7 @@ public class CBORArray extends CBORObject {
 
     @Override
     byte[] internalEncode() {
-        byte[] encoded = encodeTagAndN(MT_ARRAY, objects.size());
-        for (CBORObject cborObject : objects) {
-            encoded = addByteArrays(encoded, cborObject.internalEncode());
-        }
-        return encoded;
+        return encodeBody(encodeTagAndN(MT_ARRAY, objects.size()));
     }
 
     @Override

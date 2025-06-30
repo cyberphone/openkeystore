@@ -1979,15 +1979,15 @@ public class CBORTest {
                                    CBORDecoder.SEQUENCE_MODE,
                                    Integer.MAX_VALUE)
                        .decodeWithOptions() == null);
-        CBORSequenceBuilder sequenceBuilder = new CBORSequenceBuilder()
+        CBORArray sequenceBuilder = new CBORArray()
             .add(new CBORString("Hello CBOR Sequence World!"))
             .add(new CBORArray()
                 .add(new CBORFloat(4.5))
                 .add(new CBORBoolean(true)));
-        assertTrue("seqs",
-                   sequenceBuilder.toString().equals("\"Hello CBOR Sequence World!\",\n" +
-                                                     "[4.5, true]"));
-        sequence = sequenceBuilder.encode();
+        sequence = sequenceBuilder.encodeAsSequence();
+        assertTrue("seqs", HexaDecimal.encode(sequence).equals(
+            "781a48656c6c6f2043424f522053657175656e636520576f726c642182f94480f5"));
+
         inputStream = new ByteArrayInputStream(sequence);
         position = 0;
         decoder = new CBORDecoder(inputStream,

@@ -23,13 +23,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.webpki.cbor.CBORArray;
 import org.webpki.cbor.CBORBytes;
 import org.webpki.cbor.CBORCryptoConstants;
 import org.webpki.cbor.CBORInt;
 import org.webpki.cbor.CBORKeyPair;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORPublicKey;
-import org.webpki.cbor.CBORSequenceBuilder;
 
 import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONObjectWriter;
@@ -72,7 +72,7 @@ public class CoseKeyServlet extends CoreRequestServlet {
                          new CBORBytes(UTF8.encode(keyData.optionalKeyId)));
             }
             jsonResponse.setString(CBOR_OUT, getFormattedCbor(parsedJson, 
-                                                              new CBORSequenceBuilder().add(cbor)));
+                                                              new CBORArray().add(cbor)));
         } catch (Exception e) {
             jsonResponse.setString(ERROR, HTML.encode(e.getMessage()).replace("\n", "<br>")
                                                                      .replace(" ","&nbsp;"));

@@ -16,6 +16,7 @@
  */
 package org.webpki.webapps.csf_lab;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import java.security.KeyPair;
@@ -38,7 +39,6 @@ import org.webpki.cbor.CBORKeyPair;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORObject;
 import org.webpki.cbor.CBORPublicKey;
-import org.webpki.cbor.CBORSequenceBuilder;
 import org.webpki.cbor.CBORTag;
 
 import org.webpki.crypto.AlgorithmPreferences;
@@ -184,32 +184,42 @@ public class CoreRequestServlet extends HttpServlet {
                                       .replaceAll("( |\n|\r)", ""));
     }
 
-    String getFormattedCbor(JSONObjectReader parsedJson, CBORSequenceBuilder sequence) 
+    String getFormattedCbor(JSONObjectReader parsedJson, CBORArray sequenceBuilder) 
             throws IOException {
-        String selected = parsedJson.getString(SEL_OUT);
-        if (selected.equals(DIAG)) {
-            return HTML.encode(sequence.toString()).replace("\n", "<br>")
-                                                   .replace(" ","&nbsp;");
-        } else {
-            byte[] cborBytes = sequence.encode();
-            switch (selected) {
-                case HEXA:
-                    return HexaDecimal.encode(cborBytes);
-                    
-                case CSTYLE:
-                    String hex = HexaDecimal.encode(cborBytes);
-                    StringBuilder cstyle = new StringBuilder();
-                    for (int i = 0; i < hex.length(); ) {
-                        if (i > 0) {
-                            cstyle.append(", ");
-                        }
-                        cstyle.append("0x").append(hex.charAt(i++)).append(hex.charAt(i++));
+        byte[] cborBytes = sequenceBuilder.encodeAsSequence();
+        switch (parsedJson.getString(SEL_OUT)) {
+            case DIAG:
+                boolean next = false;
+                String diagnosticNotation = "";
+                CBORDecoder decoder = new CBORDecoder(new ByteArrayInputStream(cborBytes),
+                                                      CBORDecoder.SEQUENCE_MODE,
+                                                      cborBytes.length);
+                CBORObject object;
+                while ((object = decoder.decodeWithOptions()) != null) {
+                    if (next) {
+                        diagnosticNotation += ",\n";
                     }
-                    return cstyle.toString();
-    
-                default:
-                    return Base64URL.encode(cborBytes);
-            }
+                    next = true;
+                    diagnosticNotation += object.toString();
+                }
+                return HTML.encode(diagnosticNotation).replace("\n", "<br>")
+                                                      .replace(" ","&nbsp;");
+            case HEXA:
+                return HexaDecimal.encode(cborBytes);
+                
+            case CSTYLE:
+                String hex = HexaDecimal.encode(cborBytes);
+                StringBuilder cstyle = new StringBuilder();
+                for (int i = 0; i < hex.length(); ) {
+                    if (i > 0) {
+                        cstyle.append(", ");
+                    }
+                    cstyle.append("0x").append(hex.charAt(i++)).append(hex.charAt(i++));
+                }
+                return cstyle.toString();
+
+            default:
+                return Base64URL.encode(cborBytes);
         }
     }
 

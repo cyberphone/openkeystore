@@ -27,10 +27,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.webpki.cbor.CBORArray;
 import org.webpki.cbor.CBORDecoder;
 import org.webpki.cbor.CBORDiagnosticNotation;
 import org.webpki.cbor.CBORObject;
-import org.webpki.cbor.CBORSequenceBuilder;
 
 import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONObjectWriter;
@@ -50,11 +50,11 @@ public class ConvertServlet extends CoreRequestServlet {
 
         
     byte[] getBytesFromCborSequence(ArrayList<CBORObject> cborObjects) throws IOException {
-        CBORSequenceBuilder sequence = new CBORSequenceBuilder();
+        CBORArray sequence = new CBORArray();
         for (CBORObject cborObject : cborObjects) {
             sequence.add(cborObject);
         }
-        return sequence.encode();        
+        return sequence.encodeAsSequence();        
     }
         
     public void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -89,22 +89,21 @@ public class ConvertServlet extends CoreRequestServlet {
                     cborBytes = Base64URL.decode(inData);
                     break;
             }
-            CBORSequenceBuilder sequence = new CBORSequenceBuilder();
-            ByteArrayInputStream bais = new ByteArrayInputStream(cborBytes);
-            CBORObject cborObject;
-            CBORDecoder cborDecoder = new CBORDecoder(bais, 
+            CBORDecoder cborDecoder = new CBORDecoder(new ByteArrayInputStream(cborBytes), 
                 (sequenceFlag ? CBORDecoder.SEQUENCE_MODE : 0) |
                 (strictFlag ? 0 :
                      CBORDecoder.LENIENT_MAP_DECODING | CBORDecoder.LENIENT_NUMBER_DECODING) |
                 (rejectNonInfinityFlag ? CBORDecoder.REJECT_NON_FINITE_FLOATS : 0),
                                                       cborBytes.length);
+            CBORArray sequenceBuilder = new CBORArray();
+            CBORObject cborObject;
             while ((cborObject = cborDecoder.decodeWithOptions()) != null) {
-                sequence.add(cborObject);
+                sequenceBuilder.add(cborObject);
                 if (!sequenceFlag) {
                     break;
                 }
             }
-            jsonResponse.setString(CBOR_OUT, getFormattedCbor(parsedJson, sequence));
+            jsonResponse.setString(CBOR_OUT, getFormattedCbor(parsedJson, sequenceBuilder));
         } catch (Exception e) {
             jsonResponse.setString(ERROR, HTML.encode(e.getMessage()).replace("\n", "<br>")
                                                                      .replace(" ","&nbsp;"));

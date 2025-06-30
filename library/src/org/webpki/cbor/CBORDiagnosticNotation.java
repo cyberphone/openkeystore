@@ -159,7 +159,7 @@ public class CBORDiagnosticNotation {
         
             case '<':
                 scanFor("<");
-                CBORSequenceBuilder sequence = new CBORSequenceBuilder();
+                CBORArray sequence = new CBORArray();
                 scanNonSignficantData();
                 while (readChar() != '>') {
                     index--;
@@ -168,7 +168,7 @@ public class CBORDiagnosticNotation {
                     } while (continueList('>'));
                 }
                 scanFor(">");
-                return new CBORBytes(sequence.encode());
+                return new CBORBytes(sequence.encodeAsSequence());
     
             case '[':
                 CBORArray array = new CBORArray();
