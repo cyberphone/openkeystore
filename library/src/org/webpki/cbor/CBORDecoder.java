@@ -67,7 +67,7 @@ public class CBORDecoder {
     * <p>
     * Note that irrespective of options, the decoder maintains parsed data
     * in the form required for  
-    * <a href='package-summary.html#deterministic-encoding'>Deterministic&nbsp;Encoding</a>.
+    * <a href='package-summary.html#deterministic-encoding' class='webpkilink'>Deterministic&nbsp;Encoding</a>.
     * </p>
     * <p>
     * This constructor presumes that the actual decoding is performed
@@ -92,7 +92,7 @@ public class CBORDecoder {
     * <div style='margin-top:0.8em'>{@link CBORDecoder#LENIENT_MAP_DECODING}:</div>
     * <div style='padding:0.2em 0 0 1.2em'>By default, the decoder requires
     * that CBOR maps conform to the
-    * <a href='package-summary.html#deterministic-encoding'>Deterministic&nbsp;Encoding</a> 
+    * <a href='package-summary.html#deterministic-encoding' class='webpkilink'>Deterministic&nbsp;Encoding</a> 
     * rules.
     * The&nbsp;{@link CBORDecoder#LENIENT_MAP_DECODING} option forces the decoder
     * to accept CBOR maps with arbitrary key ordering.
@@ -101,7 +101,7 @@ public class CBORDecoder {
     * <div style='margin-top:0.8em'>{@link CBORDecoder#LENIENT_NUMBER_DECODING}:</div>
     * <div style='padding:0.2em 0 0 1.2em'>By default, the decoder requires
     * that CBOR numbers conform to the
-    * <a href='package-summary.html#deterministic-encoding'>Deterministic&nbsp;Encoding</a> rules.
+    * <a href='package-summary.html#deterministic-encoding' class='webpkilink'>Deterministic&nbsp;Encoding</a> rules.
     * The&nbsp;{@link CBORDecoder#LENIENT_NUMBER_DECODING} option forces the decoder to
     * accept different representations of CBOR <code>int</code>, <code>bigint</code>,
     * and <code>float</code> items, only limited by RFC&nbsp;8949.</div>

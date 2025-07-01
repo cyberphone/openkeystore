@@ -30,7 +30,7 @@ import static org.webpki.cbor.CBORInternal.*;
  * <p>
  * In this implementation "object" should be regarded as 
  * equivalent to the  
- * CBOR [<a href='https://www.rfc-editor.org/rfc/rfc8949.html'>RFC&nbsp;8949</a>]
+ * CBOR [<a href='https://www.rfc-editor.org/rfc/rfc8949.html' class='webpkilink'>RFC&nbsp;8949</a>]
  * term, "data item".
  * </p>
  */
@@ -52,7 +52,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * Encode CBOR object.
      * <p>
      * Note: this method always return CBOR data using 
-     * <a href='package-summary.html#deterministic-encoding'>Deterministic&nbsp;Encoding</a>.
+     * <a href='package-summary.html#deterministic-encoding' class='webpkilink'>Deterministic&nbsp;Encoding</a>.
      * </p>
      * 
      * @return CBOR encoded <code>byteArray</code>
@@ -448,7 +448,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * <p>
      * This method requires that the underlying object is a 
      * {@link CBORString} that is compatible with ISO date/time
-     * [<a href='https://www.rfc-editor.org/rfc/rfc3339.html'>RFC&nbsp;3339</a>], 
+     * [<a href='https://www.rfc-editor.org/rfc/rfc3339.html' class='webpkilink'>RFC&nbsp;3339</a>], 
      * otherwise a {@link CBORException} is thrown.
      * </p>
       * 
@@ -659,7 +659,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * Compare CBOR objects for equality.
      * <p>
      * Equality in CBOR depends on the actual binary encoding which in turn depends on
-     * <a href='package-summary.html#deterministic-encoding'>Deterministic&nbsp;Encoding</a>.
+     * <a href='package-summary.html#deterministic-encoding' class='webpkilink'>Deterministic&nbsp;Encoding</a>.
      * </p>
      */
     @Override
@@ -693,7 +693,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
 
     /**
      * Render CBOR object in
-     * <a href='package-summary.html#diagnostic-notation'>Diagnostic Notation</a>.
+     * <a href='package-summary.html#diagnostic-notation' class='webpkilink'>Diagnostic Notation</a>.
      * <p>
      * If the object (as well as possible
      * child objects), conforms to the subset of data types supported by JSON,

@@ -55,7 +55,7 @@ public abstract class CBORDecrypter <T extends CBORDecrypter<?>> {
      * are rejected ({@link CBORCryptoUtils.POLICY#FORBIDDEN}).
      * </p>
      * <p>
-     * See also <a href='doc-files/crypto-options.html'>crypto options</a>.
+     * See also <a href='doc-files/crypto-options.html' class='webpkilink'>crypto options</a>.
      * </p>
      * @param customDataPolicy Define level of support
      * @param customDataCallBack Interface for reading custom data
@@ -76,7 +76,7 @@ public abstract class CBORDecrypter <T extends CBORDecrypter<?>> {
      * By default wrapped containers are rejected ({@link CBORCryptoUtils.POLICY#FORBIDDEN}).
      * </p>
      * <p>
-     * See also <a href='doc-files/crypto-options.html'>crypto options</a>.
+     * See also <a href='doc-files/crypto-options.html' class='webpkilink'>crypto options</a>.
      * </p>
      * @param tagPolicy Define level of support
      * @param tagCallBack Interface for reading tag

@@ -27,7 +27,7 @@ import org.webpki.util.UTF8;
  * Class for converting diagnostic notation CBOR to CBOR.
  * <p>
  * Note: generated CBOR always conform to 
- * <a href='package-summary.html#deterministic-encoding'>Deterministic&nbsp;Encoding</a>.
+ * <a href='package-summary.html#deterministic-encoding' class='webpkilink'>Deterministic&nbsp;Encoding</a>.
  * </p>
  */
 public class CBORDiagnosticNotation {

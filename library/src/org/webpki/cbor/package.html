@@ -1,11 +1,12 @@
 <body>
 <h2>CBOR - Encoder, Decoder, Signatures, and Encryption</h2>
 This package contains Java support for CBOR using the 
-[<a href='https://www.ietf.org/archive/id/draft-rundgren-cbor-core-11.html'>CBOR::Core</a>] profile.
+[<a href='https://www.ietf.org/archive/id/draft-rundgren-cbor-core-11.html' class='webpkilink'>CBOR::Core</a>]
+cross platform profile.
 <h3 id='supported-objects'>Supported Objects</h3>
 The following table shows the supported CBOR objects (data items)
 and their mapping to Java, here expressed in
-CDDL&nbsp;[<a href='https://www.rfc-editor.org/rfc/rfc8610.html'>RFC&nbsp;8610</a>]
+CDDL&nbsp;[<a href='https://www.rfc-editor.org/rfc/rfc8610.html' class='webpkilink'>RFC&nbsp;8610</a>]
 notation:
 <div class='webpkifloat'>
 <table class='webpkitable' style='margin-left:2em'>
@@ -47,12 +48,12 @@ hashing and signatures, over "raw" CBOR data.
 This API supports such operations through deterministic encoding
 which also is the default mode.
 The deterministic encoding scheme is described in
-[<a href='https://www.ietf.org/archive/id/draft-rundgren-cbor-core-11.html'>CBOR::Core</a>].
+[<a href='https://www.ietf.org/archive/id/draft-rundgren-cbor-core-11.html' class='webpkilink'>CBOR::Core</a>].
 If input data does not conform to the deterministic encoding scheme,
 a {@link CBORException} is thrown.
 <p id='decoder-options'>
 For more control of the decoding process, including dealing with "legacy" CBOR
-data as well as with <a href='#examples.seq-encoding'>CBOR&nbsp;sequences</a>, see
+data as well as with <a href='#examples.seq-encoding' class='webpkilink'>CBOR&nbsp;sequences</a>, see
 {@link CBORDecoder#CBORDecoder(inputStream, int, int)}.
 </p>
 <p>
@@ -105,15 +106,15 @@ inside of their respective containers.
 </p>
 <h3 id='cbor-schema-support'>"Schema" Support</h3>
 Although this package does not support a CBOR counterpart
-to <a href='https://www.w3.org/XML/Schema'>XML&nbsp;Schema</a>,
+to <a href='https://www.w3.org/XML/Schema' class='webpkilink'>XML&nbsp;Schema</a>,
 similar functionality can be achieved using the <i>programmatic
 constructs</i> described in the previous section.
 For an example, turn to 
-<a href='doc-files/typed-objects.html'>Typed Objects</a>.
+<a href='doc-files/typed-objects.html' class='webpkilink'>Typed Objects</a>.
 <h3 id='cryptographic-support'>Cryptographic Support</h3>
 To aid the use of cryptography, support for
-<a href='doc-files/signatures.html'>Signatures</a> and 
-<a href='doc-files/encryption.html'>Encryption</a> is integrated in the package.
+<a href='doc-files/signatures.html' class='webpkilink'>Signatures</a> and 
+<a href='doc-files/encryption.html' class='webpkilink'>Encryption</a> is integrated in the package.
 <h3 id='diagnostic-notation'>Diagnostic Notation</h3>
 Creating CBOR data in diagnostic notation
 is provided by the {@link CBORObject#toString()} method.
@@ -123,7 +124,7 @@ in diagnostic (textual) notation, making CBOR useful for "config" and test data 
 </p>
 <p>
 By adhering to the
-<a href='#deterministic-encoding'>Deterministic Encoding</a> 
+<a href='#deterministic-encoding' class='webpkilink'>Deterministic Encoding</a> 
 specification above, CBOR data can be <i>bidirectionally</i>
 converted between its native (binary) format and diagnostic notation
 without getting corrupted.  Note though that text-binary-text "roundtrips"
@@ -150,7 +151,7 @@ The following code shows how you can decode variant CBOR-encoded data:
 <div class='webpkifloat'><div class='webpkibox' style='margin:0.5em 0 0.5em 2em;width:50em'>CBORObject&nbsp;intOrString&nbsp;=&nbsp;CBORDecoder.decode(cbor);<br>if&nbsp;(intOrString&nbsp;instanceof&nbsp;CBORInt)&nbsp;{<br>&nbsp;&nbsp;int&nbsp;i&nbsp;=&nbsp;intOrString.getInt32();<br>&nbsp;&nbsp;//&nbsp;Do&nbsp;something&nbsp;with&nbsp;i...<br>}&nbsp;else&nbsp;{<br>&nbsp;&nbsp;//&nbsp;This&nbsp;line&nbsp;will&nbsp;throw&nbsp;an&nbsp;exception&nbsp;if&nbsp;the&nbsp;object&nbsp;is&nbsp;not&nbsp;a&nbsp;CBORString<br>&nbsp;&nbsp;String&nbsp;s&nbsp;=&nbsp;intOrString.getString();<br>&nbsp;&nbsp;//&nbsp;Do&nbsp;something&nbsp;with&nbsp;s...<br>}<br></div></div>
   <h5 id='examples.dn-decoding' style='margin:1em 0 0.5em 0'>Decode CBOR Diagnostic Notation</h5>
 The following code shows how you can decode CBOR provided in
-<a href='#diagnostic-notation'>Diagnostic&nbsp;Notation</a>:
+<a href='#diagnostic-notation' class='webpkilink'>Diagnostic&nbsp;Notation</a>:
 <div class='webpkifloat'><div class='webpkibox' style='margin:0.5em 0 0.5em 2em;width:50em'>byte[]&nbsp;cbor&nbsp;=&nbsp;CBORDiagnosticNotation.convert("""<br>{<br>#&nbsp;Comments&nbsp;are&nbsp;also&nbsp;permitted<br>&nbsp;&nbsp;1:&nbsp;45.7,<br>&nbsp;&nbsp;2:&nbsp;&quot;Hi&nbsp;there!&quot;<br>}""").encode();<br><br>System.out.println(HexaDecimal.encode(cbor));<br><span style='color:#007fdd'>a201fb4046d9999999999a0269486920746865726521</span><br></div></div>
   <h5 id='examples.seq-encoding' style='margin:1em 0 0.5em 0'>Encode CBOR Sequence</h5>
 The following code shows how you can create CBOR sequences:

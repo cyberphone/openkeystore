@@ -81,7 +81,7 @@ public abstract class CBORValidator <T extends CBORValidator<T>> {
      * are rejected ({@link CBORCryptoUtils.POLICY#FORBIDDEN}).
      * </p>
      * <p>
-     * See also <a href='doc-files/crypto-options.html'>crypto options</a>.
+     * See also <a href='doc-files/crypto-options.html' class='webpkilink'>crypto options</a>.
      * </p>
      * @param customDataPolicy Define level of support
      * @param customDataCollector Interface for reading custom data
@@ -102,7 +102,7 @@ public abstract class CBORValidator <T extends CBORValidator<T>> {
      * By default tagged CSF containers are rejected ({@link CBORCryptoUtils.POLICY#FORBIDDEN}).
      * </p>
      * <p>
-     * See also <a href='doc-files/crypto-options.html'>crypto options</a>.
+     * See also <a href='doc-files/crypto-options.html' class='webpkilink'>crypto options</a>.
      * </p>
      * @param tagPolicy Define level of support
      * @param tagCollector Interface for reading tag

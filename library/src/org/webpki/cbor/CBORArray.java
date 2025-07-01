@@ -92,7 +92,7 @@ public class CBORArray extends CBORObject {
      * Encode CBOR sequence.
      * <p>
      * Return the objects in the array as a CBOR sequence using
-     * <a href='../cbor/package-summary.html#deterministic-encoding'>Deterministic&nbsp;Encoding</a>.
+     * <a href='package-summary.html#deterministic-encoding' class='webpkilink'>Deterministic&nbsp;Encoding</a>.
      * </p>
      * 
      * @return Sequence

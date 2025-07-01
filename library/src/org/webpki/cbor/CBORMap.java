@@ -26,7 +26,7 @@ import static org.webpki.cbor.CBORInternal.*;
  * Class for holding CBOR <code>{}</code> (map) objects.
  * <p>
  * Note: to maintain
- * <a href='package-summary.html#deterministic-encoding'>Deterministic&nbsp;Encoding</a>
+ * <a href='package-summary.html#deterministic-encoding' class='webpkilink'>Deterministic&nbsp;Encoding</a>
  * map keys are <i>automatically sorted during insertion</i>.
  * </p>
  */
