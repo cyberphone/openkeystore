@@ -658,13 +658,11 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     /**
      * Compare CBOR objects for equality.
      * <p>
-     * Equality in CBOR depends on the actual binary encoding which in turn depends on
-     * <a href='package-summary.html#deterministic-encoding' class='webpkilink'>Deterministic&nbsp;Encoding</a>.
-     * </p>
-     * <p>
      * The result is <code>true</code> if and only if the argument is not <code>null</code> and is a
-     * {@link CBORObject}.
+     * {@link CBORObject}, and the actual binary encodings are equivalent (which in turn depends on
+     * <a href='package-summary.html#deterministic-encoding' class='webpkilink'>Deterministic&nbsp;Encoding</a>).
      * </p>
+     * @param Argument to compare with
      */
     @Override
     public boolean equals(Object object) {
