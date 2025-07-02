@@ -661,8 +661,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * Compare CBOR objects for equality.
      * <p>
      * The result is <code>true</code> if and only if the argument is not <code>null</code> and is a
-     * {@link CBORObject}, and the actual binary encodings are equivalent (which in turn depends on
-     * <a href='package-summary.html#deterministic-encoding' class='webpkilink'>Deterministic&nbsp;Encoding</a>).
+     * {@link CBORObject}, and the binary encodings (as provided by {@link #encode()}) are equivalent.
      * </p>
      * @param object Argument to compare with
      */
@@ -674,6 +673,9 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
 
     /**
      * Compare CBOR objects for magnitude.
+     * <p>
+     * The comparison is based on the binary encodings as provided by {@link #encode()}.
+     * </p>
      * @param object Argument to compare with
      */
     @Override
@@ -683,15 +685,17 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
 
     /**
      * Calculate hash code of CBOR object.
+     * <p>
+     * The hash is calculated in the same way as for {@link String#hashCode()},
+     * using the output from {@link #encode()} as <code>"s"</code>.
+     * </p>
      */
     @Override
     public int hashCode() {
         byte[] encoded = encode();
         int hash = 0;
-        int q = Math.min(encoded.length, 4);
-        while (--q >= 0) {
-            hash <<= 8;
-            hash += encoded[q];
+        for (byte b : encoded) {
+            hash = 31 * hash + (b & 0xff);
         }
         return hash;
     }
