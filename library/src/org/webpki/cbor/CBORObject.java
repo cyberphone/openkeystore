@@ -54,7 +54,9 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * Note: this method always return CBOR data using 
      * <a href='package-summary.html#deterministic-encoding' class='webpkilink'>Deterministic&nbsp;Encoding</a>.
      * </p>
-     * 
+     * <p>
+     * See also {@link CBORArray#encodeAsSequence()}.
+     * </p>
      * @return CBOR encoded <code>byteArray</code>
      */
     public byte[] encode() {
