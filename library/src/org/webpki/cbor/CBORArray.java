@@ -95,7 +95,7 @@ public class CBORArray extends CBORObject {
      * <a href='package-summary.html#deterministic-encoding' class='webpkilink'>Deterministic&nbsp;Encoding</a>.
      * </p>
      * 
-     * @return Sequence
+     * @return CBOR sequence
      */
     public byte[] encodeAsSequence() {
         return encodeBody(new byte[0]);
