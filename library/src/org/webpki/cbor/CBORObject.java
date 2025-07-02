@@ -660,8 +660,9 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     /**
      * Compare CBOR objects for equality.
      * <p>
-     * The result is <code>true</code> if and only if the argument is not <code>null</code> and is a
-     * {@link CBORObject}, and the binary encodings (as provided by {@link #encode()}) are equivalent.
+     * The result is <code>true</code> if and only if the argument is
+     * not <code>null</code> and is a {@link CBORObject}, and the associated
+     * binary encodings (as provided by {@link #encode()}) are equivalent.
      * </p>
      * @param object Argument to compare with
      */
@@ -674,7 +675,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     /**
      * Compare CBOR objects for magnitude.
      * <p>
-     * The comparison is based on the binary encodings as provided by {@link #encode()}.
+     * The comparison is based on the associated binary encodings as provided by {@link #encode()}.
      * </p>
      * @param object Argument to compare with
      */
