@@ -34,7 +34,9 @@ public class CBORMap extends CBORObject {
 
     /**
      * Support interface for dynamic CBOR generation.
-    * @see #setDynamic(Dynamic)
+     * <p>
+     * Also see {@link #setDynamic(Dynamic)}.
+     * </p>
      */
     public interface Dynamic {
 
