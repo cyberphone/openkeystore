@@ -111,10 +111,10 @@ public class CBORMap extends CBORObject {
      */
     public CBORMap set(CBORObject key, CBORObject object) {
         immutableTest();
-        // Keys are immutable.
-        makeImmutable(checkObject(key));
         // Create a map entry object.
-        Entry newEntry = new Entry(key, checkObject(object));
+        Entry newEntry = new Entry(checkObject(key), checkObject(object));
+        // Keys are immutable.
+        makeImmutable(key);
         // Insert the entry object in the proper position in the map.
         int insertIndex = entries.size();
         // Keys are always sorted, making the verification process simple.

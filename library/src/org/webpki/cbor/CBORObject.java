@@ -512,7 +512,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
         return (CBORTag) getTypeAndMarkAsRead(CBORTag.class);
     }
 
-    void makeImmutable(CBORObject object) {
+    static void makeImmutable(CBORObject object) {
         object.immutableFlag = true;
         if (object instanceof CBORMap cborMap) {
             for (CBORMap.Entry entry : cborMap.entries) {
