@@ -111,18 +111,18 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
         return encodeTagAndValue(majorType | modifier, length >> 2, n);
     }
 
-    void checkTypeAndMarkAsRead(Class<? extends CBORObject> requestedCborType) {
+    CBORObject getTypeAndMarkAsRead(Class<? extends CBORObject> requestedCborType) {
         if (requestedCborType.isInstance(this)) {
             readFlag = true;
         } else {
             cborError("Is type: " + this.getClass().getSimpleName() +
                      ", requested: " + requestedCborType.getSimpleName());
         }
+        return this;
     }
 
     private CBORInt getCBORInt() {
-        checkTypeAndMarkAsRead(CBORInt.class);
-        return (CBORInt) this;
+        return (CBORInt) getTypeAndMarkAsRead(CBORInt.class);
     }
 
     /**
@@ -140,8 +140,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
         if (this instanceof CBORInt) {
             return getCBORInt().toBigInteger();
         }
-        checkTypeAndMarkAsRead(CBORBigInt.class);
-        return ((CBORBigInt) this).value;
+        return ((CBORBigInt) getTypeAndMarkAsRead(CBORBigInt.class)).value;
     }
 
     /**
@@ -316,8 +315,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * @throws CBORException
      */
     public double getFloat64() {
-        checkTypeAndMarkAsRead(CBORFloat.class);
-        return ((CBORFloat) this).value;
+        return ((CBORFloat) getTypeAndMarkAsRead(CBORFloat.class)).value;
     }
  
     /**
@@ -332,8 +330,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * @throws CBORException
      */
     public float getFloat32() {
-        checkTypeAndMarkAsRead(CBORFloat.class);
-        CBORFloat floatingPoint = (CBORFloat) this;
+        CBORFloat floatingPoint = (CBORFloat) getTypeAndMarkAsRead(CBORFloat.class);
         if (floatingPoint.tag == MT_FLOAT64) {
             cborError(STDERR_FLOAT_RANGE);
         }
@@ -352,8 +349,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * @throws CBORException
      */
     public float getFloat16() {
-        checkTypeAndMarkAsRead(CBORFloat.class);
-        CBORFloat floatingPoint = (CBORFloat) this;
+        CBORFloat floatingPoint = (CBORFloat) getTypeAndMarkAsRead(CBORFloat.class);
         if (floatingPoint.tag != MT_FLOAT16) {
             cborError(STDERR_FLOAT_RANGE);
         }
@@ -370,8 +366,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * @throws CBORException
      */
     public int getSimple() {
-        checkTypeAndMarkAsRead(CBORSimple.class);
-        return ((CBORSimple) this).value;
+        return ((CBORSimple) getTypeAndMarkAsRead(CBORSimple.class)).value;
     }
 
     /**
@@ -385,8 +380,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * @throws CBORException
      */
     public boolean getBoolean() {
-        checkTypeAndMarkAsRead(CBORBoolean.class);
-        return ((CBORBoolean) this).value;
+        return ((CBORBoolean) getTypeAndMarkAsRead(CBORBoolean.class)).value;
     }
 
     /**
@@ -421,8 +415,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * @throws CBORException
      */
     public String getString() {
-        checkTypeAndMarkAsRead(CBORString.class);
-        return ((CBORString) this).textString;
+        return ((CBORString) getTypeAndMarkAsRead(CBORString.class)).textString;
     }
 
     /**
@@ -474,8 +467,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * @throws CBORException
      */
     public byte[] getBytes() {
-        checkTypeAndMarkAsRead(CBORBytes.class);
-        return ((CBORBytes) this).byteString;
+        return ((CBORBytes) getTypeAndMarkAsRead(CBORBytes.class)).byteString;
     }
 
     /**
@@ -489,8 +481,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * @throws CBORException
      */
     public CBORMap getMap() {
-        checkTypeAndMarkAsRead(CBORMap.class);
-        return (CBORMap) this;
+        return (CBORMap) getTypeAndMarkAsRead(CBORMap.class);
     }
 
     /**
@@ -504,8 +495,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * @throws CBORException
      */
     public CBORArray getArray() {
-        checkTypeAndMarkAsRead(CBORArray.class);
-        return (CBORArray) this;
+        return (CBORArray) getTypeAndMarkAsRead(CBORArray.class);
     }
     
     /**
@@ -519,8 +509,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * @throws CBORException
      */
     public CBORTag getTag() {
-        checkTypeAndMarkAsRead(CBORTag.class);
-        return (CBORTag) this;
+        return (CBORTag) getTypeAndMarkAsRead(CBORTag.class);
     }
 
     void makeImmutable(CBORObject object) {
