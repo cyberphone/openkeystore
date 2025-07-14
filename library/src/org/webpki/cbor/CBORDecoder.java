@@ -32,22 +32,22 @@ import static org.webpki.cbor.CBORInternal.*;
 public class CBORDecoder {
 
     /**
-     * {@link CBORDecoder#CBORDecoder(InputStream, int, int)} flag.
+     * {@link CBORDecoder#CBORDecoder(InputStream, int, int)} <code>options</code> flag.
      */
     public final static int SEQUENCE_MODE            = 0x1;
 
     /**
-     * {@link CBORDecoder#CBORDecoder(InputStream, int, int)} flag.
+     * {@link CBORDecoder#CBORDecoder(InputStream, int, int)} <code>options</code> flag.
      */
     public final static int LENIENT_MAP_DECODING     = 0x2;
 
     /**
-     * {@link CBORDecoder#CBORDecoder(InputStream, int, int)} flag.
+     * {@link CBORDecoder#CBORDecoder(InputStream, int, int)} <code>options</code> flag.
      */
     public final static int LENIENT_NUMBER_DECODING  = 0x4;
 
     /**
-     * {@link CBORDecoder#CBORDecoder(InputStream, int, int)} flag.
+     * {@link CBORDecoder#CBORDecoder(InputStream, int, int)} <code>options</code> flag.
      */
     public final static int REJECT_NON_FINITE_FLOATS = 0x8;
 
@@ -113,7 +113,7 @@ public class CBORDecoder {
     * causes such numbers to throw a {@link CBORException}.</div>
     * </p>
     * <p>
-    * Exceeding <code>maxInputLength</code> throws a {@link CBORException}.  It is
+    * Exceeding <code>maxInputLength</code> during decoding throws a {@link CBORException}.  It is
     * <i>recommendable</i> setting this as low as possible, since malformed
     * CBOR objects may request any amount of memory.
     * </p>
@@ -239,7 +239,7 @@ public class CBORDecoder {
                     // Special "number"
                     
                     // Non-deterministic representations of NaN will be flagged later.
-                    // NaN "signaling" is not supported, "quiet" NaN is all there is.
+                    // Only simple NaNs are supported by this implementation.
                     float64 = significand == 0 ? Double.POSITIVE_INFINITY : Double.NaN;
                         
                 } else {
