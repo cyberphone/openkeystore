@@ -2348,15 +2348,33 @@ public class CBORTest {
     public void disableNaNAndInfinity() {
         String[] decoding = {"f97e00", "f97c00", "f9fc00"};
         for (String hexCbor : decoding) {
+            byte[] cbor = Hex.decode(hexCbor);
             try {
-                new CBORDecoder(new ByteArrayInputStream(Hex.decode(hexCbor)),
+                new CBORDecoder(new ByteArrayInputStream(cbor),
                                 CBORDecoder.REJECT_NON_FINITE_FLOATS,
                                 Integer.MAX_VALUE)
                     .decodeWithOptions();
                 fail("must not");
             } catch (Exception e) {
-                checkException(e, CBORDecoder.STDERR_NON_FINITE_FLOATS_DISABLED);
+                checkException(e, CBORFloat.STDERR_NON_FINITE_FLOATS_DISABLED);
             }
+            CBORDecoder.decode(cbor);
+            CBORFloat.setNonFiniteFloatsMode(true);
+            try {
+                CBORDecoder.decode(cbor);
+                fail("must not");
+            } catch (Exception e) {
+                checkException(e, CBORFloat.STDERR_NON_FINITE_FLOATS_DISABLED);
+            }
+            try {
+                new CBORFloat(Double.NaN);
+                fail("must not");
+            } catch (Exception e) {
+                checkException(e, CBORFloat.STDERR_NON_FINITE_FLOATS_DISABLED);
+            }
+            CBORFloat.setNonFiniteFloatsMode(false);
+            new CBORFloat(Double.NaN);
+            CBORDecoder.decode(cbor);
         }
     }
 

@@ -37,21 +37,10 @@ public class CBORFloat extends CBORObject {
     // CBOR representation of value.
     int tag;
     long bitFormat;
-    
-    /**
-     * Creates a CBOR <code>float</code> object.
-     * <p>
-     * Note that this implementation does not provide a specific constructor
-     * for Java <code>float</code> values.
-     * Due to the CBOR normalization algorithm, numbers are still correctly encoded.
-     * </p>
-     * <p>
-     * See also {@link CBORObject#getFloat64()} and {@link CBORObject#getFloat32()}
-     * </p>
-     * 
-     * @param value Java double
-     */
-    public CBORFloat(double value) {
+
+    static boolean globalRejectNonFiniteFloats;
+
+    CBORFloat(double value, boolean rejectNonFiniteFloats) {
         this.value = value;
 
         // Initial assumption: the number is a plain vanilla 64-bit double.
@@ -70,6 +59,9 @@ public class CBORFloat extends CBORObject {
         } else if ((bitFormat & FLOAT64_POS_INFINITY) == FLOAT64_POS_INFINITY) {
 
             // Special "number".
+            if (globalRejectNonFiniteFloats || rejectNonFiniteFloats) {
+                cborError(STDERR_NON_FINITE_FLOATS_DISABLED);
+            }
             tag = MT_FLOAT16;
             bitFormat = (bitFormat == FLOAT64_POS_INFINITY) ?
                 FLOAT16_POS_INFINITY : (bitFormat == FLOAT64_NEG_INFINITY) ?
@@ -142,6 +134,43 @@ public class CBORFloat extends CBORObject {
     }
 
     /**
+     * Creates a CBOR <code>float</code> object.
+     * <p>
+     * Note that this implementation does not provide a specific constructor
+     * for Java <code>float</code> values.
+     * Due to the CBOR normalization algorithm, numbers are still correctly encoded.
+     * </p>
+     * <p>
+     * See also {@link CBORObject#getFloat64()} and {@link CBORObject#getFloat32()}
+     * </p>
+     * <p>
+     * For <code>NaN</code> and <code>Infinity</code> support see
+     * {@link CBORDecoder#REJECT_NON_FINITE_FLOATS} and
+     * {@link #setNonFiniteFloatsMode(boolean)}.
+     * </p>
+     * 
+     * @param value Java double
+     * @throws CBORException
+     */
+    public CBORFloat(double value) {
+        this(value, false);
+    }
+
+    /**
+     * Globally disable <code>NaN</code> and <code>Infinity</code>.
+     * <p>
+     * Note that this method unlike {@link CBORDecoder#REJECT_NON_FINITE_FLOATS},
+     * also affects <i>encoding</i> of <code>NaN</code> and <code>Infinity</code> values.
+     * Since this is a <i>global</i> setting. you need to consider how it
+     * could affect other applications running in the same JVM.
+     * </p>
+     * @param reject If <code>true</code>, disable <code>NaN</code> and <code>Infinity</code> support.
+     */
+    public static void setNonFiniteFloatsMode(boolean reject) {
+        globalRejectNonFiniteFloats = reject;
+    }
+
+    /**
      * Get number in diagnostic notation.
      * <p>
      * Floating point numbers are serialized using at least
@@ -185,4 +214,8 @@ public class CBORFloat extends CBORObject {
     void internalToString(CborPrinter cborPrinter) {
          cborPrinter.append(formatDouble(value));
     }
+
+    static final String STDERR_NON_FINITE_FLOATS_DISABLED = 
+        "\"NaN\" and \"Infinity\" support is disabled";
+
 }

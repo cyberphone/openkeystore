@@ -78,6 +78,7 @@ public class CBORDecoder {
     * Multiple options can be combined using the binary OR-operator ("<code>|</code>").
     * A zero (0) sets the decoder default mode.
     * The options are defined by the following constants:
+    * </p>
     * <div style='margin-top:0.3em'>{@link CBORDecoder#SEQUENCE_MODE}:</div>
     * <div style='padding:0.2em 0 0 1.2em'>If the {@link CBORDecoder#SEQUENCE_MODE}
     * option is defined, the following apply:
@@ -88,7 +89,7 @@ public class CBORDecoder {
     * (<i>empty</i> sequences are permitted).</li>
     * </ul>
     * Note that data that has not yet been decoded, is not verified for correctness.
-    <div style='margin-top:0.5em'>See also {@link CBORArray#encodeAsSequence}.</div></div>
+    * <div style='margin-top:0.5em'>See also {@link CBORArray#encodeAsSequence}.</div></div>
     * <div style='margin-top:0.8em'>{@link CBORDecoder#LENIENT_MAP_DECODING}:</div>
     * <div style='padding:0.2em 0 0 1.2em'>By default, the decoder requires
     * that CBOR maps conform to the
@@ -110,8 +111,8 @@ public class CBORDecoder {
     * <code>NaN</code> and <code>Infinity</code> values. 
     * In case these variants are not applicable for the application in question,
     * the {@link CBORDecoder#REJECT_NON_FINITE_FLOATS} option
-    * causes such numbers to throw a {@link CBORException}.</div>
-    * </p>
+    * causes such numbers to throw a {@link CBORException}.
+    * <div style='margin-top:0.5em'>See also {@link CBORFloat#setNonFiniteFloatsMode(boolean)}.</div></div>
     * <p>
     * Exceeding <code>maxInputLength</code> during decoding throws a {@link CBORException}.  It is
     * <i>recommendable</i> setting this as low as possible, since malformed
@@ -120,6 +121,7 @@ public class CBORDecoder {
     * @param inputStream Stream holding CBOR data. 
     * @param options The decoder options.
     * @param maxInputLength Upper limit in bytes.
+    * @throws CBORException
     * @see #getByteCount()
     */
     public CBORDecoder(InputStream inputStream, int options, int maxInputLength) {
@@ -190,14 +192,10 @@ public class CBORDecoder {
     }
 
     private CBORFloat checkDoubleConversion(int tag, long bitFormat, double value) {
-        CBORFloat cborFloat = new CBORFloat(value);
+        CBORFloat cborFloat = new CBORFloat(value, rejectNonFiniteFloats);
         if (strictNumbers &&
             (cborFloat.tag != tag || cborFloat.bitFormat != bitFormat)) {
             cborError(String.format(STDERR_NON_DETERMINISTIC_FLOAT + "%2x", tag));
-        }
-        if (rejectNonFiniteFloats && cborFloat.tag == MT_FLOAT16 &&
-            (cborFloat.bitFormat & FLOAT16_POS_INFINITY) == FLOAT16_POS_INFINITY) {
-            cborError(STDERR_NON_FINITE_FLOATS_DISABLED);
         }
         return cborFloat;
     }
@@ -389,10 +387,10 @@ public class CBORDecoder {
      * </p>
      * <p>
      * This conveniance method is identical to:
+     * </p>
      * <pre>  new CBORDecoder(new ByteArrayInputStream(cbor), 0, cbor.length)
      *      .decodeWithOptions();
      * </pre>
-     * </p>
      * @param cbor CBOR binary data <i>holding exactly one CBOR object</i>.
      * @return {@link CBORObject}
      * @throws CBORException
@@ -426,6 +424,4 @@ public class CBORDecoder {
     static final String STDERR_READING_LIMIT =
             "Reading past input limit";
 
-    static final String STDERR_NON_FINITE_FLOATS_DISABLED = 
-            "\"NaN\" and \"Infinity\" support is disabled";
 }
