@@ -107,11 +107,11 @@ public class CBORDecoder {
     * accept different representations of CBOR <code>int</code>, <code>bigint</code>,
     * and <code>float</code> items, only limited by RFC&nbsp;8949.</div>
     * <div style='margin-top:0.8em'>{@link CBORDecoder#REJECT_NON_FINITE_FLOATS}:</div>
-    * <div style='padding:0.2em 0 0 1.2em'>By default, the decoder supports 
-    * <code>NaN</code> and <code>Infinity</code> values. 
-    * In case these variants are not applicable for the application in question,
-    * the {@link CBORDecoder#REJECT_NON_FINITE_FLOATS} option
-    * causes such numbers to throw a {@link CBORException}.
+    * <div style='padding:0.2em 0 0 1.2em'>By default, the decoder supports
+    * the special floating-point values 
+    * <code>NaN</code>, <code>Infinity</code>, and <code>-Infinity</code>. 
+    * The {@link CBORDecoder#REJECT_NON_FINITE_FLOATS} option
+    * causes the occurrence of such a value to throw a {@link CBORException}.
     * <div style='margin-top:0.5em'>See also {@link CBORFloat#setNonFiniteFloatsMode(boolean)}.</div></div>
     * <p>
     * Exceeding <code>maxInputLength</code> during decoding throws a {@link CBORException}.  It is
