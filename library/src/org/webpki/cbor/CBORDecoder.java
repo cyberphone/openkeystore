@@ -95,23 +95,22 @@ public class CBORDecoder {
     * that CBOR maps conform to the
     * <a href='package-summary.html#deterministic-encoding' class='webpkilink'>Deterministic&nbsp;Encoding</a> 
     * rules.
-    * The&nbsp;{@link CBORDecoder#LENIENT_MAP_DECODING} option forces the decoder
+    * <div>The {@link CBORDecoder#LENIENT_MAP_DECODING} option forces the decoder
     * to accept CBOR maps with arbitrary key ordering.
-    * Note that duplicate keys still cause a {@link CBORException} to be thrown.
-    * </div>
+    * Note that duplicate keys still cause a {@link CBORException} to be thrown.</div></div>
     * <div style='margin-top:0.8em'>{@link CBORDecoder#LENIENT_NUMBER_DECODING}:</div>
     * <div style='padding:0.2em 0 0 1.2em'>By default, the decoder requires
     * that CBOR numbers conform to the
     * <a href='package-summary.html#deterministic-encoding' class='webpkilink'>Deterministic&nbsp;Encoding</a> rules.
-    * The&nbsp;{@link CBORDecoder#LENIENT_NUMBER_DECODING} option forces the decoder to
+    * <div>The {@link CBORDecoder#LENIENT_NUMBER_DECODING} option forces the decoder to
     * accept different representations of CBOR <code>int</code>, <code>bigint</code>,
-    * and <code>float</code> items, only limited by RFC&nbsp;8949.</div>
+    * and <code>float</code> items, only limited by RFC&nbsp;8949.</div></div>
     * <div style='margin-top:0.8em'>{@link CBORDecoder#REJECT_NON_FINITE_FLOATS}:</div>
     * <div style='padding:0.2em 0 0 1.2em'>By default, the decoder supports
     * the special floating-point values 
-    * <code>NaN</code>, <code>Infinity</code>, and <code>-Infinity</code>. 
-    * The {@link CBORDecoder#REJECT_NON_FINITE_FLOATS} option
-    * causes the occurrence of such a value to throw a {@link CBORException}.
+    * <code>NaN</code>, <code>Infinity</code>, and <code>-Infinity</code>.
+    * <div>The {@link CBORDecoder#REJECT_NON_FINITE_FLOATS} option
+    * causes the occurrence of such a value to throw a {@link CBORException}.</div>
     * <div style='margin-top:0.5em'>See also {@link CBORFloat#setNonFiniteFloatsMode(boolean)}.</div></div>
     * <p>
     * Exceeding <code>maxInputLength</code> during decoding throws a {@link CBORException}.  It is
