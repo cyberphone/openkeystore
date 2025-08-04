@@ -2435,16 +2435,19 @@ public class CBORTest {
     public void nanWithPayloads() {
         oneNanWithPayloadTurn("7e00");
         oneNanWithPayloadTurn("7c01");
+        oneNanWithPayloadTurn("fc01");
         oneNanWithPayloadTurn("7fff");
-        oneNanWithPayloadTurn("fd00");
+        oneNanWithPayloadTurn("fe00");
 
         oneNanWithPayloadTurn("7fc00000");
         oneNanWithPayloadTurn("7f800001");
+        oneNanWithPayloadTurn("ff800001");
         oneNanWithPayloadTurn("7fffffff");
         oneNanWithPayloadTurn("ffc00000");
 
         oneNanWithPayloadTurn("7ff8000000000000");
         oneNanWithPayloadTurn("7ff0000000000001");
+        oneNanWithPayloadTurn("fff0000000000001");
         oneNanWithPayloadTurn("7fffffffffffffff");
         oneNanWithPayloadTurn("fff8000000000000");
     }
