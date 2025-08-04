@@ -40,13 +40,13 @@ public class CBORFloat extends CBORObject {
 
     static boolean globalRejectNonFiniteFloats;
 
-    CBORFloat(double value, boolean rejectNonFiniteFloats) {
+    CBORFloat(double value, boolean rejectNonFiniteFloats, boolean rejectNaNWithPayloads) {
         this.value = value;
 
         // Initial assumption: the number is a plain vanilla 64-bit double.
 
         tag = MT_FLOAT64;
-        bitFormat = Double.doubleToLongBits(value);
+        bitFormat = Double.doubleToRawLongBits(value);
 
         // Check for possible edge cases.
 
@@ -58,15 +58,21 @@ public class CBORFloat extends CBORObject {
 
         } else if ((bitFormat & FLOAT64_POS_INFINITY) == FLOAT64_POS_INFINITY) {
 
-            // Special "number".
+            // Non-finite numbers: Infinity, -Infinity, and NaN.
             if (globalRejectNonFiniteFloats || rejectNonFiniteFloats) {
                 cborError(STDERR_NON_FINITE_FLOATS_DISABLED);
             }
             tag = MT_FLOAT16;
-            bitFormat = (bitFormat == FLOAT64_POS_INFINITY) ?
-                FLOAT16_POS_INFINITY : (bitFormat == FLOAT64_NEG_INFINITY) ?
-                    // Deterministic representation of NaN => Only "quiet" NaN is supported.
-                    FLOAT16_NEG_INFINITY : FLOAT16_NOT_A_NUMBER;
+            if ((bitFormat & ((1L << FLOAT64_SIGNIFICAND_SIZE) - 1L)) != 0) {
+                if (rejectNaNWithPayloads && (bitFormat != FLOAT64_NOT_A_NUMBER)) {
+                    cborError(STDERR_NAN_WITH_PAYLOADS_NOT_PERMITTED);
+                }
+                // Deterministic representation of NaN => Only "quiet" NaNs are supported.
+                bitFormat = FLOAT16_NOT_A_NUMBER;
+            } else {
+                bitFormat = (bitFormat == FLOAT64_POS_INFINITY) ?
+                                           FLOAT16_POS_INFINITY : FLOAT16_NEG_INFINITY;
+            }
 
         } else {
 
@@ -153,7 +159,7 @@ public class CBORFloat extends CBORObject {
      * @throws CBORException
      */
     public CBORFloat(double value) {
-        this(value, false);
+        this(value, false, true);
     }
 
     /**
@@ -217,5 +223,8 @@ public class CBORFloat extends CBORObject {
 
     static final String STDERR_NON_FINITE_FLOATS_DISABLED = 
         "\"NaN\" and \"Infinity\" support is disabled";
+
+    static final String STDERR_NAN_WITH_PAYLOADS_NOT_PERMITTED = 
+        "NaN with payloads are not permitted in deterministic mode";
 
 }

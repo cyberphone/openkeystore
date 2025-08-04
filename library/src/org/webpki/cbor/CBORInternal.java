@@ -56,6 +56,9 @@ class CBORInternal {
     static final long FLOAT16_NEG_INFINITY    = 0x000000000000fc00L;
     static final long FLOAT16_POS_ZERO        = 0x0000000000000000L;
     static final long FLOAT16_NEG_ZERO        = 0x0000000000008000L;
+
+    static final long FLOAT32_POS_INFINITY    = 0x000000007f800000L;
+    static final long FLOAT32_NEG_ZERO        = 0x0000000080000000L;
      
     static final long FLOAT64_NOT_A_NUMBER    = 0x7ff8000000000000L;
     static final long FLOAT64_POS_INFINITY    = 0x7ff0000000000000L;

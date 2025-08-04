@@ -191,7 +191,7 @@ public class CBORDecoder {
     }
 
     private CBORFloat checkDoubleConversion(int tag, long bitFormat, double value) {
-        CBORFloat cborFloat = new CBORFloat(value, rejectNonFiniteFloats);
+        CBORFloat cborFloat = new CBORFloat(value, rejectNonFiniteFloats, strictNumbers);
         if (strictNumbers &&
             (cborFloat.tag != tag || cborFloat.bitFormat != bitFormat)) {
             cborError(String.format(STDERR_NON_DETERMINISTIC_FLOAT + "%2x", tag));
@@ -200,6 +200,10 @@ public class CBORDecoder {
     }
 
     private CBORObject getObject() throws IOException {
+        double float64;
+        long exponent;
+        long significand;
+
         int tag = readByte();
 
         // Begin with CBOR types that are uniquely defined by the tag byte.
@@ -221,23 +225,21 @@ public class CBORDecoder {
                 return cborBigInt;
 
             case MT_FLOAT16:
-                double float64;
-                long f16Bin = getLongFromBytes(2);
+                long f16bin = getLongFromBytes(2);
 
                 // Get the significand.
-                long significand = f16Bin & ((1L << FLOAT16_SIGNIFICAND_SIZE) - 1);
+                significand = f16bin & ((1L << FLOAT16_SIGNIFICAND_SIZE) - 1);
                 // Get the exponent.
-                long exponent = f16Bin & FLOAT16_POS_INFINITY;
+                exponent = f16bin & FLOAT16_POS_INFINITY;
 
                 // Begin with the edge cases.
         
                 if (exponent == FLOAT16_POS_INFINITY) {
 
-                    // Special "number"
-                    
-                    // Non-deterministic representations of NaN will be flagged later.
-                    // Only simple NaNs are supported by this implementation.
-                    float64 = significand == 0 ? Double.POSITIVE_INFINITY : Double.NaN;
+                    // Non-finite numbers: Infinity, -Infinity, and NaN.
+
+                    float64 = Double.longBitsToDouble(FLOAT64_POS_INFINITY |
+                        (significand << (FLOAT64_SIGNIFICAND_SIZE - FLOAT16_SIGNIFICAND_SIZE)));
                         
                 } else {
 
@@ -254,16 +256,39 @@ public class CBORDecoder {
                             (1L << (FLOAT16_EXPONENT_BIAS + FLOAT16_SIGNIFICAND_SIZE - 1));
                 }
                 return checkDoubleConversion(tag,
-                                             f16Bin,
-                                             f16Bin >= FLOAT16_NEG_ZERO ? -float64 : float64);
+                                             f16bin,
+                                             f16bin >= FLOAT16_NEG_ZERO ? -float64 : float64);
 
             case MT_FLOAT32:
-                long f32Bin = getLongFromBytes(4);
-                return checkDoubleConversion(tag, f32Bin, Float.intBitsToFloat((int)f32Bin));
+                long f32bin = getLongFromBytes(4);
+
+                // Get the exponent.
+                exponent = f32bin & FLOAT32_POS_INFINITY;
+
+                // Begin with the edge cases.
+        
+                if (exponent == FLOAT32_POS_INFINITY) {
+
+                // Non-finite numbers: Infinity, -Infinity, and NaN.
+
+                // Get the significand.
+                significand = f32bin & ((1L << FLOAT32_SIGNIFICAND_SIZE) - 1);
+                    float64 = Double.longBitsToDouble(FLOAT64_POS_INFINITY |
+                        (significand << (FLOAT64_SIGNIFICAND_SIZE - FLOAT32_SIGNIFICAND_SIZE)) |
+                        (FLOAT64_NEG_ZERO & (f32bin << 32)));
+                        
+                } else {
+
+                    // It is a "regular" number.
+
+                    float64 = Float.intBitsToFloat((int)f32bin);
+                }
+                return checkDoubleConversion(tag, f32bin, float64);
+
 
             case MT_FLOAT64:
-                long f64Bin = getLongFromBytes(8);
-                return checkDoubleConversion(tag, f64Bin, Double.longBitsToDouble(f64Bin));
+                long f64bin = getLongFromBytes(8);
+                return checkDoubleConversion(tag, f64bin, Double.longBitsToDouble(f64bin));
 
             case MT_NULL:
                 return new CBORNull();

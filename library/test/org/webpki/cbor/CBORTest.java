@@ -324,6 +324,7 @@ public class CBORTest {
     }
     void doubleTest(String asText, String hex, int mustFail) {
         double v = Double.valueOf(asText);
+        Double d = 0.0;
         try {
             CBORFloat cborFloat = (CBORFloat)parseCborHex(hex);
             int l;
@@ -343,7 +344,7 @@ public class CBORTest {
                 assertTrue("diag"+ asText, asText.equals(cborFloat.toString()));
             }
             assertFalse("Double should fail", mustFail == 1);
-            Double d = cborFloat.getFloat64();
+            d = cborFloat.getFloat64();
             assertTrue("Equal d=" + d + " v=" + v, (d.compareTo(v)) == 0 ^ (mustFail != 0));
         } catch (Exception e) {
             assertTrue("Ok fail", mustFail != 0);
@@ -1164,6 +1165,8 @@ public class CBORTest {
                         e.getMessage().contains("float") ?
                     CBORDecoder.STDERR_NON_DETERMINISTIC_FLOAT
                                                            :
+                e.getMessage().contains("with payloads") ?
+                    CBORFloat.STDERR_NAN_WITH_PAYLOADS_NOT_PERMITTED :
                     CBORDecoder.STDERR_NON_DETERMINISTIC_N);
             }
         }
@@ -2376,6 +2379,74 @@ public class CBORTest {
             new CBORFloat(Double.NaN);
             CBORDecoder.decode(cbor);
         }
+    }
+
+    void oneNanWithPayloadTurn(String nanInHex) {
+        byte[] ieee754 = Hex.decode(nanInHex);
+        int length = ieee754.length;
+        byte[] cbor = CBORObject.addByteArrays(new byte[]{(byte)(0xf9 + (length >> 2))}, ieee754);
+        long significand = 0;
+        for (int q = 0; q < length; q++) {
+            significand <<= 8;
+            significand += ieee754[q] & 0xff;
+        }
+        int precision = switch (length) {
+            case 2 -> CBORInternal.FLOAT16_SIGNIFICAND_SIZE; 
+            case 4 -> CBORInternal.FLOAT32_SIGNIFICAND_SIZE; 
+            default -> CBORInternal.FLOAT64_SIGNIFICAND_SIZE; 
+        };
+        significand &= (1L << precision) - 1L;
+        long f64bin = CBORInternal.FLOAT64_POS_INFINITY | 
+            (significand << (CBORInternal.FLOAT64_SIGNIFICAND_SIZE - precision));
+        boolean quietNan;
+        if (ieee754[0] < 0) {
+            quietNan = false;
+            f64bin |= CBORInternal.FLOAT64_NEG_ZERO;
+        } else {
+            quietNan = f64bin == CBORInternal.FLOAT64_NOT_A_NUMBER;
+        }
+        double value = Double.longBitsToDouble(f64bin);
+        try {
+            assertTrue("NaN", Double.isNaN(value));
+            new CBORFloat(value);
+            assertTrue("OK1", quietNan);
+        } catch (Exception e) {
+            checkException(e, CBORFloat.STDERR_NAN_WITH_PAYLOADS_NOT_PERMITTED);
+        }
+        double readFloat;
+        try {
+            readFloat = CBORDecoder.decode(cbor).getFloat64();
+            assertTrue("OK2", quietNan && length == 2);
+            assertTrue("V1", Double.doubleToRawLongBits(value) == Double.doubleToRawLongBits(readFloat));
+        } catch (Exception e) {
+            assertTrue("OK3", !quietNan || length != 2);
+            checkException(e, quietNan ? 
+                CBORDecoder.STDERR_NON_DETERMINISTIC_FLOAT
+                                        :
+                CBORFloat.STDERR_NAN_WITH_PAYLOADS_NOT_PERMITTED);
+        }
+        readFloat = new CBORDecoder(new ByteArrayInputStream(cbor),
+                                        CBORDecoder.LENIENT_NUMBER_DECODING, 
+                                        cbor.length).decodeWithOptions().getFloat64();
+        assertTrue("V2", Double.doubleToRawLongBits(value) == Double.doubleToRawLongBits(readFloat));
+    }
+
+    @Test
+    public void nanWithPayloads() {
+        oneNanWithPayloadTurn("7e00");
+        oneNanWithPayloadTurn("7c01");
+        oneNanWithPayloadTurn("7fff");
+        oneNanWithPayloadTurn("fd00");
+
+        oneNanWithPayloadTurn("7fc00000");
+        oneNanWithPayloadTurn("7f800001");
+        oneNanWithPayloadTurn("7fffffff");
+        oneNanWithPayloadTurn("ffc00000");
+
+        oneNanWithPayloadTurn("7ff8000000000000");
+        oneNanWithPayloadTurn("7ff0000000000001");
+        oneNanWithPayloadTurn("7fffffffffffffff");
+        oneNanWithPayloadTurn("fff8000000000000");
     }
 
     void oneDateTime(long epoch, String isoString) {
