@@ -201,8 +201,6 @@ public class CBORDecoder {
 
     private CBORObject getObject() throws IOException {
         double float64;
-        long exponent;
-        long significand;
 
         int tag = readByte();
 
@@ -228,9 +226,9 @@ public class CBORDecoder {
                 long f16bin = getLongFromBytes(2);
 
                 // Get the significand.
-                significand = f16bin & ((1L << FLOAT16_SIGNIFICAND_SIZE) - 1);
+                long significand = f16bin & ((1L << FLOAT16_SIGNIFICAND_SIZE) - 1);
                 // Get the exponent.
-                exponent = f16bin & FLOAT16_POS_INFINITY;
+                long exponent = f16bin & FLOAT16_POS_INFINITY;
 
                 // Begin with the edge cases.
         
@@ -262,19 +260,15 @@ public class CBORDecoder {
             case MT_FLOAT32:
                 long f32bin = getLongFromBytes(4);
 
-                // Get the exponent.
-                exponent = f32bin & FLOAT32_POS_INFINITY;
-
                 // Begin with the edge cases.
         
-                if (exponent == FLOAT32_POS_INFINITY) {
+                if ((f32bin & FLOAT32_POS_INFINITY) == FLOAT32_POS_INFINITY) {
 
-                // Non-finite numbers: Infinity, -Infinity, and NaN.
+                    // Non-finite numbers: Infinity, -Infinity, and NaN.
 
-                // Get the significand.
-                significand = f32bin & ((1L << FLOAT32_SIGNIFICAND_SIZE) - 1);
                     float64 = Double.longBitsToDouble(FLOAT64_POS_INFINITY |
-                        (significand << (FLOAT64_SIGNIFICAND_SIZE - FLOAT32_SIGNIFICAND_SIZE)) |
+                        ((f32bin & ((1L << FLOAT32_SIGNIFICAND_SIZE) - 1)) << 
+                            (FLOAT64_SIGNIFICAND_SIZE - FLOAT32_SIGNIFICAND_SIZE)) |
                         (FLOAT64_NEG_ZERO & (f32bin << 32)));
                         
                 } else {
