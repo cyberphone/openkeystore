@@ -200,8 +200,6 @@ public class CBORDecoder {
     }
 
     private CBORObject getObject() throws IOException {
-        double float64;
-
         int tag = readByte();
 
         // Begin with CBOR types that are uniquely defined by the tag byte.
@@ -224,6 +222,7 @@ public class CBORDecoder {
             }
 
             case MT_FLOAT16 -> {
+                double float64;
                 long f16bin = getLongFromBytes(2);
 
                 // Get the significand.
@@ -260,6 +259,7 @@ public class CBORDecoder {
             }
 
             case MT_FLOAT32 -> {
+                double float64;
                 long f32bin = getLongFromBytes(4);
 
                 // Begin with the edge cases.
