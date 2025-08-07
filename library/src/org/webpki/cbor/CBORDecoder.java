@@ -319,6 +319,7 @@ public class CBORDecoder {
                 }
                 // N successfully decoded, now switch on major type (upper three bits).
                 yield switch (tag & 0xe0) {
+
                     case MT_SIMPLE -> new CBORSimple(checkLength(n));
 
                     case MT_TAG -> new CBORTag(n, getObject());

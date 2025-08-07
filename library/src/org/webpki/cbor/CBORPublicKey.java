@@ -134,7 +134,6 @@ public class CBORPublicKey {
                                     .set(COSE_OKP_CRV_LBL, WEBPKI_2_COSE_CRV.get(keyAlg))
                                     .set(COSE_OKP_X_LBL, new CBORBytes(
                                             OkpSupport.public2RawKey(jcePublicKey, keyAlg)));
-
         };
     }
 
@@ -177,9 +176,9 @@ public class CBORPublicKey {
             return switch (getKeyType(publicKeyMap)) {
 
                 case RSA -> KeyFactory.getInstance("RSA").generatePublic(
-                        new RSAPublicKeySpec(getCryptoBinary(publicKeyMap, COSE_RSA_N_LBL),
-                                             getCryptoBinary(publicKeyMap, COSE_RSA_E_LBL)));
-        
+                    new RSAPublicKeySpec(getCryptoBinary(publicKeyMap, COSE_RSA_N_LBL),
+                                         getCryptoBinary(publicKeyMap, COSE_RSA_E_LBL)));
+   
                 case EC -> {
                     KeyAlgorithms keyAlg = getKeyAlgorithmFromCurve(publicKeyMap, COSE_EC2_CRV_LBL);
                     if (keyAlg.getKeyType() != KeyTypes.EC) {
@@ -201,7 +200,6 @@ public class CBORPublicKey {
                     yield OkpSupport.raw2PublicKey(
                         publicKeyMap.get(COSE_OKP_X_LBL).getBytes(), keyAlg);
                 }
-
             };
         } catch (GeneralSecurityException e) {
             throw new CryptoException(e);
