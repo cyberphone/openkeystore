@@ -205,9 +205,9 @@ public class CBORDecoder {
         int tag = readByte();
 
         // Begin with CBOR types that are uniquely defined by the tag byte.
-        switch (tag) {
-            case MT_BIG_NEGATIVE:
-            case MT_BIG_UNSIGNED:
+        return switch (tag) {
+
+            case MT_BIG_NEGATIVE, MT_BIG_UNSIGNED -> {
                 byte[] byteArray = getObject().getBytes();
                 BigInteger bigInteger = new BigInteger(1, byteArray);
                 CBORBigInt cborBigInt = new CBORBigInt(tag == MT_BIG_UNSIGNED ? 
@@ -218,11 +218,12 @@ public class CBORDecoder {
                     } 
                 } else {
                     // Normalization...
-                    return cborBigInt.clone();
+                    yield cborBigInt.clone();
                 }
-                return cborBigInt;
+                yield cborBigInt;
+            }
 
-            case MT_FLOAT16:
+            case MT_FLOAT16 -> {
                 long f16bin = getLongFromBytes(2);
 
                 // Get the significand.
@@ -253,11 +254,12 @@ public class CBORDecoder {
                     float64 = (double)significand / 
                             (1L << (FLOAT16_EXPONENT_BIAS + FLOAT16_SIGNIFICAND_SIZE - 1));
                 }
-                return checkDoubleConversion(tag,
-                                             f16bin,
-                                             f16bin >= FLOAT16_NEG_ZERO ? -float64 : float64);
+                yield checkDoubleConversion(tag,
+                                            f16bin,
+                                            f16bin >= FLOAT16_NEG_ZERO ? -float64 : float64);
+            }
 
-            case MT_FLOAT32:
+            case MT_FLOAT32 -> {
                 long f32bin = getLongFromBytes(4);
 
                 // Begin with the edge cases.
@@ -277,89 +279,86 @@ public class CBORDecoder {
 
                     float64 = Float.intBitsToFloat((int)f32bin);
                 }
-                return checkDoubleConversion(tag, f32bin, float64);
+                yield checkDoubleConversion(tag, f32bin, float64);
+            }
 
-
-            case MT_FLOAT64:
+            case MT_FLOAT64 -> {
                 long f64bin = getLongFromBytes(8);
-                return checkDoubleConversion(tag, f64bin, Double.longBitsToDouble(f64bin));
+                yield checkDoubleConversion(tag, f64bin, Double.longBitsToDouble(f64bin));
+            }
 
-            case MT_NULL:
-                return new CBORNull();
+            case MT_NULL -> new CBORNull();
                 
-            case MT_TRUE:
-            case MT_FALSE:
-                return new CBORBoolean(tag == MT_TRUE);
-        }
+            case MT_TRUE, MT_FALSE -> new CBORBoolean(tag == MT_TRUE);
 
-        // Then decode CBOR types that blend length of data in the tag byte.
-        long n = tag & 0x1fL;
-        if (n > 27) {
-            unsupportedTag(tag);
-        }
-        if (n > 23) {
-            // For 1, 2, 4, and 8 byte N.
-            int q = 1 << (n - 24);
-            // 1: 00000000ffffffff
-            // 2: 000000ffffffff00
-            // 4: 0000ffffffff0000
-            // 8: ffffffff00000000
-            long mask = MASK_LOWER_32 << (q / 2) * 8;
-            n = 0;
-            while (--q >= 0) {
-                n <<= 8;
-                n |= readByte();
-            }
-            // If the upper half (for 2, 4, 8 byte N) of N or a single byte
-            // N is zero, a shorter variant should have been used.
-            // In addition, a single byte N must be > 23. 
-            if (strictNumbers && ((n & mask) == 0 || (n > 0 && n < 24))) {
-                cborError(STDERR_NON_DETERMINISTIC_N);
-            }
-        }
-        // N successfully decoded, now switch on major type (upper three bits).
-        switch (tag & 0xe0) {
-            case MT_SIMPLE:
-                return new CBORSimple(checkLength(n));
-
-            case MT_TAG:
-                return new CBORTag(n, getObject());
-
-            case MT_UNSIGNED:
-                return new CBORInt(n, true);
-
-            case MT_NEGATIVE:
-                // Only let two-complement integers use long.
-                return n < 0 ?
-                    new CBORBigInt(NEGATIVE_HIGH_RANGE.add(BigInteger.valueOf(~n))) 
-                             :
-                    new CBORInt(~n, false);
-
-            case MT_BYTES:
-                return new CBORBytes(readBytes(checkLength(n)));
-
-            case MT_STRING:
-                return new CBORString(UTF8.decode(readBytes(checkLength(n))));
-
-            case MT_ARRAY:
-                CBORArray cborArray = new CBORArray();
-                for (int q = checkLength(n); --q >= 0; ) {
-                    cborArray.add(getObject());
+            default -> {
+                // Then decode CBOR types that blend length of data in the tag byte.
+                long n = tag & 0x1fL;
+                if (n > 27) {
+                    unsupportedTag(tag);
                 }
-                return cborArray;
-
-            case MT_MAP:
-                CBORMap cborMap = new CBORMap().setSortingMode(strictMaps);
-                for (int q = checkLength(n); --q >= 0; ) {
-                    cborMap.set(getObject(), getObject());
+                if (n > 23) {
+                    // For 1, 2, 4, and 8 byte N.
+                    int q = 1 << (n - 24);
+                    // 1: 00000000ffffffff
+                    // 2: 000000ffffffff00
+                    // 4: 0000ffffffff0000
+                    // 8: ffffffff00000000
+                    long mask = MASK_LOWER_32 << (q / 2) * 8;
+                    n = 0;
+                    while (--q >= 0) {
+                        n <<= 8;
+                        n |= readByte();
+                    }
+                    // If the upper half (for 2, 4, 8 byte N) of N or a single byte
+                    // N is zero, a shorter variant should have been used.
+                    // In addition, a single byte N must be > 23. 
+                    if (strictNumbers && ((n & mask) == 0 || (n > 0 && n < 24))) {
+                        cborError(STDERR_NON_DETERMINISTIC_N);
+                    }
                 }
-                // Programmatically added elements will be sorted (by default). 
-                return cborMap.setSortingMode(false);
+                // N successfully decoded, now switch on major type (upper three bits).
+                yield switch (tag & 0xe0) {
+                    case MT_SIMPLE -> new CBORSimple(checkLength(n));
 
-            default:
-                unsupportedTag(tag);
-        }
-        return null;  // For the compiler only...
+                    case MT_TAG -> new CBORTag(n, getObject());
+
+                    case MT_UNSIGNED -> new CBORInt(n, true);
+
+                    // Only let two-complement integers use long.
+                    case MT_NEGATIVE -> n < 0 ?
+                        new CBORBigInt(NEGATIVE_HIGH_RANGE.add(BigInteger.valueOf(~n))) 
+                                              :
+                        new CBORInt(~n, false);
+                    
+                    case MT_BYTES -> new CBORBytes(readBytes(checkLength(n)));
+
+                    case MT_STRING -> new CBORString(UTF8.decode(readBytes(checkLength(n))));
+
+                    case MT_ARRAY -> {
+                        CBORArray cborArray = new CBORArray();
+                        for (int q = checkLength(n); --q >= 0; ) {
+                            cborArray.add(getObject());
+                        }
+                        yield cborArray;
+                    }
+
+                    case MT_MAP -> {
+                        CBORMap cborMap = new CBORMap().setSortingMode(strictMaps);
+                        for (int q = checkLength(n); --q >= 0; ) {
+                            cborMap.set(getObject(), getObject());
+                        }
+                        // Programmatically added elements will be sorted (by default). 
+                        yield cborMap.setSortingMode(false);
+                    }
+
+                    default -> {
+                        unsupportedTag(tag);
+                        yield null;
+                    }
+                };
+            }
+        };
     }
 
     /**
