@@ -156,11 +156,12 @@ public class CBORKeyPair {
                         CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_QINV_LBL)));
 
                 case EC -> KeyFactory.getInstance("EC").generatePrivate(
-                    new ECPrivateKeySpec(CBORPublicKey.getCurvePoint(privateKeyMap,
-                                         COSE_EC2_D_LBL,
-                                         CBORPublicKey.getKeyAlgorithmFromCurve(
-                                             privateKeyMap, COSE_EC2_CRV_LBL)),
-                                         ((ECKey) publicKey).getParams()));
+                    new ECPrivateKeySpec(
+                            CBORPublicKey.getCurvePoint(privateKeyMap,
+                                                        COSE_EC2_D_LBL,
+                                                        CBORPublicKey.getKeyAlgorithmFromCurve(
+                                                            privateKeyMap, COSE_EC2_CRV_LBL)),
+                            ((ECKey) publicKey).getParams()));
 
                 // EDDSA and XEC
                 default -> OkpSupport.raw2PrivateKey(
