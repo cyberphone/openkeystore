@@ -96,10 +96,11 @@ public class CBORKeyPair {
     public static CBORMap convert(KeyPair keyPair) {
         CBORMap cosePrivateKey = CBORPublicKey.convert(keyPair.getPublic());
         KeyAlgorithms keyAlg = KeyAlgorithms.getKeyAlgorithm(keyPair.getPublic());
-        switch (keyAlg.getKeyType()) {
-            case RSA:
+        return switch (keyAlg.getKeyType()) {
+        
+            case RSA -> {
                 RSAPrivateCrtKey rsaPrivateKey = (RSAPrivateCrtKey)keyPair.getPrivate();
-                cosePrivateKey
+                yield cosePrivateKey
                     .set(COSE_RSA_D_LBL, 
                          CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrivateExponent()))
                     .set(COSE_RSA_P_LBL, 
@@ -112,20 +113,17 @@ public class CBORKeyPair {
                          CBORPublicKey.cryptoBinary(rsaPrivateKey.getPrimeExponentQ()))
                     .set(COSE_RSA_QINV_LBL,
                          CBORPublicKey.cryptoBinary(rsaPrivateKey.getCrtCoefficient()));
-                break;
+            }
 
-            case EC:
-                cosePrivateKey.set(COSE_EC2_D_LBL,
-                        CBORPublicKey.curvePoint(((ECPrivateKey)keyPair.getPrivate()).getS(), 
-                                                 keyAlg));
-                break;
+            case EC -> cosePrivateKey.set(COSE_EC2_D_LBL,
+                                          CBORPublicKey.curvePoint(
+                ((ECPrivateKey)keyPair.getPrivate()).getS(), keyAlg));
 
-            default:
-                cosePrivateKey.set(COSE_OKP_D_LBL, new CBORBytes(
-                        OkpSupport.private2RawKey(keyPair.getPrivate(), keyAlg)));
-            
-        }
-        return cosePrivateKey;
+            default -> cosePrivateKey.set(COSE_OKP_D_LBL, new CBORBytes(
+                                              OkpSupport.private2RawKey(keyPair.getPrivate(),
+                                                                        keyAlg)));
+
+        };
     }
 
     /**
@@ -142,42 +140,37 @@ public class CBORKeyPair {
     public static KeyPair convert(CBORObject cosePrivateKey) {
         CBORMap privateKeyMap = cosePrivateKey.getMap();
         PublicKey publicKey = CBORPublicKey.getPublicKey(privateKeyMap);
-        PrivateKey privateKey;
         try {
-            switch (CBORPublicKey.getKeyType(privateKeyMap)) {
-                case RSA:
-                    privateKey = KeyFactory.getInstance("RSA").generatePrivate(
-                        new RSAPrivateCrtKeySpec(
-                            ((RSAPublicKey) publicKey).getModulus(),
-                            ((RSAPublicKey) publicKey).getPublicExponent(),
-                            CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_D_LBL),
-                            CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_P_LBL),
-                            CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_Q_LBL),
-                            CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_DP_LBL),
-                            CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_DQ_LBL),
-                            CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_QINV_LBL)));
-                    break;
-    
-                case EC:
-                    privateKey = KeyFactory.getInstance("EC").generatePrivate(new ECPrivateKeySpec(
-                            CBORPublicKey.getCurvePoint(privateKeyMap,
-                                                        COSE_EC2_D_LBL, 
-                                                        CBORPublicKey.getKeyAlgorithmFromCurveId(
-                                                                        privateKeyMap,
-                                                                        COSE_EC2_CRV_LBL)),
-                            ((ECKey)publicKey).getParams()));
-                    break;
-    
-                default:
-                    privateKey = OkpSupport.raw2PrivateKey(
-                            privateKeyMap.get(COSE_OKP_D_LBL).getBytes(),
-                            CBORPublicKey.getKeyAlgorithmFromCurveId(privateKeyMap, 
-                                                                     COSE_OKP_CRV_LBL));
-            }
+            PrivateKey privateKey = switch (CBORPublicKey.getKeyType(privateKeyMap)) {
+
+                case RSA -> KeyFactory.getInstance("RSA").generatePrivate(
+                    new RSAPrivateCrtKeySpec(
+                        ((RSAPublicKey) publicKey).getModulus(),
+                        ((RSAPublicKey) publicKey).getPublicExponent(),
+                        CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_D_LBL),
+                        CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_P_LBL),
+                        CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_Q_LBL),
+                        CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_DP_LBL),
+                        CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_DQ_LBL),
+                        CBORPublicKey.getCryptoBinary(privateKeyMap, COSE_RSA_QINV_LBL)));
+
+                case EC -> KeyFactory.getInstance("EC").generatePrivate(
+                    new ECPrivateKeySpec(CBORPublicKey.getCurvePoint(privateKeyMap,
+                                         COSE_EC2_D_LBL,
+                                         CBORPublicKey.getKeyAlgorithmFromCurve(
+                                             privateKeyMap, COSE_EC2_CRV_LBL)),
+                                         ((ECKey) publicKey).getParams()));
+
+                default -> OkpSupport.raw2PrivateKey(
+                    privateKeyMap.get(COSE_OKP_D_LBL).getBytes(),
+                                      CBORPublicKey.getKeyAlgorithmFromCurve(privateKeyMap,
+                                                                             COSE_OKP_CRV_LBL));
+
+            };
+            privateKeyMap.checkForUnread();
+            return new KeyPair(publicKey, privateKey);
         } catch (GeneralSecurityException e) {
             throw new CryptoException(e);
         }
-        privateKeyMap.checkForUnread();
-        return new KeyPair(publicKey, privateKey);
     }
 }
