@@ -244,7 +244,7 @@ public class CBORDiagnosticNotation {
             case '7':
             case '8':
             case '9':
-               return getNumberOrTag(false);
+                return getNumberOrTag(false);
 
             case 'N':
                 scanFor("aN");
@@ -261,11 +261,14 @@ public class CBORDiagnosticNotation {
         }
     }
 
-    @SuppressWarnings("fallthrough")
     private CBORObject simpleType() {
         StringBuilder token = new StringBuilder();
         while (true)  {
             switch (nextChar()) {
+                default:
+                    token.append(readChar());
+                    continue;
+
                 case ')':
                     break;
 
@@ -274,15 +277,11 @@ public class CBORDiagnosticNotation {
                 case 'e':
                 case '.':
                     parserError("Syntax error");
-
-                default:
-                    token.append(readChar());
-                    continue;
             }
             break;
         }
         readChar();
-        // Clone gives bool and null precendence over simple.
+        // Clone gives bool and null precedence over simple.
         return new CBORSimple(Integer.valueOf(token.toString().trim())).clone();
     }
 
