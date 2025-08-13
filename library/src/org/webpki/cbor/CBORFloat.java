@@ -38,9 +38,25 @@ public class CBORFloat extends CBORObject {
     int tag;
     long bitFormat;
 
-    static boolean globalRejectNonFiniteFloats;
-
-    CBORFloat(double value, boolean rejectNonFiniteFloats, boolean rejectNaNWithPayloads) {
+    /**
+     * Creates a CBOR <code>float</code> object.
+     * <p>
+     * Note that this implementation does not provide a specific constructor
+     * for Java <code>float</code> values.
+     * Due to the CBOR normalization algorithm, numbers are still correctly encoded.
+     * </p>
+     * <p>
+     * See also {@link CBORObject#getFloat64()} and {@link CBORObject#getFloat32()}
+     * </p>
+     * <p>
+     * For <code>NaN</code> and <code>Infinity</code> support see
+     * {@link CBORNonFinite}.
+     * </p>
+     * 
+     * @param value Java double
+     * @throws CBORException
+     */
+    public CBORFloat(double value) {
         this.value = value;
 
         // Initial assumption: the number is a plain vanilla 64-bit double.
@@ -50,29 +66,18 @@ public class CBORFloat extends CBORObject {
 
         // Check for possible edge cases.
 
+        if ((bitFormat & FLOAT64_POS_INFINITY) == FLOAT64_POS_INFINITY) {
+
+            // Non-finite numbers: Infinity, -Infinity, and NaN.
+            cborError(STDERR_NON_FINITE_NOT_PERMITTED);
+
+        }
+
         if ((bitFormat & ~FLOAT64_NEG_ZERO) == FLOAT64_POS_ZERO) {
 
             // Some zeroes are apparently more zero than others :)
             tag = MT_FLOAT16;
             bitFormat = (bitFormat == FLOAT64_POS_ZERO) ? FLOAT16_POS_ZERO : FLOAT16_NEG_ZERO;
-
-        } else if ((bitFormat & FLOAT64_POS_INFINITY) == FLOAT64_POS_INFINITY) {
-
-            // Non-finite numbers: Infinity, -Infinity, and NaN.
-            if (globalRejectNonFiniteFloats || rejectNonFiniteFloats) {
-                cborError(STDERR_NON_FINITE_FLOATS_DISABLED);
-            }
-            tag = MT_FLOAT16;
-            if ((bitFormat & ((1L << FLOAT64_SIGNIFICAND_SIZE) - 1L)) != 0) {
-                if (rejectNaNWithPayloads && (bitFormat != FLOAT64_NOT_A_NUMBER)) {
-                    cborError(STDERR_NAN_WITH_PAYLOADS_NOT_PERMITTED);
-                }
-                // Deterministic representation of NaN => Only "quiet" NaNs are supported.
-                bitFormat = FLOAT16_NOT_A_NUMBER;
-            } else {
-                bitFormat = (bitFormat == FLOAT64_POS_INFINITY) ?
-                                           FLOAT16_POS_INFINITY : FLOAT16_NEG_INFINITY;
-            }
 
         } else {
 
@@ -140,43 +145,6 @@ public class CBORFloat extends CBORObject {
     }
 
     /**
-     * Creates a CBOR <code>float</code> object.
-     * <p>
-     * Note that this implementation does not provide a specific constructor
-     * for Java <code>float</code> values.
-     * Due to the CBOR normalization algorithm, numbers are still correctly encoded.
-     * </p>
-     * <p>
-     * See also {@link CBORObject#getFloat64()} and {@link CBORObject#getFloat32()}
-     * </p>
-     * <p>
-     * For <code>NaN</code> and <code>Infinity</code> support see
-     * {@link CBORDecoder#REJECT_NON_FINITE_FLOATS} and
-     * {@link #setNonFiniteFloatsMode(boolean)}.
-     * </p>
-     * 
-     * @param value Java double
-     * @throws CBORException
-     */
-    public CBORFloat(double value) {
-        this(value, false, true);
-    }
-
-    /**
-     * Globally disable <code>NaN</code> and <code>Infinity</code>.
-     * <p>
-     * Note that this method unlike {@link CBORDecoder#REJECT_NON_FINITE_FLOATS},
-     * also affects <i>encoding</i> of <code>NaN</code> and <code>Infinity</code> values.
-     * Since this is a <i>global</i> setting. you need to consider how it
-     * could affect other applications running in the same JVM.
-     * </p>
-     * @param reject If <code>true</code>, disable <code>NaN</code> and <code>Infinity</code> support.
-     */
-    public static void setNonFiniteFloatsMode(boolean reject) {
-        globalRejectNonFiniteFloats = reject;
-    }
-
-    /**
      * Get number in diagnostic notation.
      * <p>
      * Floating point numbers are serialized using at least
@@ -197,6 +165,14 @@ public class CBORFloat extends CBORObject {
             return value.toString();
         }
         return Float64Stringifier.encode(value, false);
+    }
+
+    public static CBORObject createCombinedFloat(double value) {
+        if (Double.isFinite(value)) {
+            return new CBORFloat(value);
+        }
+        if (Double.isNaN(value)) value = Double.NaN;  // Sorry, only the basic NaN is used.
+        return new CBORNonFinite(Double.doubleToRawLongBits(value));
     }
 
     /**
@@ -221,10 +197,7 @@ public class CBORFloat extends CBORObject {
          cborPrinter.append(formatDouble(value));
     }
 
-    static final String STDERR_NON_FINITE_FLOATS_DISABLED = 
-        "\"NaN\" and \"Infinity\" support is disabled";
-
-    static final String STDERR_NAN_WITH_PAYLOADS_NOT_PERMITTED = 
-        "NaN with payloads are not permitted in deterministic mode";
+    static final String STDERR_NON_FINITE_NOT_PERMITTED = 
+        "Not permitted, see \"CBORNonFinite\" for details";
 
 }

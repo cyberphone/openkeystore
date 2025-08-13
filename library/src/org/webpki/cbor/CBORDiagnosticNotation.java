@@ -16,6 +16,7 @@
  */
 package org.webpki.cbor;
 
+import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 
 import java.util.ArrayList;
@@ -216,8 +217,26 @@ public class CBORDiagnosticNotation {
                 return new CBORBoolean(true);
        
             case 'f':
-                scanFor("alse");
-                return new CBORBoolean(false);
+                if (nextChar() == 'a') {
+                    scanFor("alse");
+                    return new CBORBoolean(false);
+                }
+                scanFor("loat");
+                byte[] floatBytes = getBytes(false).getBytes();
+                switch (floatBytes.length) {
+                    case 2:
+                    case 4:
+                    case 8:
+                    break;
+                    default:
+                        parserError("Argument must be a 16, 32, or 64-bit floating-point number");
+                }
+                return new CBORDecoder(
+                    new ByteArrayInputStream(
+                        CBORObject.addByteArrays(
+                            new byte[]{(byte)(0xf9 + (floatBytes.length >> 2))}, floatBytes)),
+                    CBORDecoder.LENIENT_NUMBER_DECODING,
+                    10).decodeWithOptions();
        
             case 'n':
                 scanFor("ull");
@@ -230,7 +249,7 @@ public class CBORDiagnosticNotation {
             case '-':
                 if (readChar() == 'I') {
                     scanFor("nfinity");
-                    return new CBORFloat(Double.NEGATIVE_INFINITY);
+                    return new CBORNonFinite(0xfc00);
                 }
                 return getNumberOrTag(true);
 
@@ -248,11 +267,11 @@ public class CBORDiagnosticNotation {
 
             case 'N':
                 scanFor("aN");
-                return new CBORFloat(Double.NaN);
+                return new CBORNonFinite(0x7e00);
 
             case 'I':
                 scanFor("nfinity");
-                return new CBORFloat(Double.POSITIVE_INFINITY);
+                return new CBORNonFinite(0x7c00);
                 
             default:
                 index--;

@@ -46,10 +46,6 @@ public class CBORDecoder {
      */
     public final static int LENIENT_NUMBER_DECODING  = 0x4;
 
-    /**
-     * {@link CBORDecoder#CBORDecoder(InputStream, int, int)} <code>options</code> flag.
-     */
-    public final static int REJECT_NON_FINITE_FLOATS = 0x8;
 
     static final BigInteger NEGATIVE_HIGH_RANGE = new BigInteger("-10000000000000000", 16);
    
@@ -57,7 +53,6 @@ public class CBORDecoder {
     private boolean sequenceMode;
     private boolean strictMaps;
     private boolean strictNumbers;
-    private boolean rejectNonFiniteFloats;
     private boolean atFirstByte;
     private int maxInputLength;
     private int byteCount;
@@ -90,6 +85,7 @@ public class CBORDecoder {
     * </ul>
     * Note that data that has not yet been decoded, is not verified for correctness.
     * <div style='margin-top:0.5em'>See also {@link CBORArray#encodeAsSequence}.</div></div>
+    *
     * <div style='margin-top:0.8em'>{@link CBORDecoder#LENIENT_MAP_DECODING}:</div>
     * <div style='padding:0.2em 0 0 1.2em'>By default, the decoder requires
     * that CBOR maps conform to the
@@ -98,6 +94,7 @@ public class CBORDecoder {
     * <div>The {@link CBORDecoder#LENIENT_MAP_DECODING} option forces the decoder
     * to accept CBOR maps with arbitrary key ordering.
     * Note that duplicate keys still cause a {@link CBORException} to be thrown.</div></div>
+    *
     * <div style='margin-top:0.8em'>{@link CBORDecoder#LENIENT_NUMBER_DECODING}:</div>
     * <div style='padding:0.2em 0 0 1.2em'>By default, the decoder requires
     * that CBOR numbers conform to the
@@ -105,13 +102,6 @@ public class CBORDecoder {
     * <div>The {@link CBORDecoder#LENIENT_NUMBER_DECODING} option forces the decoder to
     * accept different representations of CBOR <code>int</code>, <code>bigint</code>,
     * and <code>float</code> items, only limited by RFC&nbsp;8949.</div></div>
-    * <div style='margin-top:0.8em'>{@link CBORDecoder#REJECT_NON_FINITE_FLOATS}:</div>
-    * <div style='padding:0.2em 0 0 1.2em'>By default, the decoder supports
-    * the special floating-point values 
-    * <code>NaN</code>, <code>Infinity</code>, and <code>-Infinity</code>.
-    * <div>The {@link CBORDecoder#REJECT_NON_FINITE_FLOATS} option
-    * causes the occurrence of such a value to throw a {@link CBORException}.</div>
-    * <div style='margin-top:0.5em'>See also {@link CBORFloat#setNonFiniteFloatsMode(boolean)}.</div></div>
     * <p>
     * Exceeding <code>maxInputLength</code> during decoding throws a {@link CBORException}.  It is
     * <i>recommendable</i> setting this as low as possible, since malformed
@@ -128,7 +118,6 @@ public class CBORDecoder {
         this.sequenceMode = (options & SEQUENCE_MODE) == SEQUENCE_MODE;
         this.strictMaps = (options & LENIENT_MAP_DECODING) != LENIENT_MAP_DECODING;
         this.strictNumbers = (options & LENIENT_NUMBER_DECODING) != LENIENT_NUMBER_DECODING;
-        this.rejectNonFiniteFloats = (options & REJECT_NON_FINITE_FLOATS) == REJECT_NON_FINITE_FLOATS;
         this.maxInputLength = maxInputLength;
     }
     
@@ -190,13 +179,22 @@ public class CBORDecoder {
         return (int)n;
     }
 
-    private CBORFloat checkDoubleConversion(int tag, long bitFormat, double value) {
-        CBORFloat cborFloat = new CBORFloat(value, rejectNonFiniteFloats, strictNumbers);
+    private CBORFloat returnFloat(int tag, long bitFormat, double value) {
+        CBORFloat cborFloat = new CBORFloat(value);
         if (strictNumbers &&
             (cborFloat.tag != tag || cborFloat.bitFormat != bitFormat)) {
             cborError(String.format(STDERR_NON_DETERMINISTIC_FLOAT + "%2x", tag));
         }
         return cborFloat;
+    }
+
+    private CBORObject returnNonFinite(long value) { 
+        CBORNonFinite nonFinite = new CBORNonFinite(value);
+        if (strictNumbers && nonFinite.value != value) {
+            cborError("Non-deterministic encoding of non-finite value: " + 
+                Long.toUnsignedString(value, 16));
+        }
+        return nonFinite;
     }
 
     private CBORObject getObject() throws IOException {
@@ -222,11 +220,8 @@ public class CBORDecoder {
             }
 
             case MT_FLOAT16 -> {
-                double float64;
                 long f16bin = getLongFromBytes(2);
 
-                // Get the significand.
-                long significand = f16bin & ((1L << FLOAT16_SIGNIFICAND_SIZE) - 1);
                 // Get the exponent.
                 long exponent = f16bin & FLOAT16_POS_INFINITY;
 
@@ -236,30 +231,26 @@ public class CBORDecoder {
 
                     // Non-finite numbers: Infinity, -Infinity, and NaN.
 
-                    float64 = Double.longBitsToDouble(FLOAT64_POS_INFINITY |
-                        (significand << (FLOAT64_SIGNIFICAND_SIZE - FLOAT16_SIGNIFICAND_SIZE)));
-                        
-                } else {
-
-                    // It is a "regular" number.
-                    
-                    if (exponent > 0) {
-                        // Normal representation, add the implicit "1.".
-                        significand += (1L << FLOAT16_SIGNIFICAND_SIZE);
-                        // -1: Keep fractional point in line with subnormal numbers.
-                        significand <<= ((exponent >> FLOAT16_SIGNIFICAND_SIZE) - 1);
-                    }
-                    // Divide with: (2 ^ (Exponent offset + Size of significand - 1)).
-                    float64 = (double)significand / 
-                            (1L << (FLOAT16_EXPONENT_BIAS + FLOAT16_SIGNIFICAND_SIZE - 1));
+                    yield returnNonFinite(f16bin);
                 }
-                yield checkDoubleConversion(tag,
-                                            f16bin,
-                                            f16bin >= FLOAT16_NEG_ZERO ? -float64 : float64);
+
+                // It is a "regular" number.
+                
+                // Get the significand.
+                long significand = f16bin & ((1L << FLOAT16_SIGNIFICAND_SIZE) - 1);
+                if (exponent > 0) {
+                    // Normal representation, add the implicit "1.".
+                    significand += (1L << FLOAT16_SIGNIFICAND_SIZE);
+                    // -1: Keep fractional point in line with subnormal numbers.
+                    significand <<= ((exponent >> FLOAT16_SIGNIFICAND_SIZE) - 1);
+                }
+                // Divide with: (2 ^ (Exponent offset + Size of significand - 1)).
+                double float64 = (double)significand / 
+                        (1L << (FLOAT16_EXPONENT_BIAS + FLOAT16_SIGNIFICAND_SIZE - 1));
+                yield returnFloat(tag, f16bin, f16bin >= FLOAT16_NEG_ZERO ? -float64 : float64);
             }
 
             case MT_FLOAT32 -> {
-                double float64;
                 long f32bin = getLongFromBytes(4);
 
                 // Begin with the edge cases.
@@ -268,23 +259,29 @@ public class CBORDecoder {
 
                     // Non-finite numbers: Infinity, -Infinity, and NaN.
 
-                    float64 = Double.longBitsToDouble(FLOAT64_POS_INFINITY |
-                        ((f32bin & ((1L << FLOAT32_SIGNIFICAND_SIZE) - 1)) << 
-                            (FLOAT64_SIGNIFICAND_SIZE - FLOAT32_SIGNIFICAND_SIZE)) |
-                        (FLOAT64_NEG_ZERO & (f32bin << 32)));
-                        
-                } else {
-
-                    // It is a "regular" number.
-
-                    float64 = Float.intBitsToFloat((int)f32bin);
+                    yield returnNonFinite(f32bin);
                 }
-                yield checkDoubleConversion(tag, f32bin, float64);
+
+                // It is a "regular" number.
+
+                yield returnFloat(tag, f32bin, Float.intBitsToFloat((int)f32bin));
             }
 
             case MT_FLOAT64 -> {
                 long f64bin = getLongFromBytes(8);
-                yield checkDoubleConversion(tag, f64bin, Double.longBitsToDouble(f64bin));
+
+                // Begin with the edge cases.
+        
+                if ((f64bin & FLOAT64_POS_INFINITY) == FLOAT64_POS_INFINITY) {
+
+                    // Non-finite numbers: Infinity, -Infinity, and NaN.
+
+                    yield returnNonFinite(f64bin);
+                }
+
+                // It is a "regular" number.
+
+                yield returnFloat(tag, f64bin, Double.longBitsToDouble(f64bin));
             }
 
             case MT_NULL -> new CBORNull();

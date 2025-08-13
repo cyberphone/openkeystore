@@ -302,7 +302,31 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
             integerRangeError("Uint8");
         }
         return (int)value;
-    }    
+    }
+
+    public long getNonFinite() {
+        return ((CBORNonFinite)getTypeAndMarkAsRead(CBORNonFinite.class)).value;
+    }
+
+    public long getNonFinite64() {
+        return ((CBORNonFinite)getTypeAndMarkAsRead(CBORNonFinite.class))._get();
+    }
+
+    public double getCombinedFloat64() {
+        if (this instanceof CBORNonFinite) {
+            CBORNonFinite cborNonFinite = (CBORNonFinite) this;
+            return switch (cborNonFinite.isBasic(true) ? (int)cborNonFinite.getNonFinite() : 0) {
+                case 0x7e00 -> Double.NaN;
+                case 0x7c00 -> Double.POSITIVE_INFINITY;
+                case 0xfc00 -> Double.NEGATIVE_INFINITY;
+                default -> {
+                    cborError("getCombinedFloat64() only supports the \"basic\" NaN (7e00)");
+                    yield 0.0;
+                }
+            };
+        }
+        return getFloat64();
+    }
 
     /**
      * Get CBOR <code>float64</code> value.
