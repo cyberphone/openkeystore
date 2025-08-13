@@ -2386,7 +2386,7 @@ public class CBORTest {
     void oneNanWithPayloadTurn(String nanInHex) {
         byte[] ieee754 = Hex.decode(nanInHex);
         int length = ieee754.length;
-        byte[] cbor = CBORObject.addByteArrays(new byte[]{(byte)(0xf9 + (length >> 2))}, ieee754);
+        byte[] cbor = CBORUtil.concatByteArrays(new byte[]{(byte)(0xf9 + (length >> 2))}, ieee754);
         long significand = 0;
         for (int q = 0; q < length; q++) {
             significand <<= 8;

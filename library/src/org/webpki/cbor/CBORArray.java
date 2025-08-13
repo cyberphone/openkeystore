@@ -83,7 +83,7 @@ public class CBORArray extends CBORObject {
 
     byte[] encodeBody(byte[] header) {
         for (CBORObject cborObject : objects) {
-            header = addByteArrays(header, cborObject.internalEncode());
+            header = CBORUtil.concatByteArrays(header, cborObject.internalEncode());
         }
         return header;
     }

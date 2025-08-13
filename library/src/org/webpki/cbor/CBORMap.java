@@ -350,9 +350,9 @@ public class CBORMap extends CBORObject {
     byte[] internalEncode() {
         byte[] encoded = encodeTagAndN(MT_MAP, entries.size());
         for (Entry entry : entries) {
-            encoded = addByteArrays(encoded,
-                                    addByteArrays(entry.encodedKey, 
-                                                  entry.object.internalEncode()));
+            encoded = CBORUtil.concatByteArrays(encoded,
+                                                entry.encodedKey,
+                                                entry.object.internalEncode());
         }
         return encoded;
     }

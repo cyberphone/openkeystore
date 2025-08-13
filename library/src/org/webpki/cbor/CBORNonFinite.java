@@ -16,8 +16,6 @@
  */
 package org.webpki.cbor;
 
-import java.math.BigInteger;
-
 import org.webpki.util.HexaDecimal;
 
 import static org.webpki.cbor.CBORInternal.*;
@@ -29,8 +27,6 @@ import static org.webpki.cbor.CBORInternal.*;
  * </p>
  */
 public class CBORNonFinite extends CBORObject {
-
-    static final BigInteger MASK64 = new BigInteger("ffffffffffffffff", 16);
 
     // Original value.
     long original;
@@ -54,12 +50,7 @@ public class CBORNonFinite extends CBORObject {
         original = value;
         while (true) {
             this.value = value;
-            encoded = BigInteger.valueOf(value).and(MASK64).toByteArray();
-            if (this.encoded[0] == 0x00) {
-                byte[] woZero = new byte[encoded.length - 1];
-                System.arraycopy(encoded, 1, woZero, 0, woZero.length);
-                encoded = woZero;
-            }
+            encoded = CBORUtil.unsignedLongToByteArray(value);
             long pattern = switch (encoded.length) {
                 case 2 -> 0x7c00L;
                 case 4 -> 0x7f800000L;
@@ -144,7 +135,7 @@ public class CBORNonFinite extends CBORObject {
 
     @Override
     byte[] internalEncode() {
-        return addByteArrays(new byte[]{(byte)(0xf9 + (encoded.length >> 2))}, encoded);
+        return CBORUtil.concatByteArrays(new byte[]{(byte)(0xf9 + (encoded.length >> 2))}, encoded);
     }
     
     @Override

@@ -233,7 +233,7 @@ public class CBORDiagnosticNotation {
                 }
                 return new CBORDecoder(
                     new ByteArrayInputStream(
-                        CBORObject.addByteArrays(
+                        CBORUtil.concatByteArrays(
                             new byte[]{(byte)(0xf9 + (floatBytes.length >> 2))}, floatBytes)),
                     CBORDecoder.LENIENT_NUMBER_DECODING,
                     10).decodeWithOptions();

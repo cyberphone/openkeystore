@@ -234,7 +234,7 @@ public class CBORTag extends CBORObject {
 
     @Override
     byte[] internalEncode() {
-        return addByteArrays(encodeTagAndN(MT_TAG, tagNumber), object.encode());
+        return CBORUtil.concatByteArrays(encodeTagAndN(MT_TAG, tagNumber), object.encode());
 
     }
     

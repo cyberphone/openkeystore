@@ -70,8 +70,8 @@ public class CBORBigInt extends CBORObject {
             return encodeTagAndN(unsigned ? MT_UNSIGNED : MT_NEGATIVE, cborAdjusted.longValue());
         }
         // Needs "bigint" encoding.
-        return addByteArrays(unsigned ? UNSIGNED_BIGNUM_TAG : NEGATIVE_BIGNUM_TAG, 
-                             new CBORBytes(encoded).encode());
+        return CBORUtil.concatByteArrays(unsigned ? UNSIGNED_BIGNUM_TAG : NEGATIVE_BIGNUM_TAG, 
+                                         new CBORBytes(encoded).encode());
     }
     
     @Override

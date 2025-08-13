@@ -221,21 +221,14 @@ public class CBORDecoder {
 
             case MT_FLOAT16 -> {
                 long f16bin = getLongFromBytes(2);
-
                 // Get the exponent.
                 long exponent = f16bin & FLOAT16_POS_INFINITY;
-
                 // Begin with the edge cases.
-        
                 if (exponent == FLOAT16_POS_INFINITY) {
-
                     // Non-finite numbers: Infinity, -Infinity, and NaN.
-
                     yield returnNonFinite(f16bin);
                 }
-
                 // It is a "regular" number.
-                
                 // Get the significand.
                 long significand = f16bin & ((1L << FLOAT16_SIGNIFICAND_SIZE) - 1);
                 if (exponent > 0) {
@@ -254,16 +247,11 @@ public class CBORDecoder {
                 long f32bin = getLongFromBytes(4);
 
                 // Begin with the edge cases.
-        
                 if ((f32bin & FLOAT32_POS_INFINITY) == FLOAT32_POS_INFINITY) {
-
                     // Non-finite numbers: Infinity, -Infinity, and NaN.
-
                     yield returnNonFinite(f32bin);
                 }
-
                 // It is a "regular" number.
-
                 yield returnFloat(tag, f32bin, Float.intBitsToFloat((int)f32bin));
             }
 
@@ -271,16 +259,12 @@ public class CBORDecoder {
                 long f64bin = getLongFromBytes(8);
 
                 // Begin with the edge cases.
-        
                 if ((f64bin & FLOAT64_POS_INFINITY) == FLOAT64_POS_INFINITY) {
 
                     // Non-finite numbers: Infinity, -Infinity, and NaN.
-
                     yield returnNonFinite(f64bin);
                 }
-
                 // It is a "regular" number.
-
                 yield returnFloat(tag, f64bin, Double.longBitsToDouble(f64bin));
             }
 

@@ -39,7 +39,7 @@ public class CBORBytes extends CBORObject {
 
     @Override
     byte[] internalEncode() {
-        return addByteArrays(encodeTagAndN(MT_BYTES, byteString.length), byteString);
+        return CBORUtil.concatByteArrays(encodeTagAndN(MT_BYTES, byteString.length), byteString);
     }
 
     @Override

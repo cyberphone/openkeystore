@@ -95,7 +95,7 @@ public class CBORPublicKey {
             return cryptoBinary(value);
         }
         while (curvePoint.length < (ec.getPublicKeySizeInBits() + 7) / 8) {
-            curvePoint = CBORObject.addByteArrays(new byte[]{0}, curvePoint);
+            curvePoint = CBORUtil.concatByteArrays(new byte[]{0}, curvePoint);
         }
         return new CBORBytes(curvePoint);        
     }
