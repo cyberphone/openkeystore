@@ -40,7 +40,6 @@ public class CBORNonFinite extends CBORObject {
      * <p>
      * See also {@link CBORObject#getFloat64()} and {@link CBORObject#getFloat32()}
      * </p>
-     * <p>
      * 
      * @param value Java long holding a 16, 32, or 64-bit non-finite number.
      * @throws CBORException
@@ -52,9 +51,9 @@ public class CBORNonFinite extends CBORObject {
             this.value = value;
             encoded = CBORUtil.unsignedLongToByteArray(value);
             long pattern = switch (encoded.length) {
-                case 2 -> 0x7c00L;
-                case 4 -> 0x7f800000L;
-                case 8 -> 0x7ff0000000000000L;
+                case 2 -> FLOAT16_POS_INFINITY;
+                case 4 -> FLOAT32_POS_INFINITY;
+                case 8 -> FLOAT64_POS_INFINITY;
                 default -> {
                     badValue();
                     yield 0;
@@ -72,7 +71,7 @@ public class CBORNonFinite extends CBORObject {
                     value >>= 13;
                     value &= 0x7fffL;
                     if (signed) {
-                        value |= 0x8000L;
+                        value |= FLOAT16_NEG_ZERO;
                     }
                     continue;
                 case 8:
@@ -82,12 +81,35 @@ public class CBORNonFinite extends CBORObject {
                     value >>= 29;
                     value &= 0x7fffffffL;
                     if (signed) {
-                        value |= 0x80000000L;
+                        value |= FLOAT32_NEG_ZERO;
                     }
                     continue;
             }
             return;
         }
+    }
+//TODO
+public
+    static long reverseBits(long n) {
+        long ans = 0;
+        int bits = 0;
+        while (n > 0) {
+            bits++;
+            ans <<= 1;
+            if ((n & 1) == 1)
+                ans |= 1;
+            n >>= 1;
+        }
+        return ans << (51 - bits);
+    }
+
+    static final long PAYLOAD_MASK = ((1L << 51) - 1L);
+
+    public static CBORNonFinite createNanWithPayload(long payloadBits) {
+        if ((payloadBits & PAYLOAD_MASK) != payloadBits) {
+            cborError("Bits are limted to b51-b0");
+        }
+        return new CBORNonFinite(FLOAT64_NOT_A_NUMBER + reverseBits(payloadBits));
     }
 
     /**
@@ -118,9 +140,9 @@ public class CBORNonFinite extends CBORObject {
     long toNonFinite64(int significandLength) {
         long value64 = value;
         value64 &= (1L << significandLength) - 1L;
-        value64 = 0x7ff0000000000000L | (value64 << (52 - significandLength));
+        value64 = FLOAT64_POS_INFINITY | (value64 << (52 - significandLength));
         if (encoded[0] < 0) {
-            value64 |= 0x8000000000000000L;
+            value64 |= FLOAT64_NEG_ZERO;
         }
         return value64;       
     }

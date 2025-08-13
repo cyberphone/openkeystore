@@ -326,10 +326,11 @@ public class CBORTest {
         double v = Double.valueOf(asText);
         Double d = 0.0;
         try {
-            CBORFloat cborFloat = (CBORFloat)parseCborHex(hex);
+            CBORObject cborFloat = parseCborHex(hex);
             int l;
             if (mustFail == 0) {
-                switch (cborFloat.length()) {
+                switch (cborFloat instanceof CBORNonFinite ? 
+                       ((CBORNonFinite)cborFloat).length() : ((CBORFloat)cborFloat).length()) {
                     case 2:
                         l = 3;
                         break;
@@ -344,7 +345,7 @@ public class CBORTest {
                 assertTrue("diag"+ asText, asText.equals(cborFloat.toString()));
             }
             assertFalse("Double should fail", mustFail == 1);
-            d = cborFloat.getFloat64();
+            d = cborFloat.getCombinedFloat64();
             assertTrue("Equal d=" + d + " v=" + v, (d.compareTo(v)) == 0 ^ (mustFail != 0));
         } catch (Exception e) {
             assertTrue("Ok fail", mustFail != 0);
@@ -356,11 +357,9 @@ public class CBORTest {
         double v = Double.valueOf(asText);
         CBORObject cborObject = parseCborHex(hex);
         try {
+            if (cborObject instanceof CBORNonFinite) return;
             float f = cborObject.getFloat32();
             assertFalse("Should fail", mustFail);
-            if (Float.isNaN(f) && Double.isNaN(v)) {
-                return;
-            }
             assertTrue("Comp", v == f);
         } catch (Exception e) {
             assertTrue("Ok fail", mustFail);
@@ -372,11 +371,9 @@ public class CBORTest {
         double v = Double.valueOf(asText);
         CBORObject cborObject = parseCborHex(hex);
         try {
+            if (cborObject instanceof CBORNonFinite) return;
             float f = cborObject.getFloat16();
             assertFalse("Should fail", mustFail);
-            if (Float.isNaN(f) && Double.isNaN(v)) {
-                return;
-            }
             assertTrue("Comp", v == f);
         } catch (Exception e) {
             assertTrue("Ok fail", mustFail);
@@ -1156,17 +1153,17 @@ public class CBORTest {
                                          "1817",
                                          "3801",
                                          "3817",
-                                         "F97C01"}) {
+                                         "fa7f810000"}) {
             try {
                 parseCborHex(value);
-                fail("must not execute");
+                fail("must not execute" + value);
             } catch (Exception e) {
                 checkException(e, 
                         e.getMessage().contains("float") ?
                     CBORDecoder.STDERR_NON_DETERMINISTIC_FLOAT
                                                            :
-                e.getMessage().contains("with payloads") ?
-                    "" /* CBORFloat.STDERR_NAN_WITH_PAYLOADS_NOT_PERMITTED */:
+                e.getMessage().contains(CBORDecoder.STDERR_NON_DETERMINISTIC_NON_FINITE) ?
+                    CBORDecoder.STDERR_NON_DETERMINISTIC_NON_FINITE :
                     CBORDecoder.STDERR_NON_DETERMINISTIC_N);
             }
         }
@@ -2225,11 +2222,11 @@ public class CBORTest {
                           CBORDiagnosticNotation.convert(
                                   "<< " + DIAG_CBOR.toString() + ">>").getBytes(),
                           DIAG_CBOR.encode()));
-        Double v = CBORDiagnosticNotation.convert("Infinity").getFloat64();
+        Double v = CBORDiagnosticNotation.convert("Infinity").getCombinedFloat64();
         assertTrue("inf", v == Double.POSITIVE_INFINITY);
-        v = CBORDiagnosticNotation.convert("-Infinity").getFloat64();
+        v = CBORDiagnosticNotation.convert("-Infinity").getCombinedFloat64();
         assertTrue("-inf", v == Double.NEGATIVE_INFINITY);
-        v = CBORDiagnosticNotation.convert("NaN").getFloat64();
+        v = CBORDiagnosticNotation.convert("NaN").getCombinedFloat64();
         assertTrue("nan", v.isNaN());
         assertTrue("0.0", CBORDiagnosticNotation.convert("0.0").toString().equals("0.0"));
         assertTrue("-0.0", CBORDiagnosticNotation.convert("-0.0").toString().equals("-0.0"));
@@ -2347,111 +2344,90 @@ public class CBORTest {
         compareHash("r\u007fghhh");
     }
 
-    @Test
-    public void disableNaNAndInfinity() {
-        String[] decoding = {"f97e00", "f97c00", "f9fc00"};
-        for (String hexCbor : decoding) {
-            byte[] cbor = Hex.decode(hexCbor);
+    void oneNonFiniteTurn(long value, String binexpect, String textexpect) {
+        CBORNonFinite nonfinite = new CBORNonFinite(value);
+        String text = nonfinite.toString();
+        long returnValue = nonfinite.getNonFinite();
+        long returnValue64 = nonfinite.getNonFinite64();
+        CBORObject textdecode = CBORDiagnosticNotation.convert(textexpect);
+        byte[] cbor = nonfinite.encode();
+        byte[] refcbor = HexaDecimal.decode(binexpect);
+        String hexbin = HexaDecimal.encode(cbor);
+        assertTrue("eq1", text.equals(textexpect));
+        assertTrue("eq2", hexbin.equals( binexpect));
+        assertTrue("eq3", returnValue == CBORDecoder.decode(cbor).getNonFinite());
+        assertTrue("eq4", returnValue == textdecode.getNonFinite());
+        assertTrue("eq5", CBORUtil.unsignedLongToByteArray(returnValue).length == nonfinite.length());
+        assertTrue("eq7", CBORUtil.unsignedLongToByteArray(returnValue64).length == 8);
+        assertTrue("eq8", nonfinite.equals(CBORDecoder.decode(cbor)));
+        byte[] rawcbor = CBORUtil.unsignedLongToByteArray(value);
+        rawcbor = CBORUtil.concatByteArrays(new byte[]{(byte)(0xf9 + (rawcbor.length >> 2))}, rawcbor);
+        if (rawcbor.length > refcbor.length) {
             try {
-                new CBORDecoder(new ByteArrayInputStream(cbor),
-                                2 /*CBORDecoder.REJECT_NON_FINITE_FLOATS */,
-                                Integer.MAX_VALUE)
-                    .decodeWithOptions();
-                fail("must not");
-            } catch (Exception e) {
-                checkException(e, "" /*CBORFloat.STDERR_NON_FINITE_FLOATS_DISABLED */);
+            CBORDecoder.decode(rawcbor);
+            fail("d1");
+            } catch(Exception e) {
+            assertTrue("d2", e.getMessage().contains("Non-deterministic"));
             }
-            CBORDecoder.decode(cbor);
-//TODO
- //           CBORFloat.setNonFiniteFloatsMode(true);
-            try {
-                CBORDecoder.decode(cbor);
-                fail("must not");
-            } catch (Exception e) {
-                checkException(e, "" /* CBORFloat.STDERR_NON_FINITE_FLOATS_DISABLED */);
-            }
-            try {
-                new CBORFloat(Double.NaN);
-                fail("must not");
-            } catch (Exception e) {
-                checkException(e, "" /*CBORFloat.STDERR_NON_FINITE_FLOATS_DISABLED */);
-            }
-//TODO
-//            CBORFloat.setNonFiniteFloatsMode(false);
-            new CBORFloat(Double.NaN);
-            CBORDecoder.decode(cbor);
-        }
-    }
-
-    void oneNanWithPayloadTurn(String nanInHex) {
-        byte[] ieee754 = Hex.decode(nanInHex);
-        int length = ieee754.length;
-        byte[] cbor = CBORUtil.concatByteArrays(new byte[]{(byte)(0xf9 + (length >> 2))}, ieee754);
-        long significand = 0;
-        for (int q = 0; q < length; q++) {
-            significand <<= 8;
-            significand += ieee754[q] & 0xff;
-        }
-        int precision = switch (length) {
-            case 2 -> CBORInternal.FLOAT16_SIGNIFICAND_SIZE; 
-            case 4 -> CBORInternal.FLOAT32_SIGNIFICAND_SIZE; 
-            default -> CBORInternal.FLOAT64_SIGNIFICAND_SIZE; 
-        };
-        significand &= (1L << precision) - 1L;
-        long f64bin = CBORInternal.FLOAT64_POS_INFINITY | 
-            (significand << (CBORInternal.FLOAT64_SIGNIFICAND_SIZE - precision));
-        boolean quietNan;
-        if (ieee754[0] < 0) {
-            quietNan = false;
-            f64bin |= CBORInternal.FLOAT64_NEG_ZERO;
         } else {
-            quietNan = f64bin == CBORInternal.FLOAT64_NOT_A_NUMBER;
+            CBORDecoder.decode(rawcbor);
         }
-        double value = Double.longBitsToDouble(f64bin);
-        try {
-            assertTrue("NaN", Double.isNaN(value));
-            new CBORFloat(value);
-            assertTrue("OK1", quietNan);
-        } catch (Exception e) {
-            checkException(e, "" /* CBORFloat.STDERR_NAN_WITH_PAYLOADS_NOT_PERMITTED */);
+        assertTrue("d3", new CBORDecoder(new ByteArrayInputStream(rawcbor), CBORDecoder.LENIENT_NUMBER_DECODING, 100)
+            .decodeWithOptions().equals(nonfinite));
+        CBORNonFinite object = (CBORNonFinite)CBORDecoder.decode(refcbor);
+        if (textexpect.contains("NaN") || textexpect.contains("Infinity")) {
+            assertTrue("d4", String.valueOf(object.getCombinedFloat64()).equals(textexpect));
+            assertTrue("d5", object.isBasic(true));
+            assertTrue("d6", textexpect.contains("Infinity") ^ object.isBasic(false));
+        } else {
+            try {
+            object.getCombinedFloat64();
+            fail("d7");
+            } catch (Exception e) {
+            assertTrue("d8", e.getMessage().contains("7e00"));
+            }
+            assertFalse("d9", object.isBasic(true));
         }
-        double readFloat;
-        try {
-            readFloat = CBORDecoder.decode(cbor).getFloat64();
-            assertTrue("OK2", quietNan && length == 2);
-            assertTrue("V1", Double.doubleToRawLongBits(value) == Double.doubleToRawLongBits(readFloat));
-        } catch (Exception e) {
-            assertTrue("OK3", !quietNan || length != 2);
-            checkException(e, quietNan ? 
-                CBORDecoder.STDERR_NON_DETERMINISTIC_FLOAT
-                                        :
-                "" /* CBORFloat.STDERR_NAN_WITH_PAYLOADS_NOT_PERMITTED */);
-        }
-        readFloat = new CBORDecoder(new ByteArrayInputStream(cbor),
-                                        CBORDecoder.LENIENT_NUMBER_DECODING, 
-                                        cbor.length).decodeWithOptions().getFloat64();
-        assertTrue("V2", Double.doubleToRawLongBits(value) == Double.doubleToRawLongBits(readFloat));
     }
 
     @Test
     public void nanWithPayloads() {
-        oneNanWithPayloadTurn("7e00");
-        oneNanWithPayloadTurn("7c01");
-        oneNanWithPayloadTurn("fc01");
-        oneNanWithPayloadTurn("7fff");
-        oneNanWithPayloadTurn("fe00");
+        oneNonFiniteTurn(0x7e00L,             "f97e00",             "NaN");
+        oneNonFiniteTurn(0x7c01L,             "f97c01",             "float'7c01'");
+        oneNonFiniteTurn(0xfc01L,             "f9fc01",             "float'fc01'");
+        oneNonFiniteTurn(0x7fffL,             "f97fff",             "float'7fff'");
+        oneNonFiniteTurn(0xfe00L,             "f9fe00",             "float'fe00'");
+        oneNonFiniteTurn(0x7c00L,             "f97c00",             "Infinity");
+        oneNonFiniteTurn(0xfc00L,             "f9fc00",             "-Infinity");
 
-        oneNanWithPayloadTurn("7fc00000");
-        oneNanWithPayloadTurn("7f800001");
-        oneNanWithPayloadTurn("ff800001");
-        oneNanWithPayloadTurn("7fffffff");
-        oneNanWithPayloadTurn("ffc00000");
+        oneNonFiniteTurn(0x7fc00000L,         "f97e00",             "NaN");
+        oneNonFiniteTurn(0x7f800001L,         "fa7f800001",         "float'7f800001'");
+        oneNonFiniteTurn(0xff800001L,         "faff800001",         "float'ff800001'");
+        oneNonFiniteTurn(0x7fffffffL,         "fa7fffffff",         "float'7fffffff'");
+        oneNonFiniteTurn(0xffc00000L,         "f9fe00",             "float'fe00'");
+        oneNonFiniteTurn(0x7f800000L,         "f97c00",             "Infinity");
+        oneNonFiniteTurn(0xff800000L,         "f9fc00",             "-Infinity");
 
-        oneNanWithPayloadTurn("7ff8000000000000");
-        oneNanWithPayloadTurn("7ff0000000000001");
-        oneNanWithPayloadTurn("fff0000000000001");
-        oneNanWithPayloadTurn("7fffffffffffffff");
-        oneNanWithPayloadTurn("fff8000000000000");
+        oneNonFiniteTurn(0x7ff8000000000000L, "f97e00", "NaN");
+        oneNonFiniteTurn(0x7ff0000000000001L, "fb7ff0000000000001", "float'7ff0000000000001'");
+        oneNonFiniteTurn(0xfff0000000000001L, "fbfff0000000000001", "float'fff0000000000001'");
+        oneNonFiniteTurn(0x7fffffffffffffffL, "fb7fffffffffffffff", "float'7fffffffffffffff'");
+        oneNonFiniteTurn(0x7ff0000020000000L, "fa7f800001",         "float'7f800001'");
+        oneNonFiniteTurn(0xfff0000020000000L, "faff800001",         "float'ff800001'");
+        oneNonFiniteTurn(0xfff8000000000000L, "f9fe00",             "float'fe00'");
+        oneNonFiniteTurn(0x7ff0040000000000L, "f97c01",             "float'7c01'");
+        oneNonFiniteTurn(0x7ff0000000000000L, "f97c00",             "Infinity");
+        oneNonFiniteTurn(0xfff0000000000000L, "f9fc00",             "-Infinity");
+
+        // Very special, some platforms natively support NaN with payloads, but we don't care
+        // "signaling" NaN
+        double nanWithPayload = Double.longBitsToDouble(0x7ff0000000000001L);
+        CBORNonFinite object = (CBORNonFinite)CBORFloat.createCombinedFloat(nanWithPayload);
+        assertTrue("conv", object instanceof CBORNonFinite);
+        assertTrue("truncated", object.getNonFinite64() == 0x7ff8000000000000L);              // Returns "quiet" NaN
+        assertTrue("cbor",  HexaDecimal.encode(object.encode()).equals("f97e00"));   // Encoded as it should
+        assertTrue("combined", Double.isNaN(object.getCombinedFloat64()));                    // It is a Double.NaN
+        assertTrue("basic", object.isBasic(false));                                   // Indeed it is
     }
 
     void oneDateTime(long epoch, String isoString) {

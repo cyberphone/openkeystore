@@ -191,8 +191,7 @@ public class CBORDecoder {
     private CBORObject returnNonFinite(long value) { 
         CBORNonFinite nonFinite = new CBORNonFinite(value);
         if (strictNumbers && nonFinite.value != value) {
-            cborError("Non-deterministic encoding of non-finite value: " + 
-                Long.toUnsignedString(value, 16));
+            cborError(STDERR_NON_DETERMINISTIC_NON_FINITE + Long.toUnsignedString(value, 16));
         }
         return nonFinite;
     }
@@ -413,6 +412,9 @@ public class CBORDecoder {
 
     static final String STDERR_NON_DETERMINISTIC_N =
             "Non-deterministic encoding of N";
+
+    static final String STDERR_NON_DETERMINISTIC_NON_FINITE =
+            "Non-deterministic encoding of non-finite value: ";
 
     static final String STDERR_CBOR_EOF =
             "Malformed CBOR, trying to read past EOF";
