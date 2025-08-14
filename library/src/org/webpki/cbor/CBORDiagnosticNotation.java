@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import org.webpki.util.Base64URL;
 import org.webpki.util.UTF8;
 
+import static org.webpki.cbor.CBORInternal.*;
+
 /**
  * Class for converting diagnostic notation CBOR to CBOR.
  * <p>
@@ -156,9 +158,9 @@ public class CBORDiagnosticNotation {
     }
     
     private CBORObject getRawObject() {
-        switch (readChar()) {
+        return switch (readChar()) {
         
-            case '<':
+            case '<' -> {
                 scanFor("<");
                 CBORArray sequence = new CBORArray();
                 scanNonSignficantData();
@@ -169,9 +171,10 @@ public class CBORDiagnosticNotation {
                     } while (continueList('>'));
                 }
                 scanFor(">");
-                return new CBORBytes(sequence.encodeAsSequence());
+                yield new CBORBytes(sequence.encodeAsSequence());
+            }
     
-            case '[':
+            case '[' -> {
                 CBORArray array = new CBORArray();
                 scanNonSignficantData();
                 while (readChar() != ']') {
@@ -180,9 +183,10 @@ public class CBORDiagnosticNotation {
                         array.add(getObject());
                     } while (continueList(']'));
                 }
-                return array;
+                yield array;
+            }
      
-            case '{':
+            case '{' -> {
                 CBORMap map = new CBORMap();
                 scanNonSignficantData();
                 while (readChar() != '}') {
@@ -193,33 +197,33 @@ public class CBORDiagnosticNotation {
                         map.set(key, getObject());
                     } while (continueList('}'));
                 }
-                return map;
+                yield map;
+            }
        
-            case '\'':
-                return getString(true);
+            case '\'' -> getString(true);
                 
-            case '"':
-                return getString(false);
+            case '"' -> getString(false);
 
-            case 'h':
-                return getBytes(false);
+            case 'h' -> getBytes(false);
 
-            case 'b':
+            case 'b' -> {
                 if (nextChar() == '3') {
                     scanFor("32'");
                     parserError("b32 not implemented");
                 }
                 scanFor("64");
-                return getBytes(true);
+                yield getBytes(true);
+            }
                 
-            case 't':
+            case 't' -> {
                 scanFor("rue");
-                return new CBORBoolean(true);
+                yield new CBORBoolean(true);
+            }
        
-            case 'f':
+            case 'f' -> {
                 if (nextChar() == 'a') {
                     scanFor("alse");
-                    return new CBORBoolean(false);
+                    yield new CBORBoolean(false);
                 }
                 scanFor("loat");
                 byte[] floatBytes = getBytes(false).getBytes();
@@ -231,53 +235,49 @@ public class CBORDiagnosticNotation {
                     default:
                         parserError("Argument must be a 16, 32, or 64-bit floating-point number");
                 }
-                return new CBORDecoder(
-                    new ByteArrayInputStream(
-                        CBORUtil.concatByteArrays(
-                            new byte[]{(byte)(0xf9 + (floatBytes.length >> 2))}, floatBytes)),
+                yield new CBORDecoder(
+                    new ByteArrayInputStream(CBORUtil.concatByteArrays(
+                        new byte[]{(byte)(MT_FLOAT16 + (floatBytes.length >> 2))}, floatBytes)),
                     CBORDecoder.LENIENT_NUMBER_DECODING,
                     10).decodeWithOptions();
+            }
        
-            case 'n':
+            case 'n' -> {
                 scanFor("ull");
-                return new CBORNull();
+                yield new CBORNull();
+            }
 
-            case 's':
+            case 's' -> {
                 scanFor("imple(");
-                return simpleType();
+                yield simpleType();
+            }
                 
-            case '-':
+            case '-' -> {
                 if (readChar() == 'I') {
                     scanFor("nfinity");
-                    return new CBORNonFinite(0xfc00);
+                    yield new CBORNonFinite(0xfc00);
                 }
-                return getNumberOrTag(true);
+                yield getNumberOrTag(true);
+            }
 
-            case '0':
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-            case '8':
-            case '9':
-                return getNumberOrTag(false);
+            case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' -> getNumberOrTag(false);
 
-            case 'N':
+            case 'N' -> {
                 scanFor("aN");
-                return new CBORNonFinite(0x7e00);
+                yield new CBORNonFinite(0x7e00);
+            }
 
-            case 'I':
+            case 'I' -> {
                 scanFor("nfinity");
-                return new CBORNonFinite(0x7c00);
+                yield new CBORNonFinite(0x7c00);
+            }
                 
-            default:
+            default -> {
                 index--;
                 parserError(String.format("Unexpected character: %s", toChar(readChar())));
-                return null;  // For the compiler...
-        }
+                yield null;  // For the compiler...
+            }
+        };
     }
 
     private CBORObject simpleType() {
@@ -544,17 +544,15 @@ public class CBORDiagnosticNotation {
     }
 
     private char hexCharToChar(char c) {
-        if (c >= '0' && c <= '9') {
-            return (char) (c - '0');
-        }
-        if (c >= 'a' && c <= 'f') {
-            return (char) (c - 'a' + 10);
-        }
-        if (c >= 'A' && c <= 'F') {
-            return (char) (c - 'A' + 10);
-        }
-        parserError(String.format("Bad hex character: %s", toChar(c)));
-        return 0;  // For the compiler...
+        return (char) switch (c) {
+            case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' -> c - '0';
+            case 'a', 'b', 'c', 'd', 'e', 'f' -> c - 'a' + 10;
+            case 'A', 'B', 'C', 'D', 'E', 'F' -> c - 'A' + 10;
+            default -> {
+                parserError(String.format("Bad hex character: %s", toChar(c)));
+                yield 0;  // For the compiler...
+            }
+        };
     }
 
     private char readChar() {
