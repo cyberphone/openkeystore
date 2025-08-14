@@ -74,7 +74,7 @@ public class CBORNonFinite extends CBORObject {
                         break;
                     }
                     value >>= DIFF_32_16;
-                    value &= 0x7fffL;
+                    value &= (FLOAT16_NEG_ZERO - 1L);
                     if (signed) {
                         value |= FLOAT16_NEG_ZERO;
                     }
@@ -84,7 +84,7 @@ public class CBORNonFinite extends CBORObject {
                         break;
                     }
                     value >>= DIFF_64_32;
-                    value &= 0x7fffffffL;
+                    value &= (FLOAT32_NEG_ZERO - 1L);
                     if (signed) {
                         value |= FLOAT32_NEG_ZERO;
                     }
