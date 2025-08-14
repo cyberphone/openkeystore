@@ -38,6 +38,8 @@ public class CBORNonFinite extends CBORObject {
     static final long DIFF_32_16 = FLOAT32_SIGNIFICAND_SIZE - FLOAT16_SIGNIFICAND_SIZE;
     static final long DIFF_64_32 = FLOAT64_SIGNIFICAND_SIZE - FLOAT32_SIGNIFICAND_SIZE;
 
+    static final long PAYLOAD_MASK = ((1L << FLOAT64_SIGNIFICAND_SIZE) - 1L);
+
     /**
      * Creates a CBOR <i>non-finite</i> <code>float</code> object.
      * <p>
@@ -92,15 +94,18 @@ public class CBORNonFinite extends CBORObject {
         }
     }
 
-    static long reverseBits(long n) {
+    static long reversePayloadBits(long payload) {
+        if (payload == 0) {
+            cborError("Payload must not be zero");
+        }
         long reversed = 0;
         int bitCount = 0;
-        while (n > 0) {
+        while (payload > 0) {
             bitCount++;
             reversed <<= 1;
-            if ((n & 1) == 1)
+            if ((payload & 1) == 1)
                 reversed |= 1;
-            n >>= 1;
+            payload >>= 1;
         }
         return reversed << (FLOAT64_SIGNIFICAND_SIZE - bitCount);
     }
@@ -108,23 +113,18 @@ public class CBORNonFinite extends CBORObject {
     /**
      * Experimental API
      */
-    static final long PAYLOAD_MASK = ((1L << FLOAT64_SIGNIFICAND_SIZE) - 1L);
-
     public static CBORNonFinite createNanWithPayload(long payloadBits) {
-        if (payloadBits == 0) {
-            cborError("Payload must not be zero");
-        }
         if ((payloadBits & PAYLOAD_MASK) != payloadBits) {
             cborError("Payload bits are limited to b0-b51");
         }
-        return new CBORNonFinite(FLOAT64_POS_INFINITY + reverseBits(payloadBits));
+        return new CBORNonFinite(FLOAT64_POS_INFINITY + reversePayloadBits(payloadBits));
     }
 
     /**
      * Experimental API
      */
     public long getNaNPayloadBits() {
-        return reverseBits(getNonFinite64() & PAYLOAD_MASK);  // etNonFinite64() => Regular API
+        return reversePayloadBits(getNonFinite64() & PAYLOAD_MASK);  // etNonFinite64() => Regular API
     }
 
     /**
