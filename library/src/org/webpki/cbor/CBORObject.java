@@ -297,7 +297,10 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
         }
         return (int)value;
     }
-
+    
+    /**
+     * Documention: to be writtem...
+     */
     public double getCombinedFloat64() {
         if (this instanceof CBORNonFinite) {
             CBORNonFinite cborNonFinite = (CBORNonFinite) this;

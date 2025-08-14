@@ -167,6 +167,9 @@ public class CBORFloat extends CBORObject {
         return Float64Stringifier.encode(value, false);
     }
 
+    /**
+     * Documention: to be writtem...
+     */
     public static CBORObject createCombinedFloat(double value) {
         if (Double.isFinite(value)) {
             return new CBORFloat(value);

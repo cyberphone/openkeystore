@@ -154,7 +154,7 @@ public class CBORNonFinite extends CBORObject {
     }
 
     /**
-     * Experimental API
+     * Documention: to be writtem...
      */
     public long getNaNPayloadBits() {
         if (!isNaN()) {
@@ -175,6 +175,9 @@ public class CBORNonFinite extends CBORObject {
         return encoded.length;
     }
 
+    /**
+     * Documention: to be writtem...
+     */
     public boolean isBasic(boolean allFlag) {
         return encoded.length == 2 ?
             switch ((int)value) {
@@ -184,6 +187,9 @@ public class CBORNonFinite extends CBORObject {
             } : false;
     }
 
+    /**
+     * Documention: to be writtem...
+     */
     public boolean isNaN() {
         return (switch (encoded.length) {
             case 2 -> (1L << FLOAT16_SIGNIFICAND_SIZE) - 1L;
@@ -205,11 +211,17 @@ public class CBORNonFinite extends CBORObject {
         }
         return value64;       
     }
- 
+
+    /**
+     * Documention: to be writtem...
+     */
     public long getNonFinite() {
         return value;
     }
 
+    /**
+     * Documention: to be writtem...
+     */
     public long getNonFinite64() {
         return switch (encoded.length) {
             case 2 -> toNonFinite64(FLOAT16_SIGNIFICAND_SIZE);
