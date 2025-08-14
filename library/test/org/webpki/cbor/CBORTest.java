@@ -2359,7 +2359,9 @@ public class CBORTest {
         assertTrue("eq4", returnValue == ((CBORNonFinite)textdecode).getNonFinite());
         assertTrue("eq5", CBORUtil.unsignedLongToByteArray(returnValue).length == nonfinite.length());
         assertTrue("eq7", CBORUtil.unsignedLongToByteArray(returnValue64).length == 8);
-        assertTrue("eq8", nonfinite.equals(CBORDecoder.decode(cbor)));
+        assertTrue("eq8", nonfinite.equals(CBORDecoder.decode(cbor)));    
+        assertTrue("eq9", ((returnValue64 &
+            ((1L << CBORInternal.FLOAT64_SIGNIFICAND_SIZE) - 1L)) != 0) == nonfinite.isNaN());
         byte[] rawcbor = CBORUtil.unsignedLongToByteArray(value);
         rawcbor = CBORUtil.concatByteArrays(new byte[]{(byte)(0xf9 + (rawcbor.length >> 2))}, rawcbor);
         if (rawcbor.length > refcbor.length) {
@@ -2408,7 +2410,7 @@ public class CBORTest {
         oneNonFiniteTurn(0x7f800000L,         "f97c00",             "Infinity");
         oneNonFiniteTurn(0xff800000L,         "f9fc00",             "-Infinity");
 
-        oneNonFiniteTurn(0x7ff8000000000000L, "f97e00", "NaN");
+        oneNonFiniteTurn(0x7ff8000000000000L, "f97e00",             "NaN");
         oneNonFiniteTurn(0x7ff0000000000001L, "fb7ff0000000000001", "float'7ff0000000000001'");
         oneNonFiniteTurn(0xfff0000000000001L, "fbfff0000000000001", "float'fff0000000000001'");
         oneNonFiniteTurn(0x7fffffffffffffffL, "fb7fffffffffffffff", "float'7fffffffffffffff'");

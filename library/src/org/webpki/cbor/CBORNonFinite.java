@@ -148,6 +148,14 @@ public class CBORNonFinite extends CBORObject {
             } : false;
     }
 
+    public boolean isNaN() {
+        return (switch (encoded.length) {
+            case 2 -> (1L << FLOAT16_SIGNIFICAND_SIZE) - 1L;
+            case 4 -> (1L << FLOAT32_SIGNIFICAND_SIZE) - 1L;
+            default -> (1L << FLOAT64_SIGNIFICAND_SIZE) - 1L;
+        } & value) != 0;
+    }
+
     void badValue () {
         cborError("Invalid non-finite argument: " + Long.toUnsignedString(original, 16));
     }
