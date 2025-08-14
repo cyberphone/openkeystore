@@ -94,26 +94,59 @@ public class CBORNonFinite extends CBORObject {
         }
     }
 
-    static long reversePayloadBits(long payload) {
-        if (payload == 0) {
-            cborError("Payload must not be zero");
-        }
+    static long reversePayloadBits(long payloadBits) {
         long reversed = 0;
         int bitCount = 0;
-        while (payload > 0) {
+        while (payloadBits > 0) {
             bitCount++;
             reversed <<= 1;
-            if ((payload & 1) == 1)
+            if ((payloadBits & 1) == 1)
                 reversed |= 1;
-            payload >>= 1;
+            payloadBits >>= 1;
         }
         return reversed << (FLOAT64_SIGNIFICAND_SIZE - bitCount);
     }
 
     /**
-     * Experimental API
+     * Create a <code>NaN</code> with a payload.
+     * <div style='margin-top:1em'>
+     * The following table represents this method from a <i>developer</i> perspective:
+     * </div>
+     * <div>
+     * <table class='webpkitable'>
+     * <tr><th>Payload Bits</th></tr>
+     * <tr><td><code>b52-b1</code> in <i>big-endian</i> format</td></tr>
+     * </table>
+     * </div>
+     * <div>
+     * Note that a payload with only zeros, cause a {@link CBORException} to be thrown.
+     * </div>
+     * <div style='margin-top:1em'>
+     * Although provided here for <i>reference purposes</i> only, the payloads bits are
+     * subsequently stuffed into an <code>IEEE-754</code> 64-bit object according to the following:
+     * </div>
+     * <div>
+     * <table class='webpkitable'>
+     * <tr><th>Sign &amp; Exponent</th><th>Significand</th></tr>
+     * <tr><td style='text-align:center'>011111111111</th><td><code>b1-b52</code> in <i>little-endian</i> format</td></tr>
+     * </table>
+     * </div>
+     * <div>
+     * Note that the encoder will subsequently select the shortest serialization
+     * required to properly represent the provided set of bits.
+     * As an example, an argument of <code>6</code> (<code>b2</code> and <code>b3</code> bits are set),
+     * would yield a CBOR item encoded as
+     * <code>f97d80</code>, here shown in hexadecimal notation.
+     * </div>
+     * @param payloadBits Holds a set of application specific bits
+     * @return {@link CBORNonFinite}.  Also see <a href='../../webpki/cbor/package-summary.html#supported-objects'>CBOR wrapper objects</a>.
+     * @see CBORObject#getCombinedFloat64()
+     * @see CBORFloat#createCombinedFloat(double)
      */
     public static CBORNonFinite createNanWithPayload(long payloadBits) {
+        if (payloadBits == 0) {
+            cborError("Payload must not be zero");
+        }
         if ((payloadBits & PAYLOAD_MASK) != payloadBits) {
             cborError("Payload bits are limited to b0-b51");
         }
@@ -124,6 +157,9 @@ public class CBORNonFinite extends CBORObject {
      * Experimental API
      */
     public long getNaNPayloadBits() {
+        if (!isNaN()) {
+            cborError("Not a NaN: " + this.toString());
+        }
         return reversePayloadBits(getNonFinite64() & PAYLOAD_MASK);  // etNonFinite64() => Regular API
     }
 

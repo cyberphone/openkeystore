@@ -14,7 +14,8 @@ notation:
 <th>Java&nbsp;Mapping</th><th>Notes</th></tr>
 <tr style='text-align:center'><td><code>int</code></td><td>{@link CBORInt}</td><td><code>long</code></td><td>1</td></tr>
 <tr style='text-align:center'><td><code>bigint</code></td><td>{@link CBORBigInt}</td><td><code>BigInteger</code></td><td>1</td></tr>
-<tr style='text-align:center'><td><code>float</code></td><td>{@link CBORFloat}</td><td><code>double</code></td><td>2</td></tr>
+<tr style='text-align:center'><td rowspan='2'><code>float</code></td><td>{@link CBORFloat}</td><td><code>double</code></td><td>2</td></tr>
+<tr style='text-align:center'><td>{@link CBORNonFinite}</td><td><code>long</code></td><td>2</td></tr>
 <tr style='text-align:center'><td><code>bstr</code></td><td>{@link CBORBytes}</td><td><code>byte[]</code></td><td></td></tr>
 <tr style='text-align:center'><td><code>tstr</code></td><td>{@link CBORString}</td><td><code>String</code></td><td></td></tr>
 <tr style='text-align:center'><td><code>bool</code></td><td>{@link CBORBoolean}</td><td><code>boolean</code></td><td></td></tr>
@@ -31,7 +32,6 @@ notation:
  The encoded representation is determined by the size of the value.
 Also see {@link CBORObject#getBigInteger()}.</li>
 <li style='padding-top:0.5em'>Floating-point data covers the 16, 32, and 64-bit IEEE&nbsp;754 variants.
-Also see {@link CBORDecoder#REJECT_NON_FINITE_FLOATS}.
 The encoded representation is determined by the size and precision of the value.</li>
 </ol>
 <h3 id='time-data'>Time Data</h3>
