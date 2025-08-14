@@ -298,14 +298,6 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
         return (int)value;
     }
 
-    public long getNonFinite() {
-        return ((CBORNonFinite)getTypeAndMarkAsRead(CBORNonFinite.class)).value;
-    }
-
-    public long getNonFinite64() {
-        return ((CBORNonFinite)getTypeAndMarkAsRead(CBORNonFinite.class))._get();
-    }
-
     public double getCombinedFloat64() {
         if (this instanceof CBORNonFinite) {
             CBORNonFinite cborNonFinite = (CBORNonFinite) this;

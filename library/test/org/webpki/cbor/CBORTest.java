@@ -2355,8 +2355,8 @@ public class CBORTest {
         String hexbin = HexaDecimal.encode(cbor);
         assertTrue("eq1", text.equals(textexpect));
         assertTrue("eq2", hexbin.equals( binexpect));
-        assertTrue("eq3", returnValue == CBORDecoder.decode(cbor).getNonFinite());
-        assertTrue("eq4", returnValue == textdecode.getNonFinite());
+        assertTrue("eq3", returnValue == ((CBORNonFinite)CBORDecoder.decode(cbor)).getNonFinite());
+        assertTrue("eq4", returnValue == ((CBORNonFinite)textdecode).getNonFinite());
         assertTrue("eq5", CBORUtil.unsignedLongToByteArray(returnValue).length == nonfinite.length());
         assertTrue("eq7", CBORUtil.unsignedLongToByteArray(returnValue64).length == 8);
         assertTrue("eq8", nonfinite.equals(CBORDecoder.decode(cbor)));

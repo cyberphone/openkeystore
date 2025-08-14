@@ -244,7 +244,6 @@ public class CBORDecoder {
 
             case MT_FLOAT32 -> {
                 long f32bin = getLongFromBytes(4);
-
                 // Begin with the edge cases.
                 if ((f32bin & FLOAT32_POS_INFINITY) == FLOAT32_POS_INFINITY) {
                     // Non-finite numbers: Infinity, -Infinity, and NaN.
@@ -256,10 +255,8 @@ public class CBORDecoder {
 
             case MT_FLOAT64 -> {
                 long f64bin = getLongFromBytes(8);
-
                 // Begin with the edge cases.
                 if ((f64bin & FLOAT64_POS_INFINITY) == FLOAT64_POS_INFINITY) {
-
                     // Non-finite numbers: Infinity, -Infinity, and NaN.
                     yield returnNonFinite(f64bin);
                 }

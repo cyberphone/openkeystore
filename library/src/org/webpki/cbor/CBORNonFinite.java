@@ -161,8 +161,12 @@ public class CBORNonFinite extends CBORObject {
         }
         return value64;       
     }
+ 
+    public long getNonFinite() {
+        return value;
+    }
 
-    long _get() {
+    public long getNonFinite64() {
         return switch (encoded.length) {
             case 2 -> toNonFinite64(FLOAT16_SIGNIFICAND_SIZE);
             case 4 -> toNonFinite64(FLOAT32_SIGNIFICAND_SIZE);
