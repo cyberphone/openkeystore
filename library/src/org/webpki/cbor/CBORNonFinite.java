@@ -88,8 +88,7 @@ public class CBORNonFinite extends CBORObject {
             return;
         }
     }
-//TODO
-public
+
     static long reverseBits(long n) {
         long ans = 0;
         int bits = 0;
@@ -103,6 +102,9 @@ public
         return ans << (51 - bits);
     }
 
+    /**
+     * Experimental API
+     */
     static final long PAYLOAD_MASK = ((1L << 51) - 1L);
 
     public static CBORNonFinite createNanWithPayload(long payloadBits) {
@@ -110,6 +112,13 @@ public
             cborError("Bits are limted to b51-b0");
         }
         return new CBORNonFinite(FLOAT64_NOT_A_NUMBER + reverseBits(payloadBits));
+    }
+
+    /**
+     * Experimental API
+     */
+    public long getNaNPayloadBits() {
+        return reverseBits(getNonFinite64() & PAYLOAD_MASK);  // etNonFinite64() => Regular API
     }
 
     /**
@@ -149,15 +158,15 @@ public
 
     long _get() {
         return switch (encoded.length) {
-            case 2 -> toNonFinite64(10);
-            case 4 -> toNonFinite64(23);
+            case 2 -> toNonFinite64(FLOAT16_SIGNIFICAND_SIZE);
+            case 4 -> toNonFinite64(FLOAT32_SIGNIFICAND_SIZE);
             default -> value;
         };
     }
 
     @Override
     byte[] internalEncode() {
-        return CBORUtil.concatByteArrays(new byte[]{(byte)(0xf9 + (encoded.length >> 2))}, encoded);
+        return CBORUtil.concatByteArrays(new byte[]{(byte)(MT_FLOAT16 + (encoded.length >> 2))}, encoded);
     }
     
     @Override
