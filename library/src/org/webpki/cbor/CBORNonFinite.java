@@ -128,7 +128,7 @@ public class CBORNonFinite extends CBORObject {
      * @return {@link CBORNonFinite}.  Also see <a href='../../webpki/cbor/package-summary.html#supported-objects'>CBOR wrapper objects</a>.
      * @see CBORFloat#createExpandedFloat(double)
      */
-    public static CBORNonFinite createNaNWithPayload(long payload) {
+    public static CBORNonFinite createNaNPayload(long payload) {
         if (payload == 0) {
             payload = 1;  // "quiet" NaN
         }
@@ -142,15 +142,16 @@ public class CBORNonFinite extends CBORObject {
     /**
      * Get <code>NaN</code> payload bits.
      * <p>
-     * This method is the consumer counterpart to {@link #createNaNWithPayload(long)}.
+     * This method is the "consumer" counterpart to {@link #createNaNPayload(long)}.
      * Note that a "quiet" <code>NaN</code> (<code>7e00</code>) returns zero.
      * </p>
      * <p>
      * If the sign bit is also required, the {@link #getNonFinite64()}
      * method must be used.
      * </p>
+     * @return <code>long</code>
      */
-    public long getNaNPayloadBits() {
+    public long getNaNPayload() {
         if (!isNaN()) {
             cborError(STDERR_NOT_A_NAN + this.toString());
         }

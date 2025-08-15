@@ -2452,8 +2452,8 @@ public class CBORTest {
 
     @Test
     public void nonFiniteNethods() {
-        byte[] cbor = CBORNonFinite.createNaNWithPayload(6).encode();
-        assertTrue("nfa1", ((CBORNonFinite)CBORDecoder.decode(cbor)).getNaNPayloadBits() == 6);
+        byte[] cbor = CBORNonFinite.createNaNPayload(6).encode();
+        assertTrue("nfa1", ((CBORNonFinite)CBORDecoder.decode(cbor)).getNaNPayload() == 6);
     }
 
     void badDate(String hexBor, String err) {
