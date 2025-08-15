@@ -43,10 +43,15 @@ public class CBORNonFinite extends CBORObject {
     /**
      * Creates a CBOR <i>non-finite</i> <code>float</code> object.
      * <p>
-     * See also {@link CBORObject#getFloat64()} and {@link CBORObject#getFloat32()}
+     * The constructor takes a <code>16</code>, <code>32</code>, or <code>64</code>-bit
+     * non-finite number in <code>IEEE-754</code> encoding.
+     * Note that the argument <b>must</b> fit within <code>NaN</code> and <code>Infinity</code> number space.
+     * </p>
+     * <p>
+     * See also {@link CBORFloat#CBORFloat(double)}.
      * </p>
      * 
-     * @param value Java long holding a 16, 32, or 64-bit non-finite number.
+     * @param value <code>long</code> holding the number
      * @throws CBORException
      */
     @SuppressWarnings("this-escape")
@@ -105,12 +110,11 @@ public class CBORNonFinite extends CBORObject {
      * <tr><td><code>d51-d0</code> in <i>big-endian</i> order</td></tr>
      * </table>
      * </div>
-     * <div>
-     * Note that a payload with only zeros, will force the encoder to set bit <code>d0</code>.
-     * </div>
+     * Note that a payload having all bits set to zero, will be encoded as CBOR
+     * <code>Infinity</code> (<code>f97c00</code>).
      * <div style='margin-top:1em'>
-     * Although provided here for <i>reference purposes</i> only, the payloads bits are
-     * subsequently stuffed into an <code>IEEE-754</code> 64-bit object according to the following:
+     * The payloads bits are subsequently put into an <code>IEEE-754</code>
+     * <code>64</code>-bit object having the following layout:
      * </div>
      * <div>
      * <table class='webpkitable'>
@@ -119,19 +123,23 @@ public class CBORNonFinite extends CBORObject {
      * </table>
      * </div>
      * <div>
-     * Note that the encoder will subsequently select the shortest serialization
-     * required to properly represent the provided set of bits.
-     * As an example, an argument of <code>6</code> (<code>d1</code> and <code>d2</code> bits are set),
-     * would yield a CBOR item encoded as <code>f97d80</code>, here shown in hexadecimal notation.
+     * Note that the encoder will (due to deterministic encoding rules), subsequently select
+     * the shortest serialization required to properly represent the payload bit field.
+     * As an example, a payload having the bits <code>d1</code> and <code>d4</code> set
+     * (decimal value <code>18</code>),
+     * would yield a CBOR item encoded as <code>f97d20</code>, here shown in hexadecimal notation.
+     * </div>
+     * <div style='margin-top:0.7em'>
+     * The reason for reversing the payload bits is to make sure that a specific bit will remain
+     * in a fix position (having the same value), regardless if added or removed bits force
+     * the encoder to select a larger or smaller
+     * <code>IEEE-754</code> variant.
      * </div>
      * @param payload Holds a set of application specific bits
      * @return {@link CBORNonFinite}.  Also see <a href='../../webpki/cbor/package-summary.html#supported-objects'>CBOR wrapper objects</a>.
      * @see CBORFloat#createExpandedFloat(double)
      */
     public static CBORNonFinite createNaNPayload(long payload) {
-        if (payload == 0) {
-            payload = 1;  // "quiet" NaN
-        }
         if ((payload & PAYLOAD_MASK) != payload) {
             cborError(STDERR_PAYLOAD_RANGE);
         }
@@ -140,25 +148,19 @@ public class CBORNonFinite extends CBORObject {
     }
 
     /**
-     * Get <code>NaN</code> payload bits.
+     * Get <code>NaN</code> payload.
      * <p>
      * This method is the "consumer" counterpart to {@link #createNaNPayload(long)}.
-     * Note that a "quiet" <code>NaN</code> (<code>7e00</code>) returns zero.
+     * Note that a payload having all bits set to zero, is CBOR-wise represented as <code>Infinity</code> (<code>f97c00</code>).
      * </p>
      * <p>
      * If the sign bit is also required, the {@link #getNonFinite64()}
-     * method must be used.
+     * method must rather be used.
      * </p>
      * @return <code>long</code>
      */
     public long getNaNPayload() {
-        if (!isNaN()) {
-            cborError(STDERR_NOT_A_NAN + this.toString());
-        }
-        // getNonFinite64() => Regular API
-        long payload = CBORUtil.reverseBits(
-            getNonFinite64() & PAYLOAD_MASK, FLOAT64_SIGNIFICAND_SIZE);
-        return payload == 1 ? 0 : payload;  
+        return CBORUtil.reverseBits(getNonFinite64() & PAYLOAD_MASK, FLOAT64_SIGNIFICAND_SIZE);
     }
 
     /**
@@ -271,9 +273,7 @@ public class CBORNonFinite extends CBORObject {
     static final String STDERR_INVALID_NON_FINITE_ARGUMENT = 
             "Invalid non-finite argument: ";
 
-    static final String STDERR_NOT_A_NAN = 
-            "Not a NaN: ";
-
     static final String STDERR_PAYLOAD_RANGE = 
             "Payloads are limited to bit d0-d51";
+
 }

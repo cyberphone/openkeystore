@@ -68,6 +68,7 @@ import org.webpki.util.PEMDecoder;
 import org.webpki.util.UTF8;
 
 import static org.webpki.cbor.CBORCryptoConstants.*;
+import static org.webpki.cbor.CBORInternal.*;
 
 /**
  * CBOR JUnit suite
@@ -2392,6 +2393,16 @@ public class CBORTest {
         }
     }
 
+    void payloadOneTurn(long payload, String hex) {
+        byte[] cbor = CBORNonFinite.createNaNPayload(payload).encode();
+        CBORObject object = CBORDecoder.decode(cbor);
+        assertTrue("plo1", object instanceof CBORNonFinite);
+        CBORNonFinite nonFinite = (CBORNonFinite) object;
+        assertTrue("plo2", nonFinite.getNaNPayload() == payload);
+        assertTrue("plo3", HexaDecimal.encode(cbor).equals(hex));
+        assertTrue("plo4", (payload == 0) == nonFinite.toString().equals("Infinity"));
+    }
+
     @Test
     public void nonFiniteValues() {
         oneNonFiniteTurn(0x7e00L,             "f97e00",             "NaN");
@@ -2424,12 +2435,25 @@ public class CBORTest {
         // Very special, some platforms natively support NaN with payloads, but we don't care
         // "signaling" NaN
         double nanWithPayload = Double.longBitsToDouble(0x7ff0000000000001L);
-        CBORNonFinite object = (CBORNonFinite)CBORFloat.createExpandedFloat(nanWithPayload);
-        assertTrue("conv", object instanceof CBORNonFinite);
-        assertTrue("truncated", object.getNonFinite64() == 0x7ff8000000000000L);              // Returns "quiet" NaN
-        assertTrue("cbor",  HexaDecimal.encode(object.encode()).equals("f97e00"));   // Encoded as it should
-        assertTrue("combined", Double.isNaN(object.getExpandedFloat64()));                    // It is a Double.NaN
-        assertTrue("nan", object.isNaN());                                                    // Indeed it is
+        CBORNonFinite nonFinite = (CBORNonFinite)CBORFloat.createExpandedFloat(nanWithPayload);
+        assertTrue("conv", nonFinite instanceof CBORNonFinite);
+        assertTrue("truncated", nonFinite.getNonFinite64() == 0x7ff8000000000000L);              // Returns "quiet" NaN
+        assertTrue("cbor",  HexaDecimal.encode(nonFinite.encode()).equals("f97e00"));   // Encoded as it should
+        assertTrue("combined", Double.isNaN(nonFinite.getExpandedFloat64()));                    // It is a Double.NaN
+        assertTrue("nan", nonFinite.isNaN());    
+        
+        payloadOneTurn(0, "f97c00");
+        payloadOneTurn(18, "f97d20");
+        payloadOneTurn((1L << FLOAT64_SIGNIFICAND_SIZE) - 1L, "fb7fffffffffffffff");
+        payloadOneTurn((1L << FLOAT32_SIGNIFICAND_SIZE) - 1L, "fa7fffffff");
+        payloadOneTurn(1L << FLOAT32_SIGNIFICAND_SIZE,        "fb7ff0000010000000");
+
+        try {
+            CBORNonFinite.createNaNPayload(1L << FLOAT64_SIGNIFICAND_SIZE).encode();
+            fail("pl8");
+        } catch(Exception e) {
+            checkException(e, CBORNonFinite.STDERR_PAYLOAD_RANGE);
+        }
     }
 
     void oneDateTime(long epoch, String isoString) {
