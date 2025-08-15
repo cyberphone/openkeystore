@@ -53,7 +53,7 @@ public class CBORFloat extends CBORObject {
      * {@link CBORNonFinite}.
      * </p>
      * 
-     * @param value Java double
+     * @param value The floating-point value
      * @throws CBORException
      */
     public CBORFloat(double value) {
@@ -167,8 +167,20 @@ public class CBORFloat extends CBORObject {
         return Float64Stringifier.encode(value, false);
     }
 
-    /**
-     * Create a combined
+     /**
+     * Creates an "extended" CBOR <code>float</code> object.
+     * <p>
+     * Unlike {@link CBORFloat#CBORFloat(double)}, this method also supports the "quiet" <code>NaN</code> 
+     * and the two <code>Infinity</code> variants.
+     * </p>
+     * <p>
+     * Note that return type is either {@link CBORFloat} or {@link CBORNonFinite}, depending
+     * on if the argument is a "regular" floating-point value of one of the non-finite variants.
+     * </p>
+     * @param value The floating-point value
+     * @return {@link CBORObject}
+     * @throws CBORException
+     * @see CBORObject#getExpandedFloat64()
      */
     public static CBORObject createExpandedFloat(double value) {
         if (Double.isFinite(value)) {

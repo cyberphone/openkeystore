@@ -299,9 +299,9 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }
 
     /**
-     * Get CBOR <code>float64</code> includng <code>NaN</code> and <code>Infinity</code>.
+     * Get "extended" CBOR <code>float64</code> value.
      * <p>
-     * Unlike {@link #getFloat64()}, this method also supports the "quite" <code>NaN</code> 
+     * Note that unlike {@link #getFloat64()}, this method also supports the "quiet" <code>NaN</code> 
      * and the two <code>Infinity</code> variants.
      * </p>
      * <p>
@@ -311,6 +311,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * 
      * @return <code>double</code>
      * @throws CBORException
+     * @see CBORFloat#createExpandedFloat(double)
      */
     public double getExpandedFloat64() {
         if (this instanceof CBORNonFinite) {
