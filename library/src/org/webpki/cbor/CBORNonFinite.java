@@ -94,19 +94,6 @@ public class CBORNonFinite extends CBORObject {
         }
     }
 
-    static long reversePayloadBits(long payloadBits) {
-        long reversed = 0;
-        int bitCount = 0;
-        while (payloadBits > 0) {
-            bitCount++;
-            reversed <<= 1;
-            if ((payloadBits & 1) == 1)
-                reversed |= 1;
-            payloadBits >>= 1;
-        }
-        return reversed << (FLOAT64_SIGNIFICAND_SIZE - bitCount);
-    }
-
     /**
      * Create a <code>NaN</code> with a payload.
      * <div style='margin-top:1em'>
@@ -114,12 +101,12 @@ public class CBORNonFinite extends CBORObject {
      * </div>
      * <div>
      * <table class='webpkitable'>
-     * <tr><th>Payload Bits</th></tr>
-     * <tr><td><code>b52-b1</code> in <i>big-endian</i> format</td></tr>
+     * <tr><th>Payload</th></tr>
+     * <tr><td><code>d51-d0</code> in <i>big-endian</i> order</td></tr>
      * </table>
      * </div>
      * <div>
-     * Note that a payload with only zeros, cause a {@link CBORException} to be thrown.
+     * Note that a payload with only zeros, will force the encoder to set bit <code>d0</code> to <code>1</code>.
      * </div>
      * <div style='margin-top:1em'>
      * Although provided here for <i>reference purposes</i> only, the payloads bits are
@@ -128,43 +115,55 @@ public class CBORNonFinite extends CBORObject {
      * <div>
      * <table class='webpkitable'>
      * <tr><th>Sign &amp; Exponent</th><th>Significand</th></tr>
-     * <tr><td style='text-align:center'>011111111111</th><td><code>b1-b52</code> in <i>little-endian</i> format</td></tr>
+     * <tr><td style='text-align:center'>011111111111</th><td><code>d0-d51</code> in <i>little-endian</i> order</td></tr>
      * </table>
      * </div>
      * <div>
      * Note that the encoder will subsequently select the shortest serialization
      * required to properly represent the provided set of bits.
-     * As an example, an argument of <code>6</code> (<code>b2</code> and <code>b3</code> bits are set),
+     * As an example, an argument of <code>6</code> (<code>d1</code> and <code>d2</code> bits are set),
      * would yield a CBOR item encoded as
      * <code>f97d80</code>, here shown in hexadecimal notation.
      * </div>
-     * @param payloadBits Holds a set of application specific bits
+     * @param payload Holds a set of application specific bits
      * @return {@link CBORNonFinite}.  Also see <a href='../../webpki/cbor/package-summary.html#supported-objects'>CBOR wrapper objects</a>.
      * @see CBORObject#getCombinedFloat64()
      * @see CBORFloat#createCombinedFloat(double)
      */
-    public static CBORNonFinite createNanWithPayload(long payloadBits) {
-        if (payloadBits == 0) {
-            cborError("Payload must not be zero");
+    public static CBORNonFinite createNaNWithPayload(long payload) {
+        if (payload == 0) {
+            payload = 1;  // "quite" NaN
         }
-        if ((payloadBits & PAYLOAD_MASK) != payloadBits) {
-            cborError("Payload bits are limited to b0-b51");
+        if ((payload & PAYLOAD_MASK) != payload) {
+            cborError(STDERR_PAYLOAD_RANGE);
         }
-        return new CBORNonFinite(FLOAT64_POS_INFINITY + reversePayloadBits(payloadBits));
+        return new CBORNonFinite(
+            FLOAT64_POS_INFINITY + CBORUtil.reverseBits(payload, FLOAT64_SIGNIFICAND_SIZE));
     }
 
     /**
-     * Documention: to be writtem...
+     * Get NaN payload bits.
+     * <p>
+     * This method is the consumer counterpart to {@link #createNaNWithPayload(long)}.
+     * Note that a "quiet" NaN (<code>7e00</code>) returns zero.
+     * </p>
+     * <p>
+     * If the sign bit is also required, the {@link #getNonFinite64()}
+     * method must be used.
+     * </p>
      */
     public long getNaNPayloadBits() {
         if (!isNaN()) {
-            cborError("Not a NaN: " + this.toString());
+            cborError(STDERR_NOT_A_NAN + this.toString());
         }
-        return reversePayloadBits(getNonFinite64() & PAYLOAD_MASK);  // etNonFinite64() => Regular API
+        // getNonFinite64() => Regular API
+        long payload = CBORUtil.reverseBits(
+            getNonFinite64() & PAYLOAD_MASK, FLOAT64_SIGNIFICAND_SIZE);
+        return payload == 1 ? 0 : payload;  
     }
 
     /**
-     * Get length of the optimized IEEE 754 type.
+     * Get length of the serialized IEEE 754 type.
      * <p>
      * Note that you must cast a {@link CBORObject} to {@link CBORNonFinite}
      * in order to access {@link CBORNonFinite#length()}.
@@ -176,19 +175,20 @@ public class CBORNonFinite extends CBORObject {
     }
 
     /**
-     * Documention: to be writtem...
+     * Documentation: to be written...
      */
-    public boolean isBasic(boolean allFlag) {
+    public boolean isBasic() {
         return encoded.length == 2 ?
             switch ((int)value) {
-                case (int)FLOAT16_NOT_A_NUMBER -> true;
-                case (int)FLOAT16_POS_INFINITY, (int)FLOAT16_NEG_INFINITY -> allFlag;
+                case (int)FLOAT16_NOT_A_NUMBER,
+                     (int)FLOAT16_POS_INFINITY, 
+                     (int)FLOAT16_NEG_INFINITY -> true;
                 default -> false;
             } : false;
     }
 
     /**
-     * Documention: to be writtem...
+     * Documentation: to be written...
      */
     public boolean isNaN() {
         return (switch (encoded.length) {
@@ -199,7 +199,7 @@ public class CBORNonFinite extends CBORObject {
     }
 
     void badValue () {
-        cborError("Invalid non-finite argument: " + Long.toUnsignedString(original, 16));
+        cborError(STDERR_INVALID_NON_FINITE_ARGUMENT + Long.toUnsignedString(original, 16));
     }
 
     long toNonFinite64(int significandLength) {
@@ -213,16 +213,18 @@ public class CBORNonFinite extends CBORObject {
     }
 
     /**
-     * Documention: to be writtem...
+     * Documentation: to be written...
      */
     public long getNonFinite() {
+        scan();
         return value;
     }
 
     /**
-     * Documention: to be writtem...
+     * Documentation: to be written...
      */
     public long getNonFinite64() {
+        scan();
         return switch (encoded.length) {
             case 2 -> toNonFinite64(FLOAT16_SIGNIFICAND_SIZE);
             case 4 -> toNonFinite64(FLOAT32_SIGNIFICAND_SIZE);
@@ -237,10 +239,19 @@ public class CBORNonFinite extends CBORObject {
     
     @Override
     void internalToString(CborPrinter cborPrinter) {
-        if (isBasic(true)) {
-            cborPrinter.append(isBasic(false) ? "NaN" : encoded[0] < 0 ? "-Infinity" : "Infinity");
+        if (isBasic()) {
+            cborPrinter.append(isNaN() ? "NaN" : encoded[0] < 0 ? "-Infinity" : "Infinity");
         } else {
             cborPrinter.append("float'").append(HexaDecimal.encode(encoded)).append("'");
         }
     }
+
+    static final String STDERR_INVALID_NON_FINITE_ARGUMENT = 
+            "Invalid non-finite argument: ";
+
+    static final String STDERR_NOT_A_NAN = 
+            "Not a NaN: ";
+
+    static final String STDERR_PAYLOAD_RANGE = 
+            "Payloads are limited to bit d0-d51";
 }

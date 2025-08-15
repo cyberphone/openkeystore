@@ -168,7 +168,7 @@ public class CBORFloat extends CBORObject {
     }
 
     /**
-     * Documention: to be writtem...
+     * Documentation: to be written...
      */
     public static CBORObject createCombinedFloat(double value) {
         if (Double.isFinite(value)) {
@@ -179,7 +179,7 @@ public class CBORFloat extends CBORObject {
     }
 
     /**
-     * Get length of the optimized IEEE 754 type.
+     * Get length of the serialized IEEE 754 type.
      * <p>
      * Note that you must cast a {@link CBORObject} to {@link CBORFloat}
      * in order to access {@link CBORFloat#length()}.
@@ -201,6 +201,6 @@ public class CBORFloat extends CBORObject {
     }
 
     static final String STDERR_NON_FINITE_NOT_PERMITTED = 
-        "Not permitted, see \"CBORNonFinite\" for details";
+            "Not permitted, see \"CBORNonFinite\" for details";
 
 }

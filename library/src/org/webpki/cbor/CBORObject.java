@@ -297,19 +297,30 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
         }
         return (int)value;
     }
-    
+
     /**
-     * Documention: to be writtem...
+     * Get CBOR <code>float64</code> includng <code>NaN</code> and <code>Infinity</code>.
+     * <p>
+     * Unlike {@link #getFloat64()}, this method also supports the "quite" <code>NaN</code> 
+     * and the two <code>Infinity</code> variants.
+     * </p>
+     * <p>
+     * This method requires that the object is a
+     * {@link CBORFloat} or a {@link CBORNonFinite}, otherwise a {@link CBORException} is thrown.
+     * </p>
+     * 
+     * @return <code>double</code>
+     * @throws CBORException
      */
     public double getCombinedFloat64() {
         if (this instanceof CBORNonFinite) {
             CBORNonFinite cborNonFinite = (CBORNonFinite) this;
-            return switch (cborNonFinite.isBasic(true) ? (int)cborNonFinite.getNonFinite() : 0) {
+            return switch (cborNonFinite.isBasic() ? (int)cborNonFinite.getNonFinite() : 0) {
                 case 0x7e00 -> Double.NaN;
                 case 0x7c00 -> Double.POSITIVE_INFINITY;
                 case 0xfc00 -> Double.NEGATIVE_INFINITY;
                 default -> {
-                    cborError("getCombinedFloat64() only supports the \"basic\" NaN (7e00)");
+                    cborError(STDERR_ONLY_QUIET_NAN);
                     yield 0.0;
                 }
             };
@@ -323,7 +334,12 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * This method requires that the object is a
      * {@link CBORFloat}, otherwise a {@link CBORException} is thrown.
      * </p>
-     * 
+     * <p>
+     * Unlike {@link #getCombinedFloat64()}, this method only accepts "pure" floating-point
+     * numbers.  This makes it adapted for CBOR protocols that do not consider <code>NaN</code>
+     * or <code>Infinity</code> valid items.  That is, the latter cause a {@link CBORException}
+     * to be thrown.
+     * </p>
      * @return <code>double</code>
      * @throws CBORException
      */
@@ -756,5 +772,8 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
 
     static final String STDERR_MAP_KEY_IMMUTABLE =
             "Map keys are immutable";
+
+   static final String STDERR_ONLY_QUIET_NAN =
+            "getCombinedFloat64() only supports the \"quiet\" NaN (7e00)";
 
 }

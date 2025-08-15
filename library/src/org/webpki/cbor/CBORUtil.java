@@ -31,4 +31,20 @@ public class CBORUtil {
         }
         return result;
     }
+
+    public static long reverseBits(long bits, int fieldWidth) {
+        long reversed = 0;
+        int bitCount = 0;
+        while (bits > 0) {
+            bitCount++;
+            reversed <<= 1;
+            if ((bits & 1) == 1)
+                reversed |= 1;
+            bits >>= 1;
+        }
+        if (bitCount > fieldWidth) {
+            throw new IllegalArgumentException("Field exceeds fieldWidth");
+        }
+        return reversed << (fieldWidth - bitCount);
+    }
 }

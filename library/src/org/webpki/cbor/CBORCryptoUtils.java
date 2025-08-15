@@ -246,6 +246,6 @@ public class CBORCryptoUtils {
      * For internal use only
      */
     static final String STDERR_KEY_ID_PUBLIC = 
-            "\"keyId\" cannot be combined with public key objects";
+        "\"keyId\" cannot be combined with public key objects";
 
 }

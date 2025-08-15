@@ -53,6 +53,7 @@ public class CBORSimple extends CBORObject {
                    .append(')');
     }
 
-    static final String STDERR_SIMPLE_VALUE_OUT_OF_RANGE = "Simple value out of range: " ;
+    static final String STDERR_SIMPLE_VALUE_OUT_OF_RANGE = 
+        "Simple value out of range: " ;
 
 }

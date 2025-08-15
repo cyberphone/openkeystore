@@ -2379,8 +2379,8 @@ public class CBORTest {
         CBORNonFinite object = (CBORNonFinite)CBORDecoder.decode(refcbor);
         if (textexpect.contains("NaN") || textexpect.contains("Infinity")) {
             assertTrue("d4", String.valueOf(object.getCombinedFloat64()).equals(textexpect));
-            assertTrue("d5", object.isBasic(true));
-            assertTrue("d6", textexpect.contains("Infinity") ^ object.isBasic(false));
+            assertTrue("d5", object.isBasic());
+            assertTrue("d6", textexpect.contains("Infinity") ^ object.isNaN());
         } else {
             try {
             object.getCombinedFloat64();
@@ -2388,7 +2388,7 @@ public class CBORTest {
             } catch (Exception e) {
             assertTrue("d8", e.getMessage().contains("7e00"));
             }
-            assertFalse("d9", object.isBasic(true));
+            assertFalse("d9", object.isBasic());
         }
     }
 
@@ -2429,7 +2429,7 @@ public class CBORTest {
         assertTrue("truncated", object.getNonFinite64() == 0x7ff8000000000000L);              // Returns "quiet" NaN
         assertTrue("cbor",  HexaDecimal.encode(object.encode()).equals("f97e00"));   // Encoded as it should
         assertTrue("combined", Double.isNaN(object.getCombinedFloat64()));                    // It is a Double.NaN
-        assertTrue("basic", object.isBasic(false));                                   // Indeed it is
+        assertTrue("nan", object.isNaN());                                                    // Indeed it is
     }
 
     void oneDateTime(long epoch, String isoString) {
@@ -2448,6 +2448,12 @@ public class CBORTest {
             .getEpochTime().getTimeInMillis() == epoch + 3);
         assertTrue("date5", new CBORFloat(((double)epoch - 3.0) / 1000)
             .getEpochTime().getTimeInMillis() == epoch - 3);
+    }
+
+    @Test
+    public void nonFiniteNethods() {
+        byte[] cbor = CBORNonFinite.createNaNWithPayload(6).encode();
+        assertTrue("nfa1", ((CBORNonFinite)CBORDecoder.decode(cbor)).getNaNPayloadBits() == 6);
     }
 
     void badDate(String hexBor, String err) {
