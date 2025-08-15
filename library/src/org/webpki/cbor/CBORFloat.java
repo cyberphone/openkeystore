@@ -168,9 +168,9 @@ public class CBORFloat extends CBORObject {
     }
 
     /**
-     * Documentation: to be written...
+     * Create a combined
      */
-    public static CBORObject createCombinedFloat(double value) {
+    public static CBORObject createExpandedFloat(double value) {
         if (Double.isFinite(value)) {
             return new CBORFloat(value);
         }

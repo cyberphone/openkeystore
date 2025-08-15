@@ -106,7 +106,7 @@ public class CBORNonFinite extends CBORObject {
      * </table>
      * </div>
      * <div>
-     * Note that a payload with only zeros, will force the encoder to set bit <code>d0</code> to <code>1</code>.
+     * Note that a payload with only zeros, will force the encoder to set bit <code>d0</code>.
      * </div>
      * <div style='margin-top:1em'>
      * Although provided here for <i>reference purposes</i> only, the payloads bits are
@@ -122,17 +122,15 @@ public class CBORNonFinite extends CBORObject {
      * Note that the encoder will subsequently select the shortest serialization
      * required to properly represent the provided set of bits.
      * As an example, an argument of <code>6</code> (<code>d1</code> and <code>d2</code> bits are set),
-     * would yield a CBOR item encoded as
-     * <code>f97d80</code>, here shown in hexadecimal notation.
+     * would yield a CBOR item encoded as <code>f97d80</code>, here shown in hexadecimal notation.
      * </div>
      * @param payload Holds a set of application specific bits
      * @return {@link CBORNonFinite}.  Also see <a href='../../webpki/cbor/package-summary.html#supported-objects'>CBOR wrapper objects</a>.
-     * @see CBORObject#getCombinedFloat64()
-     * @see CBORFloat#createCombinedFloat(double)
+     * @see CBORFloat#createExpandedFloat(double)
      */
     public static CBORNonFinite createNaNWithPayload(long payload) {
         if (payload == 0) {
-            payload = 1;  // "quite" NaN
+            payload = 1;  // "quiet" NaN
         }
         if ((payload & PAYLOAD_MASK) != payload) {
             cborError(STDERR_PAYLOAD_RANGE);
@@ -142,10 +140,10 @@ public class CBORNonFinite extends CBORObject {
     }
 
     /**
-     * Get NaN payload bits.
+     * Get <code>NaN</code> payload bits.
      * <p>
      * This method is the consumer counterpart to {@link #createNaNWithPayload(long)}.
-     * Note that a "quiet" NaN (<code>7e00</code>) returns zero.
+     * Note that a "quiet" <code>NaN</code> (<code>7e00</code>) returns zero.
      * </p>
      * <p>
      * If the sign bit is also required, the {@link #getNonFinite64()}
@@ -163,7 +161,7 @@ public class CBORNonFinite extends CBORObject {
     }
 
     /**
-     * Get length of the serialized IEEE 754 type.
+     * Get length of CBOR non-finite object.
      * <p>
      * Note that you must cast a {@link CBORObject} to {@link CBORNonFinite}
      * in order to access {@link CBORNonFinite#length()}.
@@ -175,9 +173,15 @@ public class CBORNonFinite extends CBORObject {
     }
 
     /**
-     * Documentation: to be written...
+     * Check if CBOR non-finite object is simple.
+     * <p>
+     * This method returns <code>true</code> if the non-finite object is a "quiet" <code>NaN</code>,
+     * <code>Infinity</code>, or <code>-Infinity</code>,
+     * else it returns <code>false</code>.
+     * </p>
+     * @return <code>boolean</code>. 
      */
-    public boolean isBasic() {
+    public boolean isSimple() {
         return encoded.length == 2 ?
             switch ((int)value) {
                 case (int)FLOAT16_NOT_A_NUMBER,
@@ -188,7 +192,12 @@ public class CBORNonFinite extends CBORObject {
     }
 
     /**
-     * Documentation: to be written...
+     * Check if CBOR non-finite object is a <code>NaN</code>.
+     * <p>
+     * This method returns <code>true</code> for <i>all conformant</i> <code>NaN</code> variants,
+     * else it returns <code>false</code>.
+     * </p>
+     * @return <code>boolean</code>. 
      */
     public boolean isNaN() {
         return (switch (encoded.length) {
@@ -213,7 +222,13 @@ public class CBORNonFinite extends CBORObject {
     }
 
     /**
-     * Documentation: to be written...
+     * Get <i>actual</i> CBOR non-finite <code>float</code> object.
+     * <p>
+     * This method returns the value of a CBOR non-finite
+     * object.  The value is provided in the most compact form
+     * based on CBOR serialization rules.
+     * </p>
+     * @return <code>long</code>
      */
     public long getNonFinite() {
         scan();
@@ -221,7 +236,13 @@ public class CBORNonFinite extends CBORObject {
     }
 
     /**
-     * Documentation: to be written...
+     * Get <i>expanded</i> CBOR non-finite <code>float</code> object.
+     * <p>
+     * This method returns the value of a CBOR non-finite
+     * object after it has been expanded to 64 bits.
+     * That is, a received <code>7c01</code> will be returned as <code>7ff0040000000000</code>.
+     * </p>
+     * @return <code>long</code>
      */
     public long getNonFinite64() {
         scan();
@@ -239,7 +260,7 @@ public class CBORNonFinite extends CBORObject {
     
     @Override
     void internalToString(CborPrinter cborPrinter) {
-        if (isBasic()) {
+        if (isSimple()) {
             cborPrinter.append(isNaN() ? "NaN" : encoded[0] < 0 ? "-Infinity" : "Infinity");
         } else {
             cborPrinter.append("float'").append(HexaDecimal.encode(encoded)).append("'");
