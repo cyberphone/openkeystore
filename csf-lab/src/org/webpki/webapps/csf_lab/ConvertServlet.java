@@ -69,7 +69,7 @@ public class ConvertServlet extends CoreRequestServlet {
             JSONObjectReader parsedJson = JSONParser.parse(ServletUtil.getData(request));
             boolean sequenceFlag = parsedJson.getBoolean(SEQUENCE_FLAG);
             boolean strictFlag = parsedJson.getBoolean(STRICT_FLAG);
-            boolean rejectNanInfinityFlag = parsedJson.getBoolean(REJECT_NAN_FLAG);
+            boolean rejectNonFinityFlag = parsedJson.getBoolean(REJECT_NAN_FLAG);
             String inData = parsedJson.getString(CBOR_IN);
             byte[] cborBytes;
             switch (parsedJson.getString(SEL_IN)) {
@@ -98,7 +98,7 @@ public class ConvertServlet extends CoreRequestServlet {
             CBORArray sequenceBuilder = new CBORArray();
             CBORObject cborObject;
             while ((cborObject = cborDecoder.decodeWithOptions()) != null) {
-                if (rejectNanInfinityFlag && cborObject instanceof CBORNonFinite) {
+                if (rejectNonFinityFlag && cborObject instanceof CBORNonFinite) {
                     throw new IOException("\"NaN\" or \"Infinity\" were encountered");
                 }
                 sequenceBuilder.add(cborObject);
