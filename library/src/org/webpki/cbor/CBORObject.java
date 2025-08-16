@@ -311,9 +311,9 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * 
      * @return <code>double</code>
      * @throws CBORException
-     * @see CBORFloat#createExpandedFloat(double)
+     * @see CBORFloat#createExtendedFloat(double)
      */
-    public double getExpandedFloat64() {
+    public double getExtendedFloat64() {
         if (this instanceof CBORNonFinite) {
             CBORNonFinite cborNonFinite = (CBORNonFinite) this;
             return switch (cborNonFinite.isSimple() ? (int)cborNonFinite.getNonFinite() : 0) {
@@ -336,7 +336,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * {@link CBORFloat}, otherwise a {@link CBORException} is thrown.
      * </p>
      * <p>
-     * Unlike {@link #getExpandedFloat64()}, this method only accepts "pure" floating-point
+     * Unlike {@link #getExtendedFloat64()}, this method only accepts "pure" floating-point
      * numbers.  This makes it adapted for CBOR protocols that do not consider <code>NaN</code>
      * or <code>Infinity</code> valid items.  That is, the latter cause a {@link CBORException}
      * to be thrown.

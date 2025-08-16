@@ -101,7 +101,7 @@ public class CBORNonFinite extends CBORObject {
     /**
      * Creates a payload object.
      * <div style='margin-top:0.8em'>
-     * Traditionally, the non-finite number space is used for communicating
+     * Traditionally, the non-finite number space is used for propagating
      * math-related problems such as division by zero.
      * </div>
      * <div style='margin-top:0.5em'>
@@ -152,7 +152,7 @@ public class CBORNonFinite extends CBORObject {
      * </div>
      * @param payload Holds payload data
      * @return {@link CBORNonFinite}.  Also see <a href='../../webpki/cbor/package-summary.html#supported-objects'>CBOR wrapper objects</a>.
-     * @see CBORFloat#createExpandedFloat(double)
+     * @see CBORFloat#createExtendedFloat(double)
      */
     public static CBORNonFinite createPayloadObject(long payload) {
         if ((payload & PAYLOAD_MASK) != payload) {

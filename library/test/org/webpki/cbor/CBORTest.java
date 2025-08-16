@@ -346,7 +346,7 @@ public class CBORTest {
                 assertTrue("diag"+ asText, asText.equals(cborFloat.toString()));
             }
             assertFalse("Double should fail", mustFail == 1);
-            d = cborFloat.getExpandedFloat64();
+            d = cborFloat.getExtendedFloat64();
             assertTrue("Equal d=" + d + " v=" + v, (d.compareTo(v)) == 0 ^ (mustFail != 0));
         } catch (Exception e) {
             assertTrue("Ok fail", mustFail != 0);
@@ -2223,11 +2223,11 @@ public class CBORTest {
                           CBORDiagnosticNotation.convert(
                                   "<< " + DIAG_CBOR.toString() + ">>").getBytes(),
                           DIAG_CBOR.encode()));
-        Double v = CBORDiagnosticNotation.convert("Infinity").getExpandedFloat64();
+        Double v = CBORDiagnosticNotation.convert("Infinity").getExtendedFloat64();
         assertTrue("inf", v == Double.POSITIVE_INFINITY);
-        v = CBORDiagnosticNotation.convert("-Infinity").getExpandedFloat64();
+        v = CBORDiagnosticNotation.convert("-Infinity").getExtendedFloat64();
         assertTrue("-inf", v == Double.NEGATIVE_INFINITY);
-        v = CBORDiagnosticNotation.convert("NaN").getExpandedFloat64();
+        v = CBORDiagnosticNotation.convert("NaN").getExtendedFloat64();
         assertTrue("nan", v.isNaN());
         assertTrue("0.0", CBORDiagnosticNotation.convert("0.0").toString().equals("0.0"));
         assertTrue("-0.0", CBORDiagnosticNotation.convert("-0.0").toString().equals("-0.0"));
@@ -2379,12 +2379,12 @@ public class CBORTest {
             .decodeWithOptions().equals(nonfinite));
         CBORNonFinite object = (CBORNonFinite)CBORDecoder.decode(refcbor);
         if (textexpect.contains("NaN") || textexpect.contains("Infinity")) {
-            assertTrue("d4", String.valueOf(object.getExpandedFloat64()).equals(textexpect));
+            assertTrue("d4", String.valueOf(object.getExtendedFloat64()).equals(textexpect));
             assertTrue("d5", object.isSimple());
             assertTrue("d6", textexpect.contains("Infinity") ^ object.isNaN());
         } else {
             try {
-            object.getExpandedFloat64();
+            object.getExtendedFloat64();
             fail("d7");
             } catch (Exception e) {
             assertTrue("d8", e.getMessage().contains("7e00"));
@@ -2438,11 +2438,11 @@ public class CBORTest {
         // Very special, some platforms natively support NaN with payloads, but we don't care
         // "signaling" NaN
         double nanWithPayload = Double.longBitsToDouble(0x7ff0000000000001L);
-        CBORNonFinite nonFinite = (CBORNonFinite)CBORFloat.createExpandedFloat(nanWithPayload);
+        CBORNonFinite nonFinite = (CBORNonFinite)CBORFloat.createExtendedFloat(nanWithPayload);
         assertTrue("conv", nonFinite instanceof CBORNonFinite);
         assertTrue("truncated", nonFinite.getNonFinite64() == 0x7ff8000000000000L);              // Returns "quiet" NaN
         assertTrue("cbor",  HexaDecimal.encode(nonFinite.encode()).equals("f97e00"));   // Encoded as it should
-        assertTrue("combined", Double.isNaN(nonFinite.getExpandedFloat64()));                    // It is a Double.NaN
+        assertTrue("combined", Double.isNaN(nonFinite.getExtendedFloat64()));                    // It is a Double.NaN
         assertTrue("nan", nonFinite.isNaN());    
         
         payloadOneTurn(0, "f97c00", "Infinity");

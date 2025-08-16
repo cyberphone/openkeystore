@@ -41,20 +41,19 @@ public class CBORFloat extends CBORObject {
     /**
      * Creates a CBOR <code>float</code> object.
      * <p>
-     * Note that this implementation does not provide a specific constructor
-     * for Java <code>float</code> values.
-     * Due to the CBOR normalization algorithm, numbers are still correctly encoded.
+     * This constructor only implements support for finite ("genuine") floating point
+     * numbers.  That is, a {@link Double#NaN} argument causes a {@link CBORException}
+     * to be thrown.
      * </p>
      * <p>
-     * See also {@link CBORObject#getFloat64()} and {@link CBORObject#getFloat32()}
+     * {@link CBORObject#getFloat64()} is the <i>decoder</i> counterpart.
      * </p>
      * <p>
      * For <code>NaN</code> and <code>Infinity</code> support see
-     * {@link CBORNonFinite}.
+     * {@link CBORFloat#createExtendedFloat(double)}.
      * </p>
      * 
      * @param value The floating-point value
-     * @throws CBORException
      */
     public CBORFloat(double value) {
         this.value = value;
@@ -64,7 +63,7 @@ public class CBORFloat extends CBORObject {
         tag = MT_FLOAT64;
         bitFormat = Double.doubleToRawLongBits(value);
 
-        // Check for possible edge cases.
+        // Check for forbidden numbers.
 
         if ((bitFormat & FLOAT64_POS_INFINITY) == FLOAT64_POS_INFINITY) {
 
@@ -174,15 +173,18 @@ public class CBORFloat extends CBORObject {
      * and the two <code>Infinity</code> variants.
      * </p>
      * <p>
+     * {@link CBORObject#getExtendedFloat64()} is the <i>decoder</i> counterpart.
+     * </p>
+     * <p>
      * Note that return type is either {@link CBORFloat} or {@link CBORNonFinite}, depending
      * on if the argument is a "regular" floating-point value of one of the non-finite variants.
      * </p>
      * @param value The floating-point value
      * @return {@link CBORObject}
      * @throws CBORException
-     * @see CBORObject#getExpandedFloat64()
+     * @see {@link CBORNonFinite#CBORNonFinite(long))}
      */
-    public static CBORObject createExpandedFloat(double value) {
+    public static CBORObject createExtendedFloat(double value) {
         if (Double.isFinite(value)) {
             return new CBORFloat(value);
         }
