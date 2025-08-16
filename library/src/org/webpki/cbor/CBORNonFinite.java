@@ -122,8 +122,8 @@ public class CBORNonFinite extends CBORObject {
      * <code>64</code>-bit object having the following layout:
      * </div>
      * <div class='webpkifloat'><table class='webpkitable' style='margin-left:2em'>
-     * <tr><th>Sign &amp; Exponent</th><th>Significand</th></tr>
-     * <tr><td style='text-align:center'>011111111111</td><td><code>d0-d51</code> in <i>little-endian</i> order</td></tr>
+     * <tr><th style='white-space:nowrap'>Sign &amp; Exponent</th><th>Significand</th></tr>
+     * <tr><td style='text-align:center'>011111111111</td><td style='white-space:nowrap'><code>d0-d51</code> in <i>little-endian</i> order</td></tr>
      * </table></div>
      * <div>
      * The reason for <i>reversing</i> the payload bits is to ensure that a specific bit will remain
