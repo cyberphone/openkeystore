@@ -47,7 +47,7 @@ public class CBORNonFinite extends CBORObject {
      * non-finite number in <code>IEEE-754</code> encoding.
      * </p>
      * <p>
-     * See also {@link CBORFloat#CBORFloat(double)}.
+     * See also {@link CBORFloat#CBORFloat(double)} and {@link CBORFloat#createExtendedFloat(double)}.
      * </p>
      * 
      * @param value <code>long</code> holding the number
