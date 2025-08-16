@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.webpki.cbor.CBORArray;
 import org.webpki.cbor.CBORDecoder;
 import org.webpki.cbor.CBORDiagnosticNotation;
+import org.webpki.cbor.CBORNonFinite;
 import org.webpki.cbor.CBORObject;
 
 import org.webpki.json.JSONObjectReader;
@@ -68,7 +69,7 @@ public class ConvertServlet extends CoreRequestServlet {
             JSONObjectReader parsedJson = JSONParser.parse(ServletUtil.getData(request));
             boolean sequenceFlag = parsedJson.getBoolean(SEQUENCE_FLAG);
             boolean strictFlag = parsedJson.getBoolean(STRICT_FLAG);
-            boolean rejectNonInfinityFlag = parsedJson.getBoolean(REJECT_NAN_FLAG);
+            boolean rejectNanInfinityFlag = parsedJson.getBoolean(REJECT_NAN_FLAG);
             String inData = parsedJson.getString(CBOR_IN);
             byte[] cborBytes;
             switch (parsedJson.getString(SEL_IN)) {
@@ -92,12 +93,14 @@ public class ConvertServlet extends CoreRequestServlet {
             CBORDecoder cborDecoder = new CBORDecoder(new ByteArrayInputStream(cborBytes), 
                 (sequenceFlag ? CBORDecoder.SEQUENCE_MODE : 0) |
                 (strictFlag ? 0 :
-                     CBORDecoder.LENIENT_MAP_DECODING | CBORDecoder.LENIENT_NUMBER_DECODING) |
-                (rejectNonInfinityFlag ? CBORDecoder.REJECT_NON_FINITE_FLOATS : 0),
+                     CBORDecoder.LENIENT_MAP_DECODING | CBORDecoder.LENIENT_NUMBER_DECODING),
                                                       cborBytes.length);
             CBORArray sequenceBuilder = new CBORArray();
             CBORObject cborObject;
             while ((cborObject = cborDecoder.decodeWithOptions()) != null) {
+                if (rejectNanInfinityFlag && cborObject instanceof CBORNonFinite) {
+                    throw new IOException("\"NaN\" or \"Infinity\" were encountered");
+                }
                 sequenceBuilder.add(cborObject);
                 if (!sequenceFlag) {
                     break;
