@@ -2393,14 +2393,17 @@ public class CBORTest {
         }
     }
 
-    void payloadOneTurn(long payload, String hex) {
-        byte[] cbor = CBORNonFinite.createNaNPayload(payload).encode();
+    void payloadOneTurn(long payload, String hex, String dn) {
+        dn = dn == null ? "float'" + hex.substring(2) + "'" : dn;
+        byte[] cbor = CBORNonFinite.createPayloadObject(payload).encode();
         CBORObject object = CBORDecoder.decode(cbor);
         assertTrue("plo1", object instanceof CBORNonFinite);
         CBORNonFinite nonFinite = (CBORNonFinite) object;
-        assertTrue("plo2", nonFinite.getNaNPayload() == payload);
+        assertTrue("plo2", nonFinite.getPayloadData() == payload);
         assertTrue("plo3", HexaDecimal.encode(cbor).equals(hex));
-        assertTrue("plo4", (payload == 0) == nonFinite.toString().equals("Infinity"));
+        assertTrue("plo4", nonFinite.toString().equals(dn));
+     //   System.out.printf("%13x  %18s  %s\n", payload, hex, dn);
+      //  System.out.printf("<tr><td style='text-align:right'><code>%x</code></td><td style='text-align:right'><code>%s</code></td><td><code>%s</code></td></tr>\n", payload, hex, dn);
     }
 
     @Test
@@ -2442,14 +2445,17 @@ public class CBORTest {
         assertTrue("combined", Double.isNaN(nonFinite.getExpandedFloat64()));                    // It is a Double.NaN
         assertTrue("nan", nonFinite.isNaN());    
         
-        payloadOneTurn(0, "f97c00");
-        payloadOneTurn(18, "f97d20");
-        payloadOneTurn((1L << FLOAT64_SIGNIFICAND_SIZE) - 1L, "fb7fffffffffffffff");
-        payloadOneTurn((1L << FLOAT32_SIGNIFICAND_SIZE) - 1L, "fa7fffffff");
-        payloadOneTurn(1L << FLOAT32_SIGNIFICAND_SIZE,        "fb7ff0000010000000");
+        payloadOneTurn(0, "f97c00", "Infinity");
+        payloadOneTurn(1, "f97e00", "NaN");
+        payloadOneTurn(2, "f97d00", null);
+        payloadOneTurn((1L << FLOAT16_SIGNIFICAND_SIZE) - 1L, "f97fff", null);
+        payloadOneTurn(1L << FLOAT16_SIGNIFICAND_SIZE,        "fa7f801000", null);
+        payloadOneTurn((1L << FLOAT32_SIGNIFICAND_SIZE) - 1L, "fa7fffffff", null);
+        payloadOneTurn(1L << FLOAT32_SIGNIFICAND_SIZE,        "fb7ff0000010000000", null);
+        payloadOneTurn((1L << FLOAT64_SIGNIFICAND_SIZE) - 1L, "fb7fffffffffffffff", null);
 
         try {
-            CBORNonFinite.createNaNPayload(1L << FLOAT64_SIGNIFICAND_SIZE).encode();
+            CBORNonFinite.createPayloadObject(1L << FLOAT64_SIGNIFICAND_SIZE).encode();
             fail("pl8");
         } catch(Exception e) {
             checkException(e, CBORNonFinite.STDERR_PAYLOAD_RANGE);
@@ -2476,8 +2482,8 @@ public class CBORTest {
 
     @Test
     public void nonFiniteNethods() {
-        byte[] cbor = CBORNonFinite.createNaNPayload(6).encode();
-        assertTrue("nfa1", ((CBORNonFinite)CBORDecoder.decode(cbor)).getNaNPayload() == 6);
+        byte[] cbor = CBORNonFinite.createPayloadObject(6).encode();
+        assertTrue("nfa1", ((CBORNonFinite)CBORDecoder.decode(cbor)).getPayloadData() == 6);
     }
 
     void badDate(String hexBor, String err) {
