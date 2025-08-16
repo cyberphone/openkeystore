@@ -2402,6 +2402,7 @@ public class CBORTest {
         assertTrue("plo2", nonFinite.getPayloadData() == payload);
         assertTrue("plo3", HexaDecimal.encode(cbor).equals(hex));
         assertTrue("plo4", nonFinite.toString().equals(dn));
+        assertTrue("plo5", nonFinite.getNonFinite() == Long.valueOf(hex.substring(2), 16));
      //   System.out.printf("%13x  %18s  %s\n", payload, hex, dn);
       //  System.out.printf("<tr><td style='text-align:right'><code>%x</code></td><td style='text-align:right'><code>%s</code></td><td><code>%s</code></td></tr>\n", payload, hex, dn);
     }
