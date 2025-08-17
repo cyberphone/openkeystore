@@ -235,9 +235,11 @@ public class CBORDiagnosticNotation {
                     default:
                         parserError("Argument must be a 16, 32, or 64-bit floating-point number");
                 }
-                yield CBORDecoder.decode(CBORUtil.concatByteArrays(
-                    new byte[]{(byte)(MT_FLOAT16 + (floatBytes.length >> 2))}, floatBytes),
-                    CBORDecoder.LENIENT_NUMBER_DECODING);
+                yield new CBORDecoder(
+                    new ByteArrayInputStream(CBORUtil.concatByteArrays(
+                        new byte[]{(byte)(MT_FLOAT16 + (floatBytes.length >> 2))}, floatBytes)),
+                    CBORDecoder.LENIENT_NUMBER_DECODING,
+                    10).decodeWithOptions();
             }
        
             case 'n' -> {
