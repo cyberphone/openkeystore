@@ -2446,7 +2446,7 @@ public class CBORTest {
         // Very special, some platforms natively support NaN with payloads, but we don't care
         // "signaling" NaN
         double nanWithPayload = Double.longBitsToDouble(0x7ff0000000000001L);
-        CBORNonFinite nonFinite = (CBORNonFinite)CBORFloat.createExtendedFloat(nanWithPayload);
+        CBORNonFinite nonFinite = (CBORNonFinite)CBORFloat.createExtended(nanWithPayload);
         assertTrue("conv", nonFinite instanceof CBORNonFinite);
         assertTrue("truncated", nonFinite.getNonFinite64() == 0x7ff8000000000000L);              // Returns "quiet" NaN
         assertTrue("cbor",  HexaDecimal.encode(nonFinite.encode()).equals("f97e00"));   // Encoded as it should

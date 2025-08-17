@@ -32,7 +32,8 @@ notation:
  The encoded representation is determined by the size of the value.
 Also see {@link CBORObject#getBigInteger()}.</li>
 <li style='padding-top:0.5em'>Floating-point data covers the 16, 32, and 64-bit IEEE&nbsp;754 variants.
-The encoded representation is determined by the size and precision of the value.</li>
+The encoded representation is determined by the size and precision of the value.
+Also see <a href='#non-finite-numbers' class='webpkilink'>Non-Finite Numbers</a>.</li>
 </ol>
 <h3 id='time-data'>Time Data</h3>
 Since CBOR lacks a native time primitive, RFC&nbsp;8949 introduces
@@ -41,6 +42,51 @@ as well as making the same methods available without the tag constructs.
 For details turn to {@link CBORTag#getDateTime()},
 {@link CBORTag#getEpochTime()}, {@link CBORObject#getDateTime()},
 {@link CBORObject#getEpochTime()}.
+<h3 id='non-finite-numbers'>Non-Finite Numbers</h3>
+Unlike JSON&nbsp;[<a href='https://www.rfc-editor.org/rfc/rfc8259.html' class='webpkilink'>RFC&nbsp;8259</a>],
+CBOR supports the non-finite floating-point constructs defined by IEEE-754, known as
+<code>NaN</code> (not a number) and <code>Infinity</code>.
+This implementation, provides multiple levels of support, intended to
+accomodate different needs.
+This is accomplished without specific decoder or encoder options;
+it is entirely based on API method selections.
+The levels are represented by the following table:
+<div class='webpkifloat' style='margin-left:2em'><table class='webpkitable' style='margin-bottom:0;min-width:30em'>
+<tr><th>Designation</th><th>Comment</th></tr>
+<tr><td style='text-align:center'><code>FORBIDDEN</code></td><td>Only "genuine" floating-point numbers are accepted;
+an encountered non-finite number will throw a {@link CBORException}.
+</td></tr>
+<tr><td style='text-align:center'><code>EXTENDED</code></td><td>All but non-trival non-finite numbers are accepted.
+</td></tr>
+<tr><td style='text-align:center'><code>COMPLETE</code></td><td>All floating-point numbers are accepted.
+</td></tr>
+</table></div>
+<h5 style='margin:1.3em 0 1em 0'>Encoding</h5>
+<div class='webpkifloat' style='margin-left:2em;font-family: monospace;white-space:nowrap'>
+FORBIDDEN
+<div style='margin:0 0 0.5em 2em'>&#x2022; new&nbsp;{@link CBORFloat#CBORFloat(double) CBORFloat(2.5)}</div>
+EXTENDED
+<div style='margin:0 0 0.5em 2em'>&#x2022; {@link CBORFloat#createExtended(double) CBORFloat.createExtended(2.5)}<br>
+&#x2022; {@link CBORFloat#createExtended(double) CBORFloat.createExtended(Double.NaN)}</div>
+COMPLETE
+<div style='margin:0 0 0 2em'>&#x2022; new&nbsp;{@link CBORFloat#CBORFloat(double) CBORFloat(2.5)}<br>
+&#x2022; {@link CBORNonFinite#createPayloadObject(long) CBORNonFinite.createPayloadObject(347)}</div>
+</div>
+<h5 style='margin:1.3em 0 1em 0'>Decoding</h5>
+<div class='webpkifloat' style='margin:0 0 0.5em 2em;font-family: monospace;white-space:nowrap'>
+FORBIDDEN
+<div style='margin:0 0 0.5em 2em'>&#x2022; cborObject.{@link CBORObject#getFloat64() getFloat64()}</div>
+EXTENDED
+<div style='margin:0 0 0.5em 2em'>&#x2022; cborObject.{@link CBORObject#getExtendedFloat64() getExtendedFloat64()}</div>
+COMPLETE
+<div style='margin:0 0 0 2em'>&#x2022; if (cborObject instanceof {@link CBORNonFinite} nf) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;// non-finite number to proceess<br>
+&nbsp;&nbsp;&nbsp;&nbsp;nf.{@link CBORNonFinite#getPayloadData() getPayloadData()}<br>
+&nbsp;&nbsp;} else {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;// "genuine" number to proceess<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cborObject.{@link CBORObject#getFloat64() getFloat64()}<br>
+&nbsp;&nbsp;}</div>
+</div>
 <h3 id='deterministic-encoding'>Deterministic Encoding</h3>
 For certain security related applications, it has been proven
 useful performing cryptographic operations like

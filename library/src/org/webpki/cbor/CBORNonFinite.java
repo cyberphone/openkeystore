@@ -91,7 +91,7 @@ public class CBORNonFinite extends CBORObject {
      * non-finite number in <code>IEEE-754</code> encoding.
      * </p>
      * <p>
-     * See also {@link CBORFloat#CBORFloat(double)} and {@link CBORFloat#createExtendedFloat(double)}.
+     * See also {@link CBORFloat#CBORFloat(double)} and {@link CBORFloat#createExtended(double)}.
      * </p>
      * 
      * @param value <code>long</code> holding the number
@@ -130,10 +130,12 @@ public class CBORNonFinite extends CBORObject {
      * <tr style='text-align:center'><td>0</td><td>11111111111</td><td style='white-space:nowrap'><code>d0-d51</code> in <i>little-endian</i> order</td></tr>
      * </table></div>
      * <div>
+     * For setting the sign bit, see {@link #setSign(boolean)}.
+     * </div>
+     * <div style='margin-top:0.7em'>
      * The reason for <i>reversing</i> the payload bits is to ensure that a specific bit will remain
      * in a fix position (maintain the same value), independent of the size of the
      * <code>IEEE-754</code> variant used for encoding.
-     * For setting the sign bit, see {@link #setSign(boolean)}.
      * </div>
      * <div style='margin-top:0.7em'>
      * Note that the encoder will (due to CBOR deterministic encoding rules), select
@@ -156,7 +158,7 @@ public class CBORNonFinite extends CBORObject {
      * </div>
      * @param payload Payload
      * @return {@link CBORNonFinite}.  Also see <a href='../../webpki/cbor/package-summary.html#supported-objects'>CBOR wrapper objects</a>.
-     * @see CBORFloat#createExtendedFloat(double)
+     * @see CBORFloat#createExtended(double)
      */
     public static CBORNonFinite createPayloadObject(long payload) {
         if ((payload & PAYLOAD_MASK) != payload) {
