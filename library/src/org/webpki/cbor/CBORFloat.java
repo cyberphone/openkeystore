@@ -53,7 +53,7 @@ public class CBORFloat extends CBORObject {
      * {@link CBORFloat#createExtendedFloat(double)}.
      * </p>
      * 
-     * @param value The floating-point value
+     * @param value Floating-point value
      */
     public CBORFloat(double value) {
         this.value = value;
@@ -155,7 +155,7 @@ public class CBORFloat extends CBORObject {
      * </p>
      * This method also supports <code>NaN</code>, <code>Infinity</code>, and <code>-Infinity</code>.
      * 
-     * @param value The double
+     * @param value Floating-point value
      * @return The double in string format
      */
     public static String formatDouble(Double value) {
@@ -179,7 +179,7 @@ public class CBORFloat extends CBORObject {
      * Note that return type is either {@link CBORFloat} or {@link CBORNonFinite}, depending
      * on if the argument is a "regular" floating-point value of one of the non-finite variants.
      * </p>
-     * @param value The floating-point value
+     * @param value Floating-point value
      * @return {@link CBORObject}
      * @throws CBORException
      * @see {@link CBORNonFinite#CBORNonFinite(long))}

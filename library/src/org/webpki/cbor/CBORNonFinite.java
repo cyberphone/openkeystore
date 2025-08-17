@@ -154,7 +154,7 @@ public class CBORNonFinite extends CBORObject {
      * <div style='margin-top:0.7em'>
      * {@link CBORNonFinite#CBORNonFinite(long)} represents another way creating a non-finite <code>float</code>.
      * </div>
-     * @param payload Holds payload data
+     * @param payload Payload
      * @return {@link CBORNonFinite}.  Also see <a href='../../webpki/cbor/package-summary.html#supported-objects'>CBOR wrapper objects</a>.
      * @see CBORFloat#createExtendedFloat(double)
      */
@@ -171,7 +171,7 @@ public class CBORNonFinite extends CBORObject {
      * <p>
      * This method is the "consumer" counterpart to {@link #createPayloadObject(long)}.
      * </p>
-     * @return <code>long</code> holding the "pure" payload
+     * @return Payload
      */
     public long getPayloadData() {
         return CBORUtil.reverseBits(getNonFinite64() & PAYLOAD_MASK, FLOAT64_SIGNIFICAND_SIZE);
