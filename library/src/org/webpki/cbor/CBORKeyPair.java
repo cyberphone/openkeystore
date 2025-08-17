@@ -121,8 +121,7 @@ public class CBORKeyPair {
 
             // EDDSA and XEC
             default -> cosePrivateKey.set(COSE_OKP_D_LBL, new CBORBytes(
-                                              OkpSupport.private2RawKey(keyPair.getPrivate(),
-                                                                        keyAlg)));
+                OkpSupport.private2RawKey(keyPair.getPrivate(), keyAlg)));
 
         };
     }
@@ -157,11 +156,11 @@ public class CBORKeyPair {
 
                 case EC -> KeyFactory.getInstance("EC").generatePrivate(
                     new ECPrivateKeySpec(
-                            CBORPublicKey.getCurvePoint(privateKeyMap,
-                                                        COSE_EC2_D_LBL,
-                                                        CBORPublicKey.getKeyAlgorithmFromCurve(
-                                                            privateKeyMap, COSE_EC2_CRV_LBL)),
-                            ((ECKey) publicKey).getParams()));
+                        CBORPublicKey.getCurvePoint(privateKeyMap,
+                                                    COSE_EC2_D_LBL,
+                                                    CBORPublicKey.getKeyAlgorithmFromCurve(
+                                                        privateKeyMap, COSE_EC2_CRV_LBL)),
+                                        ((ECKey) publicKey).getParams()));
 
                 // EDDSA and XEC
                 default -> OkpSupport.raw2PrivateKey(
