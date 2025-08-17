@@ -73,13 +73,13 @@ COMPLETE
 &#x2022; {@link CBORNonFinite#createPayloadObject(long) CBORNonFinite.createPayloadObject(347)}</div>
 </div>
 <h5 style='margin:1.3em 0 1em 0'>Decoding</h5>
-<div class='webpkifloat' style='margin:0 0 0.5em 2em;font-family: monospace;white-space:nowrap'>
+<div class='webpkifloat' style='margin-left:2em;font-family: monospace;white-space:nowrap'>
 FORBIDDEN
 <div style='margin:0 0 0.5em 2em'>&#x2022; cborObject.{@link CBORObject#getFloat64() getFloat64()}</div>
 EXTENDED
 <div style='margin:0 0 0.5em 2em'>&#x2022; cborObject.{@link CBORObject#getExtendedFloat64() getExtendedFloat64()}</div>
 COMPLETE
-<div style='margin:0 0 0 2em'>&#x2022; if (cborObject instanceof {@link CBORNonFinite} nf) {<br>
+<div style='margin:0 0 0.8em 2em'>&#x2022; if (cborObject instanceof {@link CBORNonFinite} nf) {<br>
 &nbsp;&nbsp;&nbsp;&nbsp;// non-finite number to proceess<br>
 &nbsp;&nbsp;&nbsp;&nbsp;nf.{@link CBORNonFinite#getPayloadData() getPayloadData()}<br>
 &nbsp;&nbsp;} else {<br>
