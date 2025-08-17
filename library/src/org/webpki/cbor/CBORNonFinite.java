@@ -40,21 +40,7 @@ public class CBORNonFinite extends CBORObject {
 
     static final long PAYLOAD_MASK = ((1L << FLOAT64_SIGNIFICAND_SIZE) - 1L);
 
-    /**
-     * Creates a CBOR <i>non-finite</i> <code>float</code> object.
-     * <p>
-     * The constructor takes a <code>16</code>, <code>32</code>, or <code>64</code>-bit
-     * non-finite number in <code>IEEE-754</code> encoding.
-     * </p>
-     * <p>
-     * See also {@link CBORFloat#CBORFloat(double)} and {@link CBORFloat#createExtendedFloat(double)}.
-     * </p>
-     * 
-     * @param value <code>long</code> holding the number
-     * @throws CBORException If the argument is not within the non-finite number space
-     */
-    @SuppressWarnings("this-escape")
-    public CBORNonFinite(long value) {
+    void createDetermnisticEncoding(long value) {
         original = value;
         while (true) {
             this.value = value;
@@ -96,6 +82,24 @@ public class CBORNonFinite extends CBORObject {
             }
             return;
         }
+    }
+
+    /**
+     * Creates a CBOR <i>non-finite</i> <code>float</code> object.
+     * <p>
+     * The constructor takes a <code>16</code>, <code>32</code>, or <code>64</code>-bit
+     * non-finite number in <code>IEEE-754</code> encoding.
+     * </p>
+     * <p>
+     * See also {@link CBORFloat#CBORFloat(double)} and {@link CBORFloat#createExtendedFloat(double)}.
+     * </p>
+     * 
+     * @param value <code>long</code> holding the number
+     * @throws CBORException If the argument is not within the non-finite number space
+     */
+    @SuppressWarnings("this-escape")
+    public CBORNonFinite(long value) {
+        createDetermnisticEncoding(value);
     }
 
     /**
@@ -171,6 +175,29 @@ public class CBORNonFinite extends CBORObject {
      */
     public long getPayloadData() {
         return CBORUtil.reverseBits(getNonFinite64() & PAYLOAD_MASK, FLOAT64_SIGNIFICAND_SIZE);
+    }
+
+    long getBitMask() {
+        return 1L << ((encoded.length * 8) - 1L);
+    }
+
+    /**
+     * Set the sign bit of the non-finite <code>float</code>.
+     * @param on Sign bit
+     * @return {@link CBORNonFinite}
+     */
+    public CBORNonFinite setSign(boolean on) {
+        long mask = getBitMask();
+        createDetermnisticEncoding((value & (mask - 1L)) | (on ? mask : 0));
+        return this;
+    }
+
+    /**
+     * Get the sign bit of the non-finite <code>float</code>.
+     * @return Sign bit expressed as a <code>boolean</code>
+     */
+    public boolean getSign() {
+        return (value & getBitMask()) != 0;
     }
 
     /**

@@ -2403,6 +2403,13 @@ public class CBORTest {
         assertTrue("plo3", HexaDecimal.encode(cbor).equals(hex));
         assertTrue("plo4", nonFinite.toString().equals(dn));
         assertTrue("plo5", nonFinite.getNonFinite() == Long.valueOf(hex.substring(2), 16));
+        assertFalse("plo6", nonFinite.getSign());
+        String signedHex = hex.substring(0, 2) + "f" +hex.substring(3);
+        nonFinite.setSign(true);
+        assertTrue("plo7", nonFinite.getSign());
+        assertTrue("plo8", HexaDecimal.encode(nonFinite.encode()).equals(signedHex));
+        nonFinite = CBORNonFinite.createPayloadObject(payload).setSign(true);
+        assertTrue("plo9", HexaDecimal.encode(nonFinite.encode()).equals(signedHex));
      //   System.out.printf("%13x  %18s  %s\n", payload, hex, dn);
       //  System.out.printf("<tr><td style='text-align:right'><code>%x</code></td><td style='text-align:right'><code>%s</code></td><td><code>%s</code></td></tr>\n", payload, hex, dn);
     }
