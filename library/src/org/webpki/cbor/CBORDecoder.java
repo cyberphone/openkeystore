@@ -383,9 +383,11 @@ public class CBORDecoder {
      * <p>
      * This conveniance method is identical to:
      * </p>
+     * <div class='webpkifloat'>
      * <pre>  new CBORDecoder(new ByteArrayInputStream(cbor), 0, cbor.length)
      *      .decodeWithOptions();
      * </pre>
+     * </div>
      * @param cbor CBOR binary data <i>holding exactly one CBOR object</i>.
      * @return {@link CBORObject}
      * @throws CBORException
