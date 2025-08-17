@@ -396,6 +396,30 @@ public class CBORDecoder {
         return new CBORDecoder(new ByteArrayInputStream(cbor), 0, cbor.length)
                                    .decodeWithOptions();
     }
+
+   /**
+     * Decode CBOR data.
+     * <p>
+     * Unsupported or malformed CBOR data cause a {@link CBORException} to be thrown.
+     * </p>
+     * <p>
+     * This conveniance method is identical to:
+     * </p>
+     * <div class='webpkifloat'>
+     * <pre>  new CBORDecoder(new ByteArrayInputStream(cbor), options, cbor.length)
+     *      .decodeWithOptions();
+     * </pre>
+     * </div>
+     * @param options The decoder options.
+     * @param cbor CBOR binary data <i>holding exactly one CBOR object</i>.
+     * @return {@link CBORObject}
+     * @throws CBORException
+     */
+    public static CBORObject decode(byte[] cbor, int options) {
+        return new CBORDecoder(new ByteArrayInputStream(cbor), options, cbor.length)
+                                   .decodeWithOptions();
+    }
+
     
     static final String STDERR_UNSUPPORTED_TAG =
             "Unsupported tag: ";
