@@ -120,6 +120,22 @@ public class CBORDecoder {
         this.strictNumbers = (options & LENIENT_NUMBER_DECODING) != LENIENT_NUMBER_DECODING;
         this.maxInputLength = maxInputLength;
     }
+
+    /**
+     * Create a customized CBOR decoder.
+     * <p></p>
+     * This constructor is identical to:
+     * <div class='webpkifloat'>
+     * <pre>  new CBORDecoder(new ByteArrayInputStream(cbor), 0, cbor.length);</pre>
+     * </div>
+     * @param cbor CBOR binary data
+     * @param options The decoder options.
+     * @throws CBORException
+     * @see #getByteCount()
+     */
+    public CBORDecoder(byte[] cbor, int options) {
+        this(new ByteArrayInputStream(cbor), options, cbor.length);
+    }
     
     private void eofError() {
         cborError(STDERR_CBOR_EOF);
@@ -377,16 +393,11 @@ public class CBORDecoder {
  
     /**
      * Decode CBOR data.
-     * <p>
-     * Unsupported or malformed CBOR data cause a {@link CBORException} to be thrown.
-     * </p>
-     * <p>
+     * <p></p>
      * This conveniance method is identical to:
-     * </p>
      * <div class='webpkifloat'>
      * <pre>  new CBORDecoder(new ByteArrayInputStream(cbor), 0, cbor.length)
-     *      .decodeWithOptions();
-     * </pre>
+     *      .decodeWithOptions();</pre>
      * </div>
      * @param cbor CBOR binary data <i>holding exactly one CBOR object</i>.
      * @return {@link CBORObject}

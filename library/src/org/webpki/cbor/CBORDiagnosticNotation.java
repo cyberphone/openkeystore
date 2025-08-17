@@ -16,7 +16,6 @@
  */
 package org.webpki.cbor;
 
-import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 
 import java.util.ArrayList;
@@ -236,10 +235,9 @@ public class CBORDiagnosticNotation {
                         parserError("Argument must be a 16, 32, or 64-bit floating-point number");
                 }
                 yield new CBORDecoder(
-                    new ByteArrayInputStream(CBORUtil.concatByteArrays(
-                        new byte[]{(byte)(MT_FLOAT16 + (floatBytes.length >> 2))}, floatBytes)),
-                    CBORDecoder.LENIENT_NUMBER_DECODING,
-                    10).decodeWithOptions();
+                    CBORUtil.concatByteArrays(
+                        new byte[]{(byte)(MT_FLOAT16 + (floatBytes.length >> 2))}, floatBytes),
+                    CBORDecoder.LENIENT_NUMBER_DECODING).decodeWithOptions();
             }
        
             case 'n' -> {

@@ -16,7 +16,6 @@
  */
 package org.webpki.webapps.csf_lab;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import java.util.ArrayList;
@@ -90,11 +89,10 @@ public class ConvertServlet extends CoreRequestServlet {
                     cborBytes = Base64URL.decode(inData);
                     break;
             }
-            CBORDecoder cborDecoder = new CBORDecoder(new ByteArrayInputStream(cborBytes), 
+            CBORDecoder cborDecoder = new CBORDecoder(cborBytes, 
                 (sequenceFlag ? CBORDecoder.SEQUENCE_MODE : 0) |
                 (strictFlag ? 0 :
-                     CBORDecoder.LENIENT_MAP_DECODING | CBORDecoder.LENIENT_NUMBER_DECODING),
-                                                      cborBytes.length);
+                     CBORDecoder.LENIENT_MAP_DECODING | CBORDecoder.LENIENT_NUMBER_DECODING));
             CBORArray sequenceBuilder = new CBORArray();
             CBORObject cborObject;
             while ((cborObject = cborDecoder.decodeWithOptions()) != null) {
