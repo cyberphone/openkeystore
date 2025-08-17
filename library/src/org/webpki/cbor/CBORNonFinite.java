@@ -252,7 +252,7 @@ public class CBORNonFinite extends CBORObject {
         long value64 = value;
         value64 &= (1L << significandLength) - 1L;
         value64 = FLOAT64_POS_INFINITY | (value64 << (52 - significandLength));
-        if (encoded[0] < 0) {
+        if (getSign()) {
             value64 |= FLOAT64_NEG_ZERO;
         }
         return value64;       
