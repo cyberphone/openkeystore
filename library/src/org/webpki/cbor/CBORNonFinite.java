@@ -177,10 +177,6 @@ public class CBORNonFinite extends CBORObject {
         return CBORUtil.reverseBits(getNonFinite64() & PAYLOAD_MASK, FLOAT64_SIGNIFICAND_SIZE);
     }
 
-    long getBitMask() {
-        return 1L << ((encoded.length * 8) - 1L);
-    }
-
     /**
      * Set the sign bit of the non-finite <code>float</code>.
      * @param on Sign bit
@@ -188,7 +184,7 @@ public class CBORNonFinite extends CBORObject {
      * @see #getSign()
      */
     public CBORNonFinite setSign(boolean on) {
-        long mask = getBitMask();
+        long mask = 1L << ((encoded.length * 8) - 1L);
         createDetermnisticEncoding((value & (mask - 1L)) | (on ? mask : 0));
         return this;
     }
@@ -199,7 +195,7 @@ public class CBORNonFinite extends CBORObject {
      * @see #setSign(boolean)
      */
     public boolean getSign() {
-        return (value & getBitMask()) != 0;
+        return encoded[0] < 0;
     }
 
     /**
