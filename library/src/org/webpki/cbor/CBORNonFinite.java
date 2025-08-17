@@ -126,13 +126,14 @@ public class CBORNonFinite extends CBORObject {
      * <code>64</code>-bit object having the following layout:
      * </div>
      * <div class='webpkifloat'><table class='webpkitable' style='margin-left:2em'>
-     * <tr><th style='white-space:nowrap'>Sign &amp; Exponent</th><th>Significand</th></tr>
-     * <tr><td style='text-align:center'>011111111111</td><td style='white-space:nowrap'><code>d0-d51</code> in <i>little-endian</i> order</td></tr>
+     * <tr><th>Sign</th><th>Exponent</th><th>Significand</th></tr>
+     * <tr style='text-align:center'><td>0</td><td>11111111111</td><td style='white-space:nowrap'><code>d0-d51</code> in <i>little-endian</i> order</td></tr>
      * </table></div>
      * <div>
      * The reason for <i>reversing</i> the payload bits is to ensure that a specific bit will remain
      * in a fix position (maintain the same value), independent of the size of the
      * <code>IEEE-754</code> variant used for encoding.
+     * For setting the sign bit, see {@link #setSign(boolean)}.
      * </div>
      * <div style='margin-top:0.7em'>
      * Note that the encoder will (due to CBOR deterministic encoding rules), select
@@ -151,8 +152,7 @@ public class CBORNonFinite extends CBORObject {
      * <tr><td style='text-align:right'><code>fffffffffffff</code></td><td style='text-align:right'><code>fb7fffffffffffffff</code></td><td><code>float'7fffffffffffffff'</code></td></tr>
      * </table></div>
      * <div style='margin-top:0.7em'>
-     * If full control of every bit is required, the
-     * {@link CBORNonFinite#CBORNonFinite(long)} and {@link #getNonFinite64()} constructs must be used.
+     * {@link CBORNonFinite#CBORNonFinite(long)} represents another way creating a non-finite <code>float</code>.
      * </div>
      * @param payload Holds payload data
      * @return {@link CBORNonFinite}.  Also see <a href='../../webpki/cbor/package-summary.html#supported-objects'>CBOR wrapper objects</a>.
@@ -185,6 +185,7 @@ public class CBORNonFinite extends CBORObject {
      * Set the sign bit of the non-finite <code>float</code>.
      * @param on Sign bit
      * @return {@link CBORNonFinite}
+     * @see #getSign()
      */
     public CBORNonFinite setSign(boolean on) {
         long mask = getBitMask();
@@ -195,6 +196,7 @@ public class CBORNonFinite extends CBORObject {
     /**
      * Get the sign bit of the non-finite <code>float</code>.
      * @return Sign bit expressed as a <code>boolean</code>
+     * @see #setSign(boolean)
      */
     public boolean getSign() {
         return (value & getBitMask()) != 0;
