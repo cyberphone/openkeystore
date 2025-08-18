@@ -23,7 +23,15 @@ import static org.webpki.cbor.CBORInternal.*;
 /**
  * Class for holding CBOR <i>non-finite</i> <code>float</code> objects.
  * <p>
- * See also {@link CBORFloat}.
+ * Due to the fact that platform support for non-finite <code>float</code> objects
+ * beyond the three simple forms, "quiet" <code>NaN</code>, <code>Infinity</code>,
+ * and <code>-Infinity</code> is limited, the Java implementation <i>separates</i>
+ * non-finite <code>float</code> objects from "genuine" <code>float</code> numbers.
+ * The latter are dealt with by the {@link CBORFloat} class.
+ * </p>
+ * <p>
+ * Since non-finite data can be "anything" that makes sence for consuming
+ * applications, <code>long</code> is used as value container.
  * </p>
  */
 public class CBORNonFinite extends CBORObject {
@@ -85,7 +93,7 @@ public class CBORNonFinite extends CBORObject {
     }
 
     /**
-     * Creates a CBOR <i>non-finite</i> <code>float</code> object.
+     * Creates a <i>non-finite</i> <code>float</code>.
      * <p>
      * The constructor takes a <code>16</code>, <code>32</code>, or <code>64</code>-bit
      * non-finite number in <code>IEEE-754</code> encoding.
@@ -180,7 +188,7 @@ public class CBORNonFinite extends CBORObject {
     }
 
     /**
-     * Set the sign bit of the non-finite <code>float</code>.
+     * Set sign bit of the non-finite object.
      * @param on Sign bit
      * @return {@link CBORNonFinite}
      * @see #getSign()
@@ -192,7 +200,7 @@ public class CBORNonFinite extends CBORObject {
     }
 
     /**
-     * Get the sign bit of the non-finite <code>float</code>.
+     * Get sign bit of the non-finite object.
      * @return Sign bit expressed as a <code>boolean</code>
      * @see #setSign(boolean)
      */
@@ -201,7 +209,7 @@ public class CBORNonFinite extends CBORObject {
     }
 
     /**
-     * Get length of CBOR non-finite object.
+     * Get length of the non-finite object.
      * <p>
      * Note that you must cast a {@link CBORObject} to {@link CBORNonFinite}
      * in order to access {@link CBORNonFinite#length()}.
@@ -213,10 +221,10 @@ public class CBORNonFinite extends CBORObject {
     }
 
     /**
-     * Check if CBOR non-finite object is simple.
+     * Check if the non-finite object is simple.
      * <p>
      * This method returns <code>true</code> if the non-finite object is a "quiet" <code>NaN</code>,
-     * <code>Infinity</code>, or <code>-Infinity</code>, else it returns <code>false</code>.
+     * <code>Infinity</code>, or <code>-Infinity</code>, else <code>false</code> is returned.
      * </p>
      * @return <code>boolean</code>. 
      */
@@ -231,10 +239,10 @@ public class CBORNonFinite extends CBORObject {
     }
 
     /**
-     * Check if CBOR non-finite object is a <code>NaN</code>.
+     * Check if the non-finite object is a <code>NaN</code>.
      * <p>
      * This method returns <code>true</code> for <i>all conformant</i> <code>NaN</code> variants,
-     * else it returns <code>false</code>.
+     * else <code>false</code> is returned..
      * </p>
      * @return <code>boolean</code>. 
      */
@@ -261,7 +269,7 @@ public class CBORNonFinite extends CBORObject {
     }
 
     /**
-     * Get <i>actual</i> CBOR non-finite <code>float</code> object.
+     * Get <i>actual</i> non-finite object (value).
      * <p>
      * This method returns the value of a CBOR non-finite
      * object.  The value is provided in the most compact form
@@ -275,7 +283,7 @@ public class CBORNonFinite extends CBORObject {
     }
 
     /**
-     * Get <i>expanded</i> CBOR non-finite <code>float</code> object.
+     * Get <i>expanded</i> non-finite object (value).
      * <p>
      * This method returns the value of a CBOR non-finite
      * object after it has been expanded to 64 bits.
