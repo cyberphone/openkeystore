@@ -314,9 +314,8 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * @see CBORFloat#createExtended(double)
      */
     public double getExtendedFloat64() {
-        if (this instanceof CBORNonFinite) {
-            CBORNonFinite cborNonFinite = (CBORNonFinite) this;
-            return switch (cborNonFinite.isSimple() ? (int)cborNonFinite.getNonFinite() : 0) {
+        if (this instanceof CBORNonFinite nf) {
+            return switch (nf.isSimple() ? (int)nf.getNonFinite() : 0) {
                 case 0x7e00 -> Double.NaN;
                 case 0x7c00 -> Double.POSITIVE_INFINITY;
                 case 0xfc00 -> Double.NEGATIVE_INFINITY;

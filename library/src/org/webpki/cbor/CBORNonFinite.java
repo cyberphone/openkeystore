@@ -294,7 +294,8 @@ public class CBORNonFinite extends CBORObject {
 
     @Override
     byte[] internalEncode() {
-        return CBORUtil.concatByteArrays(new byte[]{(byte)(MT_FLOAT16 + (encoded.length >> 2))}, encoded);
+        return CBORUtil.concatByteArrays(new byte[]{(byte)(MT_FLOAT16 + (encoded.length >> 2))},
+                                         encoded);
     }
     
     @Override
@@ -302,7 +303,7 @@ public class CBORNonFinite extends CBORObject {
         if (isSimple()) {
             cborPrinter.append(isNaN() ? "NaN" : getSign() ? "-Infinity" : "Infinity");
         } else {
-            cborPrinter.append("float'").append(HexaDecimal.encode(encoded)).append("'");
+            cborPrinter.append("float'").append(HexaDecimal.encode(encoded)).append('\'');
         }
     }
 
