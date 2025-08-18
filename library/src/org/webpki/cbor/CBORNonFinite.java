@@ -259,19 +259,19 @@ public class CBORNonFinite extends CBORObject {
     }
 
     long toNonFinite64(int significandLength) {
-        long value64 = value;
-        value64 &= (1L << significandLength) - 1L;
-        value64 = FLOAT64_POS_INFINITY | (value64 << (52 - significandLength));
+        long f64 = value;
+        f64 &= (1L << significandLength) - 1L;
+        f64 = FLOAT64_POS_INFINITY | (f64 << (FLOAT64_SIGNIFICAND_SIZE - significandLength));
         if (getSign()) {
-            value64 |= FLOAT64_NEG_ZERO;
+            f64 |= FLOAT64_NEG_ZERO;
         }
-        return value64;       
+        return f64;       
     }
 
     /**
      * Get <i>actual</i> non-finite object (value).
      * <p>
-     * This method returns the value of a CBOR non-finite
+     * This method returns the value of a non-finite
      * object.  The value is provided in the most compact form
      * based on CBOR serialization rules.
      * </p>
@@ -285,7 +285,7 @@ public class CBORNonFinite extends CBORObject {
     /**
      * Get <i>expanded</i> non-finite object (value).
      * <p>
-     * This method returns the value of a CBOR non-finite
+     * This method returns the value of a non-finite
      * object after it has been expanded to 64 bits.
      * That is, a received <code>7c01</code> will be returned as <code>7ff0040000000000</code>.
      * </p>
