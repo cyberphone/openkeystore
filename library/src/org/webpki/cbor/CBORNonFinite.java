@@ -300,7 +300,7 @@ public class CBORNonFinite extends CBORObject {
     @Override
     void internalToString(CborPrinter cborPrinter) {
         if (isSimple()) {
-            cborPrinter.append(isNaN() ? "NaN" : encoded[0] < 0 ? "-Infinity" : "Infinity");
+            cborPrinter.append(isNaN() ? "NaN" : getSign() ? "-Infinity" : "Infinity");
         } else {
             cborPrinter.append("float'").append(HexaDecimal.encode(encoded)).append("'");
         }
