@@ -50,7 +50,7 @@ public class CBORFloat extends CBORObject {
      * </p>
      * <p>
      * For <code>NaN</code> and <code>Infinity</code> support see
-     * {@link CBORFloat#createExtended(double)}.
+     * {@link CBORFloat#createExtendedFloat(double)}.
      * </p>
      * 
      * @param value Floating-point value
@@ -184,7 +184,7 @@ public class CBORFloat extends CBORObject {
      * @throws CBORException
      * @see {@link CBORNonFinite#CBORNonFinite(long))}
      */
-    public static CBORObject createExtended(double value) {
+    public static CBORObject createExtendedFloat(double value) {
         if (Double.isFinite(value)) {
             return new CBORFloat(value);
         }

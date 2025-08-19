@@ -311,7 +311,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * 
      * @return <code>double</code>
      * @throws CBORException
-     * @see CBORFloat#createExtended(double)
+     * @see CBORFloat#createExtendedFloat(double)
      */
     public double getExtendedFloat64() {
         if (this instanceof CBORNonFinite nf) {

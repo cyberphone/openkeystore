@@ -21,12 +21,12 @@ import org.webpki.util.HexaDecimal;
 import static org.webpki.cbor.CBORInternal.*;
 
 /**
- * Class for holding CBOR <i>non-finite</i> <code>float</code> objects.
+ * Class for holding CBOR <i>non-finite</i> floating-point objects.
  * <p>
- * Due to the fact that platform support for non-finite <code>float</code> objects
+ * Due to the fact that platform support for non-finite floating-point objects
  * beyond the three simple forms, "quiet" <code>NaN</code>, <code>Infinity</code>,
- * and <code>-Infinity</code> is limited, the Java implementation <i>separates</i>
- * non-finite <code>float</code> objects from "genuine" <code>float</code> numbers.
+ * and <code>-Infinity</code> is limited, this implementation <i>separates</i>
+ * non-finite floating-point objects from "genuine" floating-point numbers.
  * The latter are dealt with by the {@link CBORFloat} class.
  * </p>
  * <p>
@@ -93,16 +93,16 @@ public class CBORNonFinite extends CBORObject {
     }
 
     /**
-     * Creates a <i>non-finite</i> <code>float</code>.
+     * Creates a <i>non-finite</i> floating-point number.
      * <p>
      * The constructor takes a <code>16</code>, <code>32</code>, or <code>64</code>-bit
      * non-finite number in <code>IEEE-754</code> encoding.
      * </p>
      * <p>
-     * See also {@link CBORFloat#CBORFloat(double)} and {@link CBORFloat#createExtended(double)}.
+     * See also {@link CBORFloat#CBORFloat(double)} and {@link CBORFloat#createExtendedFloat(double)}.
      * </p>
      * 
-     * @param value <code>long</code> holding the number
+     * @param value Non-finite number expressed as a <code>long</code>
      * @throws CBORException If the argument is not within the non-finite number space
      */
     @SuppressWarnings("this-escape")
@@ -166,7 +166,7 @@ public class CBORNonFinite extends CBORObject {
      * </div>
      * @param payload Payload
      * @return {@link CBORNonFinite}.  Also see <a href='../../webpki/cbor/package-summary.html#supported-objects'>CBOR wrapper objects</a>.
-     * @see CBORFloat#createExtended(double)
+     * @see CBORFloat#createExtendedFloat(double)
      */
     public static CBORNonFinite createPayloadObject(long payload) {
         if ((payload & PAYLOAD_MASK) != payload) {

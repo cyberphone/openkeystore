@@ -62,30 +62,35 @@ an encountered non-finite number will throw a {@link CBORException}.
 </td></tr>
 </table></div>
 <h5 style='margin:1.3em 0 1em 0'>Encoding</h5>
-<div class='webpkifloat' style='margin-left:2em;font-family: monospace;white-space:nowrap'>
-FORBIDDEN
-<div style='margin:0 0 0.5em 2em'>&#x2022; new&nbsp;{@link CBORFloat#CBORFloat(double) CBORFloat(2.5)}</div>
-EXTENDED
-<div style='margin:0 0 0.5em 2em'>&#x2022; {@link CBORFloat#createExtended(double) CBORFloat.createExtended(2.5)}<br>
-&#x2022; {@link CBORFloat#createExtended(double) CBORFloat.createExtended(Double.NaN)}</div>
-COMPLETE
-<div style='margin:0 0 0 2em'>&#x2022; new&nbsp;{@link CBORFloat#CBORFloat(double) CBORFloat(2.5)}<br>
-&#x2022; {@link CBORNonFinite#createPayloadObject(long) CBORNonFinite.createPayloadObject(347)}</div>
+<div class='webpkifloat'>
+<table style='margin-left:2em;font-family: monospace;white-space:nowrap;border-spacing:0'>
+<tr><td colspan='2'>FORBIDDEN</td></tr>
+<tr><td style='padding:0 1em'>&#x2022; new&nbsp;{@link CBORFloat#CBORFloat(double) CBORFloat(<i>argument</i>)}</td><td>// "Genuine" number</td></tr>
+<tr><td colspan='2' style='padding-top:0.8em'>EXTENDED</td></tr>
+<tr><td style='padding:0 1em'>&#x2022; {@link CBORFloat#createExtendedFloat(double) CBORFloat.createExtendedFloat(<i>argument</i>)}</td><td>// "Genuine" number, NaN, or Infinity</td></tr>
+<tr><td colspan='2' style='padding-top:0.8em'>COMPLETE</td></tr>
+<tr><td style='padding:0 1em'>&#x2022; new&nbsp;{@link CBORFloat#CBORFloat(double) CBORFloat(<i>argument</i>)}</td><td>// "Genuine" number</td></tr>
+<tr><td style='padding:0 1em'>&#x2022; new&nbsp;{@link CBORNonFinite#CBORNonFinite(long) CBORNonFinite(<i>argument</i>)}</td><td>// Arbitrary non-finite number</td></tr>
+<tr><td style='padding:0 1em'>&#x2022; {@link CBORNonFinite#createPayloadObject(long) CBORNonFinite.createPayloadObject(<i>argument</i>)}</td><td>// Application-specific data</td></tr>
+</table>
 </div>
 <h5 style='margin:1.3em 0 1em 0'>Decoding</h5>
-<div class='webpkifloat' style='margin-left:2em;font-family: monospace;white-space:nowrap'>
-FORBIDDEN
-<div style='margin:0 0 0.5em 2em'>&#x2022; cborObject.{@link CBORObject#getFloat64() getFloat64()}</div>
-EXTENDED
-<div style='margin:0 0 0.5em 2em'>&#x2022; cborObject.{@link CBORObject#getExtendedFloat64() getExtendedFloat64()}</div>
-COMPLETE
-<div style='margin:0 0 0.8em 2em'>&#x2022; if (cborObject instanceof {@link CBORNonFinite} nf) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;// non-finite number to proceess<br>
-&nbsp;&nbsp;&nbsp;&nbsp;nf.{@link CBORNonFinite#getPayloadData() getPayloadData()}<br>
-&nbsp;&nbsp;} else {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;// "genuine" number to proceess<br>
-&nbsp;&nbsp;&nbsp;&nbsp;cborObject.{@link CBORObject#getFloat64() getFloat64()}<br>
-&nbsp;&nbsp;}</div>
+<div class='webpkifloat'>
+<table style='margin-left:2em;font-family: monospace;white-space:nowrap;border-spacing:0'>
+<tr><td colspan='2'>FORBIDDEN</td></tr>
+<tr><td style='padding:0 1em'>&#x2022; cborObject.{@link CBORObject#getFloat64() getFloat64()}</td><td>// "Genuine" number</td></tr>
+<tr><td colspan='2' style='padding-top:0.8em'>EXTENDED</td></tr>
+<tr><td style='padding:0 1em'>&#x2022; cborObject.{@link CBORObject#getExtendedFloat64() getExtendedFloat64()}</td><td>// "Genuine" number, NaN, or Infinity</td></tr>
+<tr><td colspan='2' style='padding-top:0.8em'>COMPLETE</td></tr>
+<tr><td style='padding:0 1em'>&#x2022; if (cborObject instanceof {@link CBORNonFinite} nf) {</td><td></td></tr>
+<tr><td style='padding:0 1em'>&nbsp;&nbsp;&nbsp;&nbsp;// non-finite number to proceess</td><td></td></tr>
+<tr><td style='padding:0 1em'>&nbsp;&nbsp;&nbsp;&nbsp;nf.{@link CBORNonFinite#getNonFinite() getNonFinite()}</td><td>// Non-finite number</td></tr>
+<tr><td style='padding:0 1em'>&nbsp;&nbsp;&nbsp;&nbsp;nf.{@link CBORNonFinite#getPayloadData() getPayloadData()}</td><td>// Application-specific data</td></tr>
+<tr><td style='padding:0 1em'>&nbsp;&nbsp;} else {</td><td></td></tr>
+<tr><td style='padding:0 1em'>&nbsp;&nbsp;&nbsp;&nbsp;// "Genuine" number to proceess</td><td></td></tr>
+<tr><td style='padding:0 1em'>&nbsp;&nbsp;&nbsp;&nbsp;cborObject.{@link CBORObject#getFloat64() getFloat64()}</td><td>// "Genuine" number</td></tr>
+<tr><td style='padding:0 1em'>&nbsp;&nbsp;}</td><td></td></tr>
+</table>
 </div>
 <h3 id='deterministic-encoding'>Deterministic Encoding</h3>
 For certain security related applications, it has been proven
