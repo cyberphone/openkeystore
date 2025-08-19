@@ -686,8 +686,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      */
     @Override
     public boolean equals(Object object) {
-        return object instanceof CBORObject && 
-            Arrays.equals(((CBORObject) object).encode(), encode());
+        return object instanceof CBORObject o && Arrays.equals(o.encode(), encode());
     }
 
     /**

@@ -156,6 +156,7 @@ public class CBORCryptoUtils {
             if (tagPolicy == POLICY.FORBIDDEN) {
                 inputError("Tag encountered", tagPolicy);
             }
+            // Do NOT replace this with a tag in instanceof!
             CBORTag tag = container.getTag();
             container = tag.object;
             if (tag.cotxObject != null) {
