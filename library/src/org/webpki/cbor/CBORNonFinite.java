@@ -188,20 +188,20 @@ public class CBORNonFinite extends CBORObject {
     }
 
     /**
-     * Set sign bit of the non-finite object.
-     * @param on Sign bit
+     * Set sign bit of non-finite object.
+     * @param sign Sign bit expressed as a <code>boolean</code>. <code>true</code> = 1, <code>false</code> = 0.
      * @return {@link CBORNonFinite}
      * @see #getSign()
      */
-    public CBORNonFinite setSign(boolean on) {
+    public CBORNonFinite setSign(boolean sign) {
         long mask = 1L << ((encoded.length * 8) - 1L);
-        createDetermnisticEncoding((value & (mask - 1L)) | (on ? mask : 0));
+        createDetermnisticEncoding((value & (mask - 1L)) | (sign ? mask : 0));
         return this;
     }
 
     /**
-     * Get sign bit of the non-finite object.
-     * @return Sign bit expressed as a <code>boolean</code>
+     * Get sign bit of non-finite object.
+     * @return Sign bit expressed as a <code>boolean</code>. <code>true</code> = 1, <code>false</code> = 0.
      * @see #setSign(boolean)
      */
     public boolean getSign() {
@@ -209,7 +209,7 @@ public class CBORNonFinite extends CBORObject {
     }
 
     /**
-     * Get length of the non-finite object.
+     * Get length of non-finite object.
      * <p>
      * Note that you must cast a {@link CBORObject} to {@link CBORNonFinite}
      * in order to access {@link CBORNonFinite#length()}.
@@ -221,7 +221,7 @@ public class CBORNonFinite extends CBORObject {
     }
 
     /**
-     * Check if the non-finite object is simple.
+     * Check if non-finite object is simple.
      * <p>
      * This method returns <code>true</code> if the non-finite object is a "quiet" <code>NaN</code>,
      * <code>Infinity</code>, or <code>-Infinity</code>, else <code>false</code> is returned.
@@ -239,7 +239,7 @@ public class CBORNonFinite extends CBORObject {
     }
 
     /**
-     * Check if the non-finite object is a <code>NaN</code>.
+     * Check if non-finite object is a <code>NaN</code>.
      * <p>
      * This method returns <code>true</code> for <i>all conformant</i> <code>NaN</code> variants,
      * else <code>false</code> is returned..
