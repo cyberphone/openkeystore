@@ -42,12 +42,12 @@ an encountered non-finite number will throw a {@link CBORException}.
 <tr><td colspan='2' style='padding-top:0.8em'>COMPLETE</td></tr>
 <tr><td style='padding-left:1.5em'>// Check what the decoder returned:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td></td></tr>
 <tr><td colspan='2' style='padding-left:1.5em'>if (cborObject instanceof {@link CBORNonFinite} nf) {</td></tr>
-<tr><td style='padding-left:1.5em'>&nbsp;&nbsp;// Non-finite number to proceess</td><td></td></tr>
+<tr><td style='padding-left:1.5em'>&nbsp;&nbsp;// Non-finite number to process</td><td></td></tr>
 <tr><td style='padding-left:1.5em'>&nbsp;&nbsp;// Select suitable method:</td><td></td></tr>
 <tr><td style='padding-left:1.5em'>&nbsp;&nbsp;nf.{@link CBORNonFinite#getNonFinite() getNonFinite()}</td><td>// Non-finite number</td></tr>
 <tr><td style='padding-left:1.5em'>&nbsp;&nbsp;nf.{@link CBORNonFinite#getPayloadData() getPayloadData()}</td><td>// Application-specific data</td></tr>
 <tr><td style='padding-left:1.5em'>} else {</td><td></td></tr>
-<tr><td style='padding-left:1.5em'>&nbsp;&nbsp;// "Genuine" number to proceess</td><td></td></tr>
+<tr><td style='padding-left:1.5em'>&nbsp;&nbsp;// "Genuine" number to process</td><td></td></tr>
 <tr><td style='padding-left:1.5em'>&nbsp;&nbsp;cborObject.{@link CBORObject#getFloat64() getFloat64()}</td><td>// "Genuine" number</td></tr>
 <tr><td style='padding-left:1.5em'>}</td><td></td></tr>
 </table>
