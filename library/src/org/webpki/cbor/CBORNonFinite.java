@@ -35,7 +35,8 @@ import static org.webpki.cbor.CBORInternal.*;
  * </p>
  * <p>
  * For a detailed description and user guide, turn to:
- * <a href='../../webpki/cbor/doc-files/non-finite-numbers.html'>Non-Finite Numbers</a>.
+ * <a href='../../webpki/cbor/doc-files/non-finite-numbers.html' 
+ * class='webpkilink'>Non-Finite Numbers</a>.
  * </p>
  */
 public class CBORNonFinite extends CBORObject {
@@ -118,7 +119,8 @@ public class CBORNonFinite extends CBORObject {
      * Creates a payload object.
      * <div style='margin-top:0.7em'>
      * For details turn to
-     * <a href='../../webpki/cbor/doc-files/non-finite-numbers.html#payload-option'>Payload Option</a>.
+     * <a href='../../webpki/cbor/doc-files/non-finite-numbers.html#payload-option'
+     * class='webpkilink'>Payload Option</a>.
      * </div>
      * @param payload Payload data
      * @return {@link CBORNonFinite}
