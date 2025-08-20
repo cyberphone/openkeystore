@@ -139,7 +139,7 @@ public class CBORNonFinite extends CBORObject {
      * </p>
      * @return Payload
      */
-    public long getPayloadData() {
+    public long getPayload() {
         return CBORUtil.reverseBits(getNonFinite64() & PAYLOAD_MASK, FLOAT64_SIGNIFICAND_SIZE);
     }
 

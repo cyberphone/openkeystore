@@ -2399,7 +2399,7 @@ public class CBORTest {
         CBORObject object = CBORDecoder.decode(cbor);
         assertTrue("plo1", object instanceof CBORNonFinite);
         CBORNonFinite nonFinite = (CBORNonFinite) object;
-        assertTrue("plo2", nonFinite.getPayloadData() == payload);
+        assertTrue("plo2", nonFinite.getPayload() == payload);
         assertTrue("plo3", HexaDecimal.encode(cbor).equals(hex));
         assertTrue("plo4", nonFinite.toString().equals(dn));
         assertTrue("plo5", nonFinite.getNonFinite() == Long.valueOf(hex.substring(2), 16));
@@ -2491,7 +2491,7 @@ public class CBORTest {
     @Test
     public void nonFiniteNethods() {
         byte[] cbor = CBORNonFinite.createPayloadObject(6).encode();
-        assertTrue("nfa1", ((CBORNonFinite)CBORDecoder.decode(cbor)).getPayloadData() == 6);
+        assertTrue("nfa1", ((CBORNonFinite)CBORDecoder.decode(cbor)).getPayload() == 6);
     }
 
     void badDate(String hexBor, String err) {
