@@ -33,6 +33,10 @@ import static org.webpki.cbor.CBORInternal.*;
  * Since non-finite data can be "anything" that makes sence for consuming
  * applications, <code>long</code> is used as value container.
  * </p>
+ * <p>
+ * For a detailed description and user guide, turn to:
+ * <a href='../../webpki/cbor/doc-files/non-finite-numbers.html'>Non-Finite Numbers</a>.
+ * </p>
  */
 public class CBORNonFinite extends CBORObject {
 
@@ -112,68 +116,20 @@ public class CBORNonFinite extends CBORObject {
 
     /**
      * Creates a payload object.
-     * <div style='margin-top:0.8em'>
-     * Traditionally, the non-finite number space is used for propagating
-     * math-related problems such as division by zero.
-     * </div>
-     * <div style='margin-top:0.5em'>
-     * However, in some cases there may be a desire providing more application specific data,
-     * like debug information related to faulty sensors.
-     * The {@link #createPayloadObject(long)} and {@link #getPayloadData()}
-     * methods were designed for this particular purpose.
-     * To obviate the need defining another CBOR type, these methods
-     * are "piggybacking" on the existing non-finite number space.
-     * The following table represents these methods from a <i>developer</i> perspective:
-     * </div>
-     * <div class='webpkifloat'><table class='webpkitable' style='margin-left:2em'>
-     * <tr><th>Payload</th></tr>
-     * <tr><td><code>d51-d0</code> in <i>big-endian</i> order</td></tr>
-     * </table></div>
-     * <div style='margin-top:0.5em'>
-     * The payload bits are conceptually put into an <code>IEEE-754</code>
-     * <code>64</code>-bit object having the following layout:
-     * </div>
-     * <div class='webpkifloat'><table class='webpkitable' style='margin-left:2em'>
-     * <tr><th>Sign</th><th>Exponent</th><th>Significand</th></tr>
-     * <tr style='text-align:center'><td>0</td><td>11111111111</td><td style='white-space:nowrap'><code>d0-d51</code> in <i>little-endian</i> order</td></tr>
-     * </table></div>
-     * <div>
-     * For setting the sign bit, see {@link #setSign(boolean)}.
-     * </div>
      * <div style='margin-top:0.7em'>
-     * The reason for <i>reversing</i> the payload bits is to ensure that a specific bit will remain
-     * in a fix position (maintain the same value), independent of the size of the
-     * <code>IEEE-754</code> variant used for encoding.
+     * For details turn to
+     * <a href='../../webpki/cbor/doc-files/non-finite-numbers.html#payload-option'>Payload Option</a>.
      * </div>
-     * <div style='margin-top:0.7em'>
-     * Note that the encoder will (due to CBOR deterministic encoding rules), select
-     * the shortest serialization required to properly represent the payload.
-     * The following table shows a few examples:
-     * </div>
-     * <div class='webpkifloat'><table class='webpkitable' style='margin-left:2em'>
-     * <tr><th>Payload (hex)</th><th>CBOR Encoding</th><th>Diagnostic Notation</th></tr>
-     * <tr><td style='text-align:right'><code>0</code></td><td style='text-align:right'><code>f97c00</code></td><td><code>Infinity</code></td></tr>
-     * <tr><td style='text-align:right'><code>1</code></td><td style='text-align:right'><code>f97e00</code></td><td><code>NaN</code></td></tr>
-     * <tr><td style='text-align:right'><code>2</code></td><td style='text-align:right'><code>f97d00</code></td><td><code>float'7d00'</code></td></tr>
-     * <tr><td style='text-align:right'><code>3ff</code></td><td style='text-align:right'><code>f97fff</code></td><td><code>float'7fff'</code></td></tr>
-     * <tr><td style='text-align:right'><code>400</code></td><td style='text-align:right'><code>fa7f801000</code></td><td><code>float'7f801000'</code></td></tr>
-     * <tr><td style='text-align:right'><code>7fffff</code></td><td style='text-align:right'><code>fa7fffffff</code></td><td><code>float'7fffffff'</code></td></tr>
-     * <tr><td style='text-align:right'><code>800000</code></td><td style='text-align:right'><code>fb7ff0000010000000</code></td><td><code>float'7ff0000010000000'</code></td></tr>
-     * <tr><td style='text-align:right'><code>fffffffffffff</code></td><td style='text-align:right'><code>fb7fffffffffffffff</code></td><td><code>float'7fffffffffffffff'</code></td></tr>
-     * </table></div>
-     * <div style='margin-top:0.7em'>
-     * {@link CBORNonFinite#CBORNonFinite(long)} represents another way creating a non-finite <code>float</code>.
-     * </div>
-     * @param payload Payload
-     * @return {@link CBORNonFinite}.  Also see <a href='../../webpki/cbor/package-summary.html#supported-objects'>CBOR wrapper objects</a>.
+     * @param payloadData Payload data
+     * @return {@link CBORNonFinite}
      * @see CBORFloat#createExtendedFloat(double)
      */
-    public static CBORNonFinite createPayloadObject(long payload) {
-        if ((payload & PAYLOAD_MASK) != payload) {
+    public static CBORNonFinite createPayloadObject(long payloadData) {
+        if ((payloadData & PAYLOAD_MASK) != payloadData) {
             cborError(STDERR_PAYLOAD_RANGE);
         }
         return new CBORNonFinite(
-            FLOAT64_POS_INFINITY + CBORUtil.reverseBits(payload, FLOAT64_SIGNIFICAND_SIZE));
+            FLOAT64_POS_INFINITY + CBORUtil.reverseBits(payloadData, FLOAT64_SIGNIFICAND_SIZE));
     }
 
     /**

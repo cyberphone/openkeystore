@@ -15,7 +15,7 @@ notation:
 <tr style='text-align:center'><td><code>int</code></td><td>{@link CBORInt}</td><td><code>long</code></td><td>1</td></tr>
 <tr style='text-align:center'><td><code>bigint</code></td><td>{@link CBORBigInt}</td><td><code>BigInteger</code></td><td>1</td></tr>
 <tr style='text-align:center'><td rowspan='2'><code>float</code></td><td>{@link CBORFloat}</td><td><code>double</code></td><td>2</td></tr>
-<tr style='text-align:center'><td>{@link CBORNonFinite}</td><td><code>long</code></td><td>2</td></tr>
+<tr style='text-align:center'><td>{@link CBORNonFinite}</td><td><code>long</code></td><td>2, 3</td></tr>
 <tr style='text-align:center'><td><code>bstr</code></td><td>{@link CBORBytes}</td><td><code>byte[]</code></td><td></td></tr>
 <tr style='text-align:center'><td><code>tstr</code></td><td>{@link CBORString}</td><td><code>String</code></td><td></td></tr>
 <tr style='text-align:center'><td><code>bool</code></td><td>{@link CBORBoolean}</td><td><code>boolean</code></td><td></td></tr>
@@ -23,7 +23,7 @@ notation:
 <tr style='text-align:center'><td><code>[]</code></td><td>{@link CBORArray}</td><td></td><td></td></tr>
 <tr style='text-align:center'><td><code>{}</code></td><td>{@link CBORMap}</td><td></td><td></td></tr>
 <tr style='text-align:center'><td><code>#6.n</code></td><td>{@link CBORTag}</td><td></td><td></td></tr>
-<tr style='text-align:center'><td><code>#7.n</code></td><td>{@link CBORSimple}</td><td><code>int</code></td><td></td></tr>
+<tr style='text-align:center'><td><code>#7.n</code></td><td>{@link CBORSimple}</td><td></td><td></td></tr>
 </table>
 </div>
 <ol style='margin:0 0'>
@@ -32,8 +32,9 @@ notation:
  The encoded representation is determined by the size of the value.
 Also see {@link CBORObject#getBigInteger()}.</li>
 <li style='padding-top:0.5em'>Floating-point data covers the 16, 32, and 64-bit IEEE&nbsp;754 variants.
-The encoded representation is determined by the size and precision of the value.
-Also see <a href='doc-files/non-finite-numbers.html' class='webpkilink'>Non-Finite Numbers</a>.</li>
+The encoded representation is determined by the size and precision of the value.</li>
+<li style='padding-top:0.5em'>CBOR applications may also depend on
+<a href='doc-files/non-finite-numbers.html' class='webpkilink'>Non-Finite Numbers</a>.</li>
 </ol>
 <h3 id='time-data'>Time Data</h3>
 Since CBOR lacks a native time primitive, RFC&nbsp;8949 introduces
