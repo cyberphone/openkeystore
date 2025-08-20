@@ -1,6 +1,8 @@
 <body>
 <h2>CBOR - Encoder, Decoder, Signatures, and Encryption</h2>
-This package contains Java support for CBOR using the 
+This package contains Java support for CBOR 
+[<a href='https://www.rfc-editor.org/rfc/rfc8949.html' class='webpkilink'>RFC&nbsp;8949</a>]
+using the 
 [<a href='https://www.ietf.org/archive/id/draft-rundgren-cbor-core-12.html' class='webpkilink'>CBOR::Core</a>]
 cross platform profile.
 <h3 id='supported-objects'>Supported Objects</h3>
@@ -15,7 +17,7 @@ notation:
 <tr style='text-align:center'><td><code>int</code></td><td>{@link CBORInt}</td><td><code>long</code></td><td>1</td></tr>
 <tr style='text-align:center'><td><code>bigint</code></td><td>{@link CBORBigInt}</td><td><code>BigInteger</code></td><td>1</td></tr>
 <tr style='text-align:center'><td rowspan='2'><code>float</code></td><td>{@link CBORFloat}</td><td><code>double</code></td><td>2</td></tr>
-<tr style='text-align:center'><td>{@link CBORNonFinite}</td><td><code>long</code></td><td>2, 3</td></tr>
+<tr style='text-align:center'><td>{@link CBORNonFinite}</td><td><code>long</code></td><td>3</td></tr>
 <tr style='text-align:center'><td><code>bstr</code></td><td>{@link CBORBytes}</td><td><code>byte[]</code></td><td></td></tr>
 <tr style='text-align:center'><td><code>tstr</code></td><td>{@link CBORString}</td><td><code>String</code></td><td></td></tr>
 <tr style='text-align:center'><td><code>bool</code></td><td>{@link CBORBoolean}</td><td><code>boolean</code></td><td></td></tr>
