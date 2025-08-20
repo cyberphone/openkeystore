@@ -120,16 +120,16 @@ public class CBORNonFinite extends CBORObject {
      * For details turn to
      * <a href='../../webpki/cbor/doc-files/non-finite-numbers.html#payload-option'>Payload Option</a>.
      * </div>
-     * @param payloadData Payload data
+     * @param payload Payload data
      * @return {@link CBORNonFinite}
      * @see CBORFloat#createExtendedFloat(double)
      */
-    public static CBORNonFinite createPayloadObject(long payloadData) {
-        if ((payloadData & PAYLOAD_MASK) != payloadData) {
+    public static CBORNonFinite createPayloadObject(long payload) {
+        if ((payload & PAYLOAD_MASK) != payload) {
             cborError(STDERR_PAYLOAD_RANGE);
         }
         return new CBORNonFinite(
-            FLOAT64_POS_INFINITY + CBORUtil.reverseBits(payloadData, FLOAT64_SIGNIFICAND_SIZE));
+            FLOAT64_POS_INFINITY + CBORUtil.reverseBits(payload, FLOAT64_SIGNIFICAND_SIZE));
     }
 
     /**
