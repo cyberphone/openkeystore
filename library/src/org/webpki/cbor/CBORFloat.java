@@ -41,7 +41,7 @@ public class CBORFloat extends CBORObject {
     /**
      * Creates a CBOR <code>float</code> object.
      * <p>
-     * This constructor only implements support for finite ("genuine") floating point
+     * This constructor only implements support for finite ("regular") floating point
      * numbers.  That is, a {@link Double#NaN} argument causes a {@link CBORException}
      * to be thrown.
      * </p>

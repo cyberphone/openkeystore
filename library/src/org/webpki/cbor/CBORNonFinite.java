@@ -26,7 +26,7 @@ import static org.webpki.cbor.CBORInternal.*;
  * Due to the fact that platform support for non-finite floating-point objects
  * beyond the three simple forms, "quiet" <code>NaN</code>, <code>Infinity</code>,
  * and <code>-Infinity</code> is limited, this implementation <i>separates</i>
- * non-finite floating-point objects from "genuine" floating-point numbers.
+ * non-finite floating-point objects from "regular" floating-point numbers.
  * The latter are dealt with by the {@link CBORFloat} class.
  * </p>
  * <p>
