@@ -8,17 +8,18 @@ accommodate different needs.
 This is accomplished without specific decoder or encoder options;
 it is entirely based on API method selections.
 The levels are represented by the following table:
-<div class='webpkifloat' style='margin-left:2em'><table class='webpkitable' style='margin-bottom:0;min-width:30em'>
+<div class='webpkifloat' style='margin-left:2em'><table class='webpkitable' style='min-width:30em'>
 <tr><th>Designation</th><th>Comment</th></tr>
 <tr><td style='text-align:center'><code>STANDARD</code></td><td>Only "regular" floating-point numbers are accepted;
 an encountered non-finite number will throw a {@link CBORException}.
 </td></tr>
-<tr><td style='text-align:center'><code>EXTENDED</code></td><td>All but non-trivial non-finite numbers are accepted.
+<tr><td style='text-align:center'><code>EXTENDED</code></td><td>All but non-trivial NaNs are accepted.
 </td></tr>
 <tr><td style='text-align:center'><code>COMPLETE</code></td><td>All floating-point numbers are accepted.
 </td></tr>
 </table></div>
-<h5 style='margin:1.3em 0 1em 0'>Encoding</h5>
+Note that the constraints apply to <i>encoding</i> as well.
+<h5 style='margin:1.3em 0 1em 0'>Encoding Methods</h5>
 <div class='webpkifloat'>
 <table style='margin-left:2em;font-family: monospace;white-space:nowrap;border-spacing:0'>
 <tr><td colspan='2'>STANDARD</td></tr>
@@ -32,7 +33,7 @@ an encountered non-finite number will throw a {@link CBORException}.
 <tr><td style='padding-left:1.5em'>{@link CBORNonFinite#createPayloadObject(long)}</td><td>// Application-specific data</td></tr>
 </table>
 </div>
-<h5 style='margin:1.3em 0 1em 0'>Decoding</h5>
+<h5 style='margin:1.3em 0 1em 0'>Decoding Methods</h5>
 <div class='webpkifloat'>
 <table style='margin-left:2em;font-family: monospace;white-space:nowrap;border-spacing:0'>
 <tr><td colspan='2'>STANDARD</td></tr>
@@ -59,7 +60,7 @@ math-related problems such as division by zero.
 </div>
 <div style='margin-top:0.5em'>
 However, in some cases there may be a desire providing more application specific data,
-like debug information related to faulty sensors.
+like information related to a faulty sensor that needs attention.
 The {@link CBORNonFinite#createPayloadObject(long)} and {@link CBORNonFinite#getPayload()}
 methods were designed for this particular purpose.
 To obviate the need defining another CBOR type, these methods
