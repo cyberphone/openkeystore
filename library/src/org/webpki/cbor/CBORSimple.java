@@ -21,12 +21,11 @@ import static org.webpki.cbor.CBORInternal.*;
 /**
  * Class for holding CBOR <code>#7.n</code> (simple) objects.
  * <p>
- * Although <code>simple</code> types in the range of <code>0-19</code> and <code>32-255</code>
- * may appear like some kind of integers, serving as a limited set of <i>unique
- * and reserved labels</i> (keys) in CBOR maps seems like a more logical use case.
+ * A primary use case for <code>simple</code> types in the range of <code>0-19</code> and <code>32-255</code>,
+ * is serving as a limited set of <i>unique and reserved labels</i> (keys) in CBOR maps.
  * The <code>simple(99)</code> label featured in
  * <a href='../../webpki/cbor/doc-files/signatures.html' class='webpkilink'>Embedded&nbsp;Signatures</a>
- * is a representative example.
+ * shows a representative example.
  * </p>
  */
 public class CBORSimple extends CBORObject {
