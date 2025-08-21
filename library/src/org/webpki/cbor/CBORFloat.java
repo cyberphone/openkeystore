@@ -23,8 +23,8 @@ import static org.webpki.cbor.CBORInternal.*;
 /**
  * Class for holding CBOR <code>float</code> objects.
  * <p>
- * Numbers are constrained to the IEEE 754 notation
- * using the length 16, 32, and 64 bit on the "wire".  Which
+ * Numbers are in the <code>IEEE-754</code> format
+ * using the length <code>16</code>, <code>32</code>, and <code>64</code> bit on the "wire".  Which
  * length to use is governed by the size and precision 
  * required to (minimally) correctly represent a number.
  * </p>
@@ -146,7 +146,7 @@ public class CBORFloat extends CBORObject {
      /**
      * Creates an "extended" CBOR <code>float</code> object.
      * <p>
-     * Unlike {@link CBORFloat#CBORFloat(double)}, this method also supports the "quiet" <code>NaN</code> 
+     * Unlike {@link CBORFloat#CBORFloat(double)}, this method also supports the "simple" <code>NaN</code> 
      * and the two <code>Infinity</code> variants.
      * </p>
      * <p>
@@ -159,18 +159,18 @@ public class CBORFloat extends CBORObject {
      * @param value Floating-point value
      * @return {@link CBORObject}
      * @throws CBORException
-     * @see {@link CBORNonFinite#CBORNonFinite(long))}
+     * @see CBORNonFinite#CBORNonFinite(long)
      */
     public static CBORObject createExtendedFloat(double value) {
         if (Double.isFinite(value)) {
             return new CBORFloat(value);
         }
-        if (Double.isNaN(value)) value = Double.NaN;  // Sorry, only the basic NaN is used.
+        if (Double.isNaN(value)) value = Double.NaN;  // Sorry, only "simple" NaNs apply.
         return new CBORNonFinite(Double.doubleToRawLongBits(value));
     }
 
     /**
-     * Get length of the serialized <code>IEEE 754</code> object.
+     * Get length of the serialized <code>IEEE-754</code> object.
      * <p>
      * Note that you must cast a {@link CBORObject} to {@link CBORFloat}
      * in order to access {@link CBORFloat#length()}.
