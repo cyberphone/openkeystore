@@ -146,8 +146,10 @@ public class CBORFloat extends CBORObject {
      /**
      * Creates an "extended" CBOR <code>float</code> object.
      * <p>
-     * Unlike {@link CBORFloat#CBORFloat(double)}, this method also supports the "simple" <code>NaN</code> 
-     * and the two <code>Infinity</code> variants.
+     * Unlike {@link CBORFloat#CBORFloat(double)}, this method also supports the
+     * {@link Double#NaN},
+     * {@link Double#POSITIVE_INFINITY}, and 
+     * {@link Double#NEGATIVE_INFINITY} non-finite variants.
      * </p>
      * <p>
      * {@link CBORObject#getExtendedFloat64()} is the <i>decoder</i> counterpart.
