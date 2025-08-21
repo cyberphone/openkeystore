@@ -240,7 +240,7 @@ public class CBORDecoder {
                 long exponent = f16bin & FLOAT16_POS_INFINITY;
                 // Begin with the edge cases.
                 if (exponent == FLOAT16_POS_INFINITY) {
-                    // Non-finite numbers: Infinity, -Infinity, and NaN.
+                    // Non-finite number found: Infinity, -Infinity, or any variant of NaN.
                     yield returnNonFinite(f16bin);
                 }
                 // It is a "regular" number.
@@ -262,7 +262,7 @@ public class CBORDecoder {
                 long f32bin = getLongFromBytes(4);
                 // Begin with the edge cases.
                 if ((f32bin & FLOAT32_POS_INFINITY) == FLOAT32_POS_INFINITY) {
-                    // Non-finite numbers: Infinity, -Infinity, and NaN.
+                    // Non-finite number found: Infinity, -Infinity, or any variant of NaN.
                     yield returnNonFinite(f32bin);
                 }
                 // It is a "regular" number.
@@ -273,7 +273,7 @@ public class CBORDecoder {
                 long f64bin = getLongFromBytes(8);
                 // Begin with the edge cases.
                 if ((f64bin & FLOAT64_POS_INFINITY) == FLOAT64_POS_INFINITY) {
-                    // Non-finite numbers: Infinity, -Infinity, and NaN.
+                    // Non-finite number found: Infinity, -Infinity, or any variant of NaN.
                     yield returnNonFinite(f64bin);
                 }
                 // It is a "regular" number.
