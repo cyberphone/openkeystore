@@ -143,29 +143,6 @@ public class CBORFloat extends CBORObject {
         }
     }
 
-    /**
-     * Get number in diagnostic notation.
-     * <p>
-     * Floating point numbers are serialized using at least
-     * one integer digit (may be <code>0</code>), a decimal point, and
-     * one or more fractional digits. 
-     * </p>
-     * <p>
-     * Possible exponents are written as <code>e&pm;</code><i>n</i>, where <i>n</i> != <code>0</code>.
-     * </p>
-     * This method also supports <code>NaN</code>, <code>Infinity</code>, and <code>-Infinity</code>.
-     * 
-     * @param value Floating-point value
-     * @return The double in string format
-     */
-    public static String formatDouble(Double value) {
-        // Catch things the serializer is not designed for.
-        if (value == 0 || value.isInfinite() || value.isNaN()) {
-            return value.toString();
-        }
-        return Float64Stringifier.encode(value, false);
-    }
-
      /**
      * Creates an "extended" CBOR <code>float</code> object.
      * <p>
@@ -193,7 +170,7 @@ public class CBORFloat extends CBORObject {
     }
 
     /**
-     * Get length of the serialized IEEE 754 type.
+     * Get length of the serialized <code>IEEE 754</code> object.
      * <p>
      * Note that you must cast a {@link CBORObject} to {@link CBORFloat}
      * in order to access {@link CBORFloat#length()}.
@@ -211,7 +188,8 @@ public class CBORFloat extends CBORObject {
     
     @Override
     void internalToString(CborPrinter cborPrinter) {
-         cborPrinter.append(formatDouble(value));
+        cborPrinter.append((value == 0 || !Double.isFinite(value)) ?
+            String.valueOf(value) : Float64Stringifier.encode(value, false));
     }
 
     static final String STDERR_NON_FINITE_NOT_PERMITTED = 
