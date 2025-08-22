@@ -52,7 +52,7 @@ Note that the constraints apply to <i>encoding</i> as well.
 <tr><td colspan='2' style='padding-left:1.5em'>if (cborObject instanceof {@link CBORNonFinite} nf) {</td></tr>
 <tr><td style='padding-left:1.5em'>&nbsp;&nbsp;// Non-finite number to process</td><td></td></tr>
 <tr><td style='padding-left:1.5em'>&nbsp;&nbsp;// Select suitable method:</td><td></td></tr>
-<tr><td style='padding-left:1.5em'>&nbsp;&nbsp;nf.{@link CBORNonFinite#getNonFinite() getNonFinite()}</td><td>// Arbitrary non-finite number</td></tr>
+<tr><td style='padding-left:1.5em'>&nbsp;&nbsp;nf.{@link CBORNonFinite#getNonFinite64() getNonFinite64()}</td><td>// Arbitrary non-finite number</td></tr>
 <tr><td style='padding-left:1.5em'>&nbsp;&nbsp;nf.{@link CBORNonFinite#getPayload() getPayload()}</td><td>// Application-specific data</td></tr>
 <tr><td style='padding-left:1.5em'>} else {</td><td></td></tr>
 <tr><td style='padding-left:1.5em'>&nbsp;&nbsp;// "Regular" number to process</td><td></td></tr>
