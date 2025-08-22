@@ -301,8 +301,10 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     /**
      * Get "extended" CBOR <code>float64</code> value.
      * <p>
-     * Note that unlike {@link #getFloat64()}, this method also supports the "quiet" <code>NaN</code> 
-     * and the two <code>Infinity</code> variants.
+     * Note that unlike {@link #getFloat64()}, this method also supports the
+     * {@link Double#NaN},
+     * {@link Double#POSITIVE_INFINITY}, and 
+     * {@link Double#NEGATIVE_INFINITY} non-finite variants.
      * </p>
      * <p>
      * This method requires that the object is a
@@ -335,7 +337,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * {@link CBORFloat}, otherwise a {@link CBORException} is thrown.
      * </p>
      * <p>
-     * Unlike {@link #getExtendedFloat64()}, this method only accepts "pure" floating-point
+     * Unlike {@link #getExtendedFloat64()}, this method only accepts "regular" floating-point
      * numbers.  This makes it adapted for CBOR protocols that do not consider <code>NaN</code>
      * or <code>Infinity</code> valid items.  That is, the latter cause a {@link CBORException}
      * to be thrown.
@@ -351,7 +353,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * Get CBOR <code>float32</code> value.
      * <p>
      * This method requires that the object is a
-     * {@link CBORFloat} holding a 16 or 32-bit IEEE 754 value, 
+     * {@link CBORFloat} holding a 16 or 32-bit <code>IEEE&nbsp;754</code> value, 
      * otherwise a {@link CBORException} is thrown.
      * </p>
      * 
@@ -370,7 +372,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * Get CBOR <code>float16</code> value.
      * <p>
      * This method requires that the object is a
-     * {@link CBORFloat} holding a 16-bit IEEE 754 value, 
+     * {@link CBORFloat} holding a 16-bit <code>IEEE&nbsp;754</code> value, 
      * otherwise a {@link CBORException} is thrown.
      * </p>
      * 
@@ -450,7 +452,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     /**
      * Get UNIX <code>Epoch</code> time object.
      * <p>
-     * This method requires that the underlying object is a 
+     * This method requires that the object is a 
      * {@link CBORInt} or {@link CBORFloat}, 
      * otherwise a {@link CBORException} is thrown.
      * </p>
@@ -470,7 +472,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     /**
      * Get ISO <code>date/time</code> object.
      * <p>
-     * This method requires that the underlying object is a 
+     * This method requires that the object is a 
      * {@link CBORString} that is compatible with ISO date/time
      * [<a href='https://www.rfc-editor.org/rfc/rfc3339.html' class='webpkilink'>RFC&nbsp;3339</a>], 
      * otherwise a {@link CBORException} is thrown.

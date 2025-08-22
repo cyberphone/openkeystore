@@ -1,7 +1,7 @@
 <body>
 <h1>Non-Finite Numbers</h1>
 Unlike JSON&nbsp;[<a href='https://www.rfc-editor.org/rfc/rfc8259.html' class='webpkilink'>RFC&nbsp;8259</a>],
-CBOR supports the non-finite floating-point constructs defined by IEEE-754, known as
+CBOR supports the non-finite floating-point constructs defined by <code>IEEE&nbsp;754</code>, known as
 <code>NaN</code> (not a number) and <code>Infinity</code>.
 This implementation provides multiple levels of support, intended to
 accommodate different needs.
@@ -17,6 +17,9 @@ In the list below, <code>NaN</code> refers to "simple" <code>NaNs</code>
 (in deterministically encoded CBOR represented by <code>f97e00</code>),
 while <code>Infinity</code> refers to
 positive infinity (<code>f97c00</code>) and negative infinity (<code>f9fc00</code>).
+The Java counterparts are represented by {@link java.lang.Double#NaN},
+{@link java.lang.Double#POSITIVE_INFINITY},
+and {@link java.lang.Double#NEGATIVE_INFINITY} respectively.
 </td></tr>
 <tr><td style='text-align:center'><code>COMPLETE</code></td><td>All floating-point numbers are accepted.
 </td></tr>
@@ -76,7 +79,7 @@ The following table represents these methods from a <i>developer</i> perspective
 <tr><td><code>d51-d0</code> in <i>big-endian</i> order</td></tr>
 </table></div>
 <div style='margin-top:0.5em'>
-The payload bits are conceptually put into an <code>IEEE-754</code>
+The payload bits are conceptually put into an <code>IEEE&nbsp;754</code>
 <code>64</code>-bit object having the following layout:
 </div>
 <div class='webpkifloat'><table class='webpkitable' style='margin-left:2em'>
@@ -89,7 +92,7 @@ For setting the sign bit, see {@link CBORNonFinite#setSign(boolean)}.
 <div style='margin-top:0.7em'>
 The reason for <i>reversing</i> the payload bits is to ensure that a specific bit will remain
 in a fix position (maintain the same value), independent of the size of the
-<code>IEEE-754</code> variant used for encoding.
+<code>IEEE&nbsp;754</code> variant used for encoding.
 </div>
 <div style='margin-top:0.7em'>
 Note that the encoder will (due to CBOR deterministic encoding rules), select

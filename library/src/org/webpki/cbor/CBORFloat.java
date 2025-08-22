@@ -23,7 +23,7 @@ import static org.webpki.cbor.CBORInternal.*;
 /**
  * Class for holding CBOR <code>float</code> objects.
  * <p>
- * Numbers are in the <code>IEEE-754</code> format
+ * Numbers are in the <code>IEEE&nbsp;754</code> format
  * using the length <code>16</code>, <code>32</code>, and <code>64</code> bit on the "wire".  Which
  * length to use is governed by the size and precision 
  * required to (minimally) correctly represent a number.
@@ -172,7 +172,7 @@ public class CBORFloat extends CBORObject {
     }
 
     /**
-     * Get length of the serialized <code>IEEE-754</code> object.
+     * Get length of the serialized <code>IEEE&nbsp;754</code> object.
      * <p>
      * Note that you must cast a {@link CBORObject} to {@link CBORFloat}
      * in order to access {@link CBORFloat#length()}.
