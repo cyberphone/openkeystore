@@ -168,8 +168,11 @@ public class CBORFloat extends CBORObject {
         if (Double.isFinite(value)) {
             return new CBORFloat(value);
         }
-        if (Double.isNaN(value)) value = Double.NaN;  // Sorry, only "simple" NaNs apply.
-        return new CBORNonFinite(Double.doubleToRawLongBits(value));
+        CBORNonFinite nf = new CBORNonFinite(Double.doubleToRawLongBits(value));
+        if (!nf.isSimple()) {
+            cborError(STDERR_NON_TRIVIAL_NAN_NOT_PERMITTED);
+        }
+        return nf;
     }
 
     /**
@@ -197,5 +200,8 @@ public class CBORFloat extends CBORObject {
 
     static final String STDERR_NON_FINITE_NOT_PERMITTED = 
             "Not permitted, see \"CBORNonFinite\" for details";
+
+    static final String STDERR_NON_TRIVIAL_NAN_NOT_PERMITTED = 
+            "createExtendedFloat() does not support non-trivial NaNs";
 
 }
