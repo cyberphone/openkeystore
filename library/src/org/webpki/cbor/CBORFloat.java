@@ -23,11 +23,12 @@ import static org.webpki.cbor.CBORInternal.*;
 /**
  * Class for holding CBOR <code>float</code> objects.
  * <p>
- * Numbers are in the <code>IEEE&nbsp;754</code> format
+ * Numbers are in the <span style='white-space:nowrap'><code>IEEE</code> <code>754</code></span> format
  * using the length <code>16</code>, <code>32</code>, and <code>64</code> bit on the "wire".  Which
  * length to use is governed by the size and precision 
  * required to (minimally) correctly represent a number.
  * </p>
+ * @see <a href='doc-files/non-finite-numbers.html' class='webpkilink'>Non-Finite Numbers</a>
  */
 public class CBORFloat extends CBORObject {
 
@@ -172,7 +173,7 @@ public class CBORFloat extends CBORObject {
     }
 
     /**
-     * Get length of the serialized <code>IEEE&nbsp;754</code> object.
+     * Get length of the serialized <span style='white-space:nowrap'><code>IEEE</code> <code>754</code></span> object.
      * <p>
      * Note that you must cast a {@link CBORObject} to {@link CBORFloat}
      * in order to access {@link CBORFloat#length()}.

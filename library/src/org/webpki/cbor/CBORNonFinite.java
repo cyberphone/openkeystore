@@ -101,7 +101,7 @@ public class CBORNonFinite extends CBORObject {
      * Creates a <i>non-finite</i> floating-point number.
      * <p>
      * The constructor takes a <code>16</code>, <code>32</code>, or <code>64</code>-bit
-     * non-finite number in <code>IEEE&nbsp;754</code> encoding.
+     * non-finite number in <span style='white-space:nowrap'><code>IEEE</code> <code>754</code></span> encoding.
      * </p>
      * <p>
      * See also {@link CBORFloat#CBORFloat(double)} and {@link CBORFloat#createExtendedFloat(double)}.
@@ -233,7 +233,7 @@ public class CBORNonFinite extends CBORObject {
      * object.  The value is provided in the most compact form
      * based on CBOR serialization rules.
      * </p>
-     * @return <code>IEEE&nbsp;754</code> non-finite number coded as a <code>long</code>
+     * @return <span style='white-space:nowrap'><code>IEEE</code> <code>754</code></span> non-finite number coded as a <code>long</code>
      */
     public long getNonFinite() {
         scan();
@@ -247,7 +247,7 @@ public class CBORNonFinite extends CBORObject {
      * object after it has been expanded to 64 bits.
      * That is, a received <code>7c01</code> will be returned as <code>7ff0040000000000</code>.
      * </p>
-     * @return <code>IEEE&nbsp;754</code> non-finite number coded as a <code>long</code>
+     * @return <span style='white-space:nowrap'><code>IEEE</code> <code>754</code></span> non-finite number coded as a <code>long</code>
      */
     public long getNonFinite64() {
         scan();

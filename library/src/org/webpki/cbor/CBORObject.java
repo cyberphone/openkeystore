@@ -353,7 +353,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * Get CBOR <code>float32</code> value.
      * <p>
      * This method requires that the object is a
-     * {@link CBORFloat} holding a 16 or 32-bit <code>IEEE&nbsp;754</code> value, 
+     * {@link CBORFloat} holding a 16 or 32-bit <span style='white-space:nowrap'><code>IEEE</code> <code>754</code></span> value, 
      * otherwise a {@link CBORException} is thrown.
      * </p>
      * 
@@ -372,7 +372,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * Get CBOR <code>float16</code> value.
      * <p>
      * This method requires that the object is a
-     * {@link CBORFloat} holding a 16-bit <code>IEEE&nbsp;754</code> value, 
+     * {@link CBORFloat} holding a 16-bit <span style='white-space:nowrap'><code>IEEE</code> <code>754</code></span> value, 
      * otherwise a {@link CBORException} is thrown.
      * </p>
      * 

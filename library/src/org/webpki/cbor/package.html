@@ -33,7 +33,7 @@ notation:
  dealt with automatically.
  The encoded representation is determined by the size of the value.
 Also see {@link CBORObject#getBigInteger()}.</li>
-<li style='padding-top:0.5em'>Floating-point data covers the 16, 32, and 64-bit <code>IEEE&nbsp;754</code> variants.
+<li style='padding-top:0.5em'>Floating-point data covers the 16, 32, and 64-bit <span style='white-space:nowrap'><code>IEEE</code> <code>754</code></span> variants.
 The encoded representation is determined by the size and precision of the value.</li>
 <li style='padding-top:0.5em'>CBOR applications may also depend on
 <a href='doc-files/non-finite-numbers.html' class='webpkilink'>Non-Finite Numbers</a>.</li>
@@ -136,7 +136,7 @@ do not necessarily return identical text: <code>0x10</code> used
 as diagnostic notation input will return <code>16</code> as
 diagnostic notation output.
 Caveat: for reliable conversions, floating-point values <b>must</b>
-be aligned with <code>IEEE&nbsp;754</code> encoding and rounding rules.
+be aligned with <span style='white-space:nowrap'><code>IEEE</code> <code>754</code></span> encoding and rounding rules.
 </p>
 The following table shows how CBOR objects should be represented in 
 diagnostic notation:
