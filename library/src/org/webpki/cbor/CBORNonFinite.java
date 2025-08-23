@@ -124,7 +124,6 @@ public class CBORNonFinite extends CBORObject {
      * </div>
      * @param payload Payload data
      * @return {@link CBORNonFinite}
-     * @see CBORFloat#createExtendedFloat(double)
      */
     public static CBORNonFinite createPayloadObject(long payload) {
         if ((payload & PAYLOAD_MASK) != payload) {
