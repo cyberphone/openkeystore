@@ -181,8 +181,11 @@ public class CBORNonFinite extends CBORObject {
     /**
      * Check if non-finite object is simple.
      * <p>
-     * This method returns <code>true</code> if the non-finite object is a "quiet" <code>NaN</code>,
-     * <code>Infinity</code>, or <code>-Infinity</code>, else <code>false</code> is returned.
+     * This method returns <code>true</code> if the non-finite object is a 
+     * {@link Double#NaN},
+     * {@link Double#POSITIVE_INFINITY}, or 
+     * {@link Double#NEGATIVE_INFINITY},
+     * else <code>false</code> is returned.
      * </p>
      * @return <code>boolean</code>. 
      */
