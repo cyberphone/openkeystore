@@ -159,7 +159,11 @@ public class CBORNonFinite extends CBORObject {
 
     /**
      * Get sign bit of non-finite object.
-     * @return Sign bit expressed as a <code>boolean</code>. <code>true</code> = 1, <code>false</code> = 0.
+     * <p>
+     * This method returns <code>true</code> if the sign bit is <code>1</code>,
+     * else <code>false</code> is returned.
+     * </p>
+     * @return <code>boolean</code>.
      * @see #setSign(boolean)
      */
     public boolean getSign() {
