@@ -1,6 +1,5 @@
 package org.webpki.cbor;
 
-import static org.webpki.cbor.CBORInternal.FLOAT32_SIGNIFICAND_SIZE;
 import static org.webpki.cbor.CBORInternal.FLOAT64_SIGNIFICAND_SIZE;
 
 import java.util.Random;
