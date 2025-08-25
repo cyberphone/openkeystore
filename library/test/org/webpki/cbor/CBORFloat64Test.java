@@ -1,5 +1,8 @@
 package org.webpki.cbor;
 
+import static org.webpki.cbor.CBORInternal.FLOAT32_SIGNIFICAND_SIZE;
+import static org.webpki.cbor.CBORInternal.FLOAT64_SIGNIFICAND_SIZE;
+
 import java.util.Random;
 
 public class CBORFloat64Test {
@@ -8,33 +11,62 @@ public class CBORFloat64Test {
     static long float32;
     static long float16;
     static long runs;
+    static boolean oneShot;
     
-    static void convert (long l, boolean float32Flag) {
+    static void convert (long l) {
+        boolean genuine = true;
+        boolean simple = true;
+        byte[] cbor = null;
+        CBORNonFinite nf = null;
+        String type = "G";
         try {
-            double d = float32Flag ? Float.intBitsToFloat((int) l) : Double.longBitsToDouble(l);
-            CBORFloat cbor = new CBORFloat(d);
-            switch (cbor.tag) {
-                case CBORInternal.MT_FLOAT16:
+            if ((l & CBORInternal.FLOAT64_POS_INFINITY) == CBORInternal.FLOAT64_POS_INFINITY) {
+                nf = new CBORNonFinite(l);
+                genuine = false;
+                simple = nf.isSimple();
+                cbor = nf.encode();
+                type = simple ? "S" : "X";
+            }
+            if (simple) {
+                cbor = CBORFloat.createExtendedFloat(Double.longBitsToDouble(l)).encode();
+            }
+            switch (cbor.length) {
+                case 3:
                     float16++;
                     break;
-                case CBORInternal.MT_FLOAT32:
+                case 5:
                     float32++;
                     break;
-                case CBORInternal.MT_FLOAT64:
+                case 9:
                     float64++;
-                    if (float32Flag) {
-                        throw new RuntimeException("BUG");
-                    }
                     break;
                 default:
                     throw new RuntimeException("BUG");
             }
-            Double v = CBORDecoder.decode(cbor.encode()).getFloat64();
-            if (v.compareTo(d) != 0) {
-                throw new RuntimeException ("Fail");
+            CBORObject object = CBORDecoder.decode(cbor);
+            if (simple) {
+                double d = Double.longBitsToDouble(l);
+                Double v = object.getExtendedFloat64();
+                if (v.compareTo(d) != 0) {
+                    throw new RuntimeException ("Fail");
+                }
+                if (genuine) {
+                    v = object.getFloat64();
+                    if (v.compareTo(d) != 0) {
+                        throw new RuntimeException ("Fail2");
+                    }
+                }
+            } else {
+                if (((nf.getNonFinite64() ^ l) &
+                    ((1 << FLOAT64_SIGNIFICAND_SIZE) - 1)) != 0) {
+                    throw new RuntimeException ("Fail3");
+                }
             }
-            if ((++runs % 1000000) == 0) {
-                System.out.println("16=" + float16 + " 32=" + float32 + " 64=" + float64);
+            if (oneShot || ((++runs % 1000000) == 0)) {
+                System.out.println(" 16=" + float16 + 
+                                   " 32=" + float32 +
+                                   " 64=" + float64 +
+                                   " T=" + type);
             }
         } catch (Exception e) {
             System.out.println("**********=" + Long.toUnsignedString(l, 16));
@@ -43,11 +75,13 @@ public class CBORFloat64Test {
     }
     
     public static void main(String[] argv)  {
-        Random random = new Random();
-        while (true) {
-            long l = random.nextLong();
-            convert(l, false);
-            convert(l, true);
+        if (argv.length == 0) {
+            Random random = new Random();
+            while (true) {
+                convert(random.nextLong());
+            }
         }
+        oneShot = true;
+        convert(Long.parseUnsignedLong(argv[0], 16));
     }
 }
