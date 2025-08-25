@@ -4,6 +4,8 @@ import static org.webpki.cbor.CBORInternal.FLOAT64_SIGNIFICAND_SIZE;
 
 import java.util.Random;
 
+import org.webpki.util.HexaDecimal;
+
 public class CBORFloat64Test {
     
     static long float64;
@@ -65,7 +67,8 @@ public class CBORFloat64Test {
                 System.out.println(" 16=" + float16 + 
                                    " 32=" + float32 +
                                    " 64=" + float64 +
-                                   " T=" + type);
+                                   " T=" + type +
+                                   " E=" + HexaDecimal.encode(cbor));
             }
         } catch (Exception e) {
             System.out.println("**********=" + Long.toUnsignedString(l, 16));
@@ -81,6 +84,9 @@ public class CBORFloat64Test {
             }
         }
         oneShot = true;
-        convert(Long.parseUnsignedLong(argv[0], 16));
+        String number = argv[0];
+        convert(number.startsWith("x") ?
+            Long.parseUnsignedLong(number.substring(1), 16) :
+            Double.doubleToLongBits(Double.valueOf(number)));
     }
 }
