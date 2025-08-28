@@ -155,12 +155,11 @@ public class CBORMap extends CBORObject {
 
     /**
      * Set CBOR data using an external (dynamic) interface.
-     * <p>
+     * <p></p>
      * Sample using a construct suitable for chained writing:
-     * <pre>
-     *    setDynamic((wr) -&gt; optionalString == null ? wr : wr.set(KEY, new CBORString(optionalString))); 
-     * </pre>
-     * </p>
+     * <div class='webpkifloat'>
+     * <pre>  setDynamic((wr) -&gt; optionalString == null ? wr : wr.set(KEY, new CBORString(optionalString)));</pre>
+     * </div>
      * @param dynamic Interface (usually Lambda)
      * @return <code>this</code>
      * @throws CBORException
