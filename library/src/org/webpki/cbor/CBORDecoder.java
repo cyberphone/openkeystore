@@ -126,7 +126,7 @@ public class CBORDecoder {
      * <p></p>
      * This constructor is identical to:
      * <div class='webpkifloat'>
-     * <pre>  new CBORDecoder(new ByteArrayInputStream(cbor), 0, cbor.length);</pre>
+     * <pre>  CBORDecoder(new ByteArrayInputStream(cbor), 0, cbor.length);</pre>
      * </div>
      * @param cbor CBOR binary data
      * @param options The decoder options.
