@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.webpki.cbor.CBORArray;
 import org.webpki.cbor.CBORDecoder;
 import org.webpki.cbor.CBORDiagnosticNotation;
+import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORNonFinite;
 import org.webpki.cbor.CBORObject;
 
@@ -55,6 +56,21 @@ public class ConvertServlet extends CoreRequestServlet {
             sequence.add(cborObject);
         }
         return sequence.encodeAsSequence();        
+    }
+
+    void checkForNonFinites(CBORObject object) throws IOException{
+        if (object instanceof CBORArray array) {
+            for (CBORObject element : array.toArray()) {
+                checkForNonFinites(element);
+            }
+        } else if (object instanceof CBORMap map) {
+            for (CBORObject key : map.getKeys()) {
+                checkForNonFinites(key);
+                checkForNonFinites(map.get(key));
+            }
+        } else if (object instanceof CBORNonFinite) {
+            throw new IOException("\"NaN\" or \"Infinity\" were encountered");
+        }
     }
         
     public void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -96,8 +112,8 @@ public class ConvertServlet extends CoreRequestServlet {
             CBORArray sequenceBuilder = new CBORArray();
             CBORObject cborObject;
             while ((cborObject = cborDecoder.decodeWithOptions()) != null) {
-                if (rejectNonFinityFlag && cborObject instanceof CBORNonFinite) {
-                    throw new IOException("\"NaN\" or \"Infinity\" were encountered");
+                if (rejectNonFinityFlag) {
+                    checkForNonFinites(cborObject);
                 }
                 sequenceBuilder.add(cborObject);
                 if (!sequenceFlag) {
