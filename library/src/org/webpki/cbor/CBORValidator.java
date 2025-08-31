@@ -114,18 +114,21 @@ public abstract class CBORValidator <T extends CBORValidator<T>> {
         return getThis();
     }
 
-    POLICY nonProtectedPolicy = POLICY.FORBIDDEN;
+    POLICY unprotectedDataPolicy = POLICY.FORBIDDEN;
 
     /**
-     * Sets non-protected data policy.
+     * Sets unprotected data policy.
      * <p>
-     * By default non-protected data is rejected ({@link CBORCryptoUtils.POLICY#FORBIDDEN}).
+     * Unprotected data is indicated by the reserved label {@link CBORCryptoConstants#CSF_UNPROTECTED_LBL}.
      * </p>
-     * @param nonProtectedPolicy Define level of support
+     * <p>
+     * By default unprotected data is rejected ({@link CBORCryptoUtils.POLICY#FORBIDDEN}).
+     * </p>
+     * @param policy Define level of support
      * @return <code>this</code> of subclass
      */
-    public T setNonProtectedPolicy(POLICY nonProtectedPolicy) {
-        this.nonProtectedPolicy = nonProtectedPolicy;
+    public T setUnprotectedDataPolicy(POLICY policy) {
+        this.unprotectedDataPolicy = policy;
         return getThis();
     }
 
@@ -172,15 +175,15 @@ public abstract class CBORValidator <T extends CBORValidator<T>> {
                                                                tagPolicy,
                                                                tagCollector);
 
-        // Deal with optional non-protected data.
-        CBORObject nonProtected = null;
-        if (signedMap.containsKey(CSF_NON_PROTECTED_LBL)) {
-            if (nonProtectedPolicy == POLICY.FORBIDDEN) {
-                cborError(STDERR_NON_PROTECTED_FORBIDDEN);
+        // Deal with optional unprotected data.
+        CBORObject unprotectedData = null;
+        if (signedMap.containsKey(CSF_UNPROTECTED_LBL)) {
+            if (unprotectedDataPolicy == POLICY.FORBIDDEN) {
+                cborError(STDERR_UNPROTECTED_FORBIDDEN);
             }
-            nonProtected = signedMap.remove(CSF_NON_PROTECTED_LBL);
-        } else if (nonProtectedPolicy == POLICY.MANDATORY) {
-            cborError(STDERR_NON_PROTECTED_MISSING);
+            unprotectedData = signedMap.remove(CSF_UNPROTECTED_LBL);
+        } else if (unprotectedDataPolicy == POLICY.MANDATORY) {
+            cborError(STDERR_UNPROTECTED_MISSING);
         }
 
         // Fetch signature container object.
@@ -202,8 +205,8 @@ public abstract class CBORValidator <T extends CBORValidator<T>> {
         }
 
         // Restore signed object.
-        if (nonProtected != null) {
-            signedMap.set(CSF_NON_PROTECTED_LBL, nonProtected);
+        if (unprotectedData != null) {
+            signedMap.set(CSF_UNPROTECTED_LBL, unprotectedData);
         }
 
         // Return it as well.
@@ -213,9 +216,9 @@ public abstract class CBORValidator <T extends CBORValidator<T>> {
     static final String STDERR_NO_SIGNATURE = 
             "No signature found!";
     
-    static final String STDERR_NON_PROTECTED_FORBIDDEN = 
-            "Non-protected data must be enabled";
+    static final String STDERR_UNPROTECTED_FORBIDDEN = 
+            "Unprotected data policy must be enabled";
     
-    static final String STDERR_NON_PROTECTED_MISSING = 
-            "Missing non-protected data";
+    static final String STDERR_UNPROTECTED_MISSING = 
+            "Missing unprotected data";
 }

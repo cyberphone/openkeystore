@@ -201,12 +201,12 @@ public interface CBORCryptoConstants {
     CBORInt CEF_CIPHER_TEXT_LBL      = new CBORInt(10);
 
     /**
-     * Reserved label holding the CSF container object.
+     * Reserved label simple(99) holding the CSF container object.
      */
     CBORSimple CSF_CONTAINER_LBL     = new CBORSimple(99);
 
     /**
-     * Reserved label holding optional non-protected data the CSF container object.
+     * Reserved label simple(100) holding optional unprotected data.
      */
-    CBORSimple CSF_NON_PROTECTED_LBL = new CBORSimple(100);
+    CBORSimple CSF_UNPROTECTED_LBL   = new CBORSimple(100);
 }

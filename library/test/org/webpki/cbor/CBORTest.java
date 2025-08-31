@@ -1281,31 +1281,31 @@ public class CBORTest {
         }).validate(cborSd);
     }
 
-    void oneNonProtected(CBORCryptoUtils.POLICY policy, boolean addNonProtected) throws IOException {
+    void oneUnprotected(CBORCryptoUtils.POLICY policy, boolean addUnprotectedData) throws IOException {
         CBORMap mapToBeSgnated = createDataToBeSigned();
-        if (addNonProtected) {
-            mapToBeSgnated.set(CBORCryptoConstants.CSF_NON_PROTECTED_LBL, 
+        if (addUnprotectedData) {
+            mapToBeSgnated.set(CBORCryptoConstants.CSF_UNPROTECTED_LBL, 
                                new CBORString("not protected"));
         }
-        boolean mustFail = (policy == CBORCryptoUtils.POLICY.FORBIDDEN && addNonProtected) ||
-                           (policy == CBORCryptoUtils.POLICY.MANDATORY && !addNonProtected);
+        boolean mustFail = (policy == CBORCryptoUtils.POLICY.FORBIDDEN && addUnprotectedData) ||
+                           (policy == CBORCryptoUtils.POLICY.MANDATORY && !addUnprotectedData);
         try {
             CBORObject signed = new CBORAsymKeySigner(p256.getPrivate()).sign(mapToBeSgnated);
-            CBORObject result = new CBORAsymKeyValidator(p256.getPublic()).setNonProtectedPolicy(policy).validate(signed);
+            CBORObject result = new CBORAsymKeyValidator(p256.getPublic()).setUnprotectedDataPolicy(policy).validate(signed);
             assertFalse("should not", mustFail);
             assertTrue("equal", signed.equals(result));
         } catch (Exception e) {
             assertTrue("but it is ok", mustFail);
-            checkException(e, addNonProtected ?
-                CBORValidator.STDERR_NON_PROTECTED_FORBIDDEN 
+            checkException(e, addUnprotectedData ?
+                CBORValidator.STDERR_UNPROTECTED_FORBIDDEN 
                                               : 
-                CBORValidator.STDERR_NON_PROTECTED_MISSING);
+                CBORValidator.STDERR_UNPROTECTED_MISSING);
         }
     }
 
-    void nonProtected(CBORCryptoUtils.POLICY policy) throws IOException {
-        oneNonProtected(policy, true);
-        oneNonProtected(policy, false);
+    void unprotectedTest(CBORCryptoUtils.POLICY policy) throws IOException {
+        oneUnprotected(policy, true);
+        oneUnprotected(policy, false);
     }
 
     @Test
@@ -1640,10 +1640,10 @@ public class CBORTest {
                 }
             }).validate(taggedSignature);
 
-        // Testing the non-protected option
-        nonProtected(CBORCryptoUtils.POLICY.MANDATORY);
-        nonProtected(CBORCryptoUtils.POLICY.OPTIONAL);
-        nonProtected(CBORCryptoUtils.POLICY.FORBIDDEN);
+        // Testing the unprotected option
+        unprotectedTest(CBORCryptoUtils.POLICY.MANDATORY);
+        unprotectedTest(CBORCryptoUtils.POLICY.OPTIONAL);
+        unprotectedTest(CBORCryptoUtils.POLICY.FORBIDDEN);
 
     }
 

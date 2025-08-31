@@ -153,7 +153,7 @@ public class ValidateServlet extends CoreRequestServlet {
                     }
                 })
                 .setTagPolicy(CBORCryptoUtils.POLICY.OPTIONAL, null)
-                .setNonProtectedPolicy(CBORCryptoUtils.POLICY.OPTIONAL)
+                .setUnprotectedDataPolicy(CBORCryptoUtils.POLICY.OPTIONAL)
                 .setMultiSignatureMode(rawSignatures instanceof CBORArray)
                 .validate(destroyedCopy);
             

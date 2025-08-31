@@ -170,9 +170,9 @@ public abstract class CBORSigner <T extends CBORSigner<?>> {
                                                                POLICY.OPTIONAL, 
                                                                null);
         
-        // Save and remove possible non-protected data.
-        CBORObject nonProtected = mapToSign.containsKey(CSF_NON_PROTECTED_LBL) ? 
-                                       mapToSign.remove(CSF_NON_PROTECTED_LBL) : null;
+        // Save and remove possible unprotected data.
+        CBORObject unprotectedData = mapToSign.containsKey(CSF_UNPROTECTED_LBL) ? 
+                                          mapToSign.remove(CSF_UNPROTECTED_LBL) : null;
 
         // Create an empty signature container object.
         CBORMap csfContainer = new CBORMap();
@@ -215,9 +215,9 @@ public abstract class CBORSigner <T extends CBORSigner<?>> {
                              true);
         }
 
-        // Restore possible non-protected data.
-        if (nonProtected != null) {
-            mapToSign.set(CSF_NON_PROTECTED_LBL, nonProtected);
+        // Restore possible unprotected data.
+        if (unprotectedData != null) {
+            mapToSign.set(CSF_UNPROTECTED_LBL, unprotectedData);
         }
 
         // Return the now signed object.
