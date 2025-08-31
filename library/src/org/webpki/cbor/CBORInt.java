@@ -83,6 +83,7 @@ public class CBORInt extends CBORObject {
         cborPrinter.append(unsigned ? Long.toUnsignedString(value) : Long.toString(value));
     }
 
-    static final String STDERR_INT_VALUE_OUT_OF_RANGE = "Integer out of range: ";
+    static final String STDERR_INT_VALUE_OUT_OF_RANGE = 
+            "Integer out of range: ";
 
 }

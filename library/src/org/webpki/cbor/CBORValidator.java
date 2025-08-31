@@ -114,6 +114,21 @@ public abstract class CBORValidator <T extends CBORValidator<T>> {
         return getThis();
     }
 
+    POLICY nonProtectedPolicy = POLICY.FORBIDDEN;
+
+    /**
+     * Sets non-protected data policy.
+     * <p>
+     * By default non-protected data is rejected ({@link CBORCryptoUtils.POLICY#FORBIDDEN}).
+     * </p>
+     * @param nonProtectedPolicy Define level of support
+     * @return <code>this</code> of subclass
+     */
+    public T setNonProtectedPolicy(POLICY nonProtectedPolicy) {
+        this.nonProtectedPolicy = nonProtectedPolicy;
+        return getThis();
+    }
+
     void validateOneSignature(CBORMap csfContainer, CBORObject signedObject) {
 
         // Get the signature value and remove it from the (map) object.
@@ -157,13 +172,24 @@ public abstract class CBORValidator <T extends CBORValidator<T>> {
                                                                tagPolicy,
                                                                tagCollector);
 
+        // Deal with optional non-protected data.
+        CBORObject nonProtected = null;
+        if (signedMap.containsKey(CSF_NON_PROTECTED_LBL)) {
+            if (nonProtectedPolicy == POLICY.FORBIDDEN) {
+                cborError(STDERR_NON_PROTECTED_FORBIDDEN);
+            }
+            nonProtected = signedMap.remove(CSF_NON_PROTECTED_LBL);
+        } else if (nonProtectedPolicy == POLICY.MANDATORY) {
+            cborError(STDERR_NON_PROTECTED_MISSING);
+        }
+
         // Fetch signature container object.
         // Need to separate single and multiple signatures.
         if (multiSignFlag) {
             CBORArray arrayOfSignatures = signedMap.get(CSF_CONTAINER_LBL).getArray();
             int signatureCount = arrayOfSignatures.size();
             if (signatureCount == 0) {
-                cborError("No signature found!");
+                cborError(STDERR_NO_SIGNATURE);
             }
             while (--signatureCount >= 0) {
                 CBORMap csfContainer = arrayOfSignatures.get(signatureCount).getMap();
@@ -174,8 +200,22 @@ public abstract class CBORValidator <T extends CBORValidator<T>> {
         } else {
             validateOneSignature(signedMap.get(CSF_CONTAINER_LBL).getMap(), signedObject);
         }
-        
+
+        // Restore signed object.
+        if (nonProtected != null) {
+            signedMap.set(CSF_NON_PROTECTED_LBL, nonProtected);
+        }
+
         // Return it as well.
         return signedObject;
     }
+
+    static final String STDERR_NO_SIGNATURE = 
+            "No signature found!";
+    
+    static final String STDERR_NON_PROTECTED_FORBIDDEN = 
+            "Non-protected data must be enabled";
+    
+    static final String STDERR_NON_PROTECTED_MISSING = 
+            "Missing non-protected data";
 }

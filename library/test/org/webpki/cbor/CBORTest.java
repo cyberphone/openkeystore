@@ -1281,6 +1281,33 @@ public class CBORTest {
         }).validate(cborSd);
     }
 
+    void oneNonProtected(CBORCryptoUtils.POLICY policy, boolean addNonProtected) throws IOException {
+        CBORMap mapToBeSgnated = createDataToBeSigned();
+        if (addNonProtected) {
+            mapToBeSgnated.set(CBORCryptoConstants.CSF_NON_PROTECTED_LBL, 
+                               new CBORString("not protected"));
+        }
+        boolean mustFail = (policy == CBORCryptoUtils.POLICY.FORBIDDEN && addNonProtected) ||
+                           (policy == CBORCryptoUtils.POLICY.MANDATORY && !addNonProtected);
+        try {
+            CBORObject signed = new CBORAsymKeySigner(p256.getPrivate()).sign(mapToBeSgnated);
+            CBORObject result = new CBORAsymKeyValidator(p256.getPublic()).setNonProtectedPolicy(policy).validate(signed);
+            assertFalse("should not", mustFail);
+            assertTrue("equal", signed.equals(result));
+        } catch (Exception e) {
+            assertTrue("but it is ok", mustFail);
+            checkException(e, addNonProtected ?
+                CBORValidator.STDERR_NON_PROTECTED_FORBIDDEN 
+                                              : 
+                CBORValidator.STDERR_NON_PROTECTED_MISSING);
+        }
+    }
+
+    void nonProtected(CBORCryptoUtils.POLICY policy) throws IOException {
+        oneNonProtected(policy, true);
+        oneNonProtected(policy, false);
+    }
+
     @Test
     public void signatureTest() throws Exception {
   
@@ -1612,6 +1639,12 @@ public class CBORTest {
                     assertTrue("tagn", tag == objectOrNull.getTag().getTagNumber());
                 }
             }).validate(taggedSignature);
+
+        // Testing the non-protected option
+        nonProtected(CBORCryptoUtils.POLICY.MANDATORY);
+        nonProtected(CBORCryptoUtils.POLICY.OPTIONAL);
+        nonProtected(CBORCryptoUtils.POLICY.FORBIDDEN);
+
     }
 
     void enumerateEncryptions(KeyEncryptionAlgorithms[] keas,
