@@ -64,23 +64,23 @@ public enum AsymSignatureAlgorithms implements SignatureAlgorithms {
                   // https://www.ietf.org/archive/id/draft-ietf-jose-fully-specified-algorithms-05.html
                   // Kept JOSE, Updated COSE
     ECDSA_SHA384  ("http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha384",    "ES384",   
-                   -48,  "1.2.840.10045.4.3.3",   "SHA384withECDSA",
+                   -51,  "1.2.840.10045.4.3.3",   "SHA384withECDSA",
                    HashAlgorithms.SHA384, true,  KeyTypes.EC,    null),
  
                   // https://www.ietf.org/archive/id/draft-ietf-jose-fully-specified-algorithms-05.html
                   // Kept JOSE, Updated COSE  
     ECDSA_SHA512  ("http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha512",    "ES512",   
-                   -49,  "1.2.840.10045.4.3.4",   "SHA512withECDSA",
+                   -52,  "1.2.840.10045.4.3.4",   "SHA512withECDSA",
                    HashAlgorithms.SHA512, true,  KeyTypes.EC,    null),
 
                   // https://www.ietf.org/archive/id/draft-ietf-jose-fully-specified-algorithms-05.html
     ED25519       ("https://webpki.github.io/sks/algorithm#ed25519",         "Ed25519",   
-                   -50,  "1.3.101.112",           "Ed25519",
+                   -19,  "1.3.101.112",           "Ed25519",
                    null /*"pure" */,      false, KeyTypes.EDDSA, null),
 
                   // https://www.ietf.org/archive/id/draft-ietf-jose-fully-specified-algorithms-05.html
     ED448         ("https://webpki.github.io/sks/algorithm#ed448",           "Ed448",   
-                   -51,  "1.3.101.113",           "Ed448",
+                   -53,  "1.3.101.113",           "Ed448",
                    null /*"pure" */,      false, KeyTypes.EDDSA, null);
 
     private final String sksId;             // As expressed in SKS

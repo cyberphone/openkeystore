@@ -159,13 +159,13 @@ containers:
 &nbsp;&nbsp;1: "Hello signed world!",<br>
 &nbsp;&nbsp;2: [4.7, true, h'012345'],<br>
 &nbsp;&nbsp;simple(99): [{<br>
-&nbsp;&nbsp;&nbsp;&nbsp;1: -50,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;1: -19,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;4: {<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: 1,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-1: 6,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-2: h'fe49acf5b92b6e923594f2e83368f680ac924be93cf533aecaf802e37757f8c9'<br>
 &nbsp;&nbsp;&nbsp;&nbsp;},<br>
-&nbsp;&nbsp;&nbsp;&nbsp;6: h'5c2699faa73abc448b1b936e550b4afa9929c4a266a3a394a666577fd90aa9d6cf39a8f0cb771d5ac00b43958a59dc6802a145922ecd6b980839356598d1f70d'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;6: h'692a8fac0a30b770797b61ab5b77f1c08f0653cb3569378094a98a326ed70eb20ccb20ba0278ed18cd40528e110009c572677d8ca66fba444678073898497000'<br>
 &nbsp;&nbsp;}, {<br>
 &nbsp;&nbsp;&nbsp;&nbsp;1: -9,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;4: {<br>
@@ -197,13 +197,13 @@ include a top-level object identifier in the signed data:
 &nbsp;&nbsp;1: "Hello signed world!",<br>
 &nbsp;&nbsp;2: [4.7, true, h'012345'],<br>
 &nbsp;&nbsp;simple(99): {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;1: -50,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;1: -19,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;4: {<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: 1,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-1: 6,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-2: h'fe49acf5b92b6e923594f2e83368f680ac924be93cf533aecaf802e37757f8c9'<br>
 &nbsp;&nbsp;&nbsp;&nbsp;},<br>
-&nbsp;&nbsp;&nbsp;&nbsp;6: h'5de56d88d5ef3f7052b1e79f323fa585c6a6e5b5bfedb697cd61fe9515bf2578f2af03b149cbf43b5ab7176fa784cf4fbb66ba25943d1879a21ad57bc3c81d0f'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;6: h'9bae93c35be09cc5aedb4167910f84bff63d834747c7ba592ec060a6f35300cdc9c2202252fc6cfe01156a12b547f1dca518658c30ce53bede620c398f6e4204'<br>
 &nbsp;&nbsp;}<br>
 }])
 </div>
@@ -226,13 +226,13 @@ The following shows an example of a signed object holding unprotected data:
 &nbsp;&nbsp;1: "Hello signed world!",<br>
 &nbsp;&nbsp;2: [4.7, true, h'012345'],<br>
 &nbsp;&nbsp;simple(99): {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;1: -50,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;1: -19,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;4: {<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: 1,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-1: 6,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-2: h'fe49acf5b92b6e923594f2e83368f680ac924be93cf533aecaf802e37757f8c9'<br>
 &nbsp;&nbsp;&nbsp;&nbsp;},<br>
-&nbsp;&nbsp;&nbsp;&nbsp;6: h'3e87482de249133e1e8046331777b0b31963c9469121566ed58b2fe795768e1f2905cfdf64c777da8405cc1cd275dc772b6caf64d26b96b734e0bc1216357e06'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;6: h'edc343e2740741fba9fe53c11e2428d301ffdfa7d1ca46482d85a26335ab707cb2813f0ac81d200bc2f84933cad5e87a3a7ff849816bc4e741b297e0c62eb30b'<br>
 &nbsp;&nbsp;},<br>
 &nbsp;&nbsp;simple(100): "Unprotected - Not signed"<br>
 }
@@ -248,11 +248,11 @@ Currently supported COSE signature algorithms:
 <tr style='text-align:center'><td><code>HS256</code></td><td>5</td><td></td></tr>
 <tr style='text-align:center'><td><code>HS384</code></td><td>6</td><td></td></tr>
 <tr style='text-align:center'><td><code>HS512</code></td><td>7</td><td></td></tr>
-<tr style='text-align:center'><td><code>Ed25519</code></td><td>-50</td><td>1</td></tr>
-<tr style='text-align:center'><td><code>Ed448</code></td><td>-51</td><td>1</td></tr>
+<tr style='text-align:center'><td><code>Ed25519</code></td><td>-19</td><td>1</td></tr>
+<tr style='text-align:center'><td><code>Ed448</code></td><td>-53</td><td>1</td></tr>
 <tr style='text-align:center'><td><code>ESP256</code></td><td>-9</td><td>1</td></tr>
-<tr style='text-align:center'><td><code>ESP384</code></td><td>-48</td><td>1</td></tr>
-<tr style='text-align:center'><td><code>ESP512</code></td><td>-49</td><td>1</td></tr>
+<tr style='text-align:center'><td><code>ESP384</code></td><td>-51</td><td>1</td></tr>
+<tr style='text-align:center'><td><code>ESP512</code></td><td>-52</td><td>1</td></tr>
 <tr style='text-align:center'><td><code>PS256</code></td><td>-37</td><td></td></tr>
 <tr style='text-align:center'><td><code>PS384</code></td><td>-38</td><td></td></tr>
 <tr style='text-align:center'><td><code>PS512</code></td><td>-39</td><td></td></tr>
