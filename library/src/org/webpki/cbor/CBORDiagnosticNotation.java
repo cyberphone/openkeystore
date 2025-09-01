@@ -151,7 +151,11 @@ public class CBORDiagnosticNotation {
             readChar();
             return true;
         }
-        scanFor(String.valueOf(validStop));
+        char actual = readChar(); 
+        if (validStop != actual) {
+            parserError(String.format(
+                "Expected: ',' or '%c' actual: %s", validStop, toReadableChar(actual)));
+        }
         index--;
         return false;
     }
@@ -272,7 +276,7 @@ public class CBORDiagnosticNotation {
                 
             default -> {
                 index--;
-                parserError(String.format("Unexpected character: %s", toChar(readChar())));
+                parserError(String.format("Unexpected character: %s", toReadableChar(readChar())));
                 yield null;  // For the compiler...
             }
         };
@@ -405,7 +409,7 @@ public class CBORDiagnosticNotation {
         return c;
     }
 
-    private String toChar(char c) {
+    private String toReadableChar(char c) {
         return c < ' ' ? String.format("\\u%04x", (int) c) : String.format("'%c'", c);
     }
 
@@ -413,7 +417,7 @@ public class CBORDiagnosticNotation {
         for (char c : expected.toCharArray()) {
             char actual = readChar(); 
             if (c != actual) {
-                parserError(String.format("Expected: '%c' actual: %s", c, toChar(actual)));
+                parserError(String.format("Expected: '%c' actual: %s", c, toReadableChar(actual)));
             }
         }
     }
@@ -474,7 +478,7 @@ public class CBORDiagnosticNotation {
                             break;
     
                         default:
-                            parserError(String.format("Invalid escape character %s", toChar(c)));
+                            parserError(String.format("Invalid escape character %s", toReadableChar(c)));
                     }
                     break;
  
@@ -495,7 +499,7 @@ public class CBORDiagnosticNotation {
                 // Normal character handling
                 default:
                     if (c < ' ') {
-                        parserError(String.format("Unexpected control character: %s", toChar(c)));
+                        parserError(String.format("Unexpected control character: %s", toReadableChar(c)));
                     }
             }
             s.append(c);
@@ -547,7 +551,7 @@ public class CBORDiagnosticNotation {
             case 'a', 'b', 'c', 'd', 'e', 'f' -> c - 'a' + 10;
             case 'A', 'B', 'C', 'D', 'E', 'F' -> c - 'A' + 10;
             default -> {
-                parserError(String.format("Bad hex character: %s", toChar(c)));
+                parserError(String.format("Bad hex character: %s", toReadableChar(c)));
                 yield 0;  // For the compiler...
             }
         };
