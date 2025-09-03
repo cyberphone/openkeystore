@@ -358,7 +358,7 @@ public class CBORMap extends CBORObject {
         
     @Override
     void internalToString(CborPrinter cborPrinter) {
-        cborPrinter.beginMap();
+        cborPrinter.beginList('{');
         boolean notFirst = false;
         for (Entry entry : entries) {
             if (notFirst) {
@@ -370,7 +370,7 @@ public class CBORMap extends CBORObject {
             cborPrinter.append(':').space();
             entry.object.internalToString(cborPrinter);
         }
-        cborPrinter.endMap(notFirst);
+        cborPrinter.endList(notFirst, '}');
     }
     
     static final String STDERR_NON_DET_SORT_ORDER =

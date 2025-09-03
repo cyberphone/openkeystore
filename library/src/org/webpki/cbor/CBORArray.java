@@ -118,15 +118,29 @@ public class CBORArray extends CBORObject {
 
     @Override
     void internalToString(CborPrinter cborPrinter) {
-        cborPrinter.append('[');
-        boolean notFirst = false;
-        for (CBORObject cborObject : objects) {
-            if (notFirst) {
-                cborPrinter.append(',').space();
+        if (cborPrinter.arrayFolding(this)) {
+            cborPrinter.beginList('[');
+            boolean notFirst = false;
+            for (CBORObject cborObject : objects) {
+                if (notFirst) {
+                    cborPrinter.append(',');
+                }
+                notFirst = true;
+                cborPrinter.newlineAndIndent();
+                cborObject.internalToString(cborPrinter);
             }
-            notFirst = true;
-            cborObject.internalToString(cborPrinter);
+            cborPrinter.endList(notFirst, ']');
+        } else {
+            cborPrinter.append('[');
+            boolean notFirst = false;
+            for (CBORObject cborObject : objects) {
+                if (notFirst) {
+                    cborPrinter.append(',').space();
+                }
+                notFirst = true;
+                cborObject.internalToString(cborPrinter);
+            }
+            cborPrinter.append(']');
         }
-        cborPrinter.append(']');
     }
 }

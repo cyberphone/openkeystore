@@ -241,7 +241,15 @@ public class CBORTag extends CBORObject {
     @Override
     void internalToString(CborPrinter cborPrinter) {
          cborPrinter.append(Long.toUnsignedString(tagNumber)).append('(');
-         object.internalToString(cborPrinter);
+         if (cotxObject == null) {
+            object.internalToString(cborPrinter);
+         } else {
+            cborPrinter.append('[');
+            object.getArray().get(0).internalToString(cborPrinter);
+            cborPrinter.append(',').space();
+            object.getArray().get(1).internalToString(cborPrinter);
+            cborPrinter.append(']');
+         }
          cborPrinter.append(')');
     }
 

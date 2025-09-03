@@ -2215,6 +2215,10 @@ public class CBORTest {
         }
     }
 
+    void arrayDiag(String diag) {
+        assertTrue("diag5", diag.equals(CBORDiagnosticNotation.convert(diag).toString()));
+    }
+
     @Test
     public void diagnosticNotation() throws Exception {
         assertTrue("#",
@@ -2285,12 +2289,17 @@ public class CBORTest {
         diagFlag("'unterminated");  // Bad string
         diagFlag("\"unterminated");  // Bad string
         
-        String pretty = 
-                "{\n" +
-                "  1: \"text\\nnext\",\n" +
-                "  2: [5.960465188081798e-8, h'abcdef', " + 
-                "true, 0(\"2023-06-02T07:53:19Z\")]\n" +
-                "}";
+        // Long array
+        String pretty = """
+{
+  1: "text\\nnext",
+  2: [
+    5.960465188081798e-8,
+    h'abcdef',
+    true,
+    0("2023-06-02T07:53:19Z")
+  ]
+}""";
         
         CBORObject diag = CBORDiagnosticNotation.convert(pretty);
         assertTrue("diag1", pretty.equals(diag.toString()));
@@ -2299,6 +2308,15 @@ public class CBORTest {
         assertTrue("diag3", pretty.equals(diag.toDiagnosticNotation(true)));
         assertTrue("diag4", CBORDiagnosticNotation.convert("\"next\nline\r\\\ncont\r\nk\"")
             .toString().equals("\"next\\nline\\ncont\\nk\""));
+        arrayDiag("[]");
+         // Array only always separate lines.
+        arrayDiag("""
+[
+  []
+]""");
+        // Mixed - keep in line if not too long.
+        arrayDiag("""
+[[], 1]""");
     }
 
     void utf8DecoderTest(String hex, boolean ok) {

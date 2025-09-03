@@ -623,11 +623,13 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     
     static class CborPrinter {
  
-        static final String INDENT = "  ";
+        static final String INDENT       = "  ";
+        static final int MAX_LINE_LENGTH = 70;  // RFCs
         
         private int indentationLevel;
         private StringBuilder outputBuffer;
         private boolean prettyPrint;
+        private int startOfLine;
                
         private CborPrinter(boolean prettyPrint) {
             outputBuffer = new StringBuilder();
@@ -636,15 +638,41 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
 
         void newlineAndIndent() {
             if (prettyPrint) {
+                startOfLine = outputBuffer.length();
                 outputBuffer.append('\n');
                 for (int i = 0; i < indentationLevel; i++) {
                     outputBuffer.append(INDENT);
                 }
             }
         }
+
+        boolean arrayFolding(CBORArray array) {
+            if (prettyPrint) {
+                if (array.size() == 0) {
+                    return false;
+                }
+                boolean arraysInArrays = true;
+                for (CBORObject element : array.toArray()) {
+                    if (!(element instanceof CBORArray)) {
+                        arraysInArrays = false;
+                        break;
+                    }
+                }
+                if (arraysInArrays) {
+                    return true;
+                }
+                if (outputBuffer.length() - startOfLine + // Where we are staing at the moment.
+                    array.size() +                        // space after comma.
+                    2 +                                   // [] 
+                    array.toDiagnosticNotation(false).length() > MAX_LINE_LENGTH) {
+                    return true;
+                }
+            }
+            return false;
+        }
         
-        void beginMap() {
-            outputBuffer.append('{');
+        void beginList(char startChar) {
+            outputBuffer.append(startChar);
             indentationLevel++;
         }
         
@@ -654,12 +682,12 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
             }
         }
 
-        void endMap(boolean notEmpty) {
+        void endList(boolean notEmpty, char endChar) {
             indentationLevel--;
             if (notEmpty) {
                 newlineAndIndent();
             }
-            outputBuffer.append('}');
+            outputBuffer.append(endChar);
         }
 
         CborPrinter append(String text) {
