@@ -1159,13 +1159,10 @@ public class CBORTest {
                 parseCborHex(value);
                 fail("must not execute" + value);
             } catch (Exception e) {
-                checkException(e, 
-                        e.getMessage().contains("float") ?
-                    CBORDecoder.STDERR_NON_DETERMINISTIC_FLOAT
-                                                           :
-                e.getMessage().contains(CBORDecoder.STDERR_NON_DETERMINISTIC_NON_FINITE) ?
-                    CBORDecoder.STDERR_NON_DETERMINISTIC_NON_FINITE :
-                    CBORDecoder.STDERR_NON_DETERMINISTIC_N);
+                checkException(e, e.getMessage().contains("float") ?
+                                CBORDecoder.STDERR_NON_DETERMINISTIC_FLOAT
+                                                                     :
+                                CBORDecoder.STDERR_NON_DETERMINISTIC_N);
             }
         }
     }

@@ -195,20 +195,24 @@ public class CBORDecoder {
         return (int)n;
     }
 
+    private void floatDeterminismError(int tag, long bitFormat) {
+        cborError(String.format(STDERR_NON_DETERMINISTIC_FLOAT + "%2x%0" +
+           (4 << (tag - MT_FLOAT16)) + "x", tag, bitFormat));
+    }
+
     private CBORFloat returnFloat(int tag, long bitFormat, double value) {
         CBORFloat cborFloat = new CBORFloat(value);
         if (strictNumbers &&
             (cborFloat.tag != tag || cborFloat.bitFormat != bitFormat)) {
-            cborError(String.format(STDERR_NON_DETERMINISTIC_FLOAT + "%2x", tag));
+            floatDeterminismError(tag, bitFormat);
         }
         return cborFloat;
     }
 
-    private CBORObject returnNonFinite(long value) { 
-        CBORNonFinite nonFinite = new CBORNonFinite(value);
-        if (strictNumbers && nonFinite.value != value) {
-            cborError(STDERR_NON_DETERMINISTIC_NON_FINITE + Long.toUnsignedString(value, 16));
-        }
+    private CBORObject returnNonFinite(int tag, long bitFormat) { 
+        CBORNonFinite nonFinite = new CBORNonFinite(bitFormat);
+        if (strictNumbers && nonFinite.value != bitFormat) {
+            floatDeterminismError(tag, bitFormat);        }
         return nonFinite;
     }
 
@@ -241,7 +245,7 @@ public class CBORDecoder {
                 // Begin with the edge cases.
                 if (exponent == FLOAT16_POS_INFINITY) {
                     // Non-finite number found: Infinity, -Infinity, or any variant of NaN.
-                    yield returnNonFinite(f16bin);
+                    yield returnNonFinite(tag, f16bin);
                 }
                 // It is a "regular" number.
                 // Get the significand.
@@ -263,7 +267,7 @@ public class CBORDecoder {
                 // Begin with the edge cases.
                 if ((f32bin & FLOAT32_POS_INFINITY) == FLOAT32_POS_INFINITY) {
                     // Non-finite number found: Infinity, -Infinity, or any variant of NaN.
-                    yield returnNonFinite(f32bin);
+                    yield returnNonFinite(tag, f32bin);
                 }
                 // It is a "regular" number.
                 yield returnFloat(tag, f32bin, Float.intBitsToFloat((int)f32bin));
@@ -274,7 +278,7 @@ public class CBORDecoder {
                 // Begin with the edge cases.
                 if ((f64bin & FLOAT64_POS_INFINITY) == FLOAT64_POS_INFINITY) {
                     // Non-finite number found: Infinity, -Infinity, or any variant of NaN.
-                    yield returnNonFinite(f64bin);
+                    yield returnNonFinite(tag, f64bin);
                 }
                 // It is a "regular" number.
                 yield returnFloat(tag, f64bin, Double.longBitsToDouble(f64bin));
@@ -418,13 +422,10 @@ public class CBORDecoder {
             "Non-deterministic encoding of bignum";
 
     static final String STDERR_NON_DETERMINISTIC_FLOAT =
-            "Non-deterministic encoding of floating point value, tag: ";
+            "Non-deterministic encoding of floating point value: ";
 
     static final String STDERR_NON_DETERMINISTIC_N =
             "Non-deterministic encoding of N";
-
-    static final String STDERR_NON_DETERMINISTIC_NON_FINITE =
-            "Non-deterministic encoding of non-finite value: ";
 
     static final String STDERR_CBOR_EOF =
             "Malformed CBOR, trying to read past EOF";
