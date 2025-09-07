@@ -208,20 +208,6 @@ public class CBORTag extends CBORObject {
         }
         return cotxObject;
     }
-    
-    /**
-     * Update tagged CBOR object.
-     * 
-     * @param object New object
-     * @return Previous object
-     * @throws CBORException
-     */
-    public CBORObject update(CBORObject object) {
-        immutableTest();
-        CBORObject previous = this.object;
-        this.object = object;
-        return previous;
-    }
 
     /**
      * Get tag number.

@@ -457,10 +457,6 @@ public class CBORTest {
                         .set(new CBORInt(-2), new CBORString("m2"))),
                         "a500647a65726f01636f6e6502f9400020626d3121626d32");
 
-        CBORTag cborTag = new CBORTag(800, new CBORString("tag"));
-        assertTrue("upd-1", cborTag.update(new CBORFloat(34.0)).getString().equals("tag"));
-        assertTrue("upd-2", cborTag.get().getFloat16() == 34.0);
-
         integerTest(0, "00" );
         integerTest(1, "01");
         integerTest(10, "0a");
