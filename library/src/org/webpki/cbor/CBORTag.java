@@ -18,6 +18,7 @@ package org.webpki.cbor;
 
 import static org.webpki.cbor.CBORInternal.*;
 
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
 /**
@@ -57,9 +58,21 @@ public class CBORTag extends CBORObject {
      * Return object for COTX tags.
      */
     public static class COTXObject {
-        private COTXObject() {}
-        public String objectId;
-        public CBORObject object;
+
+        /**
+         * COTX String (Object ID)
+         */
+        public final String objectId;
+
+        /**
+         * COTX Object
+         */
+        public final CBORObject object;
+
+        private COTXObject(String objectId, CBORObject object) {
+            this.objectId = objectId;
+            this.object = object;
+        }
     }
 
     // General tag data.
@@ -134,9 +147,7 @@ public class CBORTag extends CBORObject {
             if (object instanceof CBORArray) {
                 CBORArray holder = object.getArray();
                 if (holder.size() == 2 && holder.get(0) instanceof CBORString) {
-                    cotxObject = new COTXObject();
-                    cotxObject.objectId = holder.get(0).getString();
-                    cotxObject.object = holder.get(1);
+                    cotxObject = new COTXObject(holder.get(0).getString(), holder.get(1));
                     return;
                 }
             }
@@ -231,9 +242,11 @@ public class CBORTag extends CBORObject {
             object.internalToString(cborPrinter);
          } else {
             cborPrinter.append('[');
-            object.getArray().get(0).internalToString(cborPrinter);
+            // DO NOT touch CBORObject.readFlag!
+            ArrayList<CBORObject> internal = ((CBORArray) object).objects;
+            internal.get(0).internalToString(cborPrinter);
             cborPrinter.append(',').space();
-            object.getArray().get(1).internalToString(cborPrinter);
+            internal.get(1).internalToString(cborPrinter);
             cborPrinter.append(']');
          }
          cborPrinter.append(')');
