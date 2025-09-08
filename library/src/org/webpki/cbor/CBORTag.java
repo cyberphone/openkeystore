@@ -18,7 +18,6 @@ package org.webpki.cbor;
 
 import static org.webpki.cbor.CBORInternal.*;
 
-import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
 /**
@@ -242,11 +241,9 @@ public class CBORTag extends CBORObject {
             object.internalToString(cborPrinter);
          } else {
             cborPrinter.append('[');
-            // DO NOT touch CBORObject.readFlag!
-            ArrayList<CBORObject> internal = ((CBORArray) object).objects;
-            internal.get(0).internalToString(cborPrinter);
+            object.getArray().get(0).internalToString(cborPrinter);
             cborPrinter.append(',').space();
-            internal.get(1).internalToString(cborPrinter);
+            object.getArray().get(1).internalToString(cborPrinter);
             cborPrinter.append(']');
          }
          cborPrinter.append(')');
