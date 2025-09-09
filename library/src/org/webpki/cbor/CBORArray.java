@@ -56,7 +56,7 @@ public class CBORArray extends CBORObject {
     /**
      * Add object to the CBOR array.
      * <p>
-     * Also see {@link CBORArray#update(int, CBORObject)}
+     * Also see {@link CBORArray#insert(int, CBORObject)}
      * </p>
      * 
      * @param object Object to be appended to the array.
@@ -69,6 +69,23 @@ public class CBORArray extends CBORObject {
     }
     
     /**
+     * Insert object at a specific position in the CBOR array.
+     * <p>
+     * The <code>object</code> will be inserted <i>before</i> the
+     * current object with the same <code>index</code>.
+     * </p>
+     * @param index The position (<code>0..size()</code>)
+     * @param object Object to be inserted in the array.
+     * @return <code>this</code>
+     * @throws IndexOutOfBoundsException If the index is out of range.
+     */
+    public CBORArray insert(int index, CBORObject object) {
+        immutableTest();
+        objects.add(index, checkObject(object));
+        return this;
+    }
+
+    /**
      * Update object at a specific position in the CBOR array.
      * 
      * @param index The position (<code>0..size()-1</code>)
@@ -79,6 +96,18 @@ public class CBORArray extends CBORObject {
     public CBORObject update(int index, CBORObject object) {
         immutableTest();
         return objects.set(index, checkObject(object));
+    }
+
+    /**
+     * Remove object at a specific position in the CBOR array.
+     * 
+     * @param index The position (<code>0..size()-1</code>)
+     * @return Previous <code>object</code>
+     * @throws IndexOutOfBoundsException If the index is out of range.
+     */
+    public CBORObject remove(int index) {
+        immutableTest();
+        return objects.remove(index);
     }
 
     byte[] encodeBody(byte[] header) {
