@@ -435,8 +435,18 @@ public class CBORTest {
                 .add(new CBORInt(4))
                 .add(new CBORInt(5)));
         textCompare(cborArray,
-                "[1, {\n  8: 2,\n  58: 3,\n  -4: [true, false],\n  -90: null\n}, [4, 5]]");
+                """
+[1, {
+  8: 2,
+  58: 3,
+  -4: [true, false],
+  -90: null
+}, [4, 5]]""");
         binaryCompare(cborArray,"8301a40802183a032382f5f43859f6820405");
+        cborArray.insert(1, new CBORInt(4)).insert(cborArray.size(), new CBORString("hi"));
+        binaryCompare(cborArray,"850104a40802183a032382f5f43859f6820405626869");
+        binaryCompare(cborArray.remove(2),"a40802183a032382f5f43859f6");
+        binaryCompare(cborArray,"840104820405626869");
 
         CBORMap cborMap = 
             new CBORMap()
