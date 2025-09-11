@@ -32,7 +32,7 @@ import org.webpki.cbor.CBORDiagnosticNotation;
 import org.webpki.cbor.CBORMap;
 import org.webpki.cbor.CBORNonFinite;
 import org.webpki.cbor.CBORObject;
-
+import org.webpki.cbor.CBORTag;
 import org.webpki.json.JSONObjectReader;
 import org.webpki.json.JSONObjectWriter;
 import org.webpki.json.JSONParser;
@@ -68,6 +68,8 @@ public class ConvertServlet extends CoreRequestServlet {
                 checkForNonFinites(key);
                 checkForNonFinites(map.get(key));
             }
+        } else if (object instanceof CBORTag tag) {
+            checkForNonFinites(tag.get());
         } else if (object instanceof CBORNonFinite) {
             throw new IOException("\"NaN\" or \"Infinity\" were encountered");
         }
