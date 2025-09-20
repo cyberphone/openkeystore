@@ -126,9 +126,9 @@ public class JSFService extends InitPropertyReader implements ServletContextList
         initProperties(event);
         CustomCryptoProvider.forcedLoad(false);
         try {
-            /////////////////////////////////////////////////////////////////////////////////////////////
+            //=========================================================================================//
             // Keys
-            /////////////////////////////////////////////////////////////////////////////////////////////
+            //=========================================================================================//
             keyDeclarations = 
                     new KeyDeclaration(KeyDeclaration.PRIVATE_KEYS, "privatekey.pem")
                           .addKey(AsymSignatureAlgorithms.ED25519,       "ed25519")
@@ -159,9 +159,9 @@ public class JSFService extends InitPropertyReader implements ServletContextList
                           .addKey(HmacAlgorithms.HMAC_SHA384,            "a384")
                           .addKey(HmacAlgorithms.HMAC_SHA512,            "a512").toString();
 
-            /////////////////////////////////////////////////////////////////////////////////////////////
+            //=========================================================================================//
             // Sample signature for verification
-            /////////////////////////////////////////////////////////////////////////////////////////////
+            //=========================================================================================//
             String sampleDataToSign = getEmbeddedResourceString("sample-data-to-sign.json");
             KeyPair sampleKey = PEMDecoder.getKeyPair(getEmbeddedResource("p256privatekey.pem"));
             String signedData =  new JSONObjectWriter(JSONParser.parse(sampleDataToSign))
@@ -173,9 +173,9 @@ public class JSFService extends InitPropertyReader implements ServletContextList
                               signedData.substring(signedData.indexOf("\n  \"signature"));
             samplePublicKey = getEmbeddedResourceString("p256publickey.pem").trim();
 
-            /////////////////////////////////////////////////////////////////////////////////////////////
+            //=========================================================================================//
             // Logging?
-            /////////////////////////////////////////////////////////////////////////////////////////////
+            //=========================================================================================//
             logging = getPropertyBoolean("logging");
 
             logger.info("JSF Lab Successfully Initiated");

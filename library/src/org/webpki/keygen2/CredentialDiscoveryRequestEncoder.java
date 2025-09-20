@@ -171,16 +171,16 @@ public class CredentialDiscoveryRequestEncoder extends ServerEncoder {
 
     @Override
     void writeServerRequest(JSONObjectWriter wr) {
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         // Session properties
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         wr.setString(SERVER_SESSION_ID_JSON, serverSessionId);
 
         wr.setString(CLIENT_SESSION_ID_JSON, clientSessionId);
 
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         // Lookup descriptors
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         if (lookupDescriptors.isEmpty()) {
             bad("There must be at least one descriptor defined");
         }

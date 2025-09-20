@@ -138,9 +138,9 @@ public class ProvisioningInitializationRequestEncoder extends ServerEncoder {
 
     @Override
     void writeServerRequest(JSONObjectWriter wr) {
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         // Core session properties
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         wr.setString(SERVER_SESSION_ID_JSON, serverSessionId);
 
         wr.setString(SERVER_TIME_JSON, serverState.serverTime);
@@ -151,16 +151,16 @@ public class ProvisioningInitializationRequestEncoder extends ServerEncoder {
 
         wr.setInt(SESSION_LIFE_TIME_JSON, sessionLifeTime);
 
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         // Server ephemeral key
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         wr.setObject(SERVER_EPHEMERAL_KEY_JSON,
                      JSONObjectWriter.createCorePublicKey(serverEphemeralKey, 
                                                           AlgorithmPreferences.JOSE_ACCEPT_PREFER));
 
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         // Optional key management key
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         if (kmkRoot != null) {
             wr.setObject(KEY_MANAGEMENT_KEY_JSON,
                          JSONObjectWriter.createCorePublicKey(kmkRoot.keyManagementKey, 

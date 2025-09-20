@@ -66,9 +66,9 @@ public class ProvisioningInitializationResponseEncoder extends JSONEncoder {
 
     @Override
     protected void writeJSONData(JSONObjectWriter wr) {
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         // Session properties
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         wr.setString(SERVER_SESSION_ID_JSON, serverSessionId);
 
         wr.setString(CLIENT_SESSION_ID_JSON, clientSessionId);
@@ -77,23 +77,23 @@ public class ProvisioningInitializationResponseEncoder extends JSONEncoder {
 
         wr.setDateTime(CLIENT_TIME_JSON, clientTime, ISODateTime.LOCAL_NO_SUBSECONDS);
 
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         // Server ephemeral key
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         wr.setObject(CLIENT_EPHEMERAL_KEY_JSON,
                      JSONObjectWriter.createCorePublicKey(clientEphemeralKey,
                                                           AlgorithmPreferences.JOSE_ACCEPT_PREFER));
 
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         // Optional device certificate path
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         if (deviceCertificatePath != null) {
             wr.setObject(DEVICE_ID_JSON).setCertificatePath(deviceCertificatePath);
         }
 
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         // "Logical" position for the attestation
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         wr.setBinary(ATTESTATION_JSON, attestation);
     }
 

@@ -54,9 +54,9 @@ import org.webpki.util.ArrayUtil;
 
 public class SoftHSM implements ServerCryptoInterface {
 
-    ////////////////////////////////////////////////////////////////////////////////////////
+    //====================================================================================//
     // Private and secret keys would in a HSM implementation be represented as handles
-    ////////////////////////////////////////////////////////////////////////////////////////
+    //====================================================================================//
     LinkedHashMap<PublicKey, PrivateKey> key_management_keys = new LinkedHashMap<>();
 
     private void addKMK(KeyStore km_keystore) {

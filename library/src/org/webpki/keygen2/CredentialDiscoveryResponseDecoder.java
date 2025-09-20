@@ -101,16 +101,16 @@ public class CredentialDiscoveryResponseDecoder extends KeyGen2Validator {
 
     @Override
     protected void readJSONData(JSONObjectReader rd) {
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         // Session properties
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         serverSessionId = getID(rd, SERVER_SESSION_ID_JSON);
 
         clientSessionId = getID(rd, CLIENT_SESSION_ID_JSON);
 
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         // Get the lookup_results [1..n]
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         JSONArrayReader lookups = rd.getArray(LOOKUP_RESULTS_JSON);
         do {
             LookupResult lookupResult = new LookupResult(lookups.getObject());

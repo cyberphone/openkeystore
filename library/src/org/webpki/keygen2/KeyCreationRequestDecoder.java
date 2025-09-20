@@ -455,17 +455,17 @@ public class KeyCreationRequestDecoder extends ClientDecoder {
                 return error;
             }
 
-            ///////////////////////////////////////////////////////////////////////////////////
+            //===============================================================================//
             // Check PIN length
-            ///////////////////////////////////////////////////////////////////////////////////
+            //===============================================================================//
             if (pinPolicy.minLength > pin.length || pinPolicy.maxLength < pin.length) {
                 error.lengthError = true;
                 return error;
             }
 
-            ///////////////////////////////////////////////////////////////////////////////////
+            //===============================================================================//
             // Check PIN syntax
-            ///////////////////////////////////////////////////////////////////////////////////
+            //===============================================================================//
             boolean upperalpha = false;
             boolean loweralpha = false;
             boolean number = false;
@@ -488,9 +488,9 @@ public class KeyCreationRequestDecoder extends ClientDecoder {
                 return error;
             }
 
-            ///////////////////////////////////////////////////////////////////////////////////
+            //===============================================================================//
             // Check PIN patterns
-            ///////////////////////////////////////////////////////////////////////////////////
+            //===============================================================================//
             if (pinPolicy.patternRestrictions.contains(PatternRestriction.MISSING_GROUP)) {
                 if (!upperalpha || !number ||
                     (pinPolicy.format == PassphraseFormat.STRING && (!loweralpha || !nonalphanum))) {
@@ -543,9 +543,9 @@ public class KeyCreationRequestDecoder extends ClientDecoder {
                 }
             }
 
-            ///////////////////////////////////////////////////////////////////////////////////
+            //===============================================================================//
             // Check that PIN grouping rules are followed
-            ///////////////////////////////////////////////////////////////////////////////////
+            //===============================================================================//
             ArrayList<KeyObject> keysNeedingPin = new ArrayList<>();
             for (KeyObject key : requestObjects) {
                 if (key.pinPolicy == pinPolicy) {
@@ -589,9 +589,9 @@ public class KeyCreationRequestDecoder extends ClientDecoder {
                 }
             }
 
-            ///////////////////////////////////////////////////////////////////////////////////
+            //===============================================================================//
             // We did it!  Assign the PIN to the associated keys or just return null=success
-            ///////////////////////////////////////////////////////////////////////////////////
+            //===============================================================================//
             if (setValueOnSuccess) {
                 for (KeyObject key : keysNeedingPin) {
                     key.userSetPin = pin;
@@ -704,9 +704,9 @@ public class KeyCreationRequestDecoder extends ClientDecoder {
 
     @Override
     void readServerRequest(JSONObjectReader rd) {
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         // Session properties
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
 
         keyEntryAlgorithm = getURI(rd, KEY_ENTRY_ALGORITHM_JSON);
 
@@ -716,9 +716,9 @@ public class KeyCreationRequestDecoder extends ClientDecoder {
 
         deferredIssuance = rd.getBooleanConditional(DEFERRED_ISSUANCE_JSON);
 
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         // Get the key requests and protection elements [1..n]
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         for (JSONObjectReader puk : getObjectArrayConditional(rd, PUK_POLICY_SPECIFIERS_JSON)) {
             readPINProtectedKeys(puk, new PUKPolicy(puk));
         }

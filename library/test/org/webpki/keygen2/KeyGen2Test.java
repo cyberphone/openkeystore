@@ -451,9 +451,9 @@ public class KeyGen2Test {
             }
         }
 
-        ///////////////////////////////////////////////////////////////////////////////////
+        //===============================================================================//
         // Get platform request and respond with SKS compatible data
-        ///////////////////////////////////////////////////////////////////////////////////
+        //===============================================================================//
         byte[] invocationResponse(byte[] json_data) throws IOException, GeneralSecurityException {
             invocation_request = (InvocationRequestDecoder) client_json_cache.parse(json_data);
             assertTrue("Languages", invocation_request.getOptionalLanguageList() == null ^ languages);
@@ -493,9 +493,9 @@ public class KeyGen2Test {
             return invocation_response.serializeJSONDocument(JSONOutputFormats.PRETTY_PRINT);
         }
 
-        ///////////////////////////////////////////////////////////////////////////////////
+        //===============================================================================//
         // Get provisioning session request and respond with ephemeral keys and and attest
-        ///////////////////////////////////////////////////////////////////////////////////
+        //===============================================================================//
         byte[] provSessResponse(byte[] json_data) throws IOException, GeneralSecurityException {
             prov_sess_req = (ProvisioningInitializationRequestDecoder) client_json_cache.parse(json_data);
             scanForKeyManagementKeyUpdates(prov_sess_req.getKeyManagementKeyUpdateHolderRoot());
@@ -524,9 +524,9 @@ public class KeyGen2Test {
             return prov_init_response.serializeJSONDocument(JSONOutputFormats.PRETTY_PRINT);
         }
 
-        ///////////////////////////////////////////////////////////////////////////////////
+        //===============================================================================//
         // Get credential discovery request
-        ///////////////////////////////////////////////////////////////////////////////////
+        //===============================================================================//
         byte[] creDiscResponse(byte[] json_data) throws IOException, GeneralSecurityException {
             cre_disc_req = (CredentialDiscoveryRequestDecoder) client_json_cache.parse(json_data);
             CredentialDiscoveryResponseEncoder cdre = new CredentialDiscoveryResponseEncoder(cre_disc_req);
@@ -558,9 +558,9 @@ public class KeyGen2Test {
             return cdre.serializeJSONDocument(JSONOutputFormats.PRETTY_PRINT);
         }
 
-        ///////////////////////////////////////////////////////////////////////////////////
+        //===============================================================================//
         // Get key initialization request and respond with freshly generated public keys
-        ///////////////////////////////////////////////////////////////////////////////////
+        //===============================================================================//
         byte[] keyCreResponse(byte[] json_data) throws IOException, GeneralSecurityException {
             key_creation_request = (KeyCreationRequestDecoder) client_json_cache.parse(json_data);
             KeyCreationResponseEncoder key_creation_response = new KeyCreationResponseEncoder(key_creation_request);
@@ -624,9 +624,9 @@ public class KeyGen2Test {
             return key_creation_response.serializeJSONDocument(JSONOutputFormats.PRETTY_PRINT);
         }
 
-        ///////////////////////////////////////////////////////////////////////////////////
+        //===============================================================================//
         // Get the certificates and attributes and return a success message
-        ///////////////////////////////////////////////////////////////////////////////////
+        //===============================================================================//
         byte[] creFinalizeResponse(byte[] json_data) throws IOException, GeneralSecurityException {
             ProvisioningFinalizationRequestDecoder prov_final_request =
                     (ProvisioningFinalizationRequestDecoder) client_json_cache.parse(json_data);
@@ -646,35 +646,35 @@ public class KeyGen2Test {
                 }
             }
 
-            //////////////////////////////////////////////////////////////////////////
+            //======================================================================//
             // Final check, do these keys match the request?
             // Missing credentials will be found by SKS during session termination
-            //////////////////////////////////////////////////////////////////////////
+            //======================================================================//
             for (ProvisioningFinalizationRequestDecoder.IssuedCredential key : prov_final_request.getIssuedCredentials()) {
                 int keyHandle = sks.getKeyHandle(eps.getProvisioningHandle(), key.getId());
                 sks.setCertificatePath(keyHandle, key.getCertificatePath(), key.getMac());
 
-                //////////////////////////////////////////////////////////////////////////
+                //======================================================================//
                 // There may be a symmetric key
-                //////////////////////////////////////////////////////////////////////////
+                //======================================================================//
                 if (key.getOptionalSymmetricKey() != null) {
                     sks.importSymmetricKey(keyHandle,
                             key.getOptionalSymmetricKey(),
                             key.getSymmetricKeyMac());
                 }
 
-                //////////////////////////////////////////////////////////////////////////
+                //======================================================================//
                 // There may be a private key
-                //////////////////////////////////////////////////////////////////////////
+                //======================================================================//
                 if (key.getOptionalPrivateKey() != null) {
                     sks.importPrivateKey(keyHandle,
                             key.getOptionalPrivateKey(),
                             key.getPrivateKeyMac());
                 }
 
-                //////////////////////////////////////////////////////////////////////////
+                //======================================================================//
                 // There may be extensions
-                //////////////////////////////////////////////////////////////////////////
+                //======================================================================//
                 for (ProvisioningFinalizationRequestDecoder.Extension extension : key.getExtensions()) {
                     sks.addExtension(keyHandle,
                             extension.getExtensionType(),
@@ -684,32 +684,32 @@ public class KeyGen2Test {
                             extension.getMac());
                 }
 
-                //////////////////////////////////////////////////////////////////////////
+                //======================================================================//
                 // There may be a postUpdateKey or postCloneKeyProtection
-                //////////////////////////////////////////////////////////////////////////
+                //======================================================================//
                 ProvisioningFinalizationRequestDecoder.PostOperation postOperation = key.getPostOperation();
                 if (postOperation != null) {
                     postProvisioning(postOperation, keyHandle);
                 }
             }
 
-            //////////////////////////////////////////////////////////////////////////
+            //======================================================================//
             // There may be any number of postUnlockKey
-            //////////////////////////////////////////////////////////////////////////
+            //======================================================================//
             for (ProvisioningFinalizationRequestDecoder.PostOperation post_unl : prov_final_request.getPostUnlockKeys()) {
                 postProvisioning(post_unl, eps.getProvisioningHandle());
             }
 
-            //////////////////////////////////////////////////////////////////////////
+            //======================================================================//
             // There may be any number of postDeleteKey
-            //////////////////////////////////////////////////////////////////////////
+            //======================================================================//
             for (ProvisioningFinalizationRequestDecoder.PostOperation post_del : prov_final_request.getPostDeleteKeys()) {
                 postProvisioning(post_del, eps.getProvisioningHandle());
             }
 
-            //////////////////////////////////////////////////////////////////////////
+            //======================================================================//
             // Create final and attested message
-            //////////////////////////////////////////////////////////////////////////
+            //======================================================================//
             ProvisioningFinalizationResponseEncoder fin_prov_response =
                     new ProvisioningFinalizationResponseEncoder(prov_final_request,
                             sks.closeProvisioningSession(eps.getProvisioningHandle(),
@@ -744,29 +744,29 @@ public class KeyGen2Test {
         }
 
         void getProvSess(JSONDecoder json_object) throws IOException, GeneralSecurityException {
-            ////////////////////////////////////////////////////////////////////////////////////
+            //================================================================================//
             // Begin by creating the "SessionKey" that holds the key to just about everything
-            ////////////////////////////////////////////////////////////////////////////////////
+            //================================================================================//
             ProvisioningInitializationResponseDecoder prov_init_response = (ProvisioningInitializationResponseDecoder) json_object;
 
-            ////////////////////////////////////////////////////////////////////////////////////
+            //================================================================================//
             // Update the container state.  This is where the action is
-            ////////////////////////////////////////////////////////////////////////////////////
+            //================================================================================//
             serverState.update(prov_init_response);
 
-            ////////////////////////////////////////////////////////////////////////////////////
+            //================================================================================//
             // Here we could/should introduce an SKS identity/brand check
-            ////////////////////////////////////////////////////////////////////////////////////
+            //================================================================================//
             X509Certificate[] certificatePath = prov_init_response.getDeviceCertificatePath();
         }
 
-        //////////////////////////////////////////////////////////////////////////////////
+        //==============================================================================//
         // Create platform negotiation request for the client
-        ///////////////////////////////////////////////////////////////////////////////////
+        //===============================================================================//
         byte[] invocationRequest() throws IOException, GeneralSecurityException {
-            ////////////////////////////////////////////////////////////////////////////////////
+            //================================================================================//
             // Create the state container
-            ////////////////////////////////////////////////////////////////////////////////////
+            //================================================================================//
             serverState = new ServerState(serverCryptoInterface,
                                           INVOCATION_URL,
                                           server_certificate,
@@ -784,9 +784,9 @@ public class KeyGen2Test {
                 serverState.setTargetKeyContainerList(new KeyContainerTypes[]{KeyContainerTypes.SOFTWARE, KeyContainerTypes.EMBEDDED});
             }
 
-            ////////////////////////////////////////////////////////////////////////////////////
+            //================================================================================//
             // First keygen2 request
-            ////////////////////////////////////////////////////////////////////////////////////
+            //================================================================================//
             InvocationRequestEncoder invocation_request = new InvocationRequestEncoder(serverState);
             if (ask_for_4096) {
                 serverState.addFeatureQuery(KeyAlgorithms.RSA4096.getAlgorithmId(AlgorithmPreferences.SKS))
@@ -817,9 +817,9 @@ public class KeyGen2Test {
             return invocation_request.serializeJSONDocument(JSONOutputFormats.PRETTY_PRINT);
         }
 
-        //////////////////////////////////////////////////////////////////////////////////
+        //==============================================================================//
         // Create a provisioning session request for the client
-        ///////////////////////////////////////////////////////////////////////////////////
+        //===============================================================================//
         byte[] provSessRequest(byte[] json_data) throws IOException, GeneralSecurityException {
             InvocationResponseDecoder invocation_response = (InvocationResponseDecoder) ServerState.parseReceivedMessage(json_data);
             serverState.update(invocation_response);
@@ -860,9 +860,9 @@ public class KeyGen2Test {
             return prov_init_request.serializeJSONDocument(JSONOutputFormats.PRETTY_PRINT);
         }
 
-        ///////////////////////////////////////////////////////////////////////////////////
+        //===============================================================================//
         // Create credential discovery request for the client
-        ///////////////////////////////////////////////////////////////////////////////////
+        //===============================================================================//
         byte[] creDiscRequest(byte[] json_data) throws IOException, GeneralSecurityException {
             getProvSess(ServerState.parseReceivedMessage(json_data));
             CredentialDiscoveryRequestEncoder cdre = new CredentialDiscoveryRequestEncoder(serverState);
@@ -891,9 +891,9 @@ public class KeyGen2Test {
             return cdre.serializeJSONDocument(JSONOutputFormats.PRETTY_PRINT);
         }
 
-        ///////////////////////////////////////////////////////////////////////////////////
+        //===============================================================================//
         // Create a key creation request for the client
-        ///////////////////////////////////////////////////////////////////////////////////
+        //===============================================================================//
         byte[] keyCreRequest(byte[] json_data) throws IOException, GeneralSecurityException {
             JSONDecoder json_object = ServerState.parseReceivedMessage(json_data);
             if (json_object instanceof ProvisioningInitializationResponseDecoder) {
@@ -1022,9 +1022,9 @@ public class KeyGen2Test {
         }
 
 
-        ///////////////////////////////////////////////////////////////////////////////////
+        //===============================================================================//
         // Get the key create response and respond with certified public keys and attributes
-        ///////////////////////////////////////////////////////////////////////////////////
+        //===============================================================================//
         byte[] creFinalizeRequest(byte[] json_data) throws IOException, GeneralSecurityException {
             if (plain_unlock_key == null) {
                 boolean temp_set_private_key = set_private_key;
@@ -1129,9 +1129,9 @@ public class KeyGen2Test {
             return new ProvisioningFinalizationRequestEncoder(serverState).serializeJSONDocument(JSONOutputFormats.PRETTY_PRINT);
         }
 
-        ///////////////////////////////////////////////////////////////////////////////////
+        //===============================================================================//
         // Finally we get the attested response
-        ///////////////////////////////////////////////////////////////////////////////////
+        //===============================================================================//
         void creFinalizeResponse(byte[] json_data) throws IOException, GeneralSecurityException {
             ProvisioningFinalizationResponseDecoder prov_final_response = (ProvisioningFinalizationResponseDecoder) ServerState.parseReceivedMessage(json_data);
             serverState.update(prov_final_response);

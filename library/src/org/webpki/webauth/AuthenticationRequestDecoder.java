@@ -96,15 +96,15 @@ public class AuthenticationRequestDecoder extends ClientDecoder {
     }
 
 
-    /////////////////////////////////////////////////////////////////////////////////////////////
+    //=========================================================================================//
     // JSON Reader
-    /////////////////////////////////////////////////////////////////////////////////////////////
+    //=========================================================================================//
 
     @Override
     void readServerRequest(JSONObjectReader rd) {
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         // Read the top level properties
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         id = InputValidator.getID(rd, ID_JSON);
 
         serverTime = rd.getDateTime(SERVER_TIME_JSON, ISODateTime.UTC_NO_SUBSECONDS);
@@ -117,9 +117,9 @@ public class AuthenticationRequestDecoder extends ClientDecoder {
 
         expires = rd.hasProperty(EXPIRES_JSON) ? rd.getInt(EXPIRES_JSON) : -1;  // Default: no timeout and associated GUI
 
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         // Optional client features [0..1]
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         String[] features = InputValidator.getURIListConditional(rd, CLIENT_FEATURES_JSON);
         if (features != null) for (String feature : features) {
             if (!clientFeatures.add(feature)) {
@@ -127,9 +127,9 @@ public class AuthenticationRequestDecoder extends ClientDecoder {
             }
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         // Get the signature algorithms [1..n]
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         for (String sig_alg_string : InputValidator.getNonEmptyList(rd, SIGNATURE_ALGORITHMS_JSON)) {
             AsymSignatureAlgorithms sig_alg = AsymSignatureAlgorithms.getAlgorithmFromId(sig_alg_string, AlgorithmPreferences.JOSE_ACCEPT_PREFER);
             if (!algorithms.add(sig_alg)) {
@@ -140,9 +140,9 @@ public class AuthenticationRequestDecoder extends ClientDecoder {
             }
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         // Get the optional certificate filters [0..n]
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         for (JSONObjectReader cf : InputValidator.getObjectArrayConditional(rd, CERTIFICATE_FILTERS_JSON)) {
             certificateFilters.add(CertificateFilterReader.read(cf));
         }

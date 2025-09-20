@@ -66,16 +66,16 @@ public class KeyCreationResponseEncoder extends JSONEncoder {
 
     @Override
     protected void writeJSONData(JSONObjectWriter wr) {
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         // Session properties
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         wr.setString(SERVER_SESSION_ID_JSON, serverSessionId);
 
         wr.setString(CLIENT_SESSION_ID_JSON, clientSessionId);
 
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         // The generated keys
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         JSONArrayWriter keys = wr.setArray(GENERATED_KEYS_JSON);
         for (GeneratedPublicKey gk : generatedKeys) {
             keys.setObject()

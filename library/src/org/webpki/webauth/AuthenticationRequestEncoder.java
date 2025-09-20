@@ -140,9 +140,9 @@ public class AuthenticationRequestEncoder extends ServerEncoder {
 
     @Override
     void writeServerRequest(JSONObjectWriter wr) {
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         // Set top-level attributes
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         if (id == null) {
             id = Long.toHexString(new GregorianCalendar().getTimeInMillis());
             id += CryptoRandom.generateURLFriendlyRandom(MAX_ID_LENGTH - id.length());
@@ -175,16 +175,16 @@ public class AuthenticationRequestEncoder extends ServerEncoder {
             signature_algorithm_array.setString(algorithm.getAlgorithmId(AlgorithmPreferences.JOSE_ACCEPT_PREFER));
         }
 
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         // Optional "client platform features"
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         if (!requestedClientFeatures.isEmpty()) {
             wr.setStringArray(REQUESTED_CLIENT_FEATURES_JSON, requestedClientFeatures.toArray(new String[0]));
         }
 
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         // Certificate filters (optional)
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         if (!certificateFilters.isEmpty()) {
             JSONArrayWriter cf_arr = wr.setArray(CERTIFICATE_FILTERS_JSON);
             for (CertificateFilter cf : certificateFilters) {

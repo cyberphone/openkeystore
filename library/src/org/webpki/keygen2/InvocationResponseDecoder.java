@@ -30,14 +30,14 @@ public class InvocationResponseDecoder extends KeyGen2Validator {
 
     @Override
     protected void readJSONData(JSONObjectReader rd) {
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         // Session properties
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         serverSessionId = getID(rd, SERVER_SESSION_ID_JSON);
 
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         // Get the optional client capabilities
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         for (JSONObjectReader cc : getObjectArrayConditional(rd, CLIENT_CAPABILITIES_JSON)) {
             String type = cc.getString(TYPE_JSON);
             ServerState.CapabilityBase capability = null;

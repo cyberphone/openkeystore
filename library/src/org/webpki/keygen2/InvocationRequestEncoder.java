@@ -43,9 +43,9 @@ public class InvocationRequestEncoder extends ServerEncoder {
 
     @Override
     void writeServerRequest(JSONObjectWriter wr) {
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         // Session properties
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         wr.setString(SERVER_SESSION_ID_JSON, serverState.serverSessionId);
 
         wr.setString(ACTION_JSON, action.getJSONName());

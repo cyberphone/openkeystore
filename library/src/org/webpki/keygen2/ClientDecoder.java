@@ -42,9 +42,9 @@ abstract class ClientDecoder extends KeyGen2Validator {
     final protected void readJSONData(JSONObjectReader rd) {
         readServerRequest(rd);
 
-        //////////////////////////////////////////////////////////////////
+        //==============================================================//
         // Must be a Signature otherwise something has gone wrong...
-        //////////////////////////////////////////////////////////////////
+        //==============================================================//
         if (rd.hasProperty(JSONObjectWriter.SIGNATURE_DEFAULT_LABEL_JSON)) {
             signature = rd.getSignature(new JSONCryptoHelper.Options());
         }

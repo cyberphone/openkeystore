@@ -30,9 +30,9 @@ public class ProvisioningFinalizationResponseDecoder extends KeyGen2Validator {
 
     @Override
     protected void readJSONData(JSONObjectReader rd) {
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         // Session properties
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         serverSessionId = getID(rd, SERVER_SESSION_ID_JSON);
 
         clientSessionId = getID(rd, CLIENT_SESSION_ID_JSON);

@@ -94,9 +94,9 @@ public class ProvisioningFinalizationRequestEncoder extends ServerEncoder {
     }
 
     void issueCredential(JSONObjectWriter wr, Key key) {
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         // Always: the ID, X509 Certificate(s) and MAC
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         wr.setString(ID_JSON, key.id);
 
         MacGenerator setCertificate = new MacGenerator();
@@ -113,16 +113,16 @@ public class ProvisioningFinalizationRequestEncoder extends ServerEncoder {
         mac(wr, setCertificate.getResult(), SecureKeyStore.METHOD_SET_CERTIFICATE_PATH);
         byte[] eeCertificate = CertificateUtil.getBlobFromCertificate(certificatePath[0]);
 
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         // Optional: A certificate path may also contain a TA
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         if (key.trustAnchorSet) {
             wr.setBoolean(TRUST_ANCHOR_JSON, key.trustAnchor);
         }
 
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         // Optional: "piggybacked" symmetric key
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         if (key.encryptedSymmetricKey != null) {
             MacGenerator setSymkey = new MacGenerator();
             setSymkey.addArray(eeCertificate);
@@ -131,9 +131,9 @@ public class ProvisioningFinalizationRequestEncoder extends ServerEncoder {
                     setSymkey.getResult(), SecureKeyStore.METHOD_IMPORT_SYMMETRIC_KEY);
         }
 
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         // Optional: private key
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         if (key.encryptedPrivateKey != null) {
             MacGenerator setPrivkey = new MacGenerator();
             setPrivkey.addArray(eeCertificate);
@@ -142,18 +142,18 @@ public class ProvisioningFinalizationRequestEncoder extends ServerEncoder {
                     setPrivkey.getResult(), SecureKeyStore.METHOD_IMPORT_PRIVATE_KEY);
         }
 
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         // Optional: property bags, extensions, and logotypes.
         // Note: Order must be followed!
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         writeExtensions(wr, key, eeCertificate, SecureKeyStore.SUB_TYPE_EXTENSION);
         writeExtensions(wr, key, eeCertificate, SecureKeyStore.SUB_TYPE_ENCRYPTED_EXTENSION);
         writeExtensions(wr, key, eeCertificate, SecureKeyStore.SUB_TYPE_PROPERTY_BAG);
         writeExtensions(wr, key, eeCertificate, SecureKeyStore.SUB_TYPE_LOGOTYPE);
 
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         // Optional: post operation associated with the provisioned key
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         if (key.cloneOrUpdateOperation != null) {
             MacGenerator setPostMac = new MacGenerator();
             setPostMac.addArray(eeCertificate);
@@ -177,16 +177,16 @@ public class ProvisioningFinalizationRequestEncoder extends ServerEncoder {
 
     @Override
     void writeServerRequest(JSONObjectWriter wr) {
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         // Session properties
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         wr.setString(SERVER_SESSION_ID_JSON, serverState.serverSessionId);
 
         wr.setString(CLIENT_SESSION_ID_JSON, serverState.clientSessionId);
 
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         // Write [0..n] Credentials
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         if (!serverState.requestedKeys.isEmpty()) {
             JSONArrayWriter keyArray = wr.setArray(ISSUED_CREDENTIALS_JSON);
             for (ServerState.Key key : serverState.getKeys()) {
@@ -194,19 +194,19 @@ public class ProvisioningFinalizationRequestEncoder extends ServerEncoder {
             }
         }
 
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         // Optional: post provisioning unlock operations
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         optionalPostOps(wr, ServerState.PostOperation.UNLOCK_KEY);
 
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         // Optional: post provisioning delete operations
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         optionalPostOps(wr, ServerState.PostOperation.DELETE_KEY);
 
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         // Done with the crypto, now set the "closeProvisioningSession" MAC
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         MacGenerator close = new MacGenerator();
         close.addString(serverState.clientSessionId);
         close.addString(serverState.serverSessionId);

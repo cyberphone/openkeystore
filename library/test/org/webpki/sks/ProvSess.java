@@ -213,9 +213,9 @@ public final class ProvSess {
         "}");
             
     static class SoftHSM {
-        ////////////////////////////////////////////////////////////////////////////////////////
+        //====================================================================================//
         // Private and secret keys would in a HSM implementation be represented as handles
-        ////////////////////////////////////////////////////////////////////////////////////////
+        //====================================================================================//
         private static LinkedHashMap<PublicKey, PrivateKey> key_management_keys = new LinkedHashMap<>();
 
         static private void addKMK(KeyPair keyPair) throws IOException, GeneralSecurityException {
@@ -469,9 +469,9 @@ public final class ProvSess {
         throw new IOException(message);
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////
+    //===============================================================================//
     // Create provisioning session
-    ///////////////////////////////////////////////////////////////////////////////////
+    //===============================================================================//
     ProvSess(Device device, 
              KeyAlgorithms sessionKeyAlgortihm, 
              short sessionKeyLimit, 

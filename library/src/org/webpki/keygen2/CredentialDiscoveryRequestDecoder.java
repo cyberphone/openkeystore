@@ -146,24 +146,24 @@ public class CredentialDiscoveryRequestDecoder extends ClientDecoder {
 
     @Override
     void readServerRequest(JSONObjectReader rd) {
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         // Session properties
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         serverSessionId = getID(rd, SERVER_SESSION_ID_JSON);
 
         clientSessionId = getID(rd, CLIENT_SESSION_ID_JSON);
 
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         // Calculate proper nonce
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         MacGenerator mac = new MacGenerator();
         mac.addString(clientSessionId);
         mac.addString(serverSessionId);
         nonce_reference = HashAlgorithms.SHA256.digest(mac.getResult());
 
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         // Get the lookup specifiers [1..n]
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         for (JSONObjectReader spec : getObjectArray(rd, LOOKUP_SPECIFIERS_JSON)) {
             LookupSpecifier ls = new LookupSpecifier(spec);
             if (lookupSpecifiers.put(ls.id, ls) != null) {

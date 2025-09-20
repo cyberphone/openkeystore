@@ -52,9 +52,9 @@ public class ProvisioningInitializationResponseDecoder extends KeyGen2Validator 
 
     @Override
     protected void readJSONData(JSONObjectReader rd) {
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         // The core session properties
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         attestation = rd.getBinary(ATTESTATION_JSON);
 
         serverSessionId = getID(rd, SERVER_SESSION_ID_JSON);
@@ -65,15 +65,15 @@ public class ProvisioningInitializationResponseDecoder extends KeyGen2Validator 
 
         clientTime = rd.getDateTime(CLIENT_TIME_JSON, ISODateTime.LOCAL_NO_SUBSECONDS);
 
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         // Get the ephemeral client key
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         clientEphemeralKey = (ECPublicKey) rd.getObject(CLIENT_EPHEMERAL_KEY_JSON)
                 .getCorePublicKey(AlgorithmPreferences.JOSE_ACCEPT_PREFER);
 
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         // Get the optional device certificate path
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         if (rd.hasProperty(DEVICE_ID_JSON)) {
             deviceCertificatePath = rd.getObject(DEVICE_ID_JSON).getCertificatePath();
         }

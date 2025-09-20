@@ -70,9 +70,9 @@ public class KeyCreationRequestEncoder extends ServerEncoder {
 
     @Override
     void writeServerRequest(JSONObjectWriter wr) {
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         // Session properties
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         wr.setString(SERVER_SESSION_ID_JSON, serverState.serverSessionId);
 
         wr.setString(CLIENT_SESSION_ID_JSON, serverState.clientSessionId);
@@ -85,9 +85,9 @@ public class KeyCreationRequestEncoder extends ServerEncoder {
 
         serverState.keyAttestationAlgorithm = algorithm;
 
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         // There MUST not be zero keys to initialize...
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         if (serverState.requestedKeys.isEmpty()) {
             bad("Empty request not allowd!");
         }

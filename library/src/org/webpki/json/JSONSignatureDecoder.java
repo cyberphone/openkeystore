@@ -124,7 +124,7 @@ public class JSONSignatureDecoder {
 
         signatureValue = innerSignatureObject.getBinary(JSONCryptoHelper.VALUE_JSON);
 
-        //////////////////////////////////////////////////////////////////////////////////////
+        //==================================================================================//
         // Begin JSF/JCS core data normalization                                            //
         //                                                                                  //
         // 1. Make a shallow copy of the signature object                                   //
@@ -141,7 +141,7 @@ public class JSONSignatureDecoder {
         innerSignatureObject.root.properties = savedProperties;                             //
         //                                                                                  //
         // End JSF/JCS core data normalization                                              //
-        //////////////////////////////////////////////////////////////////////////////////////
+        //==================================================================================//
 
         if (options.exclusions != null) {
             signedData.root.properties = saveExcluded;

@@ -29,13 +29,13 @@ import org.webpki.crypto.CryptoException;
 import org.webpki.crypto.EncryptionCore;
 import org.webpki.crypto.KeyEncryptionAlgorithms;
 
-////////////////////////////////////////////////////////////////////////////////////
+//================================================================================//
 // JEF is effectively a "remake" of of JWE.  Why a remake?  Because the           //
 // encryption system (naturally) borrows heavily from JSF including clear text    //
 // header information and using JCS for creating authenticated data.              //                                                            //
 //                                                                                //
 // The supported algorithms and JWK attributes are though fully JOSE compatible.  //
-////////////////////////////////////////////////////////////////////////////////////
+//================================================================================//
 
 /**
  * Holds parsed JEF (JSON Encryption Format) data.
@@ -67,7 +67,7 @@ public class JSONDecryptionDecoder {
             this.globalEncryptionObject = globalEncryptionObject;
             this.keyEncryption = keyEncryption;
 
-            ////////////////////////////////////////////////////////////////////////////////////
+            //================================================================================//
             // Begin JEF/JCS normalization                                                    //
             //                                                                                //
             // 1. Make a shallow copy of the encryption object property list                  //
@@ -87,7 +87,7 @@ public class JSONDecryptionDecoder {
             globalEncryptionObject.root.properties = savedProperties;                         //
             //                                                                                //
             // End JEF/JCS normalization                                                      //
-            ////////////////////////////////////////////////////////////////////////////////////
+            //================================================================================//
 
             // Collect mandatory elements
             contentEncryptionAlgorithm = ContentEncryptionAlgorithms

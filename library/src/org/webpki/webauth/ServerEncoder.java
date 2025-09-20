@@ -40,9 +40,9 @@ abstract class ServerEncoder extends JSONEncoder {
     final protected void writeJSONData(JSONObjectWriter wr) {
         writeServerRequest(wr);
 
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         // Optional signature
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         if (signer != null) {
             wr.setSignature(new JSONX509Signer(signer));
         }

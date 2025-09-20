@@ -47,16 +47,16 @@ public class KeyCreationResponseDecoder extends KeyGen2Validator {
 
     @Override
     protected void readJSONData(JSONObjectReader rd) {
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         // Session properties
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         serverSessionId = getID(rd, SERVER_SESSION_ID_JSON);
 
         clientSessionId = getID(rd, CLIENT_SESSION_ID_JSON);
 
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         // Get the generated keys [1..n]
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         for (JSONObjectReader keyReader : getObjectArray(rd, GENERATED_KEYS_JSON)) {
             GeneratedPublicKey gk = new GeneratedPublicKey();
             gk.id = keyReader.getString(ID_JSON);

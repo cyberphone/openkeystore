@@ -875,9 +875,6 @@ import org.webpki.json.JSONSignatureDecoder;
         }
         return header.finalizeEncryption(unencryptedData);
     }    
-
-
-    ////////////////////////////////////////////////////////////////////////
     
     void newLine() {
         if (prettyPrint) {

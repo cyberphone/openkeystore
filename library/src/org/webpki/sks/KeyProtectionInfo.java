@@ -22,9 +22,9 @@ import java.util.Set;
 
 public final class KeyProtectionInfo {
 
-    ///////////////////////////////////////////////////////////////////////////////////
+    //===============================================================================//
     // "ProtectionStatus" constants
-    ///////////////////////////////////////////////////////////////////////////////////
+    //===============================================================================//
     public static final byte PROTSTAT_NO_PIN        = 0x00;
     public static final byte PROTSTAT_PIN_PROTECTED = 0x01;
     public static final byte PROTSTAT_PIN_BLOCKED   = 0x04;
@@ -32,9 +32,9 @@ public final class KeyProtectionInfo {
     public static final byte PROTSTAT_PUK_BLOCKED   = 0x08;
     public static final byte PROTSTAT_DEVICE_PIN    = 0x10;
 
-    ///////////////////////////////////////////////////////////////////////////////////
+    //===============================================================================//
     // "KeyBackup" bit-field constants
-    ///////////////////////////////////////////////////////////////////////////////////
+    //===============================================================================//
     public static final byte KEYBACKUP_IMPORTED     = 0x01;
     public static final byte KEYBACKUP_EXPORTED     = 0x02;
 

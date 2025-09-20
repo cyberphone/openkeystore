@@ -32,9 +32,9 @@ public class CBORPrinter {
 
     private CBORPrinter() {}  // No instantiation please
 
-    ///////////////////////////////
+    //===========================//
     ////       DEBUGGING       ////
-    ///////////////////////////////
+    //===========================//
 
     static void show() {
         System.out.println("\nUsage: CBORPrinter hex|bin|b64u text-srgument|pipe");

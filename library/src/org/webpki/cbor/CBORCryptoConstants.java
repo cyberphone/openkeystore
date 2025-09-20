@@ -21,14 +21,14 @@ package org.webpki.cbor;
  */
 public interface CBORCryptoConstants {
     
-    ////////////////////////////////
+    //============================//
     // From RFC 8152 and RFC 8230 //
-    ////////////////////////////////
+    //============================//
 
     
-    /////////////////
+    //=============//
     // COSE Labels //
-    ///////////////// 
+    //=============//
     
     /**
      * COSE "kty" label (1).
@@ -76,9 +76,9 @@ public interface CBORCryptoConstants {
     CBORInt COSE_RSA_E_LBL           = new CBORInt(-2);
 
 
-    //////////////////////
+    //==================//
     // COSE Identifiers //
-    //////////////////////
+    //==================//
 
     /**
      * COSE EC2 "kty" identifier (2).
@@ -130,14 +130,14 @@ public interface CBORCryptoConstants {
      */
     CBORInt COSE_CRV_ED448_ID        = new CBORInt(7);
     
-    /////////////////////////////////////////////////////////////////
+    //=============================================================//
     //                                                             //
     //                Common CSF and CEF labels                    //
     //                                                             //
     // The ordering of labels is based on a desire to receive them //
     // in a logical way both for CSF and CEF.  However, since they //
     // are shared, it creates certain jumps in the numbering.      //
-    /////////////////////////////////////////////////////////////////
+    //=============================================================//
  
     /**
      * CSF/CEF "customData" label (0).

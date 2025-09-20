@@ -40,9 +40,9 @@ public class ProvisioningFinalizationResponseEncoder extends JSONEncoder {
 
     @Override
     protected void writeJSONData(JSONObjectWriter wr) {
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         // Session properties
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         wr.setString(SERVER_SESSION_ID_JSON, serverSessionId);
 
         wr.setString(CLIENT_SESSION_ID_JSON, clientSessionId);

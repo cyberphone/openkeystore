@@ -94,16 +94,16 @@ public class CredentialDiscoveryResponseEncoder extends JSONEncoder {
 
     @Override
     protected void writeJSONData(JSONObjectWriter wr) {
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         // Session properties
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         wr.setString(SERVER_SESSION_ID_JSON, serverSessionId);
 
         wr.setString(CLIENT_SESSION_ID_JSON, clientSessionId);
 
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         // Lookup results
-        ////////////////////////////////////////////////////////////////////////
+        //====================================================================//
         if (lookupResults.isEmpty()) {
             throw new KeyGen2Exception("There must be at least one result defined");
         }

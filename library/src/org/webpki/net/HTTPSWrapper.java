@@ -173,9 +173,9 @@ public class HTTPSWrapper {
     private void initSSL() throws IOException {
         if (!ssl_initialized) {
             try {
-                /////////////////////////////////////
+                //=================================//
                 // Do we have a trust store?
-                /////////////////////////////////////
+                //=================================//
                 TrustManager[] trust_managers = null;
                 if (allow_invalidcert) {
                     trust_managers = new TrustManager[]{new HttpsWrapperTrustManager()};
@@ -188,9 +188,9 @@ public class HTTPSWrapper {
                     trust_managers = tmf.getTrustManagers();
                 }
 
-                /////////////////////////////////////
+                //=================================//
                 // Do we have a key store?
-                /////////////////////////////////////
+                //=================================//
                 KeyManager[] key_managers = null;
                 if (key_store != null) {
                     KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
@@ -386,22 +386,22 @@ public class HTTPSWrapper {
      * @throws IOException If something unexpected happens...
      */
     public void makePostRequest(String url, byte[] data) throws IOException {
-        /////////////////////////////
+        //=========================//
         // Prepare
-        /////////////////////////////
+        //=========================//
         setupRequest(url, true);
 
-        /////////////////////////////
+        //=========================//
         // Send POST data
-        /////////////////////////////
+        //=========================//
         OutputStream post = conn.getOutputStream();
         post.write(data);
         post.flush();
         post.close();
 
-        /////////////////////////////
+        //=========================//
         // Get response data
-        /////////////////////////////
+        //=========================//
         getServerResponse();
     }
 
@@ -423,19 +423,19 @@ public class HTTPSWrapper {
      * Sets up request. 
      */
     private void setupRequest(String urlString, boolean output) throws IOException {
-        ///////////////////////////////////////////////
+        //===========================================//
         // Clear the result
-        ///////////////////////////////////////////////
+        //===========================================//
         server_data = null;
 
-        ///////////////////////////////////////////////
+        //===========================================//
         // Clear the response header.
-        ///////////////////////////////////////////////
+        //===========================================//
         response_headers.clear();
 
-        ///////////////////////////////////////////////
+        //===========================================//
         // If HTTPS, setup the security pieces
-        ///////////////////////////////////////////////
+        //===========================================//
         this.url = urlString;
         boolean https_flag = false;
         if (urlString.startsWith("https:")) {
@@ -448,9 +448,9 @@ public class HTTPSWrapper {
             https_flag = true;
         }
 
-        ///////////////////////////////////////////////
+        //===========================================//
         // Create the connection
-        ///////////////////////////////////////////////
+        //===========================================//
         URL url;
         try {
             url = new URI(urlString).toURL();
@@ -463,9 +463,9 @@ public class HTTPSWrapper {
                 (HttpURLConnection) url.openConnection(proxy == null ? default_proxy : proxy);
         conn.setAllowUserInteraction(false);
 
-        ///////////////////////////////////////////////
+        //===========================================//
         // HTTPS requires some extras
-        ///////////////////////////////////////////////
+        //===========================================//
         if (https_flag) {
             if (allow_diffhostnames) {
                 ((HttpsURLConnection) conn).setHostnameVerifier(new HostnameVerifier() {
@@ -481,47 +481,47 @@ public class HTTPSWrapper {
             }
         }
 
-        ///////////////////////////////////////////////
+        //===========================================//
         // Set timeout if specified
-        ///////////////////////////////////////////////
+        //===========================================//
         if (timeout != 0) {
             conn.setReadTimeout(timeout);
         }
 
-        ///////////////////////////////////////////////
+        //===========================================//
         // Override GET or POST mode
-        ///////////////////////////////////////////////
+        //===========================================//
         if (request_method != null) {
             conn.setRequestMethod(request_method);
         }
 
-        ///////////////////////////////////////////////
+        //===========================================//
         // Set URI(GET) or Body(POST) mode
-        ///////////////////////////////////////////////
+        //===========================================//
         conn.setDoOutput(output);
 
-        ///////////////////////////////////////////////
+        //===========================================//
         // Set the redirect mode.  Note: false is default
-        ///////////////////////////////////////////////
+        //===========================================//
         conn.setInstanceFollowRedirects(follow_redirects);
 
-        ///////////////////////////////////////////////
+        //===========================================//
         // Output user-defined header data
-        ///////////////////////////////////////////////
+        //===========================================//
         for (String key : request_headers.keySet()) {
             for (String value : request_headers.get(key)) {
                 conn.setRequestProperty(key, value);
             }
         }
 
-        ///////////////////////////////////////////////
+        //===========================================//
         // We are done with the request header
-        ///////////////////////////////////////////////
+        //===========================================//
         request_headers.clear();
 
-        ///////////////////////////////////////////////
+        //===========================================//
         // Calling you...
-        ///////////////////////////////////////////////
+        //===========================================//
         conn.setConnectTimeout(60000);
         conn.connect();
 
@@ -543,14 +543,14 @@ public class HTTPSWrapper {
      * @throws IOException If something unexpected happens...
      */
     public void makeGetRequest(String url) throws IOException {
-        /////////////////////////////
+        //=========================//
         // Prepare
-        /////////////////////////////
+        //=========================//
         setupRequest(url, false);
 
-        /////////////////////////////
+        //=========================//
         // Get response data
-        /////////////////////////////
+        //=========================//
         getServerResponse();
     }
 
@@ -560,9 +560,9 @@ public class HTTPSWrapper {
      * If data is not null, data is posted to server.
      */
     private void getServerResponse() throws IOException {
-        ////////////////////////////////////////////
+        //========================================//
         // Read response data
-        ////////////////////////////////////////////
+        //========================================//
         response_code = conn.getResponseCode();
         if (response_code == HttpURLConnection.HTTP_OK || 
             response_code == HttpURLConnection.HTTP_CREATED) {
@@ -574,9 +574,9 @@ public class HTTPSWrapper {
             }
         }
 
-        ////////////////////////////////////////////
+        //========================================//
         // Read response header data
-        ////////////////////////////////////////////
+        //========================================//
         Map<String, List<String>> headers = conn.getHeaderFields();
         for (String key : headers.keySet()) {
             if (key != null) // Protection against a bug in URLConnection
@@ -591,9 +591,9 @@ public class HTTPSWrapper {
         content_length = conn.getContentLength();
         response_message = conn.getResponseMessage();
 
-        ////////////////////////////////////////////
+        //========================================//
         // Close
-        ////////////////////////////////////////////
+        //========================================//
         conn.disconnect();
         if (require_success && response_code != HttpURLConnection.HTTP_OK) {
             throw new IOException("Unexpected return code [" + response_code +

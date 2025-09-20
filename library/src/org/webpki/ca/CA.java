@@ -151,27 +151,27 @@ public class CA {
 
         BaseASN1Object subjectPublicKeyInfo = DerDecoder.decode(subjectPublicKey.getEncoded());
 
-        //////////////////////////////////////////////////////
+        //==================================================//
         // Basic Constraints - EE
-        //////////////////////////////////////////////////////
+        //==================================================//
         if (certSpec.endEntity) {
             extensions.add(CertificateExtensions.BASIC_CONSTRAINTS, 
                            false, 
                            new ASN1Sequence(new BaseASN1Object[]{}));
         }
 
-        //////////////////////////////////////////////////////
+        //==================================================//
         // Basic Constraints - CA
-        //////////////////////////////////////////////////////
+        //==================================================//
         if (certSpec.caCert) {
             extensions.add(CertificateExtensions.BASIC_CONSTRAINTS, 
                            true, 
                            new ASN1Sequence(new ASN1Boolean(true)));
         }
 
-        //////////////////////////////////////////////////////
+        //==================================================//
         // Key Usage
-        //////////////////////////////////////////////////////
+        //==================================================//
         if (!certSpec.keyUsageSet.isEmpty()) {
             int i = 0;
             for (KeyUsageBits kubit : certSpec.keyUsageSet) {
@@ -187,9 +187,9 @@ public class CA {
                            new ASN1BitString(keyUsage));
         }
 
-        //////////////////////////////////////////////////////
+        //==================================================//
         // Extended Key Usage
-        //////////////////////////////////////////////////////
+        //==================================================//
         if (!certSpec.extendedKeyUsageSet.isEmpty()) {
             int i = 0;
             BaseASN1Object[] ekus = new BaseASN1Object[certSpec.extendedKeyUsageSet.size()];
@@ -202,17 +202,17 @@ public class CA {
                            new ASN1Sequence(ekus));
         }
 
-        //////////////////////////////////////////////////////
+        //==================================================//
         // Subject Key Identifier
-        //////////////////////////////////////////////////////
+        //==================================================//
         if (certSpec.skiExtension) {
             extensions.add(CertificateExtensions.SUBJECT_KEY_IDENTIFIER, 
                            createKeyID(subjectPublicKey));
         }
 
-        //////////////////////////////////////////////////////
+        //==================================================//
         // Authority Key Identifier
-        //////////////////////////////////////////////////////
+        //==================================================//
         if (certSpec.akiExtension) {
             extensions.add(CertificateExtensions.AUTHORITY_KEY_IDENTIFIER, 
                            new ASN1Sequence(
@@ -220,9 +220,9 @@ public class CA {
                                                              createKeyID(issuerPublicKey))));
         }
 
-        //////////////////////////////////////////////////////
+        //==================================================//
         // Subject Alt Name
-        //////////////////////////////////////////////////////
+        //==================================================//
         if (!certSpec.subjectAltName.isEmpty()) {
             int i = 0;
             BaseASN1Object[] san = new BaseASN1Object[certSpec.subjectAltName.size()];
@@ -254,9 +254,9 @@ public class CA {
                            new ASN1Sequence(san));
         }
 
-        //////////////////////////////////////////////////////
+        //==================================================//
         // Certificate Policies
-        //////////////////////////////////////////////////////
+        //==================================================//
         if (!certSpec.certPolicyOids.isEmpty()) {
             int i = 0;
             BaseASN1Object[] policies = new BaseASN1Object[certSpec.certPolicyOids.size()];
@@ -267,9 +267,9 @@ public class CA {
                            new ASN1Sequence(policies));
         }
 
-        //////////////////////////////////////////////////////
+        //==================================================//
         // Authority Info Access
-        //////////////////////////////////////////////////////
+        //==================================================//
         if (!certSpec.aiaLocators.isEmpty()) {
             int i = 0;
             BaseASN1Object[] locators = new BaseASN1Object[certSpec.aiaLocators.size()];
@@ -283,9 +283,9 @@ public class CA {
                            new ASN1Sequence(locators));
         }
 
-        //////////////////////////////////////////////////////
+        //==================================================//
         // CRL Distribution Points
-        //////////////////////////////////////////////////////
+        //==================================================//
         if (!certSpec.crlDistPoints.isEmpty()) {
             int i = 0;
             BaseASN1Object[] cdps = new BaseASN1Object[certSpec.crlDistPoints.size()];
@@ -300,9 +300,9 @@ public class CA {
                            new ASN1Sequence(cdps));
         }
 
-        //////////////////////////////////////////////////////
+        //==================================================//
         // Certificate Creation!
-        //////////////////////////////////////////////////////
+        //==================================================//
         BaseASN1Object[] inner = new BaseASN1Object[extensions.isEmpty() ? 7 : 8];
         inner[0] = version;
         inner[1] = new ASN1Integer(serialNumber);

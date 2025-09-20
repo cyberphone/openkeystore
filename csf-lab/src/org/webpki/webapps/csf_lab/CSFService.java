@@ -127,9 +127,9 @@ public class CSFService extends InitPropertyReader implements ServletContextList
         initProperties(event);
         CustomCryptoProvider.forcedLoad(false);
         try {
-            /////////////////////////////////////////////////////////////////////////////////////////////
+            //=========================================================================================//
             // Keys
-            /////////////////////////////////////////////////////////////////////////////////////////////
+            //=========================================================================================//
             keyDeclarations = 
                     new KeyDeclaration(KeyDeclaration.PRIVATE_KEYS, "privatekey.pem")
                           .addKey(AsymSignatureAlgorithms.ED25519,       "ed25519")
@@ -160,9 +160,9 @@ public class CSFService extends InitPropertyReader implements ServletContextList
                           .addKey(HmacAlgorithms.HMAC_SHA384,            "a384")
                           .addKey(HmacAlgorithms.HMAC_SHA512,            "a512").toString();
 
-            /////////////////////////////////////////////////////////////////////////////////////////////
+            //=========================================================================================//
             // Sample signature for verification
-            /////////////////////////////////////////////////////////////////////////////////////////////
+            //=========================================================================================//
             CBORMap demoSignature = 
                     CBORDecoder.decode(getEmbeddedResource("demo-doc-signature.cbor")).getMap();
             sampleSignature = demoSignature.toString();
@@ -181,9 +181,9 @@ public class CSFService extends InitPropertyReader implements ServletContextList
                 
             }).validate(demoSignature);
 
-            /////////////////////////////////////////////////////////////////////////////////////////////
+            //=========================================================================================//
             // Logging?
-            /////////////////////////////////////////////////////////////////////////////////////////////
+            //=========================================================================================//
             logging = getPropertyBoolean("logging");
 
             logger.info("CSF Lab Successfully Initiated");

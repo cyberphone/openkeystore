@@ -76,15 +76,15 @@ public class AuthenticationResponseDecoder extends InputValidator {
         signature.verify(new JSONX509Verifier(verifier));
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////
+    //=========================================================================================//
     // JSON Reader
-    /////////////////////////////////////////////////////////////////////////////////////////////
+    //=========================================================================================//
 
     @Override
     protected void readJSONData(JSONObjectReader rd) {
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         // Get the top-level properties
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         id = rd.getString(ID_JSON);
 
         serverTime = rd.getString(SERVER_TIME_JSON);
@@ -93,9 +93,9 @@ public class AuthenticationResponseDecoder extends InputValidator {
 
         serverCertificateFingerprint = rd.getBinaryConditional(SERVER_CERT_FP_JSON);
 
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         // Get the optional client platform features
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         for (JSONObjectReader feature : InputValidator.getObjectArrayConditional(rd, CLIENT_FEATURES_JSON)) {
             String type = InputValidator.getURI(feature, TYPE_JSON);
             LinkedHashSet<String> set = clientPlatformFeatures.get(type);
@@ -108,9 +108,9 @@ public class AuthenticationResponseDecoder extends InputValidator {
             }
         }
 
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         // Finally, get the signature!
-        //////////////////////////////////////////////////////////////////////////
+        //======================================================================//
         signature = rd.getSignature(new JSONCryptoHelper.Options());
         certificatePath = signature.getCertificatePath();
         signatureAlgorithm = (AsymSignatureAlgorithms) signature.getAlgorithm();

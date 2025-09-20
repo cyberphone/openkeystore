@@ -74,9 +74,9 @@ public class InvocationRequestDecoder extends ClientDecoder {
 
     @Override
     void readServerRequest(JSONObjectReader rd) {
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         // Session properties
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         action = Action.getActionFromString(rd.getString(ACTION_JSON));
 
         languages = rd.getStringArrayConditional(PREFERREDD_LANGUAGES_JSON);

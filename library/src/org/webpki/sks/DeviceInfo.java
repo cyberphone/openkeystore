@@ -21,9 +21,9 @@ import java.security.cert.X509Certificate;
 import java.util.LinkedHashSet;
 
 public class DeviceInfo {
-    ///////////////////////////////////////////////////////////////////////////////////
+    //===============================================================================//
     // "DeviceType" constants
-    ///////////////////////////////////////////////////////////////////////////////////
+    //===============================================================================//
     public static final byte LOCATION_EXTERNAL = 0x00;
     public static final byte LOCATION_EMBEDDED = 0x01;
     public static final byte LOCATION_SOCKETED = 0x02;

@@ -433,9 +433,9 @@ public class ProvisioningFinalizationRequestDecoder extends ClientDecoder {
 
     @Override
     void readServerRequest(JSONObjectReader rd) {
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         // Session properties
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         serverSessionId = getID(rd, SERVER_SESSION_ID_JSON);
         
         clientSessionId = getID(rd, CLIENT_SESSION_ID_JSON);
@@ -446,23 +446,23 @@ public class ProvisioningFinalizationRequestDecoder extends ClientDecoder {
 
         closeSessionMac = KeyGen2Validator.getMac(closeSession);
 
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         // Get the issued_keys [0..n]
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         for (JSONObjectReader keys : getObjectArrayConditional(rd, ISSUED_CREDENTIALS_JSON)) {
             issuedKeys.add(new IssuedCredential(keys));
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         // Get optional post provisioning unlocks
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         for (JSONObjectReader keys : getObjectArrayConditional(rd, UNLOCK_KEYS_JSON)) {
             postUnlockKeys.add(readPostOperation(keys, PostOperation.UNLOCK_KEY));
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         // Get optional post provisioning deletes
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         for (JSONObjectReader keys : getObjectArrayConditional(rd, DELETE_KEYS_JSON)) {
             postDeleteKeys.add(readPostOperation(keys, PostOperation.DELETE_KEY));
         }

@@ -135,9 +135,9 @@ public class ProvisioningInitializationRequestDecoder extends ClientDecoder {
 
     @Override
     void readServerRequest(JSONObjectReader rd) {
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         // Core session properties
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         sessionKeyAlgorithm = rd.getString(SESSION_KEY_ALGORITHM_JSON);
 
         serverSessionId = getID(rd, SERVER_SESSION_ID_JSON);
@@ -150,15 +150,15 @@ public class ProvisioningInitializationRequestDecoder extends ClientDecoder {
 
         sessionLifeTime = (short) rd.getInt(SESSION_LIFE_TIME_JSON);
 
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         // Get the server key
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         serverEphemeralKey = (ECPublicKey) rd.getObject(SERVER_EPHEMERAL_KEY_JSON)
                 .getCorePublicKey(AlgorithmPreferences.JOSE_ACCEPT_PREFER);
 
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         // Get the optional key management key
-        /////////////////////////////////////////////////////////////////////////////////////////
+        //=====================================================================================//
         if (rd.hasProperty(KEY_MANAGEMENT_KEY_JSON)) {
             keyManagementKey = rd.getObject(KEY_MANAGEMENT_KEY_JSON)
                     .getCorePublicKey(AlgorithmPreferences.JOSE_ACCEPT_PREFER);
