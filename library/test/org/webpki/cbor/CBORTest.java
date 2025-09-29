@@ -855,7 +855,6 @@ public class CBORTest {
             new EdECPublicKeySpec(NamedParameterSpec.ED25519,
                                   new EdECPoint (hibit, new BigInteger(reversed)));
         PublicKey publicKey = KeyFactory.getInstance("Ed25519").generatePublic(spec);
-        System.out.println(CBORPublicKey.convert(publicKey).toString());
         assertTrue("Pub", OkpSupport.raw2PublicKey(raw, KeyAlgorithms.ED25519).equals(publicKey));
     }
 
