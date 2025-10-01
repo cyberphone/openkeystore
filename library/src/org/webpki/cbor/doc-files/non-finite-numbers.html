@@ -7,12 +7,12 @@ This implementation provides multiple levels of support, intended to
 accommodate different needs.
 This is accomplished without specific decoder or encoder options;
 it is entirely based on API method selections.
-The following table outlines the supported alternatives:
+The following table outlines the supported levels:
 <div class='webpkifloat' style='margin-left:2em'><table class='webpkitable' style='min-width:30em'>
-<tr><th>Designation</th><th>Comment</th></tr>
-<tr><td style='text-align:center'><code>BASIC</code></td><td>Only "regular" floating-point numbers are accepted.
+<tr><th>Level</th><th>Comment</th></tr>
+<tr><td style='text-align:center'><code>NONE</code></td><td>Only "regular" floating-point numbers are accepted.
 </td></tr>
-<tr><td style='text-align:center'><code>EXTENDED</code></td><td>All floating-point numbers except for non-trivial <code>NaNs</code> are accepted.
+<tr><td style='text-align:center'><code>SIMPLE</code></td><td>All floating-point numbers except for non-trivial <code>NaNs</code> are accepted.
 <div style='margin-top:0.5em'>In the list below, <code>NaN</code> refers to "simple" <code>NaNs</code>
 (in deterministically encoded CBOR represented by <code>f97e00</code>),
 while <code>Infinity</code> refers to
@@ -21,7 +21,7 @@ The Java counterparts are represented by {@link java.lang.Double#NaN},
 {@link java.lang.Double#POSITIVE_INFINITY},
 and {@link java.lang.Double#NEGATIVE_INFINITY} respectively.</div>
 </td></tr>
-<tr><td style='text-align:center'><code>COMPLETE</code></td><td>All floating-point numbers are accepted.
+<tr><td style='text-align:center'><code>FULL</code></td><td>All floating-point numbers are accepted.
 </td></tr>
 </table></div>
 Non-supported items cause a {@link CBORException} to be thrown.
@@ -29,35 +29,35 @@ Note that the constraints apply to <i>encoding</i> as well.
 <h5 style='margin:1.3em 0 1em 0'>Encoding Methods</h5>
 <div class='webpkifloat'>
 <table style='margin-left:2em;font-family: monospace;white-space:nowrap;border-spacing:0'>
-<tr><td colspan='2'>BASIC</td></tr>
-<tr><td style='padding-left:1.5em'>new&nbsp;{@link CBORFloat#CBORFloat(double)}</td><td>// "Regular" number</td></tr>
-<tr><td colspan='2' style='padding-top:0.8em'>EXTENDED</td></tr>
-<tr><td style='padding-left:1.5em'>{@link CBORFloat#createExtendedFloat(double)}</td><td>// "Regular" number, NaN, or Infinity</td></tr>
-<tr><td colspan='2' style='padding-top:0.8em'>COMPLETE</td></tr>
-<tr><td style='padding-left:1.5em'>// Select suitable method:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td></td></tr>
-<tr><td style='padding-left:1.5em'>new&nbsp;{@link CBORFloat#CBORFloat(double)}</td><td>// "Regular" number</td></tr>
-<tr><td style='padding-left:1.5em'>new&nbsp;{@link CBORNonFinite#CBORNonFinite(long)}</td><td>// Arbitrary non-finite number</td></tr>
-<tr><td style='padding-left:1.5em'>{@link CBORNonFinite#createPayloadObject(long)}</td><td>// Application-specific data</td></tr>
+<tr><td colspan='2'>NONE</td></tr>
+<tr><td style='padding-left:1.2em'>new&nbsp;{@link CBORFloat#CBORFloat(double)}</td><td>// "Regular" number</td></tr>
+<tr><td colspan='2' style='padding-top:0.8em'>SIMPLE</td></tr>
+<tr><td style='padding-left:1.2em'>{@link CBORFloat#createExtendedFloat(double)}</td><td>// "Regular" number, NaN, or Infinity</td></tr>
+<tr><td colspan='2' style='padding-top:0.8em'>FULL</td></tr>
+<tr><td style='padding-left:1.2em'>// Select suitable method:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td></td></tr>
+<tr><td style='padding-left:1.2em'>new&nbsp;{@link CBORFloat#CBORFloat(double)}</td><td>// "Regular" number</td></tr>
+<tr><td style='padding-left:1.2em'>new&nbsp;{@link CBORNonFinite#CBORNonFinite(long)}</td><td>// Arbitrary non-finite number</td></tr>
+<tr><td style='padding-left:1.2em'>{@link CBORNonFinite#createPayloadObject(long)}</td><td>// Application-specific data</td></tr>
 </table>
 </div>
 <h5 style='margin:1.3em 0 1em 0'>Decoding Methods</h5>
 <div class='webpkifloat'>
 <table style='margin-left:2em;font-family: monospace;white-space:nowrap;border-spacing:0'>
-<tr><td colspan='2'>BASIC</td></tr>
-<tr><td style='padding-left:1.5em'>cborObject.{@link CBORObject#getFloat64() getFloat64()}</td><td>// "Regular" number</td></tr>
-<tr><td colspan='2' style='padding-top:0.8em'>EXTENDED</td></tr>
-<tr><td style='padding-left:1.5em'>cborObject.{@link CBORObject#getExtendedFloat64() getExtendedFloat64()}</td><td>// "Regular" number, NaN, or Infinity</td></tr>
-<tr><td colspan='2' style='padding-top:0.8em'>COMPLETE</td></tr>
-<tr><td style='padding-left:1.5em'>// Check what the decoder returned:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td></td></tr>
-<tr><td colspan='2' style='padding-left:1.5em'>if (cborObject instanceof {@link CBORNonFinite} nf) {</td></tr>
-<tr><td style='padding-left:1.5em'>&nbsp;&nbsp;// Non-finite number to process</td><td></td></tr>
-<tr><td style='padding-left:1.5em'>&nbsp;&nbsp;// Select suitable method:</td><td></td></tr>
-<tr><td style='padding-left:1.5em'>&nbsp;&nbsp;nf.{@link CBORNonFinite#getNonFinite64() getNonFinite64()}</td><td>// Arbitrary non-finite number</td></tr>
-<tr><td style='padding-left:1.5em'>&nbsp;&nbsp;nf.{@link CBORNonFinite#getPayload() getPayload()}</td><td>// Application-specific data</td></tr>
-<tr><td style='padding-left:1.5em'>} else {</td><td></td></tr>
-<tr><td style='padding-left:1.5em'>&nbsp;&nbsp;// "Regular" number to process</td><td></td></tr>
-<tr><td style='padding-left:1.5em'>&nbsp;&nbsp;cborObject.{@link CBORObject#getFloat64() getFloat64()}</td><td>// "Regular" number</td></tr>
-<tr><td style='padding-left:1.5em'>}</td><td></td></tr>
+<tr><td colspan='2'>NONE</td></tr>
+<tr><td style='padding-left:1.2em'>cborObject.{@link CBORObject#getFloat64() getFloat64()}</td><td>// "Regular" number</td></tr>
+<tr><td colspan='2' style='padding-top:0.8em'>SIMPLE</td></tr>
+<tr><td style='padding-left:1.2em'>cborObject.{@link CBORObject#getExtendedFloat64() getExtendedFloat64()}</td><td>// "Regular" number, NaN, or Infinity</td></tr>
+<tr><td colspan='2' style='padding-top:0.8em'>FULL</td></tr>
+<tr><td style='padding-left:1.2em'>// Check what the decoder returned:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td></td></tr>
+<tr><td colspan='2' style='padding-left:1.2em'>if (cborObject instanceof {@link CBORNonFinite} nf) {</td></tr>
+<tr><td style='padding-left:1.2em'>&nbsp;&nbsp;// Non-finite number to process</td><td></td></tr>
+<tr><td style='padding-left:1.2em'>&nbsp;&nbsp;// Select suitable method:</td><td></td></tr>
+<tr><td style='padding-left:1.2em'>&nbsp;&nbsp;nf.{@link CBORNonFinite#getNonFinite64() getNonFinite64()}</td><td>// Arbitrary non-finite number</td></tr>
+<tr><td style='padding-left:1.2em'>&nbsp;&nbsp;nf.{@link CBORNonFinite#getPayload() getPayload()}</td><td>// Application-specific data</td></tr>
+<tr><td style='padding-left:1.2em'>} else {</td><td></td></tr>
+<tr><td style='padding-left:1.2em'>&nbsp;&nbsp;// "Regular" number to process</td><td></td></tr>
+<tr><td style='padding-left:1.2em'>&nbsp;&nbsp;cborObject.{@link CBORObject#getFloat64() getFloat64()}</td><td>// "Regular" number</td></tr>
+<tr><td style='padding-left:1.2em'>}</td><td></td></tr>
 </table>
 </div>
 <h3 id='payload-option' style='padding-top:0.5em'>Payload Option</h3>
