@@ -235,6 +235,13 @@ public class CoreRequestServlet extends HttpServlet {
             return null;
         }   
     }
+
+    CBORMap getMap(CBORObject cborObject) throws IOException {
+        if (!(cborObject instanceof CBORMap)) {
+            requestError("Data to be signed must be supplied in a CBOR map");
+        }
+        return cborObject.getMap();
+    }
     
     CBORMap unwrapOptionalTag(CBORObject rawContainer) throws IOException {
         // It might be tagged
@@ -243,9 +250,9 @@ public class CoreRequestServlet extends HttpServlet {
             if (container instanceof CBORArray) {
                 container = container.getArray().get(1);
             }
-            return container.getMap();
+            return getMap(container);
         }
-        return rawContainer.getMap();
+        return getMap(rawContainer);
     }
 
     static class ReadKeyData {
