@@ -10,7 +10,7 @@ it is entirely based on API method selections.
 The following table outlines the supported levels:
 <div class='webpkifloat' style='margin-left:2em'><table class='webpkitable' style='min-width:30em'>
 <tr><th>Level</th><th>Comment</th></tr>
-<tr><td style='text-align:center'><code>NONE</code></td><td>Only "regular" floating-point numbers are accepted.
+<tr><td style='text-align:center'><code>BASIC</code></td><td>Only "regular" floating-point numbers are accepted.
 </td></tr>
 <tr><td style='text-align:center'><code>EXTENDED</code></td><td>All floating-point numbers except for non-trivial <code>NaNs</code> are accepted.
 <div style='margin-top:0.5em'>In the list below, <code>NaN</code> refers to "simple" <code>NaNs</code>
@@ -29,7 +29,7 @@ Note that the constraints apply to <i>encoding</i> as well.
 <h5 style='margin:1.3em 0 1em 0'>Encoding Methods</h5>
 <div class='webpkifloat'>
 <table style='margin-left:2em;font-family: monospace;white-space:nowrap;border-spacing:0'>
-<tr><td colspan='2'>NONE</td></tr>
+<tr><td colspan='2'>BASIC</td></tr>
 <tr><td style='padding-left:1.2em'>new&nbsp;{@link CBORFloat#CBORFloat(double)}</td><td>// "Regular" number</td></tr>
 <tr><td colspan='2' style='padding-top:0.8em'>EXTENDED</td></tr>
 <tr><td style='padding-left:1.2em'>{@link CBORFloat#createExtendedFloat(double)}</td><td>// "Regular" number, NaN, or Infinity</td></tr>
@@ -43,7 +43,7 @@ Note that the constraints apply to <i>encoding</i> as well.
 <h5 style='margin:1.3em 0 1em 0'>Decoding Methods</h5>
 <div class='webpkifloat'>
 <table style='margin-left:2em;font-family: monospace;white-space:nowrap;border-spacing:0'>
-<tr><td colspan='2'>NONE</td></tr>
+<tr><td colspan='2'>BASIC</td></tr>
 <tr><td style='padding-left:1.2em'>cborObject.{@link CBORObject#getFloat64() getFloat64()}</td><td>// "Regular" number</td></tr>
 <tr><td colspan='2' style='padding-top:0.8em'>EXTENDED</td></tr>
 <tr><td style='padding-left:1.2em'>cborObject.{@link CBORObject#getExtendedFloat64() getExtendedFloat64()}</td><td>// "Regular" number, NaN, or Infinity</td></tr>
