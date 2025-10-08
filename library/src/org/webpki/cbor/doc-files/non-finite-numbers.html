@@ -37,7 +37,7 @@ Note that the constraints apply to <i>encoding</i> as well.
 <tr><td style='padding-left:1.2em'>// Select suitable method:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td></td></tr>
 <tr><td style='padding-left:1.2em'>new&nbsp;{@link CBORFloat#CBORFloat(double)}</td><td>// "Regular" number</td></tr>
 <tr><td style='padding-left:1.2em'>new&nbsp;{@link CBORNonFinite#CBORNonFinite(long)}</td><td>// Arbitrary non-finite number</td></tr>
-<tr><td style='padding-left:1.2em'>{@link CBORNonFinite#createPayloadObject(long)}</td><td>// Application-specific data</td></tr>
+<tr><td style='padding-left:1.2em'>{@link CBORNonFinite#createPayload(long)}</td><td>// Application-specific data</td></tr>
 </table>
 </div>
 <h5 style='margin:1.3em 0 1em 0'>Decoding Methods</h5>
@@ -68,10 +68,8 @@ math-related problems such as division by zero.
 <div style='margin-top:0.5em'>
 However, in some cases there may be a desire providing more application specific data,
 like information related to a faulty sensor that needs attention.
-The {@link CBORNonFinite#createPayloadObject(long)} and {@link CBORNonFinite#getPayload()}
+The {@link CBORNonFinite#createPayload(long)} and {@link CBORNonFinite#getPayload()}
 methods were designed for this particular purpose.
-To obviate the need defining another CBOR type, these methods
-are "piggybacking" on the existing non-finite number space.
 The following table represents these methods from a <i>developer</i> perspective:
 </div>
 <div class='webpkifloat'><table class='webpkitable' style='margin-left:2em'>

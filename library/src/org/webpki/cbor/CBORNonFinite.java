@@ -125,7 +125,7 @@ public class CBORNonFinite extends CBORObject {
      * @param payload Payload data
      * @return {@link CBORNonFinite}
      */
-    public static CBORNonFinite createPayloadObject(long payload) {
+    public static CBORNonFinite createPayload(long payload) {
         if ((payload & PAYLOAD_MASK) != payload) {
             cborError(STDERR_PAYLOAD_RANGE);
         }
@@ -136,7 +136,7 @@ public class CBORNonFinite extends CBORObject {
     /**
      * Get payload data.
      * <p>
-     * This method is the "consumer" counterpart to {@link #createPayloadObject(long)}.
+     * This method is the "consumer" counterpart to {@link #createPayload(long)}.
      * </p>
      * @return Payload
      */
