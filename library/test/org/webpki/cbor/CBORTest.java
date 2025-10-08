@@ -2534,7 +2534,7 @@ public class CBORTest {
             CBORFloat.createExtendedFloat(nanWithPayload);
             fail("nooo");
         } catch (Exception e) {
-            checkException(e, CBORFloat.STDERR_NON_TRIVIAL_NAN_NOT_PERMITTED);
+            checkException(e, CBORFloat.STDERR_NAN_WITH_PAYLOADS_NOT_PERMITTED);
         }
         CBORNonFinite nonFinite =  (CBORNonFinite)CBORFloat.createExtendedFloat(Double.NaN);
         assertTrue("conv", nonFinite instanceof CBORNonFinite);

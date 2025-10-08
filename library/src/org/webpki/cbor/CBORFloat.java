@@ -170,7 +170,7 @@ public class CBORFloat extends CBORObject {
         }
         CBORNonFinite nf = new CBORNonFinite(Double.doubleToRawLongBits(value));
         if (!nf.isSimple()) {
-            cborError(STDERR_NON_TRIVIAL_NAN_NOT_PERMITTED);
+            cborError(STDERR_NAN_WITH_PAYLOADS_NOT_PERMITTED);
         }
         return nf;
     }
@@ -201,7 +201,7 @@ public class CBORFloat extends CBORObject {
     static final String STDERR_NON_FINITE_NOT_PERMITTED = 
             "Not permitted, see \"CBORNonFinite\" for details";
 
-    static final String STDERR_NON_TRIVIAL_NAN_NOT_PERMITTED = 
-            "createExtendedFloat() does not support non-trivial NaNs";
+    static final String STDERR_NAN_WITH_PAYLOADS_NOT_PERMITTED = 
+            "createExtendedFloat() does not support NaN with payloads";
 
 }
