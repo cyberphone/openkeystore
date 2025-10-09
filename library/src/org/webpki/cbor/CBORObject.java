@@ -322,7 +322,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
                 case 0x7c00 -> Double.POSITIVE_INFINITY;
                 case 0xfc00 -> Double.NEGATIVE_INFINITY;
                 default -> {
-                    cborError(STDERR_ONLY_QUIET_NAN);
+                    cborError(STDERR_ONLY_SIMPLE_NAN);
                     yield 0.0;
                 }
             };
@@ -802,7 +802,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     static final String STDERR_MAP_KEY_IMMUTABLE =
             "Map keys are immutable";
 
-   static final String STDERR_ONLY_QUIET_NAN =
-            "getCombinedFloat64() only supports the \"quiet\" NaN (7e00)";
+   static final String STDERR_ONLY_SIMPLE_NAN =
+            "getExtendedFloat64() only supports \"simple\" NaN (7e00)";
 
 }
