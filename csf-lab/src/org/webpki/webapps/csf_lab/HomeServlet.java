@@ -28,7 +28,7 @@ public class HomeServlet extends CoreRequestServlet {
     private static final long serialVersionUID = 1L;
     
     static final String SUPPORTED_CBOR = "This implementation supports the " +
-            "[<a href='https://www.ietf.org/archive/id/draft-rundgren-cbor-core-13.html' " +
+            "[<a href='https://www.ietf.org/archive/id/draft-rundgren-cbor-core-14.html' " +
             "target='_blank' title='cbor'>CBOR::Core</a>] primitives (" +
             "<code>tstr</code>, <code>bstr</code>, " +
             "<code>int</code>, <code>bigint</code>, " +
@@ -47,8 +47,8 @@ public class HomeServlet extends CoreRequestServlet {
             "[<a href='https://www.rfc-editor.org/rfc/rfc8949.html' " +
             "target='_blank' title='cbor'>RFC&nbsp;8949</a>] based systems " +
             "using digital signatures. Unlike COSE " +
-            "[<a href='https://datatracker.ietf.org/doc/html/rfc8152' " +
-            "target='_blank' title='cose'>RFC&nbsp;8152</a>], " +
+            "[<a href='https://www.rfc-editor.org/rfc/rfc9052.html' " +
+            "target='_blank' title='cose'>RFC&nbsp;9052</a>], " +
             "CSF utilizes " + DETERMINISTIC_LINK + " enabling signatures " +
             "to become a part of the application data, rather than embedding " +
             "such data in signatures.  For detailed technical information " +
