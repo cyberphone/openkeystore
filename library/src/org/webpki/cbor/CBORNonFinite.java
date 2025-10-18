@@ -54,7 +54,6 @@ public class CBORNonFinite extends CBORObject {
     static final long PAYLOAD_MASK = ((1L << FLOAT64_SIGNIFICAND_SIZE) - 1L);
 
     void createDeterministicEncoding(long value) {
-        original = value;
         while (true) {
             this.value = value;
             encoded = CBORUtil.unsignedLongToByteArray(value);
@@ -112,6 +111,7 @@ public class CBORNonFinite extends CBORObject {
      */
     @SuppressWarnings("this-escape")
     public CBORNonFinite(long value) {
+        original = value;
         createDeterministicEncoding(value);
     }
 
@@ -223,13 +223,13 @@ public class CBORNonFinite extends CBORObject {
     }
 
     long toNonFinite64(int significandLength) {
-        long f64 = value;
-        f64 &= (1L << significandLength) - 1L;
-        f64 = FLOAT64_POS_INFINITY | (f64 << (FLOAT64_SIGNIFICAND_SIZE - significandLength));
+        long nf64 = value;
+        nf64 &= (1L << significandLength) - 1L;
+        nf64 = FLOAT64_POS_INFINITY | (nf64 << (FLOAT64_SIGNIFICAND_SIZE - significandLength));
         if (getSign()) {
-            f64 |= FLOAT64_NEG_ZERO;
+            nf64 |= FLOAT64_NEG_ZERO;
         }
-        return f64;       
+        return nf64;       
     }
 
     /**
