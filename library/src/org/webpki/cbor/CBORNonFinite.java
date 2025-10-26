@@ -46,7 +46,7 @@ public class CBORNonFinite extends CBORObject {
 
     // Encoding data
     long value;
-    byte[] encoded;
+    byte[] ieee754;
 
     static final long DIFF_32_16 = FLOAT32_SIGNIFICAND_SIZE - FLOAT16_SIGNIFICAND_SIZE;
     static final long DIFF_64_32 = FLOAT64_SIGNIFICAND_SIZE - FLOAT32_SIGNIFICAND_SIZE;
@@ -56,8 +56,8 @@ public class CBORNonFinite extends CBORObject {
     void createDeterministicEncoding(long value) {
         while (true) {
             this.value = value;
-            encoded = CBORUtil.unsignedLongToByteArray(value);
-            long pattern = switch (encoded.length) {
+            ieee754 = CBORUtil.unsignedLongToByteArray(value);
+            long exponent = switch (ieee754.length) {
                 case 2 -> FLOAT16_POS_INFINITY;
                 case 4 -> FLOAT32_POS_INFINITY;
                 case 8 -> FLOAT64_POS_INFINITY;
@@ -66,18 +66,18 @@ public class CBORNonFinite extends CBORObject {
                     yield 0;
                 }
             };
-            boolean signed = encoded[0] < 0;
-            if ((value & pattern) != pattern) {
+            boolean sign = ieee754[0] < 0;
+            if ((value & exponent) != exponent) {
                 badValue();
             }
-            switch (encoded.length) {
+            switch (ieee754.length) {
                 case 4:
                     if ((value & ((1L << DIFF_32_16) - 1L)) != 0) {
                         break;
                     }
                     value >>= DIFF_32_16;
                     value &= (FLOAT16_NEG_ZERO - 1L);
-                    if (signed) {
+                    if (sign) {
                         value |= FLOAT16_NEG_ZERO;
                     }
                     continue;
@@ -87,7 +87,7 @@ public class CBORNonFinite extends CBORObject {
                     }
                     value >>= DIFF_64_32;
                     value &= (FLOAT32_NEG_ZERO - 1L);
-                    if (signed) {
+                    if (sign) {
                         value |= FLOAT32_NEG_ZERO;
                     }
                     continue;
@@ -151,7 +151,7 @@ public class CBORNonFinite extends CBORObject {
      * @see #getSign()
      */
     public CBORNonFinite setSign(boolean sign) {
-        long mask = 1L << ((encoded.length * 8) - 1L);
+        long mask = 1L << ((ieee754.length * 8) - 1L);
         createDeterministicEncoding((value & (mask - 1L)) | (sign ? mask : 0));
         return this;
     }
@@ -166,7 +166,7 @@ public class CBORNonFinite extends CBORObject {
      * @see #setSign(boolean)
      */
     public boolean getSign() {
-        return encoded[0] < 0;
+        return ieee754[0] < 0;
     }
 
     /**
@@ -178,7 +178,7 @@ public class CBORNonFinite extends CBORObject {
      * @return Length in bytes: 2, 4, or 8.
      */
     public int length() {
-        return encoded.length;
+        return ieee754.length;
     }
 
     /**
@@ -193,7 +193,7 @@ public class CBORNonFinite extends CBORObject {
      * @return <code>boolean</code>. 
      */
     public boolean isSimple() {
-        return encoded.length == 2 ?
+        return ieee754.length == 2 ?
             switch ((int)value) {
                 case (int)FLOAT16_NOT_A_NUMBER,
                      (int)FLOAT16_POS_INFINITY, 
@@ -211,7 +211,7 @@ public class CBORNonFinite extends CBORObject {
      * @return <code>boolean</code>. 
      */
     public boolean isNaN() {
-        return (switch (encoded.length) {
+        return (switch (ieee754.length) {
             case 2 -> (1L << FLOAT16_SIGNIFICAND_SIZE) - 1L;
             case 4 -> (1L << FLOAT32_SIGNIFICAND_SIZE) - 1L;
             default -> (1L << FLOAT64_SIGNIFICAND_SIZE) - 1L;
@@ -257,7 +257,7 @@ public class CBORNonFinite extends CBORObject {
      */
     public long getNonFinite64() {
         scan();
-        return switch (encoded.length) {
+        return switch (ieee754.length) {
             case 2 -> toNonFinite64(FLOAT16_SIGNIFICAND_SIZE);
             case 4 -> toNonFinite64(FLOAT32_SIGNIFICAND_SIZE);
             default -> value;
@@ -266,8 +266,8 @@ public class CBORNonFinite extends CBORObject {
 
     @Override
     byte[] internalEncode() {
-        return CBORUtil.concatByteArrays(new byte[]{(byte)(MT_FLOAT16 + (encoded.length >> 2))},
-                                         encoded);
+        return CBORUtil.concatByteArrays(new byte[]{(byte)(MT_FLOAT16 + (ieee754.length >> 2))},
+                                         ieee754);
     }
     
     @Override
@@ -275,7 +275,7 @@ public class CBORNonFinite extends CBORObject {
         if (isSimple()) {
             cborPrinter.append(isNaN() ? "NaN" : getSign() ? "-Infinity" : "Infinity");
         } else {
-            cborPrinter.append("float'").append(HexaDecimal.encode(encoded)).append('\'');
+            cborPrinter.append("float'").append(HexaDecimal.encode(ieee754)).append('\'');
         }
     }
 
