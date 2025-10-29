@@ -25,8 +25,9 @@ import static org.webpki.cbor.CBORInternal.*;
  */
 public class CBORInt extends CBORObject {
 
-    static final BigInteger MAX_CBOR_INTEGER_MAGNITUDE = new BigInteger("ffffffffffffffff", 16);
-    
+    static final BigInteger MAX_CBOR_INTEGER_MAGNITUDE = new BigInteger("ffffffffffffffff", 16);    
+    static final BigInteger FORBIDDEN_INT_RANGE_OFFSET = new BigInteger("-8000000000000001", 16);
+
     long value;
     boolean unsigned;
     
@@ -51,7 +52,8 @@ public class CBORInt extends CBORObject {
         this.value = value;
         this.unsigned = unsigned;
         if (!unsigned && value >= 0) {
-            cborError(STDERR_INT_VALUE_OUT_OF_RANGE + value);
+            cborError(STDERR_INT_VALUE_OUT_OF_RANGE + 
+                FORBIDDEN_INT_RANGE_OFFSET.subtract(BigInteger.valueOf(value)).toString());
         }
     }
 
@@ -84,6 +86,6 @@ public class CBORInt extends CBORObject {
     }
 
     static final String STDERR_INT_VALUE_OUT_OF_RANGE = 
-            "Integer out of range: ";
+            "Long out of range: ";
 
 }
