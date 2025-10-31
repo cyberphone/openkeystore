@@ -22,6 +22,12 @@ import static org.webpki.cbor.CBORInternal.*;
 
 /**
  * Class for holding CBOR <code>int</code> objects.
+ * <div id='negative-integers' class='webpkicomment' style='margin-top:1em'>
+ * Note that {@link CBORInt} does not support negative integers (CBOR major type 1)
+ * beyond the normal range for 64-bit signed integers 
+ * (<span style='white-space:nowrap'><code>-2<sup>63</sup></code></span>&#x2009;).
+ * In the unlikely case there is a need to explicitly deal with such integers,
+ * using {@link CBORBigInt} is the supported workaround.
  */
 public class CBORInt extends CBORObject {
 
