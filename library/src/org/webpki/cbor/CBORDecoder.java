@@ -47,7 +47,7 @@ public class CBORDecoder {
     public final static int LENIENT_NUMBER_DECODING  = 0x4;
 
 
-    static final BigInteger NEGATIVE_HIGH_RANGE = new BigInteger("-10000000000000000", 16);
+    static final BigInteger NEGATIVE_HIGH_RANGE_P1 = new BigInteger("-10000000000000001", 16);
    
     private InputStream inputStream;
     private boolean sequenceMode;
@@ -325,7 +325,7 @@ public class CBORDecoder {
 
                     // Only let two-complement integers use long.
                     case MT_NEGATIVE -> n < 0 ?
-                        new CBORBigInt(NEGATIVE_HIGH_RANGE.add(BigInteger.valueOf(~n))) 
+                        new CBORBigInt(NEGATIVE_HIGH_RANGE_P1.subtract(BigInteger.valueOf(n))) 
                                               :
                         new CBORInt(~n, false);
                     
