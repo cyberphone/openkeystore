@@ -49,7 +49,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     abstract byte[] internalEncode();
 
     /**
-     * Encode CBOR object.
+     * Encode (aka "serialize") CBOR object.
      * <p>
      * Note: this method always return CBOR data using 
      * <a href='package-summary.html#deterministic-encoding' class='webpkilink'>Deterministic&nbsp;Encoding</a>.

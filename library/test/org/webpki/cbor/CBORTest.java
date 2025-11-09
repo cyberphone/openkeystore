@@ -1131,14 +1131,14 @@ public class CBORTest {
             parseCborHex("c24900ffffffffffffffff");
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, CBORDecoder.STDERR_NON_DETERMINISTIC_BIGNUM);
+            checkException(e, CBORDecoder.STDERR_NON_DETERMINISTIC_BIGINT);
         }
 
         try {
             parseCborHex("c24101");
             fail("must not execute");
         } catch (Exception e) {
-            checkException(e, CBORDecoder.STDERR_NON_DETERMINISTIC_BIGNUM);
+            checkException(e, CBORDecoder.STDERR_NON_DETERMINISTIC_BIGINT);
         }
         
         try {

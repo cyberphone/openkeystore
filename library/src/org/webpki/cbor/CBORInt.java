@@ -31,8 +31,8 @@ import static org.webpki.cbor.CBORInternal.*;
  */
 public class CBORInt extends CBORObject {
 
-    static final BigInteger MAX_CBOR_INTEGER_MAGNITUDE = new BigInteger("ffffffffffffffff", 16);    
-    static final BigInteger FORBIDDEN_INT_RANGE_OFFSET = new BigInteger("-8000000000000001", 16);
+    static final BigInteger MAX_INT_MAGNITUDE = new BigInteger("ffffffffffffffff", 16);    
+    static final BigInteger MIN_INT_VALUE     = new BigInteger("-10000000000000000", 16);
 
     long value;
     boolean unsigned;
@@ -59,7 +59,7 @@ public class CBORInt extends CBORObject {
         this.unsigned = unsigned;
         if (!unsigned && value >= 0) {
             cborError(STDERR_INT_VALUE_OUT_OF_RANGE + 
-                FORBIDDEN_INT_RANGE_OFFSET.subtract(BigInteger.valueOf(value)).toString());
+                MIN_INT_VALUE.add(BigInteger.valueOf(value)).toString());
         }
     }
 
@@ -83,7 +83,7 @@ public class CBORInt extends CBORObject {
 
     BigInteger toBigInteger() {
         BigInteger bigInteger = BigInteger.valueOf(value);
-        return unsigned ? bigInteger.and(MAX_CBOR_INTEGER_MAGNITUDE) : bigInteger;
+        return unsigned ? bigInteger.and(MAX_INT_MAGNITUDE) : bigInteger;
     }
 
     @Override

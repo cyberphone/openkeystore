@@ -27,27 +27,27 @@ import org.webpki.util.UTF8;
 import static org.webpki.cbor.CBORInternal.*;
 
 /**
- * CBOR decoder class.
+ * Class for decoding (aka "deserializing") CBOR data.
  */
 public class CBORDecoder {
 
     /**
      * {@link CBORDecoder#CBORDecoder(InputStream, int, int)} <code>options</code> flag.
      */
-    public final static int SEQUENCE_MODE            = 0x1;
+    public final static int SEQUENCE_MODE           = 0x1;
 
     /**
      * {@link CBORDecoder#CBORDecoder(InputStream, int, int)} <code>options</code> flag.
      */
-    public final static int LENIENT_MAP_DECODING     = 0x2;
+    public final static int LENIENT_MAP_DECODING    = 0x2;
 
     /**
      * {@link CBORDecoder#CBORDecoder(InputStream, int, int)} <code>options</code> flag.
      */
-    public final static int LENIENT_NUMBER_DECODING  = 0x4;
+    public final static int LENIENT_NUMBER_DECODING = 0x4;
 
 
-    static final BigInteger NEGATIVE_HIGH_RANGE_P1 = new BigInteger("-10000000000000001", 16);
+    static final BigInteger MIN_INT_VALUE_MINUS_ONE = new BigInteger("-10000000000000001", 16);
    
     private InputStream inputStream;
     private boolean sequenceMode;
@@ -229,7 +229,7 @@ public class CBORDecoder {
                                                                    bigInteger : bigInteger.not());
                 if (strictNumbers) {
                     if (byteArray.length <= 8 || byteArray[0] == 0) {
-                        cborError(STDERR_NON_DETERMINISTIC_BIGNUM);
+                        cborError(STDERR_NON_DETERMINISTIC_BIGINT);
                     } 
                 } else {
                     // Normalization...
@@ -325,7 +325,7 @@ public class CBORDecoder {
 
                     // Only let two-complement integers use long.
                     case MT_NEGATIVE -> n < 0 ?
-                        new CBORBigInt(NEGATIVE_HIGH_RANGE_P1.subtract(BigInteger.valueOf(n))) 
+                        new CBORBigInt(MIN_INT_VALUE_MINUS_ONE.subtract(BigInteger.valueOf(n))) 
                                               :
                         new CBORInt(~n, false);
                     
@@ -418,11 +418,11 @@ public class CBORDecoder {
     static final String STDERR_N_RANGE_ERROR =
             "N out of range: ";
 
-    static final String STDERR_NON_DETERMINISTIC_BIGNUM =
-            "Non-deterministic encoding of bignum";
+    static final String STDERR_NON_DETERMINISTIC_BIGINT =
+            "Non-deterministic encoding of bigint";
 
     static final String STDERR_NON_DETERMINISTIC_FLOAT =
-            "Non-deterministic encoding of floating point value: ";
+            "Non-deterministic encoding of float value: ";
 
     static final String STDERR_NON_DETERMINISTIC_N =
             "Non-deterministic encoding of N";
