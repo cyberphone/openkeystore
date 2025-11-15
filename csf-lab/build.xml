@@ -105,8 +105,6 @@
         <exclude name="*-key.pem"/>
         <exclude name="*-2*"/>
       </zipfileset>
-      <zipfileset file="${openkeystore.dir}/testdata/cbor-signatures/demo-doc-signature.cbor"
-                  prefix="${class_war_path}"/>
     </war>
   </target>
   

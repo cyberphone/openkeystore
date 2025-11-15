@@ -19,7 +19,7 @@ package org.webpki.webapps.csf_lab;
 import java.io.IOException;
 import java.io.InputStream;
 
-import java.security.PublicKey;
+import java.security.KeyPair;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,19 +27,21 @@ import java.util.logging.Logger;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.webpki.cbor.CBORAsymKeyValidator;
-import org.webpki.cbor.CBORDecoder;
+import org.webpki.cbor.CBORArray;
+import org.webpki.cbor.CBORAsymKeySigner;
+import org.webpki.cbor.CBORFloat;
+import org.webpki.cbor.CBORInt;
 import org.webpki.cbor.CBORMap;
-import org.webpki.cbor.CBORObject;
+import org.webpki.cbor.CBORString;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
-import org.webpki.crypto.CryptoException;
 import org.webpki.crypto.CustomCryptoProvider;
 import org.webpki.crypto.HmacAlgorithms;
 import org.webpki.crypto.SignatureAlgorithms;
 
 import org.webpki.util.IO;
+import org.webpki.util.PEMDecoder;
 import org.webpki.util.UTF8;
 
 import org.webpki.webutil.InitPropertyReader;
@@ -163,23 +165,25 @@ public class CSFService extends InitPropertyReader implements ServletContextList
             //=========================================================================================//
             // Sample signature for verification
             //=========================================================================================//
-            CBORMap demoSignature = 
-                    CBORDecoder.decode(getEmbeddedResource("demo-doc-signature.cbor")).getMap();
-            sampleSignature = demoSignature.toString();
-            samplePublicKey = getEmbeddedResourceString("p256publickey.pem").trim();
-            new CBORAsymKeyValidator(new CBORAsymKeyValidator.KeyLocator() {
+            KeyPair keyPair = PEMDecoder.getKeyPair(
+                UTF8.encode(getEmbeddedResourceString("ed25519privatekey.pem")));
+            sampleSignature = new CBORAsymKeySigner(keyPair.getPrivate())
+                .setPublicKey(keyPair.getPublic())
+                .sign(new CBORMap()
+                    .set(new CBORInt(1), new CBORMap()
+                        .set(new CBORInt(1), new CBORString("Space Shop"))
+                        .set(new CBORInt(2), new CBORString("435.00"))
+                        .set(new CBORInt(3), new CBORString("USD")))
+                    .set(new CBORInt(2), new CBORString("spaceshop.com"))
+                    .set(new CBORInt(3), new CBORString("FR7630002111110020050014382"))
+                    .set(new CBORInt(4), new CBORString("https://banknet2.org"))
+                    .set(new CBORInt(5), new CBORString("05768401"))
+                    .set(new CBORInt(6), new CBORString("2025-04-23T09:34:08-05:00"))
+                    .set(new CBORInt(7), new CBORArray()
+                        .add(new CBORFloat(38.8882))
+                        .add(new CBORFloat(77.0199)))).toString();
 
-                @Override
-                public PublicKey locate(PublicKey publicKey, 
-                                        CBORObject keyId, 
-                                        AsymSignatureAlgorithms algorithm) {
-                    if (publicKey == null) {
-                        throw new CryptoException("No public key");
-                    }
-                    return publicKey;
-                }
-                
-            }).validate(demoSignature);
+            samplePublicKey = getEmbeddedResourceString("ed25519publickey.pem").trim();
 
             //=========================================================================================//
             // Logging?
