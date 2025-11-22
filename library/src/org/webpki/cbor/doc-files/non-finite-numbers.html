@@ -22,6 +22,9 @@ The Java counterparts are represented by {@link java.lang.Double#NaN},
 and {@link java.lang.Double#NEGATIVE_INFINITY} respectively.</div>
 </td></tr>
 <tr><td style='text-align:center'><code>COMPLETE</code></td><td>All floating-point numbers are accepted.
+<div style='margin-top:0.5em'>Note that the Java runtime does not generate
+non-finite numbers beyond those supported by <code>EXTENDED</code>.
+Also see: <a href='#payload-option'>Payload Option</a>.</div>
 </td></tr>
 </table></div>
 Non-supported items cause a {@link CBORException} to be thrown.
