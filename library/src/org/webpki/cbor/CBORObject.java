@@ -182,6 +182,30 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * Get CBOR <code>int</code> value.
      * <p>
      * This method requires that the object is a
+     * {@link CBORInt} and has a value ranging from JavaScript's 
+     * <code>Number.MIN_SAFE_INTEGER</code> (<code>-2<sup>53</sup>+1</code>) to
+     * <code>Number.MAX_SAFE_INTEGER</code> (<code>2<sup>53</sup>-1</code>).
+     * </p>
+     * <p>
+     * Since 53-bit integers are specific to JavaScript, this method
+     * should be used with great caution in cross-platform scenarios.
+     * </p>
+     * 
+     * @return <code>long</code>
+     * @throws CBORException
+     */
+    public long getInt53() {
+        long value = getInt64();
+        if (value > MAX_SAFE_JS_INTEGER || value < MIN_SAFE_JS_INTEGER) {
+            integerRangeError("Int53");
+        }
+        return value;
+    }
+
+    /**
+     * Get CBOR <code>int</code> value.
+     * <p>
+     * This method requires that the object is a
      * {@link CBORInt} and has a value ranging from
      * <code>-0x80000000</code> to 
      * <code>0x7fffffff</code>.
@@ -463,7 +487,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      */
     public GregorianCalendar getEpochTime() {
         long timeInMillis = this instanceof CBORInt ? 
-                                  getInt64() * 1000 : Math.round(getFloat64() * 1000);
+                                  getInt53() * 1000 : Math.round(getFloat64() * 1000);
         GregorianCalendar gregorianCalendar = new GregorianCalendar();
         gregorianCalendar.setTimeInMillis(timeInMillis);
         return gregorianCalendar;

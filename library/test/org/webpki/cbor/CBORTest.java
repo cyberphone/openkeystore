@@ -122,6 +122,7 @@ public class CBORTest {
     enum IntegerVariations {
         INT64  (false), 
         UINT64 (true),
+        INT53  (false), 
         INT32  (false), 
         UINT32 (true),
         INT16  (false), 
@@ -246,6 +247,9 @@ public class CBORTest {
                     break;
                 case UINT32:
                     v = ucheck(res.getUint32(), 0xffffffffL);
+                    break;
+                case INT53:
+                    v = res.getInt53();
                     break;
                 case INT64:
                     v = res.getInt64();
@@ -514,6 +518,11 @@ public class CBORTest {
         integerTest("18446744073709551615",  IntegerVariations.UINT64, false);
         integerTest("18446744073709551616",  IntegerVariations.UINT64, true);
         integerTest("-1",                    IntegerVariations.UINT64, true);
+
+        integerTest("-9007199254740991", IntegerVariations.INT53, false);
+        integerTest("-9007199254740992", IntegerVariations.INT53, true);
+        integerTest("9007199254740991",  IntegerVariations.INT53, false);
+        integerTest("9007199254740992",  IntegerVariations.INT53, true);
 
         integerTest("-2147483648", IntegerVariations.INT32, false);
         integerTest("-2147483649", IntegerVariations.INT32, true);
