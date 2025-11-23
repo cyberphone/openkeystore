@@ -77,7 +77,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }
 
     static void integerRangeError(String integerType) {
-        cborError(STDERR_INT_RANGE + integerType);
+        cborError(STDERR_INT_RANGE + integerType + "\"");
     }
 
     byte[] encodeTagAndValue(int tag, int length, long value) {
@@ -815,7 +815,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }
 
     static final String STDERR_INT_RANGE =
-            "CBOR integer does not fit a Java \"";
+            "CBOR integer does not fit \"";
     
     static final String STDERR_ARGUMENT_IS_NULL =
             "Argument \"null\" is not permitted";
