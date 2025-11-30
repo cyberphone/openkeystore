@@ -46,7 +46,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 
-import org.bouncycastle.util.encoders.Hex;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -267,7 +266,7 @@ public class CBORTest {
                 String dataType = variation.toString().toLowerCase();
                 dataType = dataType.substring(0,1).toUpperCase() +
                     dataType.substring(1);
-                checkException(e, CBORObject.STDERR_INT_RANGE + dataType);
+                checkException(e, CBORObject.STDERR_OUT_OF_RANGE + dataType);
             }
             assertTrue("Shouldn't throw: " + value + e.getMessage(), mustFail);
         }
@@ -375,7 +374,7 @@ public class CBORTest {
             assertTrue("Comp", v == f);
         } catch (Exception e) {
             assertTrue("Ok fail", mustFail);
-            checkException(e, CBORObject.STDERR_FLOAT_RANGE);
+            checkException(e, CBORObject.STDERR_OUT_OF_RANGE);
         }
     }
 
@@ -389,7 +388,7 @@ public class CBORTest {
             assertTrue("Comp", v == f);
         } catch (Exception e) {
             assertTrue("Ok fail", mustFail);
-            checkException(e, CBORObject.STDERR_FLOAT_RANGE);
+            checkException(e, CBORObject.STDERR_OUT_OF_RANGE);
         }
     }
 
@@ -2595,7 +2594,7 @@ public class CBORTest {
 
     void badDate(String hexBor, String err) {
         try {
-            CBORDecoder.decode(Hex.decode(hexBor));
+            parseCborHex(hexBor);
             fail("must not");
         } catch (Exception e) {
             checkException(e, err);
@@ -2603,9 +2602,9 @@ public class CBORTest {
     }
 
     void oneEpoch(String hexBor, double epoch, String err) {
-        assertTrue("epoch1", CBORDecoder.decode(Hex.decode(hexBor))
+        assertTrue("epoch1", parseCborHex(hexBor)
             .getEpochTime().getTimeInMillis() == epoch * 1000);
-        CBORObject date = CBORDecoder.decode(Hex.decode(hexBor));
+        CBORObject date = parseCborHex(hexBor);
         try {
             date.checkForUnread();
             fail("must not");
@@ -2616,6 +2615,20 @@ public class CBORTest {
         date.checkForUnread();
     }
 
+    void oneBadEpoch(String hexBor) {
+        try {
+            parseCborHex(hexBor).getEpochTime();
+            fail("must not");
+        } catch (Exception e) {
+            checkException(e, CBORObject.STDERR_OUT_OF_RANGE);
+        }
+    }
+
+    void badEpoch(String hexBor, double epoch) {
+        oneBadEpoch(hexBor);
+        oneBadEpoch(HexaDecimal.encode(new CBORFloat(epoch).encode()));
+    }
+
     @Test
     public void dateSystems() {
         oneDateTime(1740060548000l, "2025-02-20T14:09:08+00:00");
@@ -2624,12 +2637,21 @@ public class CBORTest {
         oneDateTime(1740060548000l, "2025-02-20T15:39:08+01:30");
         oneDateTime(1740060548000l, "2025-02-20T12:09:08-02:00");
         oneDateTime(1740060548000l, "2025-02-20T11:39:08-02:30");
+      //  oneDateTime(Math.round(MAX_EPOCH_IN_SECONDS * 1000), "9999-12-31T23:59:59Z");
         badDate("c001", "Is type: CBORInt, requested: CBORString");
         badDate("c06135", "\"dateTime\" syntax error: 5");
         badDate("c16135", "Is type: CBORString, requested: CBORFloat");
         oneEpoch("FB41D9EDCDE113645A", 1740060548.303, "Data of type=CBORFloat");
         oneEpoch("c1FB41D9EDCDE113645A", 1740060548.303, "Tagged object 1 of type=CBORFloat");
+        oneEpoch("1b0000003afff4417f", MAX_EPOCH_IN_SECONDS, "Data of type=CBORInt");
         oneEpoch("00", 0, "Data of type=CBORInt");
+
+        badEpoch("1b0000003afff44180", 253402300800l);
+
+        assertTrue("dt=ep", 
+            CBORDecoder.decode(new CBORString("9999-12-31T23:59:59Z").encode()).getDateTime().getTimeInMillis()
+               == Math.round(MAX_EPOCH_IN_SECONDS * 1000)); 
+
     }
 
     @Test

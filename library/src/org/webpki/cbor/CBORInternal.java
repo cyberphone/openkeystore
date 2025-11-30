@@ -72,8 +72,10 @@ class CBORInternal {
     static final long UINT16_MASK             = 0xffffffffffff0000L;
     static final long UINT8_MASK              = 0xffffffffffffff00L;
 
-    static final long MAX_SAFE_JS_INTEGER     = 0x1fffffffffffffL;
+    static final long MAX_SAFE_JS_INTEGER     = 9007199254740991L;
     static final long MIN_SAFE_JS_INTEGER     = -MAX_SAFE_JS_INTEGER;
+
+    static final double MAX_EPOCH_IN_SECONDS  = 253402300799.0; // 9999-12-31T23:59:59Z
     
     static final int  MAX_ERROR_MESSAGE       = 100;
 
