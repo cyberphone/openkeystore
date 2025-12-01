@@ -39,7 +39,7 @@ import org.webpki.util.HexaDecimal;
 // Source configured for JDK 17 and upwards.
 
 /**
- * Support methods for "OKP" [<a href='https://datatracker.ietf.org/doc/html/rfc8037'>RFC&nbsp;8037</a>].
+ * Support methods for "OKP" [<a href='https://datatracker.ietf.org/doc/html/rfc8037'>RFC8037</a>].
  */ 
 public class OkpSupport {
     

@@ -45,10 +45,10 @@ public class HomeServlet extends CoreRequestServlet {
             "<div style='padding-top:15pt'>This service permits testing and " +
             "debugging CBOR " +
             "[<a href='https://www.rfc-editor.org/rfc/rfc8949.html' " +
-            "target='_blank' title='cbor'>RFC&nbsp;8949</a>] based systems " +
+            "target='_blank' title='cbor'>RFC8949</a>] based systems " +
             "using digital signatures. Unlike COSE " +
             "[<a href='https://www.rfc-editor.org/rfc/rfc9052.html' " +
-            "target='_blank' title='cose'>RFC&nbsp;9052</a>], " +
+            "target='_blank' title='cose'>RFC9052</a>], " +
             "CSF utilizes " + DETERMINISTIC_LINK + " enabling signatures " +
             "to become a part of the application data, rather than embedding " +
             "such data in signatures.  For detailed technical information " +

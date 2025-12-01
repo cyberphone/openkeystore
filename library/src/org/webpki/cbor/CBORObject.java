@@ -30,7 +30,7 @@ import static org.webpki.cbor.CBORInternal.*;
  * <p>
  * In this implementation "object" should be regarded as 
  * equivalent to the  
- * CBOR [<a href='https://www.rfc-editor.org/rfc/rfc8949.html' class='webpkilink'>RFC&nbsp;8949</a>]
+ * CBOR [<a href='https://www.rfc-editor.org/rfc/rfc8949.html' class='webpkilink'>RFC8949</a>]
  * term, "data item".
  * </p>
  */
@@ -503,7 +503,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * <p>
      * This method requires that the object is a 
      * {@link CBORString} that is compatible with ISO date/time
-     * [<a href='https://www.rfc-editor.org/rfc/rfc3339.html' class='webpkilink'>RFC&nbsp;3339</a>], 
+     * [<a href='https://www.rfc-editor.org/rfc/rfc3339.html' class='webpkilink'>RFC3339</a>], 
      * otherwise a {@link CBORException} is thrown.
      * </p>
      * <p>

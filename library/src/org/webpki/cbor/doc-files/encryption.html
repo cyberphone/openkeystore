@@ -222,7 +222,7 @@ The result from step #4 is the decrypted content.
 <h2>4. Algorithms</h2>
 <h3 id='cef-kdf'>4.1. Key Derivation Function (KDF)</h3>
 ECDH based key encryption schemes <b>must</b> use a Key Derivation Function (KDF) according to
-HKDF [<a href='https://www.rfc-editor.org/rfc/rfc5869.html'>RFC&nbsp;5869</a>], profiled as follows:
+HKDF [<a href='https://www.rfc-editor.org/rfc/rfc5869.html'>RFC5869</a>], profiled as follows:
 <ul>
 <li class='webpkilistspacing'><code>hmac</code>: The HKDF implementation <b>must</b> use HMAC with SHA-256</li>
 <li class='webpkilistspacing'><code>salt</code>: N/A. The default extract mode handling <b>must</b> be implemented.</li>
