@@ -474,15 +474,23 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }
 
     /**
-     * Get <code>IEEE</code> <code>Epoch</code> time object.
-     * <p>
-     * This method requires that the object is a 
-     * {@link CBORInt} or {@link CBORFloat}, 
-     * otherwise a {@link CBORException} is thrown.
-     * </p>
-     * <p>
-     * <code>Epoch</code> values must be within <code>0</code> to <code>253402300799</code> (<code>9999-12-31T23:59:59Z</code>). 
-     * </p>
+     * Get <code>EpochTime</code> object.
+     *
+<div style='margin-top:0.5em'>
+This method performs a
+{@link #getInt64()} or {@link #getFloat64()} and then uses
+the returned number to initiate a JavaScript <kbd>Date</kbd> object.</div>
+<div style='margin-top:0.5em'>
+A {@link CBORException} will be thrown if not all of the following conditions are met:
+<ul style='padding:0;margin:0 0 0.5em 1.2em'>
+<li style='margin-top:0'>the underlying object
+is a {@link CBORInt} or {@link CBORFloat}.</li>
+<li>the Epoch 
+[<a href='https://pubs.opengroup.org/onlinepubs/9799919799/basedefs/V1_chap04.html#tag_04_19'
+ class='webpkilink'>TIME</a>] object is within:
+<span style='white-space:nowrap'><code>0</code> (<code>"1970-01-01T00:00:00Z"</code>)</span> to
+<span style='white-space:nowrap'><code>253402300799</code> (<code>"9999-12-31T23:59:59Z"</code>)</span>.</li>
+</ul>
      * 
      * @return <code>GregorianCalendar</code>
      * @see CBORTag#getEpochTime()
@@ -499,16 +507,25 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }
 
     /**
-     * Get <code>ISO</code> <code>DateTime</code> object.
-     * <p>
-     * This method requires that the object is a 
-     * {@link CBORString} that is compatible with ISO date/time
-     * [<a href='https://www.rfc-editor.org/rfc/rfc3339.html' class='webpkilink'>RFC3339</a>], 
-     * otherwise a {@link CBORException} is thrown.
-     * </p>
-     * <p>
-     * <code>DateTime</code> objects must not be negative or exceed <code>"9999-12-31T23:59:59Z"</code>. 
-     * </p>
+     * Get <code>DateTime</code> object.
+     * 
+<div style='margin-top:0.5em'>
+This method performs a {@link #getString()} and then uses
+the returned string to initiate a JavaScript <kbd>Date</kbd> object.</div>
+<div style='margin-top:0.5em'>
+A {@link CBORException} will be thrown if not all of the following conditions are met:
+<ul style='padding:0;margin:0 0 0.5em 1.2em'>
+<li style='margin-top:0'>the underlying object is a
+{@link CBORString}.</li>
+<li>the string matches the ISO date/time format described
+in section&nbsp;5.6 of
+[<a href='https://www.rfc-editor.org/rfc/rfc3339.html#section-5.6' class='webpkilink'>RFC3339</a>].</li>
+<li>the <i>optional</i> sub-second field (<code>.nnn</code>) features <i>less</i> than ten digits.</li>
+<li>the date/time object is within:
+<code style='white-space:nowrap'>"0000-01-01T00:00:00Z"</code> to
+<code style='white-space:nowrap'>"9999-12-31T23:59:59Z"</code>.</li>
+</ul>
+</div>
      * 
      * @return <code>GregorianCalendar</code>
      * @throws CBORException

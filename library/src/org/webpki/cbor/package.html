@@ -16,7 +16,7 @@ notation:
 <th>Java&nbsp;Mapping</th><th>Notes</th></tr>
 <tr style='text-align:center'><td><code>int</code></td><td>{@link CBORInt}</td><td><code>long</code></td><td><code>1</code></td></tr>
 <tr style='text-align:center'><td><code>bigint</code></td><td>{@link CBORBigInt}</td><td><code>BigInteger</code></td><td><code>1</code></td></tr>
-<tr style='text-align:center'><td rowspan='2'><code>float</code></td><td>{@link CBORFloat}</td><td><code>double</code></td><td><code>2</code></td></tr>
+<tr style='text-align:center'><td rowspan='2'><code>float</code></td><td>{@link CBORFloat}</td><td><code>double</code></td><td><code>2</code>, <code>3</code></td></tr>
 <tr style='text-align:center'><td>{@link CBORNonFinite}</td><td><code>long</code></td><td><code>3</code></td></tr>
 <tr style='text-align:center'><td><code>bstr</code></td><td>{@link CBORBytes}</td><td><code>byte[]</code></td><td></td></tr>
 <tr style='text-align:center'><td><code>tstr</code></td><td>{@link CBORString}</td><td><code>String</code></td><td></td></tr>
@@ -92,7 +92,7 @@ This implementation performs <i>strict type checking</i>.
 That is, if an application expects a <code>CBOR</code> integer and calls
 {@link CBORObject#getInt32()}, an exception will be thrown
 if the referenced object is not an instance of {@link CBORInt}, or 
-if the <code>CBOR</code> integer cannot be represented as a <code>32</code>-bit two-complement value. 
+if the <code>CBOR</code> integer is out of range for signed 32-bit objects. 
 </p>
 <p>
 However, you typically also want to verify

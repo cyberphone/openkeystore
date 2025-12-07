@@ -74,7 +74,7 @@ public class CBORDecoder {
     * A zero (0) sets the decoder default mode.
     * The options are defined by the following constants:
     * </p>
-    * <div style='margin-top:0.3em'>{@link CBORDecoder#SEQUENCE_MODE}:</div>
+    * <div id='Option-SEQUENCE_MODE' style='margin-top:0.3em'>{@link CBORDecoder#SEQUENCE_MODE}:</div>
     * <div style='padding:0.2em 0 0 1.2em'>If the {@link CBORDecoder#SEQUENCE_MODE}
     * option is defined, the following apply:
     * <ul style='padding:0;margin:0 0 0.5em 1.2em'>
@@ -86,7 +86,7 @@ public class CBORDecoder {
     * Note that data that has not yet been decoded, is not verified for correctness.
     * <div style='margin-top:0.5em'>See also {@link CBORArray#encodeAsSequence}.</div></div>
     *
-    * <div style='margin-top:0.8em'>{@link CBORDecoder#LENIENT_MAP_DECODING}:</div>
+    * <div id='Option-LENIENT_MAP_DECODING' style='margin-top:0.8em'>{@link CBORDecoder#LENIENT_MAP_DECODING}:</div>
     * <div style='padding:0.2em 0 0 1.2em'>By default, the decoder requires
     * that CBOR maps conform to the
     * <a href='package-summary.html#deterministic-encoding' class='webpkilink'>Deterministic&nbsp;Encoding</a> 
@@ -95,16 +95,17 @@ public class CBORDecoder {
     * accept CBOR maps with arbitrary key ordering.
     * Note that duplicate keys still cause a {@link CBORException} to be thrown.</div></div>
     *
-    * <div style='margin-top:0.8em'>{@link CBORDecoder#LENIENT_NUMBER_DECODING}:</div>
+    * <div id='Option-LENIENT_NUMBER_DECODING' style='margin-top:0.8em'>{@link CBORDecoder#LENIENT_NUMBER_DECODING}:</div>
     * <div style='padding:0.2em 0 0 1.2em'>By default, the decoder requires
     * that CBOR numbers conform to the
     * <a href='package-summary.html#deterministic-encoding' class='webpkilink'>Deterministic&nbsp;Encoding</a> rules.
     * <div>The {@link CBORDecoder#LENIENT_NUMBER_DECODING} option makes the decoder
-    * accept different representations of CBOR <code>int</code>, <code>bigint</code>,
-    * and <code>float</code> items, only limited by RFC&nbsp;8949.</div></div>
+    * accept different representations of CBOR <code>int/bigint</code>
+    * and <code>float</code> objects, only limited by
+    * [<a href='https://www.rfc-editor.org/rfc/rfc8949.html' class='webpkilink'>RFC8949</a>].</div></div>
     * <p>
     * Exceeding <code>maxInputLength</code> during decoding throws a {@link CBORException}.  It is
-    * <i>recommendable</i> setting this as low as possible, since malformed
+    * <i>recommendable</i> setting this as low as possible since malformed
     * CBOR objects may request any amount of memory.
     * </p>
     * @param inputStream Stream holding CBOR data. 
