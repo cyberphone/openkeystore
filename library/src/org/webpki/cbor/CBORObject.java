@@ -477,9 +477,9 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * Get <code>EpochTime</code> object.
      *
 <div style='margin-top:0.5em'>
-This method performs a
-{@link #getInt64()} or {@link #getFloat64()} and then uses
-the returned number to initiate a JavaScript <kbd>Date</kbd> object.</div>
+Depending on the type of the current object, this method performs a
+{@link #getInt64()} or a {@link #getFloat64()}.
+The returned number is subsequently used to initiate a JavaScript <kbd>Date</kbd> object.</div>
 <div style='margin-top:0.5em'>
 A {@link CBORException} will be thrown if not all of the following conditions are met:
 <ul style='padding:0;margin:0 0 0.5em 1.2em'>
@@ -510,8 +510,8 @@ is a {@link CBORInt} or {@link CBORFloat}.</li>
      * Get <code>DateTime</code> object.
      * 
 <div style='margin-top:0.5em'>
-This method performs a {@link #getString()} and then uses
-the returned string to initiate a JavaScript <kbd>Date</kbd> object.</div>
+This method performs a {@link #getString()}.
+The returned string is subsequently used to initiate a JavaScript <kbd>Date</kbd> object.</div>
 <div style='margin-top:0.5em'>
 A {@link CBORException} will be thrown if not all of the following conditions are met:
 <ul style='padding:0;margin:0 0 0.5em 1.2em'>
