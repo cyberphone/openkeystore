@@ -481,20 +481,21 @@ Depending on the type of the current object, this method performs a
 {@link #getInt64()} or a {@link #getFloat64()}.
 The returned number is subsequently used to initiate a JavaScript <kbd>Date</kbd> object.</div>
 <div style='margin-top:0.5em'>
-A {@link CBORException} will be thrown if not all of the following conditions are met:
+If not <i>all</i> of the following conditions are met,
+a {@link CBORException} is thrown:
 <ul style='padding:0;margin:0 0 0.5em 1.2em'>
-<li style='margin-top:0'>the underlying object
+<li style='margin-top:0'>The underlying object
 is a {@link CBORInt} or {@link CBORFloat}.</li>
-<li>the Epoch 
+<li>The Epoch 
 [<a href='https://pubs.opengroup.org/onlinepubs/9799919799/basedefs/V1_chap04.html#tag_04_19'
- class='webpkilink'>TIME</a>] object is within:
+ class='webpkilink'>TIME</a>] object is within the range:
 <span style='white-space:nowrap'><code>0</code> (<code>"1970-01-01T00:00:00Z"</code>)</span> to
 <span style='white-space:nowrap'><code>253402300799</code> (<code>"9999-12-31T23:59:59Z"</code>)</span>.</li>
 </ul>
-     * 
-     * @return <code>GregorianCalendar</code>
-     * @see CBORTag#getEpochTime()
-     * @throws CBORException
+    @return <code>GregorianCalendar</code>
+    @see CBORTag#getEpochTime()
+    @see CBORUtil#createEpochTime(GregorianCalendar, boolean)
+    @throws CBORException
      */
     public GregorianCalendar getEpochTime() {
         double epochSeconds = this instanceof CBORInt ? (double) getInt64() : getFloat64();
@@ -513,15 +514,15 @@ is a {@link CBORInt} or {@link CBORFloat}.</li>
 This method performs a {@link #getString()}.
 The returned string is subsequently used to initiate a JavaScript <kbd>Date</kbd> object.</div>
 <div style='margin-top:0.5em'>
-A {@link CBORException} will be thrown if not all of the following conditions are met:
+If not <i>all</i> of the following conditions are met, a {@link CBORException} is thrown:
 <ul style='padding:0;margin:0 0 0.5em 1.2em'>
-<li style='margin-top:0'>the underlying object is a
+<li style='margin-top:0'>The underlying object is a
 {@link CBORString}.</li>
-<li>the string matches the ISO date/time format described
+<li>The string matches the ISO date/time format described
 in section&nbsp;5.6 of
 [<a href='https://www.rfc-editor.org/rfc/rfc3339.html#section-5.6' class='webpkilink'>RFC3339</a>].</li>
-<li>the <i>optional</i> sub-second field (<code>.nnn</code>) features <i>less</i> than ten digits.</li>
-<li>the date/time object is within:
+<li>The <i>optional</i> sub-second field (<code>.nnn</code>) features <i>less</i> than ten digits.</li>
+<li>The date/time object is within the range:
 <code style='white-space:nowrap'>"0000-01-01T00:00:00Z"</code> to
 <code style='white-space:nowrap'>"9999-12-31T23:59:59Z"</code>.</li>
 </ul>
@@ -531,6 +532,7 @@ in section&nbsp;5.6 of
      * @throws CBORException
      * @throws IllegalArgumentException
      * @see CBORTag#getDateTime()
+     * @see CBORUtil#createDateTime(GregorianCalendar, boolean, boolean)
      */
     public GregorianCalendar getDateTime() {
         return ISODateTime.decode(getString(), ISODateTime.COMPLETE);
