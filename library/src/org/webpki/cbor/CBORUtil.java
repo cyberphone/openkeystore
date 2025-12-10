@@ -1,6 +1,10 @@
 package org.webpki.cbor;
 
-import java.util.GregorianCalendar;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+
+import static org.webpki.cbor.CBORInternal.*;
 
 public class CBORUtil {
 
@@ -22,7 +26,7 @@ a {@link CBORException} is thrown .</div>
 If <code>millis</code> is <code>true</code> the date/time string will feature
 milliseconds (<code>.nnn</code>) as well.</div>
 <div style='margin-top:0.5em'>Sample code:</div>
-<div style='margin:0.3em 0 0 1.2em'><code>let iso = CBORUtil.createDateTime(new Date(), true, false);<br>
+<div style='margin:0.3em 0 0 1.2em'><code>CBORString iso = CBORUtil.createDateTime(Instant.now(), true, false);<br>
 System.out.println(iso.toString());<br>
 <span style='color:#007fdd'>"2025-12-05T13:55:42.418+01:00"</span></code></div>
 @see CBORObject#getDateTime()
@@ -46,8 +50,26 @@ else the local time followed by the <code>UTC</code> offset
 @return {@link CBORString}
 @throws CBORException
     */
-    public static CBORString createDateTime(GregorianCalendar instant, boolean millis, boolean utc) {
-        return null;
+    public static CBORString createDateTime(Instant instant, boolean millis, boolean utc) {
+        long epochMillis = instantDateTimeToMillisCheck(instant);
+        millis = millisCheck(epochMillis, millis);
+        if (!millis) {
+            long remainder = epochMillis % 1000;
+            if (remainder >= 500) {
+                epochMillis += 1000;
+            }
+            epochMillis -= remainder;
+        }
+        String dateTime = Instant.ofEpochMilli(epochMillis).atZone(ZoneId.systemDefault())
+            .format(utc ? DateTimeFormatter.ISO_INSTANT : DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        if (millis && utc) {
+            int i = dateTime.length();
+            while (dateTime.charAt(--i - 1) == '0') {
+                ;
+            }
+            dateTime = dateTime.substring(0, i) + "Z";
+        }
+        return new CBORString(dateTime);
     }
 
     /**
@@ -67,7 +89,7 @@ If <code>millis</code> is <code>true</code> a {@link CBORFloat}
 object holding seconds with a milliseconds fraction will be created,
 else a {@link CBORInt} object holding seconds will be created.</div>
 <div style='margin-top:0.5em'>Sample code:</div>
-<div style='margin:0.3em 0 0 1.2em'><code>CBORObject epoch = CBORUtil.createEpochTime(new Date(), false);<br>
+<div style='margin:0.3em 0 0 1.2em'><code>CBORObject epoch = CBORUtil.createEpochTime(Instant.now(), false);<br>
 System.out.println(epoch.toString());<br>
 <span style='color:#007fdd'>1764939916</span></code></div>
 @see CBORObject#getEpochTime()
@@ -86,8 +108,13 @@ add a second to the created time object.</div><div>
 @return {@link CBORObject}
 @throws CBORException
     */
-    public static CBORObject createEpochTime(GregorianCalendar instant, boolean millis) {
-        return null;
+    public static CBORObject createEpochTime(Instant instant, boolean millis) {
+        long epochMillis = epochCheck(instant.toEpochMilli());
+        millis = millisCheck(epochMillis, millis);
+        epochMillis = timeRound(epochMillis, millis);
+        return millis ? new CBORFloat((double)epochMillis / 1000) 
+                                    : 
+                        new CBORInt(epochMillis / 1000);
     }
 
     public static byte[] concatByteArrays(byte[]...listOfArrays) {
@@ -133,4 +160,42 @@ add a second to the created time object.</div><div>
         }
         return reversed << (fieldWidth - bitCount);
     }
+
+    static void epochOutOfRange() {
+        cborError(STDERR_EPOCH_OUT_OF_RANGE);
+    }
+
+    static long epochCheck(long epochMillis) {
+        if (epochMillis < 0 || epochMillis > MAX_INSTANT_IN_MILLIS) {
+            epochOutOfRange();
+        }
+        return epochMillis;
+    }
+
+    static long instantDateTimeToMillisCheck(Instant instant) {
+        long dateTimeMillis = instant.toEpochMilli();
+        if (dateTimeMillis < MIN_INSTANT_IN_MILLIS || dateTimeMillis > MAX_INSTANT_IN_MILLIS) {
+            cborError(STDERR_DATETIME_OUT_OF_RANGE);
+        }
+        return dateTimeMillis;
+    }
+
+    static boolean millisCheck(long epochMillis, boolean millis) {
+        return epochMillis % 1000 == 0 ? false : millis;
+    }
+
+    static long timeRound(long epochMillis, boolean millis) {
+        if (!millis) {
+            if (epochMillis % 1000 > 500) {
+                epochMillis += 1000;
+            }
+        }
+        return epochMillis;
+    }
+
+    static final String STDERR_EPOCH_OUT_OF_RANGE =
+            "Epoch outside the range 0 to 253402300799";
+
+    static final String STDERR_DATETIME_OUT_OF_RANGE =
+            "DateTime out of range";
 }

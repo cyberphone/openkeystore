@@ -2569,21 +2569,21 @@ public class CBORTest {
     }
 
     void oneDateTime(long epoch, String isoString) {
-        assertTrue("date1", new CBORString(isoString).getDateTime().getTimeInMillis() == epoch);
+        assertTrue("date1", new CBORString(isoString).getDateTime().toEpochMilli() == epoch);
         CBORObject cbor = CBORDecoder.decode(new CBORString(isoString).encode());
-        assertTrue("date2", cbor.getDateTime().getTimeInMillis() == epoch);
+        assertTrue("date2", cbor.getDateTime().toEpochMilli() == epoch);
         assertTrue("date3", new CBORTag(0l, new CBORString(isoString))
-            .getDateTime().getTimeInMillis() == epoch);
+            .getDateTime().toEpochMilli() == epoch);
         assertTrue("date3", new CBORTag(1l, new CBORInt(epoch / 1000))
-            .getEpochTime().getTimeInMillis() == epoch);
+            .getEpochTime().toEpochMilli() == epoch);
         assertTrue("date31", new CBORInt(epoch / 1000)
-            .getEpochTime().getTimeInMillis() == epoch);
+            .getEpochTime().toEpochMilli() == epoch);
         assertTrue("date4", new CBORTag(1l, new CBORFloat(((double)epoch) / 1000))
-            .getEpochTime().getTimeInMillis() == epoch);
+            .getEpochTime().toEpochMilli() == epoch);
         assertTrue("date5", new CBORTag(1l, new CBORFloat(((double)epoch + 3.0) / 1000))
-            .getEpochTime().getTimeInMillis() == epoch + 3);
+            .getEpochTime().toEpochMilli() == epoch + 3);
         assertTrue("date5", new CBORFloat(((double)epoch - 3.0) / 1000)
-            .getEpochTime().getTimeInMillis() == epoch - 3);
+            .getEpochTime().toEpochMilli() == epoch - 3);
     }
 
     @Test
@@ -2603,7 +2603,7 @@ public class CBORTest {
 
     void oneEpoch(String hexBor, double epoch, String err) {
         assertTrue("epoch1", parseCborHex(hexBor)
-            .getEpochTime().getTimeInMillis() == epoch * 1000);
+            .getEpochTime().toEpochMilli() == epoch * 1000);
         CBORObject date = parseCborHex(hexBor);
         try {
             date.checkForUnread();
@@ -2620,7 +2620,7 @@ public class CBORTest {
             parseCborHex(hexBor).getEpochTime();
             fail("must not");
         } catch (Exception e) {
-            checkException(e, CBORObject.STDERR_OUT_OF_RANGE);
+            checkException(e, CBORUtil.STDERR_EPOCH_OUT_OF_RANGE);
         }
     }
 
@@ -2639,18 +2639,18 @@ public class CBORTest {
         oneDateTime(1740060548000l, "2025-02-20T11:39:08-02:30");
       //  oneDateTime(Math.round(MAX_EPOCH_IN_SECONDS * 1000), "9999-12-31T23:59:59Z");
         badDate("c001", "Is type: CBORInt, requested: CBORString");
-        badDate("c06135", "\"dateTime\" syntax error: 5");
+        badDate("c06135", "\"DateTime\" syntax error: 5");
         badDate("c16135", "Is type: CBORString, requested: CBORFloat");
         oneEpoch("FB41D9EDCDE113645A", 1740060548.303, "Data of type=CBORFloat");
         oneEpoch("c1FB41D9EDCDE113645A", 1740060548.303, "Tagged object 1 of type=CBORFloat");
-        oneEpoch("1b0000003afff4417f", MAX_EPOCH_IN_SECONDS, "Data of type=CBORInt");
+        oneEpoch("1b0000003afff4417f", MAX_INSTANT_IN_MILLIS / 1000, "Data of type=CBORInt");
         oneEpoch("00", 0, "Data of type=CBORInt");
 
         badEpoch("1b0000003afff44180", 253402300800l);
 
         assertTrue("dt=ep", 
-            CBORDecoder.decode(new CBORString("9999-12-31T23:59:59Z").encode()).getDateTime().getTimeInMillis()
-               == Math.round(MAX_EPOCH_IN_SECONDS * 1000)); 
+            CBORDecoder.decode(new CBORString("9999-12-31T23:59:59Z").encode()).getDateTime().toEpochMilli()
+               == MAX_INSTANT_IN_MILLIS); 
 
     }
 

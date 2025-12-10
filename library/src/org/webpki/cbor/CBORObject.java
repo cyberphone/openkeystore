@@ -18,10 +18,12 @@ package org.webpki.cbor;
 
 import java.math.BigInteger;
 
-import java.util.Arrays;
-import java.util.GregorianCalendar;
+import java.time.Instant;
+import java.time.ZonedDateTime;
 
-import org.webpki.util.ISODateTime;
+import java.util.Arrays;
+
+import java.util.regex.Pattern;
 
 import static org.webpki.cbor.CBORInternal.*;
 
@@ -492,21 +494,21 @@ is a {@link CBORInt} or {@link CBORFloat}.</li>
 <span style='white-space:nowrap'><code>0</code> (<code>"1970-01-01T00:00:00Z"</code>)</span> to
 <span style='white-space:nowrap'><code>253402300799</code> (<code>"9999-12-31T23:59:59Z"</code>)</span>.</li>
 </ul>
-    @return <code>GregorianCalendar</code>
+    @return {@link Instant}
     @see CBORTag#getEpochTime()
-    @see CBORUtil#createEpochTime(GregorianCalendar, boolean)
+    @see CBORUtil#createEpochTime(Instant, boolean)
     @throws CBORException
      */
-    public GregorianCalendar getEpochTime() {
+    public Instant getEpochTime() {
         double epochSeconds = this instanceof CBORInt ? (double) getInt64() : getFloat64();
-        if (epochSeconds < 0 || epochSeconds > MAX_EPOCH_IN_SECONDS) {
-            outOfRangeError("Epoch");
+        if (epochSeconds < 0 || epochSeconds > (MAX_INSTANT_IN_MILLIS / 1000L)) {
+            CBORUtil.epochOutOfRange();
         }
-        GregorianCalendar gregorianCalendar = new GregorianCalendar();
-        gregorianCalendar.setTimeInMillis(Math.round(epochSeconds * 1000));
-        return gregorianCalendar;
+        return Instant.ofEpochMilli(Math.round(epochSeconds * 1000));
     }
 
+    static final Pattern RFC3339_5_6_PATTERN = Pattern.compile(
+            "(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2})(\\.\\d{1,9})?([+-]\\d{2}:\\d{2}|Z)");
     /**
      * Get <code>DateTime</code> object.
      * 
@@ -528,14 +530,20 @@ in section&nbsp;5.6 of
 </ul>
 </div>
      * 
-     * @return <code>GregorianCalendar</code>
+     * @return {@link Instant}
      * @throws CBORException
      * @throws IllegalArgumentException
      * @see CBORTag#getDateTime()
-     * @see CBORUtil#createDateTime(GregorianCalendar, boolean, boolean)
+     * @see CBORUtil#createDateTime(Instant, boolean, boolean)
      */
-    public GregorianCalendar getDateTime() {
-        return ISODateTime.decode(getString(), ISODateTime.COMPLETE);
+    public Instant getDateTime() {
+        String dateTime = getString();
+        if (!RFC3339_5_6_PATTERN.matcher(dateTime).matches()) {
+            throw new IllegalArgumentException("\"DateTime\" syntax error: " + dateTime);
+        }
+        Instant instant = ZonedDateTime.parse(dateTime).toInstant();
+        CBORUtil.instantDateTimeToMillisCheck(instant);
+        return instant;
     }
 
     /**
