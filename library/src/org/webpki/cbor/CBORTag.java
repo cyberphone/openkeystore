@@ -169,7 +169,7 @@ public class CBORTag extends CBORObject {
      * This method assumes that a valid CBOR tag 0 has been found, 
      * otherwise a {@link CBORException} is thrown.
      * </p>
-     * @return <code>GregorianCalendar</code>
+     * @return {@link Instant}
      * @see CBORObject#getDateTime()
      * @throws CBORException
      */
@@ -189,7 +189,7 @@ public class CBORTag extends CBORObject {
      * This method assumes that a valid CBOR tag 1 has been found, 
      * otherwise a {@link CBORException} is thrown.
      * </p>
-     * @return <code>GregorianCalendar</code>
+     * @return {@link Instant}
      * @see CBORObject#getEpochTime()
      * @throws CBORException
      */

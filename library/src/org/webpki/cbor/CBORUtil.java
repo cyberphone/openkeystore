@@ -2,10 +2,14 @@ package org.webpki.cbor;
 
 import java.time.Instant;
 import java.time.ZoneId;
+
 import java.time.format.DateTimeFormatter;
 
 import static org.webpki.cbor.CBORInternal.*;
 
+/**
+ * Utility methods.
+ */
 public class CBORUtil {
 
     private CBORUtil() {} 
@@ -40,7 +44,9 @@ part of the <code>instant</code> object is zero,
 <div style='margin-top:0.5em'>If <code>millis</code> is
 <code>false</code>, the millisecond part of the <code>instant</code>
 object will not be used, but may after <i>rounding</i>,
-add a second to the created time object.</div><div>
+add a second to the created time object.
+Rounding is performed for milliseconds <code>&ge;500</code>,
+and always in the <i>positive</i> direction.</div><div>
 @param utc <div style='margin-left:2em'>
 If <code>utc</i></code> is <code>true</code>,
 the <code>UTC</code> time zone (denoted by a terminating <code>Z</code>) will be used,
@@ -51,18 +57,15 @@ else the local time followed by the <code>UTC</code> offset
 @throws CBORException
     */
     public static CBORString createDateTime(Instant instant, boolean millis, boolean utc) {
-        long epochMillis = instantDateTimeToMillisCheck(instant);
-        millis = millisCheck(epochMillis, millis);
-        if (!millis) {
-            long remainder = epochMillis % 1000;
-            if (remainder >= 500) {
-                epochMillis += 1000;
-            }
-            epochMillis -= remainder;
-        }
-        String dateTime = Instant.ofEpochMilli(epochMillis).atZone(ZoneId.systemDefault())
+        // Verify that time is within the permitted range.
+        long instantMillis = instantDateTimeToMillisCheck(instant);
+        // If there ar no milliseconds, do not output milliseconds, even if requested. 
+        millis = millisZeroCheck(instantMillis, millis);
+        instantMillis = timeRound(instantMillis, millis);
+        String dateTime = Instant.ofEpochMilli(instantMillis).atZone(ZoneId.systemDefault())
             .format(utc ? DateTimeFormatter.ISO_INSTANT : DateTimeFormatter.ISO_OFFSET_DATE_TIME);
         if (millis && utc) {
+            // Trailing zero elimination.
             int i = dateTime.length();
             while (dateTime.charAt(--i - 1) == '0') {
                 ;
@@ -81,8 +84,8 @@ This method creates an Epoch
  class='webpkilink'>TIME</a>] time stamp.</div>
 <div style='margin-top:0.5em'>
 If the <code>instant</code> object is not within
-the range <code style='white-space:nowrap'>"1970-01-01T00:00:00Z"</code> to
-<code style='white-space:nowrap'>"9999-12-31T23:59:59Z"</code>,
+the range <span style='white-space:nowrap'><code>0</code> (<code>"1970-01-01T00:00:00Z"</code>)</span> to
+<span style='white-space:nowrap'><code>253402300799</code> (<code>"9999-12-31T23:59:59Z"</code>)</span>,
 a {@link CBORException} is thrown.</div>
 <div style='margin-top:0.5em'>
 If <code>millis</code> is <code>true</code> a {@link CBORFloat}
@@ -103,18 +106,23 @@ part of the <code>instant</code> object is zero,
 <div style='margin-top:0.5em'>If <code>millis</code> is
 <code>false</code>, the millisecond part of the <code>instant</code>
 object will not be used, but may after <i>rounding</i>,
-add a second to the created time object.</div><div>
+add a second to the created time object.
+Rounding is performed for milliseconds <code>&ge;500</code>,
+and always in the <i>positive</i> direction.</div><div>
 
 @return {@link CBORObject}
 @throws CBORException
     */
     public static CBORObject createEpochTime(Instant instant, boolean millis) {
-        long epochMillis = epochCheck(instant.toEpochMilli());
-        millis = millisCheck(epochMillis, millis);
-        epochMillis = timeRound(epochMillis, millis);
-        return millis ? new CBORFloat((double)epochMillis / 1000) 
+        long instantMillis = instant.toEpochMilli();
+        if (instantMillis < 0 || instantMillis > MAX_INSTANT_IN_MILLIS) {
+            epochOutOfRange();
+        }
+        millis = millisZeroCheck(instantMillis, millis);
+        instantMillis = timeRound(instantMillis, millis);
+        return millis ? new CBORFloat((double)instantMillis / 1000) 
                                     : 
-                        new CBORInt(epochMillis / 1000);
+                        new CBORInt(instantMillis / 1000);
     }
 
     public static byte[] concatByteArrays(byte[]...listOfArrays) {
@@ -165,13 +173,6 @@ add a second to the created time object.</div><div>
         cborError(STDERR_EPOCH_OUT_OF_RANGE);
     }
 
-    static long epochCheck(long epochMillis) {
-        if (epochMillis < 0 || epochMillis > MAX_INSTANT_IN_MILLIS) {
-            epochOutOfRange();
-        }
-        return epochMillis;
-    }
-
     static long instantDateTimeToMillisCheck(Instant instant) {
         long dateTimeMillis = instant.toEpochMilli();
         if (dateTimeMillis < MIN_INSTANT_IN_MILLIS || dateTimeMillis > MAX_INSTANT_IN_MILLIS) {
@@ -180,17 +181,26 @@ add a second to the created time object.</div><div>
         return dateTimeMillis;
     }
 
-    static boolean millisCheck(long epochMillis, boolean millis) {
-        return epochMillis % 1000 == 0 ? false : millis;
+    static boolean millisZeroCheck(long instantMillis, boolean millis) {
+        return instantMillis % 1000 == 0 ? false : millis;
     }
 
-    static long timeRound(long epochMillis, boolean millis) {
+    static long timeRound(long instantMillis, boolean millis) {
         if (!millis) {
-            if (epochMillis % 1000 > 500) {
-                epochMillis += 1000;
+            // Optionally round seconds, set millisecond to zero. 
+            long reminder = instantMillis % 1000;
+            if (instantMillis < 0) {
+                if (reminder < -500) {
+                    instantMillis -= 1000;
+                }
+            } else {
+                if (reminder >= 500) {
+                    instantMillis += 1000;
+                }
             }
+            instantMillis -= reminder;
         }
-        return epochMillis;
+        return instantMillis;
     }
 
     static final String STDERR_EPOCH_OUT_OF_RANGE =

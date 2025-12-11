@@ -42,6 +42,8 @@ import java.security.spec.EdECPublicKeySpec;
 import java.security.spec.NamedParameterSpec;
 import java.security.spec.X509EncodedKeySpec;
 
+import java.time.Instant;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
@@ -2624,6 +2626,20 @@ public class CBORTest {
         }
     }
 
+    void truncateDateTime(String iso, long millis, long seconds) {
+        Instant dateTime = new CBORString(iso).getDateTime();
+        assertTrue("trdt1", dateTime.toEpochMilli() == millis);
+        assertTrue("trdt2", CBORUtil.createDateTime(dateTime, true, false).getDateTime().toEpochMilli() == millis);
+        assertTrue("trdt3", CBORUtil.createDateTime(dateTime, false, false).getDateTime().toEpochMilli() == seconds * 1000);
+    }
+
+    void truncateEpochTime(double floatValue, long millis, long seconds) {
+        Instant epoch = new CBORFloat(floatValue).getEpochTime();
+        assertTrue("tr1", epoch.toEpochMilli() == millis);
+        assertTrue("tr2", CBORUtil.createEpochTime(epoch, true).getEpochTime().toEpochMilli() == millis);
+        assertTrue("tr3", CBORUtil.createEpochTime(epoch, false).getEpochTime().toEpochMilli() == seconds * 1000);
+    }
+
     void badEpoch(String hexBor, double epoch) {
         oneBadEpoch(hexBor);
         oneBadEpoch(HexaDecimal.encode(new CBORFloat(epoch).encode()));
@@ -2652,6 +2668,28 @@ public class CBORTest {
             CBORDecoder.decode(new CBORString("9999-12-31T23:59:59Z").encode()).getDateTime().toEpochMilli()
                == MAX_INSTANT_IN_MILLIS); 
 
+        truncateEpochTime(1740060548.000, 1740060548000L, 1740060548);
+        truncateEpochTime(0.0, 0, 0);
+        truncateEpochTime(1740060548.0004, 1740060548000L, 1740060548);
+        truncateEpochTime(1740060548.0005, 1740060548001L, 1740060548);
+
+        truncateDateTime("2025-07-10T23:12:27Z", 1752189147000L, 1752189147);
+        truncateDateTime("2025-07-10T23:12:27.1Z", 1752189147100L, 1752189147);
+        truncateDateTime("2025-07-10T23:12:27.12Z", 1752189147120L, 1752189147);
+        truncateDateTime("2025-07-10T23:12:27.123Z", 1752189147123L, 1752189147);
+        truncateDateTime("2025-07-10T23:12:27.1233Z", 1752189147123L, 1752189147);
+        truncateDateTime("2025-07-10T23:12:27.1235Z", 1752189147123L, 1752189147);
+        truncateDateTime("2025-07-10T23:12:27.523Z", 1752189147523L, 1752189148);
+
+        truncateDateTime("1925-07-10T23:12:27Z", -1403570853000L, -1403570853);
+        truncateDateTime("1925-07-10T23:12:27.1Z", -1403570852900L, -1403570853);
+        truncateDateTime("1925-07-10T23:12:27.12Z", -1403570852880L, -1403570853);
+        truncateDateTime("1925-07-10T23:12:27.123Z", -1403570852877L, -1403570853);
+        truncateDateTime("1925-07-10T23:12:27.1233Z", -1403570852877L, -1403570853);
+        truncateDateTime("1925-07-10T23:12:27.1235Z", -1403570852877L, -1403570853);
+        truncateDateTime("1925-07-10T23:12:27.499Z", -1403570852501L, -1403570853);
+        truncateDateTime("1925-07-10T23:12:27.500Z", -1403570852500L, -1403570852);
+        truncateDateTime("1925-07-10T23:12:27.700Z", -1403570852300L, -1403570852);
     }
 
     @Test
