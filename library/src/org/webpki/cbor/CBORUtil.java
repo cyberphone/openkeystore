@@ -5,6 +5,8 @@ import java.time.ZoneId;
 
 import java.time.format.DateTimeFormatter;
 
+import org.webpki.util.Float64Stringifier;
+
 import static org.webpki.cbor.CBORInternal.*;
 
 /**
@@ -170,7 +172,7 @@ and always in the <i>positive</i> direction.</div><div>
     }
 
     static void epochOutOfRange(double epochSeconds) {
-        cborError(STDERR_EPOCH_OUT_OF_RANGE + epochSeconds);
+        cborError(STDERR_EPOCH_OUT_OF_RANGE + Float64Stringifier.encode(epochSeconds, true));
     }
 
     static long instantDateTimeToMillisCheck(Instant instant) {
