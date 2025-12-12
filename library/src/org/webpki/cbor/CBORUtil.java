@@ -109,8 +109,7 @@ part of the <code>instant</code> object is zero,
 <code>false</code>, the millisecond part of the <code>instant</code>
 object will not be used, but may after <i>rounding</i>,
 add a second to the created time object.
-Rounding is performed for milliseconds <code>&ge;500</code>,
-and always in the <i>positive</i> direction.</div><div>
+Rounding is performed for milliseconds <code>&ge;500</code>.</div><div>
 
 @return {@link CBORObject}
 @throws CBORException
