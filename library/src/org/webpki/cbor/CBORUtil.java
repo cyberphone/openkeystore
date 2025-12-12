@@ -116,7 +116,7 @@ and always in the <i>positive</i> direction.</div><div>
     public static CBORObject createEpochTime(Instant instant, boolean millis) {
         long instantMillis = instant.toEpochMilli();
         if (instantMillis < 0 || instantMillis > MAX_INSTANT_IN_MILLIS) {
-            epochOutOfRange();
+            epochOutOfRange((double)instantMillis / 1000);
         }
         millis = millisZeroCheck(instantMillis, millis);
         instantMillis = timeRound(instantMillis, millis);
@@ -169,14 +169,14 @@ and always in the <i>positive</i> direction.</div><div>
         return reversed << (fieldWidth - bitCount);
     }
 
-    static void epochOutOfRange() {
-        cborError(STDERR_EPOCH_OUT_OF_RANGE);
+    static void epochOutOfRange(double epochSeconds) {
+        cborError(STDERR_EPOCH_OUT_OF_RANGE + epochSeconds);
     }
 
     static long instantDateTimeToMillisCheck(Instant instant) {
         long dateTimeMillis = instant.toEpochMilli();
         if (dateTimeMillis < MIN_INSTANT_IN_MILLIS || dateTimeMillis > MAX_INSTANT_IN_MILLIS) {
-            cborError(STDERR_DATETIME_OUT_OF_RANGE);
+            cborError(STDERR_DATETIME_OUT_OF_RANGE + instant.toString());
         }
         return dateTimeMillis;
     }
@@ -204,8 +204,8 @@ and always in the <i>positive</i> direction.</div><div>
     }
 
     static final String STDERR_EPOCH_OUT_OF_RANGE =
-            "Epoch outside the range 0 to 253402300799";
+            "Epoch out of range: ";
 
     static final String STDERR_DATETIME_OUT_OF_RANGE =
-            "DateTime out of range";
+            "DateTime out of range: ";
 }

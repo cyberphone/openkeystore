@@ -502,7 +502,7 @@ is a {@link CBORInt} or {@link CBORFloat}.</li>
     public Instant getEpochTime() {
         double epochSeconds = this instanceof CBORInt ? (double) getInt64() : getFloat64();
         if (epochSeconds < 0 || epochSeconds > (MAX_INSTANT_IN_MILLIS / 1000L)) {
-            CBORUtil.epochOutOfRange();
+            CBORUtil.epochOutOfRange(epochSeconds);
         }
         return Instant.ofEpochMilli(Math.round(epochSeconds * 1000));
     }
@@ -529,17 +529,16 @@ in section&nbsp;5.6 of
 <code style='white-space:nowrap'>"9999-12-31T23:59:59Z"</code>.</li>
 </ul>
 </div>
-     * 
-     * @return {@link Instant}
-     * @throws CBORException
-     * @throws IllegalArgumentException
-     * @see CBORTag#getDateTime()
-     * @see CBORUtil#createDateTime(Instant, boolean, boolean)
+
+    @return {@link Instant}
+    @throws CBORException
+    @see CBORTag#getDateTime()
+    @see CBORUtil#createDateTime(Instant, boolean, boolean)
      */
     public Instant getDateTime() {
         String dateTime = getString();
         if (!RFC3339_5_6_PATTERN.matcher(dateTime).matches()) {
-            throw new IllegalArgumentException("\"DateTime\" syntax error: " + dateTime);
+            cborError("\"DateTime\" syntax error: " + dateTime);
         }
         Instant instant = ZonedDateTime.parse(dateTime).toInstant();
         CBORUtil.instantDateTimeToMillisCheck(instant);
