@@ -43,7 +43,6 @@
       <fileset dir="${src_dir}">
         <include name="**/util/HexaDecimal.java"/>
         <include name="**/util/UTF8.java"/>
-        <include name="**/util/ISODateTime.java"/>
         <include name="**/util/Float64Stringifier.java"/>
         <include name="**/util/IO.java"/>
         <include name="**/util/package.html"/>
