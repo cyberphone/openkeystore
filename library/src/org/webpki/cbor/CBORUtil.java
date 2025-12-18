@@ -130,6 +130,11 @@ public class CBORUtil {
                         new CBORInt(instantMillis / 1000);
     }
 
+    /**
+     * Concatenate any nunber of byte-arrays.
+     * @param listOfArrays Sort of self-explanatory.
+     * @return <code>byte[]</code>
+     */
     public static byte[] concatByteArrays(byte[]...listOfArrays) {
         int totalLength = 0;
         for (byte[] array : listOfArrays) {
@@ -144,6 +149,11 @@ public class CBORUtil {
         return result;
     }
 
+    /**
+     * Convert <code>long</code> to <code>byte[]</code>.
+     * @param value Value to be converted.
+     * @return <code>byte[]</code>
+     */
     public static byte[] unsignedLongToByteArray(long value) {
         long temp = value;
         int length = 0;
@@ -156,22 +166,6 @@ public class CBORUtil {
             value >>>= 8;
         }
         return result;
-    }
-
-    public static long reverseBits(long bits, int fieldWidth) {
-        long reversed = 0;
-        int bitCount = 0;
-        while (bits > 0) {
-            bitCount++;
-            reversed <<= 1;
-            if ((bits & 1) == 1)
-                reversed |= 1;
-            bits >>= 1;
-        }
-        if (bitCount > fieldWidth) {
-            throw new IllegalArgumentException("Field exceeds fieldWidth");
-        }
-        return reversed << (fieldWidth - bitCount);
     }
 
     static void epochOutOfRange(double epochSeconds) {

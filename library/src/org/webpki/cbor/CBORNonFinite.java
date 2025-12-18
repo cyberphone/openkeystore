@@ -129,8 +129,7 @@ public class CBORNonFinite extends CBORObject {
         if ((payload & PAYLOAD_MASK) != payload) {
             cborError(STDERR_PAYLOAD_RANGE);
         }
-        return new CBORNonFinite(
-            FLOAT64_POS_INFINITY + CBORUtil.reverseBits(payload, FLOAT64_SIGNIFICAND_SIZE));
+        return new CBORNonFinite(FLOAT64_POS_INFINITY + (Long.reverse(payload) >>> 12));
     }
 
     /**
@@ -141,7 +140,7 @@ public class CBORNonFinite extends CBORObject {
      * @return Payload
      */
     public long getPayload() {
-        return CBORUtil.reverseBits(getNonFinite64() & PAYLOAD_MASK, FLOAT64_SIGNIFICAND_SIZE);
+        return Long.reverse((getNonFinite64() & PAYLOAD_MASK) << 12);
     }
 
     /**

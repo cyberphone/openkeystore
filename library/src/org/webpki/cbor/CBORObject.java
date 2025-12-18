@@ -485,7 +485,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * <div style='margin-top:0.5em'>
      * Depending on the type of the current object, this method performs a
      * {@link #getInt64()} or a {@link #getFloat64()}.
-     * The returned number is subsequently used to initiate an {@link Instant} object.</div>
+     * The returned number is subsequently used for initiating an {@link Instant} object.</div>
      * <div style='margin-top:0.5em'>
      * If not <i>all</i> of the following conditions are met,
      * a {@link CBORException} is thrown:
@@ -522,7 +522,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * 
      * <div style='margin-top:0.5em'>
      * This method performs a {@link #getString()}.
-     * The returned string is subsequently used to initiate an {@link Instant} object.</div>
+     * The returned string is subsequently used for initiating an {@link Instant} object.</div>
      * <div style='margin-top:0.5em'>
      * If not <i>all</i> of the following conditions are met, a {@link CBORException} is thrown:
      * <ul style='padding:0;margin:0 0 0.5em 1.2em'>
