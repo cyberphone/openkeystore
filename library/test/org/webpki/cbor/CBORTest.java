@@ -2347,8 +2347,8 @@ public class CBORTest {
         CBORObject diag = CBORDiagnosticNotation.convert(pretty);
         assertTrue("diag1", pretty.equals(diag.toString()));
         assertTrue("diag2", pretty.replace(" ", "")
-                                  .replace("\n", "").equals(diag.toDiagnosticNotation(false)));
-        assertTrue("diag3", pretty.equals(diag.toDiagnosticNotation(true)));
+                                  .replace("\n", "").equals(diag.toDiagnostic(false)));
+        assertTrue("diag3", pretty.equals(diag.toDiagnostic(true)));
         assertTrue("diag4", CBORDiagnosticNotation.convert("\"next\nline\r\\\ncont\r\nk\"")
             .toString().equals("\"next\\nline\\ncont\\nk\""));
         arrayDiag("[]");

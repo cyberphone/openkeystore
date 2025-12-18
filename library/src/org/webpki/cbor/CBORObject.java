@@ -670,9 +670,9 @@ in section&nbsp;5.6 of
                                 holderObject instanceof CBORTag ?
                                 "Tagged object " +
                                 Long.toUnsignedString(((CBORTag)holderObject).tagNumber) : 
-                                "Map key " + holderObject.toDiagnosticNotation(false) + " with argument") +                    
+                                "Map key " + holderObject.toDiagnostic(false) + " with argument") +                    
                             " of type=" + this.getClass().getSimpleName() + 
-                            " with value=" + this.toDiagnosticNotation(false) + " was never read");
+                            " with value=" + this.toDiagnostic(false) + " was never read");
             }
         } else {
             readFlag = true;
@@ -722,7 +722,7 @@ in section&nbsp;5.6 of
                 if (outputBuffer.length() - startOfLine + // Where we are staing at the moment.
                     array.size() +                        // space after comma.
                     2 +                                   // [] 
-                    array.toDiagnosticNotation(false).length() > MAX_LINE_LENGTH) {
+                    array.toDiagnostic(false).length() > MAX_LINE_LENGTH) {
                     return true;
                 }
             }
@@ -818,7 +818,7 @@ in section&nbsp;5.6 of
      * result easier to read.  If <code>false</code> elements are output
      * without additional white space (=single line).
      */
-    public String toDiagnosticNotation(boolean prettyPrint) {
+    public String toDiagnostic(boolean prettyPrint) {
         CborPrinter outputBuffer = new CborPrinter(prettyPrint);
         internalToString(outputBuffer);
         return outputBuffer.getTextualCbor();
@@ -827,13 +827,13 @@ in section&nbsp;5.6 of
     /**
      * Render CBOR object in a pretty-printed form.
      * <p>
-     * Equivalent to {@link #toDiagnosticNotation(boolean)}
+     * Equivalent to {@link #toDiagnostic(boolean)}
      * with the argument set to <code>true</code>.
      * </p>
      */
     @Override
     public String toString() {
-        return toDiagnosticNotation(true);
+        return toDiagnostic(true);
     }
     
     /**

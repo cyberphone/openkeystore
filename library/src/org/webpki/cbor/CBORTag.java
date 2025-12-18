@@ -117,7 +117,7 @@ public class CBORTag extends CBORObject {
     }
 
     private void tagSyntaxError(String tagError) {
-        cborError(tagError + toDiagnosticNotation(false));
+        cborError(tagError + toDiagnostic(false));
     }
 
     /**
