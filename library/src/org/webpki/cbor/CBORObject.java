@@ -56,9 +56,8 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * Note: this method always return CBOR data using 
      * <a href='package-summary.html#deterministic-encoding' class='webpkilink'>Deterministic&nbsp;Encoding</a>.
      * </p>
-     * <p>
-     * See also {@link CBORArray#encodeAsSequence()}.
-     * </p>
+     *
+     * @see CBORArray#encodeAsSequence()
      * @return CBOR encoded <code>byteArray</code>
      */
     public byte[] encode() {
@@ -368,6 +367,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * or <code>Infinity</code> valid items.  That is, the latter cause a {@link CBORException}
      * to be thrown.
      * </p>
+     * 
      * @return <code>double</code>
      * @throws CBORException
      */
@@ -382,6 +382,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * {@link CBORFloat} holding a 16 or 32-bit <span style='white-space:nowrap'><code>IEEE</code> <code>754</code></span> value, 
      * otherwise a {@link CBORException} is thrown.
      * </p>
+     * 
      * @see CBORFloat#createFloat32(double)
      * @return <code>float</code>
      * @throws CBORException
@@ -401,6 +402,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * {@link CBORFloat} holding a 16-bit <span style='white-space:nowrap'><code>IEEE</code> <code>754</code></span> value, 
      * otherwise a {@link CBORException} is thrown.
      * </p>
+     * 
      * @see CBORFloat#createFloat16(double)
      * @return <code>float</code>
      * @throws CBORException
@@ -412,6 +414,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
         }
         return (float)floatingPoint.value;
     }
+
     /**
      * Get CBOR <code>#7.n</code> (simple) value.
      * <p>
@@ -419,6 +422,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * {@link CBORSimple}, 
      * otherwise a {@link CBORException} is thrown.
      * </p>
+     * 
      * @return <code>int</code>
      * @throws CBORException
      */
@@ -478,26 +482,30 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     /**
      * Get <code>EpochTime</code> object.
      *
-<div style='margin-top:0.5em'>
-Depending on the type of the current object, this method performs a
-{@link #getInt64()} or a {@link #getFloat64()}.
-The returned number is subsequently used to initiate an {@link Instant} object.</div>
-<div style='margin-top:0.5em'>
-If not <i>all</i> of the following conditions are met,
-a {@link CBORException} is thrown:
-<ul style='padding:0;margin:0 0 0.5em 1.2em'>
-<li style='margin-top:0'>The underlying object
-is a {@link CBORInt} or {@link CBORFloat}.</li>
-<li>The Epoch 
-[<a href='https://pubs.opengroup.org/onlinepubs/9799919799/basedefs/V1_chap04.html#tag_04_19'
- class='webpkilink'>TIME</a>] object is within the range:
-<span style='white-space:nowrap'><code>0</code> (<code>"1970-01-01T00:00:00Z"</code>)</span> to
-<span style='white-space:nowrap'><code>253402300799</code> (<code>"9999-12-31T23:59:59Z"</code>)</span>.</li>
-</ul>
-    @return {@link Instant}
-    @see CBORTag#getEpochTime()
-    @see CBORUtil#createEpochTime(Instant, boolean)
-    @throws CBORException
+     * <div style='margin-top:0.5em'>
+     * Depending on the type of the current object, this method performs a
+     * {@link #getInt64()} or a {@link #getFloat64()}.
+     * The returned number is subsequently used to initiate an {@link Instant} object.</div>
+     * <div style='margin-top:0.5em'>
+     * If not <i>all</i> of the following conditions are met,
+     * a {@link CBORException} is thrown:
+     * <ul style='padding:0;margin:0 0 0.5em 1.2em'>
+     * <li style='margin-top:0'>The underlying object
+     * is a {@link CBORInt} or {@link CBORFloat}.</li>
+     * <li>The Epoch 
+     * [<a href='https://pubs.opengroup.org/onlinepubs/9799919799/basedefs/V1_chap04.html#tag_04_19'
+     * class='webpkilink'>TIME</a>] object is within the range:
+     * <span style='white-space:nowrap'><code>0</code> 
+     * (<code>"1970-01-01T00:00:00Z"</code>)</span> to
+     * <span style='white-space:nowrap'><code>253402300799</code> 
+     * (<code>"9999-12-31T23:59:59Z"</code>)</span>.</li>
+     * </ul>
+     * </div>
+     * 
+     * @return {@link Instant}
+     * @see CBORTag#getEpochTime()
+     * @see CBORUtil#createEpochTime(Instant, boolean)
+     * @throws CBORException
      */
     public Instant getEpochTime() {
         double epochSeconds = this instanceof CBORInt ? (double) getInt64() : getFloat64();
@@ -512,28 +520,29 @@ is a {@link CBORInt} or {@link CBORFloat}.</li>
     /**
      * Get <code>DateTime</code> object.
      * 
-<div style='margin-top:0.5em'>
-This method performs a {@link #getString()}.
-The returned string is subsequently used to initiate an {@link Instant} object.</div>
-<div style='margin-top:0.5em'>
-If not <i>all</i> of the following conditions are met, a {@link CBORException} is thrown:
-<ul style='padding:0;margin:0 0 0.5em 1.2em'>
-<li style='margin-top:0'>The underlying object is a
-{@link CBORString}.</li>
-<li>The string matches the ISO date/time format described
-in section&nbsp;5.6 of
-[<a href='https://www.rfc-editor.org/rfc/rfc3339.html#section-5.6' class='webpkilink'>RFC3339</a>].</li>
-<li>The <i>optional</i> sub-second field (<code>.nnn</code>) features <i>less</i> than ten digits.</li>
-<li>The date/time object is within the range:
-<code style='white-space:nowrap'>"0000-01-01T00:00:00Z"</code> to
-<code style='white-space:nowrap'>"9999-12-31T23:59:59Z"</code>.</li>
-</ul>
-</div>
-
-    @return {@link Instant}
-    @throws CBORException
-    @see CBORTag#getDateTime()
-    @see CBORUtil#createDateTime(Instant, boolean, boolean)
+     * <div style='margin-top:0.5em'>
+     * This method performs a {@link #getString()}.
+     * The returned string is subsequently used to initiate an {@link Instant} object.</div>
+     * <div style='margin-top:0.5em'>
+     * If not <i>all</i> of the following conditions are met, a {@link CBORException} is thrown:
+     * <ul style='padding:0;margin:0 0 0.5em 1.2em'>
+     * <li style='margin-top:0'>The underlying object is a
+     * {@link CBORString}.</li>
+     * <li>The string matches the ISO date/time format described
+     * in section&nbsp;5.6 of
+     * [<a href='https://www.rfc-editor.org/rfc/rfc3339.html#section-5.6' class='webpkilink'>RFC3339</a>].</li>
+     * <li>The <i>optional</i> sub-second field (<code>.nnn</code>) 
+     * features <i>less</i> than ten digits.</li>
+     * <li>The date/time object is within the range:
+     * <code style='white-space:nowrap'>"0000-01-01T00:00:00Z"</code> to
+     * <code style='white-space:nowrap'>"9999-12-31T23:59:59Z"</code>.</li>
+     * </ul>
+     * </div>
+     *
+     * @return {@link Instant}
+     * @throws CBORException
+     * @see CBORTag#getDateTime()
+     * @see CBORUtil#createDateTime(Instant, boolean, boolean)
      */
     public Instant getDateTime() {
         String dateTime = getString();
@@ -626,8 +635,8 @@ in section&nbsp;5.6 of
      * This method sets the status of this object as well as to possible
      * child objects to &quot;read&quot;.
      * </p>
-     * See also {@link #checkForUnread()}.
      * 
+     * @see #checkForUnread()
      * @return <code>this</code>
      */
     public CBORObject scan() {
@@ -643,7 +652,8 @@ in section&nbsp;5.6 of
      * (through calling {@link #getBytes()} etc.),
      * and throws a {@link CBORException} if this is not the case.
      * </p>
-     * See also {@link #scan()}.
+     * 
+     * @see #scan()
      * @throws CBORException
      */
     public void checkForUnread() {
