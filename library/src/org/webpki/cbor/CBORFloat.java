@@ -157,7 +157,7 @@ public class CBORFloat extends CBORObject {
      * </p>
      * <p>
      * Note that return type is either {@link CBORFloat} or {@link CBORNonFinite}, depending
-     * on if the argument is a "regular" floating-point value of one of the non-finite variants.
+     * on if the argument is a "regular" floating-point value or one of the non-finite variants.
      * </p>
      * @param value Floating-point value
      * @return {@link CBORObject}
@@ -173,6 +173,66 @@ public class CBORFloat extends CBORObject {
             cborError(STDERR_NAN_WITH_PAYLOADS_NOT_PERMITTED);
         }
         return nf;
+    }
+
+    static float overflowCheck(float value) {
+        if (!Float.isFinite(value)) {
+            cborError("Value out of range for this floating-point type");
+        }
+        return value;
+    }
+
+    static float reduce32Check(double value) {
+        if (!Double.isFinite(value)) {
+            cborError("Not permitted: 'NaN/Infinity'");
+        }
+        return overflowCheck((float)value);
+    }
+
+    /**
+     * Creates a CBOR <code>float32</code> object.
+     * <p>
+     * This method creates a {@link CBORFloat} object,
+     * where the value is converted to fit CBOR <code>float32</code> representation.
+     * </p>
+     * <p>
+     * If the value (after applying
+     * <span style='white-space:nowrap'><code>IEEE</code> <code>754</code></span> rounding rules),
+     * is out of range, a {@link CBORException} is thrown.
+     * </p>
+     * <p>
+     * Note that this method returns a <code>float16</code> compatible object
+     * if the value and precision is <i>equivalent</i> to the <code>float32</code>
+     * representation (e.g. <code>2.5</code>).
+     * </p>
+     * @param value Floating-point value
+     * @return {@link CBORFloat}
+     * @throws CBORException
+     * @see #getFloat32()
+     */
+    public static CBORFloat createFloat32(double value) {
+        return new CBORFloat(reduce32Check(value));
+    }
+
+    /**
+     * Creates a CBOR <code>float16</code> object.
+     * <p>
+     * This method creates a {@link CBORFloat} object,
+     * where the value is converted to fit CBOR <code>float16</code> representation.
+     * </p>
+     * <p>
+     * If the value (after applying
+     * <span style='white-space:nowrap'><code>IEEE</code> <code>754</code></span> rounding rules),
+     * is out of range, a {@link CBORException} is thrown.
+     * </p>
+     * @param value Floating-point value
+     * @return {@link CBORFloat}
+     * @throws CBORException
+     * @see #getFloat16()
+     */
+    public static CBORFloat createFloat16(double value) {
+        return new CBORFloat(
+            overflowCheck(Float.float16ToFloat(Float.floatToFloat16(reduce32Check(value)))));
     }
 
     /**

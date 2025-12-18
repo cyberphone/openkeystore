@@ -2740,6 +2740,52 @@ public class CBORTest {
         }
     }
 
+    void reducedOneTurn(boolean f16, Integer length, double value, double result) {
+        boolean ok = length != null;
+        CBORFloat reduced = null;
+        try {
+            reduced = f16 ? CBORFloat.createFloat16(value) : CBORFloat.createFloat32(value);
+            assertTrue("Should not", ok);
+            assertTrue("Compare=" + reduced + " r=" + result, reduced.getFloat64() == result);
+            assertTrue("len", reduced.length() == length);
+            assertTrue("equi", CBORDecoder.decode(reduced.encode()).equals(reduced));
+    //        System.out.println("Hi=" + result + " j=" + reduced + " l=" + reduced.length());
+        } catch (Exception e) {
+    //        System.out.println("EHi=" + result + " r=" + reduced + " v=" + value);
+    //        System.out.println(e.toString());
+            assertFalse("should" + e.toString(), ok);
+            checkException(e, Double.isFinite(value) ? "Value out of range" : "Not permitted:");
+        }
+    }
+
+    @Test
+    public void createShortFloats() throws Exception {
+        reducedOneTurn(true, null, Double.NaN, 0);
+        reducedOneTurn(true, 2, 60000, 60000);
+        reducedOneTurn(true, 2, 5.960464477539063e-8, 5.960464477539063e-8);
+        reducedOneTurn(true, 2, 3.0e-8, 5.960464477539063e-8);
+        reducedOneTurn(true, 2, 2.0e-8, 0);
+        reducedOneTurn(true, 2, 65504.0, 65504.0);
+        reducedOneTurn(true, 2, 65519.99, 65504.0);
+        reducedOneTurn(true, null, 65520, 65504.0);
+        reducedOneTurn(true, 2, 10, 10);
+        reducedOneTurn(true, 2, 10.003906, 10);
+        reducedOneTurn(true, 2, 10.003907, 10.0078125);
+        reducedOneTurn(true, 2, 6.097555160522461e-5, 6.097555160522461e-5);
+        reducedOneTurn(true, 2, 6.097e-5, 6.097555160522461e-5);
+        reducedOneTurn(true, 2, 6.09e-5, 6.091594696044922e-5);
+
+        reducedOneTurn(false, null, Double.NaN, 0);
+        reducedOneTurn(false, 2, 2.5, 2.5);
+        reducedOneTurn(false, 2, 65504.0, 65504.0);
+        reducedOneTurn(false, 2, 5.960464477539063e-8, 5.960464477539063e-8);
+        reducedOneTurn(false, 4, 2.0e-8, 1.999999987845058e-8);
+        reducedOneTurn(false, 4, 1.401298464324817e-45, 1.401298464324817e-45);
+        reducedOneTurn(false, 4, 3.4028234663852886e+38, 3.4028234663852886e+38);
+        reducedOneTurn(false, 4, 3.4028235e+38, 3.4028234663852886e+38);
+        reducedOneTurn(false, null, 3.40282358e+38, 3.4028234663852886e+38);
+    }
+
     @Test
     public void circularTest() throws Exception {
         CBORMap m = new CBORMap();
