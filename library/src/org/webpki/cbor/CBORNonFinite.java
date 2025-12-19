@@ -23,15 +23,14 @@ import static org.webpki.cbor.CBORInternal.*;
 /**
  * Class for holding CBOR <i>non-finite</i> floating-point objects.
  * <p>
- * Due to the fact that platform support for non-finite floating-point objects
+ * Due to the fact that platform support for <i>non-finite</i> floating-point objects
  * beyond the three simple forms, "quiet" <code>NaN</code>, <code>Infinity</code>,
  * and <code>-Infinity</code> is limited, this implementation <i>separates</i>
  * non-finite floating-point objects from "regular" floating-point numbers.
  * The latter are dealt with by the {@link CBORFloat} class.
  * </p>
  * <p>
- * Since non-finite data can be "anything" that makes sence for consuming
- * applications, <code>long</code> is used as value container.
+ * Since non-finite data can be "anything", <code>long</code> is used as value container.
  * </p>
  * <p>
  * For a detailed description and user guide, turn to:
@@ -52,6 +51,22 @@ public class CBORNonFinite extends CBORObject {
     static final long DIFF_64_32 = FLOAT64_SIGNIFICAND_SIZE - FLOAT32_SIGNIFICAND_SIZE;
 
     static final long PAYLOAD_MASK = ((1L << FLOAT64_SIGNIFICAND_SIZE) - 1L);
+
+    /**
+     * Creates a <i>non-finite</i> floating-point number.
+     * 
+     * @see CBORFloat#CBORFloat(double)
+     * @see CBORFloat#createExtendedFloat(double)
+     * @param value <code>16</code>, <code>32</code>, or <code>64</code>-bit non-finite number in
+     * <span style='white-space:nowrap'><code>IEEE</code> <code>754</code></span> encoding,
+     * expressed as a <code>long</code>
+     * @throws CBORException If the argument is not within the non-finite number space
+     */
+    @SuppressWarnings("this-escape")
+    public CBORNonFinite(long value) {
+        original = value;
+        createDeterministicEncoding(value);
+    }
 
     void createDeterministicEncoding(long value) {
         while (true) {
@@ -97,26 +112,8 @@ public class CBORNonFinite extends CBORObject {
     }
 
     /**
-     * Creates a <i>non-finite</i> floating-point number.
-     * <p>
-     * The constructor takes a <code>16</code>, <code>32</code>, or <code>64</code>-bit
-     * non-finite number in <span style='white-space:nowrap'><code>IEEE</code> <code>754</code></span> encoding.
-     * </p>
-     * <p>
-     * See also {@link CBORFloat#CBORFloat(double)} and {@link CBORFloat#createExtendedFloat(double)}.
-     * </p>
-     * 
-     * @param value Non-finite number expressed as a <code>long</code>
-     * @throws CBORException If the argument is not within the non-finite number space
-     */
-    @SuppressWarnings("this-escape")
-    public CBORNonFinite(long value) {
-        original = value;
-        createDeterministicEncoding(value);
-    }
-
-    /**
      * Creates a payload object.
+     * 
      * <div style='margin-top:0.7em'>
      * For details turn to
      * <a href='../../webpki/cbor/doc-files/non-finite-numbers.html#payload-option'
@@ -134,6 +131,7 @@ public class CBORNonFinite extends CBORObject {
 
     /**
      * Get payload data.
+     * 
      * <p>
      * This method is the "consumer" counterpart to {@link #createPayload(long)}.
      * </p>
@@ -145,7 +143,9 @@ public class CBORNonFinite extends CBORObject {
 
     /**
      * Set sign bit of non-finite object.
-     * @param sign Sign bit expressed as a <code>boolean</code>. <code>true</code> = 1, <code>false</code> = 0.
+     * 
+     * @param sign Sign bit expressed as a 
+     * <code>boolean</code>. <code>true</code> = 1, <code>false</code> = 0.
      * @return {@link CBORNonFinite}
      * @see #getSign()
      */
@@ -157,6 +157,7 @@ public class CBORNonFinite extends CBORObject {
 
     /**
      * Get sign bit of non-finite object.
+     * 
      * <p>
      * This method returns <code>true</code> if the sign bit is <code>1</code>,
      * else <code>false</code> is returned.
@@ -170,6 +171,7 @@ public class CBORNonFinite extends CBORObject {
 
     /**
      * Get length of non-finite object.
+     * 
      * <p>
      * Note that you must cast a {@link CBORObject} to {@link CBORNonFinite}
      * in order to access {@link CBORNonFinite#length()}.
@@ -182,6 +184,7 @@ public class CBORNonFinite extends CBORObject {
 
     /**
      * Check if non-finite object is simple.
+     * 
      * <p>
      * This method returns <code>true</code> if the non-finite object is a 
      * {@link Double#NaN},
@@ -203,9 +206,10 @@ public class CBORNonFinite extends CBORObject {
 
     /**
      * Check if non-finite object is a <code>NaN</code>.
+     * 
      * <p>
      * This method returns <code>true</code> for <i>all conformant</i> <code>NaN</code> variants,
-     * else <code>false</code> is returned..
+     * else <code>false</code> is returned.
      * </p>
      * @return <code>boolean</code>. 
      */
@@ -238,7 +242,9 @@ public class CBORNonFinite extends CBORObject {
      * object.  The value is provided in the most compact form
      * based on CBOR serialization rules.
      * </p>
-     * @return <span style='white-space:nowrap'><code>IEEE</code> <code>754</code></span> non-finite number coded as a <code>long</code>
+     * @return <span style='white-space:nowrap'>
+     * <code>IEEE</code> <code>754</code></span>
+     * non-finite number coded as a <code>long</code>
      */
     public long getNonFinite() {
         scan();
@@ -247,12 +253,15 @@ public class CBORNonFinite extends CBORObject {
 
     /**
      * Get <i>expanded</i> non-finite object (value).
+     * 
      * <p>
      * This method returns the value of a non-finite
      * object after it has been expanded to 64 bits.
      * That is, a received <code>7c01</code> will be returned as <code>7ff0040000000000</code>.
      * </p>
-     * @return <span style='white-space:nowrap'><code>IEEE</code> <code>754</code></span> non-finite number coded as a <code>long</code>
+     * @return <span style='white-space:nowrap'>
+     * <code>IEEE</code> <code>754</code></span>
+     * non-finite number coded as a <code>long</code>
      */
     public long getNonFinite64() {
         scan();

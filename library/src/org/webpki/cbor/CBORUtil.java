@@ -131,7 +131,7 @@ public class CBORUtil {
     }
 
     /**
-     * Concatenate any nunber of byte-arrays.
+     * Concatenate a set of byte-arrays.
      * @param listOfArrays Sort of self-explanatory.
      * @return <code>byte[]</code>
      */

@@ -23,10 +23,11 @@ import static org.webpki.cbor.CBORInternal.*;
 /**
  * Class for holding CBOR <code>float</code> objects.
  * <p>
- * Numbers are in the <span style='white-space:nowrap'><code>IEEE</code> <code>754</code></span> format
- * using the length <code>16</code>, <code>32</code>, and <code>64</code> bit on the "wire".  Which
- * length to use is governed by the size and precision 
- * required to (minimally) correctly represent a number.
+ * Floating-point numbers are expressed in the
+ * <span style='white-space:nowrap'><code>IEEE</code> <code>754</code></span> format
+ * using the length <code>16</code>, <code>32</code>, and <code>64</code> bit on the "wire".
+ * Which length to use is governed by the size and precision 
+ * required to (minimally) correctly represent a value.
  * </p>
  * @see <a href='doc-files/non-finite-numbers.html' class='webpkilink'>Non-Finite Numbers</a>
  */

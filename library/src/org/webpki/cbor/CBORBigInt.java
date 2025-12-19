@@ -23,12 +23,8 @@ import java.util.Arrays;
 import static org.webpki.cbor.CBORInternal.*;
 
 /**
- * Class for holding CBOR integer objects.
- * <p>
- * Note that <i>the encoder is adaptive</i>, selecting the proper CBOR
- * representation in order to produce a fully deterministic result.
- * </p>
- * See also {@link CBORInt}.
+ * Class for holding CBOR <code>integer</code> objects.
+ * @see CBORInt
  */
 public class CBORBigInt extends CBORObject {
 
@@ -38,17 +34,14 @@ public class CBORBigInt extends CBORObject {
     BigInteger value;
  
     /**
-     * Creates a CBOR integer value of any size.
-     * <p>
-     * Also see {@link CBORInt#CBORInt(long)} and
-     * {@link CBORObject#getBigInteger()}.
-     * </p>
+     * Creates a CBOR <code>integer</code> value of any size.
      * <p>
      * Note: if <code>value</code> is within the CBOR <code>int</code> range,
      * <code>int</code> encoding will be used, otherwise <code>value</code>
      * will be encoded as a CBOR <code>bigint</code>.
      * </p>
-     * 
+     * @see CBORInt#CBORInt(long)
+     * @see CBORObject#getBigInteger()
      * @param value Integer in BigInteger format
      */
     public CBORBigInt(BigInteger value) {
