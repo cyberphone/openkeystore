@@ -198,7 +198,7 @@ public class CBORFloat extends CBORObject {
      * </p>
      * <p>
      * If the value (after applying
-     * <span style='white-space:nowrap'><code>IEEE</code> <code>754</code></span> rounding rules),
+     * <span style='white-space:nowrap'><code>IEEE</code> <code>754</code></span> conversion rules),
      * is out of range, a {@link CBORException} is thrown.
      * </p>
      * <p>
@@ -223,7 +223,7 @@ public class CBORFloat extends CBORObject {
      * </p>
      * <p>
      * If the value (after applying
-     * <span style='white-space:nowrap'><code>IEEE</code> <code>754</code></span> rounding rules),
+     * <span style='white-space:nowrap'><code>IEEE</code> <code>754</code></span> conversion rules),
      * is out of range, a {@link CBORException} is thrown.
      * </p>
      * @param value Floating-point value
