@@ -123,6 +123,12 @@
        }&#10;
        return a.length - b.length;&#10;"
         flags="g"/>
+    <replaceregexp file="${android-cbor-src}/org/webpki/cbor/CBORFloat.java"
+        match="(\ {8}r.*\n\ {12}overflow.*float16ToFloat.*\;\n)"
+        replace=" if (android.os.Build.VERSION.SDK_INT >= 36) {&#10;\0} else {&#10;
+       cborError(&quot;Version 36 needed!&quot;);&#10;
+       return null;&#10;}&#10;"
+        flags="g"/>
 
     <javac debug="${debug}" srcdir="${android-cbor-src}:androidrefsrc" 
         destdir="${bin_dir}" 
