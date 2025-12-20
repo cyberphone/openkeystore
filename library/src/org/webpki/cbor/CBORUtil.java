@@ -33,8 +33,8 @@ public class CBORUtil {
      * milliseconds (<code>.nnn</code>) as well.</div>
      * <div style='margin-top:0.5em'>Sample code:</div>
      * <div style='margin:0.3em 0 0 1.2em'>
-     * <code>CBORString iso = CBORUtil.createDateTime(Instant.now(), true, false);<br>
-     * System.out.println(iso.toString());<br>
+     * <code>CBORString dateTime = CBORUtil.createDateTime(Instant.now(), true, false);<br>
+     * System.out.println(dateTime.toString());&nbsp;&nbsp;// Diagnostic notation<br>
      * <span style='color:#007fdd'>"2025-12-05T13:55:42.418+01:00"</span></code></div>
      * @see CBORObject#getDateTime()
      * @param instant Time source object.
@@ -99,7 +99,7 @@ public class CBORUtil {
      * <div style='margin-top:0.5em'>Sample code:</div>
      * <div style='margin:0.3em 0 0 1.2em'>
      * <code>CBORObject epoch = CBORUtil.createEpochTime(Instant.now(), false);<br>
-     * System.out.println(epoch.toString());<br>
+     * System.out.println(epoch.toString());&nbsp;&nbsp;// Diagnostic notation<br>
      * <span style='color:#007fdd'>1764939916</span></code></div>
      * @see CBORObject#getEpochTime()
      * @param instant Time source object.
