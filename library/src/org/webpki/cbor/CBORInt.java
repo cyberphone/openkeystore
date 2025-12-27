@@ -94,6 +94,6 @@ public class CBORInt extends CBORObject {
     }
 
     static final String STDERR_INT_VALUE_OUT_OF_RANGE = 
-            "Long out of range: ";
+            "Signed \"int\" out of range: ";
 
 }
