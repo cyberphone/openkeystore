@@ -77,8 +77,8 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
         return object;
     }
 
-    static void outOfRangeError(String type) {
-        cborError(STDERR_OUT_OF_RANGE + type + "\"");
+    void outOfRangeError(String type) {
+        cborError(STDERR_OUT_OF_RANGE + type + "\" value=" + this.toString());
     }
 
     byte[] encodeTagAndValue(int tag, int length, long value) {
