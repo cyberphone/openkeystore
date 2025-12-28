@@ -45,7 +45,7 @@ public class CBORSimple extends CBORObject {
     public CBORSimple(int value) {
         this.value = value;
         if (value < 0 || value > 255 || (value > 23 && value < 32)) {
-            cborError(STDERR_SIMPLE_VALUE_OUT_OF_RANGE + value);
+            cborError(STDERR_SIMPLE_VALUE_OUT_OF_RANGE, value);
         }
     }
 
@@ -62,6 +62,6 @@ public class CBORSimple extends CBORObject {
     }
 
     static final String STDERR_SIMPLE_VALUE_OUT_OF_RANGE = 
-            "Simple value out of range: " ;
+            "Simple value out of range: %i" ;
 
 }
