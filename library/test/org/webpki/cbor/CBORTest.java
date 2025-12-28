@@ -275,7 +275,7 @@ public class CBORTest {
             if (res instanceof CBORBigInt) {
                 checkException(e, "Is type: CBORBigInt");
             } else {
- //               System.out.println("Value: " + e.toString());
+//                System.out.println("Value: " + e.toString());
                 String dataType = variation.toString().toLowerCase();
                 dataType = dataType.substring(0,1).toUpperCase() +
                     dataType.substring(1);
@@ -310,11 +310,12 @@ public class CBORTest {
         assertTrue("dn2", value.equals(new CBORBigInt(bigVal).toString()));
         assertTrue("dn3", value.equals(ib.getBigInteger().toString()));
         try {
-            new CBORInt(bigVal.longValue(), !value.startsWith("-"));
+            new CBORInt(bigVal.longValue(), !value.startsWith("-")).toString();
             assertFalse("should not", big);
         } catch (Exception e) {
+//            System.out.println(e.toString());
             assertTrue("should", big);
-            checkException(e, CBORInt.STDERR_INT_VALUE_OUT_OF_RANGE);
+            checkException(e, CBORInt.STDERR_INT_VALUE_OUT_OF_RANGE, bigVal.toString());
         }
         assertTrue("eq", ib.getBigInteger().compareTo(bigVal) == 0);
     }
@@ -386,7 +387,7 @@ public class CBORTest {
             assertFalse("Should fail", mustFail);
             assertTrue("Comp", v == f);
         } catch (Exception e) {
-            System.out.println("Value: " + e.toString());
+//            System.out.println("Value: " + e.toString());
             assertTrue("Ok fail", mustFail);
             checkException(e, CBORObject.STDERR_OUT_OF_RANGE);
         }
@@ -401,7 +402,7 @@ public class CBORTest {
             assertFalse("Should fail", mustFail);
             assertTrue("Comp", v == f);
         } catch (Exception e) {
-            System.out.println("Value: " + e.toString());
+//            System.out.println("Value: " + e.toString());
             assertTrue("Ok fail", mustFail);
             checkException(e, CBORObject.STDERR_OUT_OF_RANGE);
         }

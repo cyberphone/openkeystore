@@ -60,7 +60,7 @@ public class CBORInt extends CBORObject {
         this.value = value;
         this.unsigned = unsigned;
         if (!unsigned && value >= 0) {
-            cborError(STDERR_INT_VALUE_OUT_OF_RANGE + 
+            cborError(STDERR_INT_VALUE_OUT_OF_RANGE, 
                 MIN_INT_VALUE.add(BigInteger.valueOf(value)).toString());
         }
     }
@@ -94,6 +94,6 @@ public class CBORInt extends CBORObject {
     }
 
     static final String STDERR_INT_VALUE_OUT_OF_RANGE = 
-            "Signed \"int\" out of range: ";
+            "Signed \"int\" out of range: %s";
 
 }
