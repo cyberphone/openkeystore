@@ -78,7 +78,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }
 
     void outOfRangeError(String type) {
-        cborError(STDERR_OUT_OF_RANGE + type + "\" value=" + this.toString());
+        cborError(STDERR_OUT_OF_RANGE, type, this.toString());
     }
 
     byte[] encodeTagAndValue(int tag, int length, long value) {
@@ -859,7 +859,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }
 
     static final String STDERR_OUT_OF_RANGE =
-            "Value out of range for \"";
+            "Value out of range for \"%s\" value=%s";
     
     static final String STDERR_ARGUMENT_IS_NULL =
             "Argument \"null\" is not permitted";

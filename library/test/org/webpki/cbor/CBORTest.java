@@ -148,9 +148,19 @@ public class CBORTest {
         return jwkPlus.getKeyPair();
     }
 
-    void checkException(Exception e, String compareMessage) {
+    void checkException(Exception e, String format, Object... args) {
         String m = e.getMessage();
         String full = m;
+        String compareMessage;
+        if (args.length > 0) {
+            compareMessage = String.format(format, args);
+        } else {
+            compareMessage = format;
+            int i = compareMessage.indexOf('%');
+            if (i > 0) {
+                compareMessage = compareMessage.substring(0, i);
+            }
+        }
         if (compareMessage.length() < m.length()) {
             m = m.substring(0, compareMessage.length());
         }
@@ -265,10 +275,11 @@ public class CBORTest {
             if (res instanceof CBORBigInt) {
                 checkException(e, "Is type: CBORBigInt");
             } else {
+ //               System.out.println("Value: " + e.toString());
                 String dataType = variation.toString().toLowerCase();
                 dataType = dataType.substring(0,1).toUpperCase() +
                     dataType.substring(1);
-                checkException(e, CBORObject.STDERR_OUT_OF_RANGE + dataType);
+                checkException(e, CBORObject.STDERR_OUT_OF_RANGE, dataType, res.toString());
             }
             assertTrue("Shouldn't throw: " + value + e.getMessage(), mustFail);
         }
@@ -375,6 +386,7 @@ public class CBORTest {
             assertFalse("Should fail", mustFail);
             assertTrue("Comp", v == f);
         } catch (Exception e) {
+            System.out.println("Value: " + e.toString());
             assertTrue("Ok fail", mustFail);
             checkException(e, CBORObject.STDERR_OUT_OF_RANGE);
         }
@@ -389,6 +401,7 @@ public class CBORTest {
             assertFalse("Should fail", mustFail);
             assertTrue("Comp", v == f);
         } catch (Exception e) {
+            System.out.println("Value: " + e.toString());
             assertTrue("Ok fail", mustFail);
             checkException(e, CBORObject.STDERR_OUT_OF_RANGE);
         }

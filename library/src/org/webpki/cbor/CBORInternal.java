@@ -80,7 +80,8 @@ class CBORInternal {
     
     static final int  MAX_ERROR_MESSAGE       = 100;
 
-    static void cborError(String error) {
+    static void cborError(String format, Object... args) {
+        String error = String.format(format, args);
         if (error.length() > MAX_ERROR_MESSAGE) {
             error = error.substring(0, MAX_ERROR_MESSAGE - 3) + " ...";
         }
