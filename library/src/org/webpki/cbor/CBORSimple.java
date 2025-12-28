@@ -62,6 +62,6 @@ public class CBORSimple extends CBORObject {
     }
 
     static final String STDERR_SIMPLE_VALUE_OUT_OF_RANGE = 
-            "Simple value out of range: %i" ;
+            "Simple value out of range: %d" ;
 
 }
