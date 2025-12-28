@@ -143,7 +143,7 @@ public class CBORDecoder {
     }
 
     private void unsupportedTag(int tag) {
-        cborError(String.format(STDERR_UNSUPPORTED_TAG + "%02x", tag));
+        cborError(STDERR_UNSUPPORTED_TAG, tag);
     }
     
     private void outOfLimitTest(int increment) {
@@ -414,7 +414,7 @@ public class CBORDecoder {
     }
     
     static final String STDERR_UNSUPPORTED_TAG =
-            "Unsupported tag: ";
+            "Unsupported tag: %02x";
 
     static final String STDERR_N_RANGE_ERROR =
             "N out of range: ";
