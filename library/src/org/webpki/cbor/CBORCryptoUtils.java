@@ -146,7 +146,7 @@ public class CBORCryptoUtils {
     public enum POLICY {FORBIDDEN, OPTIONAL, MANDATORY}
     
     private static void inputError(String text, POLICY policy) {
-        cborError(String.format("%s. Policy: %s", text, policy.toString()));
+        cborError("%s. Policy: %s", text, policy.toString());
     }
  
     static CBORMap unwrapContainerMap(CBORObject container, 
