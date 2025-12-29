@@ -147,7 +147,7 @@ public class CBORDecoder {
     }
     
     private void outOfLimitTest(int increment) {
-        if ((byteCount += increment) > maxInputLength || byteCount < 0) {
+        if ((byteCount += increment) > maxInputLength) {
             cborError(STDERR_READING_LIMIT);
         }
     }
@@ -191,14 +191,14 @@ public class CBORDecoder {
 
     private int checkLength(long n) {
         if (n < 0 || n > Integer.MAX_VALUE) {
-            cborError(STDERR_N_RANGE_ERROR + n);
+            cborError(STDERR_N_RANGE_ERROR, n);
         }
         return (int)n;
     }
 
     private void floatDeterminismError(int tag, long bitFormat) {
-        cborError(String.format(STDERR_NON_DETERMINISTIC_FLOAT + "%2x%0" +
-           (4 << (tag - MT_FLOAT16)) + "x", tag, bitFormat));
+        cborError(STDERR_NON_DETERMINISTIC_FLOAT + (4 << (tag - MT_FLOAT16)) + "x", 
+                  tag, bitFormat);
     }
 
     private CBORFloat returnFloat(int tag, long bitFormat, double value) {
@@ -417,13 +417,13 @@ public class CBORDecoder {
             "Unsupported tag: %02x";
 
     static final String STDERR_N_RANGE_ERROR =
-            "N out of range: ";
+            "N out of range: %d";
 
     static final String STDERR_NON_DETERMINISTIC_BIGINT =
             "Non-deterministic encoding of bigint";
 
     static final String STDERR_NON_DETERMINISTIC_FLOAT =
-            "Non-deterministic encoding of float value: ";
+            "Non-deterministic encoding of float value: %2x%0";
 
     static final String STDERR_NON_DETERMINISTIC_N =
             "Non-deterministic encoding of N";
