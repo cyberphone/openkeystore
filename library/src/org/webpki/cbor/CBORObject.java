@@ -859,7 +859,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }
 
     static final String STDERR_OUT_OF_RANGE =
-            "Value out of range for \"%s\" value=%s";
+            "Value out of range for \"%s\": %s";
     
     static final String STDERR_ARGUMENT_IS_NULL =
             "Argument \"null\" is not permitted";

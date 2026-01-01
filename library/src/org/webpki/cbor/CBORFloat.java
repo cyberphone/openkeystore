@@ -70,7 +70,7 @@ public class CBORFloat extends CBORObject {
         if ((bitFormat & FLOAT64_POS_INFINITY) == FLOAT64_POS_INFINITY) {
 
             // Non-finite numbers: Infinity, -Infinity, and NaN.
-            cborError(STDERR_NON_FINITE_NOT_PERMITTED);
+            cborError(STDERR_NAN_INFINITY_NOT_PERMITTED);
 
         }
 
@@ -258,9 +258,6 @@ public class CBORFloat extends CBORObject {
         cborPrinter.append((value == 0 || !Double.isFinite(value)) ?
             String.valueOf(value) : Float64Stringifier.encode(value, false));
     }
-
-    static final String STDERR_NON_FINITE_NOT_PERMITTED = 
-            "Not permitted, see \"CBORNonFinite\" for details";
 
     static final String STDERR_NAN_WITH_PAYLOADS_NOT_PERMITTED = 
             "createExtendedFloat() does not support NaN with payloads";
