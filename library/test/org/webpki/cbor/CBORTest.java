@@ -231,6 +231,33 @@ public class CBORTest {
         }
         return v;
     }
+
+    void oneIntegerTest(long value, IntegerVariations variation, boolean mustFail) {
+        CBORInt res = null;
+        try {
+            res = switch (variation) {
+                case INT8 -> CBORInt.createInt8((int)value);
+                case UINT8 -> CBORInt.createUint8((int)value);
+                case INT16 -> CBORInt.createInt16((int)value);
+                case UINT16 -> CBORInt.createUint16((int)value);
+                case INT32 -> CBORInt.createInt32(value);
+                case UINT32 -> CBORInt.createUint32(value);
+                case INT53 -> CBORInt.createInt53(value);
+                default -> null;
+            };
+            assertFalse("Should not fail: " + value + " " + variation, mustFail);
+            assertTrue("comp v=" + value, res.getInt64() == value);
+        } catch (Exception e) {
+            assertTrue("Should fail: " + value + " " + variation, mustFail);
+        }
+    }
+
+    void integerTest(long min, long max, IntegerVariations variation) {
+        oneIntegerTest(min, variation, false);
+        oneIntegerTest(max, variation, false);
+        oneIntegerTest(min - 1, variation, true);
+        oneIntegerTest(max + 1, variation, true);
+    }
     
     void integerTest(String value, IntegerVariations variation, boolean mustFail) {
         BigInteger bigInteger = new BigInteger(value);
@@ -565,6 +592,14 @@ public class CBORTest {
         integerTest("-2",  IntegerVariations.UINT8, true);
         integerTest("255", IntegerVariations.UINT8, false);
         integerTest("256", IntegerVariations.UINT8, true);
+
+        integerTest(-0x80, 0x7f, IntegerVariations.INT8);
+        integerTest(0, 0xff, IntegerVariations.UINT8);
+        integerTest(-0x8000, 0x7fff, IntegerVariations.INT16);
+        integerTest(0, 0xffff, IntegerVariations.UINT16);
+        integerTest(-0x80000000L, 0x7fffffffL, IntegerVariations.INT32);
+        integerTest(0, 0xffffffffL, IntegerVariations.UINT32);
+        integerTest(-9007199254740991L, 9007199254740991L, IntegerVariations.INT53);
         
         bigIntegerTest("18446744073709551615", "1bffffffffffffffff");
         bigIntegerTest("18446744073709551614", "1bfffffffffffffffe");

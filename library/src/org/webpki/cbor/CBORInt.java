@@ -30,6 +30,16 @@ import static org.webpki.cbor.CBORInternal.*;
  * In the unlikely case there is a need to explicitly deal with such integers,
  * using {@link CBORBigInt} is the supported workaround.
  * </div>
+ * <p>
+ * For better control of the generation of short integers, see
+ * {@link #createInt8(int)},
+ * {@link #createUint8(int)},
+ * {@link #createInt16(int)},
+ * {@link #createUint16(int)},
+ * {@link #createInt32(long)},
+ * {@link #createUint32(long)}, and
+ * {@link #createInt53(long)}.
+ * </p>
  */
 public class CBORInt extends CBORObject {
 
@@ -51,7 +61,6 @@ public class CBORInt extends CBORObject {
      * See also {@link CBORBigInt#CBORBigInt(BigInteger)} and
      * {@link CBORObject#getBigInteger()}.
      * </p>
-     *
      * @param value long value
      * @param unsigned <code>true</code> if value should be considered as unsigned
      * @throws CBORException
@@ -71,11 +80,146 @@ public class CBORInt extends CBORObject {
      * This constructor is equivalent to 
      * {@link CBORInt(long,boolean) <code>CBORInt(value, value >= 0)</code>}.
      * </p>
-     * 
      * @param value Java (signed) long type
      */
     public CBORInt(long value) {
         this(value, value >= 0);
+    }
+
+    static CBORInt rangeCheck(long value, int bits, boolean unsigned) {
+        long min;
+        long max;
+        if (bits == 53) {
+            min = -9007199254740991L;
+            max = 9007199254740991L;
+        } else {
+            min = unsigned ? 0 : -(1L << (bits - 1));
+            max = (unsigned ? 1L << bits : -min) - 1;
+        }
+        CBORInt cborInt = new CBORInt(value);
+        if (value < min || value > max) {
+            cborInt.outOfRangeError((unsigned ? "Uint" : "Int") + bits);
+        }
+        return cborInt;
+    }
+
+    /**
+     * Creates a CBOR <code>int</code> object.
+     * <p>
+     * This method creates a {@link CBORInt} object,
+     * where the value is verified to be within
+     * <code>-0x80</code> to 
+     * <code>0x7f</code>.
+     * </p>
+     * @param value Integer
+     * @return {@link CBORInt} object
+     * @throws CBORException If value is out of range
+     * @see CBORObject#getInt8()
+     */
+    public static CBORInt createInt8(int value) {
+        return rangeCheck(value, 8, false);
+    }
+
+    /**
+     * Creates a CBOR <code>int</code> object.
+     * <p>
+     * This method creates a {@link CBORInt} object,
+     * where the value is verified to be within
+     * <code>0</code> to 
+     * <code>0xff</code>.
+     * </p>
+     * @param value Integer
+     * @return {@link CBORInt} object
+     * @throws CBORException If value is out of range
+     * @see CBORObject#getUint8()
+     */
+    public static CBORInt createUint8(int value) {
+        return rangeCheck(value, 8, true);
+    }
+
+    /**
+     * Creates a CBOR <code>int</code> object.
+     * <p>
+     * This method creates a {@link CBORInt} object,
+     * where the value is verified to be within
+     * <code>-0x8000</code> to 
+     * <code>0x7fff</code>.
+     * </p>
+     * @param value Integer
+     * @return {@link CBORInt} object
+     * @throws CBORException If value is out of range
+     * @see CBORObject#getInt16()
+     */
+    public static CBORInt createInt16(int value) {
+        return rangeCheck(value, 16, false);
+    }
+
+    /**
+     * Creates a CBOR <code>int</code> object.
+     * <p>
+     * This method creates a {@link CBORInt} object,
+     * where the value is verified to be within
+     * <code>0</code> to 
+     * <code>0xffff</code>.
+     * </p>
+     * @param value Integer
+     * @return {@link CBORInt} object
+     * @throws CBORException If value is out of range
+     * @see CBORObject#getUint16()
+     */
+    public static CBORInt createUint16(int value) {
+        return rangeCheck(value, 16, true);
+    }
+
+    /**
+     * Creates a CBOR <code>int</code> object.
+     * <p>
+     * This method creates a {@link CBORInt} object,
+     * where the value is verified to be within
+     * <code>-0x80000000</code> to 
+     * <code>0x7fffffff</code>.
+     * </p>
+     * @param value Integer
+     * @return {@link CBORInt} object
+     * @throws CBORException If value is out of range
+     * @see CBORObject#getInt32()
+     */
+    public static CBORInt createInt32(long value) {
+        return rangeCheck(value, 32, false);
+    }
+
+    /**
+     * Creates a CBOR <code>int</code> object.
+     * <p>
+     * This method creates a {@link CBORInt} object,
+     * where the value is verified to be within
+     * <code>0</code> to 
+     * <code>0xffffffff</code>.
+     * </p>
+     * @param value Integer
+     * @return {@link CBORInt} object
+     * @throws CBORException If value is out of range
+     * @see CBORObject#getUint32()
+     */
+    public static CBORInt createUint32(long value) {
+        return rangeCheck(value, 32, true);
+    }
+
+    /**
+     * Creates a CBOR <code>int</code> object.
+     * <p>
+     * This method creates a {@link CBORInt} object,
+     * where the value is verified to be within
+     * <code>-9007199254740991</code> to 
+     * <code>9007199254740991</code>.
+     * </p>
+     * @param value Integer
+     * @return {@link CBORInt} object
+     * @throws CBORException If value is out of range
+     * @see CBORObject#getInt53()
+     */
+    public static CBORInt createInt53(long value) {
+        return rangeCheck(value, 53, false);
     }
 
     @Override
