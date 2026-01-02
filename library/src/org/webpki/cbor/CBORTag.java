@@ -133,24 +133,30 @@ public class CBORTag extends CBORObject {
         this.tagNumber = tagNumber;
         this.object = object;
         nullCheck(object);
-        if (tagNumber == RESERVED_BIG_INT_UNSIGNED || tagNumber == RESERVED_BIG_INT_NEGATIVE) {
-            cborError(STDERR_RESERVED_BIG_INT);
-        }
-        if (tagNumber == RESERVED_TAG_DATE_TIME) {
-            // Note: clone() because we have mot read it really.
-            dateTime = object.clone().getDateTime();
-        } else if (tagNumber == RESERVED_TAG_EPOCH_TIME) {
-            // Note: clone() because we have mot read it really.
-            epochTime = object.clone().getEpochTime();
-        } else if (tagNumber == RESERVED_TAG_COTX) {
-            if (object instanceof CBORArray) {
-                CBORArray holder = object.getArray();
-                if (holder.size() == 2 && holder.get(0) instanceof CBORString) {
-                    cotxObject = new COTXObject(holder.get(0).getString(), holder.get(1));
-                    return;
+        if (tagNumber < 10000) switch ((int)tagNumber) {
+            case RESERVED_BIG_INT_UNSIGNED, RESERVED_BIG_INT_NEGATIVE:
+                cborError(STDERR_RESERVED_BIG_INT);
+                break;
+
+            case RESERVED_TAG_DATE_TIME:
+                // Note: clone() because we have mot read it really.
+                dateTime = object.clone().getDateTime();
+                break;
+
+            case RESERVED_TAG_EPOCH_TIME:
+                // Note: clone() because we have mot read it really.
+                epochTime = object.clone().getEpochTime();
+                break;
+
+            case RESERVED_TAG_COTX:
+                if (object instanceof CBORArray) {
+                    CBORArray holder = object.getArray();
+                    if (holder.size() == 2 && holder.get(0) instanceof CBORString) {
+                        cotxObject = new COTXObject(holder.get(0).getString(), holder.get(1));
+                        return;
+                    }
                 }
-            }
-            tagSyntaxError(STDERR_INVALID_COTX_OBJECT);
+                tagSyntaxError(STDERR_INVALID_COTX_OBJECT);
         }
     }
 
