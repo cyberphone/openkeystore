@@ -2803,7 +2803,7 @@ public class CBORTest {
     //        System.out.println("EHi=" + result + " r=" + reduced + " v=" + value);
     //        System.out.println(e.toString());
             assertFalse("should" + e.toString(), ok);
-            checkException(e, Double.isFinite(value) ? "Value out of range" : "Not permitted:");
+            checkException(e, CBORObject.STDERR_OUT_OF_RANGE);
         }
     }
 

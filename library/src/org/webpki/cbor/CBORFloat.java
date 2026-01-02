@@ -176,18 +176,16 @@ public class CBORFloat extends CBORObject {
         return nf;
     }
 
-    static float overflowCheck(float value) {
-        if (!Float.isFinite(value)) {
-            cborError(STDERR_OUT_OF_RANGE);
-        }
-        return value;
+    static float reduce32(double value) {
+        return (float)value;
     }
 
-    static float reduce32Check(double value) {
-        if (!Double.isFinite(value)) {
-            cborError(STDERR_NAN_INFINITY_NOT_PERMITTED);
+    static CBORFloat returnConverted(float float32, double original, String type) {
+        if (Float.isFinite(float32)) {
+            return new CBORFloat(float32);
         }
-        return overflowCheck((float)value);
+        createExtendedFloat(original).outOfRangeError(type);
+        return null;       
     }
 
     /**
@@ -212,7 +210,7 @@ public class CBORFloat extends CBORObject {
      * @see #getFloat32()
      */
     public static CBORFloat createFloat32(double value) {
-        return new CBORFloat(reduce32Check(value));
+        return returnConverted(reduce32(value), value, "Float32");
     }
 
     /**
@@ -232,8 +230,8 @@ public class CBORFloat extends CBORObject {
      * @see #getFloat16()
      */
     public static CBORFloat createFloat16(double value) {
-        return new CBORFloat(
-            overflowCheck(Float.float16ToFloat(Float.floatToFloat16(reduce32Check(value)))));
+        return returnConverted(Float.float16ToFloat(Float.floatToFloat16(reduce32(value))),
+                               value, "Float16");
     }
 
     /**
@@ -261,9 +259,6 @@ public class CBORFloat extends CBORObject {
 
     static final String STDERR_NAN_WITH_PAYLOADS_NOT_PERMITTED = 
             "createExtendedFloat() does not support NaN with payloads";
-
-    static final String STDERR_OUT_OF_RANGE = 
-            "Value out of range for this floating-point type";
 
     static final String STDERR_NAN_INFINITY_NOT_PERMITTED = 
             "Not permitted: 'NaN/Infinity'";
