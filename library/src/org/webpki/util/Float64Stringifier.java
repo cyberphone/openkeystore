@@ -115,6 +115,11 @@ public final class Float64Stringifier {
      * @return String representation
      */
     public static String encode(double value, boolean ecmaOriginalMode) {
+        // Step 0: CBOR specials.
+        if (!ecmaOriginalMode && (value == 0 || !Double.isFinite(value))) {
+            return String.valueOf(value);
+        }
+
         // Step 1: Decode the floating point number, and unify normalized and subnormal cases.
         long bits = Double.doubleToLongBits(value);
         int ieeeExponent = (int) ((bits >>> DOUBLE_MANTISSA_BITS) & DOUBLE_EXPONENT_MASK);

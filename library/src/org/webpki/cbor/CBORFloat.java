@@ -253,8 +253,7 @@ public class CBORFloat extends CBORObject {
     
     @Override
     void internalToString(CborPrinter cborPrinter) {
-        cborPrinter.append((value == 0 || !Double.isFinite(value)) ?
-            String.valueOf(value) : Float64Stringifier.encode(value, false));
+        cborPrinter.append(Float64Stringifier.encode(value, false));
     }
 
     static final String STDERR_NAN_WITH_PAYLOADS_NOT_PERMITTED = 
