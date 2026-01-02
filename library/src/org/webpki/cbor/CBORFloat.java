@@ -177,6 +177,9 @@ public class CBORFloat extends CBORObject {
     }
 
     static float reduce32(double value) {
+        if (!Double.isFinite(value)) {
+            cborError(STDERR_NAN_INFINITY_NOT_PERMITTED);
+        }
         return (float)value;
     }
 

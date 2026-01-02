@@ -2803,7 +2803,8 @@ public class CBORTest {
     //        System.out.println("EHi=" + result + " r=" + reduced + " v=" + value);
     //        System.out.println(e.toString());
             assertFalse("should" + e.toString(), ok);
-            checkException(e, CBORObject.STDERR_OUT_OF_RANGE);
+            checkException(e, Double.isFinite(value) ? 
+                      CBORObject.STDERR_OUT_OF_RANGE : CBORFloat.STDERR_NAN_INFINITY_NOT_PERMITTED);
         }
     }
 
