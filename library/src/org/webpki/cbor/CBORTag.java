@@ -26,28 +26,28 @@ import java.time.Instant;
  * Tagged objects are based on CBOR major type 6.
  * This implementation accepts multiple variants of tags:
  * </p>
- * <div style='margin-left:4em'>
- * <code>nnn(</code><i>CBOR&nbsp;object&nbsp;</i><code>)</code><br>
- * <code>{@value #RESERVED_TAG_DATE_TIME}(</code><i>ISO&nbsp;date&nbsp;string</i><code>)</code><br>
-  <code>{@value #RESERVED_TAG_EPOCH_TIME}(</code><i>seconds[.mmm]</i><code>)</code><br>
- * <code>{@value #RESERVED_TAG_COTX}([</code><i>CBOR&nbsp;text&nbsp;string</i><code>,
- * </code><i>CBOR&nbsp;object&nbsp;</i><code>])</code>
+ * <div class='webpkifloat'>
+ * <table class='webpkitable' style='margin-left:2em'>
+ * <tr><th>Type</th><th>Diagnostic&nbsp;Notation</th><th>Comment</th></tr>
+ * <tr><td>General Purpose</td>
+ * <td><code>nnn(</code><i>CBOR&nbsp;object</i><code>)</code></td>
+ * <td>Arbitrary CBOR tag</td></tr>
+ * <tr><td><i>Reserved</i> <code>DateTime</code></td>
+ * <td><code>{@value #RESERVED_TAG_DATE_TIME}(</code><i>ISO&nbsp;date&nbsp;string</i><code>)</code></td>
+ * <td>See {@link #getDateTime()}</td></tr>
+ * <tr><td><i>Reserved</i> <code>EpochTime</code></td>
+ * <td><code>{@value #RESERVED_TAG_EPOCH_TIME}(</code><i>Time stamp</i><code>)</code></td>
+ * <td>See {@link #getEpochTime()}</td></tr>
+ * <tr><td><i>Reserved</i> <code>COTX</code></td>
+ * <td><code>{@value #RESERVED_TAG_COTX}([</code><i>Text&nbsp;string</i><code>,
+ * </code><i>CBOR&nbsp;object</i><code>])</code></td>
+ * <td>See {@link #getCOTXObject()}</td></tr>
+ * </table>
  * </div>
+ * The <i>reserved</i> tags are verified for correctness during decoding as well
+ * as when created programmatically. 
  * <p>
- * The purpose of the last construct is to provide a
- * generic way of adding an object type identifier in the
- * form of a URL or other text data to CBOR objects.
- * The CBOR tag <b>must</b> in this case be <code>{@value #RESERVED_TAG_COTX}</code>. 
- * Example:
- * </p>
- * <div style='margin-left:4em'><code>
- * {@value #RESERVED_TAG_COTX}(["https://example.com/myobject", {<br>
- * &nbsp;&nbsp;"amount": "145.00",<br>
- * &nbsp;&nbsp;"currency": "USD"<br>
- * }])</code>
- * </div>
- * <p>
- * Note that the <code>bignum</code> type is dealt with
+ * Note that the <code>bigint</code> type is dealt with
  * as a specific primitive, in spite of being a tagged object.
  * </p>
  */
@@ -104,7 +104,19 @@ public class CBORTag extends CBORObject {
 
     
     /**
-     * Creates a COTX-tagged object.
+     * Creates a <a href='https://www.ietf.org/archive/id/draft-rundgren-cotx-05.html' class='webpkilink'>COTX</a> object.
+     * <p>
+     * The purpose of the <code>COTX</code> tag is to provide a
+     * generic way of adding an object type identifier in the
+     * form of a URL or other text data to CBOR objects.
+     * Example:
+     * </p>
+     * <div style='margin-left:2em'><code>
+     * {@value #RESERVED_TAG_COTX}(["https://example.com/myobject", {<br>
+     * &nbsp;&nbsp;"amount": "145.00",<br>
+     * &nbsp;&nbsp;"currency": "USD"<br>
+     * }])</code>
+     * </div>
      * 
      * @param typeUrl Type URL (or other string)
      * @param object Object
@@ -212,11 +224,12 @@ public class CBORTag extends CBORObject {
     /**
      * Get <code>COTX</code> object.
      * <p>
-     * This method assumes that a valid COTX tag has been found, 
+     * This method assumes that a valid {@link CBORTag#CBORTag(String, CBORObject) COTX} tag has been found, 
      * otherwise a {@link CBORException} is thrown.
      * </p>
      * @return <code>COTXObject</code>
      * @throws CBORException
+     * @see CBORTag#CBORTag(String, CBORObject)
      */
     public COTXObject getCOTXObject() {
         if (cotxObject == null) {
