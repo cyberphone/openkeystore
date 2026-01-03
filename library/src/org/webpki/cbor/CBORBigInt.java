@@ -48,6 +48,18 @@ public class CBORBigInt extends CBORObject {
         this.value = value;
         nullCheck(value);
     }
+
+    public static CBORBigInt createInt128(BigInteger value) {
+        CBORBigInt cborBigInt = new CBORBigInt(value);
+        cborBigInt.getInt128();
+        return cborBigInt;
+    }
+
+    public static CBORBigInt createUint128(BigInteger value) {
+        CBORBigInt cborBigInt = new CBORBigInt(value);
+        cborBigInt.getUint128();
+        return cborBigInt;
+    }
     
     @Override
     byte[] internalEncode() {

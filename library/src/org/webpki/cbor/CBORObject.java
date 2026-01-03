@@ -38,6 +38,10 @@ import static org.webpki.cbor.CBORInternal.*;
  */
 public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
 
+    static final BigInteger MIN_INT_128  = new BigInteger("-80000000000000000000000000000000", 16);
+    static final BigInteger MAX_INT_128  = new BigInteger("7fffffffffffffffffffffffffffffff", 16);
+    static final BigInteger MAX_UINT_128 = new BigInteger("ffffffffffffffffffffffffffffffff", 16);
+
     // Package level constructor
     CBORObject() {}
     
@@ -137,6 +141,21 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
         }
         return ((CBORBigInt) getTypeAndMarkAsRead(CBORBigInt.class)).value;
     }
+
+    BigInteger checkInt128(BigInteger value, BigInteger min, BigInteger max, String type) {
+        if (value.compareTo(min) < 0 || value.compareTo(max) > 0) {
+            outOfRangeError(type);
+        }
+        return value;
+    }
+
+    public BigInteger getInt128() {
+        return checkInt128(getBigInteger(), MIN_INT_128, MAX_INT_128, "Int128");
+    }
+
+    public BigInteger getUint128() {
+        return checkInt128(getBigInteger(), BigInteger.ZERO, MAX_UINT_128, "Uint128");
+    } 
 
     /**
      * Get CBOR <code>int</code> value.
