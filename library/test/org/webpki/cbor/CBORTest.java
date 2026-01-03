@@ -442,6 +442,39 @@ public class CBORTest {
         assertTrue("=", (expected == 0) == (result == 0));
     }
 
+    void goodInt128(boolean unsigned, BigInteger value) {
+        CBORObject int128 = CBORDecoder.decode(new CBORBigInt(value).encode());
+        BigInteger res = unsigned ? int128.getUint128() : int128.getInt128();
+        assertTrue("eq1", res.equals(value));
+        assertTrue("eq2", int128.equals(unsigned ? CBORBigInt.createUint128(value) : CBORBigInt.createInt128(value)));
+    }
+
+    void badInt128(boolean unsigned, BigInteger value) {
+        try {
+            CBORObject int128 = CBORDecoder.decode(new CBORBigInt(value).encode());
+            BigInteger res = unsigned ? int128.getUint128() : int128.getInt128();
+            fail("Should not");
+        } catch (Exception e) {
+            checkException(e, CBORObject.STDERR_OUT_OF_RANGE);
+        }
+        try {
+            CBORBigInt res = unsigned ? CBORBigInt.createUint128(value) : CBORBigInt.createInt128(value);
+            fail("Should not");
+        } catch (Exception e) {
+            checkException(e, CBORObject.STDERR_OUT_OF_RANGE);
+        }
+  
+    }
+
+    void int128Test(BigInteger min, BigInteger max) {
+        boolean unsigned = min.equals(BigInteger.ZERO);
+        goodInt128(unsigned, min);
+        goodInt128(unsigned, max);
+        goodInt128(unsigned, BigInteger.TEN);
+        badInt128(unsigned, min.subtract(BigInteger.ONE));
+        badInt128(unsigned, max.add(BigInteger.ONE));
+    }
+
     @Test
     public void assortedTests() {
         CBORArray cborArray = new CBORArray()
@@ -622,6 +655,9 @@ public class CBORTest {
         intBigintTest("-9223372036854775809", "3b8000000000000000", true);
         intBigintTest("-18446744073709551616", "3bffffffffffffffff", true);
         intBigintTest("18446744073709551615", "1bffffffffffffffff", false);
+
+        int128Test(CBORObject.MIN_INT_128, CBORObject.MAX_INT_128);
+        int128Test(BigInteger.ZERO, CBORObject.MAX_UINT_128);
  
         integerTest(-1, "20");
         integerTest(-10, "29");
