@@ -453,13 +453,13 @@ public class CBORTest {
         try {
             CBORObject int128 = CBORDecoder.decode(new CBORBigInt(value).encode());
             BigInteger res = unsigned ? int128.getUint128() : int128.getInt128();
-            fail("Should not");
+            fail("Should not" + res);
         } catch (Exception e) {
             checkException(e, CBORObject.STDERR_OUT_OF_RANGE);
         }
         try {
             CBORBigInt res = unsigned ? CBORBigInt.createUint128(value) : CBORBigInt.createInt128(value);
-            fail("Should not");
+            fail("Should not" + res);
         } catch (Exception e) {
             checkException(e, CBORObject.STDERR_OUT_OF_RANGE);
         }

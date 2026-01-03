@@ -149,10 +149,36 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
         return value;
     }
 
+    /**
+     * Get CBOR <code>int</code> value.
+     * <p>
+     * This method requires that the object is a
+     * {@link CBORBigInt} or {@link CBORInt}, and has a value ranging from
+     * <code>-0x80000000000000000000000000000000</code> to 
+     * <code>0x7fffffffffffffffffffffffffffffff</code>.
+     * </p>
+     * 
+     * @return 128-bit signed integer.
+     * @see CBORBigInt#createInt128(BigInteger)
+     * @throws CBORException
+     */
     public BigInteger getInt128() {
         return checkInt128(getBigInteger(), MIN_INT_128, MAX_INT_128, "Int128");
     }
 
+    /**
+     * Get CBOR <code>int</code> value.
+     * <p>
+     * This method requires that the object is a
+     * {@link CBORBigInt} or {@link CBORInt}, and has a value ranging from
+     * <code>-0</code> to 
+     * <code>0xffffffffffffffffffffffffffffffff</code>.
+     * </p>
+     * 
+     * @return 128-bit unsigned integer.
+     * @see CBORBigInt#createUint128(BigInteger)
+     * @throws CBORException
+     */
     public BigInteger getUint128() {
         return checkInt128(getBigInteger(), BigInteger.ZERO, MAX_UINT_128, "Uint128");
     } 
