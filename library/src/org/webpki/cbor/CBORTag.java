@@ -133,7 +133,7 @@ public class CBORTag extends CBORObject {
         this.tagNumber = tagNumber;
         this.object = object;
         nullCheck(object);
-        if (tagNumber < 10000) switch ((int)tagNumber) {
+        if (tagNumber < Integer.MAX_VALUE) switch ((int)tagNumber) {
             case RESERVED_BIG_INT_UNSIGNED, RESERVED_BIG_INT_NEGATIVE:
                 cborError(STDERR_RESERVED_BIG_INT);
                 break;
