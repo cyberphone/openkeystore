@@ -31,7 +31,8 @@ import static org.webpki.cbor.CBORInternal.*;
  * using {@link CBORBigInt} is the supported workaround.
  * </div>
  * <p>
- * For better control of the generation of short integers, see
+ * For fine-grained control of programmatically created integers,
+ * the following methods are provided as an <i>alternative</i> to the constructor:
  * {@link #createInt8(int)},
  * {@link #createUint8(int)},
  * {@link #createInt16(int)},
@@ -39,6 +40,9 @@ import static org.webpki.cbor.CBORInternal.*;
  * {@link #createInt32(long)},
  * {@link #createUint32(long)}, and
  * {@link #createInt53(long)}.
+ * Note that these methods <i>do not change data</i>; they
+ * only verify that data is within expected limits, and if that is the case,
+ * finish the operation using the standard constructor.
  * </p>
  */
 public class CBORInt extends CBORObject {
