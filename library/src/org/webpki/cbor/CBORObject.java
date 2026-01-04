@@ -171,7 +171,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * <p>
      * This method requires that the object is a
      * {@link CBORBigInt} or {@link CBORInt}, and has a value ranging from
-     * <code>-0</code> to 
+     * <code>0</code> to 
      * <code>0xffffffffffffffffffffffffffffffff</code>.
      * </p>
      * 
