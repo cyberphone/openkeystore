@@ -153,7 +153,7 @@ public abstract class CBORSigner <T extends CBORSigner<?>> {
      * <p>
      * </p>
      * <p>
-     * Also see {@link #setCloneMode(boolean)}.
+     * See also {@link #setCloneMode(boolean)}.
      * </p>
      * 
      * @param objectToSign CBOR map or tag(map) to be signed

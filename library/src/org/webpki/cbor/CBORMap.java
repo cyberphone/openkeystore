@@ -35,7 +35,7 @@ public class CBORMap extends CBORObject {
     /**
      * Support interface for dynamic CBOR generation.
      * <p>
-     * Also see {@link #setDynamic(Dynamic)}.
+     * See also {@link #setDynamic(Dynamic)}.
      * </p>
      */
     public interface Dynamic {
@@ -102,7 +102,7 @@ public class CBORMap extends CBORObject {
      * either be created <i>inline</i> (using chaining), or be supplied as
      * <i>preset variables</i>.
      * </p>
-     * Also see {@link CBORMap#update(CBORObject, CBORObject, boolean)}.
+     * See also {@link CBORMap#update(CBORObject, CBORObject, boolean)}.
      * <p>
      * </p>
      * 

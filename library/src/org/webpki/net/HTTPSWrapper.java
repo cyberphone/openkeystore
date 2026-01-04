@@ -1328,7 +1328,7 @@ public class HTTPSWrapper {
 
         CmdLineArgument CMD_addprovider = create(CmdLineArgumentGroup.GENERAL,
                 "provider", "class",
-                "Add provider (also see \"provider-argument\")",
+                "Add provider (see also \"provider-argument\")",
                 CmdFrequency.OPTIONAL);
 
         CmdLineArgument CMD_provider_arg = create(CmdLineArgumentGroup.GENERAL,

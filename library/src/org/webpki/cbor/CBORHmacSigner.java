@@ -23,7 +23,7 @@ import org.webpki.crypto.SignatureAlgorithms;
 /**
  * Class for creating CBOR HMAC signatures.
  * <p>
- * Also see {@link CBORSigner}.
+ * See also {@link CBORSigner}.
  * </p>
  */
 public class CBORHmacSigner extends CBORSigner<CBORHmacSigner> {

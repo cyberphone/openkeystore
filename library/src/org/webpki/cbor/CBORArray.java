@@ -56,7 +56,7 @@ public class CBORArray extends CBORObject {
     /**
      * Add object to the CBOR array.
      * <p>
-     * Also see {@link CBORArray#insert(int, CBORObject)}
+     * See also {@link CBORArray#insert(int, CBORObject)}
      * </p>
      * 
      * @param object Object to be appended to the array.

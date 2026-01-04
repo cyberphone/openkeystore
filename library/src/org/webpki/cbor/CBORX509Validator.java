@@ -26,7 +26,7 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
 /**
  * Class for validating X.509 signatures.
  *<p>
- * Also see {@link CBORValidator}.
+ * See also {@link CBORValidator}.
  *</p> 
  * <p>
  * Note that X.509 signatures do not permit the use of a keyId.

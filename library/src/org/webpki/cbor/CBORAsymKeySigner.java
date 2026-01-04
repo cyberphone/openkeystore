@@ -30,12 +30,12 @@ import static org.webpki.cbor.CBORCryptoConstants.*;
 /**
  * Class for creating CBOR asymmetric key signatures.
  * <p>
- * Also see {@link CBORSigner}.
+ * See also {@link CBORSigner}.
  * </p>
  * <p> 
  * Note that asymmetric key signatures do not permit using
  * both a <code>keyId</code> and an in-line public key.
- * Also see {@link CBORSigner#setKeyId(CBORObject)} and {@link #setPublicKey(PublicKey)}.
+ * See also {@link CBORSigner#setKeyId(CBORObject)} and {@link #setPublicKey(PublicKey)}.
  * </p>
  */
 public class CBORAsymKeySigner extends CBORSigner<CBORAsymKeySigner> {
