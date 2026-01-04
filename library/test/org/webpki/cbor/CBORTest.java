@@ -336,14 +336,6 @@ public class CBORTest {
         assertTrue("dn=" + ib.toString(), value.equals(ib.toString()));
         assertTrue("dn2", value.equals(new CBORBigInt(bigVal).toString()));
         assertTrue("dn3", value.equals(ib.getBigInteger().toString()));
-        try {
-            new CBORInt(bigVal.longValue(), !value.startsWith("-")).toString();
-            assertFalse("should not", big);
-        } catch (Exception e) {
-//            System.out.println(e.toString());
-            assertTrue("should", big);
-            checkException(e, CBORInt.STDERR_INT_VALUE_OUT_OF_RANGE, bigVal.toString());
-        }
         assertTrue("eq", ib.getBigInteger().compareTo(bigVal) == 0);
     }
 

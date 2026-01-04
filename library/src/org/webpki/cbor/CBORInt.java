@@ -48,46 +48,44 @@ import static org.webpki.cbor.CBORInternal.*;
 public class CBORInt extends CBORObject {
 
     static final BigInteger MAX_INT_MAGNITUDE = new BigInteger("ffffffffffffffff", 16);    
-    static final BigInteger MIN_INT_VALUE     = new BigInteger("-10000000000000000", 16);
 
     long value;
     boolean unsigned;
     
     /**
-     * Creates a CBOR unsigned or negative <code>int</code> object.
+     * Creates a CBOR unsigned or signed <code>int</code> object.
      * <p>
-     * Unsigned integers range from <code>0</code> to 
-     * <span style='white-space:nowrap'><code>2<sup>64</sup>-1</code></span>,
-     * while valid negative integers range from <code>-1</code> to
-     * <span style='white-space:nowrap'><code>-2<sup>63</sup></code></span>.
+     * If <code>unsigned</code> is <code>true</code>, <code>value</code> is treated
+     * as an <i>unsigned</i> integer with range <code>0</code> to <code>0xffffffffffffffff</code>,
+     * else <code>value</code> is assumed to be a standard java (<i>signed</i>) long.
      * </p>
      * <p>
      * See also {@link CBORBigInt#CBORBigInt(BigInteger)} and
      * {@link CBORObject#getBigInteger()}.
      * </p>
+     * 
      * @param value long value
-     * @param unsigned <code>true</code> if value should be considered as unsigned
-     * @throws CBORException
+     * @param unsigned <code>true</code> => unsigned
      */
     public CBORInt(long value, boolean unsigned) {
         this.value = value;
-        this.unsigned = unsigned;
         if (!unsigned && value >= 0) {
-            cborError(STDERR_INT_VALUE_OUT_OF_RANGE, 
-                MIN_INT_VALUE.add(BigInteger.valueOf(value)).toString());
+            unsigned = true;
         }
+        this.unsigned = unsigned;
     }
 
     /**
      * Creates a CBOR signed <code>int</code> object.
      * <p>
      * This constructor is equivalent to 
-     * {@link CBORInt(long,boolean) <code>CBORInt(value, value >= 0)</code>}.
+     * {@link CBORInt(long,boolean) <code>CBORInt(value, false)</code>}.
      * </p>
-     * @param value Java (signed) long type
+     * 
+     * @param value Java (<i>signed</i>) long
      */
     public CBORInt(long value) {
-        this(value, value >= 0);
+        this(value, false);
     }
 
     static CBORInt rangeCheck(long value, long min, long max) {
@@ -114,6 +112,7 @@ public class CBORInt extends CBORObject {
      * <code>-0x80</code> to 
      * <code>0x7f</code>.
      * </p>
+     * 
      * @param value Integer
      * @return {@link CBORInt} object
      * @throws CBORException If value is out of range
@@ -131,6 +130,7 @@ public class CBORInt extends CBORObject {
      * <code>0</code> to 
      * <code>0xff</code>.
      * </p>
+     * 
      * @param value Integer
      * @return {@link CBORInt} object
      * @throws CBORException If value is out of range
@@ -148,6 +148,7 @@ public class CBORInt extends CBORObject {
      * <code>-0x8000</code> to 
      * <code>0x7fff</code>.
      * </p>
+     * 
      * @param value Integer
      * @return {@link CBORInt} object
      * @throws CBORException If value is out of range
@@ -165,6 +166,7 @@ public class CBORInt extends CBORObject {
      * <code>0</code> to 
      * <code>0xffff</code>.
      * </p>
+     * 
      * @param value Integer
      * @return {@link CBORInt} object
      * @throws CBORException If value is out of range
@@ -182,6 +184,7 @@ public class CBORInt extends CBORObject {
      * <code>-0x80000000</code> to 
      * <code>0x7fffffff</code>.
      * </p>
+     * 
      * @param value Integer
      * @return {@link CBORInt} object
      * @throws CBORException If value is out of range
@@ -199,6 +202,7 @@ public class CBORInt extends CBORObject {
      * <code>0</code> to 
      * <code>0xffffffff</code>.
      * </p>
+     * 
      * @param value Integer
      * @return {@link CBORInt} object
      * @throws CBORException If value is out of range
@@ -216,6 +220,7 @@ public class CBORInt extends CBORObject {
      * <code>-9007199254740991</code> to 
      * <code>9007199254740991</code>.
      * </p>
+     * 
      * @param value Integer
      * @return {@link CBORInt} object
      * @throws CBORException If value is out of range
@@ -239,8 +244,4 @@ public class CBORInt extends CBORObject {
     void internalToString(CborPrinter cborPrinter) {
         cborPrinter.append(unsigned ? Long.toUnsignedString(value) : Long.toString(value));
     }
-
-    static final String STDERR_INT_VALUE_OUT_OF_RANGE = 
-            "Signed \"int\" out of range: %s";
-
 }
