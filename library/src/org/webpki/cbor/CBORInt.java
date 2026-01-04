@@ -58,10 +58,6 @@ public class CBORInt extends CBORObject {
      * <span style='white-space:nowrap'><code>-2<sup>63</sup></code></span>.
      * </p>
      * <p>
-     * For fine-grained control of created integers, the <code>CBORInt.create*()</code>
-     * methods may be used as an alternative to this constructor.
-     * </p>
-     * <p>
      * See also {@link CBORBigInt#CBORBigInt(BigInteger)} and
      * {@link CBORObject#getBigInteger()}.
      * </p>
