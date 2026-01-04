@@ -40,6 +40,7 @@ public class CBORBigInt extends CBORObject {
      * <code>int</code> encoding will be used, otherwise <code>value</code>
      * will be encoded as a CBOR <code>bigint</code>.
      * </p>
+     * 
      * @see CBORInt#CBORInt(long)
      * @see CBORObject#getBigInteger()
      * @param value Integer in BigInteger format
@@ -49,12 +50,40 @@ public class CBORBigInt extends CBORObject {
         nullCheck(value);
     }
 
+    /**
+     * Creates a CBOR <code>int</code> object.
+     * <p>
+     * This method creates a {@link CBORBigInt} object,
+     * where the value is verified to be within
+     * <code>-0x80000000000000000000000000000000</code> to 
+     * <code>0x7fffffffffffffffffffffffffffffff</code>.
+     * </p>
+     * 
+     * @param value Integer
+     * @return {@link CBORBigInt} object
+     * @throws CBORException If value is out of range
+     * @see CBORObject#getInt128()
+     */
     public static CBORBigInt createInt128(BigInteger value) {
         CBORBigInt cborBigInt = new CBORBigInt(value);
         cborBigInt.getInt128();
         return cborBigInt;
     }
 
+    /**
+     * Creates a CBOR <code>int</code> object.
+     * <p>
+     * This method creates a {@link CBORBigInt} object,
+     * where the value is verified to be within
+     * <code>0</code> to 
+     * <code>0xffffffffffffffffffffffffffffffff</code>.
+     * </p>
+     * 
+     * @param value Integer
+     * @return {@link CBORBigInt} object
+     * @throws CBORException If value is out of range
+     * @see CBORObject#getUint128()
+     */
     public static CBORBigInt createUint128(BigInteger value) {
         CBORBigInt cborBigInt = new CBORBigInt(value);
         cborBigInt.getUint128();

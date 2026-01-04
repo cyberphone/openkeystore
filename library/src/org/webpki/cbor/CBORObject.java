@@ -150,7 +150,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }
 
     /**
-     * Get CBOR <code>int</code> value.
+     * Get CBOR <code>bigint</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORBigInt} or {@link CBORInt}, and has a value ranging from
@@ -167,7 +167,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }
 
     /**
-     * Get CBOR <code>int</code> value.
+     * Get CBOR <code>unsiged</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORBigInt} or {@link CBORInt}, and has a value ranging from
