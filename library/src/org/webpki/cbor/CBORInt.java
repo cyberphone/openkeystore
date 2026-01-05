@@ -55,9 +55,12 @@ public class CBORInt extends CBORObject {
     /**
      * Creates a CBOR unsigned or signed <code>int</code> object.
      * <p>
-     * If <code>unsigned</code> is <code>true</code>, <code>value</code> is treated
-     * as an <i>unsigned</i> integer with range <code>0</code> to <code>0xffffffffffffffff</code>,
-     * else <code>value</code> is assumed to be a standard java (<i>signed</i>) long.
+     * If the <code>unsigned</code> flag is <code>true</code>, <code>value</code> is treated
+     * as an <i>unsigned</i> long with range <code>0</code> to <code>0xffffffffffffffff</code>.
+     * </p>
+     * <p>
+     * If the <code>unsigned</code> flag is <code>false</code>, <code>value</code> is treated
+     * as a standard java (<i>signed</i>) long with range <code>-0x8000000000000000</code> to <code>0x7fffffffffffffff</code>.
      * </p>
      * <p>
      * See also {@link CBORBigInt#CBORBigInt(BigInteger)} and
