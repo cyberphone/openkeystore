@@ -12,7 +12,7 @@ and their mapping to Java, here expressed in
 notation:
 <div class='webpkifloat'>
 <table class='webpkitable' style='margin-left:2em'>
-<tr><th>CBOR</th><th>Implementation</th>
+<tr><th>CDDL</th><th>Implementation</th>
 <th>Java&nbsp;Mapping</th><th>Notes</th></tr>
 <tr style='text-align:center'><td><code>int</code></td><td>{@link CBORInt}</td><td><code>long</code></td><td><code>1</code></td></tr>
 <tr style='text-align:center'><td><code>bigint</code></td><td>{@link CBORBigInt}</td><td><code>BigInteger</code></td><td><code>1</code></td></tr>
@@ -29,15 +29,110 @@ notation:
 </table>
 </div>
 <ol style='margin:0 0'>
-<li>The distinction between unsigned and negative values is
- dealt with automatically.
- The encoded representation is determined by the size of the value.
-See also {@link CBORObject#getBigInteger()}.</li>
+<li>See a href='#integer-data-types'>Integer Data Types</a>.</li>
 <li style='padding-top:0.5em'>Floating-point data covers the <code>16</code>, <code>32</code>, and <code>64</code>-bit
 <span style='white-space:nowrap'><code>IEEE</code> <code>754</code></span> variants.
 The encoded representation is determined by the size and precision of the value.</li>
 <li style='padding-top:0.5em'>CBOR applications may also depend on
 <a href='doc-files/non-finite-numbers.html' class='webpkilink'>Non-Finite Numbers</a>.</li>
+</ol>
+<h3 id='integer-data-types'>Integer Data Types</h3>
+The distinction between unsigned and negative values is
+ dealt with automatically.
+ The encoded representation is determined by the size of the value.
+See also {@link CBORObject#getBigInteger()}.
+The following table holds additional CDDL defintions, imposed by the API and
+[<a href='https://www.ietf.org/archive/id/draft-rundgren-cbor-core-21.html#name-additional-cddl-types' class='webpkilink'>CBOR::Core</a>]:
+<div class='webpkifloat'>
+<table class='webpkitable' style='margin-left:2em'>
+  <tr><th>CDDL</th><th>Decoding</th><th>Encoding</th><th>Constructor</th><th>Notes</th></tr>
+  <tr>
+    <td style='text-align:center'><code>int8</code></td>
+    <td>&nbsp;{@link CBORObject#getInt8() getInt8()}</td>
+    <td>&nbsp;&nbsp;{@link CBORInt#createUint8(int)}</td>
+    <td style='text-align:center'>{@link CBORInt#CBORInt(long)}</td>
+    <td style='text-align:center'>1, 2</td>
+  </tr>
+  <tr>
+    <td style='text-align:center'><code>uint8</code></td>
+    <td>&nbsp;{@link CBORObject#getUint8() getUint8()}</td>
+    <td>&nbsp;&nbsp;{@link CBORInt#createUint8(int)}</td>
+    <td style='text-align:center'>{@link CBORInt#CBORInt(long)}</td>
+    <td style='text-align:center'>1, 2</td>
+  </tr>
+  <tr>
+    <td style='text-align:center'><code>int16</code></td>
+    <td>&nbsp;{@link CBORObject#getInt16() getInt16()}</td>
+    <td>&nbsp;&nbsp;{@link CBORInt#createInt16(int)}</td>
+    <td style='text-align:center'>{@link CBORInt#CBORInt(long)}</td>
+    <td style='text-align:center'>1, 2</td>
+  </tr>
+  <tr>
+    <td style='text-align:center'><code>uint16</code></td>
+    <td>&nbsp;{@link CBORObject#getUint16() getUint16()}</td>
+    <td>&nbsp;&nbsp;{@link CBORInt#createUint16(int)}</td>
+    <td style='text-align:center'>{@link CBORInt#CBORInt(long)}</td>
+    <td style='text-align:center'>1, 2</td>
+  </tr>
+  <tr>
+    <td style='text-align:center'><code>int32</code></td>
+    <td>&nbsp;{@link CBORObject#getInt32() getInt32()}</td>
+    <td>&nbsp;&nbsp;{@link CBORInt#createInt32(long)}</td>
+    <td style='text-align:center'>{@link CBORInt#CBORInt(long)}</td>
+    <td style='text-align:center'>1, 2</td>
+  </tr>
+  <tr>
+    <td style='text-align:center'><code>uint32</code></td>
+    <td>&nbsp;{@link CBORObject#getUint32() getUint32()}</td>
+    <td>&nbsp;&nbsp;{@link CBORInt#createUint32(long)}</td>
+    <td style='text-align:center'>{@link CBORInt#CBORInt(long)}</td>
+    <td style='text-align:center'>1, 2</td>
+  </tr>
+  <tr>
+    <td style='text-align:center'><code>int53</code></td>
+    <td>&nbsp;{@link CBORObject#getInt53() getInt53()}</td>
+    <td>&nbsp;&nbsp;{@link CBORInt#createInt53(long)}</td>
+    <td style='text-align:center'>{@link CBORInt#CBORInt(long)}</td>
+    <td style='text-align:center'>1</td>
+  </tr>
+  <tr>
+    <td style='text-align:center'><code>int64</code></td>
+    <td>&nbsp;{@link CBORObject#getInt64() getInt64()}</td>
+    <td></td>
+    <td style='text-align:center'>{@link CBORInt#CBORInt(long)}</td>
+    <td style='text-align:center'>1, 2</td>
+  </tr>
+  <tr>
+    <td style='text-align:center'><code>uint64</code></td>
+    <td>&nbsp;{@link CBORObject#getUint64() getUint64()}</td>
+    <td></td>
+    <td style='text-align:center'>{@link CBORInt#CBORInt(long, boolean) CBORInt(long, true)}</td>
+    <td style='text-align:center'>1, 2</td>
+  </tr>
+  <tr>
+    <td style='text-align:center'><code>int128</code></td>
+    <td>{@link CBORObject#getInt128() getInt128()}</td>
+    <td>{@link CBORBigInt#createInt128(BigInteger)}</td>
+    <td style='text-align:center'>{@link CBORBigInt#CBORBigInt(BigInteger)}</td>
+    <td style='text-align:center'>1, 2</td>
+  </tr>
+  <tr>
+    <td style='text-align:center'><code>uint128</code></td>
+    <td>{@link CBORObject#getUint128() getUint128()}</td>
+    <td>{@link CBORBigInt#createUint128(BigInteger)}</td>
+    <td style='text-align:center'>{@link CBORBigInt#CBORBigInt(BigInteger)}</td>
+    <td style='text-align:center'>1, 2</td>
+  </tr>
+</table>
+</div>
+<ol style='margin:0 0'>
+  <li>Note that the only difference between the "Encoding" method and the
+    "Constructor", is that the former <i>verifies</i> that the input argument
+    matches the permitted range as well.
+  </li>
+  <li style='padding-top:0.5em'>Integer type with a value range adapted to languages like C and Rust that depend on
+    two's complement representation.
+  </li>
 </ol>
 <h3 id='time-data'>Time Data</h3>
 Since <code>CBOR</code> lacks a native time primitive,

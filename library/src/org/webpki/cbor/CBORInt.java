@@ -108,7 +108,7 @@ public class CBORInt extends CBORObject {
     }
 
     /**
-     * Creates a CBOR <code>int</code> object.
+     * Creates a CBOR <code>int8</code> object.
      * <p>
      * This method creates a {@link CBORInt} object,
      * where the value is verified to be within
@@ -126,7 +126,7 @@ public class CBORInt extends CBORObject {
     }
 
     /**
-     * Creates a CBOR <code>int</code> object.
+     * Creates a CBOR <code>uint8</code> object.
      * <p>
      * This method creates a {@link CBORInt} object,
      * where the value is verified to be within
@@ -144,7 +144,7 @@ public class CBORInt extends CBORObject {
     }
 
     /**
-     * Creates a CBOR <code>int</code> object.
+     * Creates a CBOR <code>int16</code> object.
      * <p>
      * This method creates a {@link CBORInt} object,
      * where the value is verified to be within
@@ -162,7 +162,7 @@ public class CBORInt extends CBORObject {
     }
 
     /**
-     * Creates a CBOR <code>int</code> object.
+     * Creates a CBOR <code>uint16</code> object.
      * <p>
      * This method creates a {@link CBORInt} object,
      * where the value is verified to be within
@@ -180,7 +180,7 @@ public class CBORInt extends CBORObject {
     }
 
     /**
-     * Creates a CBOR <code>int</code> object.
+     * Creates a CBOR <code>int32</code> object.
      * <p>
      * This method creates a {@link CBORInt} object,
      * where the value is verified to be within
@@ -198,7 +198,7 @@ public class CBORInt extends CBORObject {
     }
 
     /**
-     * Creates a CBOR <code>int</code> object.
+     * Creates a CBOR <code>uint32</code> object.
      * <p>
      * This method creates a {@link CBORInt} object,
      * where the value is verified to be within
@@ -216,7 +216,7 @@ public class CBORInt extends CBORObject {
     }
 
     /**
-     * Creates a CBOR <code>int</code> object.
+     * Creates a CBOR <code>int53</code> object.
      * <p>
      * This method creates a {@link CBORInt} object,
      * where the value is verified to be within

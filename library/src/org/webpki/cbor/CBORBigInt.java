@@ -51,7 +51,7 @@ public class CBORBigInt extends CBORObject {
     }
 
     /**
-     * Creates a CBOR <code>integer</code> object.
+     * Creates a CBOR <code>int128</code> object.
      * <p>
      * This method creates a {@link CBORBigInt} object,
      * where the value is verified to be within
@@ -71,7 +71,7 @@ public class CBORBigInt extends CBORObject {
     }
 
     /**
-     * Creates a CBOR <code>unsigned</code> object.
+     * Creates a CBOR <code>uint128</code> object.
      * <p>
      * This method creates a {@link CBORBigInt} object,
      * where the value is verified to be within

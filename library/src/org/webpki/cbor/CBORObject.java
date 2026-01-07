@@ -150,7 +150,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }
 
     /**
-     * Get CBOR <code>integer</code> value.
+     * Get CBOR <code>int128</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORBigInt} or {@link CBORInt}, and has a value ranging from
@@ -167,7 +167,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }
 
     /**
-     * Get CBOR <code>unsiged</code> value.
+     * Get CBOR <code>uint128</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORBigInt} or {@link CBORInt}, and has a value ranging from
@@ -184,7 +184,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     } 
 
     /**
-     * Get CBOR <code>int</code> value.
+     * Get CBOR <code>int64</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInt} and has a value ranging from
@@ -205,7 +205,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }
 
     /**
-     * Get CBOR <code>uint</code> value.
+     * Get CBOR <code>uint64</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInt} and has a value ranging from
@@ -225,7 +225,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }
 
     /**
-     * Get CBOR <code>int</code> value.
+     * Get CBOR <code>int53</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInt} and has a value ranging from JavaScript's 
@@ -249,7 +249,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }
 
     /**
-     * Get CBOR <code>int</code> value.
+     * Get CBOR <code>int32</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInt} and has a value ranging from
@@ -269,7 +269,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }
 
     /**
-     * Get CBOR <code>uint</code> value.
+     * Get CBOR <code>uint32</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInt} and has a value ranging from
@@ -289,7 +289,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }    
 
     /**
-     * Get CBOR <code>int</code> value.
+     * Get CBOR <code>int16</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInt} and has a value ranging from
@@ -309,7 +309,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }
 
     /**
-     * Get CBOR <code>uint</code> value.
+     * Get CBOR <code>uint16</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInt} and has a value ranging from
@@ -329,7 +329,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }    
 
     /**
-     * Get CBOR <code>int</code> value.
+     * Get CBOR <code>int8</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInt} and has a value ranging from
@@ -349,7 +349,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     }
 
     /**
-     * Get CBOR <code>uint</code> value.
+     * Get CBOR <code>uint8</code> value.
      * <p>
      * This method requires that the object is a
      * {@link CBORInt} and has a value ranging from
