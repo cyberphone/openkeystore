@@ -101,14 +101,14 @@ and their API counterparts:
     <td>&nbsp;{@link CBORObject#getInt64()}</td>
     <td rowspan='2' style='text-align:center'><i>Through Constructor</i></td>
     <td style='text-align:center'>{@link CBORInt#CBORInt(long)}</td>
-    <td style='text-align:center'><code>1</code>, <code>2</code></td>
+    <td style='text-align:center'><code>2</code></td>
   </tr>
   <tr>
     <td style='text-align:center'><code>uint64</code></td>
     <td>&nbsp;{@link CBORObject#getUint64()}</td>
 
     <td style='text-align:center'>{@link CBORInt#CBORInt(long, boolean) CBORInt(long, true)}</td>
-    <td style='text-align:center'><code>1</code>, <code>2</code></td>
+    <td style='text-align:center'><code>2</code></td>
   </tr>
   <tr>
     <td style='text-align:center'><code>int128</code></td>
@@ -133,11 +133,14 @@ and their API counterparts:
     For a description of the valid range for a specific integer type, lookup
     the associated "Decoding" method.
   </li>
-  <li style='padding-top:0.5em'>Integer with a value range adapted to languages like Java, C and Rust,
-    that depend on two's complement representation.
-  </li>
-  <li style='padding-top:0.5em'>Integer mapping the JavaScript <code>Number</code> type.
-  </li>
+</li>
+<li style='padding-top:0.5em'>Counterparts to the core integer types
+  featured in languages like Java, C and Rust.
+  Value ranges are compatible with <i>two's complement</i> representation.
+</li>
+<li style='padding-top:0.5em'>Integer mapping the JavaScript <code>Number</code> type.
+  For maintaining JavaScript compatibility, integers are limited to the range:
+<code>Number.MIN_SAFE_INTEGER</code> to <code>Number.MAX_SAFE_INTEGER</code>.</li>
 </ol>
 <h3 id='time-data'>Time Data</h3>
 Since <code>CBOR</code> lacks a native time primitive,
