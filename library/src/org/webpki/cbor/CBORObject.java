@@ -127,19 +127,15 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     /**
      * Get CBOR <code>integer</code> object.
      * <p>
-     * If current object is not a
-     * {@link CBORBigInt} or {@link CBORInt}, a {@link CBORException} is thrown.
+     * If current object is not a {@link CBORInt}, a {@link CBORException} is thrown.
      * </p>
      * 
-     * @see CBORBigInt#CBORBigInt(BigInteger)
+     * @see CBORInt#CBORInt(BigInteger)
      * @return <code>BigInteger</code>
      * @throws CBORException
      */
     public BigInteger getBigInteger() {
-        if (this instanceof CBORInt) {
-            return getCBORInt().toBigInteger();
-        }
-        return ((CBORBigInt) getTypeAndMarkAsRead(CBORBigInt.class)).value;
+        return getCBORInt().toBigInteger();
     }
 
     BigInteger checkInt128(BigInteger value, BigInteger min, BigInteger max, String type) {
@@ -153,13 +149,13 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * Get CBOR <code>int128</code> object.
      * <p>
      * If current object is not a
-     * {@link CBORBigInt} or {@link CBORInt}, or holds a value outside the range
+     * {@link CBORInt}, or holds a value outside the range
      * <code>-0x80000000000000000000000000000000</code> to 
      * <code>0x7fffffffffffffffffffffffffffffff</code>, a {@link CBORException} is thrown.
      * </p>
      * 
      * @return 128-bit signed integer.
-     * @see CBORBigInt#createInt128(BigInteger)
+     * @see CBORInt#createInt128(BigInteger)
      * @throws CBORException
      */
     public BigInteger getInt128() {
@@ -170,13 +166,13 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * Get CBOR <code>uint128</code> object.
      * <p>
      * If current object is not a
-     * {@link CBORBigInt} or a {@link CBORInt}, or holds a value outside the range
+     * {@link CBORInt}, or holds a value outside the range
      * <code>0</code> to 
      * <code>0xffffffffffffffffffffffffffffffff</code>, a {@link CBORException} is thrown.
      * </p>
      * 
      * @return 128-bit unsigned integer.
-     * @see CBORBigInt#createUint128(BigInteger)
+     * @see CBORInt#createUint128(BigInteger)
      * @throws CBORException
      */
     public BigInteger getUint128() {
@@ -196,9 +192,9 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * @throws CBORException
      */
     public long getInt64() {
-        CBORInt CBORInt = getCBORInt();
-        long value = CBORInt.value;
-        if (CBORInt.unsigned && (value < 0)) {
+        CBORInt cborInt = getCBORInt();
+        long value = cborInt.value;
+        if (cborInt.bigInteger != null || (cborInt.unsigned && (value < 0))) {
             outOfRangeError("Int64");
         }
         return value;
@@ -217,11 +213,11 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * @throws CBORException
      */
     public long getUint64() {
-        CBORInt CBORInt = getCBORInt();
-        if (!CBORInt.unsigned) {
+        CBORInt cborInt = getCBORInt();
+        if (cborInt.bigInteger != null || !cborInt.unsigned) {
             outOfRangeError("Uint64");
         }
-        return CBORInt.value;
+        return cborInt.value;
     }
 
     /**

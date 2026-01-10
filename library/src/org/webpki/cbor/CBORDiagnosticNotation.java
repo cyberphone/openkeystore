@@ -392,8 +392,7 @@ public class CBORDiagnosticNotation {
             return cborTag;
         }
         BigInteger bigInteger = new BigInteger(number, prefix == null ? 10 : prefix);
-        // Clone: slight quirk to get the proper CBOR integer type  
-        return new CBORBigInt(negative ? bigInteger.negate() : bigInteger).clone();
+        return new CBORInt(negative ? bigInteger.negate() : bigInteger);
     }
 
     private void testForNonDecimal(Integer nonDecimal) {

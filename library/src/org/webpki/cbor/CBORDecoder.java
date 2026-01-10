@@ -226,17 +226,12 @@ public class CBORDecoder {
             case MT_BIG_NEGATIVE, MT_BIG_UNSIGNED -> {
                 byte[] byteArray = getObject().getBytes();
                 BigInteger bigInteger = new BigInteger(1, byteArray);
-                CBORBigInt cborBigInt = new CBORBigInt(tag == MT_BIG_UNSIGNED ? 
-                                                                   bigInteger : bigInteger.not());
-                if (strictNumbers) {
-                    if (byteArray.length <= 8 || byteArray[0] == 0) {
-                        cborError(STDERR_NON_DETERMINISTIC_BIGINT);
-                    } 
-                } else {
-                    // Normalization...
-                    yield cborBigInt.clone();
-                }
-                yield cborBigInt;
+                CBORInt cborInt = new CBORInt(tag == MT_BIG_UNSIGNED ? 
+                                                          bigInteger : bigInteger.not());
+                if (strictNumbers && (byteArray.length <= 8 || byteArray[0] == 0)) {
+                    cborError(STDERR_NON_DETERMINISTIC_BIGINT);
+                } 
+                yield cborInt;
             }
 
             case MT_FLOAT16 -> {
@@ -324,10 +319,9 @@ public class CBORDecoder {
 
                     case MT_UNSIGNED -> new CBORInt(n, true);
 
-                    // Only let two-complement integers use long.
-                    case MT_NEGATIVE -> n < 0 ?
-                        new CBORBigInt(MIN_INT_VALUE_MINUS_ONE.subtract(BigInteger.valueOf(n))) 
-                                              :
+                    case MT_NEGATIVE ->  n < 0 ?
+                        new CBORInt(MIN_INT_VALUE_MINUS_ONE.subtract(BigInteger.valueOf(n))) 
+                                               :
                         new CBORInt(~n, false);
                     
                     case MT_BYTES -> new CBORBytes(readBytes(checkLength(n)));

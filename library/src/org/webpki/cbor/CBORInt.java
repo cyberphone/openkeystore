@@ -18,18 +18,12 @@ package org.webpki.cbor;
 
 import java.math.BigInteger;
 
+import java.util.Arrays;
+
 import static org.webpki.cbor.CBORInternal.*;
 
 /**
- * Class for holding CBOR <code>int</code> objects.
- * 
- * <div id='negative-integers' class='webpkicomment' style='margin-top:1em'>
- * Note that {@link CBORInt} does not support negative integers (CBOR major type 1)
- * beyond the normal range for 64-bit signed integers 
- * (<span style='white-space:nowrap'><code>-2<sup>63</sup></code></span>&#x2009;).
- * In the unlikely case there is a need to explicitly deal with such integers,
- * using {@link CBORBigInt} is the supported workaround.
- * </div>
+ * Class for holding CBOR integer objects.
  * <p>
  * For fine-grained control of programmatically created integers,
  * the following methods are provided as an <i>alternative</i> to the constructor:
@@ -38,8 +32,10 @@ import static org.webpki.cbor.CBORInternal.*;
  * {@link #createInt16(int)},
  * {@link #createUint16(int)},
  * {@link #createInt32(long)},
- * {@link #createUint32(long)}, and
- * {@link #createInt53(long)}.
+ * {@link #createUint32(long)},
+ * {@link #createInt53(long)},
+ * {@link #createInt128(BigInteger)}, and
+ * {@link #createUint128(BigInteger)}.
  * Note that these methods <i>do not change data</i>; they
  * only verify that data is within expected limits, and if that is the case,
  * finish the operation using the standard constructor.
@@ -47,10 +43,30 @@ import static org.webpki.cbor.CBORInternal.*;
  */
 public class CBORInt extends CBORObject {
 
-    static final BigInteger MAX_INT_MAGNITUDE = new BigInteger("ffffffffffffffff", 16);    
+    static final BigInteger MAX_INT_MAGNITUDE = new BigInteger("ffffffffffffffff", 16);
+    static final BigInteger MIN_NEGATIVE      = new BigInteger("-8000000000000000", 16);
 
+    static final byte[] UNSIGNED_BIGNUM_TAG = {(byte)MT_BIG_UNSIGNED};
+    static final byte[] NEGATIVE_BIGNUM_TAG = {(byte)MT_BIG_NEGATIVE};
+
+    // "int"
     long value;
+
+    // "bigint"
+    BigInteger bigInteger;
+
+    // "int/bigint"
     boolean unsigned;
+
+    public CBORInt(BigInteger value) {
+        // Maintain a Java-optimized solution using as little BigInteger as possible.
+        this.unsigned = value.compareTo(BigInteger.ZERO) >= 0;
+        if (value.compareTo(MIN_NEGATIVE) >= 0 && value.compareTo(MAX_INT_MAGNITUDE) <= 0) {
+            this.value = value.longValue();
+        } else {
+            bigInteger = value;
+        }
+    }
     
     /**
      * Creates a CBOR unsigned or signed <code>int</code> object.
@@ -63,7 +79,7 @@ public class CBORInt extends CBORObject {
      * as a standard java (<i>signed</i>) long with range <code>-0x8000000000000000</code> to <code>0x7fffffffffffffff</code>.
      * </p>
      * <p>
-     * See also {@link CBORBigInt#CBORBigInt(BigInteger)} and
+     * See also {@link CBORInt#CBORInt(BigInteger)} and
      * {@link CBORObject#getBigInteger()}.
      * </p>
      * 
@@ -233,18 +249,82 @@ public class CBORInt extends CBORObject {
         return rangeCheck(value, MIN_SAFE_JS_INTEGER, MAX_SAFE_JS_INTEGER);
     }
 
+    /**
+     * Creates a CBOR <code>int128</code> object.
+     * <p>
+     * This method creates a {@link CBORInt} object,
+     * where the value is verified to be within
+     * <code>-0x80000000000000000000000000000000</code> to 
+     * <code>0x7fffffffffffffffffffffffffffffff</code>.
+     * </p>
+     * 
+     * @param value Integer
+     * @return {@link CBORInt} object
+     * @throws CBORException If value is out of range
+     * @see CBORObject#getInt128()
+     */
+    public static CBORInt createInt128(BigInteger value) {
+        CBORInt cborInt = new CBORInt(value);
+        cborInt.getInt128();
+        return cborInt;
+    }
+
+    /**
+     * Creates a CBOR <code>uint128</code> object.
+     * <p>
+     * This method creates a {@link CBORInt} object,
+     * where the value is verified to be within
+     * <code>0</code> to 
+     * <code>0xffffffffffffffffffffffffffffffff</code>.
+     * </p>
+     * 
+     * @param value Integer
+     * @return {@link CBORInt} object
+     * @throws CBORException If value is out of range
+     * @see CBORObject#getUint128()
+     */
+    public static CBORInt createUint128(BigInteger value) {
+        CBORInt cborInt = new CBORInt(value);
+        cborInt.getUint128();
+        return cborInt;
+    }
+
     @Override
     byte[] internalEncode() {
-        return encodeTagAndN(unsigned ? MT_UNSIGNED : MT_NEGATIVE, unsigned ? value : ~value);
+        if (bigInteger == null) {
+            return encodeTagAndN(unsigned ? MT_UNSIGNED : MT_NEGATIVE, unsigned ? value : ~value);
+        } else {
+            BigInteger cborAdjusted = unsigned ? bigInteger : bigInteger.not();
+            byte[] encoded = cborAdjusted.toByteArray();
+            if (encoded[0] == 0) {
+                // Remove leading zero which may be present due to two-complement encoding.
+                encoded = Arrays.copyOfRange(encoded, 1, encoded.length);
+            }
+            if (encoded.length <= 8) {
+                // Fits "int" encoding.
+                return encodeTagAndN(unsigned ? MT_UNSIGNED : MT_NEGATIVE,
+                                     cborAdjusted.longValue());
+            }
+            // Needs "bigint" encoding.
+            return CBORUtil.concatByteArrays(unsigned ? UNSIGNED_BIGNUM_TAG : NEGATIVE_BIGNUM_TAG, 
+                                             new CBORBytes(encoded).encode());
+
+        }
     }
 
     BigInteger toBigInteger() {
-        BigInteger bigInteger = BigInteger.valueOf(value);
-        return unsigned ? bigInteger.and(MAX_INT_MAGNITUDE) : bigInteger;
+        if (bigInteger == null) {
+            BigInteger bigInteger = BigInteger.valueOf(value);
+            return unsigned ? bigInteger.and(MAX_INT_MAGNITUDE) : bigInteger;
+        }
+        return bigInteger;
     }
 
     @Override
     void internalToString(CborPrinter cborPrinter) {
-        cborPrinter.append(unsigned ? Long.toUnsignedString(value) : Long.toString(value));
+        cborPrinter.append(bigInteger == null ?
+            unsigned ? Long.toUnsignedString(value) : Long.toString(value)
+                                              :
+            bigInteger.toString());
     }
 }

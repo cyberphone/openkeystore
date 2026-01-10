@@ -261,10 +261,10 @@ public class CBORTest {
     
     void integerTest(String value, IntegerVariations variation, boolean mustFail) {
         BigInteger bigInteger = new BigInteger(value);
-        CBORObject CBORBigInt = new CBORBigInt(bigInteger);
-        byte[] cbor = CBORBigInt.encode();
+        CBORObject CBORInt = new CBORInt(bigInteger);
+        byte[] cbor = CBORInt.encode();
         CBORObject res = CBORDecoder.decode(cbor);
-        assertTrue("int", res.equals(CBORBigInt));
+        assertTrue("int", res.equals(CBORInt));
         long v = 0;
         try {
             switch (variation) {
@@ -299,21 +299,17 @@ public class CBORTest {
             assertFalse("Should not run: " + value, mustFail);
             assertTrue("=" + value, v == bigInteger.longValue());
         } catch (Exception e) {
-            if (res instanceof CBORBigInt) {
-                checkException(e, "Is type: CBORBigInt");
-            } else {
-//                System.out.println("Value: " + e.toString());
-                String dataType = variation.toString().toLowerCase();
-                dataType = dataType.substring(0,1).toUpperCase() +
-                    dataType.substring(1);
-                checkException(e, CBORObject.STDERR_OUT_OF_RANGE, dataType, res.toString());
-            }
+//            System.out.println("Value: " + e.toString());
+            String dataType = variation.toString().toLowerCase();
+            dataType = dataType.substring(0,1).toUpperCase() +
+                dataType.substring(1);
+            checkException(e, CBORObject.STDERR_OUT_OF_RANGE, dataType, res.toString());
             assertTrue("Shouldn't throw: " + value + e.getMessage(), mustFail);
         }
     }
 
     void bigIntegerTest(String value, String hex) {
-        byte[] cbor = new CBORBigInt(new BigInteger(value)).encode();
+        byte[] cbor = new CBORInt(new BigInteger(value)).encode();
         String calc = HexaDecimal.encode(cbor);
         assertTrue("big int=" + value + " c=" + calc + " h=" + hex,
                 hex.equals(HexaDecimal.encode(cbor)));
@@ -324,17 +320,17 @@ public class CBORTest {
 
     void intBigintTest(String value, String hex, boolean big) {
         BigInteger bigVal = new BigInteger(value);
-        byte[] cbor = new CBORBigInt(bigVal).encode();
+        byte[] cbor = new CBORInt(bigVal).encode();
         String calc = HexaDecimal.encode(cbor);
         assertTrue("big1 int=" + value + " c=" + calc + " h=" + hex,
                 hex.equals(HexaDecimal.encode(cbor)));
-        CBORObject ib = CBORDecoder.decode(cbor);
-        assertTrue("ib1", big ^ ib instanceof CBORInt);
+        CBORInt ib = (CBORInt)CBORDecoder.decode(cbor);
+        assertTrue("ib1", big ^ ib.bigInteger == null);
         calc = HexaDecimal.encode(ib.encode());
         assertTrue("big2 int=" + value + " c=" + calc + " h=" + hex,
                 hex.equals(HexaDecimal.encode(cbor)));
         assertTrue("dn=" + ib.toString(), value.equals(ib.toString()));
-        assertTrue("dn2", value.equals(new CBORBigInt(bigVal).toString()));
+        assertTrue("dn2", value.equals(new CBORInt(bigVal).toString()));
         assertTrue("dn3", value.equals(ib.getBigInteger().toString()));
         assertTrue("eq", ib.getBigInteger().compareTo(bigVal) == 0);
     }
@@ -435,22 +431,22 @@ public class CBORTest {
     }
 
     void goodInt128(boolean unsigned, BigInteger value) {
-        CBORObject int128 = CBORDecoder.decode(new CBORBigInt(value).encode());
+        CBORObject int128 = CBORDecoder.decode(new CBORInt(value).encode());
         BigInteger res = unsigned ? int128.getUint128() : int128.getInt128();
         assertTrue("eq1", res.equals(value));
-        assertTrue("eq2", int128.equals(unsigned ? CBORBigInt.createUint128(value) : CBORBigInt.createInt128(value)));
+        assertTrue("eq2", int128.equals(unsigned ? CBORInt.createUint128(value) : CBORInt.createInt128(value)));
     }
 
     void badInt128(boolean unsigned, BigInteger value) {
         try {
-            CBORObject int128 = CBORDecoder.decode(new CBORBigInt(value).encode());
+            CBORObject int128 = CBORDecoder.decode(new CBORInt(value).encode());
             BigInteger res = unsigned ? int128.getUint128() : int128.getInt128();
             fail("Should not" + res);
         } catch (Exception e) {
             checkException(e, CBORObject.STDERR_OUT_OF_RANGE);
         }
         try {
-            CBORBigInt res = unsigned ? CBORBigInt.createUint128(value) : CBORBigInt.createInt128(value);
+            CBORInt res = unsigned ? CBORInt.createUint128(value) : CBORInt.createInt128(value);
             fail("Should not" + res);
         } catch (Exception e) {
             checkException(e, CBORObject.STDERR_OUT_OF_RANGE);

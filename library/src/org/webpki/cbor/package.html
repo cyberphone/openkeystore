@@ -15,7 +15,7 @@ notation:
 <tr><th>CDDL</th><th>Implementation</th>
 <th>Java&nbsp;Mapping</th><th>Notes</th></tr>
 <tr style='text-align:center'><td><code>int</code></td><td>{@link CBORInt}</td><td><code>long</code></td><td><code>1</code></td></tr>
-<tr style='text-align:center'><td><code>bigint</code></td><td>{@link CBORBigInt}</td><td><code>BigInteger</code></td><td><code>1</code></td></tr>
+<tr style='text-align:center'><td><code>bigint</code></td><td>{@link CBORInt}</td><td><code>BigInteger</code></td><td><code>1</code></td></tr>
 <tr style='text-align:center'><td rowspan='2'><code>float</code></td><td>{@link CBORFloat}</td><td><code>double</code></td><td><code>2</code>, <code>3</code></td></tr>
 <tr style='text-align:center'><td>{@link CBORNonFinite}</td><td><code>long</code></td><td><code>3</code></td></tr>
 <tr style='text-align:center'><td><code>bstr</code></td><td>{@link CBORBytes}</td><td><code>byte[]</code></td><td></td></tr>
@@ -113,15 +113,15 @@ and their API counterparts:
   <tr>
     <td style='text-align:center'><code>int128</code></td>
     <td>{@link CBORObject#getInt128()}</td>
-    <td>{@link CBORBigInt#createInt128(BigInteger)}</td>
-    <td style='text-align:center'>{@link CBORBigInt#CBORBigInt(BigInteger)}</td>
+    <td>{@link CBORInt#createInt128(BigInteger)}</td>
+    <td style='text-align:center'>{@link CBORInt#CBORInt(BigInteger)}</td>
     <td style='text-align:center'><code>1</code>, <code>2</code></td>
   </tr>
   <tr>
     <td style='text-align:center'><code>uint128</code></td>
     <td>{@link CBORObject#getUint128()}</td>
-    <td>{@link CBORBigInt#createUint128(BigInteger)}</td>
-    <td style='text-align:center'>{@link CBORBigInt#CBORBigInt(BigInteger)}</td>
+    <td>{@link CBORInt#createUint128(BigInteger)}</td>
+    <td style='text-align:center'>{@link CBORInt#CBORInt(BigInteger)}</td>
     <td style='text-align:center'><code>1</code>, <code>2</code></td>
   </tr>
 </table>
