@@ -127,6 +127,9 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     /**
      * Get CBOR <code>integer</code> object.
      * <p>
+     * Get CBOR integers of any size.
+     * </p>
+     * <p>
      * If current object is not a {@link CBORInt}, a {@link CBORException} is thrown.
      * </p>
      * 

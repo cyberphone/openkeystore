@@ -58,6 +58,15 @@ public class CBORInt extends CBORObject {
     // "int/bigint"
     boolean unsigned;
 
+    /**
+     * Creates a CBOR <code>integer</code> object.
+     * <p>
+     * Constructor supporting integers of any size.
+     * </p>
+     * 
+     * @see CBORObject#getBigInteger()
+     * @param value
+     */
     public CBORInt(BigInteger value) {
         // Maintain a Java-optimized solution using as little BigInteger as possible.
         this.unsigned = value.compareTo(BigInteger.ZERO) >= 0;
@@ -69,7 +78,7 @@ public class CBORInt extends CBORObject {
     }
     
     /**
-     * Creates a CBOR unsigned or signed <code>int</code> object.
+     * Creates a CBOR <code>int</code> object.
      * <p>
      * If the <code>unsigned</code> flag is <code>true</code>, <code>value</code> is treated
      * as an <i>unsigned</i> long with range <code>0</code> to <code>0xffffffffffffffff</code>.
@@ -78,11 +87,8 @@ public class CBORInt extends CBORObject {
      * If the <code>unsigned</code> flag is <code>false</code>, <code>value</code> is treated
      * as a standard java (<i>signed</i>) long with range <code>-0x8000000000000000</code> to <code>0x7fffffffffffffff</code>.
      * </p>
-     * <p>
-     * See also {@link CBORInt#CBORInt(BigInteger)} and
-     * {@link CBORObject#getBigInteger()}.
-     * </p>
      * 
+     * @see CBORInt#CBORInt(BigInteger)
      * @param value long value
      * @param unsigned <code>true</code> => unsigned
      */
