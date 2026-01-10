@@ -187,7 +187,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * Get CBOR <code>int64</code> object.
      * <p>
      * If current object is not a
-     * {@link CBORInt} or holds a value outside the range
+     * {@link CBORInt}, or holds a value outside the range
      * <code>-0x8000000000000000</code> to 
      * <code>0x7fffffffffffffff</code>, a {@link CBORException} is thrown.
      * </p>
@@ -208,7 +208,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * Get CBOR <code>uint64</code> object.
      * <p>
      * If current object is not a
-     * {@link CBORInt} or holds a value outside the range
+     * {@link CBORInt}, or holds a value outside the range
      * <code>0</code> to 
      * <code>0xffffffffffffffff</code>, a {@link CBORException} is thrown.
      * </p>
@@ -228,7 +228,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * Get CBOR <code>int53</code> object.
      * <p>
      * If current object is not a
-     * {@link CBORInt} or holds a value outside the range JavaScript's 
+     * {@link CBORInt}, or holds a value outside the JavaScript limits
      * <code>Number.MIN_SAFE_INTEGER</code> (<code>-9007199254740991</code>) to
      * <code>Number.MAX_SAFE_INTEGER</code> (<code>9007199254740991</code>),
      * a {@link CBORException} is thrown.
@@ -253,7 +253,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * Get CBOR <code>int32</code> object.
      * <p>
      * If current object is not a
-     * {@link CBORInt} or holds a value outside the range
+     * {@link CBORInt}, or holds a value outside the range
      * <code>-0x80000000</code> to 
      * <code>0x7fffffff</code>, a {@link CBORException} is thrown.
      * </p>
@@ -273,7 +273,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * Get CBOR <code>uint32</code> object.
      * <p>
      * If current object is not a
-     * {@link CBORInt} or holds a value outside the range
+     * {@link CBORInt}, or holds a value outside the range
      * <code>0</code> to 
      * <code>0xffffffff</code>, a {@link CBORException} is thrown.
      * </p>
@@ -293,7 +293,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * Get CBOR <code>int16</code> object.
      * <p>
      * If current object is not a
-     * {@link CBORInt} or holds a value outside the range
+     * {@link CBORInt}, or holds a value outside the range
      * <code>-0x8000</code> to 
      * <code>0x7fff</code>, a {@link CBORException} is thrown.
      * </p>
@@ -313,7 +313,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * Get CBOR <code>uint16</code> object.
      * <p>
      * If current object is not a
-     * {@link CBORInt} or holds a value outside the range
+     * {@link CBORInt}, or holds a value outside the range
      * <code>0</code> to 
      * <code>0xffff</code>, a {@link CBORException} is thrown.
      * </p>
@@ -333,7 +333,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * Get CBOR <code>int8</code> object.
      * <p>
      * If current object is not a
-     * {@link CBORInt} or holds a value outside the range
+     * {@link CBORInt}, or holds a value outside the range
      * <code>-0x80</code> to 
      * <code>0x7f</code>, a {@link CBORException} is thrown.
      * </p>
@@ -353,7 +353,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * Get CBOR <code>uint8</code> object.
      * <p>
      * If current object is not a
-     * {@link CBORInt} or holds a value outside the range
+     * {@link CBORInt}, or holds a value outside the range
      * <code>0</code> to 
      * <code>0xff</code>, a {@link CBORException} is thrown.
      * </p>
