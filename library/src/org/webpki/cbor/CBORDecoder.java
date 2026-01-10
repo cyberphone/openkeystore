@@ -320,6 +320,9 @@ public class CBORDecoder {
                     case MT_UNSIGNED -> new CBORInt(n, true);
 
                     case MT_NEGATIVE ->  n < 0 ?
+                        // Black magic?  Well, a Java "long" is used for the int64/uint64 range,
+                        // while numbers < Long.MIN_VALUE switch over to "BigInteger" using the
+                        // following not entirely obvious transformation:  
                         new CBORInt(MIN_INT_VALUE_MINUS_ONE.subtract(BigInteger.valueOf(n))) 
                                                :
                         new CBORInt(~n, false);

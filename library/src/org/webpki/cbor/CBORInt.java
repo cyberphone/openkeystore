@@ -53,7 +53,7 @@ public class CBORInt extends CBORObject {
     long value;
 
     // "bigint"
-    BigInteger bigInteger;
+    BigInteger bigValue;
 
     // "int/bigint"
     boolean unsigned;
@@ -65,7 +65,7 @@ public class CBORInt extends CBORObject {
      * </p>
      * 
      * @see CBORObject#getBigInteger()
-     * @param value
+     * @param value Big integer value
      */
     public CBORInt(BigInteger value) {
         // Maintain a Java-optimized solution using as little BigInteger as possible.
@@ -73,7 +73,7 @@ public class CBORInt extends CBORObject {
         if (value.compareTo(MIN_NEGATIVE) >= 0 && value.compareTo(MAX_INT_MAGNITUDE) <= 0) {
             this.value = value.longValue();
         } else {
-            bigInteger = value;
+            bigValue = value;
         }
     }
     
@@ -297,10 +297,10 @@ public class CBORInt extends CBORObject {
 
     @Override
     byte[] internalEncode() {
-        if (bigInteger == null) {
+        if (bigValue == null) {
             return encodeTagAndN(unsigned ? MT_UNSIGNED : MT_NEGATIVE, unsigned ? value : ~value);
         } else {
-            BigInteger cborAdjusted = unsigned ? bigInteger : bigInteger.not();
+            BigInteger cborAdjusted = unsigned ? bigValue : bigValue.not();
             byte[] encoded = cborAdjusted.toByteArray();
             if (encoded[0] == 0) {
                 // Remove leading zero which may be present due to two-complement encoding.
@@ -314,23 +314,22 @@ public class CBORInt extends CBORObject {
             // Needs "bigint" encoding.
             return CBORUtil.concatByteArrays(unsigned ? UNSIGNED_BIGNUM_TAG : NEGATIVE_BIGNUM_TAG, 
                                              new CBORBytes(encoded).encode());
-
         }
     }
 
     BigInteger toBigInteger() {
-        if (bigInteger == null) {
+        if (bigValue == null) {
             BigInteger bigInteger = BigInteger.valueOf(value);
             return unsigned ? bigInteger.and(MAX_INT_MAGNITUDE) : bigInteger;
         }
-        return bigInteger;
+        return bigValue;
     }
 
     @Override
     void internalToString(CborPrinter cborPrinter) {
-        cborPrinter.append(bigInteger == null ?
+        cborPrinter.append(bigValue == null ?
             unsigned ? Long.toUnsignedString(value) : Long.toString(value)
                                               :
-            bigInteger.toString());
+            bigValue.toString());
     }
 }

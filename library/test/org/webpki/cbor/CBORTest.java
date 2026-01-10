@@ -325,7 +325,7 @@ public class CBORTest {
         assertTrue("big1 int=" + value + " c=" + calc + " h=" + hex,
                 hex.equals(HexaDecimal.encode(cbor)));
         CBORInt ib = (CBORInt)CBORDecoder.decode(cbor);
-        assertTrue("ib1", big ^ ib.bigInteger == null);
+        assertTrue("ib1", big ^ ib.bigValue == null);
         calc = HexaDecimal.encode(ib.encode());
         assertTrue("big2 int=" + value + " c=" + calc + " h=" + hex,
                 hex.equals(HexaDecimal.encode(cbor)));
