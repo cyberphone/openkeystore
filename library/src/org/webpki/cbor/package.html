@@ -49,86 +49,86 @@ and their API counterparts:
   <tr><th>CDDL</th><th>Decoding</th><th>Encoding</th><th>Constructor</th><th>Notes</th></tr>
   <tr>
     <td style='text-align:center'><code>int8</code></td>
-    <td>&nbsp;{@link CBORObject#getInt8()}</td>
-    <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@link CBORInt#createUint8(int)}</td>
-    <td style='text-align:center'>{@link CBORInt#CBORInt(long)}</td>
+    <td>{@link CBORObject#getInt8()}</td>
+    <td>{@link CBORInt#createUint8(int)}</td>
+    <td>{@link CBORInt#CBORInt(long)}</td>
     <td style='text-align:center'><code>1</code>, <code>2</code></td>
   </tr>
   <tr>
     <td style='text-align:center'><code>uint8</code></td>
-    <td>&nbsp;{@link CBORObject#getUint8()}</td>
-    <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@link CBORInt#createUint8(int)}</td>
-    <td style='text-align:center'>{@link CBORInt#CBORInt(long)}</td>
+    <td>{@link CBORObject#getUint8()}</td>
+    <td>{@link CBORInt#createUint8(int)}</td>
+    <td>{@link CBORInt#CBORInt(long)}</td>
     <td style='text-align:center'><code>1</code>, <code>2</code></td>
   </tr>
   <tr>
     <td style='text-align:center'><code>int16</code></td>
-    <td>&nbsp;{@link CBORObject#getInt16()}</td>
-    <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@link CBORInt#createInt16(int)}</td>
-    <td style='text-align:center'>{@link CBORInt#CBORInt(long)}</td>
+    <td>{@link CBORObject#getInt16()}</td>
+    <td>{@link CBORInt#createInt16(int)}</td>
+    <td>{@link CBORInt#CBORInt(long)}</td>
     <td style='text-align:center'><code>1</code>, <code>2</code></td>
   </tr>
   <tr>
     <td style='text-align:center'><code>uint16</code></td>
-    <td>&nbsp;{@link CBORObject#getUint16()}</td>
-    <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@link CBORInt#createUint16(int)}</td>
-    <td style='text-align:center'>{@link CBORInt#CBORInt(long)}</td>
+    <td>{@link CBORObject#getUint16()}</td>
+    <td>{@link CBORInt#createUint16(int)}</td>
+    <td>{@link CBORInt#CBORInt(long)}</td>
     <td style='text-align:center'><code>1</code>, <code>2</code></td>
   </tr>
   <tr>
     <td style='text-align:center'><code>int32</code></td>
-    <td>&nbsp;{@link CBORObject#getInt32()}</td>
-    <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@link CBORInt#createInt32(long)}</td>
-    <td style='text-align:center'>{@link CBORInt#CBORInt(long)}</td>
+    <td>{@link CBORObject#getInt32()}</td>
+    <td>{@link CBORInt#createInt32(long)}</td>
+    <td>{@link CBORInt#CBORInt(long)}</td>
     <td style='text-align:center'><code>1</code>, <code>2</code></td>
   </tr>
   <tr>
     <td style='text-align:center'><code>uint32</code></td>
-    <td>&nbsp;{@link CBORObject#getUint32()}</td>
-    <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@link CBORInt#createUint32(long)}</td>
-    <td style='text-align:center'>{@link CBORInt#CBORInt(long)}</td>
+    <td>{@link CBORObject#getUint32()}</td>
+    <td>{@link CBORInt#createUint32(long)}</td>
+    <td>{@link CBORInt#CBORInt(long)}</td>
     <td style='text-align:center'><code>1</code>, <code>2</code></td>
   </tr>
   <tr>
     <td style='text-align:center'><code>int53</code></td>
-    <td>&nbsp;{@link CBORObject#getInt53()}</td>
-    <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@link CBORInt#createInt53(long)}</td>
-    <td style='text-align:center'>{@link CBORInt#CBORInt(long)}</td>
+    <td>{@link CBORObject#getInt53()}</td>
+    <td>{@link CBORInt#createInt53(long)}</td>
+    <td>{@link CBORInt#CBORInt(long)}</td>
     <td style='text-align:center'><code>1</code>, <code>3</code></td>
   </tr>
   <tr>
     <td style='text-align:center'><code>int64</code></td>
-    <td>&nbsp;{@link CBORObject#getInt64()}</td>
-    <td rowspan='2' style='text-align:center'><i>Through Constructor</i></td>
-    <td style='text-align:center'>{@link CBORInt#CBORInt(long)}</td>
+    <td>{@link CBORObject#getInt64()}</td>
+    <td rowspan='2' style='text-align:center' class='webpkilink'>N/A - Constructor Only</td>
+    <td>{@link CBORInt#CBORInt(long)}</td>
     <td style='text-align:center'><code>2</code></td>
   </tr>
   <tr>
     <td style='text-align:center'><code>uint64</code></td>
-    <td>&nbsp;{@link CBORObject#getUint64()}</td>
+    <td>{@link CBORObject#getUint64()}</td>
 
-    <td style='text-align:center'>{@link CBORInt#CBORInt(long, boolean) CBORInt(long, true)}</td>
+    <td>{@link CBORInt#CBORInt(long, boolean) CBORInt(long, true)}</td>
     <td style='text-align:center'><code>2</code></td>
   </tr>
   <tr>
     <td style='text-align:center'><code>int128</code></td>
     <td>{@link CBORObject#getInt128()}</td>
     <td>{@link CBORInt#createInt128(BigInteger)}</td>
-    <td style='text-align:center'>{@link CBORInt#CBORInt(java.math.BigInteger) CBORInt(BigInteger)}</td>
+    <td>{@link CBORInt#CBORInt(java.math.BigInteger) CBORInt(BigInteger)}</td>
     <td style='text-align:center'><code>1</code>, <code>2</code></td>
   </tr>
   <tr>
     <td style='text-align:center'><code>uint128</code></td>
     <td>{@link CBORObject#getUint128()}</td>
     <td>{@link CBORInt#createUint128(BigInteger)}</td>
-    <td style='text-align:center'>{@link CBORInt#CBORInt(java.math.BigInteger) CBORInt(BigInteger)}</td>
+    <td>{@link CBORInt#CBORInt(java.math.BigInteger) CBORInt(BigInteger)}</td>
     <td style='text-align:center'><code>1</code>, <code>2</code></td>
   </tr>
   <tr>
     <td style='text-align:center'><code>integer</code></td>
     <td>{@link CBORObject#getBigInteger()}</td>
-    <td style='text-align:center'><i>Through Constructor</i></td>
-    <td style='text-align:center'>{@link CBORInt#CBORInt(java.math.BigInteger) CBORInt(BigInteger)}</td>
+    <td style='text-align:center' class='webpkilink'>N/A - Constructor Only</td>
+    <td>{@link CBORInt#CBORInt(java.math.BigInteger) CBORInt(BigInteger)}</td>
     <td style='text-align:center'></td>
   </tr>
 </table>
@@ -145,8 +145,7 @@ and their API counterparts:
   featured in languages like Java, C, and Rust.
 </li>
 <li style='padding-top:0.5em'>Integer mapping the JavaScript <code>Number</code> type.
-  For maintaining JavaScript compatibility, integers are limited to the range:
-<code>Number.MIN_SAFE_INTEGER</code> to <code>Number.MAX_SAFE_INTEGER</code>.</li>
+Consult {@link CBORObject#getInt53()} for details.</li>
 </ol>
 <h3 id='time-data'>Time Data</h3>
 Since <code>CBOR</code> lacks a native time primitive,

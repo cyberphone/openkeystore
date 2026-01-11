@@ -241,9 +241,13 @@ public class CBORInt extends CBORObject {
      * Creates a CBOR <code>int53</code> object.
      * <p>
      * This method creates a {@link CBORInt} object,
-     * where the value is verified to be within
-     * <code>-9007199254740991</code> to 
-     * <code>9007199254740991</code>.
+     * where the value is verified to be within the JavaScript limits
+     * <code>Number.MIN_SAFE_INTEGER</code> (<code>-9007199254740991</code>) to
+     * <code>Number.MAX_SAFE_INTEGER</code> (<code>9007199254740991</code>).
+     * </p>
+     * <p>
+     * Since 53-bit integers are specific to JavaScript, <code>int53</code> objects
+     * should be used with caution in cross-platform scenarios.
      * </p>
      * 
      * @param value Integer

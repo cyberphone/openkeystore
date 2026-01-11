@@ -157,8 +157,8 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * <code>0x7fffffffffffffffffffffffffffffff</code>, a {@link CBORException} is thrown.
      * </p>
      * 
-     * @return 128-bit signed integer.
      * @see CBORInt#createInt128(BigInteger)
+     * @return 128-bit signed integer.
      * @throws CBORException
      */
     public BigInteger getInt128() {
@@ -174,8 +174,8 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * <code>0xffffffffffffffffffffffffffffffff</code>, a {@link CBORException} is thrown.
      * </p>
      * 
-     * @return 128-bit unsigned integer.
      * @see CBORInt#createUint128(BigInteger)
+     * @return 128-bit unsigned integer.
      * @throws CBORException
      */
     public BigInteger getUint128() {
@@ -233,10 +233,11 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * a {@link CBORException} is thrown.
      * </p>
      * <p>
-     * Since 53-bit integers are specific to JavaScript, this method
+     * Since 53-bit integers are specific to JavaScript, <code>int53</code> objects
      * should be used with caution in cross-platform scenarios.
      * </p>
      * 
+     * @see CBORInt#createInt53(long)
      * @return <code>long</code>
      * @throws CBORException
      */
@@ -257,6 +258,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * <code>0x7fffffff</code>, a {@link CBORException} is thrown.
      * </p>
      * 
+     * @see CBORInt#createInt32(long)
      * @return <code>int</code>
      * @throws CBORException
      */
@@ -277,6 +279,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * <code>0xffffffff</code>, a {@link CBORException} is thrown.
      * </p>
      * 
+     * @see CBORInt#createUint32(long)
      * @return <code>long</code>
      * @throws CBORException
      */
@@ -297,6 +300,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * <code>0x7fff</code>, a {@link CBORException} is thrown.
      * </p>
      * 
+     * @see CBORInt#createInt16(int)
      * @return <code>int</code>
      * @throws CBORException
      */
@@ -317,6 +321,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * <code>0xffff</code>, a {@link CBORException} is thrown.
      * </p>
      * 
+     * @see CBORInt#createUint16(int)
      * @return <code>int</code>
      * @throws CBORException
      */
@@ -337,6 +342,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * <code>0x7f</code>, a {@link CBORException} is thrown.
      * </p>
      * 
+     * @see CBORInt#createInt8(int)
      * @return <code>int</code>
      * @throws CBORException
      */
@@ -357,6 +363,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * <code>0xff</code>, a {@link CBORException} is thrown.
      * </p>
      * 
+     * @see CBORInt#createUint8(int)
      * @return <code>int</code>
      * @throws CBORException
      */
@@ -372,7 +379,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * Get "extended" CBOR <code>float</code> object.
      * <p>
      * If current object is not a
-     * {@link CBORFloat} holding a 64-bit, 32-bit, or 16-bit
+     * {@link CBORFloat} holding a 64, 32, or 16-bit
      * <span style='white-space:nowrap'><code>IEEE</code> <code>754</code></span> number, 
      * a {@link CBORException} is thrown.
      * </p>
@@ -406,7 +413,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * Get CBOR <code>float</code> object.
      * <p>
      * If current object is not a
-     * {@link CBORFloat} holding a 64-bit, 32-bit, or 16-bit
+     * {@link CBORFloat} holding a 64, 32, or 16-bit
      * <span style='white-space:nowrap'><code>IEEE</code> <code>754</code></span> number, 
      * a {@link CBORException} is thrown.
      * </p>
