@@ -91,12 +91,12 @@ public class CBORTag extends CBORObject {
     /**
      * EPOCH_TIME tag: {@value #RESERVED_TAG_EPOCH_TIME}
      */
-    public static final int RESERVED_TAG_EPOCH_TIME  = 1;
+    public static final int RESERVED_TAG_EPOCH_TIME = 1;
 
     /**
      * COTX tag: {@value #RESERVED_TAG_COTX}
      */
-    public static final int RESERVED_TAG_COTX  = 1010;
+    public static final int RESERVED_TAG_COTX       = 1010;
 
     private static final int RESERVED_BIG_INT_UNSIGNED = 2;
     private static final int RESERVED_BIG_INT_NEGATIVE = 3;
