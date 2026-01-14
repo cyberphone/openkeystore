@@ -204,6 +204,8 @@
         <include name="**/*"/>
         <exclude name="README*"/>
         <exclude name="LICENSE*"/>
+        <exclude name="app-notes/**/*"/>
+        <exclude name=".gitattributes*"/>
         <exclude name=".gitattributes*"/>
         <exclude name=".gitignore*"/>
       </fileset>
