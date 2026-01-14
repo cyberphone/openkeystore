@@ -16,6 +16,11 @@
  */
 package org.webpki.cbor;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UncheckedIOException;
+
 import java.math.BigInteger;
 
 import java.time.Instant;
@@ -51,8 +56,31 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     // True if map key object
     private boolean immutableFlag;
 
-    // This solution is simply to get a JavaDoc that is more logical...
-    abstract byte[] internalEncode();
+    // Where to write CBOR.
+    abstract void internalEncode(OutputStream outputStream) throws IOException;
+
+    /**
+     * Encode (aka "serialize") CBOR object to a stream.
+     * <p>
+     * Note: this method always returns CBOR data using 
+     * <a href='package-summary.html#deterministic-encoding' class='webpkilink'>Deterministic&nbsp;Encoding</a>.
+     * </p>
+     * <p>
+     * Note: the <code>outputStream</code> is not closed after the encoding has been performed.
+     * </p>
+     *
+     * @param outputStream Where to write data
+     * @see CBORArray#encodeAsSequence()
+     * @return CBOR encoded <code>byteArray</code>
+     */
+    public OutputStream encode(OutputStream outputStream) {
+        try {
+            internalEncode(outputStream);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+        return outputStream;
+    }
 
     /**
      * Encode (aka "serialize") CBOR object.
@@ -65,8 +93,11 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * @return CBOR encoded <code>byteArray</code>
      */
     public byte[] encode() {
-        return internalEncode();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        encode(baos);
+        return baos.toByteArray();
     }
+
     
     abstract void internalToString(CborPrinter outputBuffer);
     

@@ -18,6 +18,9 @@ package org.webpki.cbor;
 
 import static org.webpki.cbor.CBORInternal.*;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 /**
  * Class for holding CBOR <code>#7.n</code> (simple) objects.
  * <p>
@@ -50,8 +53,8 @@ public class CBORSimple extends CBORObject {
     }
 
     @Override
-    byte[] internalEncode() {
-        return encodeTagAndN(MT_SIMPLE, value);
+    void internalEncode(OutputStream outputStream) throws IOException {
+        outputStream.write(encodeTagAndN(MT_SIMPLE, value));
     }
 
     @Override

@@ -18,6 +18,9 @@ package org.webpki.cbor;
 
 import static org.webpki.cbor.CBORInternal.*;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 import java.time.Instant;
 
 /**
@@ -248,8 +251,9 @@ public class CBORTag extends CBORObject {
     }
 
     @Override
-    byte[] internalEncode() {
-        return CBORUtil.concatByteArrays(encodeTagAndN(MT_TAG, tagNumber), object.encode());
+    void internalEncode(OutputStream outputStream) throws IOException {
+        outputStream.write(encodeTagAndN(MT_TAG, tagNumber));
+        object.internalEncode(outputStream);
 
     }
     

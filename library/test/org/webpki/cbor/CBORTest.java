@@ -188,7 +188,8 @@ public class CBORTest {
     CBORObject parseCborHex(String hex) {
         byte[] cbor = HexaDecimal.decode(hex);
         CBORObject cborObject = CBORDecoder.decode(cbor);
-        assertTrue("phex: " + hex, Arrays.equals(cbor, cborObject.encode()));
+        byte[] recbor = cborObject.encode();
+        assertTrue("phex: " + hex + " " + HexaDecimal.encode(recbor), Arrays.equals(cbor, recbor));
         return cborObject;
     }
 

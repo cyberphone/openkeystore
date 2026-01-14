@@ -20,6 +20,9 @@ import org.webpki.util.HexaDecimal;
 
 import static org.webpki.cbor.CBORInternal.*;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 /**
  * Class for holding CBOR <code>bstr</code> objects.
  */
@@ -38,8 +41,9 @@ public class CBORBytes extends CBORObject {
     }
 
     @Override
-    byte[] internalEncode() {
-        return CBORUtil.concatByteArrays(encodeTagAndN(MT_BYTES, byteString.length), byteString);
+    void internalEncode(OutputStream outputStream) throws IOException {
+        outputStream.write(encodeTagAndN(MT_BYTES, byteString.length));
+        outputStream.write(byteString);
     }
 
     @Override

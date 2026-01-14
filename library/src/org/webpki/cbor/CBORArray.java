@@ -16,6 +16,9 @@
  */
 package org.webpki.cbor;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 import java.util.ArrayList;
 
 import static org.webpki.cbor.CBORInternal.*;
@@ -110,13 +113,6 @@ public class CBORArray extends CBORObject {
         return objects.remove(index);
     }
 
-    byte[] encodeBody(byte[] header) {
-        for (CBORObject cborObject : objects) {
-            header = CBORUtil.concatByteArrays(header, cborObject.internalEncode());
-        }
-        return header;
-    }
-
     /**
      * Encode CBOR sequence.
      * <p>
@@ -127,7 +123,11 @@ public class CBORArray extends CBORObject {
      * @return CBOR sequence
      */
     public byte[] encodeAsSequence() {
-        return encodeBody(new byte[0]);
+        byte[] encoded = new byte[0];
+        for (CBORObject cborObject : objects) {
+            encoded = CBORUtil.concatByteArrays(encoded, cborObject.encode());
+        }
+        return encoded;
     }
 
     /**
@@ -141,8 +141,11 @@ public class CBORArray extends CBORObject {
     }
 
     @Override
-    byte[] internalEncode() {
-        return encodeBody(encodeTagAndN(MT_ARRAY, objects.size()));
+    void internalEncode(OutputStream outputStream) throws IOException {
+        outputStream.write(encodeTagAndN(MT_ARRAY, objects.size()));
+        for (CBORObject cborObject : objects) {
+            cborObject.internalEncode(outputStream);
+        }
     }
 
     @Override
