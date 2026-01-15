@@ -22,6 +22,8 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -30,6 +32,7 @@ import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
+import java.security.MessageDigest;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
@@ -2870,5 +2873,48 @@ public class CBORTest {
             fail("Must not");
         } catch (StackOverflowError e) {
         }
+    }
+
+    @Test
+    public void streamTest() throws Exception {
+        CBORObject BYTE_COUNT_KEY = new CBORInt(1);
+        CBORObject SHA256_KEY = new CBORInt(2);
+        FileInputStream fis = new FileInputStream(System.getProperty("test.large-file"));
+        MessageDigest hashFunction = MessageDigest.getInstance("SHA256");
+
+        // Now read (in modest chunks), the potentially large file.
+        byte[] buffer = new byte[1000];
+        int byteCount = 0;
+        for (int n; (n = fis.read(buffer)) > 0; byteCount += n) {
+            // Each chunk updates the SHA256 calculation.
+            hashFunction.update(buffer, 0, n);
+        }
+        fis.close();
+        byte[] calculatedSha256 = hashFunction.digest();
+        CBORMap metaData = new CBORMap()
+            .set(BYTE_COUNT_KEY, new CBORInt(byteCount))
+            .set(SHA256_KEY, new CBORBytes(calculatedSha256));
+        File tempFile = File.createTempFile("payload", null);
+        tempFile.deleteOnExit();
+        FileOutputStream fos = new FileOutputStream(tempFile);
+        metaData.encode(fos);
+        fis = new FileInputStream(System.getProperty("test.large-file"));
+        for (int n; (n = fis.read(buffer)) > 0; ) {
+            fos.write(buffer, 0, n);
+        }
+        fis.close();
+        fos.close();
+        fis = new FileInputStream(tempFile);
+        metaData = new CBORDecoder(fis, CBORDecoder.SEQUENCE_MODE, 1000)
+            .decodeWithOptions().getMap();
+        byteCount = 0;
+        hashFunction.reset();
+        for (int n; (n = fis.read(buffer)) > 0; byteCount += n) {
+            hashFunction.update(buffer, 0, n);
+        }
+        calculatedSha256 = hashFunction.digest();
+        assertTrue("Sha256", Arrays.compare(calculatedSha256, metaData.get(SHA256_KEY).getBytes()) == 0);
+        assertTrue("BC", metaData.get(BYTE_COUNT_KEY).getInt32() == byteCount);
+        fis.close();
     }
  }
