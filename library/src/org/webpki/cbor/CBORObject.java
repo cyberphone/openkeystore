@@ -62,16 +62,16 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     /**
      * Encode (aka "serialize") CBOR object to a stream.
      * <p>
-     * Note: this method always returns CBOR data using 
+     * Note: this method always produce data using 
      * <a href='package-summary.html#deterministic-encoding' class='webpkilink'>Deterministic&nbsp;Encoding</a>.
      * </p>
      * <p>
-     * Note: the <code>outputStream</code> is not closed after the encoding has been performed.
+     * Note: <code>outputStream</code> is not closed after the encoding has been performed.
      * </p>
      *
      * @param outputStream Where to write data
      * @see CBORArray#encodeAsSequence()
-     * @return CBOR encoded <code>byteArray</code>
+     * @return The original <code>outputStream</code>
      */
     public OutputStream encode(OutputStream outputStream) {
         try {
@@ -85,12 +85,12 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     /**
      * Encode (aka "serialize") CBOR object.
      * <p>
-     * Note: this method always returns CBOR data using 
+     * Note: this method always produce data using 
      * <a href='package-summary.html#deterministic-encoding' class='webpkilink'>Deterministic&nbsp;Encoding</a>.
      * </p>
      *
      * @see CBORArray#encodeAsSequence()
-     * @return CBOR encoded <code>byteArray</code>
+     * @return CBOR encoded <code>byte-array</code>
      */
     public byte[] encode() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
