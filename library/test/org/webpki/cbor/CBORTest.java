@@ -2877,6 +2877,12 @@ public class CBORTest {
 
     @Test
     public void streamTest() throws Exception {
+        // Tranferral of mera-data and large file
+
+        //////////////////////////
+        //    Sending side.     //
+        //////////////////////////
+
         CBORObject BYTE_COUNT_KEY = new CBORInt(1);
         CBORObject SHA256_KEY = new CBORInt(2);
         FileInputStream fis = new FileInputStream(System.getProperty("test.large-file"));
@@ -2904,17 +2910,25 @@ public class CBORTest {
         }
         fis.close();
         fos.close();
+
+        //////////////////////////
+        //    Receiving side    //
+        //////////////////////////
+    
         fis = new FileInputStream(tempFile);
         metaData = new CBORDecoder(fis, CBORDecoder.SEQUENCE_MODE, 1000)
             .decodeWithOptions().getMap();
         byteCount = 0;
         hashFunction.reset();
+        fos = new FileOutputStream(System.getProperty("test.large-file"));
         for (int n; (n = fis.read(buffer)) > 0; byteCount += n) {
             hashFunction.update(buffer, 0, n);
+            fos.write(buffer, 0, n);
         }
         calculatedSha256 = hashFunction.digest();
         assertTrue("Sha256", Arrays.compare(calculatedSha256, metaData.get(SHA256_KEY).getBytes()) == 0);
         assertTrue("BC", metaData.get(BYTE_COUNT_KEY).getInt32() == byteCount);
         fis.close();
+        fos.close();
     }
  }
