@@ -225,7 +225,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     public long getInt64() {
         CBORInt cborInt = getCBORInt();
         long value = cborInt.value;
-        if (cborInt.bigValue != null || (cborInt.unsigned && (value < 0))) {
+        if (cborInt.bigValue != null || (cborInt.unsigned && value < 0)) {
             outOfRangeError("Int64");
         }
         return value;
