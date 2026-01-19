@@ -26,7 +26,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
+import java.io.OutputStream;
 import java.math.BigInteger;
 
 import java.security.GeneralSecurityException;
@@ -2902,8 +2902,7 @@ public class CBORTest {
             .set(SHA256_KEY, new CBORBytes(calculatedSha256));
         File tempFile = File.createTempFile("payload", null);
         tempFile.deleteOnExit();
-        FileOutputStream fos = new FileOutputStream(tempFile);
-        metaData.encode(fos);
+        OutputStream fos = metaData.encode(new FileOutputStream(tempFile));
         fis = new FileInputStream(System.getProperty("test.large-file"));
         for (int n; (n = fis.read(buffer)) > 0; ) {
             fos.write(buffer, 0, n);

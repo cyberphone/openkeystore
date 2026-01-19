@@ -72,12 +72,13 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * @see CBORArray#encodeAsSequence()
      * @return The original <code>outputStream</code>
      */
-    public void encode(OutputStream outputStream) {
+    public OutputStream encode(OutputStream outputStream) {
         try {
             outputStream.write(internalEncode());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+        return outputStream;
     }
 
     /**
