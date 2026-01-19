@@ -16,9 +16,6 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 import java.math.BigInteger;
 
 import java.util.Arrays;
@@ -48,6 +45,9 @@ public class CBORInt extends CBORObject {
 
     static final BigInteger MAX_INT_MAGNITUDE = new BigInteger("ffffffffffffffff", 16);
     static final BigInteger MIN_INT_NEGATIVE  = new BigInteger("-8000000000000000", 16);
+
+    static final byte[] UNSIGNED_BIGNUM_TAG = {(byte)MT_BIG_UNSIGNED};
+    static final byte[] NEGATIVE_BIGNUM_TAG = {(byte)MT_BIG_NEGATIVE};
 
     // "int"
     long value;
@@ -305,11 +305,10 @@ public class CBORInt extends CBORObject {
     }
 
     @Override
-    void internalEncode(OutputStream outputStream) throws IOException {
+    byte[] internalEncode() {
         if (bigValue == null) {
-            outputStream.write(encodeTagAndN(unsigned ? 
-                                          MT_UNSIGNED : MT_NEGATIVE, 
-                                             unsigned ? value : ~value));
+            return encodeTagAndN(unsigned ?  MT_UNSIGNED : MT_NEGATIVE, 
+                                 unsigned ? value : ~value);
         } else {
             BigInteger cborAdjusted = unsigned ? bigValue : bigValue.not();
             byte[] encoded = cborAdjusted.toByteArray();
@@ -319,13 +318,12 @@ public class CBORInt extends CBORObject {
             }
             if (encoded.length <= 8) {
                 // Fits "int" encoding.
-                outputStream.write(encodeTagAndN(unsigned ? MT_UNSIGNED : MT_NEGATIVE,
-                                                 cborAdjusted.longValue()));
-            } else {
-                // Needs "bigint" encoding.
-                outputStream.write(unsigned ? MT_BIG_UNSIGNED : MT_BIG_NEGATIVE);
-                new CBORBytes(encoded).internalEncode(outputStream);
+                return encodeTagAndN(unsigned ? MT_UNSIGNED : MT_NEGATIVE,
+                                     cborAdjusted.longValue());
             }
+            // Needs "bigint" encoding.
+            return CBORUtil.concatByteArrays(unsigned ? UNSIGNED_BIGNUM_TAG : NEGATIVE_BIGNUM_TAG,
+                                             new CBORBytes(encoded).internalEncode());
         }
     }
 

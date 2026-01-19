@@ -20,9 +20,6 @@ import org.webpki.util.HexaDecimal;
 
 import static org.webpki.cbor.CBORInternal.*;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 /**
  * Class for holding CBOR <i>non-finite</i> floating-point objects.
  * <p>
@@ -276,9 +273,9 @@ public class CBORNonFinite extends CBORObject {
     }
 
     @Override
-    void internalEncode(OutputStream outputStream) throws IOException {
-        outputStream.write((byte)(MT_FLOAT16 + (ieee754.length >> 2)));
-        outputStream.write(ieee754);
+    byte[] internalEncode() {
+        return CBORUtil.concatByteArrays(new byte[]{(byte)(MT_FLOAT16 + (ieee754.length >> 2))},
+                                         ieee754);
     }
     
     @Override

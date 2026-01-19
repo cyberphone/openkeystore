@@ -20,9 +20,6 @@ import org.webpki.util.UTF8;
 
 import static org.webpki.cbor.CBORInternal.*;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 /**
  * Class for holding CBOR <code>tstr</code> objects.
  */
@@ -45,10 +42,9 @@ public class CBORString extends CBORObject {
     }
 
     @Override
-    void internalEncode(OutputStream outputStream) throws IOException {
+    byte[] internalEncode() {
         byte[] utf8Bytes = UTF8.encode(textString);
-        outputStream.write(encodeTagAndN(MT_STRING, utf8Bytes.length));
-        outputStream.write(utf8Bytes);
+        return CBORUtil.concatByteArrays(encodeTagAndN(MT_STRING, utf8Bytes.length), utf8Bytes);
     }
 
     // JavaScript/JSON compatible escape character support

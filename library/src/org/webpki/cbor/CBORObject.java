@@ -16,7 +16,6 @@
  */
 package org.webpki.cbor;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
@@ -56,8 +55,8 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
     // True if map key object
     private boolean immutableFlag;
 
-    // Where to write CBOR.
-    abstract void internalEncode(OutputStream outputStream) throws IOException;
+    // Each wrapper return this.
+    abstract byte[] internalEncode();
 
     /**
      * Encode (aka "serialize") CBOR object to a stream.
@@ -73,13 +72,12 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * @see CBORArray#encodeAsSequence()
      * @return The original <code>outputStream</code>
      */
-    public OutputStream encode(OutputStream outputStream) {
+    public void encode(OutputStream outputStream) {
         try {
-            internalEncode(outputStream);
+            outputStream.write(internalEncode());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-        return outputStream;
     }
 
     /**
@@ -93,9 +91,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * @return CBOR encoded <code>byte-array</code>
      */
     public byte[] encode() {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        encode(baos);
-        return baos.toByteArray();
+        return internalEncode();
     }
 
     

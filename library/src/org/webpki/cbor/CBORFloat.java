@@ -20,9 +20,6 @@ import org.webpki.util.Float64Stringifier;
 
 import static org.webpki.cbor.CBORInternal.*;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 /**
  * Class for holding CBOR <code>float</code> objects.
  * <p>
@@ -253,8 +250,8 @@ public class CBORFloat extends CBORObject {
     }
 
     @Override
-    void internalEncode(OutputStream outputStream) throws IOException {
-        outputStream.write(encodeTagAndValue(tag, length(), bitFormat));
+    byte[] internalEncode() {
+        return encodeTagAndValue(tag, length(), bitFormat);
     }
     
     @Override

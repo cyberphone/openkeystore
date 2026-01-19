@@ -18,22 +18,20 @@ package org.webpki.cbor;
 
 import static org.webpki.cbor.CBORInternal.*;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 /**
  * Class for holding CBOR <code>null</code> objects.
  */
 public class CBORNull extends CBORObject {
 
+    static final byte[] NULL_TAG = {(byte)MT_NULL};
     /**
      * Creates a CBOR <code>null</code>.
      */
     public CBORNull() {}
 
     @Override
-    void internalEncode(OutputStream outputStream) throws IOException {
-        outputStream.write((byte)MT_NULL);
+    byte[] internalEncode() {
+        return NULL_TAG;
     }
 
     @Override

@@ -18,13 +18,13 @@ package org.webpki.cbor;
 
 import static org.webpki.cbor.CBORInternal.*;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 /**
  * Class for holding CBOR <code>bool</code> objects.
  */
 public class CBORBoolean extends CBORObject {
+
+    static final byte[] TRUE  = {(byte)MT_TRUE};
+    static final byte[] FALSE = {(byte)MT_FALSE};
 
     boolean value;
 
@@ -38,8 +38,8 @@ public class CBORBoolean extends CBORObject {
     }
 
     @Override
-    void internalEncode(OutputStream outputStream) throws IOException {
-        outputStream.write(value ? MT_TRUE : MT_FALSE);
+    byte[] internalEncode() {
+        return value ? TRUE : FALSE;
     }
 
     @Override

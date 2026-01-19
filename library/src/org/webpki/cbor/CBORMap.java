@@ -16,9 +16,7 @@
  */
 package org.webpki.cbor;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -349,12 +347,14 @@ public class CBORMap extends CBORObject {
     }
 
     @Override
-    void internalEncode(OutputStream outputStream) throws IOException {
-        outputStream.write(encodeTagAndN(MT_MAP, entries.size()));
+    byte[] internalEncode() {
+        byte[] encoded = encodeTagAndN(MT_MAP, entries.size());
         for (Entry entry : entries) {
-            outputStream.write(entry.encodedKey);
-            entry.object.internalEncode(outputStream);
+            encoded = CBORUtil.concatByteArrays(encoded,
+                                                entry.encodedKey,
+                                                entry.object.internalEncode());
         }
+        return encoded;
     }
         
     @Override
