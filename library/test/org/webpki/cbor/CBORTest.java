@@ -2875,6 +2875,32 @@ public class CBORTest {
         }
     }
 
+    void nest(Integer setMax, int level, boolean ok) {
+        CBORArray cborArray = new CBORArray();
+        CBORArray lastArray = cborArray;
+        while (--level > 0) {
+            lastArray.add(lastArray = new CBORArray());
+        }
+        try {
+            CBORDecoder cborDecorder = new CBORDecoder(cborArray.encode(), 0);
+            if (setMax != null) {
+                cborDecorder.setMaxNestingLevel(setMax);
+            }
+            cborDecorder.decodeWithOptions();
+            assertTrue("mustnot", ok);
+        } catch (Exception e) {
+            assertFalse("bad", ok);
+        }
+    }
+
+    @Test
+    public void nestingTest() throws Exception {
+        nest(null, CBORDecoder.MAX_NEXTING_LEVEL, true);
+        nest(null, CBORDecoder.MAX_NEXTING_LEVEL + 1, false);
+        nest(2, 2, true);
+        nest(2, 3, false);
+    }
+
     @Test
     public void streamTest() throws Exception {
         // Tranferral of mera-data and large file

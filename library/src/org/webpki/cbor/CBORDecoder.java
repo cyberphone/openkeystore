@@ -48,6 +48,8 @@ public class CBORDecoder {
 
 
     static final BigInteger MIN_INT_VALUE_MINUS_ONE = new BigInteger("-10000000000000001", 16);
+
+    static final int MAX_NEXTING_LEVEL              = 25;
    
     private InputStream inputStream;
     private boolean sequenceMode;
@@ -56,7 +58,7 @@ public class CBORDecoder {
     private boolean atFirstByte;
     private int maxInputLength;
     private int byteCount;
-    private int maxLevel = 25;  // Default
+    private int maxLevel = MAX_NEXTING_LEVEL;  // Default
     private int level;
 
     /**
