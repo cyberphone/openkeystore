@@ -56,6 +56,8 @@ public class CBORDecoder {
     private boolean atFirstByte;
     private int maxInputLength;
     private int byteCount;
+    private int maxLevel = 25;  // Default
+    private int level;
 
     /**
     * Create a customized CBOR decoder.
@@ -138,6 +140,23 @@ public class CBORDecoder {
      */
     public CBORDecoder(byte[] cbor, int options) {
         this(new ByteArrayInputStream(cbor), options, cbor.length);
+    }
+
+    /**
+     * Set max structure nesting level.
+     * 
+     * @param maxLevel Set new max level.  Default is 25.
+     * @return <code>this</code>
+     */
+    public CBORDecoder setMaxNestingLevel(int maxLevel) {
+        this.maxLevel = maxLevel;
+        return this;
+    }
+
+    private void enterLevel() {
+        if (++level > maxLevel) {
+            cborError(STDERR_LEVEL_LIMIT, maxLevel);
+        }
     }
     
     private void eofError() {
@@ -317,7 +336,12 @@ public class CBORDecoder {
 
                     case MT_SIMPLE -> new CBORSimple(checkLength(n));
 
-                    case MT_TAG -> new CBORTag(n, getObject());
+                    case MT_TAG -> {
+                        enterLevel();
+                        CBORTag cborTag = new CBORTag(n, getObject());
+                        --level;
+                        yield cborTag;
+                    }
 
                     case MT_UNSIGNED -> new CBORInt(n, true);
 
@@ -334,18 +358,22 @@ public class CBORDecoder {
                     case MT_STRING -> new CBORString(UTF8.decode(readBytes(checkLength(n))));
 
                     case MT_ARRAY -> {
+                        enterLevel();
                         CBORArray cborArray = new CBORArray();
                         for (int q = checkLength(n); --q >= 0; ) {
                             cborArray.add(getObject());
                         }
+                        --level;
                         yield cborArray;
                     }
 
                     case MT_MAP -> {
+                        enterLevel();
                         CBORMap cborMap = new CBORMap().setSortingMode(strictMaps);
                         for (int q = checkLength(n); --q >= 0; ) {
                             cborMap.set(getObject(), getObject());
                         }
+                        --level;
                         // Programmatically added elements will be sorted (by default). 
                         yield cborMap.setSortingMode(false);
                     }
@@ -435,5 +463,8 @@ public class CBORDecoder {
     
     static final String STDERR_READING_LIMIT =
             "Reading past input limit";
+
+    static final String STDERR_LEVEL_LIMIT =
+            "Structure nesting level exceeding: %d";
 
 }
