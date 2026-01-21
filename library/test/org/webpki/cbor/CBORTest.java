@@ -2895,8 +2895,8 @@ public class CBORTest {
 
     @Test
     public void nestingTest() throws Exception {
-        nest(null, CBORDecoder.MAX_NEXTING_LEVEL, true);
-        nest(null, CBORDecoder.MAX_NEXTING_LEVEL + 1, false);
+        nest(null, CBORDecoder.MAX_NESTING_LEVEL, true);
+        nest(null, CBORDecoder.MAX_NESTING_LEVEL + 1, false);
         nest(2, 2, true);
         nest(2, 3, false);
     }

@@ -49,17 +49,20 @@ public class CBORDecoder {
 
     static final BigInteger MIN_INT_VALUE_MINUS_ONE = new BigInteger("-10000000000000001", 16);
 
-    static final int MAX_NEXTING_LEVEL              = 25;
+    static final int MAX_NESTING_LEVEL              = 100;
    
+    // Configuration data
     private InputStream inputStream;
     private boolean sequenceMode;
     private boolean strictMaps;
     private boolean strictNumbers;
-    private boolean atFirstByte;
     private int maxInputLength;
+    private int maxNestingLevel = MAX_NESTING_LEVEL;  // Default
+
+    // Runtime data
+    private boolean atFirstByte;
     private int byteCount;
-    private int maxLevel = MAX_NEXTING_LEVEL;  // Default
-    private int level;
+    private int nestingLevel;
 
     /**
     * Create a customized CBOR decoder.
@@ -114,10 +117,12 @@ public class CBORDecoder {
     * <i>recommendable</i> setting this as low as possible since malformed
     * CBOR objects may request any amount of memory.
     * </p>
+    * 
     * @param inputStream Stream holding CBOR data. 
     * @param options The decoder options.
     * @param maxInputLength Upper limit in bytes.
     * @throws CBORException
+    * @see #setMaxNestingLevel(int)
     * @see #getByteCount()
     */
     public CBORDecoder(InputStream inputStream, int options, int maxInputLength) {
@@ -135,10 +140,10 @@ public class CBORDecoder {
      * <div class='webpkifloat'>
      * <pre>  CBORDecoder(new ByteArrayInputStream(cbor), 0, cbor.length);</pre>
      * </div>
+     * 
      * @param cbor CBOR binary data
      * @param options The decoder options.
      * @throws CBORException
-     * @see #getByteCount()
      */
     public CBORDecoder(byte[] cbor, int options) {
         this(new ByteArrayInputStream(cbor), options, cbor.length);
@@ -146,18 +151,21 @@ public class CBORDecoder {
 
     /**
      * Set max structure nesting level.
+     * <p>
+     * Structure refers to CBOR tags, arrays, and maps. Example: <code>[{}]</code> represents a nesting level of <code>2</code>.
+     * </p>
      * 
-     * @param maxLevel Set new max level.  Default is 25.
+     * @param maxLevel Set new max level.  Default is <code>{@value CBORDecoder#MAX_NESTING_LEVEL}</code>.
      * @return <code>this</code>
      */
     public CBORDecoder setMaxNestingLevel(int maxLevel) {
-        this.maxLevel = maxLevel;
+        this.maxNestingLevel = maxLevel;
         return this;
     }
 
     private void enterLevel() {
-        if (++level > maxLevel) {
-            cborError(STDERR_LEVEL_LIMIT, maxLevel);
+        if (++nestingLevel > maxNestingLevel) {
+            cborError(STDERR_LEVEL_LIMIT, maxNestingLevel);
         }
     }
     
@@ -341,7 +349,7 @@ public class CBORDecoder {
                     case MT_TAG -> {
                         enterLevel();
                         CBORTag cborTag = new CBORTag(n, getObject());
-                        --level;
+                        --nestingLevel;
                         yield cborTag;
                     }
 
@@ -365,7 +373,7 @@ public class CBORDecoder {
                         for (int q = checkLength(n); --q >= 0; ) {
                             cborArray.add(getObject());
                         }
-                        --level;
+                        --nestingLevel;
                         yield cborArray;
                     }
 
@@ -375,7 +383,7 @@ public class CBORDecoder {
                         for (int q = checkLength(n); --q >= 0; ) {
                             cborMap.set(getObject(), getObject());
                         }
-                        --level;
+                        --nestingLevel;
                         // Programmatically added elements will be sorted (by default). 
                         yield cborMap.setSortingMode(false);
                     }
