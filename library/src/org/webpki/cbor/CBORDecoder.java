@@ -91,7 +91,7 @@ public class CBORDecoder {
     * (<i>empty</i> sequences are permitted).</li>
     * </ul>
     * Note that data that has not yet been decoded, is not verified for correctness.
-    * The application note <a href='https://github.com/cyberphone/javaapi/tree/gh-pages/app-notes/cbor-large-payloads'
+    * The application note <a href='https://github.com/cyberphone/javaapi/tree/gh-pages/app-notes/large-payloads'
     * class='webpkilink'>Large&nbsp;Payloads</a> shows how this can be utilized.
     * <div style='margin-top:0.5em'>See also {@link CBORArray#encodeAsSequence}.</div></div>
     *
