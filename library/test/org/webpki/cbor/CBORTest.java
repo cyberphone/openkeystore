@@ -2882,11 +2882,11 @@ public class CBORTest {
             lastArray.add(lastArray = new CBORArray());
         }
         try {
-            CBORDecoder cborDecorder = new CBORDecoder(cborArray.encode(), 0);
+            CBORDecoder cborDecoder = new CBORDecoder(cborArray.encode(), 0);
             if (setMax != null) {
-                cborDecorder.setMaxNestingLevel(setMax);
+                cborDecoder.setMaxNestingLevel(setMax);
             }
-            cborDecorder.decodeWithOptions();
+            cborDecoder.decodeWithOptions();
             assertTrue("mustnot", ok);
         } catch (Exception e) {
             assertFalse("bad", ok);
