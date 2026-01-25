@@ -2546,6 +2546,11 @@ public class CBORTest {
         } else {
             CBORDecoder.decode(rawcbor);
         }
+        assertTrue("eq10", nonfinite.getSign() ^ (binexpect.charAt(2) == '7'));
+        nonfinite.setSign(!nonfinite.getSign());
+        assertTrue("eq11", nonfinite.getSign() ^ (binexpect.charAt(2) == 'f'));
+        nonfinite.setSign(!nonfinite.getSign());
+        assertTrue("eq12", returnValue == nonfinite.getNonFinite());
         assertTrue("d3", new CBORDecoder(new ByteArrayInputStream(rawcbor), CBORDecoder.LENIENT_NUMBER_DECODING, 100)
             .decodeWithOptions().equals(nonfinite));
         CBORNonFinite object = (CBORNonFinite)CBORDecoder.decode(refcbor);
@@ -2566,6 +2571,7 @@ public class CBORTest {
 
     void payloadOneTurn(long payload, String hex, String dn) {
         dn = dn == null ? "float'" + hex.substring(2) + "'" : dn;
+  //      System.out.printf("%13x  %18s  %s\n", payload, hex, dn);
         byte[] cbor = CBORNonFinite.createPayload(payload).encode();
         CBORObject object = CBORDecoder.decode(cbor);
         assertTrue("plo1", object instanceof CBORNonFinite);
@@ -2573,15 +2579,7 @@ public class CBORTest {
         assertTrue("plo2", nonFinite.getPayload() == payload);
         assertTrue("plo3", HexaDecimal.encode(cbor).equals(hex));
         assertTrue("plo4", nonFinite.toString().equals(dn));
-        assertTrue("plo5", nonFinite.getNonFinite() == Long.valueOf(hex.substring(2), 16));
-        assertFalse("plo6", nonFinite.getSign());
-        String signedHex = hex.substring(0, 2) + "f" +hex.substring(3);
-        nonFinite.setSign(true);
-        assertTrue("plo7", nonFinite.getSign());
-        assertTrue("plo8", HexaDecimal.encode(nonFinite.encode()).equals(signedHex));
-        nonFinite = CBORNonFinite.createPayload(payload).setSign(true);
-        assertTrue("plo9", HexaDecimal.encode(nonFinite.encode()).equals(signedHex));
-     //   System.out.printf("%13x  %18s  %s\n", payload, hex, dn);
+        assertTrue("plo5", nonFinite.getNonFinite() == Long.parseUnsignedLong(hex.substring(2), 16));
       //  System.out.printf("<tr><td style='text-align:right'><code>%x</code></td><td style='text-align:right'><code>%s</code></td><td><code>%s</code></td></tr>\n", payload, hex, dn);
     }
 
@@ -2638,9 +2636,17 @@ public class CBORTest {
         payloadOneTurn((1L << FLOAT32_SIGNIFICAND_SIZE) - 1L, "fa7fffffff", null);
         payloadOneTurn(1L << FLOAT32_SIGNIFICAND_SIZE,        "fb7ff0000010000000", null);
         payloadOneTurn((1L << FLOAT64_SIGNIFICAND_SIZE) - 1L, "fb7fffffffffffffff", null);
+        payloadOneTurn(1L << FLOAT64_SIGNIFICAND_SIZE, "f9fc00", "-Infinity");
+        payloadOneTurn((1L << FLOAT64_SIGNIFICAND_SIZE) + 1L, "f9fe00", null);
+        payloadOneTurn((1L << FLOAT64_SIGNIFICAND_SIZE) + 0x3ffL, "f9ffff", null);
+        payloadOneTurn((1L << FLOAT64_SIGNIFICAND_SIZE) + 0x400L, "faff801000", null);
+        payloadOneTurn((1L << FLOAT64_SIGNIFICAND_SIZE) + ((1L << FLOAT32_SIGNIFICAND_SIZE) - 1L), "faffffffff", null);
+        payloadOneTurn((1L << FLOAT64_SIGNIFICAND_SIZE) + (1L << FLOAT32_SIGNIFICAND_SIZE), "fbfff0000010000000", null);
+        payloadOneTurn(3L << (FLOAT64_SIGNIFICAND_SIZE - 1), "fbfff0000000000001", null);
+        payloadOneTurn((1L << (FLOAT64_SIGNIFICAND_SIZE + 1)) - 1L, "fbffffffffffffffff", null);
 
         try {
-            CBORNonFinite.createPayload(1L << FLOAT64_SIGNIFICAND_SIZE).encode();
+            CBORNonFinite.createPayload(1L << (FLOAT64_SIGNIFICAND_SIZE + 1)).encode();
             fail("pl8");
         } catch(Exception e) {
             checkException(e, CBORNonFinite.STDERR_PAYLOAD_RANGE);

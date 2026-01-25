@@ -50,7 +50,8 @@ public class CBORNonFinite extends CBORObject {
     static final long DIFF_32_16 = FLOAT32_SIGNIFICAND_SIZE - FLOAT16_SIGNIFICAND_SIZE;
     static final long DIFF_64_32 = FLOAT64_SIGNIFICAND_SIZE - FLOAT32_SIGNIFICAND_SIZE;
 
-    static final long PAYLOAD_MASK = ((1L << FLOAT64_SIGNIFICAND_SIZE) - 1L);
+    static final long PAYLOAD_B51_B0_MASK = ((1L << FLOAT64_SIGNIFICAND_SIZE) - 1L);
+    static final long PAYLOAD_B52_BIT     = (1L << FLOAT64_SIGNIFICAND_SIZE);
 
     /**
      * Creates a <i>non-finite</i> floating-point number.
@@ -119,14 +120,19 @@ public class CBORNonFinite extends CBORObject {
      * <a href='../../webpki/cbor/doc-files/non-finite-numbers.html#payload-option'
      * class='webpkilink'>Payload Option</a>.
      * </div>
-     * @param payload Payload data
+     * @param payload Payload data must be within the range <code>0</code> to <code>0x1fffffffffffff</code>.
      * @return {@link CBORNonFinite}
      */
     public static CBORNonFinite createPayload(long payload) {
-        if ((payload & PAYLOAD_MASK) != payload) {
+        if ((payload & (PAYLOAD_B51_B0_MASK + PAYLOAD_B52_BIT)) != payload) {
             cborError(STDERR_PAYLOAD_RANGE);
         }
-        return new CBORNonFinite(FLOAT64_POS_INFINITY + (Long.reverse(payload) >>> 12));
+        long highBits = FLOAT64_POS_INFINITY;
+        if ((payload & PAYLOAD_B52_BIT) != 0L) {
+            highBits = FLOAT64_NEG_INFINITY;
+            payload &= PAYLOAD_B51_B0_MASK;
+        }
+        return new CBORNonFinite(highBits + (Long.reverse(payload) >>> 12));
     }
 
     /**
@@ -138,7 +144,7 @@ public class CBORNonFinite extends CBORObject {
      * @return Payload
      */
     public long getPayload() {
-        return Long.reverse((getNonFinite64() & PAYLOAD_MASK) << 12);
+        return Long.reverse((getNonFinite64() & PAYLOAD_B51_B0_MASK) << 12) + (getSign() ? PAYLOAD_B52_BIT : 0);
     }
 
     /**
@@ -291,6 +297,6 @@ public class CBORNonFinite extends CBORObject {
             "Invalid non-finite argument: ";
 
     static final String STDERR_PAYLOAD_RANGE = 
-            "Payloads are limited to bit d0-d51";
+            "Payloads must be within the range 0 to 0x1fffffffffffff";
 
 }
