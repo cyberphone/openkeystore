@@ -66,7 +66,7 @@ public class CBORMap extends CBORObject {
         boolean compareAndTest(Entry entry) {
             int diff = compare(entry.encodedKey);
             if (diff == 0) {
-                cborError(STDERR_DUPLICATE_KEY + key);
+                cborError(STDERR_DUPLICATE_KEY, key.toString());
             }
             return diff > 0;
         }
@@ -127,7 +127,7 @@ public class CBORMap extends CBORObject {
             if (preSortedKeys) {
                 // Normal case for determinstic decoding.
                 if (entries.get(endIndex).compareAndTest(newEntry)) {
-                    cborError(STDERR_NON_DET_SORT_ORDER + key);
+                    cborError(STDERR_NON_DET_SORT_ORDER, key.toString());
                 }
             } else {
                 // Programmatically created key or the result of unconstrained decoding.
@@ -233,7 +233,7 @@ public class CBORMap extends CBORObject {
             }
         }
         if (mustExist) {
-            cborError(STDERR_MISSING_KEY + key);
+            cborError(STDERR_MISSING_KEY, key.toString());
         }
         return null;
     }
@@ -375,11 +375,11 @@ public class CBORMap extends CBORObject {
     }
     
     static final String STDERR_NON_DET_SORT_ORDER =
-            "Non-deterministic sort order for map key: ";
+            "Non-deterministic sort order for map key: %s";
     
     static final String STDERR_DUPLICATE_KEY = 
-            "Duplicate key: ";
+            "Duplicate key: %s";
 
     static final String STDERR_MISSING_KEY = 
-            "Missing key: ";
+            "Missing key: %s";
 }
