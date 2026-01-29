@@ -129,7 +129,7 @@ public class CBORTag extends CBORObject {
     }
 
     private void tagSyntaxError(String tagError) {
-        cborError(tagError + toDiagnostic(false));
+        cborError(tagError, toDiagnostic(false));
     }
 
     /**
@@ -268,13 +268,13 @@ public class CBORTag extends CBORObject {
     }
 
     static final String STDERR_INVALID_COTX_OBJECT =
-            "Invalid COTX object: ";
+            "Invalid COTX object: %s";
 
     static final String STDERR_ISO_DATE_TIME =
-            "Invalid ISO date/time object: ";
+            "Invalid ISO date/time object: %s";
 
     static final String STDERR_EPOCH_TIME =
-            "Invalid Epoch time object: ";
+            "Invalid Epoch time object: %s";
 
     static final String STDERR_RESERVED_BIG_INT =
             "Reserved for 'bigint'";
