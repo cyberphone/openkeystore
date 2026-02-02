@@ -23,8 +23,8 @@ import static org.webpki.cbor.CBORInternal.*;
  */
 public class CBORBoolean extends CBORObject {
 
-    static final byte[] TRUE  = {(byte)MT_TRUE};
-    static final byte[] FALSE = {(byte)MT_FALSE};
+    static final byte[] TRUE  = {(byte)SIMPLE_TRUE};
+    static final byte[] FALSE = {(byte)SIMPLE_FALSE};
 
     boolean value;
 

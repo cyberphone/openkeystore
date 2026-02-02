@@ -240,7 +240,7 @@ public class CBORDiagnosticNotation {
                 }
                 yield new CBORDecoder(
                     CBORUtil.concatByteArrays(
-                        new byte[]{(byte)(MT_FLOAT16 + (floatBytes.length >> 2))}, floatBytes),
+                        new byte[]{(byte)(SIMPLE_FLOAT16 + (floatBytes.length >> 2))}, floatBytes),
                     CBORDecoder.LENIENT_NUMBER_DECODING).decodeWithOptions();
             }
        

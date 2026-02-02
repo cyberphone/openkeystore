@@ -62,7 +62,7 @@ public class CBORFloat extends CBORObject {
 
         // Initial assumption: the number is a plain vanilla 64-bit double.
 
-        tag = MT_FLOAT64;
+        tag = SIMPLE_FLOAT64;
         bitFormat = Double.doubleToRawLongBits(value);
 
         // Check for forbidden numbers.
@@ -77,7 +77,7 @@ public class CBORFloat extends CBORObject {
         if ((bitFormat & ~FLOAT64_NEG_ZERO) == FLOAT64_POS_ZERO) {
 
             // Some zeroes are apparently more zero than others :)
-            tag = MT_FLOAT16;
+            tag = SIMPLE_FLOAT16;
             bitFormat = (bitFormat == FLOAT64_POS_ZERO) ? FLOAT16_POS_ZERO : FLOAT16_NEG_ZERO;
 
         } else {
@@ -93,7 +93,7 @@ public class CBORFloat extends CBORObject {
 
             // Yes, the number is compatible with 32-bit float representation.
 
-            tag = MT_FLOAT32;
+            tag = SIMPLE_FLOAT32;
             bitFormat = Float.floatToIntBits((float)value) & MASK_LOWER_32;
             
             // However, we must still check if the number could fit in a 16-bit float.
@@ -134,7 +134,7 @@ public class CBORFloat extends CBORObject {
 
             // Seems like 16 bits indeed are sufficient!
 
-            tag = MT_FLOAT16;
+            tag = SIMPLE_FLOAT16;
             bitFormat = 
                 // Put sign bit in position.
                 ((bitFormat >>> (32 - 16)) & FLOAT16_NEG_ZERO) +
@@ -246,7 +246,7 @@ public class CBORFloat extends CBORObject {
      * @return Length in bytes: 2, 4, or 8.
      */
     public int length() {
-        return 2 << (tag - MT_FLOAT16);
+        return 2 << (tag - SIMPLE_FLOAT16);
     }
 
     @Override

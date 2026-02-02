@@ -23,7 +23,7 @@ import static org.webpki.cbor.CBORInternal.*;
  */
 public class CBORNull extends CBORObject {
 
-    static final byte[] NULL_TAG = {(byte)MT_NULL};
+    static final byte[] NULL_TAG = {(byte)SIMPLE_NULL};
     /**
      * Creates a CBOR <code>null</code>.
      */

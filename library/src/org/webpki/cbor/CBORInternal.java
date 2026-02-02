@@ -21,7 +21,7 @@ package org.webpki.cbor;
  */
 class CBORInternal {
 
-    // Supported CBOR types
+    // Supported CBOR types.  All according to RFC 8949.
     static final int MT_UNSIGNED      = 0x00;
     static final int MT_NEGATIVE      = 0x20;
     static final int MT_BYTES         = 0x40;
@@ -29,16 +29,19 @@ class CBORInternal {
     static final int MT_ARRAY         = 0x80;
     static final int MT_MAP           = 0xa0;
     static final int MT_TAG           = 0xc0;
-    static final int MT_BIG_UNSIGNED  = 0xc2;
-    static final int MT_BIG_NEGATIVE  = 0xc3;
     static final int MT_SIMPLE        = 0xe0;
-    static final int MT_FALSE         = 0xf4;
-    static final int MT_TRUE          = 0xf5;
-    static final int MT_NULL          = 0xf6;
-    static final int MT_FLOAT16       = 0xf9;
-    static final int MT_FLOAT32       = 0xfa;
-    static final int MT_FLOAT64       = 0xfb;
 
+    static final int TAG_BIG_UNSIGNED = 0xc2;
+    static final int TAG_BIG_NEGATIVE = 0xc3;
+    
+    static final int SIMPLE_FALSE     = 0xf4;
+    static final int SIMPLE_TRUE      = 0xf5;
+    static final int SIMPLE_NULL      = 0xf6;
+    static final int SIMPLE_FLOAT16   = 0xf9;
+    static final int SIMPLE_FLOAT32   = 0xfa;
+    static final int SIMPLE_FLOAT64   = 0xfb;
+
+    // Floating-point constants.
     static final int FLOAT16_SIGNIFICAND_SIZE = 10;
     static final int FLOAT32_SIGNIFICAND_SIZE = 23;
     static final int FLOAT64_SIGNIFICAND_SIZE = 52;
@@ -67,14 +70,17 @@ class CBORInternal {
     static final long FLOAT64_NEG_ZERO        = 0x8000000000000000L;
 
     static final long MASK_LOWER_32           = 0x00000000ffffffffL;
-    
+ 
+    // Integer specials.
     static final long UINT32_MASK             = 0xffffffff00000000L;
     static final long UINT16_MASK             = 0xffffffffffff0000L;
     static final long UINT8_MASK              = 0xffffffffffffff00L;
 
+    // JavaScript Number.MAX_SAFE_INTEGER.
     static final long MAX_SAFE_JS_INTEGER     = 9007199254740991L;
     static final long MIN_SAFE_JS_INTEGER     = -MAX_SAFE_JS_INTEGER;
 
+    // CBOR::Core time limits.
     static final long MAX_INSTANT_IN_MILLIS   = 253402300799000L; // 9999-12-31T23:59:59Z
     static final long MIN_INSTANT_IN_MILLIS   = -62167219200000L; // 0000-01-01T00:00:00Z;           
     

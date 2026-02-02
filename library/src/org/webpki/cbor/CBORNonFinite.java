@@ -280,7 +280,7 @@ public class CBORNonFinite extends CBORObject {
 
     @Override
     byte[] internalEncode() {
-        return CBORUtil.concatByteArrays(new byte[]{(byte)(MT_FLOAT16 + (ieee754.length >> 2))},
+        return CBORUtil.concatByteArrays(new byte[]{(byte)(SIMPLE_FLOAT16 + (ieee754.length >> 2))},
                                          ieee754);
     }
     

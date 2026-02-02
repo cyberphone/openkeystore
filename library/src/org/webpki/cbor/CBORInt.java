@@ -46,8 +46,8 @@ public class CBORInt extends CBORObject {
     static final BigInteger MAX_INT_MAGNITUDE = new BigInteger("ffffffffffffffff", 16);
     static final BigInteger MIN_INT_NEGATIVE  = new BigInteger("-8000000000000000", 16);
 
-    static final byte[] UNSIGNED_BIGNUM_TAG = {(byte)MT_BIG_UNSIGNED};
-    static final byte[] NEGATIVE_BIGNUM_TAG = {(byte)MT_BIG_NEGATIVE};
+    static final byte[] UNSIGNED_BIGINT = {(byte)TAG_BIG_UNSIGNED};
+    static final byte[] NEGATIVE_BIGINT = {(byte)TAG_BIG_NEGATIVE};
 
     // "int"
     long value;
@@ -322,7 +322,7 @@ public class CBORInt extends CBORObject {
                                      cborAdjusted.longValue());
             }
             // Needs "bigint" encoding.
-            return CBORUtil.concatByteArrays(unsigned ? UNSIGNED_BIGNUM_TAG : NEGATIVE_BIGNUM_TAG,
+            return CBORUtil.concatByteArrays(unsigned ? UNSIGNED_BIGINT : NEGATIVE_BIGINT,
                                              new CBORBytes(encoded).internalEncode());
         }
     }

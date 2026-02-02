@@ -228,7 +228,7 @@ public class CBORDecoder {
     }
 
     private void floatDeterminismError(int tag, long bitFormat) {
-        cborError(STDERR_NON_DETERMINISTIC_FLOAT + (4 << (tag - MT_FLOAT16)) + "x", 
+        cborError(STDERR_NON_DETERMINISTIC_FLOAT + (4 << (tag - SIMPLE_FLOAT16)) + "x", 
                   tag, bitFormat);
     }
 
@@ -254,10 +254,10 @@ public class CBORDecoder {
         // Begin with CBOR types that are uniquely defined by the tag byte.
         return switch (tag) {
 
-            case MT_BIG_NEGATIVE, MT_BIG_UNSIGNED -> {
+            case TAG_BIG_NEGATIVE, TAG_BIG_UNSIGNED -> {
                 byte[] byteArray = getObject().getBytes();
                 BigInteger bigInteger = new BigInteger(1, byteArray);
-                CBORInt cborInt = new CBORInt(tag == MT_BIG_UNSIGNED ? 
+                CBORInt cborInt = new CBORInt(tag == TAG_BIG_UNSIGNED ? 
                                                           bigInteger : bigInteger.not());
                 if (strictNumbers && (byteArray.length <= 8 || byteArray[0] == 0)) {
                     cborError(STDERR_NON_DETERMINISTIC_BIGINT);
@@ -265,7 +265,7 @@ public class CBORDecoder {
                 yield cborInt;
             }
 
-            case MT_FLOAT16 -> {
+            case SIMPLE_FLOAT16 -> {
                 long f16bin = getLongFromBytes(2);
                 // Get the exponent.
                 long exponent = f16bin & FLOAT16_POS_INFINITY;
@@ -289,7 +289,7 @@ public class CBORDecoder {
                 yield returnFloat(tag, f16bin, f16bin >= FLOAT16_NEG_ZERO ? -float64 : float64);
             }
 
-            case MT_FLOAT32 -> {
+            case SIMPLE_FLOAT32 -> {
                 long f32bin = getLongFromBytes(4);
                 // Begin with the edge cases.
                 if ((f32bin & FLOAT32_POS_INFINITY) == FLOAT32_POS_INFINITY) {
@@ -300,7 +300,7 @@ public class CBORDecoder {
                 yield returnFloat(tag, f32bin, Float.intBitsToFloat((int)f32bin));
             }
 
-            case MT_FLOAT64 -> {
+            case SIMPLE_FLOAT64 -> {
                 long f64bin = getLongFromBytes(8);
                 // Begin with the edge cases.
                 if ((f64bin & FLOAT64_POS_INFINITY) == FLOAT64_POS_INFINITY) {
@@ -311,9 +311,9 @@ public class CBORDecoder {
                 yield returnFloat(tag, f64bin, Double.longBitsToDouble(f64bin));
             }
 
-            case MT_NULL -> new CBORNull();
+            case SIMPLE_NULL -> new CBORNull();
                 
-            case MT_TRUE, MT_FALSE -> new CBORBoolean(tag == MT_TRUE);
+            case SIMPLE_TRUE, SIMPLE_FALSE -> new CBORBoolean(tag == SIMPLE_TRUE);
 
             default -> {
                 // Then decode CBOR types that blend length of data in the tag byte.

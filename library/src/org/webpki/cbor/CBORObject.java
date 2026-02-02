@@ -474,7 +474,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      */
     public float getFloat32() {
         CBORFloat floatingPoint = (CBORFloat) getTypeAndMarkAsRead(CBORFloat.class);
-        if (floatingPoint.tag == MT_FLOAT64) {
+        if (floatingPoint.tag == SIMPLE_FLOAT64) {
             outOfRangeError("Float32");
         }
         return (float)floatingPoint.value;
@@ -495,7 +495,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      */
     public float getFloat16() {
         CBORFloat floatingPoint = (CBORFloat) getTypeAndMarkAsRead(CBORFloat.class);
-        if (floatingPoint.tag != MT_FLOAT16) {
+        if (floatingPoint.tag != SIMPLE_FLOAT16) {
             outOfRangeError("Float16");
         }
         return (float)floatingPoint.value;
