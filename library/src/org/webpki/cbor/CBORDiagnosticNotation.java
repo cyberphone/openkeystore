@@ -512,7 +512,24 @@ public class CBORDiagnosticNotation {
             char c;
             switch (c = readChar()) {
                 case '\'':
-                    break;
+                    String encoded = s.toString();
+                    if (b64) {
+                        return new CBORBytes(
+                            Base64URL.decodePadded(
+                                encoded.replace('+', '-')
+                                       .replace('/', '_')));
+                    }
+                    int length = encoded.length();
+                    if ((length & 1) != 0) {
+                        parserError("Uneven number of hex characters");
+                    }
+                    byte[] bytes = new byte[length >> 1];
+                    int q = 0;
+                    int i = 0;
+                    while (q < length) {
+                        bytes[i++] = (byte)((encoded.charAt(q++) << 4) + encoded.charAt(q++));
+                    }
+                    return new CBORBytes(bytes);
                
                 case ' ':
                 case '\r':
@@ -522,26 +539,8 @@ public class CBORDiagnosticNotation {
 
                 default:
                     s.append(b64 ? c : hexCharToChar(c));
-                    continue;
             }
-            break;
         }
-        String encoded = s.toString();
-        if (b64) {
-            return new CBORBytes(
-                    Base64URL.decodePadded(encoded.replace('+', '-').replace('/', '_')));
-        }
-        int length = encoded.length();
-        if ((length & 1) != 0) {
-            parserError("Uneven number of hex characters");
-        }
-        byte[] bytes = new byte[length >> 1];
-        int q = 0;
-        int i = 0;
-        while (q < length) {
-            bytes[i++] = (byte)((encoded.charAt(q++) << 4) + encoded.charAt(q++));
-        }
-        return new CBORBytes(bytes);
     }
 
     private char hexCharToChar(char c) {
