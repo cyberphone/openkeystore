@@ -82,7 +82,7 @@ class CBORInternal {
 
     // CBOR::Core time limits.
     static final long MAX_INSTANT_IN_MILLIS   = 253402300799000L; // 9999-12-31T23:59:59Z
-    static final long MIN_INSTANT_IN_MILLIS   = -62167219200000L; // 0000-01-01T00:00:00Z;           
+    static final long MIN_INSTANT_IN_MILLIS   = 000000000000000L; // 1970-01-01T00:00:00Z;           
     
     static final int  MAX_ERROR_MESSAGE       = 100;
 

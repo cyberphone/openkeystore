@@ -619,7 +619,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * <li>The <i>optional</i> sub-second field (<code>.nnn</code>) 
      * features <i>less</i> than ten digits.</li>
      * <li>The date/time object is within the range:
-     * <code style='white-space:nowrap'>"0000-01-01T00:00:00Z"</code> to
+     * <code style='white-space:nowrap'>"1970-01-01T00:00:00Z"</code> to
      * <code style='white-space:nowrap'>"9999-12-31T23:59:59Z"</code>.</li>
      * </ul>
      * </div>

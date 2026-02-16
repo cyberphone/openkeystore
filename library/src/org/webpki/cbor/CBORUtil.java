@@ -25,7 +25,7 @@ public class CBORUtil {
      * The string is subsequently wrapped in a {@link CBORString} object.</div>
      * <div style='margin-top:0.5em'>
      * If the <code>instant</code> object is not within
-     * the range <code style='white-space:nowrap'>"0000-01-01T00:00:00Z"</code> to
+     * the range <code style='white-space:nowrap'>"1970-01-01T00:00:00Z"</code> to
      * <code style='white-space:nowrap'>"9999-12-31T23:59:59Z"</code>,
      * a {@link CBORException} is thrown .</div>
      * <div style='margin-top:0.5em'>
