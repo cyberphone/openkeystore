@@ -242,6 +242,11 @@
       <filelist dir="." files="javadoc-extrastyles.css"/>
     </concat>
 
+    <replaceregexp file="${doc_dir}/org/webpki/cbor/package-summary.html"
+      match="\&lt;hr\&gt;\n.*\&lt;\/div\&gt;\n"
+      replace="&lt;img style='max-width:50%' width='250pt' src='doc-files/cbor-core.svg' alt='logo' title='CBOR::Core logotype'&gt;"
+      flags="g"/>
+
     <replaceregexp file="${doc_dir}/stylesheet.css"
       match="\nsup \{.*\n.*\n.*\}"
       replace=""
