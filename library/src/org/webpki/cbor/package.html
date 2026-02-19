@@ -1,10 +1,12 @@
 <body>
 <h2>CBOR - Encoder, Decoder, Signatures, and Encryption</h2>
-This package contains Java support for <code>CBOR</code> 
+This package contains Java&reg; support for <code>CBOR</code> 
 [<a href='https://www.rfc-editor.org/rfc/rfc8949.html' class='webpkilink'>RFC8949</a>]
 using the 
 [<a href='https://www.ietf.org/archive/id/draft-rundgren-cbor-core-25.html' class='webpkilink'>CBOR::Core</a>]
 cross platform profile.
+Although this document describes a Java API, it may also serve
+as a guide for <code>CBOR::Core</code> implementations for other software platforms.
 <h3 id='supported-objects'>Supported Objects</h3>
 The following table shows the supported <code>CBOR</code> objects (data items)
 and their mapping to Java, here expressed in
@@ -33,14 +35,14 @@ notation:
 <li>See <a href='#integer-data-types' class='webpkilink'>Integer Data Types</a>.</li>
 <li style='padding-top:0.5em'>Floating-point data covers the <code>16</code>, <code>32</code>, and <code>64</code>-bit
 <span style='white-space:nowrap'><code>IEEE</code> <code>754</code></span> variants.
-The encoded representation is determined by the size and precision of the value.</li>
+The encoded representation is determined by the size and precision of a value.</li>
 <li style='padding-top:0.5em'>CBOR applications may also depend on
 <a href='doc-files/non-finite-numbers.html' class='webpkilink'>Non-Finite Numbers</a>.</li>
 </ol>
 <h3 id='integer-data-types'>Integer Data Types</h3>
 The distinction between unsigned and negative values is
  dealt with automatically.
- The encoded representation is determined by the size of the value.
+ The encoded representation is determined by the size of a value.
 The following table holds additional CDDL defintions 
 [<a href='https://www.ietf.org/archive/id/draft-rundgren-cbor-core-25.html#name-additional-cddl-types' class='webpkilink'>CDDL-EXT</a>],
 and their API counterparts:
@@ -134,12 +136,11 @@ and their API counterparts:
 </table>
 </div>
 <ol style='margin:0 0'>
-  <li>The only difference between the "Encoding" method and the
-    "Constructor", is that the former <i>verifies</i> that the input argument
-    matches the permitted range as well.
-    For a description of the valid range for a specific integer type, lookup
-    the associated "Decoding" method.
-  </li>
+<li>The only difference between the "Encoding" method and the
+  "Constructor", is that the former <i>verifies</i> that the input argument
+  matches the permitted range as well.
+  For a description of the valid range for a specific integer type, lookup
+  the associated "Decoding" method.
 </li>
 <li style='padding-top:0.5em'>Counterparts to the <i>fixed-size</i>, <i>two's complement</i> integer types,
   featured in languages like Java, C, and Rust.
@@ -158,12 +159,10 @@ For details turn to {@link CBORTag#getDateTime()},
 <h3 id='deterministic-encoding'>Deterministic Encoding</h3>
 For certain security related applications, it has been proven
 useful performing cryptographic operations like
-hashing and signatures, over "raw" <code>CBOR</code> data.
-This API supports such operations through deterministic encoding
-which also is the default mode.
-The deterministic encoding scheme is described in
-[<a href='https://www.ietf.org/archive/id/draft-rundgren-cbor-core-25.html' class='webpkilink'>CBOR::Core</a>].
-If input data does not conform to the deterministic encoding scheme,
+hashing and signatures, over "raw" <code>CBOR</code> (unwrapped) data.
+However, for this to work, deterministic encoding is required.
+If input data does not conform to the deterministic encoding scheme described in
+<a href='https://www.ietf.org/archive/id/draft-rundgren-cbor-core-25.html' class='webpkilink'>CBOR::Core</a>,
 a {@link CBORException} is thrown.
 <p id='decoder-options'>
 For more control of the decoding process, including dealing with "legacy" <code>CBOR</code>
@@ -179,10 +178,6 @@ regardless of if <code>CBOR</code> data was parsed or created programmatically.
 A properly designed system validates input data before acting upon it.
 This section describes how this can be achieved using this particular
 CBOR implementation.
-<p>
-During {@link CBORDecoder#decode(byte[])}, <code>CBOR</code> data is checked for
-well-formedness as well as by default, adhering to the determinism scheme.
-</p>
 <p>
 After successful decoding, the <code>CBOR</code> data is provided as a {@link CBORObject}.
 For extracting the data of <code>CBOR</code> primitives in a Java compatible way,
@@ -275,5 +270,6 @@ The following code shows how you can create <code>CBOR</code> sequences:
 The following code shows how you can decode <code>CBOR</code> sequences,
 here using the result of the previous encoding example:
 <div class='webpkifloat'><div class='webpkibox' style='margin:0.5em 0 0.5em 2em;width:50em'>CBORDecoder&nbsp;decoder&nbsp;=&nbsp;new&nbsp;CBORDecoder(cbor,&nbsp;CBORDecoder.SEQUENCE_MODE);<br>CBORObject&nbsp;object;<br>while&nbsp;((object&nbsp;=&nbsp;decoder.decodeWithOptions())&nbsp;!=&nbsp;null)&nbsp;{<br>&nbsp;&nbsp;System.out.println(&quot;\n&quot;&nbsp;+&nbsp;object.toString());<br>}<br><br><span style='color:#007fdd'>{<br>&nbsp;&nbsp;7:&nbsp;&quot;Hi!&quot;<br>}</span><br><br><span style='color:#007fdd'>4.5</span><br></div></div>
- 
+<h3 id='trademarks'>Trademarks</h3> 
+Java is a registered trademark of Oracle Corp.
 </body>
