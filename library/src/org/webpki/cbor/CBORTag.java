@@ -20,6 +20,8 @@ import static org.webpki.cbor.CBORInternal.*;
 
 import java.time.Instant;
 
+import java.util.ArrayList;
+
 /**
  * Class for holding CBOR <code>#6.n</code> (tag) objects.
  * <p>
@@ -161,10 +163,10 @@ public class CBORTag extends CBORObject {
                 break;
 
             case RESERVED_TAG_COTX:
-                if (object instanceof CBORArray) {
-                    CBORArray holder = object.getArray();
-                    if (holder.size() == 2 && holder.get(0) instanceof CBORString) {
-                        cotxObject = new COTXObject(holder.get(0).getString(), holder.get(1));
+                if (object instanceof CBORArray cborArray && cborArray.objects.size() == 2) {
+                    ArrayList<CBORObject> array = cborArray.objects;
+                    if (array.get(0) instanceof CBORString cotxId) {
+                        cotxObject = new COTXObject(cotxId.textString, array.get(1));
                         return;
                     }
                 }
@@ -235,6 +237,7 @@ public class CBORTag extends CBORObject {
         if (cotxObject == null) {
             tagSyntaxError(STDERR_INVALID_COTX_OBJECT);
         }
+        object.getArray().get(0).getString(); // Set the readFlag.
         return cotxObject;
     }
 

@@ -142,8 +142,8 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
         if (requestedCborType.isInstance(this)) {
             readFlag = true;
         } else {
-            cborError("Is type: " + this.getClass().getSimpleName() +
-                     ", requested: " + requestedCborType.getSimpleName());
+            cborError("Is type: %s, requested: %s",
+                this.getClass().getSimpleName(), requestedCborType.getSimpleName());
         }
         return this;
     }
@@ -734,7 +734,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * @return <code>this</code>
      */
     public CBORObject scan() {
-        traverse(null, false);
+        traverse(null, null, false);
         return this;
     }
 
@@ -751,33 +751,38 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * @throws CBORException
      */
     public void checkForUnread() {
-        traverse(null, true);
+        traverse(null, null, true);
     }
 
-    private void traverse(CBORObject holderObject, boolean check) {
+    private void traverse(CBORObject holderObject, CBORObject mapKey, boolean check) {
         // Should use a switch but Android didn't accept it :(
         if (this instanceof CBORMap cborMap) {
             for (CBORMap.Entry entry : cborMap.entries) {
-                entry.object.traverse(entry.key, check);
+                entry.object.traverse(this, entry.key, check);
             }
         } else if (this instanceof CBORArray cborArray) {
             for (CBORObject object : cborArray.objects) {
-                object.traverse(cborArray, check);
+                object.traverse(this, null, check);
             }
         } else if (this instanceof CBORTag cborTag) {
-            cborTag.object.traverse(cborTag, check);
+            cborTag.object.traverse(this, null, check);
         }
         if (check) {
-            if (!readFlag) {
-                cborError((holderObject == null ? "Data" : 
-                            holderObject instanceof CBORArray ? "Array element" :
-                                holderObject instanceof CBORTag ?
-                                "Tagged object " +
-                                Long.toUnsignedString(((CBORTag)holderObject).tagNumber) : 
-                                "Map key " + holderObject.toDiagnostic(false) + " with argument") +                    
-                            " of type=" + this.getClass().getSimpleName() + 
-                            " with value=" + this.toDiagnostic(false) + " was never read");
-            }
+            if (!this.readFlag) {
+                String problemItem = this.getClass().getSimpleName() +
+                    " with value=" + this.toDiagnostic(false) + " was never read";
+                String holder;
+                if (holderObject != null) {
+                    if (holderObject instanceof CBORArray) {
+                        holder = "Array element of type ";
+                    } else if (holderObject instanceof CBORTag cborTag) {
+                        holder = "Tag object " + cborTag.tagNumber + " of type ";
+                    } else {
+                        holder = "Map key " + mapKey.toDiagnostic(false) + " with argument ";
+                    }
+                } else holder = "";
+                cborError(holder + problemItem);
+            }  
         } else {
             readFlag = true;
         }

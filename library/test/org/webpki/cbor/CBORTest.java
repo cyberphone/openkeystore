@@ -27,6 +27,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
 import java.math.BigInteger;
 
 import java.security.GeneralSecurityException;
@@ -1036,7 +1037,7 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Map key 8 with argument of type=CBORInt with value=2 was never read");
+                "Map key 8 with argument CBORInt with value=2 was never read");
         }
 
         try {
@@ -1049,7 +1050,7 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Array element of type=CBORBoolean with value=false was never read");
+                "Array element of type CBORBoolean with value=false was never read");
         }
         
         try {
@@ -1059,7 +1060,7 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Data of type=CBORString with value=\"hi\" was never read");
+                "CBORString with value=\"hi\" was never read");
         }
         unread.getString();
         unread.checkForUnread();
@@ -1086,7 +1087,7 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Array element of type=CBORBoolean with value=false was never read");
+                "Array element of type CBORBoolean with value=false was never read");
         }
 
         // Getting an object without reading the value is considered as "unread".
@@ -1100,7 +1101,7 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Array element of type=CBORBoolean with value=true was never read");
+                "Array element of type CBORBoolean with value=true was never read");
         }
         
         try {
@@ -1109,7 +1110,7 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Data of type=CBORInt with value=23 was never read");
+                "CBORInt with value=23 was never read");
         }
 
         try {
@@ -1118,7 +1119,7 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Map key 7 with argument of type=CBORString with value=\"mydata\" was never read");
+                "Map key 7 with argument CBORString with value=\"mydata\" was never read");
         }
 
         try {
@@ -1127,7 +1128,7 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Data of type=CBORMap with value={} was never read");
+                "CBORMap with value={} was never read");
         }
         unread.getMap().checkForUnread();
 
@@ -1137,7 +1138,7 @@ public class CBORTest {
             fail("must not execute");
         } catch (Exception e) {
             checkException(e, 
-                "Data of type=CBORArray with value=[] was never read");
+                "CBORArray with value=[] was never read");
         }
         unread.getArray().checkForUnread();
     }
@@ -1904,7 +1905,7 @@ public class CBORTest {
                                         .set(new CBORInt(-2), new CBORInt(5)));
             fail("must not run");
         } catch (Exception e) {
-            checkException(e, "Map key -2 with argument of type=CBORInt with value=5 was never read");
+            checkException(e, "Map key -2 with argument CBORInt with value=5 was never read");
         }
         try {
             CBORObject modified =  p256Encrypted;
@@ -1989,7 +1990,7 @@ public class CBORTest {
                                 new CBORInt(600))));
             fail("must not run");
         } catch (Exception e) {
-            checkException(e, "Map key 1 with argument of type=CBORInt with value=600 was never read");
+            checkException(e, "Map key 1 with argument CBORInt with value=600 was never read");
         }
         
         String objectId = "https://example.com/myobject";
@@ -2176,7 +2177,7 @@ public class CBORTest {
                 fail("must not execute");
             } catch (Exception e) {
                 checkException(e, 
-                    "Map key \"key\" with argument of type=CBORString with value=\"value\" was never read");
+                    "Map key \"key\" with argument CBORString with value=\"value\" was never read");
             }
             try {
                 cborPublicKey.set(new CBORString("key"), new CBORString("value"));
@@ -2184,7 +2185,7 @@ public class CBORTest {
                 fail("must not execute");
             } catch (Exception e) {
                 checkException(e, 
-                    "Map key \"key\" with argument of type=CBORString with value=\"value\" was never read");
+                    "Map key \"key\" with argument CBORString with value=\"value\" was never read");
             }
         }
     }
@@ -2740,10 +2741,10 @@ public class CBORTest {
         badDate("c001", "Is type: CBORInt, requested: CBORString");
         badDate("c06135", "\"DateTime\" syntax error: 5");
         badDate("c16135", "Is type: CBORString, requested: CBORFloat");
-        oneEpoch("FB41D9EDCDE113645A", 1740060548.303, "Data of type=CBORFloat");
-        oneEpoch("c1FB41D9EDCDE113645A", 1740060548.303, "Tagged object 1 of type=CBORFloat");
-        oneEpoch("1b0000003afff4417f", MAX_INSTANT_IN_MILLIS / 1000, "Data of type=CBORInt");
-        oneEpoch("00", 0, "Data of type=CBORInt");
+        oneEpoch("FB41D9EDCDE113645A", 1740060548.303, "CBORFloat");
+        oneEpoch("c1FB41D9EDCDE113645A", 1740060548.303, "Tag object 1 of type CBORFloat");
+        oneEpoch("1b0000003afff4417f", MAX_INSTANT_IN_MILLIS / 1000, "CBORInt");
+        oneEpoch("00", 0, "CBORInt");
 
         badEpoch("1b0000003afff44180", 253402300800l);
 
