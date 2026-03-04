@@ -238,6 +238,7 @@ public class CBORTag extends CBORObject {
             tagSyntaxError(STDERR_INVALID_COTX_OBJECT);
         }
         object.getArray().get(0).getString(); // Set the readFlag.
+        getTag(); // Set the readFlag;
         return cotxObject;
     }
 
