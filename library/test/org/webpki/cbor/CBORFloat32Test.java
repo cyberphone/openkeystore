@@ -45,6 +45,9 @@ public class CBORFloat32Test {
                     if (v.compareTo(d) != 0) {
                         throw new RuntimeException ("Fail2");
                     }
+                    if (d <= 65504 && d >= 0) {
+                        CBORFloat.createFloat16(d, false);
+                    }
                 }
             } else {
                 if ((((nf.getNonFinite64() >> 

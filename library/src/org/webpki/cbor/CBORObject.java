@@ -468,7 +468,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * a {@link CBORException} is thrown.
      * </p>
      * 
-     * @see CBORFloat#createFloat32(double)
+     * @see CBORFloat#createFloat32(double, boolean)
      * @return <code>float</code>
      * @throws CBORException
      */
@@ -489,7 +489,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * a {@link CBORException} is thrown.
      * </p>
      * 
-     * @see CBORFloat#createFloat16(double)
+     * @see CBORFloat#createFloat16(double, boolean)
      * @return <code>float</code>
      * @throws CBORException
      */

@@ -2814,51 +2814,51 @@ public class CBORTest {
         }
     }
 
-    void reducedOneTurn(boolean f16, Integer length, double value, double result) {
-        boolean ok = length != null;
-        CBORFloat reduced = null;
+    void reducedOneTurn(int length, double value, double result, boolean exact) {
+        boolean ok = length != 0;
+        if (!ok) length = 2;
         try {
-            reduced = f16 ? CBORFloat.createFloat16(value) : CBORFloat.createFloat32(value);
+            CBORFloat reduced = length == 2 ? CBORFloat.createFloat16(value, exact) : CBORFloat.createFloat32(value, exact);
             assertTrue("Should not", ok);
-            assertTrue("Compare=" + reduced + " r=" + result, reduced.getFloat64() == result);
-            assertTrue("len", reduced.length() == length);
+            assertTrue("Compare", exact == (reduced.getFloat64() == value));
+            assertTrue("len", reduced.length() <= length);
             assertTrue("equi", CBORDecoder.decode(reduced.encode()).equals(reduced));
-    //        System.out.println("Hi=" + result + " j=" + reduced + " l=" + reduced.length());
         } catch (Exception e) {
-    //        System.out.println("EHi=" + result + " r=" + reduced + " v=" + value);
-    //        System.out.println(e.toString());
             assertFalse("should" + e.toString(), ok);
-            checkException(e, Double.isFinite(value) ? 
-                      CBORObject.STDERR_OUT_OF_RANGE : CBORFloat.STDERR_NAN_INFINITY_NOT_PERMITTED);
+            checkException(e, Double.isFinite(value) ? "Value out of range for" : "Not permitted: 'NaN/Infinity'");
         }
     }
 
     @Test
     public void createShortFloats() throws Exception {
-        reducedOneTurn(true, null, Double.NaN, 0);
-        reducedOneTurn(true, 2, 60000, 60000);
-        reducedOneTurn(true, 2, 5.960464477539063e-8, 5.960464477539063e-8);
-        reducedOneTurn(true, 2, 3.0e-8, 5.960464477539063e-8);
-        reducedOneTurn(true, 2, 2.0e-8, 0);
-        reducedOneTurn(true, 2, 65504.0, 65504.0);
-        reducedOneTurn(true, 2, 65519.99, 65504.0);
-        reducedOneTurn(true, null, 65520, 65504.0);
-        reducedOneTurn(true, 2, 10, 10);
-        reducedOneTurn(true, 2, 10.003906, 10);
-        reducedOneTurn(true, 2, 10.003907, 10.0078125);
-        reducedOneTurn(true, 2, 6.097555160522461e-5, 6.097555160522461e-5);
-        reducedOneTurn(true, 2, 6.097e-5, 6.097555160522461e-5);
-        reducedOneTurn(true, 2, 6.09e-5, 6.091594696044922e-5);
+        reducedOneTurn(0,    Double.NaN,                     0,                     false);
+        reducedOneTurn(2,    60000,                  60000,                  true);
+        reducedOneTurn(2,    5.960464477539063e-8,   5.960464477539063e-8,   true);
+        reducedOneTurn(2,    3.0e-8,                 5.960464477539063e-8,   false);
+        reducedOneTurn(2,    2.0e-8,                 0,                      false);
+        reducedOneTurn(2,    65504.0,                65504.0,                true);
+        reducedOneTurn(2,    65519.99,               65504.0,                false);
+        reducedOneTurn(2,    -2.0e-9,                              -0.0,                   false);
+        reducedOneTurn(4,    65520,                  65520.0,                true);
+        reducedOneTurn(2,    10,                     10,                     true);
+        reducedOneTurn(2,    10.003906,              10,                     false);
+        reducedOneTurn(2,    10.003907,              10.0078125,             false);
+        reducedOneTurn(2,    6.097555160522461e-5,   6.097555160522461e-5,   true);
+        reducedOneTurn(2,    6.097e-5,               6.097555160522461e-5,   false);
+        reducedOneTurn(2,    6.09e-5,                6.091594696044922e-5,   false);
+        reducedOneTurn(2,    2.5,                    2.5,                    true);
+        reducedOneTurn(4,    2.0e-8,                 1.999999987845058e-8,   false);
+        reducedOneTurn(4,    1.401298464324817e-45,  1.401298464324817e-45,  true);
+        reducedOneTurn(4,    3.4028234663852886e+38, 3.4028234663852886e+38, true);
+        reducedOneTurn(4,    3.4028235e+38,          3.4028234663852886e+38, false);
+        reducedOneTurn(0,    3.40282358e+38,         3.4028234663852886e+38, false);
 
-        reducedOneTurn(false, null, Double.NaN, 0);
-        reducedOneTurn(false, 2, 2.5, 2.5);
-        reducedOneTurn(false, 2, 65504.0, 65504.0);
-        reducedOneTurn(false, 2, 5.960464477539063e-8, 5.960464477539063e-8);
-        reducedOneTurn(false, 4, 2.0e-8, 1.999999987845058e-8);
-        reducedOneTurn(false, 4, 1.401298464324817e-45, 1.401298464324817e-45);
-        reducedOneTurn(false, 4, 3.4028234663852886e+38, 3.4028234663852886e+38);
-        reducedOneTurn(false, 4, 3.4028235e+38, 3.4028234663852886e+38);
-        reducedOneTurn(false, null, 3.40282358e+38, 3.4028234663852886e+38);
+        try {
+            new CBORInt(6).getFloat64();
+            fail("should not");
+        } catch (Exception e) {
+            checkException(e, "Is type: CBORInt, requested: CBORFloat");
+        }
     }
 
     @Test

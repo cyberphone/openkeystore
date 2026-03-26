@@ -183,12 +183,24 @@ public class CBORFloat extends CBORObject {
         return (float)value;
     }
 
-    static CBORFloat returnConverted(float float32, double original, String type) {
-        if (Float.isFinite(float32)) {
-            return new CBORFloat(float32);
-        }
-        createExtendedFloat(original).outOfRangeError(type);
-        return null;       
+    static CBORFloat returnConverted(boolean float16Flag, double original, boolean exact) {
+        double converted;
+        if (Double.isFinite(original)) {
+            String type = float16Flag ? "float16" : "float32";
+            float f32 = (float) original;
+            if (float16Flag) {
+                f32 = Float.float16ToFloat(Float.floatToFloat16(f32));
+            }
+            converted = f32;
+            if (Double.isFinite(converted)) {
+                if (exact && original != converted) {
+                    cborError(STDERR_NON_EXACT, type, original);
+                }
+            } else {
+                createExtendedFloat(original).outOfRangeError(type);
+            }
+        } else converted = original;
+        return new CBORFloat(converted);      
     }
 
     /**
@@ -198,9 +210,13 @@ public class CBORFloat extends CBORObject {
      * where the value is converted to fit CBOR <code>float32</code> representation.
      * </p>
      * <p>
-     * If the value (after applying
+     * If the <code>value</code> (after applying
      * <span style='white-space:nowrap'><code>IEEE</code> <code>754</code></span> conversion rules),
      * is out of range, or is <i>non-finite</i>, a {@link CBORException} is thrown.
+     * </p>
+     * <p>
+     * If the <code>exact</code> flag is set the conversion must be loss-less,
+     * else a {@link CBORException} is thrown.
      * </p>
      * <p>
      * Note that this method returns a <code>float16</code> compatible object
@@ -208,12 +224,13 @@ public class CBORFloat extends CBORObject {
      * representation (e.g. <code>2.5</code>).
      * </p>
      * @param value Floating-point value
+     * @param exact If <code>true</code> the conversion must be loss-less
      * @return {@link CBORFloat}
      * @throws CBORException
      * @see #getFloat32()
      */
-    public static CBORFloat createFloat32(double value) {
-        return returnConverted(reduce32(value), value, "Float32");
+    public static CBORFloat createFloat32(double value, boolean exact) {
+      return returnConverted(false, value, exact);
     }
 
     /**
@@ -223,18 +240,22 @@ public class CBORFloat extends CBORObject {
      * where the value is converted to fit CBOR <code>float16</code> representation.
      * </p>
      * <p>
-     * If the value (after applying
+     * If the <code>value</code> (after applying
      * <span style='white-space:nowrap'><code>IEEE</code> <code>754</code></span> conversion rules),
      * is out of range, or is <i>non-finite</i>, a {@link CBORException} is thrown.
      * </p>
+     * <p>
+     * If the <code>exact</code> flag is set the conversion must be loss-less,
+     * else a {@link CBORException} is thrown.
+     * </p>
      * @param value Floating-point value
+     * @param exact If <code>true</code> the conversion must be loss-less
      * @return {@link CBORFloat}
      * @throws CBORException
      * @see #getFloat16()
      */
-    public static CBORFloat createFloat16(double value) {
-        return returnConverted(Float.float16ToFloat(Float.floatToFloat16(reduce32(value))),
-                               value, "Float16");
+    public static CBORFloat createFloat16(double value, boolean exact) {
+        return returnConverted(true, value, exact);
     }
 
     /**
@@ -264,5 +285,8 @@ public class CBORFloat extends CBORObject {
 
     static final String STDERR_NAN_INFINITY_NOT_PERMITTED = 
             "Not permitted: 'NaN/Infinity'";
+
+    static final String STDERR_NON_EXACT =
+            "Value not possible to be exactly represented by \"%s\": %g";
 
 }
