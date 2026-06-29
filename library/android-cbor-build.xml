@@ -124,8 +124,8 @@
        return a.length - b.length;&#10;"
         flags="g"/>
     <replaceregexp file="${android-cbor-src}/org/webpki/cbor/CBORFloat.java"
-        match="f32 = Float\.float16ToFloat\(Float\.floatToFloat16\(f32\)\)"
-        replace="f32 = (float)android.util.Half.toHalf(f32)"
+        match="Float\.float16ToFloat\(Float\.floatToFloat16\(f32\)\)"
+        replace="android.util.Half.toFloat((short)android.util.Half.toHalf(f32))"
         flags="g"/>
 
     <javac debug="${debug}" srcdir="${android-cbor-src}:androidrefsrc" 
