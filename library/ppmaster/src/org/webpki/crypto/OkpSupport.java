@@ -158,7 +158,8 @@ public class OkpSupport {
             return KeyFactory.getInstance(keyAlgorithm.getJceName(), "BC")
 //#else
 //#if ANDROID
-            return KeyFactory.getInstance(keyAlgorithm.getKeyType() == KeyTypes.XEC ? "XDH" : "EC")
+            return KeyFactory.getInstance(keyAlgorithm.getKeyType() == KeyTypes.XEC ? "XDH" :
+                    keyAlgorithm.getKeyType().toString())
 //#else
             return KeyFactory.getInstance(keyAlgorithm.getJceName())
 //#endif
