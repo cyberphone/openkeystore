@@ -16,7 +16,7 @@ public class TypedObjectsDemo {
 
         int number;
         
-        static final String OBJECT_ID   = "https://example.com/object-one";
+        static final String TYPE_ID   = "https://example.com/object-one";
         static final CBORObject INT_KEY = new CBORInt(1);
         
         @Override
@@ -25,15 +25,15 @@ public class TypedObjectsDemo {
         }
 
         @Override
-        public String getObjectId() {
-            return OBJECT_ID;
+        public String getObjectTypeId() {
+            return TYPE_ID;
         }
     }
     
     // Typed object decoder two.
     public static class ObjectTwo extends CBORTypedObjectDecoder {
         
-        static final String OBJECT_ID = "https://example.com/object-two";
+        static final String TYPE_ID = "https://example.com/object-two";
         
         String justAString;
 
@@ -43,8 +43,8 @@ public class TypedObjectsDemo {
         }
 
         @Override
-        public String getObjectId() {
-            return OBJECT_ID;
+        public String getObjectTypeId() {
+            return TYPE_ID;
         }
     }
     
@@ -56,11 +56,11 @@ public class TypedObjectsDemo {
     
     public static void main(String[] args) {
         // Create typed CBOR messages.
-        byte[] objectOne = new CBORTag(ObjectOne.OBJECT_ID,
+        byte[] objectOne = new CBORTag(ObjectOne.TYPE_ID,
                 new CBORMap().set(ObjectOne.INT_KEY, new CBORInt(-343)))
                     .encode();
         
-        byte[] objectTwo = new CBORTag(ObjectTwo.OBJECT_ID, 
+        byte[] objectTwo = new CBORTag(ObjectTwo.TYPE_ID, 
                 new CBORString("Hi there!"))
                     .encode();
         
@@ -69,8 +69,8 @@ public class TypedObjectsDemo {
                 CBORDecoder.decode(objectOne));
         
         // Dispatch to the proper handler for the associated decoder.
-        switch (decodedObject.getObjectId()) {
-            case ObjectOne.OBJECT_ID:
+        switch (decodedObject.getObjectTypeId()) {
+            case ObjectOne.TYPE_ID:
                 System.out.println("Number=" + ((ObjectOne)decodedObject).number);
                 break;
                 

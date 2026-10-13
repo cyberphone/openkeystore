@@ -76,9 +76,9 @@ public abstract class CBORTypedObjectDecoder {
     /**
      * Get typed object identifier.
      *
-     * @return Object Id (COTX)
+     * @return Type Id (COTX)
      */
-    public abstract String getObjectId();
+    public abstract String getObjectTypeId();
 
 
     /**
@@ -89,7 +89,7 @@ public abstract class CBORTypedObjectDecoder {
      * 
      * @return <code>CBORObject</code>
      */
-    public CBORObject getRoot() {
+    public CBORObject getObjectRoot() {
         return root;
     }
 }

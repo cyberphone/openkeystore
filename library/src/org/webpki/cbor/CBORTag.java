@@ -43,7 +43,7 @@ import java.util.ArrayList;
  * <tr><td><i>Reserved</i> <code>COTX</code></td>
  * <td><code>{@value #RESERVED_TAG_COTX}([</code><i>Text&nbsp;string</i><code>,
  * </code><i>CBOR&nbsp;object</i><code>])</code></td>
- * <td>See {@link #getCOTXObject()}</td></tr>
+ * <td>See {@link #getCOTX()}</td></tr>
  * </table>
  * </div>
  * The <i>reserved</i> tags are verified for correctness during decoding as well
@@ -58,20 +58,20 @@ public class CBORTag extends CBORObject {
     /**
      * Return object for COTX tags.
      */
-    public static class COTXObject {
+    public static class COTX {
 
         /**
          * COTX String (Object ID)
          */
-        public final String objectId;
+        public final String id;
 
         /**
          * COTX Object
          */
         public final CBORObject object;
 
-        private COTXObject(String objectId, CBORObject object) {
-            this.objectId = objectId;
+        private COTX(String objectId, CBORObject object) {
+            this.id = objectId;
             this.object = object;
         }
     }
@@ -83,7 +83,7 @@ public class CBORTag extends CBORObject {
     // Specialized tag data,
     Instant dateTime;
     Instant epochTime;
-    COTXObject cotxObject;
+    COTX cotx;
 
     /**
      * DATE_TIME tag: {@value #RESERVED_TAG_DATE_TIME}
@@ -166,7 +166,7 @@ public class CBORTag extends CBORObject {
                 if (object instanceof CBORArray cborArray && cborArray.objects.size() == 2) {
                     ArrayList<CBORObject> array = cborArray.objects;
                     if (array.get(0) instanceof CBORString cotxId) {
-                        cotxObject = new COTXObject(cotxId.textString, array.get(1));
+                        cotx = new COTX(cotxId.textString, array.get(1));
                         return;
                     }
                 }
@@ -233,13 +233,13 @@ public class CBORTag extends CBORObject {
      * @throws CBORException
      * @see CBORTag#CBORTag(String, CBORObject)
      */
-    public COTXObject getCOTXObject() {
-        if (cotxObject == null) {
+    public COTX getCOTX() {
+        if (cotx == null) {
             tagSyntaxError(STDERR_INVALID_COTX_OBJECT);
         }
         object.getArray().get(0).getString(); // Set the readFlag.
         getTag(); // Set the readFlag;
-        return cotxObject;
+        return cotx;
     }
 
     /**
@@ -259,7 +259,7 @@ public class CBORTag extends CBORObject {
     @Override
     void internalToString(CborPrinter cborPrinter) {
          cborPrinter.append(Long.toUnsignedString(tagNumber)).append('(');
-         if (cotxObject == null) {
+         if (cotx == null) {
             object.internalToString(cborPrinter);
          } else {
             cborPrinter.append('[');

@@ -159,8 +159,8 @@ public class CBORCryptoUtils {
             // Do NOT replace this with a tag in instanceof!
             CBORTag tag = container.getTag();
             container = tag.object;
-            if (tag.cotxObject != null) {
-                container = tag.getCOTXObject().object;
+            if (tag.cotx != null) {
+                container = tag.getCOTX().object;
             }
             if (callBackOrNull != null) {
                 callBackOrNull.foundData(tag);

@@ -2194,7 +2194,7 @@ public class CBORTest {
 
         int number;
         
-        static final String OBJECT_ID   = "https://example.com/object-1";
+        static final String TYPE_ID   = "https://example.com/object-1";
         static final CBORObject INT_KEY = new CBORInt(1);
         
         @Override
@@ -2203,8 +2203,8 @@ public class CBORTest {
         }
 
         @Override
-        public String getObjectId() {
-            return OBJECT_ID;
+        public String getObjectTypeId() {
+            return TYPE_ID;
         }
     }
     
@@ -2212,7 +2212,7 @@ public class CBORTest {
 
         int number;
         
-        static final String OBJECT_ID   = "https://example.com/object-unc";
+        static final String TYPE_ID   = "https://example.com/object-unc";
         static final CBORObject INT_KEY = new CBORInt(1);
         
         @Override
@@ -2221,8 +2221,8 @@ public class CBORTest {
         }
 
         @Override
-        public String getObjectId() {
-            return OBJECT_ID;
+        public String getObjectTypeId() {
+            return TYPE_ID;
         }
         
         @Override
@@ -2233,7 +2233,7 @@ public class CBORTest {
 
     public static class ObjectTwo extends CBORTypedObjectDecoder {
         
-        static final String OBJECT_ID = "https://example.com/object-2";
+        static final String TYPE_ID = "https://example.com/object-2";
         
         String justAString;
 
@@ -2243,8 +2243,8 @@ public class CBORTest {
         }
 
         @Override
-        public String getObjectId() {
-            return OBJECT_ID;
+        public String getObjectTypeId() {
+            return TYPE_ID;
         }
     }
     
@@ -2258,7 +2258,7 @@ public class CBORTest {
         }
 
         @Override
-        public String getObjectId() {
+        public String getObjectTypeId() {
             return "https://example.com/o3";
         }
 
@@ -2271,9 +2271,9 @@ public class CBORTest {
 
     @Test
     public void schemas() throws IOException, GeneralSecurityException {
-        CBORObject objectOne = new CBORTag(ObjectOne.OBJECT_ID,
+        CBORObject objectOne = new CBORTag(ObjectOne.TYPE_ID,
                 new CBORMap().set(ObjectOne.INT_KEY, new CBORInt(-343)));
-        CBORObject objectTwo = new CBORTag(ObjectTwo.OBJECT_ID, 
+        CBORObject objectTwo = new CBORTag(ObjectTwo.TYPE_ID, 
                 new CBORString("Hi there!"));
         CBORObject o3 = new CBORTag("https://example.com/o3", 
                 new CBORString("Hi there!"));
@@ -2283,14 +2283,14 @@ public class CBORTest {
         } catch (Exception e) {
             
         }
-        CBORObject noGoodObjectOne = new CBORTag(ObjectOne.OBJECT_ID,
+        CBORObject noGoodObjectOne = new CBORTag(ObjectOne.TYPE_ID,
                 new CBORMap().set(ObjectOne.INT_KEY, new CBORInt(-343))
                              .set(new CBORString("key"), new CBORString("value")));
         
         CBORTypedObjectDecoder sco = schemaCache.decode(objectOne);
         assertTrue("inst", sco instanceof ObjectOne);
         assertTrue("data", ((ObjectOne)sco).number == -343);
-        assertTrue("cbor", objectOne.equals(sco.getRoot()));
+        assertTrue("cbor", objectOne.equals(sco.getObjectRoot()));
         sco = schemaCache.decode(objectTwo);
         assertTrue("inst", sco instanceof ObjectTwo);
         try {
@@ -2307,7 +2307,7 @@ public class CBORTest {
             checkException(e, "Map key ");
         }
         
-        CBORObject uncheckedObject = new CBORTag(UncheckedObject.OBJECT_ID,
+        CBORObject uncheckedObject = new CBORTag(UncheckedObject.TYPE_ID,
                 new CBORMap().set(ObjectOne.INT_KEY, new CBORInt(-343))
                              .set(new CBORString("key"), new CBORString("value")));
         sco = schemaCache.decode(uncheckedObject);

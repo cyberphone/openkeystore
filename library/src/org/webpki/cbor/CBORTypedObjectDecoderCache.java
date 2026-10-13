@@ -58,10 +58,10 @@ public class CBORTypedObjectDecoderCache {
      * @return Instantiated {@link CBORTypedObjectDecoder}
      */
     public CBORTypedObjectDecoder decode(CBORObject typedObject) {
-        CBORTag.COTXObject cotxObject = typedObject.getTag().getCOTXObject();
-        Class<? extends CBORTypedObjectDecoder> schemaClass = classMap.get(cotxObject.objectId);
+        CBORTag.COTX cotxObject = typedObject.getTag().getCOTX();
+        Class<? extends CBORTypedObjectDecoder> schemaClass = classMap.get(cotxObject.id);
         if (schemaClass == null) {
-            throw new CBORException("Unknown ObjectId: " + cotxObject.objectId);
+            throw new CBORException("Unknown ObjectId: " + cotxObject.id);
         }
         CBORTypedObjectDecoder decoder = getInstance(schemaClass);
         decoder.root = typedObject;
@@ -82,7 +82,7 @@ public class CBORTypedObjectDecoderCache {
     public CBORTypedObjectDecoderCache addToCache(
             Class<? extends CBORTypedObjectDecoder> decoderClass) {
         CBORTypedObjectDecoder schemaObject = getInstance(decoderClass);
-        String objectId = schemaObject.getObjectId();
+        String objectId = schemaObject.getObjectTypeId();
         if (classMap.put(objectId, schemaObject.getClass()) != null) {
             throw new RuntimeException("ObjectId already defined: " + objectId);
         }
