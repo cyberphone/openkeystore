@@ -60,19 +60,23 @@ public class CBORTag extends CBORObject {
      */
     public static class COTX {
 
+        CBORArray cotxArray;
+
         /**
-         * COTX String (Object ID)
+         * COTX String (Object Type ID)
          */
         public final String id;
 
         /**
-         * COTX Object
+         * Get COTX object.
          */
-        public final CBORObject object;
+        public CBORObject getObject() {
+            return cotxArray.get(1);
+        }
 
-        private COTX(String objectId, CBORObject object) {
-            this.id = objectId;
-            this.object = object;
+        private COTX(CBORArray cotxArray) {
+            this.id = cotxArray.get(0).getString();
+            this.cotxArray = cotxArray;
         }
     }
 
@@ -120,13 +124,14 @@ public class CBORTag extends CBORObject {
      * }])</code>
      * </div>
      * 
-     * @param typeUrl Type URL (or other string)
+     * @param id URL or other string serving as type id
      * @param object Object
+     * @see CBORTag.COTX
      */
-    public CBORTag(String typeUrl, CBORObject object) {
+    public CBORTag(String id, CBORObject object) {
         // Yeah, there will be a redundant test...
         this(RESERVED_TAG_COTX, new CBORArray()
-                                    .add(new CBORString(typeUrl))
+                                    .add(new CBORString(id))
                                     .add(object));
     }
 
@@ -163,12 +168,9 @@ public class CBORTag extends CBORObject {
                 break;
 
             case RESERVED_TAG_COTX:
-                if (object instanceof CBORArray cborArray && cborArray.objects.size() == 2) {
-                    ArrayList<CBORObject> array = cborArray.objects;
-                    if (array.get(0) instanceof CBORString cotxId) {
-                        cotx = new COTX(cotxId.textString, array.get(1));
-                        return;
-                    }
+                if (object instanceof CBORArray cotxArray && cotxArray.size() == 2) {
+                    cotx = new COTX(cotxArray);
+                    return;
                 }
                 tagSyntaxError(STDERR_INVALID_COTX_OBJECT);
         }
@@ -229,7 +231,7 @@ public class CBORTag extends CBORObject {
      * This method assumes that a valid {@link CBORTag#CBORTag(String, CBORObject) COTX} tag has been found, 
      * otherwise a {@link CBORException} is thrown.
      * </p>
-     * @return <code>COTXObject</code>
+     * @return <code>COTX</code>
      * @throws CBORException
      * @see CBORTag#CBORTag(String, CBORObject)
      */
@@ -237,7 +239,7 @@ public class CBORTag extends CBORObject {
         if (cotx == null) {
             tagSyntaxError(STDERR_INVALID_COTX_OBJECT);
         }
-        object.getArray().get(0).getString(); // Set the readFlag.
+        object.getArray(); // Set the readFlag.
         getTag(); // Set the readFlag;
         return cotx;
     }

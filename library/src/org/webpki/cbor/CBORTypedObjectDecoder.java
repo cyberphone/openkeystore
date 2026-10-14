@@ -41,7 +41,7 @@ public abstract class CBORTypedObjectDecoder {
         
     }
 
-    CBORObject root;  // Of decoded CBOR
+    CBORObject objectRoot;  // Of decoded CBOR
 
     /**
      * IMPLEMENTER USE ONLY.
@@ -90,6 +90,6 @@ public abstract class CBORTypedObjectDecoder {
      * @return <code>CBORObject</code>
      */
     public CBORObject getObjectRoot() {
-        return root;
+        return objectRoot;
     }
 }

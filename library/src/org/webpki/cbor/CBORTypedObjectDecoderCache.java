@@ -40,7 +40,7 @@ public class CBORTypedObjectDecoderCache {
             return decoderClass.getDeclaredConstructor().newInstance();
         } catch (InstantiationException | InvocationTargetException | 
                  NoSuchMethodException | IllegalAccessException e) {
-            throw new CBORException(e);
+            throw new RuntimeException(e);
         }        
     }
     
@@ -58,14 +58,14 @@ public class CBORTypedObjectDecoderCache {
      * @return Instantiated {@link CBORTypedObjectDecoder}
      */
     public CBORTypedObjectDecoder decode(CBORObject typedObject) {
-        CBORTag.COTX cotxObject = typedObject.getTag().getCOTX();
-        Class<? extends CBORTypedObjectDecoder> schemaClass = classMap.get(cotxObject.id);
+        CBORTag.COTX cotx = typedObject.getTag().getCOTX();
+        Class<? extends CBORTypedObjectDecoder> schemaClass = classMap.get(cotx.id);
         if (schemaClass == null) {
-            throw new CBORException("Unknown ObjectId: " + cotxObject.id);
+            throw new RuntimeException("Unknown Type ID: " + cotx.id);
         }
         CBORTypedObjectDecoder decoder = getInstance(schemaClass);
-        decoder.root = typedObject;
-        decoder.decode(cotxObject.object);
+        decoder.objectRoot = typedObject;
+        decoder.decode(cotx.getObject());
         if (decoder.enableCheckForUnread()) {
             typedObject.checkForUnread();
         }
@@ -82,9 +82,9 @@ public class CBORTypedObjectDecoderCache {
     public CBORTypedObjectDecoderCache addToCache(
             Class<? extends CBORTypedObjectDecoder> decoderClass) {
         CBORTypedObjectDecoder schemaObject = getInstance(decoderClass);
-        String objectId = schemaObject.getObjectTypeId();
-        if (classMap.put(objectId, schemaObject.getClass()) != null) {
-            throw new RuntimeException("ObjectId already defined: " + objectId);
+        String id = schemaObject.getObjectTypeId();
+        if (classMap.put(id, schemaObject.getClass()) != null) {
+            throw new RuntimeException("Type ID already defined: " + id);
         }
         return this;
     }
