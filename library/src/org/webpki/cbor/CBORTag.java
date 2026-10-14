@@ -20,8 +20,6 @@ import static org.webpki.cbor.CBORInternal.*;
 
 import java.time.Instant;
 
-import java.util.ArrayList;
-
 /**
  * Class for holding CBOR <code>#6.n</code> (tag) objects.
  * <p>
