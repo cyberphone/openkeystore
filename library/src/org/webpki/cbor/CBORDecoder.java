@@ -324,11 +324,11 @@ public class CBORDecoder {
                 if (n > 23) {
                     // For 1, 2, 4, and 8 byte N.
                     int q = 1 << (n - 24);
-                    // 1: 00000000ffffffff
+                    // 1: 0000000ffffffff0
                     // 2: 000000ffffffff00
                     // 4: 0000ffffffff0000
                     // 8: ffffffff00000000
-                    long mask = MASK_LOWER_32 << (q / 2) * 8;
+                    long mask = MASK_LOWER_32 << (q * 4);
                     n = 0;
                     while (--q >= 0) {
                         n <<= 8;
