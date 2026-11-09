@@ -301,13 +301,15 @@ public class CBORInt extends CBORObject {
             BigInteger cborAdjusted = unsigned ? bigValue : bigValue.not();
             byte[] encoded = cborAdjusted.toByteArray();
             if (encoded[0] == 0) {
-                // Remove leading zero which may be present due to two-complement encoding.
+                // Remove leading zero which may be present due to two's complement encoding.
                 encoded = Arrays.copyOfRange(encoded, 1, encoded.length);
             }
             if (encoded.length <= 8) {
-                // Fits "int" encoding.
-                return encodeTagAndN(unsigned ? MT_UNSIGNED : MT_NEGATIVE,
-                                     cborAdjusted.longValue());
+                // Deals with the "int65" range. That is:
+                // -0x80000000000000000 (-18446744073709551616)
+                //         to
+                //  -0x8000000000000001 (-9223372036854775809)
+                return encodeTagAndN(MT_NEGATIVE, cborAdjusted.longValue());
             }
             // Needs "bigint" encoding.
             return CBORUtil.concatByteArrays(unsigned ? UNSIGNED_BIGINT : NEGATIVE_BIGINT,
