@@ -109,6 +109,31 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
         return object;
     }
 
+    static long rangeCheck(long value, long limit) {
+        long upper;
+        if (limit < 0) {
+            upper = ~limit; // two's complement 
+        } else if (limit > 0) {
+            upper = limit;
+            limit = 0;
+        } else {
+            upper = MAX_SAFE_JS_INTEGER;
+            limit = MIN_SAFE_JS_INTEGER;
+        }
+        if (value < limit || value > upper) {
+            if (limit < 0 && upper != MAX_SAFE_JS_INTEGER) {
+                upper++;
+            }
+            int bits = 0;
+            while (upper != 0) {
+                upper >>>= 1;
+                bits++;
+            }
+            new CBORInt(value).outOfRangeError((limit == 0 ? "Uint" : "Int") + bits);
+        }
+        return value;
+    }
+
     void outOfRangeError(String type) {
         cborError(STDERR_OUT_OF_RANGE, type, this.toString());
     }
@@ -270,11 +295,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * @throws CBORException
      */
     public long getInt53() {
-        long value = getInt64();
-        if (value > MAX_SAFE_JS_INTEGER || value < MIN_SAFE_JS_INTEGER) {
-            outOfRangeError("Int53");
-        }
-        return value;
+        return rangeCheck(getInt64(), 0L);
     }
 
     /**
@@ -291,11 +312,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * @throws CBORException
      */
     public int getInt32() {
-        long value = getInt64();
-        if (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE) {
-            outOfRangeError("Int32");
-        }
-        return (int)value;
+        return (int)rangeCheck(getInt64(), -0x80000000L);
     }
 
     /**
@@ -312,11 +329,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * @throws CBORException
      */
     public long getUint32() {
-        long value = getInt64();
-        if ((value & UINT32_MASK) != 0) {
-            outOfRangeError("Uint32");
-        }
-        return value;
+        return rangeCheck(getInt64(), 0xffffffffL);
     }    
 
     /**
@@ -333,11 +346,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * @throws CBORException
      */
     public int getInt16() {
-        long value = getInt64();
-        if (value > Short.MAX_VALUE || value < Short.MIN_VALUE) {
-            outOfRangeError("Int16");
-        }
-        return (int)value;
+        return (int)rangeCheck(getInt64(), -0x8000L);
     }
 
     /**
@@ -354,11 +363,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * @throws CBORException
      */
     public int getUint16() {
-        long value = getInt64();
-        if ((value & UINT16_MASK) != 0) {
-            outOfRangeError("Uint16");
-        }
-        return (int)value;
+        return (int)rangeCheck(getInt64(), 0xffffL);
     }    
 
     /**
@@ -375,11 +380,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * @throws CBORException
      */
     public int getInt8() {
-        long value = getInt64();
-        if (value > Byte.MAX_VALUE || value < Byte.MIN_VALUE) {
-            outOfRangeError("Int8");
-        }
-        return (int)value;
+        return (int)rangeCheck(getInt64(), -0x80L);
     }
 
     /**
@@ -396,11 +397,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * @throws CBORException
      */
     public int getUint8() {
-        long value = getInt64();
-        if ((value & UINT8_MASK) != 0) {
-            outOfRangeError("Uint8");
-        }
-        return (int)value;
+        return (int)rangeCheck(getInt64(), 0xffL);
     }
 
     /**

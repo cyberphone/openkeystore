@@ -70,11 +70,6 @@ class CBORInternal {
     static final long FLOAT64_NEG_ZERO        = 0x8000000000000000L;
 
     static final long MASK_LOWER_32           = 0x00000000ffffffffL;
- 
-    // Integer specials.
-    static final long UINT32_MASK             = 0xffffffff00000000L;
-    static final long UINT16_MASK             = 0xffffffffffff0000L;
-    static final long UINT8_MASK              = 0xffffffffffffff00L;
 
     // JavaScript Number.MAX_SAFE_INTEGER.
     static final long MAX_SAFE_JS_INTEGER     = 9007199254740991L;

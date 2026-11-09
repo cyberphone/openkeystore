@@ -118,20 +118,8 @@ public class CBORInt extends CBORObject {
         this(value, false);
     }
 
-    static CBORInt rangeCheck(long value, long min, long max) {
-        CBORInt cborInt = new CBORInt(value);
-        if (value < min || value > max) {
-            if (min < 0 && max != MAX_SAFE_JS_INTEGER) {
-                max++;
-            }
-            int bits = 0;
-            while (max != 0) {
-                max >>>= 1;
-                bits++;
-            }
-            cborInt.outOfRangeError((min == 0 ? "Uint" : "Int") + bits);
-        }
-        return cborInt;
+    static CBORInt createRangeCheck(long value, long limit) {
+        return new CBORInt(rangeCheck(value, limit));
     }
 
     /**
@@ -149,7 +137,7 @@ public class CBORInt extends CBORObject {
      * @see CBORObject#getInt8()
      */
     public static CBORInt createInt8(int value) {
-        return rangeCheck(value, -0x80L, 0x7fL);
+        return createRangeCheck(value, -0x80L);
     }
 
     /**
@@ -167,7 +155,7 @@ public class CBORInt extends CBORObject {
      * @see CBORObject#getUint8()
      */
     public static CBORInt createUint8(int value) {
-        return rangeCheck(value, 0L, 0xffL);
+        return createRangeCheck(value, 0xffL);
     }
 
     /**
@@ -185,7 +173,7 @@ public class CBORInt extends CBORObject {
      * @see CBORObject#getInt16()
      */
     public static CBORInt createInt16(int value) {
-        return rangeCheck(value, -0x8000L, 0x7fffL);
+        return createRangeCheck(value, -0x8000L);
     }
 
     /**
@@ -203,7 +191,7 @@ public class CBORInt extends CBORObject {
      * @see CBORObject#getUint16()
      */
     public static CBORInt createUint16(int value) {
-        return rangeCheck(value, 0L, 0xffffL);
+        return createRangeCheck(value, 0xffffL);
     }
 
     /**
@@ -221,7 +209,7 @@ public class CBORInt extends CBORObject {
      * @see CBORObject#getInt32()
      */
     public static CBORInt createInt32(long value) {
-        return rangeCheck(value, -0x80000000L, 0x7fffffffL);
+        return createRangeCheck(value, -0x80000000L);
     }
 
     /**
@@ -239,7 +227,7 @@ public class CBORInt extends CBORObject {
      * @see CBORObject#getUint32()
      */
     public static CBORInt createUint32(long value) {
-        return rangeCheck(value, 0L, 0xffffffffL);
+        return createRangeCheck(value, 0xffffffffL);
     }
 
     /**
@@ -261,7 +249,7 @@ public class CBORInt extends CBORObject {
      * @see CBORObject#getInt53()
      */
     public static CBORInt createInt53(long value) {
-        return rangeCheck(value, MIN_SAFE_JS_INTEGER, MAX_SAFE_JS_INTEGER);
+        return createRangeCheck(value, 0L);
     }
 
     /**
