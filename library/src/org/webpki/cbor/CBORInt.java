@@ -304,11 +304,11 @@ public class CBORInt extends CBORObject {
                 // Remove leading zero which may be present due to two's complement encoding.
                 encoded = Arrays.copyOfRange(encoded, 1, encoded.length);
             }
-            if (encoded.length <= 8) {
+            if (encoded.length == 8) {
                 // Deals with the "int65" range. That is:
-                // -0x80000000000000000 (-18446744073709551616)
+                // -0x80000000000000000 (-18446744073709551616) CBOR=0x3bffffffffffffffff
                 //         to
-                //  -0x8000000000000001 (-9223372036854775809)
+                //  -0x8000000000000001  (-9223372036854775809) CBOR=0x3b8000000000000000
                 return encodeTagAndN(MT_NEGATIVE, cborAdjusted.longValue());
             }
             // Needs "bigint" encoding.
