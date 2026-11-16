@@ -65,6 +65,9 @@ public class ValidateServlet extends CoreRequestServlet {
                                             :
                 CBORDiagnosticNotation.convert(getParameterTextarea(request, CSF_OBJECT)));
             String validationKey = getParameter(request, CSF_VALIDATION_KEY);
+            if (validationKey.isEmpty()) {
+                requestError("Please provide a matching validation key!");
+            }
             
             // This is certainly not what you would do in an application...
             CBORObject destroyedCopy = signedCborObject.clone();
