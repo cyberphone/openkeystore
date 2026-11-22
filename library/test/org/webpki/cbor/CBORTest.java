@@ -266,10 +266,10 @@ public class CBORTest {
     
     void integerTest(String value, IntegerVariations variation, boolean mustFail) {
         BigInteger bigInteger = new BigInteger(value);
-        CBORObject CBORInt = new CBORInt(bigInteger);
-        byte[] cbor = CBORInt.encode();
+        CBORObject cborInt = new CBORInt(bigInteger);
+        byte[] cbor = cborInt.encode();
         CBORObject res = CBORDecoder.decode(cbor);
-        assertTrue("int", res.equals(CBORInt));
+        assertTrue("int", res.equals(cborInt));
         long v = 0;
         try {
             switch (variation) {
@@ -296,9 +296,11 @@ public class CBORTest {
                     break;
                 case INT64:
                     v = res.getInt64();
+                    assertTrue("int64", v == CBORInt.createInt64(v).getInt64());
                     break;
                 case UINT64:
                     v = res.getUint64();
+                    assertTrue("uint64", v == CBORInt.createUint64(v).getUint64());
                     break;
             }
             assertFalse("Should not run: " + value, mustFail);

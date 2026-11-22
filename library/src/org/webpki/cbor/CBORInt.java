@@ -34,6 +34,8 @@ import static org.webpki.cbor.CBORInternal.*;
  * {@link #createInt32(long)},
  * {@link #createUint32(long)},
  * {@link #createInt53(long)},
+ * {@link #createInt64(long)},
+ * {@link #createUint64(long)},
  * {@link #createInt128(BigInteger)}, and
  * {@link #createUint128(BigInteger)}.
  * Note that these methods <i>do not change data</i>; they
@@ -250,6 +252,40 @@ public class CBORInt extends CBORObject {
      */
     public static CBORInt createInt53(long value) {
         return createRangeCheck(value, 0L);
+    }
+
+   /**
+     * Creates a CBOR <code>int64</code> object.
+     * <p>
+     * This method creates a {@link CBORInt} object,
+     * where the value is within
+     * <code>-0x8000000000000000</code> to 
+     * <code>0x7fffffffffffffff</code>.
+     * </p>
+     * 
+     * @param value Integer
+     * @return {@link CBORInt} object
+     * @see CBORObject#getInt64()
+     */
+    public static CBORInt createInt64(long value) {
+        return new CBORInt(value);
+    }
+
+    /**
+     * Creates a CBOR <code>uint64</code> object.
+     * <p>
+     * This method creates a {@link CBORInt} object,
+     * where the value is within
+     * <code>0</code> to 
+     * <code>0xffffffffffffffff</code>.
+     * </p>
+     * 
+     * @param value Integer
+     * @return {@link CBORInt} object
+     * @see CBORObject#getUint64()
+     */
+    public static CBORInt createUint64(long value) {
+        return new CBORInt(value, true);
     }
 
     /**
