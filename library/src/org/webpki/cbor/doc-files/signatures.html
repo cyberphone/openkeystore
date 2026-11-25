@@ -214,9 +214,9 @@ tag holding an URL based object identifier.
 <h2 id='csf-unprotected-data'>5. Unprotected Data</h2>
 In some cases there is a need to transport unprotected data in the signed
 map.  This requires the use of the <i>reserved</i> label
-{@link CBORCryptoConstants#CSF_UNPROTECTED_LBL}.
+{@link CBORCryptoConstants#CXF_UNPROTECTED_LBL}.
 This feature is enabled through the method
-{@link CBORValidator#setUnprotectedDataPolicy(CBORCryptoUtils.POLICY)}.
+{@link CBORValidator#setUnprotectedDataPolicy(CBORCryptoUtils.POLICY, CBORCryptoUtils.Collector)}.
 <p>
 The following shows an example of a signed object holding unprotected data:
 </p>

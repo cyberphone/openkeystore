@@ -208,5 +208,5 @@ public interface CBORCryptoConstants {
     /**
      * Reserved label simple(100) holding optional unprotected data.
      */
-    CBORSimple CSF_UNPROTECTED_LBL   = new CBORSimple(100);
+    CBORSimple CXF_UNPROTECTED_LBL   = new CBORSimple(100);
 }

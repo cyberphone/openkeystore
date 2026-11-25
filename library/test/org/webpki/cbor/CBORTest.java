@@ -1407,22 +1407,23 @@ public class CBORTest {
     void oneUnprotected(CBORCryptoUtils.POLICY policy, boolean addUnprotectedData) throws IOException {
         CBORMap mapToBeSgnated = createDataToBeSigned();
         if (addUnprotectedData) {
-            mapToBeSgnated.set(CBORCryptoConstants.CSF_UNPROTECTED_LBL, 
+            mapToBeSgnated.set(CBORCryptoConstants.CXF_UNPROTECTED_LBL, 
                                new CBORString("not protected"));
         }
         boolean mustFail = (policy == CBORCryptoUtils.POLICY.FORBIDDEN && addUnprotectedData) ||
                            (policy == CBORCryptoUtils.POLICY.MANDATORY && !addUnprotectedData);
         try {
             CBORObject signed = new CBORAsymKeySigner(p256.getPrivate()).sign(mapToBeSgnated);
-            CBORObject result = new CBORAsymKeyValidator(p256.getPublic()).setUnprotectedDataPolicy(policy).validate(signed);
+            CBORObject result = new CBORAsymKeyValidator(p256.getPublic())
+                .setUnprotectedDataPolicy(policy, null).validate(signed);
             assertFalse("should not", mustFail);
             assertTrue("equal", signed.equals(result));
         } catch (Exception e) {
             assertTrue("but it is ok", mustFail);
             checkException(e, addUnprotectedData ?
-                CBORValidator.STDERR_UNPROTECTED_FORBIDDEN 
-                                              : 
-                CBORValidator.STDERR_UNPROTECTED_MISSING);
+                CBORCryptoUtils.STDERR_UNPROTECTED_FORBIDDEN 
+                                                 : 
+                CBORCryptoUtils.STDERR_UNPROTECTED_MISSING);
         }
     }
 
@@ -1443,6 +1444,25 @@ public class CBORTest {
         
         signAndVerify(new CBORAsymKeySigner(p256.getPrivate()), 
                       new CBORAsymKeyValidator(p256.getPublic()));
+
+        signAndVerify(new CBORAsymKeySigner(p256.getPrivate())
+                        .setCustomDataIntercepter(new CBORCryptoUtils.Intercepter() {
+                            
+                            @Override 
+                            public CBORObject getCustomData() {
+                                return new CBORString("hh");
+                            }
+                        }), 
+                      new CBORAsymKeyValidator(p256.getPublic())
+                        .setCustomDataPolicy(CBORCryptoUtils.POLICY.OPTIONAL, 
+                            new CBORCryptoUtils.Collector() {
+
+                                @Override
+                                public void foundData(CBORObject objectOrNull) {
+                                    assertTrue("cd", new CBORString("hh").equals(objectOrNull));
+                                }
+                            
+                        }));
 
         signAndVerify(new CBORAsymKeySigner(p256.getPrivate()).setPublicKey(p256.getPublic()), 
                       new CBORAsymKeyValidator(p256.getPublic()));
@@ -1829,6 +1849,41 @@ public class CBORTest {
         
         // Symmetric
         enumerateEncryptions(new int[] {128, 384, 256, 512});
+
+        // unprotected data
+        for (CBORCryptoUtils.POLICY policy : CBORCryptoUtils.POLICY.values()) {
+            CBORMap map = new CBORMap()
+                .set(new CBORInt(1), new CBORString("HI"));
+            CBORObject encrypted = new CBORAsymKeyEncrypter(
+                p256.getPublic(),
+                KeyEncryptionAlgorithms.ECDH_ES,
+                ContentEncryptionAlgorithms.A256GCM)
+            .setUnprotectedDataIntercepter(new CBORCryptoUtils.Intercepter() {
+                @Override 
+                public CBORObject getCustomData() {
+                    // Custom data as well
+                    return new CBORBoolean(true);
+                }
+            })
+            .encrypt(map.encode());
+            try {
+                CBORMap res = CBORDecoder.decode(new CBORAsymKeyDecrypter(
+                        p256.getPrivate())
+                        .setUnprotectedDataPolicy(policy, new CBORCryptoUtils.Collector() {
+
+                            @Override
+                            public void foundData(CBORObject objectOrNull) {
+                                assertTrue("prot", new CBORBoolean(true).equals(objectOrNull));
+                            }
+                        })
+                        .decrypt(encrypted))
+                            .getMap();
+                assertTrue("cmp", res.equals(map));
+                assertFalse("no", policy == CBORCryptoUtils.POLICY.FORBIDDEN);
+            } catch (Exception e) {
+                assertTrue("yes", policy == CBORCryptoUtils.POLICY.FORBIDDEN);
+            }
+        }
         
         CBORAsymKeyEncrypter p256Encrypter = 
                 new CBORAsymKeyEncrypter(p256.getPublic(),
@@ -1839,6 +1894,7 @@ public class CBORTest {
                 Arrays.equals(new CBORAsymKeyDecrypter(
                         p256.getPrivate()).decrypt(p256Encrypted),
                         dataToEncrypt));
+
         p256Encrypter.setKeyId(keyId);
         CBORObject p256EncryptedKeyId = p256Encrypter.encrypt(dataToEncrypt);
         assertTrue("enc/dec", 
@@ -2001,7 +2057,7 @@ public class CBORTest {
                                          KeyEncryptionAlgorithms.ECDH_ES_A256KW,
                                          ContentEncryptionAlgorithms.A256GCM)
             .setKeyId(new CBORString("mykey"))
-            .setIntercepter(new CBORCryptoUtils.Intercepter() {
+            .setCustomDataIntercepter(new CBORCryptoUtils.Intercepter() {
                 
                 @Override
                 public CBORObject getCustomData() {

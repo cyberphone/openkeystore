@@ -41,7 +41,7 @@ import org.webpki.cbor.CBORCryptoUtils.POLICY;
 public abstract class CBORSigner <T extends CBORSigner<?>> {
  
     // The default is to use a map without tagging and custom data.
-    Intercepter intercepter = new Intercepter() { };
+    Intercepter customDataIntercepter = new Intercepter() { };
 
     // Set by implementing classes
     String provider;
@@ -64,13 +64,13 @@ public abstract class CBORSigner <T extends CBORSigner<?>> {
     abstract T getThis();
     
     /**
-     * Set optional Intercepter.
+     * Set optional custom data intercepter.
      * 
-     * @param intercepter An instance of Intercepter
+     * @param customDataIntercepter An instance of Intercepter
      * @return <code>this</code> of subclass
      */
-    public T setIntercepter(Intercepter intercepter) {
-        this.intercepter = intercepter;
+    public T setCustomDataIntercepter(Intercepter customDataIntercepter) {
+        this.customDataIntercepter = customDataIntercepter;
         return getThis();
     }
     
@@ -171,14 +171,14 @@ public abstract class CBORSigner <T extends CBORSigner<?>> {
                                                                null);
         
         // Save and remove possible unprotected data.
-        CBORObject unprotectedData = mapToSign.containsKey(CSF_UNPROTECTED_LBL) ? 
-                                          mapToSign.remove(CSF_UNPROTECTED_LBL) : null;
+        CBORObject unprotectedData = mapToSign.containsKey(CXF_UNPROTECTED_LBL) ? 
+                                          mapToSign.remove(CXF_UNPROTECTED_LBL) : null;
 
         // Create an empty signature container object.
         CBORMap csfContainer = new CBORMap();
 
         // Get optional custom data.
-        CBORObject customData = intercepter.getCustomData();
+        CBORObject customData = customDataIntercepter.getCustomData();
         if (customData != null) {
             csfContainer.set(CXF_CUSTOM_DATA_LBL, customData);
         }
@@ -217,7 +217,7 @@ public abstract class CBORSigner <T extends CBORSigner<?>> {
 
         // Restore possible unprotected data.
         if (unprotectedData != null) {
-            mapToSign.set(CSF_UNPROTECTED_LBL, unprotectedData);
+            mapToSign.set(CXF_UNPROTECTED_LBL, unprotectedData);
         }
 
         // Return the now signed object.

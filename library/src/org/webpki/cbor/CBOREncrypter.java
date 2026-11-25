@@ -42,7 +42,10 @@ import org.webpki.cbor.CBORCryptoUtils.POLICY;
 public abstract class CBOREncrypter <T extends CBOREncrypter<T>>  {
 
     // The default is to use a map without custom data.
-    Intercepter intercepter = new Intercepter() { };
+    Intercepter customDataIntercepter = new Intercepter() { };
+
+    // The default is to use a map without unprotected data.
+    Intercepter unprotectedDataIntercepter = new Intercepter() { };
     
     // The algorithm to use with the contentEncryptionKey
     ContentEncryptionAlgorithms contentEncryptionAlgorithm;
@@ -59,13 +62,24 @@ public abstract class CBOREncrypter <T extends CBOREncrypter<T>>  {
     abstract T getThis();
     
     /**
-     * Set optional Intercepter.
+     * Set optional custom data intercepter.
      * 
-     * @param intercepter An instance of Intercepter
+     * @param customDataIntercepter An instance of Intercepter
      * @return <code>this</code> of subclass
      */
-    public T setIntercepter(Intercepter intercepter) {
-        this.intercepter = intercepter;
+    public T setCustomDataIntercepter(Intercepter customDataIntercepter) {
+        this.customDataIntercepter = customDataIntercepter;
+        return getThis();
+    }
+
+    /**
+     * Set optional unprotected data intercepter.
+     * 
+     * @param unprotectedDataIntercepter An instance of Intercepter
+     * @return <code>this</code> of subclass
+     */
+    public T setUnprotectedDataIntercepter(Intercepter unprotectedDataIntercepter) {
+        this.unprotectedDataIntercepter = unprotectedDataIntercepter;
         return getThis();
     }
     
@@ -122,7 +136,7 @@ public abstract class CBOREncrypter <T extends CBOREncrypter<T>>  {
         }
 
         // Get optional custom data.
-        CBORObject customData = intercepter.getCustomData();
+        CBORObject customData = customDataIntercepter.getCustomData();
         if (customData != null) {
             cefContainer.set(CXF_CUSTOM_DATA_LBL, customData);
         }
@@ -162,6 +176,12 @@ public abstract class CBOREncrypter <T extends CBOREncrypter<T>>  {
                                                  iv, 
                                                  dataToEncrypt, 
                                                  authData);
+ 
+        // Get optional unprotected data.
+        CBORObject unprotectedData = unprotectedDataIntercepter.getCustomData();
+        if (unprotectedData != null) {
+            cefContainer.set(CXF_UNPROTECTED_LBL, unprotectedData);
+        }
 
         // Complement the encryption object with the result of the content encryption.
         

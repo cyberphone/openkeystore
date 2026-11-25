@@ -115,20 +115,23 @@ public abstract class CBORValidator <T extends CBORValidator<T>> {
     }
 
     POLICY unprotectedDataPolicy = POLICY.FORBIDDEN;
+    Collector unprotectedDataCollector;
 
     /**
      * Sets unprotected data policy.
      * <p>
-     * Unprotected data is indicated by the reserved label {@link CBORCryptoConstants#CSF_UNPROTECTED_LBL}.
+     * Unprotected data is indicated by the reserved label {@link CBORCryptoConstants#CXF_UNPROTECTED_LBL}.
      * </p>
      * <p>
      * By default unprotected data is rejected ({@link CBORCryptoUtils.POLICY#FORBIDDEN}).
      * </p>
      * @param policy Define level of support
+     * @param unprotectedDataCollector Interface for reading unprotected data
      * @return <code>this</code> of subclass
      */
-    public T setUnprotectedDataPolicy(POLICY policy) {
+    public T setUnprotectedDataPolicy(POLICY policy, Collector unprotectedDataCollector) {
         this.unprotectedDataPolicy = policy;
+        this.unprotectedDataCollector = unprotectedDataCollector;
         return getThis();
     }
 
@@ -176,15 +179,10 @@ public abstract class CBORValidator <T extends CBORValidator<T>> {
                                                                tagCollector);
 
         // Deal with optional unprotected data.
-        CBORObject unprotectedData = null;
-        if (signedMap.containsKey(CSF_UNPROTECTED_LBL)) {
-            if (unprotectedDataPolicy == POLICY.FORBIDDEN) {
-                cborError(STDERR_UNPROTECTED_FORBIDDEN);
-            }
-            unprotectedData = signedMap.remove(CSF_UNPROTECTED_LBL);
-        } else if (unprotectedDataPolicy == POLICY.MANDATORY) {
-            cborError(STDERR_UNPROTECTED_MISSING);
-        }
+        CBORObject unprotectedData = 
+            CBORCryptoUtils.getUnprotectedData(signedMap,
+                                               unprotectedDataPolicy,
+                                               unprotectedDataCollector);
 
         // Fetch signature container object.
         // Need to separate single and multiple signatures.
@@ -206,7 +204,7 @@ public abstract class CBORValidator <T extends CBORValidator<T>> {
 
         // Restore signed object.
         if (unprotectedData != null) {
-            signedMap.set(CSF_UNPROTECTED_LBL, unprotectedData);
+            signedMap.set(CXF_UNPROTECTED_LBL, unprotectedData);
         }
 
         // Return it as well.
@@ -216,9 +214,4 @@ public abstract class CBORValidator <T extends CBORValidator<T>> {
     static final String STDERR_NO_SIGNATURE = 
             "No signature found!";
     
-    static final String STDERR_UNPROTECTED_FORBIDDEN = 
-            "Unprotected data policy must be enabled";
-    
-    static final String STDERR_UNPROTECTED_MISSING = 
-            "Missing unprotected data";
 }

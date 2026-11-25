@@ -86,7 +86,28 @@ public abstract class CBORDecrypter <T extends CBORDecrypter<?>> {
         this.tagPolicy = tagPolicy;
         this.tagCallBack = tagCallBack;
         return getThis();
-    }    
+    } 
+
+    POLICY unprotectedDataPolicy = POLICY.FORBIDDEN;
+    Collector unprotectedDataCollector;
+
+    /**
+     * Sets unprotected data policy.
+     * <p>
+     * Unprotected data is indicated by the reserved label {@link CBORCryptoConstants#CXF_UNPROTECTED_LBL}.
+     * </p>
+     * <p>
+     * By default unprotected data is rejected ({@link CBORCryptoUtils.POLICY#FORBIDDEN}).
+     * </p>
+     * @param policy Define level of support
+     * @param unprotectedDataCollector Interface for reading unprotected data
+     * @return <code>this</code> of subclass
+     */
+    public T setUnprotectedDataPolicy(POLICY policy, Collector unprotectedDataCollector) {
+        this.unprotectedDataPolicy = policy;
+        this.unprotectedDataCollector = unprotectedDataCollector;
+        return getThis();
+    }
  
     /**
      * Decrypt data.
@@ -104,6 +125,12 @@ public abstract class CBORDecrypter <T extends CBORDecrypter<?>> {
         CBORMap cefContainer = CBORCryptoUtils.unwrapContainerMap(encryptionObject,
                                                                   tagPolicy,
                                                                   tagCallBack);
+
+        // Deal with optional unprotected data.
+        CBORObject unprotectedData = 
+            CBORCryptoUtils.getUnprotectedData(cefContainer,
+                                               unprotectedDataPolicy,
+                                               unprotectedDataCollector);
 
         // Get the mandatory content encryption algorithm.
         ContentEncryptionAlgorithms contentEncryptionAlgorithm =
@@ -143,6 +170,9 @@ public abstract class CBORDecrypter <T extends CBORDecrypter<?>> {
         byte[] authData = encryptionObject.encode();
         
         // Be nice and restore the object as well.
+        if (unprotectedData != null) {
+            cefContainer.set(CXF_UNPROTECTED_LBL, unprotectedData);
+        }
         cefContainer.set(CEF_IV_LBL, new CBORBytes(iv));
         cefContainer.set(CEF_TAG_LBL, new CBORBytes(tag));
         cefContainer.set(CEF_CIPHER_TEXT_LBL, new CBORBytes(cipherText));

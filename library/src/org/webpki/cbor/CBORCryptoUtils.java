@@ -95,8 +95,8 @@ public class CBORCryptoUtils {
      * Interface for customizing map objects.
      * <p>
      * Implementations of this interface must be set by calling
-     * {@link CBORSigner#setIntercepter(Intercepter)} and
-     * {@link CBOREncrypter#setIntercepter(Intercepter)} for
+     * {@link CBORSigner#setCustomDataIntercepter(Intercepter)} and
+     * {@link CBOREncrypter#setCustomDataIntercepter(Intercepter)} for
      * signatures and encryption respectively.
      * </p>
      */
@@ -184,7 +184,7 @@ public class CBORCryptoUtils {
         // Get optional customData element.
         if (holderMap.containsKey(CXF_CUSTOM_DATA_LBL)) {
             if (customDataPolicy == POLICY.FORBIDDEN) {
-                inputError("Custom data encountered", customDataPolicy);
+                inputError(STDERR_CUSTOM_DATA_FORBIDDEN, customDataPolicy);
             }
             // It is OK to not read customData during validation.
             CBORObject customData = holderMap.get(CXF_CUSTOM_DATA_LBL).scan();
@@ -192,8 +192,26 @@ public class CBORCryptoUtils {
                 callBackOrNull.foundData(customData);
             }
         } else if (customDataPolicy == POLICY.MANDATORY) {
-            inputError("Missing custom data", customDataPolicy);
+            inputError(STDERR_CUSTOM_DATA_MISSING, customDataPolicy);
         }
+    }
+
+    static CBORObject getUnprotectedData(CBORMap coreMap, 
+                                         POLICY unprotectedDataPolicy,
+                                         Collector callBackOrNull) {
+        CBORObject unprotectedData = null;
+        if (coreMap.containsKey(CXF_UNPROTECTED_LBL)) {
+            if (unprotectedDataPolicy == POLICY.FORBIDDEN) {
+                inputError(STDERR_UNPROTECTED_FORBIDDEN, unprotectedDataPolicy);
+            }
+            unprotectedData = coreMap.remove(CXF_UNPROTECTED_LBL);
+            if (callBackOrNull != null) {
+                callBackOrNull.foundData(unprotectedData);
+            }
+        } else if (unprotectedDataPolicy == POLICY.MANDATORY) {
+            inputError(STDERR_UNPROTECTED_MISSING, unprotectedDataPolicy);
+        }
+        return unprotectedData;
     }
     
     static byte[] commonKeyEncryption(PublicKey publicKey,
@@ -248,5 +266,17 @@ public class CBORCryptoUtils {
      */
     static final String STDERR_KEY_ID_PUBLIC = 
         "\"keyId\" cannot be combined with public key objects";
+
+    static final String STDERR_CUSTOM_DATA_FORBIDDEN = 
+        "Custom data encountered";
+    
+    static final String STDERR_CUSTOM_DATA_MISSING = 
+        "Missing custom data";
+    
+    static final String STDERR_UNPROTECTED_FORBIDDEN = 
+        "Unprotected data encountered";
+    
+    static final String STDERR_UNPROTECTED_MISSING = 
+        "Missing unprotected data";
 
 }
