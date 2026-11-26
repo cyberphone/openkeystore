@@ -17,6 +17,7 @@
 package org.webpki.webapps.csf_lab;
 
 import static org.webpki.cbor.CBORCryptoConstants.CSF_CONTAINER_LBL;
+import static org.webpki.cbor.CBORCryptoConstants.CXF_UNPROTECTED_LBL;
 
 import java.io.IOException;
 
@@ -32,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.webpki.cbor.CBORArray;
 import org.webpki.cbor.CBORAsymKeySigner;
+import org.webpki.cbor.CBORCryptoUtils;
 import org.webpki.cbor.CBORDiagnosticNotation;
 import org.webpki.cbor.CBORHmacSigner;
 import org.webpki.cbor.CBORMap;
@@ -314,6 +316,10 @@ public class CreateServlet extends CoreRequestServlet {
             boolean multiOption = request.getParameter(FLG_MULTI_SIGN) != null;
 
             CBORMap mapToSign = unwrapOptionalTag(objectToSign);
+            final CBORObject unprotectedData = mapToSign.getConditionally(CXF_UNPROTECTED_LBL, null);
+            if (unprotectedData != null) {
+                mapToSign.remove(CXF_UNPROTECTED_LBL);
+            }
             CBORObject existingSignatures = mapToSign.getConditionally(CSF_CONTAINER_LBL, null);
             if (existingSignatures != null) {
                 if (multiOption ^ (existingSignatures instanceof CBORArray)) {
@@ -381,6 +387,15 @@ public class CreateServlet extends CoreRequestServlet {
             signer.setKeyId(optionalKeyId);
 
             signer.setMultiSignatureMode(multiOption);
+
+            signer.setUnprotectedDataIntercepter(new CBORCryptoUtils.Intercepter() {
+
+                @Override 
+                public CBORObject getData() {
+                    return unprotectedData;
+                }
+
+            });
 
             // Finally, sign!
             CBORObject signedCborObject = signer.sign(objectToSign);

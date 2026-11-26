@@ -155,6 +155,16 @@ public class ValidateServlet extends CoreRequestServlet {
                         }
                     }
                 })
+                .setUnprotectedDataPolicy(CBORCryptoUtils.POLICY.OPTIONAL, 
+                                          new CBORCryptoUtils.Collector() {
+                    
+                    @Override
+                    public void foundData(CBORObject data) {
+                        if (data != null) {
+                            data.scan();
+                        }
+                    }
+                })
                 .setTagPolicy(CBORCryptoUtils.POLICY.OPTIONAL, null)
                 .setUnprotectedDataPolicy(CBORCryptoUtils.POLICY.OPTIONAL, null)
                 .setMultiSignatureMode(rawSignatures instanceof CBORArray)
