@@ -92,42 +92,26 @@ public class CBORCryptoUtils {
     }
 
     /**
-     * Interface for customizing map objects.
-     * <p>
-     * Implementations of this interface must be set by calling
-     * {@link CBORSigner#setCustomDataIntercepter(Intercepter)} and
-     * {@link CBOREncrypter#setCustomDataIntercepter(Intercepter)} for
-     * signatures and encryption respectively.
-     * </p>
+     * Interface for customizing CSF/CEF objects.
      */
     public interface Intercepter {
 
         /**
-         * Optionally add custom data to the map.
-         * <p>
-         * Custom data may be any valid CBOR object.  This data is assigned
-         * to the CSF/CEF specific label {@link CBORCryptoConstants#CXF_CUSTOM_DATA_LBL}.
-         * </p>
+         * Optionally add specific data to the map.
          * <p>
          * If this method returns <code>null</code>, the assumption is that there is no
          * custom data.
          * </p>
          * 
-         * @return <code>null</code> (default implementation) or custom data object.
+         * @return <code>null</code> (default implementation) or a specific data object.
          */
-        default CBORObject getCustomData() {
+        default CBORObject getData() {
             return null;
         }
     }
 
     /**
-     * Interface for collecting tagged or custom data.
-     * <p>
-     * Implementations of this interface must be set by calling the
-     * {@link CBORValidator#setCustomDataPolicy(POLICY,Collector)} and
-     * {@link CBORDecrypter#setCustomDataPolicy(POLICY,Collector)} for
-     * signatures and encryption respectively.
-     * </p>
+     * Interface for collecting specific data.
      */
     public interface Collector {
 

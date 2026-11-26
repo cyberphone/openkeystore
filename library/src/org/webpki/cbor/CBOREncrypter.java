@@ -136,7 +136,7 @@ public abstract class CBOREncrypter <T extends CBOREncrypter<T>>  {
         }
 
         // Get optional custom data.
-        CBORObject customData = customDataIntercepter.getCustomData();
+        CBORObject customData = customDataIntercepter.getData();
         if (customData != null) {
             cefContainer.set(CXF_CUSTOM_DATA_LBL, customData);
         }
@@ -178,7 +178,7 @@ public abstract class CBOREncrypter <T extends CBOREncrypter<T>>  {
                                                  authData);
  
         // Get optional unprotected data.
-        CBORObject unprotectedData = unprotectedDataIntercepter.getCustomData();
+        CBORObject unprotectedData = unprotectedDataIntercepter.getData();
         if (unprotectedData != null) {
             cefContainer.set(CXF_UNPROTECTED_LBL, unprotectedData);
         }

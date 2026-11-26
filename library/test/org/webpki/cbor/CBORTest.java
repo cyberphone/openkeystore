@@ -1406,14 +1406,18 @@ public class CBORTest {
 
     void oneUnprotected(CBORCryptoUtils.POLICY policy, boolean addUnprotectedData) throws IOException {
         CBORMap mapToBeSgnated = createDataToBeSigned();
-        if (addUnprotectedData) {
-            mapToBeSgnated.set(CBORCryptoConstants.CXF_UNPROTECTED_LBL, 
-                               new CBORString("not protected"));
-        }
         boolean mustFail = (policy == CBORCryptoUtils.POLICY.FORBIDDEN && addUnprotectedData) ||
                            (policy == CBORCryptoUtils.POLICY.MANDATORY && !addUnprotectedData);
         try {
-            CBORObject signed = new CBORAsymKeySigner(p256.getPrivate()).sign(mapToBeSgnated);
+            CBORObject signed = new CBORAsymKeySigner(p256.getPrivate())
+                .setUnprotectedDataIntercepter(new CBORCryptoUtils.Intercepter() {
+                    @Override 
+                    public CBORObject getData() {
+                        return addUnprotectedData ? 
+                            new CBORString("not protected") : null;
+                    }
+                })
+                .sign(mapToBeSgnated);
             CBORObject result = new CBORAsymKeyValidator(p256.getPublic())
                 .setUnprotectedDataPolicy(policy, null).validate(signed);
             assertFalse("should not", mustFail);
@@ -1430,6 +1434,14 @@ public class CBORTest {
     void unprotectedTest(CBORCryptoUtils.POLICY policy) throws IOException {
         oneUnprotected(policy, true);
         oneUnprotected(policy, false);
+        try {
+            new CBORAsymKeySigner(p256.getPrivate())
+                .sign(new CBORMap()
+                    .set(CBORCryptoConstants.CXF_UNPROTECTED_LBL, new CBORString("NO")));
+            fail("no");
+        } catch (Exception e) {
+            checkException(e, CBORSigner.STDERR_UNPROTECTED_DATA_NOT_PERMITTED);
+        }
     }
 
     @Test
@@ -1449,7 +1461,7 @@ public class CBORTest {
                         .setCustomDataIntercepter(new CBORCryptoUtils.Intercepter() {
                             
                             @Override 
-                            public CBORObject getCustomData() {
+                            public CBORObject getData() {
                                 return new CBORString("hh");
                             }
                         }), 
@@ -1860,7 +1872,7 @@ public class CBORTest {
                 ContentEncryptionAlgorithms.A256GCM)
             .setUnprotectedDataIntercepter(new CBORCryptoUtils.Intercepter() {
                 @Override 
-                public CBORObject getCustomData() {
+                public CBORObject getData() {
                     // Custom data as well
                     return new CBORBoolean(true);
                 }
@@ -2060,7 +2072,7 @@ public class CBORTest {
             .setCustomDataIntercepter(new CBORCryptoUtils.Intercepter() {
                 
                 @Override
-                public CBORObject getCustomData() {
+                public CBORObject getData() {
                     // Custom data as well
                     return new CBORArray().add(new CBORInt(500));
                 }

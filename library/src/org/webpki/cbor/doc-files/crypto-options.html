@@ -32,7 +32,7 @@ the actual tag object or <code>null</code> if the container is not tagged.</p>
 Adding custom data to CSF or CEF containers is performed by calling
 {@link CBORSigner#setCustomDataIntercepter(CBORCryptoUtils.Intercepter)} and
 {@link CBOREncrypter#setCustomDataIntercepter(CBORCryptoUtils.Intercepter)} respectively,
-where {@link CBORCryptoUtils.Intercepter#getCustomData()} is supposed
+where {@link CBORCryptoUtils.Intercepter#getData()} is supposed
 to provide the actual data.
 
 <h3 style='padding:1em 0 0 0'>Decoding Custom Data</h3>

@@ -19,6 +19,7 @@ package org.webpki.cbor;
 import org.webpki.crypto.SignatureAlgorithms;
 
 import static org.webpki.cbor.CBORCryptoConstants.*;
+import static org.webpki.cbor.CBORInternal.*;
 
 import org.webpki.cbor.CBORCryptoUtils.Intercepter;
 import org.webpki.cbor.CBORCryptoUtils.POLICY;
@@ -40,8 +41,11 @@ import org.webpki.cbor.CBORCryptoUtils.POLICY;
  */
 public abstract class CBORSigner <T extends CBORSigner<?>> {
  
-    // The default is to use a map without tagging and custom data.
+    // The default is no custom data.
     Intercepter customDataIntercepter = new Intercepter() { };
+
+    // The default is no unprotected data.
+    Intercepter unprotectedDataIntercepter = new Intercepter() { };
 
     // Set by implementing classes
     String provider;
@@ -71,6 +75,17 @@ public abstract class CBORSigner <T extends CBORSigner<?>> {
      */
     public T setCustomDataIntercepter(Intercepter customDataIntercepter) {
         this.customDataIntercepter = customDataIntercepter;
+        return getThis();
+    }
+
+   /**
+     * Set optional unprotected data intercepter.
+     * 
+     * @param unprotectedDataIntercepter An instance of Intercepter
+     * @return <code>this</code> of subclass
+     */
+    public T setUnprotectedDataIntercepter(Intercepter unprotectedDataIntercepter) {
+        this.unprotectedDataIntercepter = unprotectedDataIntercepter;
         return getThis();
     }
     
@@ -170,15 +185,16 @@ public abstract class CBORSigner <T extends CBORSigner<?>> {
                                                                POLICY.OPTIONAL, 
                                                                null);
         
-        // Save and remove possible unprotected data.
-        CBORObject unprotectedData = mapToSign.containsKey(CXF_UNPROTECTED_LBL) ? 
-                                          mapToSign.remove(CXF_UNPROTECTED_LBL) : null;
+        // Unprotected data must not be provided inline.
+        if (mapToSign.containsKey(CXF_UNPROTECTED_LBL)) {
+            cborError(STDERR_UNPROTECTED_DATA_NOT_PERMITTED);
+        }
 
         // Create an empty signature container object.
         CBORMap csfContainer = new CBORMap();
 
         // Get optional custom data.
-        CBORObject customData = customDataIntercepter.getCustomData();
+        CBORObject customData = customDataIntercepter.getData();
         if (customData != null) {
             csfContainer.set(CXF_CUSTOM_DATA_LBL, customData);
         }
@@ -215,7 +231,7 @@ public abstract class CBORSigner <T extends CBORSigner<?>> {
                              true);
         }
 
-        // Restore possible unprotected data.
+        CBORObject unprotectedData = unprotectedDataIntercepter.getData();
         if (unprotectedData != null) {
             mapToSign.set(CXF_UNPROTECTED_LBL, unprotectedData);
         }
@@ -223,4 +239,8 @@ public abstract class CBORSigner <T extends CBORSigner<?>> {
         // Return the now signed object.
         return objectToSign;
     }
+
+    static final String STDERR_UNPROTECTED_DATA_NOT_PERMITTED = 
+        "Unprotected data must be provided by interceptor";
+
 }
