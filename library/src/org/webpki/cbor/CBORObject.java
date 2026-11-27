@@ -23,7 +23,7 @@ import java.io.UncheckedIOException;
 import java.math.BigInteger;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 
 import java.util.Arrays;
 
@@ -621,19 +621,19 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * </ul>
      * </div>
      *
-     * @return {@link Instant}
+     * @return {@link OffsetDateTime}
      * @throws CBORException
      * @see CBORTag#getDateTime()
      * @see CBORUtil#createDateTime(Instant, boolean, boolean)
      */
-    public Instant getDateTime() {
+    public OffsetDateTime getDateTime() {
         String dateTime = getString();
         if (!RFC3339_5_6_PATTERN.matcher(dateTime).matches()) {
             cborError("\"DateTime\" syntax error: " + dateTime);
         }
-        Instant instant = ZonedDateTime.parse(dateTime).toInstant();
-        CBORUtil.instantDateTimeToMillisCheck(instant);
-        return instant;
+        OffsetDateTime offsetDateTime = OffsetDateTime.parse(dateTime);
+        CBORUtil.instantDateTimeToMillisCheck(offsetDateTime.toInstant());
+        return offsetDateTime;
     }
 
     /**

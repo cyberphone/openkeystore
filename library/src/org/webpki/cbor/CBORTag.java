@@ -19,6 +19,7 @@ package org.webpki.cbor;
 import static org.webpki.cbor.CBORInternal.*;
 
 import java.time.Instant;
+import java.time.OffsetDateTime;
 
 /**
  * Class for holding CBOR <code>#6.n</code> (tag) objects.
@@ -83,7 +84,7 @@ public class CBORTag extends CBORObject {
     CBORObject object;
 
     // Specialized tag data,
-    Instant dateTime;
+    OffsetDateTime dateTime;
     Instant epochTime;
     COTX cotx;
 
@@ -194,7 +195,7 @@ public class CBORTag extends CBORObject {
      * @throws CBORException
      */
     @Override
-    public Instant getDateTime() {
+    public OffsetDateTime getDateTime() {
         if (dateTime == null) {
             tagSyntaxError(STDERR_ISO_DATE_TIME);
         }

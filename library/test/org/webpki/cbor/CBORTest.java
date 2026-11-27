@@ -47,6 +47,7 @@ import java.security.spec.NamedParameterSpec;
 import java.security.spec.X509EncodedKeySpec;
 
 import java.time.Instant;
+import java.time.OffsetDateTime;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -2725,11 +2726,11 @@ public class CBORTest {
     }
 
     void oneDateTime(long epoch, String isoString) {
-        assertTrue("date1", new CBORString(isoString).getDateTime().toEpochMilli() == epoch);
+        assertTrue("date1", new CBORString(isoString).getDateTime().toInstant().toEpochMilli() == epoch);
         CBORObject cbor = CBORDecoder.decode(new CBORString(isoString).encode());
-        assertTrue("date2", cbor.getDateTime().toEpochMilli() == epoch);
+        assertTrue("date2", cbor.getDateTime().toInstant().toEpochMilli() == epoch);
         assertTrue("date3", new CBORTag(0l, new CBORString(isoString))
-            .getDateTime().toEpochMilli() == epoch);
+            .getDateTime().toInstant().toEpochMilli() == epoch);
         assertTrue("date3", new CBORTag(1l, new CBORInt(epoch / 1000))
             .getEpochTime().toEpochMilli() == epoch);
         assertTrue("date31", new CBORInt(epoch / 1000)
@@ -2781,10 +2782,10 @@ public class CBORTest {
     }
 
     void truncateDateTime(String iso, long millis, long seconds) {
-        Instant dateTime = new CBORString(iso).getDateTime();
-        assertTrue("trdt1", dateTime.toEpochMilli() == millis);
-        assertTrue("trdt2", CBORUtil.createDateTime(dateTime, true, false).getDateTime().toEpochMilli() == millis);
-        assertTrue("trdt3", CBORUtil.createDateTime(dateTime, false, false).getDateTime().toEpochMilli() == seconds * 1000);
+        OffsetDateTime dateTime = new CBORString(iso).getDateTime();
+        assertTrue("trdt1", dateTime.toInstant().toEpochMilli() == millis);
+        assertTrue("trdt2", CBORUtil.createDateTime(dateTime, true, false).getDateTime().toInstant().toEpochMilli() == millis);
+        assertTrue("trdt3", CBORUtil.createDateTime(dateTime, false, false).getDateTime().toInstant().toEpochMilli() == seconds * 1000);
     }
 
     void truncateEpochTime(double floatValue, long millis, long seconds) {
@@ -2819,7 +2820,7 @@ public class CBORTest {
         badEpoch("1b0000003afff44180", 253402300800l);
 
         assertTrue("dt=ep", 
-            CBORDecoder.decode(new CBORString("9999-12-31T23:59:59Z").encode()).getDateTime().toEpochMilli()
+            CBORDecoder.decode(new CBORString("9999-12-31T23:59:59Z").encode()).getDateTime().toInstant().toEpochMilli()
                == MAX_INSTANT_IN_MILLIS); 
 
         truncateEpochTime(1740060548.000, 1740060548000L, 1740060548);
