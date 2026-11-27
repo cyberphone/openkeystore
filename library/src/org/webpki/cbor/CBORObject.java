@@ -604,7 +604,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * 
      * <div style='margin-top:0.5em'>
      * This method performs a {@link #getString()}.
-     * The returned string is subsequently used for initiating an {@link Instant} object.</div>
+     * The returned string is subsequently used for initiating an {@link OffsetDateTime} object.</div>
      * <div style='margin-top:0.5em'>
      * If not <i>all</i> of the following conditions are met, a {@link CBORException} is thrown:
      * <ul style='padding:0;margin:0 0 0.5em 1.2em'>
@@ -632,7 +632,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
             cborError("\"DateTime\" syntax error: " + dateTime);
         }
         OffsetDateTime offsetDateTime = OffsetDateTime.parse(dateTime);
-        CBORUtil.instantDateTimeToMillisCheck(offsetDateTime.toInstant());
+        CBORUtil.instantDateTimeToMillisCheck(offsetDateTime);
         return offsetDateTime;
     }
 

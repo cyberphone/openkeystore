@@ -24,16 +24,16 @@ public class CBORUtil {
      * [<a href='https://www.rfc-editor.org/rfc/rfc3339.html#section-5.6' class='webpkilink'>RFC3339</a>].
      * The string is subsequently wrapped in a {@link CBORString} object.</div>
      * <div style='margin-top:0.5em'>
-     * If the <code>instant</code> object is not within
+     * If <code>offsetDateTime</code> is not within
      * the range <code style='white-space:nowrap'>"1970-01-01T00:00:00Z"</code> to
      * <code style='white-space:nowrap'>"9999-12-31T23:59:59Z"</code>,
      * a {@link CBORException} is thrown .</div>
      * <div style='margin-top:0.5em'>
      * If <code>subsecond</code> is <code>true</code> the date/time string will feature
-     * milliseconds (<code>.nnn</code>) as well.</div>
+     * up to 9 digits of subsecond data (<code>.nnnnnnnnn</code>) as well.</div>
      * <div style='margin-top:0.5em'>Sample code:</div>
      * <div style='margin:0.3em 0 0 1.2em'>
-     * <code>CBORString dateTime = CBORUtil.createDateTime(Instant.now(), true, false);<br>
+     * <code>CBORString dateTime = CBORUtil.createDateTime(OffsetDateTime.now(), true, false);<br>
      * System.out.println(dateTime.toString());&nbsp;&nbsp;// Diagnostic notation<br>
      * <span style='color:#007fdd'>"2025-12-05T13:55:42.418+01:00"</span></code></div>
      * @see CBORObject#getDateTime()
@@ -55,7 +55,7 @@ public class CBORUtil {
     public static CBORString createDateTime(OffsetDateTime offsetDateTime,
                                             boolean subsecond, boolean utc) {
         // Verify that time is within the permitted range.
-        long instantMillis = instantDateTimeToMillisCheck(offsetDateTime.toInstant());
+        long instantMillis = instantDateTimeToMillisCheck(offsetDateTime);
         // Suppressing subseconds may require rounding.
         if ((timeRound(instantMillis, subsecond) / 1000) != (instantMillis / 1000)) {
             offsetDateTime = offsetDateTime.plusSeconds(1);
@@ -80,7 +80,7 @@ public class CBORUtil {
      * [<a href='https://pubs.opengroup.org/onlinepubs/9799919799/basedefs/V1_chap04.html#tag_04_19'
      * class='webpkilink'>TIME</a>] time stamp.</div>
      * <div style='margin-top:0.5em'>
-     * If the <code>instant</code> object is not within
+     * If <code>instant</code> is not within
      * the range <span style='white-space:nowrap'><code>0</code>
      * (<code>"1970-01-01T00:00:00Z"</code>)</span> to
      * <span style='white-space:nowrap'><code>253402300799</code> 
@@ -92,20 +92,20 @@ public class CBORUtil {
      * else a {@link CBORInt} object holding seconds will be created.</div>
      * <div style='margin-top:0.5em'>Sample code:</div>
      * <div style='margin:0.3em 0 0 1.2em'>
-     * <code>CBORObject epoch = CBORUtil.createEpochTime(Instant.now(), false);<br>
-     * System.out.println(epoch.toString());&nbsp;&nbsp;// Diagnostic notation<br>
+     * <code>CBORObject epochTime = CBORUtil.createEpochTime(Instant.now(), false);<br>
+     * System.out.println(epochTime.toString());&nbsp;&nbsp;// Diagnostic notation<br>
      * <span style='color:#007fdd'>1764939916</span></code></div>
      * @see CBORObject#getEpochTime()
      * @param instant Time source object.
      * @param subsecond <div style='margin-left:2em'>
      * If <code>subsecond</code> is <code>true</code>,
-     * the milliseconds of the <code>instant</code> object will be
+     * the milliseconds of <code>instant</code> will be
      * featured in the created time object.  Note: if the millisecond
-     * part of the <code>instant</code> object is zero,
+     * part of <code>instant</code> is zero,
      * <code>subsecond</code> is considered to be <code>false</code>.
      * <div style='margin-top:0.5em'>If <code>subsecond</code> is
-     * <code>false</code>, the millisecond part of the <code>instant</code>
-     * object will not be used, but may after <i>rounding</i>,
+     * <code>false</code>, the millisecond part of <code>instant</code>
+     * will not be used, but may after <i>rounding</i>,
      * add a second to the created time object.
      * Rounding is performed for milliseconds <code>&ge;500</code>.</div></div>
      * 
@@ -166,10 +166,10 @@ public class CBORUtil {
         cborError(STDERR_EPOCH_OUT_OF_RANGE + Float64Stringifier.encode(epochSeconds, true));
     }
 
-    static long instantDateTimeToMillisCheck(Instant instant) {
-        long dateTimeMillis = instant.toEpochMilli();
-        if (dateTimeMillis < MIN_INSTANT_IN_MILLIS || dateTimeMillis > MAX_INSTANT_IN_MILLIS) {
-            cborError(STDERR_DATETIME_OUT_OF_RANGE + instant.toString());
+    static long instantDateTimeToMillisCheck(OffsetDateTime offsetDateTime) {
+        long dateTimeMillis = offsetDateTime.toInstant().toEpochMilli();
+        if (dateTimeMillis < 0 || dateTimeMillis > MAX_INSTANT_IN_MILLIS) {
+            cborError(STDERR_DATETIME_OUT_OF_RANGE + offsetDateTime.toString());
         }
         return dateTimeMillis;
     }
@@ -182,14 +182,8 @@ public class CBORUtil {
         if (!subsecond) {
             // Optionally round seconds, set millisecond to zero. 
             long reminder = instantMillis % 1000;
-            if (instantMillis < 0) {
-                if (reminder < -500) {
-                    instantMillis -= 1000;
-                }
-            } else {
-                if (reminder >= 500) {
-                    instantMillis += 1000;
-                }
+            if (reminder >= 500) {
+                instantMillis += 1000;
             }
             instantMillis -= reminder;
         }
