@@ -624,7 +624,7 @@ public abstract class CBORObject implements Cloneable, Comparable<CBORObject> {
      * @return {@link OffsetDateTime}
      * @throws CBORException
      * @see CBORTag#getDateTime()
-     * @see CBORUtil#createDateTime(Instant, boolean, boolean)
+     * @see CBORUtil#createDateTime(OffsetDateTime, boolean, boolean)
      */
     public OffsetDateTime getDateTime() {
         String dateTime = getString();
