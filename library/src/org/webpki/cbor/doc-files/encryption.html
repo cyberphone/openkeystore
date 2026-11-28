@@ -221,14 +221,14 @@ and the <code class='webpkivar'>additionalAuthenticationData</code>.</li>
 The result from step #4 is the decrypted content.
 <h2>4. Algorithms</h2>
 <h3 id='cef-kdf'>4.1. Key Derivation Function (KDF)</h3>
-ECDH based key encryption schemes <b>must</b> use a Key Derivation Function (KDF) according to
+ECDH key encryption schemes <b>must</b> use a
+Key Derivation Function (KDF) according to
 HKDF [<a href='https://www.rfc-editor.org/rfc/rfc5869.html'>RFC5869</a>], profiled as follows:
 <ul>
 <li class='webpkilistspacing'><code>hmac</code>: The HKDF implementation <b>must</b> use HMAC with SHA-256</li>
 <li class='webpkilistspacing'><code>salt</code>: N/A. The default extract mode handling <b>must</b> be implemented.</li>
-<li><code>info</code>: This parameter <b>must</b> consist of the actual
-COSE key encryption algorithm,
-expressed as a 32-bit (4 byte) signed big-endian integer.</li>
+<li><code>info</code>: This parameter <b>must</b> consist of the <i>textual</i> version of
+the key encryption algorithm (e.g. <code>ECDH-ES+HKDF-256</code>) expressed as a byte-array.</li>
 </ul>
 <h3 id='cef-content-encryption-algorithms'>4.2. Content Encryption Algorithms</h3>
 <div>
@@ -252,18 +252,16 @@ Currently supported key encryption algorithms:
 <div class='webpkifloat'>
 <table class='webpkitable'>
 <tr><th>Name</th><th>Identifier</th><th>Compatibility</th><th>Notes</th></tr>
-<tr style='text-align:center'><td><code>ECDH-ES+HKDF-256</code></td><td>-25</td><td>COSE, JOSE</td><td>1, 2</td></tr>
-<tr style='text-align:center'><td><code>ECDH-ES+A128KW</code></td><td>-29</td><td>COSE, JOSE</td><td>1, 2</td></tr>
-<tr style='text-align:center'><td><code>ECDH-ES+A192KW</code></td><td>-30</td><td>COSE, JOSE</td><td>1, 2</td></tr>
-<tr style='text-align:center'><td><code>ECDH-ES+A256KW</code></td><td>-31</td><td>COSE, JOSE</td><td>1, 2</td></tr>
-<tr style='text-align:center'><td><code>RSA-OAEP</code></td><td>-40</td><td>COSE, JOSE</td><td>3</td></tr>
-<tr style='text-align:center'><td><code>RSA-OAEP-256</code></td><td>-41</td><td>COSE, JOSE</td><td>3</td></tr>
+<tr style='text-align:center'><td><code>ECDH-ES+HKDF-256</code></td><td>-25</td><td>COSE, JOSE</td><td>1</td></tr>
+<tr style='text-align:center'><td><code>ECDH-ES+A128KW</code></td><td>-29</td><td>COSE, JOSE</td><td>1</td></tr>
+<tr style='text-align:center'><td><code>ECDH-ES+A192KW</code></td><td>-30</td><td>COSE, JOSE</td><td>1</td></tr>
+<tr style='text-align:center'><td><code>ECDH-ES+A256KW</code></td><td>-31</td><td>COSE, JOSE</td><td>1</td></tr>
+<tr style='text-align:center'><td><code>RSA-OAEP</code></td><td>-40</td><td>COSE, JOSE</td><td>2</td></tr>
+<tr style='text-align:center'><td><code>RSA-OAEP-256</code></td><td>-41</td><td>COSE, JOSE</td><td>2</td></tr>
 </table>
 </div>
 Notes:
 <ol>
-    <li class='webpkilistspacing'>CEF and COSE use different profiles for 
-     the <a href='#cef-kdf'>Key&nbsp;Derivation&nbsp;Function&nbsp;(KDF)</a>.</li>
     <li class='webpkilistspacing'>Supported key types: <code>P-256</code>, <code>P-384</code>, <code>P-521</code>,
         <code>X25519</code>, and <code>X448</code>.</li>
     <li>Supported key lengths: <code>2048</code>, <code>3072</code>, and <code>4096</code></li>

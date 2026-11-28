@@ -524,8 +524,7 @@ public class EncryptionCore {
         return Arrays.copyOf(baos.toByteArray(), keyLength);
     }    
 
-    private static byte[] coreKeyAgreement(boolean coseMode,
-                                           KeyEncryptionAlgorithms keyEncryptionAlgorithm,
+    private static byte[] coreKeyAgreement(KeyEncryptionAlgorithms keyEncryptionAlgorithm,
                                            ContentEncryptionAlgorithms contentEncryptionAlgorithm,
                                            PublicKey receivedPublicKey,
                                            PrivateKey privateKey,
