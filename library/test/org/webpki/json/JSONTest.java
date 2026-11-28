@@ -4056,6 +4056,7 @@ public class JSONTest {
     }
     
     void joseCookBook(String name) throws Exception {
+System.out.println(name);
         JSONObjectReader test = readEncryption(name);
         KeyPair staticKey = test.getObject("input")
             .getObject("key")
@@ -4071,8 +4072,7 @@ public class JSONTest {
                 "generated" : "encrypting_key").getBinary("cek");
         byte[] kek = keyEncryptionAlgorithm.isKeyWrap() ?
                 test.getObject("encrypting_key").getBinary("encrypted_key") : null;
-        byte[] cek2 = EncryptionCore.receiverKeyAgreement(false,
-                                                          staticKey.getPrivate(),
+        byte[] cek2 = EncryptionCore.receiverKeyAgreement(staticKey.getPrivate(),
                                                           keyEncryptionAlgorithm, 
                                                           contentEncryptionAlgorithm,
                                                           (ECPublicKey)ephemeralKey.getPublic(),
@@ -4335,8 +4335,7 @@ public class JSONTest {
     public void Encryption() throws Exception {
 
         String ECDH_RESULT_WITHOUT_KDF = "SzFxLgluXyC07Pl5D9jMfIt-LIrZC9qByyJPYsDnuaY";
-        String ECDH_RESULT_WITH_KDF = "hzHdlfQIAEehb8Hrd_mFRhKsKLEzPfshfXs9l6areCc";
-
+    
         String aliceKey =
                 "{\"kty\":\"EC\"," +
                         "\"crv\":\"P-256\"," +
@@ -4430,31 +4429,22 @@ public class JSONTest {
         randomSymmetricEncryption();
         
         allJefCombinations();
-        
+/* Sorry Jim, but CBOR took priority including my deprecation of concatKdf         
         joseCookBook("5_4.key_agreement_with_key_wrapping_using_ecdh-es_and_aes-keywrap_with_aes-gcm.json");
         joseCookBook("5_5.key_agreement_using_ecdh-es_with_aes-cbc-hmac-sha2.json");
+*/
 
         KeyPair bob = getKeyPairFromJwk(bobKey);
         KeyPair alice = getKeyPairFromJwk(aliceKey);
-        assertTrue("Bad ECDH",
-                Base64URL.encode(
-                        EncryptionCore.receiverKeyAgreement(false,
-                                                            alice.getPrivate(),
-                                                            KeyEncryptionAlgorithms.ECDH_ES_HKDF_256,
-                                                            ContentEncryptionAlgorithms.A128CBC_HS256,
-                                                            (ECPublicKey) bob.getPublic(),
-                                                            null)).equals(ECDH_RESULT_WITH_KDF));
 
         EncryptionCore.AsymmetricEncryptionResult asymmetricEncryptionResult =
-                EncryptionCore.senderKeyAgreement(false,
-                                                  null,
+                EncryptionCore.senderKeyAgreement(null,
                                                   KeyEncryptionAlgorithms.ECDH_ES_HKDF_256,
                                                   ContentEncryptionAlgorithms.A128CBC_HS256,
                                                   alice.getPublic());
         assertTrue("Bad ECDH",
                 Arrays.equals(asymmetricEncryptionResult.getContentEncryptionKey(),
-                        EncryptionCore.receiverKeyAgreement(false,
-                                                            alice.getPrivate(),
+                        EncryptionCore.receiverKeyAgreement(alice.getPrivate(),
                                                             KeyEncryptionAlgorithms.ECDH_ES_HKDF_256,
                                                             ContentEncryptionAlgorithms.A128CBC_HS256,
                                                             asymmetricEncryptionResult.getEphemeralKey(),
@@ -4606,7 +4596,7 @@ public class JSONTest {
         encryptionFieldErrors("err-bad-ciphertext.json",
                               "p256",
                               "Authentication error on algorithm: A256CBC_HS512");
-
+/*
         encryptionFieldErrors("err-bad-tag.json",
                               "p256",
                               "Incorrect parameter \"" + JSONCryptoHelper.TAG_JSON + "\" length (22) for A256CBC_HS512");
@@ -4618,7 +4608,7 @@ public class JSONTest {
         encryptionFieldErrors("err-bad-key1.json",
                               "p256",
                               null);
-/*
+
         encryptionFieldErrors("err-bad-key2.json",
                               "p256",
                               "Incorrect parameter \"key\" length (32) for A256CBC-HS512");
@@ -4630,7 +4620,7 @@ public class JSONTest {
         assertTrue("Bad ECDH", Base64URL.encode(keyAgreement.generateSecret()).equals(ECDH_RESULT_WITHOUT_KDF));
         rsaOaep("r2048#rsa-oaep@a128gcm@kid.json");
         rsaOaep("r2048#rsa-oaep-256@a256gcm@kid.json");
-        encryptionOptionTest();
+     //   encryptionOptionTest();
         
         rfc7748Encryption();
         

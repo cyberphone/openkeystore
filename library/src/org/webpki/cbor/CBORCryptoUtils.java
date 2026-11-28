@@ -209,7 +209,6 @@ public class CBORCryptoUtils {
         
         // The sole cryptographic operation 
         EncryptionCore.AsymmetricEncryptionResult result = EncryptionCore.encryptKey(
-                                    true,
                                     publicKey, 
                                     keyEncryptionAlgorithm, 
                                     contentEncryptionAlgorithm);

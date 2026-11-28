@@ -233,8 +233,7 @@ public class JSONDecryptionDecoder {
                                              keyEncryptionAlgorithm,
                                              encryptedKeyData)
                                                            :
-                EncryptionCore.receiverKeyAgreement(false,
-                                                    privateKey,
+                EncryptionCore.receiverKeyAgreement(privateKey,
                                                     keyEncryptionAlgorithm,
                                                     holder.contentEncryptionAlgorithm,
                                                     ephemeralPublicKey,

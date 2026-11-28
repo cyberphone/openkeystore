@@ -547,28 +547,24 @@ public class EncryptionCore {
                 keyEncryptionAlgorithm.keyEncryptionKeyLength 
                                                        : 
                 contentEncryptionAlgorithm.keyLength;
-        if (coseMode) {
-            int coseAlg = keyEncryptionAlgorithm.coseId;
-            return hmacKdf(Z,
-                           null,
-                           new byte[] {(byte)(coseAlg >> 24),
-                                       (byte)(coseAlg >> 16),
-                                       (byte)(coseAlg >> 8),
-                                       (byte)coseAlg},
-                           keyLength);
+// SIMPLIFICATION: having multiple KDFs seems unessesary.
+// ASSUMPTION: hmacKdf is at least as good as the older concatKdf algorithm.
+/*
+        if (keyEncryptionAlgorithm.keyWrap) {
+            return concatKdf(Z, 
+                             keyEncryptionAlgorithm.joseId,
+                             keyLength);
         }
-        return concatKdf(Z,
-                         (keyEncryptionAlgorithm.keyWrap ?
-                              keyEncryptionAlgorithm.joseId 
-                                                         : 
-                              contentEncryptionAlgorithm.joseId),
-                         keyLength);
+*/
+        return hmacKdf(Z,
+                       null,
+                       keyEncryptionAlgorithm.joseId.getBytes(),
+                       keyLength);
     }
 
     /**
      * Perform a receiver side ECDH operation.
 
-     * @param coseMode If <code>true</code> => <code>hmacKdf</code>, else <code>concatKdf</code>
      * @param privateKey The receiver's private key
      * @param keyEncryptionAlgorithm The ECDH algorithm
      * @param contentEncryptionAlgorithm The designated content encryption algorithm
@@ -577,7 +573,6 @@ public class EncryptionCore {
      * @return Shared secret
      */
     public static byte[] receiverKeyAgreement(
-            boolean coseMode,
             PrivateKey privateKey,
             KeyEncryptionAlgorithms keyEncryptionAlgorithm,
             ContentEncryptionAlgorithms contentEncryptionAlgorithm,
@@ -590,8 +585,7 @@ public class EncryptionCore {
                     keyEncryptionAlgorithm.toString());
         }
         try {
-            byte[] derivedKey = coreKeyAgreement(coseMode,
-                                                 keyEncryptionAlgorithm,
+            byte[] derivedKey = coreKeyAgreement(keyEncryptionAlgorithm,
                                                  contentEncryptionAlgorithm,
                                                  publicKey,
                                                  privateKey,
@@ -610,7 +604,6 @@ public class EncryptionCore {
     /**
      * Perform a sender side ECDH operation.
      * 
-     * @param coseMode If <code>true</code> => <code>hmacKdf</code>, else <code>concatKdf</code>
      * @param contentEncryptionKey Also known as CEK
      * @param keyEncryptionAlgorithm The ECDH algorithm
      * @param contentEncryptionAlgorithm The designated content encryption algorithm
@@ -618,7 +611,6 @@ public class EncryptionCore {
      * @return A composite object including the (plain text) data encryption key
      */
     public static AsymmetricEncryptionResult senderKeyAgreement(
-                                    boolean coseMode,
                                     byte[] contentEncryptionKey,
                                     KeyEncryptionAlgorithms keyEncryptionAlgorithm,
                                     ContentEncryptionAlgorithms contentEncryptionAlgorithm,
@@ -674,8 +666,7 @@ public class EncryptionCore {
 //#endif
 //System.out.println(generator.getProvider().getName());
         KeyPair keyPair = generator.generateKeyPair();
-        byte[] derivedKey = coreKeyAgreement(coseMode,
-                                             keyEncryptionAlgorithm,
+        byte[] derivedKey = coreKeyAgreement(keyEncryptionAlgorithm,
                                              contentEncryptionAlgorithm,
                                              publicKey,
                                              keyPair.getPrivate(),
@@ -698,14 +689,12 @@ public class EncryptionCore {
     /**
      * Key encryption convenience method.
      * 
-     * @param coseMode <code>true</code> for COSE, <code>false</code> for JOSE
      * @param publicKey Public decryption key
      * @param keyEncryptionAlgorithm Key encryption algorithm
      * @param contentEncryptionAlgorithm Content encryption algorithm
      * @return Encryption parameters including a content encryption key
      */
     public static AsymmetricEncryptionResult encryptKey(
-                                    boolean coseMode,
                                     PublicKey publicKey,
                                     KeyEncryptionAlgorithms keyEncryptionAlgorithm,
                                     ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
@@ -720,8 +709,7 @@ public class EncryptionCore {
                                                  keyEncryptionAlgorithm,
                                                  publicKey)
                                               :
-                    EncryptionCore.senderKeyAgreement(coseMode,
-                                                      contentEncryptionKey,
+                    EncryptionCore.senderKeyAgreement(contentEncryptionKey,
                                                       keyEncryptionAlgorithm,
                                                       contentEncryptionAlgorithm,
                                                       publicKey);
@@ -730,7 +718,6 @@ public class EncryptionCore {
     /**
      * Key decryption convenience method.
      * 
-     * @param coseMode <code>true</code> for COSE, <code>false</code> for JOSE
      * @param privateKey Private decryption key
      * @param optionalEncryptedKey For key-wrapping algorithms
      * @param optionalEphemeralKey For ECDH*
@@ -738,8 +725,7 @@ public class EncryptionCore {
      * @param contentEncryptionAlgorithm Content encryption algorithm
      * @return Decrypted content encryption key
      */
-    public static byte[] decryptKey(boolean coseMode,
-                                    PrivateKey privateKey,
+    public static byte[] decryptKey(PrivateKey privateKey,
                                     byte[] optionalEncryptedKey,     // For all but ECDH-ES
                                     PublicKey optionalEphemeralKey,  // For ECDH*
                                     KeyEncryptionAlgorithms keyEncryptionAlgorithm,
@@ -750,8 +736,7 @@ public class EncryptionCore {
                                          keyEncryptionAlgorithm,
                                          optionalEncryptedKey)
                                               :
-            EncryptionCore.receiverKeyAgreement(coseMode,
-                                                privateKey,
+            EncryptionCore.receiverKeyAgreement(privateKey,
                                                 keyEncryptionAlgorithm,
                                                 contentEncryptionAlgorithm,
                                                 optionalEphemeralKey,

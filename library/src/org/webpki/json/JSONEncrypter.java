@@ -93,8 +93,7 @@ public abstract class JSONEncrypter {
                                                          encrypter.keyEncryptionAlgorithm,
                                                          encrypter.publicKey)
                                                        :
-                            EncryptionCore.senderKeyAgreement(false,
-                                                              contentEncryptionKey,
+                            EncryptionCore.senderKeyAgreement(contentEncryptionKey,
                                                               encrypter.keyEncryptionAlgorithm,
                                                               contentEncryptionAlgorithm,
                                                               encrypter.publicKey);

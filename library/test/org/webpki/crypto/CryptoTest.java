@@ -125,28 +125,24 @@ public class CryptoTest {
         
         // Encrypt key
         EncryptionCore.AsymmetricEncryptionResult result =
-                                    EncryptionCore.encryptKey(true,
-                                                              keyPair.getPublic(),
+                                    EncryptionCore.encryptKey(keyPair.getPublic(),
                                                               keyEncryptionAlgorithm,
                                                               contentEncryptionAlgorithm);
         // Decrypt key
         assertTrue("enc", Arrays.equals(result.getContentEncryptionKey(),
-                                    EncryptionCore.decryptKey(true,
-                                                              keyPair.getPrivate(), 
+                                    EncryptionCore.decryptKey(keyPair.getPrivate(), 
                                                               result.getEncryptedKey(), 
                                                               result.getEphemeralKey(), 
                                                               keyEncryptionAlgorithm, 
                                                               contentEncryptionAlgorithm)));
         // Encrypt key
         result = 
-                                    EncryptionCore.encryptKey(false,
-                                                              keyPair.getPublic(),
+                                    EncryptionCore.encryptKey(keyPair.getPublic(),
                                                               keyEncryptionAlgorithm,
                                                               contentEncryptionAlgorithm);
         // Decrypt key
         assertTrue("enc2", Arrays.equals(result.getContentEncryptionKey(),
-                                    EncryptionCore.decryptKey(false,
-                                                              keyPair.getPrivate(), 
+                                    EncryptionCore.decryptKey(keyPair.getPrivate(), 
                                                               result.getEncryptedKey(), 
                                                               result.getEphemeralKey(), 
                                                               keyEncryptionAlgorithm, 
@@ -154,12 +150,11 @@ public class CryptoTest {
         try {
             // Decrypt key
             assertTrue("enc3" + keyEncryptionAlgorithm, Arrays.equals(result.getContentEncryptionKey(),
-                                        EncryptionCore.decryptKey(true,
-                                                                keyPair.getPrivate(), 
-                                                                result.getEncryptedKey(), 
-                                                                result.getEphemeralKey(), 
-                                                                keyEncryptionAlgorithm, 
-                                                                contentEncryptionAlgorithm))
+                                        EncryptionCore.decryptKey(keyPair.getPrivate(), 
+                                                                  result.getEncryptedKey(), 
+                                                                  result.getEphemeralKey(), 
+                                                                  keyEncryptionAlgorithm, 
+                                                                  contentEncryptionAlgorithm))
                                 || !keyEncryptionAlgorithm.isRsa());
         } catch (Exception e) {
         }

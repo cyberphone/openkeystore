@@ -147,8 +147,7 @@ public class CBORX509Decrypter extends CBORDecrypter<CBORX509Decrypter> {
         return decrypterImpl == null ?
  
             // Internal crypto mode.
-            EncryptionCore.decryptKey(true, 
-                                      keyLocator.locate(certificatePath,
+            EncryptionCore.decryptKey(keyLocator.locate(certificatePath,
                                                         keyEncryptionAlgorithm,
                                                         contentEncryptionAlgorithm), 
                                                         optionalEncryptedKey, 

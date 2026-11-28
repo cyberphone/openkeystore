@@ -1941,7 +1941,6 @@ public class CBORTest {
                                         KeyEncryptionAlgorithms keyEncryptionAlgorithm,
                                         ContentEncryptionAlgorithms contentEncryptionAlgorithm) {
                         return EncryptionCore.receiverKeyAgreement(
-                            true, 
                             compareKeyId(keyId, optionalKeyId) ? p256.getPrivate() : null, 
                             keyEncryptionAlgorithm,
                             contentEncryptionAlgorithm, 
@@ -2026,8 +2025,7 @@ public class CBORTest {
                                         KeyEncryptionAlgorithms.ECDH_ES_A128KW);
                     assertTrue("cea", contentEncryptionAlgorithm == 
                                         ContentEncryptionAlgorithms.A256GCM);
-                    return EncryptionCore.receiverKeyAgreement(true, 
-                                                               p256.getPrivate(), 
+                    return EncryptionCore.receiverKeyAgreement(p256.getPrivate(), 
                                                                keyEncryptionAlgorithm,
                                                                contentEncryptionAlgorithm, 
                                                                optionalEphemeralKey, 

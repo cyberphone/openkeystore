@@ -174,8 +174,7 @@ public class CBORAsymKeyDecrypter extends CBORDecrypter<CBORAsymKeyDecrypter> {
         // Finally, get the decrypted key.
         return decrypterImpl == null ?
             // Using internal crypto.
-            EncryptionCore.decryptKey(true,
-                                      keyLocator.locate(optionalPublicKey,
+            EncryptionCore.decryptKey(keyLocator.locate(optionalPublicKey,
                                                         optionalKeyId,
                                                         keyEncryptionAlgorithm,
                                                         contentEncryptionAlgorithm), 

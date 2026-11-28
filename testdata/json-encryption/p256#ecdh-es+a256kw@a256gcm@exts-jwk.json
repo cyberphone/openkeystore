@@ -11,17 +11,17 @@
     "ephemeralKey": {
       "kty": "EC",
       "crv": "P-256",
-      "x": "0waEHuPXfwLOUqBRqo2dmc8DK5aiwwDXfQfCCSQgXeY",
-      "y": "MjhWHJHalsrBp0jNnc9X8TybZJY2ZHHmscw2dn-xtd8"
+      "x": "mF3mQ_Tjq1Uyf5NWa5ViZbyLVVRPgjcpCrM62fZc3k8",
+      "y": "wc85K3e3Qclw5suxm4lFGZBm5ofuSSKXT3Uh8SW4Tfk"
     },
-    "encryptedKey": "T5aTMhTEiC9yZX268vObcIUE3h0yTTUEdu0GICSDoE5Pi7j36Yq5_w",
+    "encryptedKey": "CxalVqqcNYwsm_tM1mDwsdBxJfVAQcBEd6FoN-wWcH0I4UA691q0dg",
     "otherExt": "something",
     "https://example.com/extension": {
       "life-is-great": true
     }
   },
   "extensions": ["otherExt", "https://example.com/extension"],
-  "iv": "cXkpHuWu080pSkSw",
-  "tag": "w_CxBpcERg877TEH9j0BWA",
-  "cipherText": "n9LBA3JAaKfnnsUAyfLNRFCe7OQX0w"
+  "iv": "5yh8d52zV7NlJmfN",
+  "tag": "dUk34CNX-GoNfscJcSzLwg",
+  "cipherText": "aACy13kyoei4lJHAa1K_hHvGbEmTPg"
 }
