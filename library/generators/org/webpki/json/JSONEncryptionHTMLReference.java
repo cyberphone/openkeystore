@@ -77,10 +77,10 @@ public class JSONEncryptionHTMLReference extends JSONBaseHTML.Types {
     static final String RSA_JWK_TEST_VECTOR    = "r2048#rsa-oaep-256@a256gcm@jwk.json";
     static final String RSA_IMP_TEST_VECTOR    = "r2048#rsa-oaep-256@a256gcm@imp.json";
     static final String RSA_KID_TEST_VECTOR    = "r2048#rsa-oaep@a128gcm@kid.json";
-    static final String P384_JWK_TEST_VECTOR   = "p384#ecdh-es@a256cbc-hs512@jwk.json";
+    static final String P384_JWK_TEST_VECTOR   = "p384#ecdh-es+hkdf-256@a256cbc-hs512@jwk.json";
     static final String P521_JWK_TEST_VECTOR   = "p521#ecdh-es+a256kw@a128cbc-hs256@jwk.json";
     static final String X25519_JWK_TEST_VECTOR = "x25519#ecdh-es+a256kw@a256gcm@jwk.json";
-    static final String X448_JWK_TEST_VECTOR   = "x448#ecdh-es@a256cbc-hs512@jwk.json";
+    static final String X448_JWK_TEST_VECTOR   = "x448#ecdh-es+hkdf-256@a256cbc-hs512@jwk.json";
     
 
     static String enumerateJoseEcCurves() throws IOException  {
