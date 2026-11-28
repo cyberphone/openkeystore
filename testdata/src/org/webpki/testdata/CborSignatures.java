@@ -352,19 +352,19 @@ public class CborSignatures {
             signer.setPublicKey(keyPair.getPublic());
         }
         if (customData) {
-            signer.setIntercepter(new CBORCryptoUtils.Intercepter() {
+            signer.setCustomDataIntercepter(new CBORCryptoUtils.Intercepter() {
                    
                 @Override
-                public CBORObject getCustomData() {
+                public CBORObject getData() {
                     return CborEncryption.CUSTOM_DATA;
                 }                
 
             });
         } else if (customData ) {
-            signer.setIntercepter(new CBORCryptoUtils.Intercepter() {
+            signer.setCustomDataIntercepter(new CBORCryptoUtils.Intercepter() {
                 
                 @Override
-                public CBORObject getCustomData() {
+                public CBORObject getData() {
                     return CborEncryption.CUSTOM_DATA;
                 }     
                 

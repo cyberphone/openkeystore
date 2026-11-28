@@ -226,7 +226,7 @@ public class JsonEncryption {
                 keyEncryptionAlgorithm = KeyEncryptionAlgorithms.ECDH_ES_A256KW;
                 break;
             default: 
-                keyEncryptionAlgorithm = KeyEncryptionAlgorithms.ECDH_ES;
+                keyEncryptionAlgorithm = KeyEncryptionAlgorithms.ECDH_ES_HKDF_256;
                 break;
             }
         }
@@ -318,7 +318,7 @@ public class JsonEncryption {
                 keyEncryptionAlgorithm = KeyEncryptionAlgorithms.ECDH_ES_A256KW;
                 break;
             default: 
-                keyEncryptionAlgorithm = KeyEncryptionAlgorithms.ECDH_ES;
+                keyEncryptionAlgorithm = KeyEncryptionAlgorithms.ECDH_ES_HKDF_256;
                 break;
             }
         }

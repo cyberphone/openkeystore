@@ -24,10 +24,10 @@ package org.webpki.crypto;
 public enum KeyEncryptionAlgorithms {
 
     // ECDH
-    ECDH_ES        ("ECDH-ES",        -25, false, false, -1),
-    ECDH_ES_A128KW ("ECDH-ES+A128KW", -29, false, true,  16),
-    ECDH_ES_A192KW ("ECDH-ES+A192KW", -30, false, true,  24),
-    ECDH_ES_A256KW ("ECDH-ES+A256KW", -31, false, true,  32),
+    ECDH_ES_HKDF_256 ("ECDH-ES+HKDF-256", -25, false, false, -1),
+    ECDH_ES_A128KW   ("ECDH-ES+A128KW",   -29, false, true,  16),
+    ECDH_ES_A192KW   ("ECDH-ES+A192KW",   -30, false, true,  24),
+    ECDH_ES_A256KW   ("ECDH-ES+A256KW",   -31, false, true,  32),
 
     // RSA
     RSA_OAEP       ("RSA-OAEP",       -40,  true, true,  -1),

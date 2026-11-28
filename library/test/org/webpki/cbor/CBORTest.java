@@ -1848,7 +1848,7 @@ public class CBORTest {
         
         // ECDH
         enumerateEncryptions(new KeyEncryptionAlgorithms[]
-                                {KeyEncryptionAlgorithms.ECDH_ES,
+                                {KeyEncryptionAlgorithms.ECDH_ES_HKDF_256,
                                  KeyEncryptionAlgorithms.ECDH_ES_A128KW,
                                  KeyEncryptionAlgorithms.ECDH_ES_A192KW,
                                  KeyEncryptionAlgorithms.ECDH_ES_A256KW},
@@ -1869,7 +1869,7 @@ public class CBORTest {
                 .set(new CBORInt(1), new CBORString("HI"));
             CBORObject encrypted = new CBORAsymKeyEncrypter(
                 p256.getPublic(),
-                KeyEncryptionAlgorithms.ECDH_ES,
+                KeyEncryptionAlgorithms.ECDH_ES_HKDF_256,
                 ContentEncryptionAlgorithms.A256GCM)
             .setUnprotectedDataIntercepter(new CBORCryptoUtils.Intercepter() {
                 @Override 
@@ -1900,7 +1900,7 @@ public class CBORTest {
         
         CBORAsymKeyEncrypter p256Encrypter = 
                 new CBORAsymKeyEncrypter(p256.getPublic(),
-                                         KeyEncryptionAlgorithms.ECDH_ES,
+                                         KeyEncryptionAlgorithms.ECDH_ES_HKDF_256,
                                          ContentEncryptionAlgorithms.A256GCM);
         CBORObject p256Encrypted = p256Encrypter.encrypt(dataToEncrypt);
         assertTrue("enc/dec", 
@@ -1954,7 +1954,7 @@ public class CBORTest {
 
         try {
             new CBORAsymKeyEncrypter(p256.getPublic(),
-                                     KeyEncryptionAlgorithms.ECDH_ES,
+                                     KeyEncryptionAlgorithms.ECDH_ES_HKDF_256,
                                      ContentEncryptionAlgorithms.A256GCM)
                                          .setPublicKeyOption(true)
                                          .setKeyId(keyId).encrypt(dataToEncrypt);

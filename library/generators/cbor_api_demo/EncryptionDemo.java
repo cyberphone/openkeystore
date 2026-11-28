@@ -34,7 +34,7 @@ public class EncryptionDemo {
         
         // Encrypt data using CEF.
         byte[] encryptionObject = new CBORAsymKeyEncrypter(senderKey,
-                                                           KeyEncryptionAlgorithms.ECDH_ES,
+                                                           KeyEncryptionAlgorithms.ECDH_ES_HKDF_256,
                                                            ContentEncryptionAlgorithms.A256GCM)
                 .encrypt(SECRET_MESSAGE).encode();
         

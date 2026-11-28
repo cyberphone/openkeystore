@@ -4440,7 +4440,7 @@ public class JSONTest {
                 Base64URL.encode(
                         EncryptionCore.receiverKeyAgreement(false,
                                                             alice.getPrivate(),
-                                                            KeyEncryptionAlgorithms.ECDH_ES,
+                                                            KeyEncryptionAlgorithms.ECDH_ES_HKDF_256,
                                                             ContentEncryptionAlgorithms.A128CBC_HS256,
                                                             (ECPublicKey) bob.getPublic(),
                                                             null)).equals(ECDH_RESULT_WITH_KDF));
@@ -4448,14 +4448,14 @@ public class JSONTest {
         EncryptionCore.AsymmetricEncryptionResult asymmetricEncryptionResult =
                 EncryptionCore.senderKeyAgreement(false,
                                                   null,
-                                                  KeyEncryptionAlgorithms.ECDH_ES,
+                                                  KeyEncryptionAlgorithms.ECDH_ES_HKDF_256,
                                                   ContentEncryptionAlgorithms.A128CBC_HS256,
                                                   alice.getPublic());
         assertTrue("Bad ECDH",
                 Arrays.equals(asymmetricEncryptionResult.getContentEncryptionKey(),
                         EncryptionCore.receiverKeyAgreement(false,
                                                             alice.getPrivate(),
-                                                            KeyEncryptionAlgorithms.ECDH_ES,
+                                                            KeyEncryptionAlgorithms.ECDH_ES_HKDF_256,
                                                             ContentEncryptionAlgorithms.A128CBC_HS256,
                                                             asymmetricEncryptionResult.getEphemeralKey(),
                                                             null)));
@@ -4467,12 +4467,12 @@ public class JSONTest {
         decryptionKeys.add(new JSONDecryptionDecoder.DecryptionKeyHolder(
                 alice.getPublic(), 
                 alice.getPrivate(),
-                KeyEncryptionAlgorithms.ECDH_ES,
+                KeyEncryptionAlgorithms.ECDH_ES_HKDF_256,
                 "alice"));
         decryptionKeys.add(new JSONDecryptionDecoder.DecryptionKeyHolder(
                 bob.getPublic(),
                 bob.getPrivate(),
-                KeyEncryptionAlgorithms.ECDH_ES,
+                KeyEncryptionAlgorithms.ECDH_ES_HKDF_256,
                 "bob"));
         decryptionKeys.add(new JSONDecryptionDecoder.DecryptionKeyHolder(
                 malletKeys.getPublic(),
@@ -4487,7 +4487,7 @@ public class JSONTest {
                         .serializeToBytes(JSONOutputFormats.NORMALIZED),
                                           ContentEncryptionAlgorithms.A128CBC_HS256,
                                           new JSONAsymKeyEncrypter(bob.getPublic(),
-                                                                   KeyEncryptionAlgorithms.ECDH_ES)).toString();
+                                                                   KeyEncryptionAlgorithms.ECDH_ES_HKDF_256)).toString();
         assertTrue("Bad JOSE ECDH",
                 unEncJson.toString()
                         .equals(JSONParser.parse(JSONParser.parse(encJson).getEncryptionObject(new JSONCryptoHelper.Options())
@@ -4498,7 +4498,7 @@ public class JSONTest {
                         .serializeToBytes(JSONOutputFormats.NORMALIZED),
                                           ContentEncryptionAlgorithms.A128CBC_HS256,
                                           new JSONAsymKeyEncrypter(bob.getPublic(),
-                                                                   KeyEncryptionAlgorithms.ECDH_ES).setKeyId("bob")).toString();
+                                                                   KeyEncryptionAlgorithms.ECDH_ES_HKDF_256).setKeyId("bob")).toString();
         JSONDecryptionDecoder decDec =
                 JSONParser.parse(encJson)
                     .getEncryptionObject(new JSONCryptoHelper.Options()
@@ -4544,7 +4544,7 @@ public class JSONTest {
                             .serializeToBytes(JSONOutputFormats.NORMALIZED),
                                               ContentEncryptionAlgorithms.A128CBC_HS256,
                                               new JSONAsymKeyEncrypter(bob.getPublic(),
-                                                                       KeyEncryptionAlgorithms.ECDH_ES)
+                                                                       KeyEncryptionAlgorithms.ECDH_ES_HKDF_256)
                             .setExtensions(new JSONObjectWriter()
                                  .setString(new ExampleComExtGood().getExtensionUri(), "hi"))).toString();
         extensionHolder = new JSONCryptoHelper.ExtensionHolder();

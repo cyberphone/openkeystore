@@ -199,16 +199,16 @@ public class CryptoTest {
     @Test
     public void encryptionTest() throws Exception {
         asymEncryptionProviderShot(KeyAlgorithms.P_256,
-                                   KeyEncryptionAlgorithms.ECDH_ES,
+                                   KeyEncryptionAlgorithms.ECDH_ES_HKDF_256,
                                    ContentEncryptionAlgorithms.A256GCM);
         asymEncryptionProviderShot(KeyAlgorithms.P_256,
                                    KeyEncryptionAlgorithms.ECDH_ES_A128KW,
                                    ContentEncryptionAlgorithms.A256GCM);
         asymEncryptionProviderShot(KeyAlgorithms.X25519,
-                                   KeyEncryptionAlgorithms.ECDH_ES,
+                                   KeyEncryptionAlgorithms.ECDH_ES_HKDF_256,
                                    ContentEncryptionAlgorithms.A256GCM);
         asymEncryptionProviderShot(KeyAlgorithms.X448,
-                                   KeyEncryptionAlgorithms.ECDH_ES,
+                                   KeyEncryptionAlgorithms.ECDH_ES_HKDF_256,
                                    ContentEncryptionAlgorithms.A256GCM);
         asymEncryptionProviderShot(KeyAlgorithms.RSA2048,
                                    KeyEncryptionAlgorithms.RSA_OAEP_256,
